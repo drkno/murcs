@@ -1,3 +1,5 @@
+package dontclick;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,7 +11,7 @@ public class MainWindowController {
     @FXML
     protected Button buttonYouShouldntPress;
 
-    private DontClickMe model = new DontClickMe();
+    private DontClickMe model = new DontClickMe(true);
 
     @FXML
     protected void becomeUnhinged(ActionEvent event){

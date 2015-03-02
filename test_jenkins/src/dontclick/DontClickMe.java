@@ -1,7 +1,7 @@
+package dontclick;
+
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -11,11 +11,14 @@ public class DontClickMe {
     private ArrayList<String> messages = new ArrayList<String>();
     private int currentIndex;
 
-    public DontClickMe(){
-        load();
+    private boolean loaded;
+
+    public DontClickMe(boolean load){
+        if (load)
+            load();
     }
 
-    private void load() {
+    public void load() {
         URL uri = getClass().getResource("messages.txt");
 
         try {
@@ -36,7 +39,19 @@ public class DontClickMe {
         currentIndex = (currentIndex + 1) % messages.size();
     }
 
+    public ArrayList<String> getMessages(){
+        return messages;
+    }
+
     public String currentText(){
         return messages.get(currentIndex);
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
     }
 }
