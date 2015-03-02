@@ -1,4 +1,4 @@
 Feature: Clicking Button
-  Scenario: Clicking the Button
+  Scenario: I click the button
     When I click the button
     Then the text changes

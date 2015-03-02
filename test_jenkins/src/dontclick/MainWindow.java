@@ -10,9 +10,18 @@ import javafx.stage.Stage;
  * Created by jayha_000 on 3/2/2015.
  */
 public class MainWindow extends Application {
-    @Override
-    public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("testwindow.fxml"));
+    private Parent root;
+
+    public Parent getRoot(){
+        return root;
+    }
+
+    public void start(Stage stage)throws Exception{
+        start(stage, true);
+    }
+
+    public void start(Stage stage, boolean show) throws Exception {
+        root = FXMLLoader.load(getClass().getResource("testwindow.fxml"));
 
         Scene scene = new Scene(root, 300, 275);
 
