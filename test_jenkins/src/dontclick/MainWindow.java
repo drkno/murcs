@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 public class MainWindow extends Application {
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("dontclick/testwindow.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("testwindow.fxml"));
 
         Scene scene = new Scene(root, 300, 275);
 
