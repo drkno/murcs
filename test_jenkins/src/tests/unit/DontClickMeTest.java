@@ -1,6 +1,6 @@
 package tests.unit;
 
-import dontclick.DontClickMe;
+import dontclick.StudentList;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,24 +9,24 @@ import org.junit.Test;
  * Created by jayha_000 on 3/2/2015.
  */
 public class DontClickMeTest {
-    private DontClickMe dontClickMe;
+    private StudentList dontClickMe;
 
     @Before
     public void setup(){
-        dontClickMe = new DontClickMe(false);
+        dontClickMe = new StudentList(false);
     }
 
 
     /**
-     * Note: This test will fail if the number of messages in 'messages.txt' is changed.
+     * Note: This test will fail if the number of messages in 'students.txt' is changed.
      */
     @Test
     public void testLoad(){
-        Assert.assertEquals("There should be no messages before loading!", 0, dontClickMe.getMessages().size());
+        Assert.assertEquals("There should be no messages before loading!", 0, dontClickMe.getStudents().size());
 
         dontClickMe.load();
 
-        Assert.assertEquals("There should be 6 messages after loading!", 6, dontClickMe.getMessages().size());
+        Assert.assertEquals("There should be 6 messages after loading!", 6, dontClickMe.getStudents().size());
     }
 
     /**
@@ -36,23 +36,23 @@ public class DontClickMeTest {
     public void testClick(){
         dontClickMe.load();
 
-        if (dontClickMe.getMessages().size() <= 1) return;
+        if (dontClickMe.getStudents().size() <= 1) return;
 
-        String message = dontClickMe.currentText();
+        String message = dontClickMe.currentStudentName();
         dontClickMe.click();
 
-        String newMessage = dontClickMe.currentText();
+        String newMessage = dontClickMe.currentStudentName();
 
         Assert.assertNotEquals("The message should have changed!", message, newMessage);
     }
 
     /**
-     * Note: This test will fail if the 'messages.txt' file is changed..
+     * Note: This test will fail if the 'students.txt' file is changed..
      */
     @Test
     public void testGetMessage(){
         dontClickMe.load();
 
-        Assert.assertEquals("The first message should be equal to 'James.'", "James.", dontClickMe.currentText());
+        Assert.assertEquals("The first message should be equal to 'James.'", "James.", dontClickMe.currentStudentName());
     }
 }

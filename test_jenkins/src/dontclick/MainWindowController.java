@@ -11,13 +11,13 @@ public class MainWindowController {
     @FXML
     protected Button buttonYouShouldntPress;
 
-    private DontClickMe model = new DontClickMe(true);
+    private StudentList model = new StudentList(true);
 
     @FXML
     protected void becomeUnhinged(ActionEvent event){
         Button sender = (Button)event.getSource();
 
-        sender.setText(model.currentText());
+        sender.setText(model.currentStudentName());
         model.click();
     }
 }

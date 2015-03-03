@@ -7,26 +7,26 @@ import java.util.ArrayList;
 /**
  * Created by jayha_000 on 3/2/2015.
  */
-public class DontClickMe {
-    private ArrayList<String> messages = new ArrayList<String>();
+public class StudentList {
+    private ArrayList<Student> students = new ArrayList<>();
     private int currentIndex;
 
     private boolean loaded;
 
-    public DontClickMe(boolean load){
+    public StudentList(boolean load){
         if (load)
             load();
     }
 
     public void load() {
-        URL uri = getClass().getResource("messages.txt");
+        URL uri = getClass().getResource("students.txt");
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(uri.getFile()));
 
             String line;
             while ((line = reader.readLine()) != null) {
-                messages.add(line);
+                students.add(new Student(line));
             }
 
             reader.close();
@@ -36,15 +36,19 @@ public class DontClickMe {
     }
 
     public void click(){
-        currentIndex = (currentIndex + 1) % messages.size();
+        currentIndex = (currentIndex + 1) % students.size();
     }
 
-    public ArrayList<String> getMessages(){
-        return messages;
+    public ArrayList<Student> getStudents(){
+        return students;
     }
 
-    public String currentText(){
-        return messages.get(currentIndex);
+    public String currentStudentName(){
+        return students.get(currentIndex).getName();
+    }
+
+    public Student currentStudent(){
+        return students.get(currentIndex);
     }
 
     public boolean isLoaded() {
