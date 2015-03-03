@@ -1,4 +1,4 @@
-package tests.unit;
+package unit;
 
 import dontclick.DontClickMe;
 import org.junit.Assert;
