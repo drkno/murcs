@@ -1,6 +1,8 @@
 package dontclick;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -13,10 +15,10 @@ public class DontClickMe {
 
     private boolean loaded;
 
-    public DontClickMe(boolean load){
-        if (load)
-            load();
+    public DontClickMe() {
+        load();
     }
+
 
     public void load() {
         URL uri = getClass().getResource("messages.txt");
@@ -30,7 +32,7 @@ public class DontClickMe {
             }
 
             reader.close();
-        }catch (IOException e){
+        }catch (IOException ignored){
 
         }
     }

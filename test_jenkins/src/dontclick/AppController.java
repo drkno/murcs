@@ -7,11 +7,11 @@ import javafx.scene.control.Button;
 /**
  * Created by jayha_000 on 3/2/2015.
  */
-public class MainWindowController {
+public class AppController {
     @FXML
     protected Button buttonYouShouldntPress;
 
-    private DontClickMe model = new DontClickMe(true);
+    private DontClickMe model = new DontClickMe();
 
     @FXML
     protected void becomeUnhinged(ActionEvent event){

@@ -13,7 +13,7 @@ public class DontClickMeTest {
 
     @Before
     public void setup(){
-        dontClickMe = new DontClickMe(false);
+        dontClickMe = new DontClickMe();
     }
 
 
@@ -22,10 +22,6 @@ public class DontClickMeTest {
      */
     @Test
     public void testLoad(){
-        Assert.assertEquals("There should be no messages before loading!", 0, dontClickMe.getMessages().size());
-
-        dontClickMe.load();
-
         Assert.assertEquals("There should be 6 messages after loading!", 6, dontClickMe.getMessages().size());
     }
 
