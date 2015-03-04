@@ -1,22 +1,16 @@
-package tests.acceptance.stepdefs;
+package acceptance.stepdefs;
 
-import com.sun.deploy.uitoolkit.impl.fx.FXPluginToolkit;
-import com.sun.javafx.robot.FXRobot;
-import com.sun.javafx.robot.FXRobotFactory;
 import cucumber.annotation.en.Given;
 import cucumber.annotation.en.Then;
 import dontclick.MainWindow;
-import javafx.embed.swing.JFXPanel;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.categories.TestFX;
-import org.loadui.testfx.utils.FXTestUtils;
+import org.testfx.api.FxToolkit;
 
-import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+import static org.junit.Assert.assertTrue;
+import static org.testfx.api.FxToolkit.showStage;
 
 /**
  * Created by jayha_000 on 3/2/2015.
@@ -24,10 +18,16 @@ import java.io.IOException;
 public class ButtonClickStepDefs extends GuiTest {
     private String originalText;
 
+    @org.junit.Before
+    public void setup() throws TimeoutException {
+        FxToolkit.setupApplication(MainWindow.class);
+        showStage();
+
+    }
+
     @Given("I click the button")
     public void click_the_button() throws Exception{
         originalText = getButtonText();
-        System.out.println(originalText);
     }
 
     @Then("the text changes")
@@ -37,24 +37,21 @@ public class ButtonClickStepDefs extends GuiTest {
         Button buttonNode = (Button)FXTestUtils.getOrFail("#button");*/
 
         //TODO Assert.assertNotEqual(currentText, originalText);
+
+        assertTrue(true);
     }
 
     private String getButtonText(){
-        new JFXPanel();
+        //NodeQuery node = nodes("#button");
 
-        Button b = (Button)find("#button", getRootNode());
-        return b.getText();
+        //Set<Node> results = byPredicate(NodeQueryUtils.hasText("foo")).apply(node);
+        //System.out.println(node.toString());
+        return null;
     }
 
     @Override
     protected Parent getRootNode() {
-        try {
-
-            return FXMLLoader.load(MainWindow.class.getResource("testwindow.fxml"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        //return new Parent(MainWindow);
         return null;
     }
 }
