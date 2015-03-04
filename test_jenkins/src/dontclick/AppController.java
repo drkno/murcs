@@ -11,7 +11,7 @@ public class AppController {
     @FXML
     protected Button buttonYouShouldntPress;
 
-    private DontClickMe model = new DontClickMe();
+    private StudentList model = new StudentList();
 
     @FXML
     protected void becomeUnhinged(ActionEvent event){
