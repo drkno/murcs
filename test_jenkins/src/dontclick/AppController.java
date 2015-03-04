@@ -17,7 +17,7 @@ public class AppController {
     protected void becomeUnhinged(ActionEvent event){
         Button sender = (Button)event.getSource();
 
-        sender.setText(model.currentText());
+        sender.setText(model.currentStudentName());
         model.click();
     }
 }
