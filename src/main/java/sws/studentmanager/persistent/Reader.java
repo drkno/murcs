@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import sws.studentmanager.model.Student;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 
@@ -21,13 +22,15 @@ public class Reader {
 
     public static Student[] readStudents(String filePath) {
         Student[] students = null;
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
-            students = gson.fromJson(br, new TypeToken<Student[]>() {
-            }.getType());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        File file = new File(filePath);
+        if (file.exists()) {
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                students = gson.fromJson(br, new TypeToken<Student[]>() {
+                }.getType());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         return students;
     }
