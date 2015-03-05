@@ -9,8 +9,8 @@ import java.io.IOException;
 
 /**
  * Handles the saving of all student information.
- * <p/>
- * Created by Daniel van Wichen on 4/03/15.
+ *
+ * @author dpv11@uclive.ac.nz (Daniel van Wichen)
  */
 public class Writer {
 
@@ -22,6 +22,7 @@ public class Writer {
      * @param students A collection of students
      * @param filePath The specified save location
      */
+
     public static void writeStudents(Student[] students, String filePath) {
         String profileString = gson.toJson(students);
 

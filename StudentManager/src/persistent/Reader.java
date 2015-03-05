@@ -11,8 +11,8 @@ import java.io.FileReader;
 
 /**
  * Handles the loading of all student information.
- * <p/>
- * Created by Haydon Baddock on 4/03/15.
+ *
+ * @author dpv11@uclive.ac.nz (Daniel van Wichen)
  */
 public class Reader {
 

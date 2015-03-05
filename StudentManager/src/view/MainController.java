@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 
 /**
- * Created by Haydon Baddock on 5/03/15.
+ * @author dpv11@uclive.ac.nz (Daniel van Wichen)
  */
 public class MainController {
 

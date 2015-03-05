@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Main application.
  *
- * Created by Daniel van Wichen on 4/03/15.
+ * @author dpv11@uclive.ac.nz (Daniel van Wichen)
  */
 public class Main extends Application {
 
