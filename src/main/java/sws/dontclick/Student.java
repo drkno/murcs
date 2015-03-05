@@ -1,4 +1,4 @@
-package main.java.sws.dontclick;
+package sws.dontclick;
 
 /**
  * Created by jayha_000 on 3/4/2015.

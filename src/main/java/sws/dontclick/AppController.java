@@ -1,4 +1,4 @@
-package main.java.sws.dontclick;
+package sws.dontclick;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

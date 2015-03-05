@@ -1,4 +1,4 @@
-package main.java.sws.dontclick;
+package sws.dontclick;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +13,7 @@ public class App extends Application {
 
 
     public void start(Stage primaryStage) throws Exception {
-        Parent parent = FXMLLoader.load(getClass().getResource("testwindow.fxml"));
+        Parent parent = FXMLLoader.load(getClass().getResource("/testwindow.fxml"));
         primaryStage.setScene(new Scene(parent));
         primaryStage.setTitle("Don't Press The Goddamn Button");
         primaryStage.show();

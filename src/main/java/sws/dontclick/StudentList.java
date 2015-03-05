@@ -1,11 +1,12 @@
-package main.java.sws.dontclick;
+package sws.dontclick;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+
 
 /**
  * Created by jayha_000 on 3/2/2015.
@@ -22,19 +23,18 @@ public class StudentList {
 
 
     public void load() {
-        File file = new File(System.getProperty("user.dir"), Paths.get("./src/main/java/sws/dontclick/students.txt").normalize().toString());
-
+        Path path = null;
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                students.add(new Student(line));
+            path = Paths.get(getClass().getResource("/students.txt").toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (path != null){
+                Files.lines(path).forEachOrdered(e -> students.add(new Student(e)));
             }
-
-            reader.close();
-        }catch (IOException ignored){
-
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

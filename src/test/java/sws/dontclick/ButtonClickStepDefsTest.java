@@ -1,6 +1,6 @@
-package test.java.sws.dontclick.acceptance.stepdefs;
+package sws.dontclick;
 
-import main.java.sws.dontclick.App;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertNotSame;
 /**
  * Created by jayha_000 on 3/2/2015.
  */
-public class ButtonClickStepDefs extends GuiTest {
+public class ButtonClickStepDefsTest extends GuiTest {
 
 
     /**
@@ -32,7 +32,7 @@ public class ButtonClickStepDefs extends GuiTest {
     @Override
     protected Parent getRootNode() {
         try {
-            return FXMLLoader.load(App.class.getResource("testwindow.fxml"));
+            return FXMLLoader.load(getClass().getResource("/testwindow.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }

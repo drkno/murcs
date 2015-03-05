@@ -1,6 +1,6 @@
-package test.java.sws.dontclick;
+package sws.dontclick;
 
-import main.java.sws.dontclick.StudentList;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
