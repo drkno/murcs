@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class Writer {
 
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /**
      * Saves a collection of students to the specified location.

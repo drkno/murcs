@@ -23,7 +23,8 @@ import java.util.Comparator;
  */
 public class MainController {
 
-    private static ObservableList students = FXCollections.observableArrayList();
+    private static final ObservableList students = FXCollections.observableArrayList();
+
     @FXML
     TextField textFieldName;
     @FXML
@@ -34,6 +35,7 @@ public class MainController {
     Button buttonSave;
     @FXML
     Button buttonDelete;
+
     private ReadOnlyProperty<Student> selectedStudent;
 
     /**

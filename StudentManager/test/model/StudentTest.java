@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 public class StudentTest {
 
-    private static Student student = new Student("Daniel van Wichen", LocalDate.of(1994, 12, 25));
+    private static final Student student = new Student("Daniel van Wichen", LocalDate.of(1994, 12, 25));
 
 
     @Test

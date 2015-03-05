@@ -16,7 +16,7 @@ import java.io.FileReader;
  */
 public class Reader {
 
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     public static Student[] readStudents(String filePath) {
         Student[] students = null;
