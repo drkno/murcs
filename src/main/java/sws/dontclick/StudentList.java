@@ -21,10 +21,11 @@ public class StudentList {
 
 
     public void load() {
-        URL uri = getClass().getResource("students.txt");
+        URL url = this.getClass().getResource("students.txt");
+        System.out.println(url.toString());
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(uri.getFile()));
+            BufferedReader reader = new BufferedReader(new FileReader(url.getFile()));
 
             String line;
             while ((line = reader.readLine()) != null) {
