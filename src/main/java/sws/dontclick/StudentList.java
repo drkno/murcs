@@ -1,9 +1,10 @@
 package main.java.sws.dontclick;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -21,11 +22,10 @@ public class StudentList {
 
 
     public void load() {
-        URL url = this.getClass().getResource("students.txt");
-        System.out.println(url.toString());
+        File file = new File(System.getProperty("user.dir"), Paths.get("./src/main/java/sws/dontclick/students.txt").normalize().toString());
 
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(url.getFile()));
+            BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String line;
             while ((line = reader.readLine()) != null) {
