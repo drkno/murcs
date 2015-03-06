@@ -34,7 +34,7 @@ public class Main extends Application {
      * Initializes the root layout.
      */
     private void initRootLayout() throws IOException {
-            AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/Main.fxml"));
+            AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/main.fxml"));
             stage.setScene(new Scene(rootLayout));
 
     }
