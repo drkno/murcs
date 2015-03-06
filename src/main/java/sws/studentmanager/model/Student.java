@@ -21,8 +21,8 @@ public class Student {
      * @param dateOfBirth
      */
     public Student(String name, LocalDate dateOfBirth) {
-        this.name = new SimpleObjectProperty<String>(name);
-        this.dateOfBirth = new SimpleObjectProperty<LocalDate>(dateOfBirth);
+        this.name = new SimpleObjectProperty<>(name);
+        this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth);
     }
 
     public String getName() {

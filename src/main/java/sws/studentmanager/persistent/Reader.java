@@ -20,6 +20,12 @@ public class Reader {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    /**
+     * Reads a collection of students from the specified location.
+     *
+     * @param filePath The specified save location
+     * @return the previously saved students
+     */
     public static Student[] readStudents(String filePath) {
         Student[] students = null;
         File file = new File(filePath);
