@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 /**
+ * Main controller for gui
+ *
  * Created by jayha_000 on 3/2/2015.
  */
 public class AppController {

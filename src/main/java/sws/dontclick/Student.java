@@ -1,6 +1,8 @@
 package sws.dontclick;
 
 /**
+ * Student objecy
+ *
  * Created by jayha_000 on 3/4/2015.
  */
 public class Student {

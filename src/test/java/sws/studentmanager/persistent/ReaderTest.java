@@ -1,7 +1,5 @@
 package sws.studentmanager.persistent;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import sws.studentmanager.model.Student;
@@ -17,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 public class ReaderTest {
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private File tmpStudentsJson;
 
     @Before

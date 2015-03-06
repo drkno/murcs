@@ -17,12 +17,12 @@ public class Student {
     /**
      * Constructor.
      *
-     * @param name
-     * @param dateOfBirth
+     * @param name Student name
+     * @param dateOfBirth Student date of birth
      */
     public Student(String name, LocalDate dateOfBirth) {
-        this.name = new SimpleObjectProperty<String>(name);
-        this.dateOfBirth = new SimpleObjectProperty<LocalDate>(dateOfBirth);
+        this.name = new SimpleObjectProperty<>(name);
+        this.dateOfBirth = new SimpleObjectProperty<>(dateOfBirth);
     }
 
     public String getName() {

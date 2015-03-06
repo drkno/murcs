@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 
 /**
+ * Loads and saves a list of students
+ *
  * Created by jayha_000 on 3/2/2015.
  */
 public class StudentList {

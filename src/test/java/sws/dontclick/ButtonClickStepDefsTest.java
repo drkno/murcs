@@ -12,6 +12,8 @@ import java.io.IOException;
 import static junit.framework.Assert.assertNotSame;
 
 /**
+ * Tests button click with Testfx
+ *
  * Created by jayha_000 on 3/2/2015.
  */
 public class ButtonClickStepDefsTest extends GuiTest {

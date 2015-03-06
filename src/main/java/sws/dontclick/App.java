@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
+ * Main gui
+ *
  * Created by jayha_000 on 3/2/2015.
  */
 public class App extends Application {

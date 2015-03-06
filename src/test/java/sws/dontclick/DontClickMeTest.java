@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * Tests Button click
+ *
  * Created by jayha_000 on 3/2/2015.
  */
 public class DontClickMeTest {

@@ -1,7 +1,5 @@
 package sws.studentmanager.persistent;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import sws.studentmanager.model.Student;
@@ -17,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 public class WriterTest {
 
-    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private Student[] students = new Student[1];
     private String studentsJson;
 
@@ -31,7 +28,7 @@ public class WriterTest {
 
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine() + "\n");
+            sb.append(scanner.nextLine()).append("\n");
         }
 
         studentsJson = sb.toString();
@@ -48,7 +45,7 @@ public class WriterTest {
 
         StringBuilder sb = new StringBuilder();
         while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine() + "\n");
+            sb.append(scanner.nextLine()).append("\n");
         }
 
         String tmpStudentJson = sb.toString();
