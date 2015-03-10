@@ -35,6 +35,8 @@ public class MainController {
     Button buttonSave;
     @FXML
     Button buttonDelete;
+    @FXML
+    Button buttonClear;
 
     private ReadOnlyProperty<Student> selectedStudent;
 
@@ -71,10 +73,12 @@ public class MainController {
                 }
             }
         });
+
+        clearFields();
     }
 
     @FXML
-    private void buttonActionCreateStudent(ActionEvent event) {
+    private void buttonActionClear(ActionEvent event) {
         listViewStudents.getSelectionModel().clearSelection();
         clearFields();
     }
@@ -124,7 +128,16 @@ public class MainController {
      * Clear all the information fields.
      */
     private void clearFields() {
+        listViewStudents.getItems().clear();
         textFieldName.clear();
         datePickerDob.setValue(null);
+
+    }
+
+    /**
+     * Empty studentList.
+     */
+    public static void emptyStudentList() {
+        students.clear();
     }
 }
