@@ -6,41 +6,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.Assertions;
 import org.loadui.testfx.GuiTest;
 import org.loadui.testfx.controls.ListViews;
-import sws.studentmanager.model.Student;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import static junit.framework.TestCase.assertEquals;
 
 /**
- * Create student test.
+ * Create student test.Dion Woolley
  *
  * Created by Dion on 3/6/2015.
  */
 public class studentStepDefsTest extends GuiTest {
-
-    private ListView studentList;
-    private Student student;
-
-    @Before
-    public void setup() {
-        student = new Student("Daniel van Wichen", LocalDate.of(1994, 12, 25));
-        studentList = find("#studentList");
-    }
-
-    @After
-    public void tearDown() {
-        // Need a way to clear student list
-        //studentList.getItems().clear();
-    }
-
 
     /**
      * When I click the save button
