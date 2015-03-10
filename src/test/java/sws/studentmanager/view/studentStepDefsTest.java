@@ -16,9 +16,12 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertEquals;
 
 /**
- * Create student test.Dion Woolley
+ * sws.studentmanger.view
  *
- * Created by Dion on 3/6/2015.
+ * Test Class for Students
+ *
+ * 3/6/2015
+ * @author Dion
  */
 public class studentStepDefsTest extends GuiTest {
 
@@ -26,7 +29,6 @@ public class studentStepDefsTest extends GuiTest {
      * When I click the save button
      * And The name field and dob field is filled out
      * Then The the student is saved to application
-     * @throws Exception
      */
     @Test
     public void creatingAStudent() throws Exception{
@@ -47,6 +49,11 @@ public class studentStepDefsTest extends GuiTest {
         assertEquals("Dion Woolley", studentList.getItems().get(0).toString());
     }
 
+    /**
+     * When I click the delete button
+     * And I have a student selected from the list
+     * Then The student is removed from the list
+     */
     @Test
     public void deleteAStudent() throws Exception {
         // Get the objects interacting with
