@@ -23,7 +23,7 @@ public class WriterTest {
     public void setUp() throws Exception {
         students[0] = new Student("Daniel van Wichen", LocalDate.of(1994, 9, 25));
 
-        java.io.Reader reader = new InputStreamReader(getClass().getResourceAsStream("/students.json"));
+        java.io.Reader reader = new InputStreamReader(getClass().getResourceAsStream("/studentmanager/students.json"));
         Scanner scanner = new Scanner(reader);
 
         StringBuilder sb = new StringBuilder();

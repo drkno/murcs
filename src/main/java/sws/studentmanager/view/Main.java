@@ -1,6 +1,5 @@
 package sws.studentmanager.view;
 
-import com.guigarage.flatterfx.FlatterFX;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -36,10 +35,9 @@ public class Main extends Application {
      * Initializes the root layout.
      */
     private void initRootLayout() throws IOException {
-        AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/main.fxml"));
+        AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/studentmanager/main.fxml"));
         Scene scene = new Scene(rootLayout);
         //Note that the sate picker does not work with flatter.
-        FlatterFX.style();
         stage.setScene(scene);
 
     }
