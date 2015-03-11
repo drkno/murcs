@@ -1,5 +1,6 @@
 package sws.project.sampledata;
 
+import sws.project.exceptions.DuplicateObjectException;
 import sws.project.model.Person;
 import sws.project.model.Skill;
 
@@ -39,7 +40,11 @@ public class PersonGenerator implements Generator<Person> {
         p.setShortName(shortName);
         p.setLongName(longName);
 
-        p.addSkills(skills);
+        try {
+            p.addSkills(skills);
+        } catch (DuplicateObjectException e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
 
         return p;
     }

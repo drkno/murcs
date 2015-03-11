@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sws.project.exceptions.DuplicateObjectException;
 import sws.project.sampledata.Generator;
-import sws.project.sampledata.PersonGenerator;
 import sws.project.sampledata.SkillGenerator;
 
 import java.util.ArrayList;
@@ -19,23 +19,19 @@ import static junit.framework.Assert.*;
  */
 public class PersonTest {
 
-    private Person personGenerated;
     private Person person;
     private Skill skillGenerated;
     private Skill skill;
-    private static Generator<Person> personGenerator;
     private static Generator<Skill> skillGenerator;
 
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        personGenerator = new PersonGenerator();
         skillGenerator = new SkillGenerator();
     }
 
     @Before
     public void setUp() {
-        personGenerated = personGenerator.generate();
         skillGenerated = skillGenerator.generate();
         person = new Person();
         skill = new Skill();
@@ -44,7 +40,6 @@ public class PersonTest {
 
     @After
     public void tearDown() {
-        personGenerated = null;
         skillGenerated = null;
         person = null;
         skill = null;
@@ -63,23 +58,28 @@ public class PersonTest {
     }
 
     @Test
-    public void addSkillTest() throws Exception{
-        int filteredSize;
+    public void addSkillTest() throws Exception {
         assertFalse(person.getSkills().contains(skillGenerated));
 
         person.addSkill(skillGenerated);
         assertTrue(person.getSkills().contains(skillGenerated));
+    }
 
+    @Test (expected = DuplicateObjectException.class)
+    public void addSkillExceptionTest1() throws Exception {
         person.addSkill(skillGenerated);
-        assertEquals(person.getSkills().size(), 1);
+        person.addSkill(skillGenerated);
+    }
 
+    @Test (expected = DuplicateObjectException.class)
+    public void addSkillExceptionTest2() throws Exception {
+        person.addSkill(skillGenerated);
         skill.setShortName(skillGenerated.getShortName());
         person.addSkill(skill);
-        assertEquals(person.getSkills().size(), 1);
     }
 
     @Test
-    public void addSkills() throws Exception {
+    public void addSkillsTest() throws Exception {
         List<Skill> testSkills = new ArrayList<>();
         assertEquals(person.getSkills().size(), 0);
         testSkills.add(skillGenerated);
@@ -90,18 +90,17 @@ public class PersonTest {
         testSkills.add(skillGenerated);
         assertEquals(testSkills.size(), 2);
         assertEquals(person.getSkills().size(), 1);
-
     }
 
     @Test
     public void removeSkillTest() throws Exception {
-        personGenerated.addSkill(skillGenerated);
-        assertTrue(personGenerated.getSkills().contains(skillGenerated));
+        person.addSkill(skillGenerated);
+        assertTrue(person.getSkills().contains(skillGenerated));
 
-        personGenerated.removeSkill(skillGenerated);
-        assertFalse(personGenerated.getSkills().contains(skillGenerated));
+        person.removeSkill(skillGenerated);
+        assertFalse(person.getSkills().contains(skillGenerated));
 
-        personGenerated.removeSkill(skillGenerated);
-        assertFalse(personGenerated.getSkills().contains(skillGenerated));
+        person.removeSkill(skillGenerated);
+        assertFalse(person.getSkills().contains(skillGenerated));
     }
 }

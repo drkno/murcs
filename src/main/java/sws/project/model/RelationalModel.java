@@ -1,6 +1,9 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The top level relational model
@@ -95,11 +98,29 @@ public class RelationalModel {
     }
 
     /**
-     * Adds a skill to skills
+     * Adds a skill to skills only if the skill does not already exist
      * @param skill The skill to add
      */
-    public void addSkill(Skill skill) {
-        this.skills.add(skill);
+    public void addSkill(Skill skill) throws DuplicateObjectException {
+        if (!skills.contains(skill) &&
+                !skills
+                        .stream()
+                        .filter(s -> s.getShortName().equals(skill.getShortName()))
+                        .findAny()
+                        .isPresent()) {
+            this.skills.add(skill);
+        }
+        else throw new DuplicateObjectException();
+    }
+
+    /**
+     * Adds a list of skills to the existing list of skills
+     * @param skills Skills to be added existing skills
+     */
+    public void addSkills(List<Skill> skills) throws DuplicateObjectException {
+        for (Skill skill: skills) {
+            this.addSkill(skill);
+        }
     }
 
     /**
@@ -107,6 +128,8 @@ public class RelationalModel {
      * @param skill The skill to remove
      */
     public void removeSkill(Skill skill) {
-        this.skills.remove(skill);
+        if (skills.contains(skill)) {
+            this.skills.remove(skill);
+        }
     }
 }

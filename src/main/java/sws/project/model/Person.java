@@ -1,5 +1,7 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,14 +56,17 @@ public class Person extends Model {
      * Adds a skill to skills only if the person does not already have that skill
      * @param skill The skill to add
      */
-    public void addSkill(Skill skill) {
+    public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill) &&
                 !skills
-                .stream()
-                .filter(s -> s.getShortName().equals(skill.getShortName()))
-                .findAny()
-                .isPresent()) {
+                    .stream()
+                    .filter(s -> s.getShortName().equals(skill.getShortName()))
+                    .findAny()
+                    .isPresent()) {
             this.skills.add(skill);
+        }
+        else {
+            throw new DuplicateObjectException();
         }
     }
 
@@ -69,8 +74,10 @@ public class Person extends Model {
      * Adds a list of skills to the persons skills
      * @param skills Skills to be added to person
      */
-    public void addSkills(List<Skill> skills) {
-        skills.forEach(this::addSkill);
+    public void addSkills(List<Skill> skills) throws DuplicateObjectException {
+        for (Skill skill: skills) {
+            this.addSkill(skill);
+        }
     }
 
     /**
