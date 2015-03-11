@@ -39,11 +39,11 @@ public class Skill extends Model{
     public boolean isRole(Role role){
         //This is a quick and dirty solution. Essentially what it does
         //is compare the two strings in the same case, without spaces.
-        return getShortName().toLowerCase().replace(" ", "") == role.toString().toLowerCase().replace(" ", "");
+        return getShortName().toLowerCase().replace(" ", "").equals(role.toString().toLowerCase().replace(" ", ""));
     }
 
     @Override
     public boolean equals(Object object){
-        return object instanceof Skill && ((Skill)object).getLongName() == getLongName();
+        return object instanceof Skill && ((Skill)object).getLongName().equals(getLongName());
     }
 }

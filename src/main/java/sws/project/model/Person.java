@@ -26,13 +26,11 @@ public class Person extends Model {
      * @return Whether the person can take on a role.
      */
     public boolean canBeRole(Skill.Role role){
-        for (int i = 0; i < getSkills().size(); ++i){
-            Skill skill = getSkills().get(i);
-
-            if (skill.isRole(role))
-                return true;
-        }
-        return false;
+        return getSkills()
+                .stream()
+                .filter(s -> s.isRole(role))
+                .findFirst()
+                .isPresent();
     }
 
     /**
