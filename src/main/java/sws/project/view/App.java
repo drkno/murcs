@@ -8,7 +8,11 @@ import javafx.stage.Stage;
 
 public class App extends Application{
 
-
+    /***
+     * Starts up the application and sets the min window size to 600x400
+     * @param primaryStage The main Stage
+     * @throws Exception A loading exception from loading the fxml
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getResource("/sws/project/App.fxml"));
@@ -21,6 +25,10 @@ public class App extends Application{
         primaryStage.show();
     }
 
+    /***
+     * Main function for starting the app
+     * @param args Arguements passed into the main function (they're irrelevant currently)
+     */
     public static void main(String[] args) {
         launch(args);
     }
