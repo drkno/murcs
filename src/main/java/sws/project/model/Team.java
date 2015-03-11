@@ -10,26 +10,9 @@ import java.util.ArrayList;
  */
 
 public class Team extends Model{
-    private Project project;
     private String description;
 
     private ArrayList<Person> members = new ArrayList<>();
-
-    /**
-     * Gets the project the team is associated with
-     * @return The teams project
-     */
-    public Project getProject() {
-        return project;
-    }
-
-    /**
-     * Sets the project the team is associated with
-     * @param project The new project for the team to work on
-     */
-    public void setProject(Project project) {
-        this.project = project;
-    }
 
     /**
      * Returns a list of members in the team. Following the
