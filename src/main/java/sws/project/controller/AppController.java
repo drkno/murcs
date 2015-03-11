@@ -8,6 +8,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
 * 11/03/2015
@@ -15,7 +16,7 @@ import javafx.scene.layout.VBox;
 public class AppController {
 
     @FXML
-    MenuItem fileQuit;
+    MenuItem fileQuit, newProjectMenuItem;
 
     @FXML
     VBox vBoxSideDisplay;
@@ -54,5 +55,10 @@ public class AppController {
             showHide = true;
         }
 
+    }
+
+    @FXML
+    private void createNewProject(ActionEvent event) {
+        throw new NotImplementedException("muhahahahahahahaha");
     }
 }
