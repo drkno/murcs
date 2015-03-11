@@ -6,9 +6,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sun.awt.SunToolkit;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -59,11 +62,35 @@ public class EditPaneGenerator {
 
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from){
         Editable editable = (Editable)getEditable(field);
+        if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditGenerator to " + field.getName());
 
-        Class<?> supported = editable.value();
-        if (!field.getType().isAssignableFrom(supported))
-            throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + (supported == null ? "null" : supported.getName()) + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+        try {
+            Constructor<?> constructor = editable.value().getConstructor();
+            EditGenerator generator = (EditGenerator)constructor.newInstance();
 
+            Class[] supportedClasses = generator.supportedTypes();
+            boolean supported = false;
 
+            for (Class clazz : supportedClasses)
+            {
+                if (field.getType().isAssignableFrom(clazz)) {
+                    supported = true;
+                    break;
+                }
+            }
+
+            if (!supported)
+                throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.value().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+
+            return generator.generate(field, getter, setter, from);
+        }catch (NoSuchMethodException e){
+            throw new IllegalArgumentException("Unable to instantiate a new " + editable.value().getName() + ". You should check it has a default constructor.");
+        }
+        catch (Exception e){
+            if (e instanceof UnsupportedOperationException)
+                throw new UnsupportedOperationException(e.getMessage());
+        }
+
+        return new VBox();
     }
 }
