@@ -98,7 +98,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
         try
         {
             // Open the persistent file
-            String persistenceFileLocation = directory + File.separator + persistent.longName + ".project";
+            String persistenceFileLocation = directory + File.separator + persistent.getLongName() + ".project";
             // Open object stream to file
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file
