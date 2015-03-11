@@ -1,6 +1,7 @@
 package sws.project.model.persistence.loaders;
 
 import sws.project.model.Model;
+import sws.project.model.RelationalModel;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return The loaded model.
      */
     @Override
-    public Model loadModel(String persistenceName)
+    public RelationalModel loadModel(String persistenceName)
     {
         // load the persistent file using the default directory
         return loadModel(persistenceName, getDirectory());
@@ -55,7 +56,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory The directory to load the persistent file from.
      * @return The loaded model.
      */
-    public Model loadModel(String persistenceName, String directory){
+    public RelationalModel loadModel(String persistenceName, String directory){
         try
         {
             // Open the model file
@@ -63,10 +64,10 @@ public class FilePersistenceLoader implements PersistenceLoader {
             // Create an object reading stream
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(persistentFileLocation));
             // Input and case to correct type
-            Model userIn = (Model)in.readObject();
+            RelationalModel input = (RelationalModel)in.readObject();
             // Close input stream
             in.close();
-            return userIn;
+            return input;
         }
         catch (Exception e)
         {
@@ -82,7 +83,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @throws Exception When a model fails to save.
      */
     @Override
-    public void saveModel(Model persistent) throws Exception
+    public void saveModel(RelationalModel persistent) throws Exception
     {
         // saves the model using the default directory
         saveModel(persistent, getDirectory());
@@ -93,12 +94,12 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param persistent Model to save.
      * @param directory Directory to save the model in.
      */
-    public void saveModel(Model persistent, String directory) throws Exception
+    public void saveModel(RelationalModel persistent, String directory) throws Exception
     {
         try
         {
             // Open the persistent file
-            String persistenceFileLocation = directory + File.separator + persistent.getLongName() + ".project";
+            String persistenceFileLocation = directory + File.separator + persistent.getProject().getLongName() + ".project";
             // Open object stream to file
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file

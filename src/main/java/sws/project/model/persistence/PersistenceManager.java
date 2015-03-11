@@ -1,10 +1,10 @@
 package sws.project.model.persistence;
 
 import sws.project.model.Model;
+import sws.project.model.RelationalModel;
 import sws.project.model.persistence.loaders.PersistenceLoader;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Provides methods for managing models
@@ -25,7 +25,7 @@ public final class PersistenceManager {
     /**
      * Currently in use user persistence.
      */
-    private Model currentModel;
+    private RelationalModel currentModel;
 
     /**
      * Currently in use persistence loader.
@@ -64,7 +64,7 @@ public final class PersistenceManager {
      * @param persistenceName The name of the model to load
      * @return The loaded persistence. Will be null if the persistence does not exist
      */
-    public Model loadModel(String persistenceName)
+    public RelationalModel loadModel(String persistenceName)
     {
         // load the persistence using the default directory
         return persistenceLoader.loadModel(persistenceName);
@@ -75,7 +75,7 @@ public final class PersistenceManager {
      * @param persistence Persistence to save.
      * @throws Exception When a model fails to save.
      */
-    public void savePersistence(Model persistence) throws Exception
+    public void savePersistence(RelationalModel persistence) throws Exception
     {
         // saves the model using the default directory
         persistenceLoader.saveModel(persistence);
@@ -114,7 +114,7 @@ public final class PersistenceManager {
      * Gets the current model
      * @return The current model. Null if it has not been set.
      */
-    public Model getCurrentModel(){
+    public RelationalModel getCurrentModel(){
         return currentModel;
     }
 
@@ -122,7 +122,7 @@ public final class PersistenceManager {
      * Sets the current model
      * @param model The new model
      */
-    public void setCurrentModel(Model model){
+    public void setCurrentModel(RelationalModel model){
         currentModel = model;
     }
 }
