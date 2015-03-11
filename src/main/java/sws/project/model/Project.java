@@ -32,4 +32,20 @@ public class Project extends Model {
     public ArrayList<Team> getTeams() {
         return teams;
     }
+
+    /**
+     * Adds a team to this project.
+     * @param team team to add.
+     */
+    public void addTeam(Team team) {
+        teams.add(team);
+    }
+
+    /**
+     * Remove a team from this project.
+     * @param team team to remove.
+     */
+    public void removeTeam(Team team) {
+        teams.remove(team);
+    }
 }
