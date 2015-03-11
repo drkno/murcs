@@ -12,10 +12,18 @@ public class Skill extends Model{
 
     private String description;
 
+    /**
+     * Gets a description of the skill
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets the description
+     * @param description The new description
+     */
     public void setDescription(String description) {
         this.description = description;
     }

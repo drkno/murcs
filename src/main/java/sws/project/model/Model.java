@@ -12,6 +12,8 @@ public abstract class Model {
     }
 
     public void setShortName(String shortName) {
+        if (shortName == null) throw new IllegalArgumentException("shortname cannot be null!");
+
         this.shortName = shortName;
     }
 
