@@ -1,4 +1,7 @@
 package sws.project.model;
+
+import java.util.ArrayList;
+
 /**
  *
  */
