@@ -3,9 +3,8 @@ package sws.project.model;
 import java.util.ArrayList;
 
 /**
- *
+ * Model of a person.
  */
-
 public class Person extends Model {
     private String userId;
     private ArrayList<Skill> skills = new ArrayList<>();

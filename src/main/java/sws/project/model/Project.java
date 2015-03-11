@@ -3,7 +3,7 @@ package sws.project.model;
 import java.util.ArrayList;
 
 /**
- *
+ * Model of a Project.
  */
 public class Project extends Model {
     private String description;

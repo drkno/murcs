@@ -1,9 +1,12 @@
 package sws.project.model;
 /**
- *
+ * Model of a skill.
  */
 
 public class Skill extends Model{
+    /**
+     * Possible roles of a team.
+     */
     public enum Role{
         ScrumMaster,
         Developer,

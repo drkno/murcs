@@ -1,19 +1,13 @@
 package sws.project.model;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import javax.management.relation.Role;
 import java.util.ArrayList;
 
 /**
- *
+ * Model of a Team.
  */
-
 public class Team extends Model{
     private String description;
-
     private ArrayList<Person> members = new ArrayList<>();
-
     private Person scrumMaster;
     private Person productOwner;
 
