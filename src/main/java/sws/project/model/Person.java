@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 
 public class Person extends Model {
+    private String userId;
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**
@@ -33,5 +34,21 @@ public class Person extends Model {
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Gets the user id
+     * @return The user id
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * Sets the user id
+     * @param userId The new user id
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
