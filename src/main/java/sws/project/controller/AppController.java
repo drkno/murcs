@@ -4,31 +4,33 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.commons.lang.NotImplementedException;
+import sws.project.model.persistence.PersistenceManager;
+import sws.project.model.persistence.loaders.FilePersistenceLoader;
+import sws.project.view.App;
+
+import java.io.File;
 
 /**
 * 11/03/2015
 */
 public class AppController {
 
-    @FXML
-    MenuItem fileQuit, newProjectMenuItem;
+    @FXML Parent root;
+    @FXML MenuItem fileQuit, newProjectMenuItem;
+    @FXML VBox vBoxSideDisplay;
+    @FXML HBox hBoxMainDisplay;
+    @FXML BorderPane borderPaneMain;
 
-    @FXML
-    VBox vBoxSideDisplay;
-
-    @FXML
-    HBox hBoxMainDisplay;
-
-    @FXML
-    BorderPane borderPaneMain;
-
-    Node removedDisplay;
-    boolean showHide = true;
+    private Node removedDisplay;
+    private boolean showHide = true;
 
     /***
      * Called when the Quit button is pressed in the file menu and quit the current application.
@@ -59,6 +61,31 @@ public class AppController {
 
     @FXML
     private void createNewProject(ActionEvent event) {
-        throw new NotImplementedException("muhahahahahahahaha");
+
+    }
+
+    @FXML
+    private void saveProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Project");
+        File file = fileChooser.showSaveDialog(App.stage);
+        if (file != null) {
+            try {
+                App.persistenceManager.savePersistence(App.model);
+            }catch (Exception e) {
+                //May it burn in hell
+            }
+        }
+    }
+
+    @FXML
+    private void openProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Project");
+        File file = fileChooser.showOpenDialog(App.stage);
+        if (file != null) {
+            App.persistenceManager.setPersistenceLoader(new FilePersistenceLoader(file.getAbsolutePath()));
+            App.persistenceManager.loadModel("Model");
+        }
     }
 }
