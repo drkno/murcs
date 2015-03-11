@@ -4,7 +4,10 @@ package sws.project.magic;
  *
  */
 public class FooBar {
+    @Editable(SimpleStringFormGenerator.class)
     private String foo;
+
+    @Editable(SimpleStringFormGenerator.class)
     private String bar;
 
     private String james;

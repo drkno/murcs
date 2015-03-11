@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class EditPaneGenerator {
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields){
+            if (!isEditable(field)) continue;
+
             //field --> getField or setField
             String getterName = "get" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
             String setterName = "set" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
@@ -41,46 +44,26 @@ public class EditPaneGenerator {
         return generated;
     }
 
-    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from){
-        if (field.getType().isAssignableFrom(String.class))
-            return generateForString(field, getter,setter,from);
-        if (field.getType().isAssignableFrom(Boolean.class))
-            generateForBoolean(field, getter, setter, from);
-
-        return new VBox(20);
+    private static boolean isEditable(Field field){
+        return getEditable(field) != null;
     }
 
-    private static Node generateForBoolean(Field field, Method getter, Method setter, Object from) {
-        return new VBox(20);
-    }
-
-    private static Node generateForString(Field field, Method getter, Method setter, Object from) {
-        VBox container = new VBox();
-
-        ArrayList<Node> children = new ArrayList<>();
-        Text title = new Text(field.getName());
-        children.add(title);
-
-        try {
-            final TextField textBox = new TextField();
-            String currentText = (String) getter.invoke(from);
-            textBox.setText(currentText);
-
-            textBox.textProperty().addListener(a -> {
-                String newText = textBox.getText();
-                try {
-                    setter.invoke(from, newText);
-                } catch (Exception e) {
-                    return;
-                }
-            });
-
-            children.add(textBox);
-        } catch (Exception e) {
-            return container;
+    private static Annotation getEditable(Field field){
+        Annotation[] annotations = field.getDeclaredAnnotations();
+        for (Annotation annotation : annotations){
+            if (annotation instanceof Editable)
+                return annotation;
         }
+        return null;
+    }
 
-        container.getChildren().addAll(children);
-        return container;
+    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from){
+        Editable editable = (Editable)getEditable(field);
+
+        Class<?> supported = editable.value();
+        if (!field.getType().isAssignableFrom(supported))
+            throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + (supported == null ? "null" : supported.getName()) + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+
+
     }
 }
