@@ -18,8 +18,6 @@ import javax.management.relation.Relation;
 public class App extends Application{
 
     public static Stage stage;
-    public static PersistenceManager persistenceManager = new PersistenceManager(new FilePersistenceLoader());
-    public static RelationalModel model = new RelationalModel();
 
     /***
      * Starts up the application and sets the min window size to 600x400
@@ -28,6 +26,12 @@ public class App extends Application{
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        if (!PersistenceManager.CurrentPersistenceManagerExists()) {
+            FilePersistenceLoader loader = new FilePersistenceLoader();
+            PersistenceManager.Current = new PersistenceManager(loader);
+        }
+
         Parent parent = FXMLLoader.load(getClass().getResource("/sws/project/App.fxml"));
         primaryStage.setScene(new Scene(parent));
 

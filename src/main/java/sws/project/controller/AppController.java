@@ -10,7 +10,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.project.model.persistence.loaders.FilePersistenceLoader;
+import sws.project.model.Project;
+import sws.project.model.RelationalModel;
+import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
@@ -54,36 +56,54 @@ public class AppController {
             hBoxMainDisplay.getChildren().add(0, removedDisplay);
             showHide = true;
         }
-
     }
 
     @FXML
     private void createNewProject(ActionEvent event) {
-
+        try {
+            RelationalModel model = new RelationalModel();
+            Project project = new Project();
+            //TODO: GUI instantiate project here
+            model.setProject(project);
+            PersistenceManager.Current.setCurrentModel(model);
+        }
+        catch (Exception e) {
+            // hell is coming
+        }
     }
 
     @FXML
     private void saveProject(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Project");
-        File file = fileChooser.showSaveDialog(App.stage);
-        if (file != null) {
-            try {
-                App.persistenceManager.savePersistence(App.model);
-            }catch (Exception e) {
-                //May it burn in hell
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Project");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            File file = fileChooser.showSaveDialog(App.stage);
+            if (file != null) {
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                PersistenceManager.Current.saveModel(file.getName());
             }
+        }catch (Exception e) {
+            //May it burn in hell
         }
     }
 
     @FXML
     private void openProject(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Project");
-        File file = fileChooser.showOpenDialog(App.stage);
-        if (file != null) {
-            App.persistenceManager.setPersistenceLoader(new FilePersistenceLoader(file.getAbsolutePath()));
-            App.persistenceManager.loadModel("Model");
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setTitle("Select Project");
+            File file = fileChooser.showOpenDialog(App.stage);
+            if (file != null) {
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                PersistenceManager.Current.loadModel(file.getName());
+            }
+        }
+        catch (Exception e) {
+            //May it burn in hell again
         }
     }
 }

@@ -1,8 +1,6 @@
 package sws.project.model.persistence.loaders;
 
-import sws.project.model.Model;
 import sws.project.model.RelationalModel;
-
 import java.util.ArrayList;
 
 public interface PersistenceLoader {
@@ -16,21 +14,36 @@ public interface PersistenceLoader {
 
     /**
      * Saves a model out to a file in the default directory.
+     * @param saveName name to save as.
      * @param persistent Model to save.
      * @throws Exception When a model fails to save.
      */
-    void saveModel(RelationalModel persistent) throws Exception;
+    void saveModel(String saveName, RelationalModel persistent) throws Exception;
 
     /**
      * Gets a list of models that exist.
      * @return List of models.
      */
-    public ArrayList<String> getModelList();
+    ArrayList<String> getModelList();
 
     /**
      * Deletes the specified model
      * @param persistenceName The name of the persistent file
      * @return Whether the operation was successful
      */
-    public boolean deleteModel(String persistenceName);
+    boolean deleteModel(String persistenceName);
+
+    /**
+     * Gets the current working directory.
+     * @return current working directory.
+     * @throws Exception Exception if current working directory is unapplicable to the current PersistenceLoader
+     */
+    String getCurrentWorkingDirectory() throws Exception;
+
+    /**
+     * Sets the current working directory.
+     * @param directory new working directory
+     * @throws Exception if current working directory is unapplicable to the current PersistenceLoader
+     */
+    void setCurrentWorkingDirectory(String directory) throws Exception;
 }

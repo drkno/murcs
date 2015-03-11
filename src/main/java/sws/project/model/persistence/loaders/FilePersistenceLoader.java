@@ -32,10 +32,18 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * Gets the storage directory of persistent data.
      * @return The location the persistent data that is stored on the HD.
      */
-    private String getDirectory()
+    public String getCurrentWorkingDirectory()
     {
         // return the current working directory
         return workingDirectory;
+    }
+
+    /**
+     * Sets the current working directory for future lookups.
+     * @param workingDirectory
+     */
+    public void setCurrentWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
     }
 
     /**
@@ -47,7 +55,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     public RelationalModel loadModel(String persistenceName)
     {
         // load the persistent file using the default directory
-        return loadModel(persistenceName, getDirectory());
+        return loadModel(persistenceName, getCurrentWorkingDirectory());
     }
 
     /**
@@ -60,7 +68,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
         try
         {
             // Open the model file
-            String persistentFileLocation = directory + File.separator + persistenceName + ".project";
+            String persistentFileLocation = directory + File.separator + persistenceName;
             // Create an object reading stream
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(persistentFileLocation));
             // Input and case to correct type
@@ -79,27 +87,29 @@ public class FilePersistenceLoader implements PersistenceLoader {
 
     /**
      * Saves a model out to a file in the default directory.
+     * @param name name to save as.
      * @param persistent Model to save.
      * @throws Exception When a model fails to save.
      */
     @Override
-    public void saveModel(RelationalModel persistent) throws Exception
+    public void saveModel(String name, RelationalModel persistent) throws Exception
     {
         // saves the model using the default directory
-        saveModel(persistent, getDirectory());
+        saveModel(name, persistent, getCurrentWorkingDirectory());
     }
 
     /**
      * Saves a model out to a file.
+     * @param name name to save as.
      * @param persistent Model to save.
      * @param directory Directory to save the model in.
      */
-    public void saveModel(RelationalModel persistent, String directory) throws Exception
+    public void saveModel(String name, RelationalModel persistent, String directory) throws Exception
     {
         try
         {
             // Open the persistent file
-            String persistenceFileLocation = directory + File.separator + persistent.getProject().getLongName() + ".project";
+            String persistenceFileLocation = directory + File.separator + name;
             // Open object stream to file
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file
@@ -122,7 +132,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     @Override
     public ArrayList<String> getModelList()
     {
-        return getModelList(getDirectory());
+        return getModelList(getCurrentWorkingDirectory());
     }
 
     /**
@@ -154,7 +164,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     @Override
     public boolean deleteModel(String persistenceName)
     {
-        return deletePersistence(persistenceName, getDirectory());
+        return deletePersistence(persistenceName, getCurrentWorkingDirectory());
     }
 
     /**
