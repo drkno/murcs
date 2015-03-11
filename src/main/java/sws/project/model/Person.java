@@ -1,6 +1,7 @@
 package sws.project.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a person.
@@ -50,11 +51,26 @@ public class Person extends Model {
     }
 
     /**
-     * Adds a skill to skills
+     * Adds a skill to skills only if the person does not already have that skill
      * @param skill The skill to add
      */
     public void addSkill(Skill skill) {
-        this.skills.add(skill);
+        if (!skills.contains(skill) &&
+                !skills
+                .stream()
+                .filter(s -> s.getShortName().equals(skill.getShortName()))
+                .findAny()
+                .isPresent()) {
+            this.skills.add(skill);
+        }
+    }
+
+    /**
+     * Adds a list of skills to the persons skills
+     * @param skills Skills to be added to person
+     */
+    public void addSkills(List<Skill> skills) {
+        skills.forEach(this::addSkill);
     }
 
     /**
@@ -62,6 +78,8 @@ public class Person extends Model {
      * @param skill The skill to remove
      */
     public void removeSkill(Skill skill) {
-        this.skills.remove(skill);
+        if (skills.contains(skill)) {
+            this.skills.remove(skill);
+        }
     }
 }
