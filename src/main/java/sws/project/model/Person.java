@@ -48,4 +48,20 @@ public class Person extends Model {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    /**
+     * Adds a skill to skills
+     * @param skill The skill to add
+     */
+    public void addSkill(Skill skill) {
+        this.skills.add(skill);
+    }
+
+    /**
+     * Removes a skill from skills
+     * @param skill The skill to remove
+     */
+    public void removeSkill(Skill skill) {
+        this.skills.remove(skill);
+    }
 }

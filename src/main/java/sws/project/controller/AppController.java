@@ -10,17 +10,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.apache.commons.lang.NotImplementedException;
-import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
 import sws.project.view.App;
 
 import java.io.File;
 
 /**
-* 11/03/2015
-*/
+ * Main app class controller
+ * 11/03/2015
+ */
 public class AppController {
 
     @FXML Parent root;
