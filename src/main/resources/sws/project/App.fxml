@@ -4,9 +4,10 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
-   <children>
-      <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+
+<BorderPane fx:id="borderPaneMain" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -20,22 +21,22 @@
             </Menu>
         </menus>
       </MenuBar>
-      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-        <columnConstraints>
-          <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="476.0" minWidth="0.0" prefWidth="452.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-        </rowConstraints>
+   </top>
+   <center>
+      <HBox fx:id="hBoxMainDisplay" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox fx:id="sideDisplay" GridPane.rowSpan="2147483647" GridPane.vgrow="ALWAYS">
+            <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
                <children>
-                  <ComboBox fx:id="itemTitle" prefWidth="150.0" />
-                  <ListView fx:id="itemList" VBox.vgrow="ALWAYS" />
+                  <AnchorPane>
+                     <children>
+                        <ChoiceBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </AnchorPane>
+                  <ListView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
+            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
          </children>
-      </GridPane>
-   </children>
-</AnchorPane>
+      </HBox>
+   </center>
+</BorderPane>

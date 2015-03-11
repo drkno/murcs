@@ -3,7 +3,10 @@ package sws.project.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
@@ -16,7 +19,16 @@ public class AppController {
     MenuItem fileQuit;
 
     @FXML
-    VBox sideDisplay;
+    VBox vBoxSideDisplay;
+
+    @FXML
+    HBox hBoxMainDisplay;
+
+    @FXML
+    BorderPane borderPaneMain;
+
+    Node removedDisplay;
+    boolean showHide = true;
 
     @FXML
     private void fileQuitPress(ActionEvent event) {
@@ -25,11 +37,15 @@ public class AppController {
 
     @FXML
     private void toggleItemListView(ActionEvent event) {
-        if (sideDisplay.isVisible()) {
-            sideDisplay.setVisible(false);
+        if (showHide) {
+            removedDisplay = hBoxMainDisplay.getChildren().get(0);
+            hBoxMainDisplay.getChildren().remove(0);
+            showHide = false;
         }
         else {
-            sideDisplay.setVisible(true);
+            hBoxMainDisplay.getChildren().add(0, removedDisplay);
+            showHide = true;
         }
+
     }
 }
