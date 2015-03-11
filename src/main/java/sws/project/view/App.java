@@ -14,6 +14,9 @@ public class App extends Application{
         Parent parent = FXMLLoader.load(getClass().getResource("/project/App.fxml"));
         primaryStage.setScene(new Scene(parent));
         primaryStage.setTitle("project");
+        //Setting up max and min width of app
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(400);
         primaryStage.show();
 
     }
