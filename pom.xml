@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.sws.sws.studentmanager</groupId>
+    <groupId>sws.project</groupId>
     <artifactId>core</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
@@ -35,7 +35,7 @@
                 <archive>
                     <manifest>
                         <addClasspath>true</addClasspath>
-                        <mainClass>sws.sws.studentmanager.view.Main</mainClass>
+                        <mainClass>sws.project.view.App</mainClass>
                         <useUniqueVersions>false</useUniqueVersions>
                     </manifest>
                 </archive>
@@ -102,11 +102,6 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.guigarage</groupId>
-            <artifactId>material-design-fx</artifactId>
-            <version>0.7</version>
         </dependency>
     </dependencies>
 </project>

@@ -16,8 +16,9 @@ import sws.project.view.App;
 import java.io.File;
 
 /**
-* 11/03/2015
-*/
+ * Main app class controller
+ * 11/03/2015
+ */
 public class AppController {
 
     @FXML Parent root;

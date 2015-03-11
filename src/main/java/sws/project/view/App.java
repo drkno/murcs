@@ -12,6 +12,9 @@ import sws.project.model.persistence.loaders.FilePersistenceLoader;
 
 import javax.management.relation.Relation;
 
+/**
+ * The main app class
+ */
 public class App extends Application{
 
     public static Stage stage;
