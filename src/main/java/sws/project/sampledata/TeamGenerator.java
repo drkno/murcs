@@ -70,6 +70,8 @@ public class TeamGenerator implements Generator<Team> {
         team.setScrumMaster(scrumMaster);
         team.setProductOwner(productOwner);
 
+        team.getMembers().addAll(members);
+
         return team;
     }
 }
