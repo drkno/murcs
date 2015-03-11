@@ -60,7 +60,7 @@ public class Person extends Model {
         if (!skills.contains(skill) &&
                 !skills
                     .stream()
-                    .filter(s -> s.getShortName().equals(skill.getShortName()))
+                    .filter(s -> s.getShortName().toLowerCase().equals(skill.getShortName().toLowerCase()))
                     .findAny()
                     .isPresent()) {
             this.skills.add(skill);

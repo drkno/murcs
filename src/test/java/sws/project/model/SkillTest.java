@@ -2,10 +2,10 @@ package sws.project.model;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.project.sampledata.Generator;
-import sws.project.sampledata.SkillGenerator;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * 3/11/2015
@@ -14,16 +14,18 @@ import sws.project.sampledata.SkillGenerator;
 public class SkillTest {
 
     private Skill skill;
-    private static Generator<Skill> skillGenerator;
+    private Skill skill2;
+    private Skill skill3;
 
-    @BeforeClass
-    public static void oneTimeSetUp() {
-        skillGenerator = new SkillGenerator();
-    }
 
     @Before
     public void setUp() {
         skill = new Skill();
+        skill2 = new Skill();
+        skill3 = new Skill();
+        skill.setShortName("PO");
+        skill2.setShortName("A very good skill to have");
+        skill3.setShortName("Something worth while");
     }
 
     @After
@@ -38,11 +40,19 @@ public class SkillTest {
 
     @Test
     public void isRoleTest() throws Exception {
-        
+        assertTrue(skill.isRole(Skill.Role.PO));
+
+        skill.setShortName("pO");
+        assertTrue(skill.isRole(Skill.Role.PO));
+
+        skill.setShortName("developer");
+        assertFalse(skill.isRole(Skill.Role.PO));
     }
 
     @Test
     public void equalsTest() throws Exception {
-
+        skill2.setShortName("PO");
+        assertTrue(skill.equals(skill2));
+        assertFalse(skill.equals(skill3));
     }
 }
