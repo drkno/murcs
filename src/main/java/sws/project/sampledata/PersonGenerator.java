@@ -39,6 +39,8 @@ public class PersonGenerator implements Generator<Person> {
         p.setShortName(shortName);
         p.setLongName(longName);
 
+        p.getSkills().addAll(skills);
+
         return p;
     }
 }
