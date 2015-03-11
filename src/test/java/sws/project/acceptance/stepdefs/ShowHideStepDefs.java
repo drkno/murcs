@@ -1,13 +1,15 @@
 package sws.project.acceptance.stepdefs;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import javafx.application.Platform;
 import javafx.stage.Stage;
+import org.junit.Assert;
 import org.loadui.testfx.GuiTest;
 import org.testfx.framework.junit.ApplicationTest;
-import org.junit.Assert;
 
 public class ShowHideStepDefs extends ApplicationTest {
 
@@ -17,30 +19,48 @@ public class ShowHideStepDefs extends ApplicationTest {
         launch(sws.project.view.App.class, args);
     }
 
+    @When("^I click the View menu$")
+    public void I_click_the_View_menu() throws Throwable {
+        moveTo("#viewMenu").clickOn("#viewMenu");
+    }
+
+    @Given("^The side panel is hidden$")
+    public void The_side_panel_is_hidden() throws Throwable {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                GuiTest.find("#vBoxSideDisplay").setVisible(false);
+            }
+        });
+    }
+
+    @And("^I click the Show/Hide Item list button$")
+    public void I_click_the_Show_Hide_Item_list_button() throws Throwable {
+        moveTo("#viewShowHide").clickOn("#viewShowHide");
+    }
+
+    @Then("^The side panel shows$")
+    public void The_side_panel_shows() throws Throwable {
+        Assert.assertTrue(GuiTest.find("#vBoxSideDisplay").isVisible());
+    }
+
+    @Given("^The side panel list is shown$")
+    public void The_side_panel_list_is_shown() throws Throwable {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                GuiTest.find("#vBoxSideDisplay").setVisible(true);
+            }
+        });
+    }
+
+    @Then("^The the side panel hides$")
+    public void The_the_side_panel_hides() throws Throwable {
+        Assert.assertFalse(GuiTest.find("#vBoxSideDisplay").isVisible());
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
 
-    }
-
-    @When("^I click the file button in the menu$")
-    public void i_click_the_file_button_in_the_menu() throws Throwable {
-        moveTo("#fileMenu").clickOn("#fileMenu");
-    }
-
-    @When("^Click the quit option$")
-    public void click_the_quit_option() throws Throwable {
-        moveTo("#fileQuit").clickOn("#fileQuit");
-    }
-
-    @Then("^The app closes$")
-    public void the_app_closes() throws Throwable {
-        boolean exists = GuiTest.getWindows().stream().filter(w -> ((Stage)w).getTitle().equals("project")).findAny().isPresent();
-        Assert.assertFalse(exists);
-    }
-
-    @When("^I click the 'X' button$")
-    public void i_click_the_X_button() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
     }
 }
