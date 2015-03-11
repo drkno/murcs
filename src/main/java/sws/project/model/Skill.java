@@ -1,4 +1,5 @@
-package sws.project.model;/*
+package sws.project.model;
+/**
  *
  */
 
