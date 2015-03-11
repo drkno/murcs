@@ -1,11 +1,9 @@
 package sws.project.sampledata;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
 
 /**
- *
+ * Generates random names
  */
 public class NameGenerator {
     private static Random random = new Random();

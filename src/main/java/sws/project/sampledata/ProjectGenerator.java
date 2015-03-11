@@ -6,7 +6,7 @@ import sws.project.model.Team;
 import java.util.ArrayList;
 
 /**
- *
+ * Generates random projects with teams
  */
 public class ProjectGenerator implements Generator<Project> {
     private String[] projectNames = new String[]{"A project", "Something exciting"};

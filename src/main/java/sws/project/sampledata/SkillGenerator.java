@@ -3,7 +3,7 @@ package sws.project.sampledata;
 import sws.project.model.Skill;
 
 /**
- *
+ * Generates random skills
  */
 public class SkillGenerator implements Generator<Skill> {
     private String[] skills = new String[]{"Falling over", "Backflips", "C#", "Running away screaming"};

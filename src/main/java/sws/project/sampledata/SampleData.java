@@ -6,7 +6,7 @@ import sws.project.model.Skill;
 import sws.project.model.Team;
 
 /**
- *
+ * Prints random generated data
  */
 public class SampleData {
     public static void main(String[] args){

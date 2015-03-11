@@ -3,11 +3,10 @@ package sws.project.sampledata;
 import sws.project.model.Person;
 import sws.project.model.Team;
 
-import javax.lang.model.element.Name;
 import java.util.ArrayList;
 
 /**
- *
+ * Generates random teams with people
  */
 public class TeamGenerator implements Generator<Team> {
     private String[] teamNames = new String[]{"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};

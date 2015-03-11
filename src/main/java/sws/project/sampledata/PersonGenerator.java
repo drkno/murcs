@@ -6,7 +6,7 @@ import sws.project.model.Skill;
 import java.util.ArrayList;
 
 /**
- *
+ * Generates random people with skills and roles
  */
 public class PersonGenerator implements Generator<Person> {
     private Generator<Skill> skillGenerator;
