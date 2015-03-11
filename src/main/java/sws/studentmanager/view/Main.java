@@ -35,7 +35,7 @@ public class Main extends Application {
      * Initializes the root layout.
      */
     private void initRootLayout() throws IOException {
-        AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/studentmanager/main.fxml"));
+        AnchorPane rootLayout = FXMLLoader.load(getClass().getResource("/sws/studentmanager/main.fxml"));
         Scene scene = new Scene(rootLayout);
         //Note that the sate picker does not work with flatter.
         stage.setScene(scene);

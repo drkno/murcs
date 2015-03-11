@@ -19,7 +19,7 @@ public class ReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        java.io.Reader reader = new InputStreamReader(getClass().getResourceAsStream("/studentmanager/students.json"));
+        java.io.Reader reader = new InputStreamReader(getClass().getResourceAsStream("/sws/studentmanager/students.json"));
         Scanner scanner = new Scanner(reader);
 
         tmpStudentsJson = File.createTempFile("students", "json");

@@ -86,7 +86,7 @@ public class studentStepDefsTest extends GuiTest {
     @Override
     protected Parent getRootNode() {
         try {
-            return FXMLLoader.load(getClass().getResource("/studentmanager/main.fxml"));
+            return FXMLLoader.load(getClass().getResource("/sws/studentmanager/main.fxml"));
         } catch (IOException e) {
             e.printStackTrace();
         }
