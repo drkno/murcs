@@ -3,5 +3,5 @@ package sws.project.model;
  *
  */
 
-public class Role {
+public class Role extends Model{
 }

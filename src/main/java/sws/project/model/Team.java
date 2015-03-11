@@ -8,7 +8,7 @@ import java.util.ArrayList;
  *
  */
 
-public class Team {
+public class Team extends Model{
     private Project project;
 
     private String shortName;

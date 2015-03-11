@@ -3,5 +3,5 @@ package sws.project.model;
  *
  */
 
-public class Skill {
+public class Skill extends Model{
 }

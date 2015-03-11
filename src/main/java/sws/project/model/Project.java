@@ -3,6 +3,6 @@ package sws.project.model;
 /**
  *
  */
-public class Project {
+public class Project extends Model {
 
 }
