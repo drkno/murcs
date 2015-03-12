@@ -12,7 +12,7 @@
             <items>
                   <Menu mnemonicParsing="false" text="New">
                     <items>
-                        <MenuItem fx:id="fileMenuNewProject" mnemonicParsing="false" onAction="#createNewProject" text="New Project" />
+                        <MenuItem fx:id="fileMenuNewProject" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
                     </items>
                   </Menu>
                   <MenuItem fx:id="fileOpenProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />

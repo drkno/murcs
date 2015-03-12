@@ -9,7 +9,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang.NotImplementedException;
+import javafx.stage.FileChooser;
+import sws.project.model.Project;
+import sws.project.model.RelationalModel;
+import sws.project.model.persistence.PersistenceManager;
+import sws.project.view.App;
 
 import java.io.File;
 
@@ -56,16 +60,7 @@ public class AppController {
 
     @FXML
     private void createNewProject(ActionEvent event) {
-        try {
-            RelationalModel model = new RelationalModel();
-            Project project = new Project();
-            //TODO: GUI instantiate project here
-            model.setProject(project);
-            PersistenceManager.Current.setCurrentModel(model);
-        }
-        catch (Exception e) {
-            // hell is coming
-        }
+        CreateProjectPopUpController.displayPopUp();
     }
 
     @FXML
