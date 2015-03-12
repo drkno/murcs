@@ -1,4 +1,4 @@
-package sws.project.magic;
+package sws.project.magic.easyedit;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;

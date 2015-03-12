@@ -1,4 +1,4 @@
-package sws.project.magic;
+package sws.project.magic.easyedit;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

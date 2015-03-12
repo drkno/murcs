@@ -1,8 +1,7 @@
-package sws.project.magic;
+package sws.project.magic.easyedit;
 
 import javafx.scene.Node;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 

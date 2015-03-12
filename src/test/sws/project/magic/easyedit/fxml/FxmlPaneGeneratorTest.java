@@ -1,9 +1,7 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class FxmlPaneGeneratorTest {
     @Before

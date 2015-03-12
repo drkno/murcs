@@ -1,10 +1,10 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import sws.project.magic.EditFormGenerator;
-import sws.project.magic.EditPaneGenerator;
+import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.magic.easyedit.EditPaneGenerator;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

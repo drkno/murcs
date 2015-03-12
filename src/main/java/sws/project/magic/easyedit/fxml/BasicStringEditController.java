@@ -1,4 +1,4 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

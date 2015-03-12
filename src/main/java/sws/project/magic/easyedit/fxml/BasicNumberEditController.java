@@ -1,4 +1,4 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -6,7 +6,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
 import java.net.URL;
-import java.util.DoubleSummaryStatistics;
 import java.util.ResourceBundle;
 
 /**

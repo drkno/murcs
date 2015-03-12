@@ -1,4 +1,4 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

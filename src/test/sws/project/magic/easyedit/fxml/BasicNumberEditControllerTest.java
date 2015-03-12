@@ -1,4 +1,4 @@
-package sws.project.magic.fxml;
+package sws.project.magic.easyedit.fxml;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
@@ -8,8 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
-
-import static org.junit.Assert.*;
 
 public class BasicNumberEditControllerTest {
     private BasicNumberEditController controller;
