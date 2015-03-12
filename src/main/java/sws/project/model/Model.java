@@ -1,9 +1,11 @@
 package sws.project.model;
 
+import sws.project.model.magic.tracking.ValueTracker;
+
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model {
+public abstract class Model extends ValueTracker {
     private String shortName;
     private String longName;
 
