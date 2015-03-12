@@ -2,6 +2,9 @@ package sws.project.model.tracking;
 
 import java.lang.reflect.Field;
 
+/**
+ * Tracks an individual change occurence that can be undone/redone.
+ */
 public class TrackedChange {
     private String changeDescription;
     private Object origionalObject;

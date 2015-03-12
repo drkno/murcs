@@ -1,7 +1,10 @@
 package sws.project.model.tracking;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 public class TrackedValue {
 
@@ -21,6 +24,17 @@ public class TrackedValue {
             Field field = _fields.get(i);
             field.setAccessible(true);
             Object value = field.get(obj);
+            if (value instanceof Collection) {
+                Class<?> clazz = value.getClass();
+                Constructor<?> ctor = clazz.getConstructor(Collection.class);
+                value = ctor.newInstance(new Object[] { value });
+            }
+            else if (value instanceof Map) {
+                Class<?> clazz = value.getClass();
+                Constructor<?> ctor = clazz.getConstructor(Map.class);
+                value = ctor.newInstance(new Object[] { value });
+            }
+
             if (initialSave || value == null && _values[i] == null || !value.equals(_values[i])) {
                 changedFields.add(field);
                 changedValues.add(value);
