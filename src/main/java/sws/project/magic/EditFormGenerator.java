@@ -26,11 +26,19 @@ public class EditFormGenerator {
             String getterName = "get" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
             String setterName = "set" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
 
+            Editable editable = (Editable)getEditable(field);
+            if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
+
+            if (!editable.getterName().isEmpty())
+                getterName = editable.getterName();
+            if (!editable.setterName().isEmpty())
+                setterName = editable.setterName();
+
             try {
                 Method getter = clazz.getMethod(getterName);
                 Method setter = clazz.getMethod(setterName, field.getType());
 
-                Node child = generateFor(field, getter, setter, from);
+                Node child = generateFor(field, getter, setter, from, editable);
                 generated.getChildren().add(child);
 
             }catch (NoSuchMethodException e){
@@ -55,10 +63,7 @@ public class EditFormGenerator {
         return null;
     }
 
-    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from){
-        Editable editable = (Editable)getEditable(field);
-        if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
-
+    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable){
         try {
             Constructor<?> constructor = editable.value().getConstructor();
             EditPaneGenerator generator = (EditPaneGenerator)constructor.newInstance();

@@ -9,11 +9,11 @@ public class FooBar {
     @Editable(SimpleStringPaneGenerator.class)
     private String foo;
 
-    @Editable(SimpleBooleanPaneGenerator.class)
-    private boolean james;
+    @Editable(SimpleNumberPaneGenerator.class)
+    private int bar;
 
-    //@Editable(SimpleStringPaneGenerator.class)
-    private String bar;
+    @Editable(value = SimpleBooleanPaneGenerator.class, getterName = "isTestBoolean")
+    private boolean testBoolean;
 
     public String getFoo() {
         return foo;
@@ -23,19 +23,19 @@ public class FooBar {
         this.foo = foo;
     }
 
-    public String getBar() {
+    public int getBar() {
         return bar;
     }
 
-    public void setBar(String bar) {
+    public void setBar(int bar) {
         this.bar = bar;
     }
 
-    public boolean getJames() {
-        return james;
+    public boolean isTestBoolean() {
+        return testBoolean;
     }
 
-    public void setJames(boolean james) {
-        this.james = james;
+    public void setTestBoolean(boolean testBoolean) {
+        this.testBoolean = testBoolean;
     }
 }

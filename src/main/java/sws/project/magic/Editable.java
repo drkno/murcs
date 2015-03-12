@@ -9,4 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Editable {
     Class<?> value();
+
+    String getterName() default "";
+    String setterName() default "";
 }

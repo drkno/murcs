@@ -14,7 +14,7 @@ public class TestApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         FooBar test = new FooBar();
         test.setFoo("foo");
-        test.setBar("bar");
+        test.setBar(5);
 
         Parent content = EditFormGenerator.generatePane(test);
 
