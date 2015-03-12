@@ -19,16 +19,6 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
     private Number value;
 
     @Override
-    protected void showValid() {
-
-    }
-
-    @Override
-    protected void showInvalid() {
-
-    }
-
-    @Override
     public void setTitle(String text) {
         titleText.setText(text);
     }

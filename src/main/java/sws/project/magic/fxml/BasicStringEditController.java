@@ -32,16 +32,6 @@ public class BasicStringEditController extends BasicEditController<String> imple
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        valueText.textProperty().addListener(onChange());
-    }
-
-    @Override
-    protected void showValid() {
-        //We don't need to do anything here
-    }
-
-    @Override
-    protected void showInvalid() {
-        throw new IllegalArgumentException("Invalid value!");
+        valueText.textProperty().addListener((p, o, n) -> notifyChanged(p, o, n));
     }
 }

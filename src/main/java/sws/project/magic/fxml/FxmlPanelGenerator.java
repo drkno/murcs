@@ -3,6 +3,7 @@ package sws.project.magic.fxml;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import sws.project.magic.EditFormGenerator;
 import sws.project.magic.EditPaneGenerator;
 
 import java.io.IOException;
@@ -29,6 +30,11 @@ public class FxmlPanelGenerator implements EditPaneGenerator {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root;
+
+        String title = EditFormGenerator.getEditable(field).friendlyName();
+        if (title == null || title.isEmpty())
+            title = EditFormGenerator.getFriendlyName(field);
+
         try{
             root = loader.load();
         }
@@ -58,7 +64,7 @@ public class FxmlPanelGenerator implements EditPaneGenerator {
             throw new UnsupportedOperationException("The FXML you supplied was valid, but it's controller doesn't support " + field.getType());
 
         try{
-            controller.setTitle(field.getName());
+            controller.setTitle(title);
 
             Object value = getter.invoke(from);
             controller.setValue(value);

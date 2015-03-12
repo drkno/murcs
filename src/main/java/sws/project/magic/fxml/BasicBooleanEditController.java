@@ -20,16 +20,6 @@ public class BasicBooleanEditController extends BasicEditController<Boolean> imp
     @FXML private RadioButton trueButton, falseButton;
 
     @Override
-    protected void showValid() {
-
-    }
-
-    @Override
-    protected void showInvalid() {
-
-    }
-
-    @Override
     public void setTitle(String text) {
         titleText.setText(text);
     }

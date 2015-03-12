@@ -2,6 +2,8 @@ package sws.project.magic.fxml;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -13,6 +15,9 @@ public abstract class BasicEditController<T> implements EditController<T> {
     protected ArrayList<Predicate<T>> validators = new ArrayList<>();
     protected ArrayList<ChangeListener<T>> changeListeners = new ArrayList<>();
 
+    @FXML
+    protected Node invalidNode;
+
     @Override
     public void addValidator(Predicate<T> predicate) {
         validators.add(predicate);
@@ -21,17 +26,6 @@ public abstract class BasicEditController<T> implements EditController<T> {
     @Override
     public void addChangeListener(ChangeListener<T> listener) {
         changeListeners.add(listener);
-    }
-
-    /**
-     * This is a default change listener for when our value is changed in the GUI
-     * @return
-     */
-    protected ChangeListener<T> onChange(){
-        return (observable, oldValue, newValue) -> {
-            //Notify all the change listeners
-            notifyChanged(observable, oldValue, newValue);
-        };
     }
 
     /**
@@ -79,10 +73,16 @@ public abstract class BasicEditController<T> implements EditController<T> {
     /**
      * Called when the value in the GUI is changed to something Invalid
      */
-    protected abstract void showValid();
+    protected void showValid(){
+        if (invalidNode == null) return;
+        invalidNode.setVisible(false);
+    }
 
     /**
      * Called when the value in the GUI is changed to something Valid
      */
-    protected abstract void showInvalid();
+    protected void showInvalid(){
+        if (invalidNode == null) return;
+        invalidNode.setVisible(true);
+    }
 }

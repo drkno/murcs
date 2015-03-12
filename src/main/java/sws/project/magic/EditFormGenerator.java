@@ -26,7 +26,7 @@ public class EditFormGenerator {
             String getterName = "get" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
             String setterName = "set" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
 
-            Editable editable = (Editable)getEditable(field);
+            Editable editable = getEditable(field);
             if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
 
             if (!editable.getterName().isEmpty())
@@ -49,16 +49,40 @@ public class EditFormGenerator {
         return generated;
     }
 
-    private static boolean isEditable(Field field){
+    public static boolean isEditable(Field field){
         return getEditable(field) != null;
     }
 
-    private static Annotation getEditable(Field field){
+    /**
+     * Gets the friendly name of a field. For example, passing in a field named 'fooBar'
+     * would result in 'Foo Bar'
+     * @param field The field to get the friendly name of
+     * @return The friendly name of the field
+     */
+    public static String getFriendlyName(Field field) {
+        String raw = field.getName();
+
+        String result = "";
+        for (int i = 0; i < raw.length(); ++i){
+            if (i == 0) {
+                result += Character.toUpperCase(raw.charAt(i));
+                continue;
+            }
+
+            if (Character.isUpperCase(raw.charAt(i)) && !Character.isUpperCase(raw.charAt(i - 1))) result += " ";
+
+            result += raw.charAt(i);
+        }
+
+        return result;
+    }
+
+    public static Editable getEditable(Field field){
         Annotation[] annotations = field.getDeclaredAnnotations();
 
         for (Annotation annotation : annotations){
             if (annotation instanceof Editable)
-                return annotation;
+                return (Editable)annotation;
         }
         return null;
     }
