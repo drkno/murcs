@@ -8,7 +8,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.apache.commons.lang.NotImplementedException;
+
+import java.io.IOException;
 
 /**
 * 11/03/2015
@@ -59,6 +60,6 @@ public class AppController {
 
     @FXML
     private void createNewProject(ActionEvent event) {
-        throw new NotImplementedException("muhahahahahahahaha");
+        CreateProjectPopUpController.displayPopUp();
     }
 }
