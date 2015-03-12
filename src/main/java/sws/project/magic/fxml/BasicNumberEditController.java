@@ -10,7 +10,9 @@ import java.util.DoubleSummaryStatistics;
 import java.util.ResourceBundle;
 
 /**
- *
+ * A basic controller for editing numbers. You can extend this or implement your own.
+ * Any FXML associated with this controller should specify a 'titleText' Text object, a
+ * 'numberText' TextField.
  */
 public class BasicNumberEditController extends BasicEditController<Number> implements Initializable {
     @FXML private Text titleText;
@@ -38,6 +40,10 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
         numberText.textProperty().addListener((p, o, n) -> convert());
     }
 
+    /**
+     * Trys to convert the text in 'numberText' to a number, in the following order
+     * Integer, Float, Double and notifies any listeners that it has changed
+     */
     private void convert(){
         Number value;
         try{

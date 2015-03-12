@@ -1,19 +1,18 @@
 package sws.project.magic;
 
-import com.sun.istack.internal.NotNull;
 import sws.project.magic.fxml.FxmlPanelGenerator;
 
 /**
  *
  */
 public class FooBar {
-    @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(editPaneGenerator = FxmlPanelGenerator.class, argument = "/sws/project/String.fxml")
     private String foo;
 
-    @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/Number.fxml")
+    @Editable(editPaneGenerator = FxmlPanelGenerator.class, argument = "/sws/project/Number.fxml")
     private int bar;
 
-    @Editable(value = FxmlPanelGenerator.class, friendlyName = "magic test boolean", getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
+    @Editable(editPaneGenerator = FxmlPanelGenerator.class, friendlyName = "magic test boolean", getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
     private boolean testBoolean;
 
     public String getFoo() {

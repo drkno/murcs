@@ -11,7 +11,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- *
+ * Generates a panel for a field based on some FXML. This FXML
+ * must specify a controller which must implement the 'EditController'
+ * interface
  */
 public class FxmlPanelGenerator implements EditPaneGenerator {
     private String fxmlPath;

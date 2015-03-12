@@ -11,7 +11,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- *
+ * A basic boolean edit controller. Any FXML associated with this controller should specify
+ * a 'titleText' Text object, and 'trueButton,' 'falseButton' radioButtons
  */
 public class BasicBooleanEditController extends BasicEditController<Boolean> implements Initializable {
     @FXML private Text titleText;

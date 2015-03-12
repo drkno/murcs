@@ -16,6 +16,7 @@ public class TestApp extends Application {
         FooBar test = new FooBar();
         test.setFoo("foo");
         test.setBar(5);
+        test.setTestBoolean(false);
 
         Parent content = EditFormGenerator.generatePane(test);
 

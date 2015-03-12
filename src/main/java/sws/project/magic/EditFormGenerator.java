@@ -33,7 +33,7 @@ public class EditFormGenerator {
             String setterName = "set" + capitalizeFieldName(field);
 
             Editable editable = getEditable(field);
-            if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
+            if (editable.editPaneGenerator() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
 
             if (!editable.getterName().isEmpty())
                 getterName = editable.getterName();
@@ -126,7 +126,7 @@ public class EditFormGenerator {
      */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable){
         try {
-            Constructor<?> constructor = editable.value().getConstructor();
+            Constructor<?> constructor = editable.editPaneGenerator().getConstructor();
             EditPaneGenerator generator = (EditPaneGenerator)constructor.newInstance();
 
             //If there was an argument set on the field, pass it on to the generator
@@ -145,11 +145,11 @@ public class EditFormGenerator {
             }
 
             if (!supported)
-                throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.value().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+                throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.editPaneGenerator().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
 
             return generator.generate(field, getter, setter, from);
         }catch (NoSuchMethodException e){
-            throw new IllegalArgumentException("Unable to instantiate a new " + editable.value().getName() + ". You should check it has a default constructor.");
+            throw new IllegalArgumentException("Unable to instantiate a new " + editable.editPaneGenerator().getName() + ". You should check it has a default constructor.");
         }
         catch (Exception e){
             if (e instanceof UnsupportedOperationException)

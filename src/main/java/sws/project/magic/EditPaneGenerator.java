@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- *
+ * A common interface for edit pane generators
  */
 public interface EditPaneGenerator {
     /**
