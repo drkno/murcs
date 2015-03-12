@@ -1,19 +1,22 @@
 package sws.project.model;
 
+import sws.project.model.magic.tracking.TrackValue;
+import sws.project.model.magic.tracking.ValueTracker;
+
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model {
+public abstract class Model extends ValueTracker {
+    @TrackValue
     private String shortName;
+    @TrackValue
     private String longName;
 
     /**
      * Gets the short name.
      * @return the short name.
      */
-    public String getShortName() {
-        return shortName;
-    }
+    public String getShortName() { return shortName; }
 
     /**
      * Sets the short name.
@@ -22,8 +25,8 @@ public abstract class Model {
      */
     public void setShortName(String shortName) {
         if (shortName == null) throw new IllegalArgumentException("shortname cannot be null!");
-
         this.shortName = shortName;
+        saveCurrentState("Short Name change");
     }
 
     /**
@@ -40,5 +43,6 @@ public abstract class Model {
      */
     public void setLongName(String longName) {
         this.longName = longName;
+        saveCurrentState("Long Name change");
     }
 }
