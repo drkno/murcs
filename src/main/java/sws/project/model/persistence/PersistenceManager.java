@@ -1,10 +1,9 @@
 package sws.project.model.persistence;
 
-import sws.project.model.Model;
+import sws.project.model.RelationalModel;
 import sws.project.model.persistence.loaders.PersistenceLoader;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Provides methods for managing models
@@ -14,18 +13,18 @@ public final class PersistenceManager {
     /**
      * Static persistence manager, used to keep a persistent manager where ever it is used from.
      */
-    public static PersistenceManager CurrentPersistenceManager;
+    public static PersistenceManager Current;
 
     /**
      * Indicates whether or not there is a current persistence manage
      * @return The persistence manager
      */
-    public static boolean CurrentPersistenceManagerExists(){ return CurrentPersistenceManager != null; }
+    public static boolean CurrentPersistenceManagerExists(){ return Current != null; }
 
     /**
      * Currently in use user persistence.
      */
-    private Model currentModel;
+    private RelationalModel currentModel;
 
     /**
      * Currently in use persistence loader.
@@ -64,21 +63,30 @@ public final class PersistenceManager {
      * @param persistenceName The name of the model to load
      * @return The loaded persistence. Will be null if the persistence does not exist
      */
-    public Model loadModel(String persistenceName)
-    {
+    public RelationalModel loadModel(String persistenceName) {
         // load the persistence using the default directory
         return persistenceLoader.loadModel(persistenceName);
     }
 
     /**
-     * Saves a user persistence out to a file in the default directory.
+     * Saves the current model.
+     * @param name name to save as
+     * @throws Exception when the model fails to save.
+     */
+    public void saveModel(String name) throws Exception {
+        saveModel(name, getCurrentModel());
+    }
+
+    /**
+     * Saves a model..
+     * @param name name to save as
      * @param persistence Persistence to save.
      * @throws Exception When a model fails to save.
      */
-    public void savePersistence(Model persistence) throws Exception
+    public void saveModel(String name, RelationalModel persistence) throws Exception
     {
         // saves the model using the default directory
-        persistenceLoader.saveModel(persistence);
+        persistenceLoader.saveModel(name, persistence);
     }
 
     /**
@@ -114,7 +122,7 @@ public final class PersistenceManager {
      * Gets the current model
      * @return The current model. Null if it has not been set.
      */
-    public Model getCurrentModel(){
+    public RelationalModel getCurrentModel(){
         return currentModel;
     }
 
@@ -122,7 +130,25 @@ public final class PersistenceManager {
      * Sets the current model
      * @param model The new model
      */
-    public void setCurrentModel(Model model){
+    public void setCurrentModel(RelationalModel model){
         currentModel = model;
+    }
+
+    /**
+     * Gets the current working directory.
+     * @return the current working directory.
+     * @throws Exception if current working directory is unapplicable to the current PersistenceLoader
+     */
+    public String getCurrentWorkingDirectory() throws Exception {
+        return persistenceLoader.getCurrentWorkingDirectory();
+    }
+
+    /**
+     * Sets the current working directory.
+     * @param directory the new working directory.
+     * @throws Exception if current working directory is unapplicable to the current PersistenceLoader
+     */
+    public void setCurrentWorkingDirectory(String directory) throws Exception {
+        persistenceLoader.setCurrentWorkingDirectory(directory);
     }
 }
