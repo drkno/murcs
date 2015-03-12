@@ -59,6 +59,14 @@ public class AppController {
             hBoxMainDisplay.setVisible(true);
             showHide = true;
         }
+        PopupController controller = new PopupController("Test");
+        controller.setOkAction(() -> {
+            System.out.println("work already");
+            controller.close();
+            return null;
+        });
+        controller.setMessage("Hi there");
+        controller.show();
     }
 
     @FXML
