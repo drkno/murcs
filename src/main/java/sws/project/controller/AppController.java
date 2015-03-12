@@ -55,14 +55,14 @@ public class AppController {
             hBoxMainDisplay.setVisible(true);
             showHide = true;
         }
-        OkCancelPopup controller = new OkCancelPopup("Test");
-        controller.setOkAction(() -> {
-            System.out.println("work already");
-            controller.close();
-            return null;
-        });
-        controller.setMessageText("Hi there");
-        controller.show();
+//        OkCancelPopup controller = new OkCancelPopup("Test");
+//        controller.setOkAction(() -> {
+//            System.out.println("work already");
+//            controller.close();
+//            return null;
+//        });
+//        controller.setMessageText("Hi there");
+//        controller.show();
     }
 
     @FXML
