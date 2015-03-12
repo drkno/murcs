@@ -10,8 +10,8 @@ public class FooBar {
     @Editable(FxmlPanelGenerator.class)
     private String foo;
 
-    //@Editable(SimpleNumberPaneGenerator.class)
-    private int bar;
+    @Editable(FxmlPanelGenerator.class)
+    private String bar;
 
     //@Editable(value = SimpleBooleanPaneGenerator.class, getterName = "isTestBoolean")
     private boolean testBoolean;
@@ -24,11 +24,11 @@ public class FooBar {
         this.foo = foo;
     }
 
-    public int getBar() {
+    public String getBar() {
         return bar;
     }
 
-    public void setBar(int bar) {
+    public void setBar(String bar) {
         this.bar = bar;
     }
 
