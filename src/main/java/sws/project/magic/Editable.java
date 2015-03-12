@@ -47,7 +47,7 @@ public @interface Editable {
      * used as the title of the field on the edit pane.
      *
      * If left blank, this will be generated as follows:
-     * myLongFieldName --> My Long Field Name
+     * myLongFieldName goes to My Long Field Name
      * @return the friendly name of the field
      */
     String friendlyName() default "";
