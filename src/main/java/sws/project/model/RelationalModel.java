@@ -9,7 +9,6 @@ import java.util.List;
  * The top level relational model
  *
  * 11/03/2015
- * @author Dion
  */
 public class RelationalModel {
 
