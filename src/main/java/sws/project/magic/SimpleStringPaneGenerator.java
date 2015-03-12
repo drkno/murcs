@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  *
  */
-public class SimpleStringFormGenerator implements EditGenerator {
+public class SimpleStringPaneGenerator implements EditPaneGenerator {
     @Override
     public Class[] supportedTypes() {
         return new Class[] {String.class};

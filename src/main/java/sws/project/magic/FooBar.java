@@ -1,13 +1,15 @@
 package sws.project.magic;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  *
  */
 public class FooBar {
-    @Editable(SimpleStringFormGenerator.class)
-    private String foo;
+    @Editable(SimpleStringPaneGenerator.class)
+    @NotNull private String foo;
 
-    @Editable(SimpleStringFormGenerator.class)
+    @Editable(SimpleStringPaneGenerator.class)
     private String bar;
 
     private String james;
