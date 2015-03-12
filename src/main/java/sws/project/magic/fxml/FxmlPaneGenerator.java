@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
  * must specify a controller which must implement the 'EditController'
  * interface
  */
-public class FxmlPanelGenerator implements EditPaneGenerator {
+public class FxmlPaneGenerator implements EditPaneGenerator {
     private String fxmlPath;
 
     @Override

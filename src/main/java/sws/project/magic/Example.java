@@ -1,21 +1,21 @@
 package sws.project.magic;
 
-import sws.project.magic.fxml.FxmlPanelGenerator;
+import sws.project.magic.fxml.FxmlPaneGenerator;
 
 /**
  * Provides a short example of how to use the FXMLPaneGenerator
  */
 public class Example {
     //To edit a string: Set the generator and provide a path to the FXML
-    @Editable(editPaneGenerator = FxmlPanelGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String foo;
 
     //Number.fxml will work for floats, integers and doubles. You can specify a friendly name for the fields
-    @Editable(editPaneGenerator = FxmlPanelGenerator.class, friendlyName = "A field named 'Bar'", argument = "/sws/project/Number.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, friendlyName = "A field named 'Bar'", argument = "/sws/project/Number.fxml")
     private int bar;
 
     //If a field has a non generic getter/setter you can specify it explicitly
-    @Editable(editPaneGenerator = FxmlPanelGenerator.class, getterName = "aNonFriendlyGetterNameForTestBoolean", argument = "/sws/project/Boolean.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, getterName = "aNonFriendlyGetterNameForTestBoolean", argument = "/sws/project/Boolean.fxml")
     private boolean testBoolean;
 
     /**
