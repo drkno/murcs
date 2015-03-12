@@ -4,7 +4,6 @@ import sws.project.magic.fxml.FxmlPaneGenerator;
 
 /**
  * Provides a short example of how to use the FXMLPaneGenerator
- *
  */
 public class Example {
     //To edit a string: Set the generator and provide a path to the FXML

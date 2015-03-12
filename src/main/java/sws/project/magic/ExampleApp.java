@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- *
+ * A simple example application
  */
 public class ExampleApp extends Application {
 
@@ -18,9 +18,6 @@ public class ExampleApp extends Application {
         test.setTestBoolean(false);
 
         Parent content = EditFormGenerator.generatePane(test);
-
-        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/project/String.fxml"));
-        //Parent content = loader.load();
 
         Scene scene = new Scene(content, 800, 480);
         primaryStage.setScene(scene);
