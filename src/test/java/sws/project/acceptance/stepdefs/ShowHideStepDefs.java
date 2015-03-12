@@ -35,12 +35,17 @@ public class ShowHideStepDefs extends ApplicationTest {
     }
 
     @When("^I click the View menu$")
-    public void I_click_the_View_menu() throws Throwable {
+    public void When_I_click_the_View_menu() throws Throwable {
         fx.moveTo("#viewMenu").clickOn("#viewMenu");
     }
 
-    @Given("^The side panel is hidden$")
-    public void The_side_panel_is_hidden() throws Throwable {
+    @And("^I click the Show/Hide Item list button$")
+    public void And_I_click_the_Show_Hide_Item_list_button() throws Throwable {
+        fx.moveTo("#viewShowHide").clickOn("#viewShowHide");
+    }
+
+    @Given("^the side panel is hidden$")
+    public void Given_the_side_panel_is_hidden() throws Throwable {
         VBox vBoxSideDisplay = (VBox) primaryStage.getScene().lookup("#vBoxSideDisplay");
         Platform.runLater(() -> {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
@@ -49,18 +54,13 @@ public class ShowHideStepDefs extends ApplicationTest {
         });
     }
 
-    @And("^I click the Show/Hide Item list button$")
-    public void I_click_the_Show_Hide_Item_list_button() throws Throwable {
-        fx.moveTo("#viewShowHide").clickOn("#viewShowHide");
-    }
-
-    @Then("^The side panel shows$")
-    public void The_side_panel_shows() throws Throwable {
+    @Then("^the side panel shows$")
+    public void Then_the_side_panel_shows() throws Throwable {
         assertTrue(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
     }
 
-    @Given("^The side panel list is shown$")
-    public void The_side_panel_list_is_shown() throws Throwable {
+    @Given("^the side panel list is shown$")
+    public void Given_the_side_panel_list_is_shown() throws Throwable {
         VBox vBoxSideDisplay = (VBox) primaryStage.getScene().lookup("#vBoxSideDisplay");
         Platform.runLater(() -> {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
@@ -69,8 +69,8 @@ public class ShowHideStepDefs extends ApplicationTest {
         });
     }
 
-    @Then("^The the side panel hides$")
-    public void The_the_side_panel_hides() throws Throwable {
+    @Then("^the side panel hides$")
+    public void Then_the_side_panel_hides() throws Throwable {
         assertFalse(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
     }
 
