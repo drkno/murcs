@@ -3,7 +3,6 @@ package sws.project.magic.fxml;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import org.omg.CORBA.INTERNAL;
 import sws.project.magic.EditPaneGenerator;
 
 import java.io.IOException;
@@ -40,10 +39,10 @@ public class FxmlPanelGenerator implements EditPaneGenerator {
         if (loader.getController() == null)
             throw new UnsupportedOperationException("The FXML must specify a controller!");
 
-        if (!(loader.getController() instanceof EditFormController))
+        if (!(loader.getController() instanceof EditController))
             throw new UnsupportedOperationException("The controller must implement the EditFormController interface");
 
-        EditFormController controller = (EditFormController)loader.getController();
+        EditController controller = (EditController)loader.getController();
 
         //Check if the field is actually supported by the controller, otherwise we'd best throw an exception
         boolean supported = false;

@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 /**
  *
  */
-public interface EditFormController<T> {
+public interface EditController<T> {
     void setTitle(String text);
     void setValue(T value);
 

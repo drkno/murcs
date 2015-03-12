@@ -1,22 +1,15 @@
 package sws.project.magic.fxml;
 
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.TextArea;
-import javafx.scene.text.Text;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 /**
  *
  */
-public abstract class BasicEditController<T> implements EditFormController<T> {
+public abstract class BasicEditController<T> implements EditController<T> {
     protected ArrayList<Predicate<T>> validators = new ArrayList<>();
     protected ArrayList<ChangeListener<T>> changeListeners = new ArrayList<>();
 
