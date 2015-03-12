@@ -10,9 +10,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- *
+ * Uses automagic (and reflection) to generate a form
+ * for editing an object. Don't question the magic.
  */
 public class EditFormGenerator {
+    /**
+     * Generates a pane for editing an object
+     * @param from The object to generate a pane for
+     * @return The edit pane
+     */
     public static Parent generatePane(Object from){
         VBox generated = new VBox(20);
 
@@ -23,8 +29,8 @@ public class EditFormGenerator {
             if (!isEditable(field)) continue;
 
             //field --> getField or setField
-            String getterName = "get" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
-            String setterName = "set" + (field.getName().charAt(0) + "").toUpperCase() + field.getName().substring(1);
+            String getterName = "get" + capitalizeFieldName(field);
+            String setterName = "set" + capitalizeFieldName(field);
 
             Editable editable = getEditable(field);
             if (editable.value() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
@@ -49,6 +55,22 @@ public class EditFormGenerator {
         return generated;
     }
 
+    /**
+     * Capitalizes the name of field fooBar --> FooBar
+     * @param field The field
+     * @return The capitalized name of the field
+     */
+    private static String capitalizeFieldName(Field field){
+        String text = field.getName();
+        text = Character.toUpperCase(text.charAt(0)) + text.substring(1, text.length());
+        return text;
+    }
+
+    /**
+     * Indicates if a specified field is editable.
+     * @param field the field to check for editableness.
+     * @return Returns whether the field is editable
+     */
     public static boolean isEditable(Field field){
         return getEditable(field) != null;
     }
@@ -77,6 +99,12 @@ public class EditFormGenerator {
         return result;
     }
 
+    /**
+     * Gets the editable annotation for a specified field
+     *
+     * @param field The field to get the editable annotation for
+     * @return The editable annotation. Null if there is not one
+     */
     public static Editable getEditable(Field field){
         Annotation[] annotations = field.getDeclaredAnnotations();
 
@@ -87,6 +115,15 @@ public class EditFormGenerator {
         return null;
     }
 
+    /**
+     * Generates a node for a specific field automagically
+     * @param field The field to generate an edit node for
+     * @param getter The getter for the field
+     * @param setter The setter for the field
+     * @param from The object the field is from
+     * @param editable The editable annotation of the
+     * @return
+     */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable){
         try {
             Constructor<?> constructor = editable.value().getConstructor();

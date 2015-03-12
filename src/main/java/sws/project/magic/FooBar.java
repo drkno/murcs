@@ -13,7 +13,7 @@ public class FooBar {
     @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/Number.fxml")
     private int bar;
 
-    @Editable(value = FxmlPanelGenerator.class, getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
+    @Editable(value = FxmlPanelGenerator.class, friendlyName = "magic test boolean", getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
     private boolean testBoolean;
 
     public String getFoo() {
