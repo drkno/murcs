@@ -1,4 +1,4 @@
-package sws.project.model.history;
+package sws.project.model.tracking;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,4 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface TrackState {
-    String description();
-}
+public @interface TrackValue {}
