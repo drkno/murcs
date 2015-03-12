@@ -26,6 +26,11 @@ public class BasicStringEditController extends BasicEditController<String> imple
     }
 
     @Override
+    public Class[] supportedTypes() {
+        return new Class[]{String.class};
+    }
+
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         valueText.textProperty().addListener(onChange());
     }

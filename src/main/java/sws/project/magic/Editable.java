@@ -12,4 +12,6 @@ public @interface Editable {
 
     String getterName() default "";
     String setterName() default "";
+
+    String argument() default "";
 }

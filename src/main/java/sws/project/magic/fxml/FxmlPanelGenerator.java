@@ -3,6 +3,7 @@ package sws.project.magic.fxml;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import org.omg.CORBA.INTERNAL;
 import sws.project.magic.EditPaneGenerator;
 
 import java.io.IOException;
@@ -13,14 +14,21 @@ import java.lang.reflect.Method;
  *
  */
 public class FxmlPanelGenerator implements EditPaneGenerator {
+    private String fxmlPath;
+
     @Override
     public Class[] supportedTypes() {
-        return new Class[] {String.class};
+        return new Class[] {String.class, int.class, Integer.class,
+                Double.class, double.class, Float.class, float.class,
+                Boolean.class, boolean.class};
     }
 
     @Override
     public Node generate(Field field, Method getter, Method setter, Object from) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/project/String.fxml"));
+        if (fxmlPath == null || fxmlPath.isEmpty())
+            throw new IllegalArgumentException("The FXML path must be set. You can do this when you specify the field is editable like this: @Editable(FxmlPanelGenerator.class, argument=\"pathToFxml\"");
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root;
         try{
             root = loader.load();
@@ -37,8 +45,24 @@ public class FxmlPanelGenerator implements EditPaneGenerator {
 
         EditFormController controller = (EditFormController)loader.getController();
 
+        //Check if the field is actually supported by the controller, otherwise we'd best throw an exception
+        boolean supported = false;
+        for (Class clazz : controller.supportedTypes()){
+            if (field.getType().isAssignableFrom(clazz)){
+                supported = true;
+                break;
+            }
+        }
+
+        //If the field isn't supported, throw an exceptions
+        if (!supported)
+            throw new UnsupportedOperationException("The FXML you supplied was valid, but it's controller doesn't support " + field.getType());
+
         try{
             controller.setTitle(field.getName());
+
+            Object value = getter.invoke(from);
+            controller.setValue(value);
         }catch (Exception e){
             System.err.println("Unable to get " + field.getName() + " on " + from);
         }
@@ -53,5 +77,10 @@ public class FxmlPanelGenerator implements EditPaneGenerator {
         });
 
         return root;
+    }
+
+    @Override
+    public void setArgument(String argument){
+        fxmlPath = argument;
     }
 }

@@ -7,13 +7,13 @@ import sws.project.magic.fxml.FxmlPanelGenerator;
  *
  */
 public class FooBar {
-    @Editable(FxmlPanelGenerator.class)
+    @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/String.fxml")
     private String foo;
 
-    @Editable(FxmlPanelGenerator.class)
-    private String bar;
+    //@Editable(FxmlPanelGenerator.class)
+    private int bar;
 
-    //@Editable(value = SimpleBooleanPaneGenerator.class, getterName = "isTestBoolean")
+    @Editable(value = FxmlPanelGenerator.class, getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
     private boolean testBoolean;
 
     public String getFoo() {
@@ -24,11 +24,11 @@ public class FooBar {
         this.foo = foo;
     }
 
-    public String getBar() {
+    public int getBar() {
         return bar;
     }
 
-    public void setBar(String bar) {
+    public void setBar(int bar) {
         this.bar = bar;
     }
 

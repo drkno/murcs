@@ -68,6 +68,10 @@ public class EditFormGenerator {
             Constructor<?> constructor = editable.value().getConstructor();
             EditPaneGenerator generator = (EditPaneGenerator)constructor.newInstance();
 
+            //If there was an argument set on the field, pass it on to the generator
+            if (editable.argument() != null && !editable.argument().isEmpty())
+                generator.setArgument(editable.argument());
+
             Class[] supportedClasses = generator.supportedTypes();
             boolean supported = false;
 

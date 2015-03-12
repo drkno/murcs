@@ -36,31 +36,31 @@ public abstract class BasicEditController<T> implements EditFormController<T> {
      */
     protected ChangeListener<T> onChange(){
         return (observable, oldValue, newValue) -> {
-            //If nothing has changed, there's no point in us doing anything is there?
-            if (oldValue == newValue) return;
-
-            //If our new value is not valid
-            if (!isValid(newValue)) {
-                //Show an invalid message and return
-                showInvalid();
-                return;
-            }
-
-            //If we have satisfied all the predicates, we must be valid!
-            showValid();
-
-            //Seeing as we're valid, notify all the change listeners
+            //Notify all the change listeners
             notifyChanged(observable, oldValue, newValue);
         };
     }
 
     /**
-     * Notify all the change listeners that we've changed
+     * Notify all the change listeners that we've changed, if the new value is valid
      * @param observable The observable that has changed
      * @param oldValue The old value
      * @param newValue The new value
      */
     protected void notifyChanged(ObservableValue<? extends T> observable, T oldValue, T newValue){
+        //If nothing has changed, there's no point in us doing anything is there?
+        if (oldValue == newValue) return;
+
+        //If our new value is not valid
+        if (!isValid(newValue)) {
+            //Show an invalid message and return
+            showInvalid();
+            return;
+        }
+
+        //If we have satisfied all the predicates, we must be valid!
+        showValid();
+
         //Loop through the change listeners and notify them all
         for (ChangeListener<T> listener : changeListeners){
             listener.changed(observable, oldValue, newValue);

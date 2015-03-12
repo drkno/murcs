@@ -13,4 +13,6 @@ public interface EditFormController<T> {
 
     void addValidator(Predicate<T> predicate);
     void addChangeListener(ChangeListener<T> listener);
+
+    Class[] supportedTypes();
 }

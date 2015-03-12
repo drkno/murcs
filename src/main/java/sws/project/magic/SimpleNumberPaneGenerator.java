@@ -52,6 +52,11 @@ public class SimpleNumberPaneGenerator implements EditPaneGenerator {
         return container;
     }
 
+    @Override
+    public void setArgument(String argument) {
+        //Don't do anything, there aren't any arguments we need
+    }
+
     private Object convertToNumber(Field field, String text){
         if (field.getType().isAssignableFrom(int.class) || field.getType().isAssignableFrom(Integer.class)){
             try {

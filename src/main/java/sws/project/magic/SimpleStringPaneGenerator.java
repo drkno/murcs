@@ -48,4 +48,9 @@ public class SimpleStringPaneGenerator implements EditPaneGenerator {
         container.getChildren().addAll(children);
         return container;
     }
+
+    @Override
+    public void setArgument(String argument) {
+        //Don't do anything, there aren't any arguments we need
+    }
 }
