@@ -10,7 +10,7 @@ public class FooBar {
     @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/String.fxml")
     private String foo;
 
-    //@Editable(FxmlPanelGenerator.class)
+    @Editable(value = FxmlPanelGenerator.class, argument = "/sws/project/Number.fxml")
     private int bar;
 
     @Editable(value = FxmlPanelGenerator.class, getterName = "isTestBoolean", argument = "/sws/project/Boolean.fxml")
