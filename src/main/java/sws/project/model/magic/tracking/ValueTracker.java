@@ -18,7 +18,9 @@ public abstract class ValueTracker {
      * This involves searching for fields annotated with @ValueTracker so any
      * annotations of this type added after this point using reflection will be
      * ignored.
-     * It also sets the state of the
+     * It also sets the initial state of the value tracker.
+     * saveCurrentState(String, true) should be called in the constructor of the
+     * object if the initial state needs to be tracked.
      */
     protected ValueTracker() {
         try {
