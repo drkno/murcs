@@ -55,7 +55,7 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
             }
         }
 
-        notifyChanged(null, value, this.value);
+        notifyChanged(null, this.value, value);
         this.value = value;
     }
 }

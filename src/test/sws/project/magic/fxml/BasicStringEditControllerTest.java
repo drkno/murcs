@@ -35,7 +35,6 @@ public class BasicStringEditControllerTest {
         valueText = new TextField();
 
         inject("titleText", titleText);
-        inject("invalidNode", invalidText);
         inject("valueText", valueText);
     }
 
@@ -61,6 +60,13 @@ public class BasicStringEditControllerTest {
         Assert.assertEquals("The titleText should change when the title is set", "foo", titleText.getText());
     }
 
+    @Test
+    public void testSetValue() throws Exception {
+        controller.initialize(null, null);
+
+        controller.setValue("Hello World");
+        Assert.assertEquals("the text of 'valueText' should have changed to Hello World", "Hello World", valueText.getText());
+    }
 
     @Test
     public void testSupportedTypes() throws Exception {
