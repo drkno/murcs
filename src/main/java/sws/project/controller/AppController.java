@@ -3,7 +3,6 @@ package sws.project.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -26,9 +25,6 @@ public class AppController {
     @FXML
     BorderPane borderPaneMain;
 
-    Node removedDisplay;
-    boolean showHide = true;
-
     /***
      * Called when the Quit button is pressed in the file menu and quit the current application.
      * @param event The even that triggers the function
@@ -44,14 +40,13 @@ public class AppController {
      */
     @FXML
     private void toggleItemListView(ActionEvent event) {
-        if (showHide) {
-            removedDisplay = hBoxMainDisplay.getChildren().get(0);
-            hBoxMainDisplay.getChildren().remove(0);
-            showHide = false;
+        if (vBoxSideDisplay.isVisible()) {
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
+            vBoxSideDisplay.setVisible(false);
         }
         else {
-            hBoxMainDisplay.getChildren().add(0, removedDisplay);
-            showHide = true;
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
+            vBoxSideDisplay.setVisible(true);
         }
 
     }
