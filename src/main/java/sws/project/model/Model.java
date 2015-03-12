@@ -1,9 +1,13 @@
 package sws.project.model;
 
+import sws.project.model.history.HistoryObject;
+import sws.project.model.history.TrackState;
+
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model {
+public abstract class Model extends HistoryObject {
+    @TrackState(description = "short name change")
     private String shortName;
     private String longName;
 
@@ -24,6 +28,7 @@ public abstract class Model {
         if (shortName == null) throw new IllegalArgumentException("shortname cannot be null!");
 
         this.shortName = shortName;
+        saveCurrentState();
     }
 
     /**
