@@ -1,4 +1,4 @@
-package sws.project.magic.easyedit.fxml;
+package sws.project.model.magic.easyedit.fxml;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,24 +1,26 @@
+package sws.project.model.magic.tracking;
+
+import sws.project.model.magic.tracking.ValueTracker;
+import sws.project.model.magic.tracking.TrackValue;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import sws.project.model.magic.tracking.TrackValue;
-import sws.project.model.magic.tracking.ValueTracker;
 
-public class TrackingStringTest {
-    public class TestString extends ValueTracker {
-        public TestString() {
+public class TrackingIntegerTest {
+    public class TestInteger extends ValueTracker {
+        public TestInteger() {
             saveCurrentState("initial state", true);
         }
 
         @TrackValue
-        private String testString;
+        private int testInteger = 0;
 
-        public String getTestString() {
-            return testString;
+        public int getTestInteger() {
+            return testInteger;
         }
 
-        public void setTestString(String testString) {
-            this.testString = testString;
+        public void setTestInteger(int testInteger) {
+            this.testInteger = testInteger;
             saveCurrentState("test desc.");
         }
     }
@@ -30,41 +32,41 @@ public class TrackingStringTest {
 
     @Test
     public void undoTest() throws Exception {
-        TestString a = new TestString();
-        a.setTestString("string1");
-        a.setTestString("string2");
-        a.setTestString("string3");
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
         ValueTracker.undo();
-        Assert.assertEquals("string2", a.getTestString());
+        Assert.assertEquals(2, a.getTestInteger());
         ValueTracker.undo();
-        Assert.assertEquals("string1", a.getTestString());
+        Assert.assertEquals(1, a.getTestInteger());
         ValueTracker.undo();
-        Assert.assertEquals(null, a.getTestString());
+        Assert.assertEquals(0, a.getTestInteger());
     }
 
     @Test
     public void redoTest() throws Exception {
-        TestString a = new TestString();
-        a.setTestString("string1");
-        a.setTestString("string2");
-        a.setTestString("string3");
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
         ValueTracker.undo();
         ValueTracker.undo();
         ValueTracker.undo();
-        Assert.assertEquals(null, a.getTestString());
+        Assert.assertEquals(0, a.getTestInteger());
         ValueTracker.redo();
-        Assert.assertEquals("string1", a.getTestString());
+        Assert.assertEquals(1, a.getTestInteger());
         ValueTracker.redo();
-        Assert.assertEquals("string2", a.getTestString());
+        Assert.assertEquals(2, a.getTestInteger());
         ValueTracker.redo();
-        Assert.assertEquals("string3", a.getTestString());
+        Assert.assertEquals(3, a.getTestInteger());
     }
 
     @Test
     public void descriptionTest() throws Exception {
-        TestString a = new TestString();
-        a.setTestString("string1");
-        a.setTestString("string2");
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
         Assert.assertEquals("test desc.", ValueTracker.getUndoDescription());
         ValueTracker.undo();
         Assert.assertEquals("initial state", ValueTracker.getUndoDescription());
@@ -75,8 +77,8 @@ public class TrackingStringTest {
 
     @Test
     public void cannotUndoTest() throws Exception {
-        TestString a = new TestString();
-        a.setTestString("string1");
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
         ValueTracker.undo();
         Assert.assertFalse(ValueTracker.canUndo());
         try {
@@ -90,8 +92,8 @@ public class TrackingStringTest {
 
     @Test
     public void cannotRedoTest() throws Exception {
-        TestString a = new TestString();
-        a.setTestString("string1");
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
         Assert.assertFalse(ValueTracker.canRedo());
         try {
             ValueTracker.redo();
