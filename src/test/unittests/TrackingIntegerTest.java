@@ -1,5 +1,5 @@
-import tracking.ValueTracker;
-import tracking.TrackValue;
+import sws.project.model.magic.tracking.ValueTracker;
+import sws.project.model.magic.tracking.TrackValue;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;

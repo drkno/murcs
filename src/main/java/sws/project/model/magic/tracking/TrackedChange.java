@@ -1,4 +1,4 @@
-package sws.project.model.tracking;
+package sws.project.model.magic.tracking;
 
 import java.lang.reflect.Field;
 
@@ -12,6 +12,13 @@ public class TrackedChange {
     private final Object[] changedValues;
     private boolean undone;
 
+    /**
+     * Instantiates a new TrackedChange that tracks an individual change occurence.
+     * @param origionalObject The object that the change occured on.
+     * @param changedFields The fields that were changed.
+     * @param changedValues The values that were changed.
+     * @param changeDescription Description of the changes made.
+     */
     public TrackedChange(Object origionalObject, Field[] changedFields, Object[] changedValues, String changeDescription) {
         this.origionalObject = origionalObject;
         this.changedFields =  changedFields;
@@ -20,10 +27,18 @@ public class TrackedChange {
         this.changeDescription = changeDescription;
     }
 
+    /**
+     * Gets the description of the change.
+     * @return the description.
+     */
     public String getDescription() {
         return changeDescription;
     }
 
+    /**
+     * Undoes this change.
+     * @throws Exception if undo cannot be performed.
+     */
     public void undo() throws Exception {
         if (undone) {
             throw new Exception("Cannot undo if already undone!");
@@ -32,6 +47,10 @@ public class TrackedChange {
         toggleValues();
     }
 
+    /**
+     * Redoes this change.
+     * @throws Exception If this change has not been undone.
+     */
     public void redo() throws Exception {
         if (!undone) {
             throw new Exception("Cannot redo if already redone!");
@@ -40,7 +59,12 @@ public class TrackedChange {
         toggleValues();
     }
 
-    public void toggleValues() throws Exception {
+    /**
+     * Switches the values stored with those of the object.
+     * @throws Exception if reflection fails - which can only occur if something drastically, horribly, horrendusly
+     * wrong happened at this point.
+     */
+    private void toggleValues() throws Exception {
         for (int i = 0; i < changedFields.length; i++) {
             Field field = changedFields[i];
             Object previousValue = field.get(origionalObject);
@@ -49,14 +73,26 @@ public class TrackedChange {
         }
     }
 
+    /**
+     * Gets the object that is affected by this change.
+     * @return the object.
+     */
     public Object getAffectedObject() {
         return origionalObject;
     }
 
+    /**
+     * Gets the fields that are affected by this change.
+     * @return an array of affected fields.
+     */
     public Field[] getFields() {
         return changedFields;
     }
 
+    /**
+     * Gets the values of the fields that are affected by this change.
+     * @return an array of values of the affected fields.
+     */
     public Object[] getValues() {
         return changedValues;
     }

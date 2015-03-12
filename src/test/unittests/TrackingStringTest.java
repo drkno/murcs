@@ -1,8 +1,8 @@
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import tracking.TrackValue;
-import tracking.ValueTracker;
+import sws.project.model.magic.tracking.TrackValue;
+import sws.project.model.magic.tracking.ValueTracker;
 
 public class TrackingStringTest {
     public class TestString extends ValueTracker {

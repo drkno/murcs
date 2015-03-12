@@ -1,4 +1,4 @@
-package sws.project.model.tracking;
+package sws.project.model.magic.tracking;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -163,7 +163,7 @@ public abstract class ValueTracker {
 
     /**
      * Gets the current maximum size of the tracking stack. No more than this number of states can be saved.
-     * @return Maximum stack size or <= 0 if infinite.
+     * @return Maximum stack size or less than or equal to 0 if infinite.
      */
     public static int getMaximumTrackingSize() {
         return maximumUndoRedoStackSize;
@@ -171,7 +171,7 @@ public abstract class ValueTracker {
 
     /**
      * Sets the current maximum size of the tracking stack. No more than this number of states can be saved.
-     * @param maximumUndoRedoStackSize new maximum stack size or <= 0 if infinite is desired.
+     * @param maximumUndoRedoStackSize new maximum stack size or less than or equal to 0 if infinite is desired.
      */
     public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
         ValueTracker.maximumUndoRedoStackSize = maximumUndoRedoStackSize;

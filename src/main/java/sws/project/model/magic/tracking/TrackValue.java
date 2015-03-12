@@ -1,4 +1,4 @@
-package sws.project.model.tracking;
+package sws.project.model.magic.tracking;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
