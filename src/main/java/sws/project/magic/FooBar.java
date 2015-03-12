@@ -7,12 +7,13 @@ import com.sun.istack.internal.NotNull;
  */
 public class FooBar {
     @Editable(SimpleStringPaneGenerator.class)
-    @NotNull private String foo;
+    private String foo;
 
-    @Editable(SimpleStringPaneGenerator.class)
+    @Editable(SimpleBooleanPaneGenerator.class)
+    private boolean james;
+
+    //@Editable(SimpleStringPaneGenerator.class)
     private String bar;
-
-    private String james;
 
     public String getFoo() {
         return foo;
@@ -30,11 +31,11 @@ public class FooBar {
         this.bar = bar;
     }
 
-    public String getJames() {
+    public boolean getJames() {
         return james;
     }
 
-    public void setJames(String james) {
+    public void setJames(boolean james) {
         this.james = james;
     }
 }
