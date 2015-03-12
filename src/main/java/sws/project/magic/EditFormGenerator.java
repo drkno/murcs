@@ -122,7 +122,7 @@ public class EditFormGenerator {
      * @param setter The setter for the field
      * @param from The object the field is from
      * @param editable The editable annotation of the
-     * @return
+     * @return The node of the edit form
      */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable){
         try {
