@@ -1,7 +1,6 @@
 package sws.project.magic;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -9,11 +8,11 @@ import javafx.stage.Stage;
 /**
  *
  */
-public class TestApp extends Application {
+public class ExampleApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FooBar test = new FooBar();
+        Example test = new Example();
         test.setFoo("foo");
         test.setBar(5);
         test.setTestBoolean(false);
