@@ -7,17 +7,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.swing.*;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
 
-public class BasicStringEditControllerTest {
-    private BasicStringEditController controller;
+public class BasicNumberEditControllerTest {
+    private BasicNumberEditController controller;
 
     private Text titleText;
     private Text invalidText;
-    private TextField valueText;
+    private TextField numberText;
 
     /**
      * Note: this method will fail if the names of the title/value texts change
@@ -26,17 +25,17 @@ public class BasicStringEditControllerTest {
     @Before
     public void setup() throws Exception{
         new JFXPanel();
-        controller = new BasicStringEditController();
+        controller = new BasicNumberEditController();
 
         titleText = new Text();
         invalidText = new Text();
         invalidText.setVisible(false);
 
-        valueText = new TextField();
+        numberText = new TextField();
 
         inject("titleText", titleText);
         inject("invalidNode", invalidText);
-        inject("valueText", valueText);
+        inject("numberText", numberText);
     }
 
     /**
@@ -55,25 +54,24 @@ public class BasicStringEditControllerTest {
     }
 
     @Test
-    public void testSetTitle() throws Exception {
-        controller.setTitle("foo");
+    public void testSupportedTypes() throws Exception {
+        Assert.assertEquals("The controller should support 6 types", 6, controller.supportedTypes().length);
 
-        Assert.assertEquals("The titleText should change when the title is set", "foo", titleText.getText());
+        Assert.assertTrue("'Integer' should be supported", containsClass(Integer.class));
+        Assert.assertTrue("'int' should be supported", containsClass(int.class));
+
+        Assert.assertTrue("'Float' should be supported", containsClass(Integer.class));
+        Assert.assertTrue("'float' should be supported", containsClass(int.class));
+
+        Assert.assertTrue("'Double' should be supported", containsClass(Integer.class));
+        Assert.assertTrue("'double' should be supported", containsClass(int.class));
     }
 
-
-    @Test
-    public void testSupportedTypes() throws Exception {
-        Class[] returned = controller.supportedTypes();
-
-        Assert.assertEquals("The BasicStringEditController should only have one supported type", 1,returned.length);
-
-        boolean supported = false;
-        for (Class clazz : returned)
-            if (String.class.equals(clazz))
-                supported = true;
-
-        Assert.assertEquals("The BasicStringEditController should support 'Strings'", true, supported);
+    private boolean containsClass(Class clazz){
+        for (Class clasz : controller.supportedTypes())
+            if (clasz.equals(clazz))
+                return true;
+        return false;
     }
 
     @Test
