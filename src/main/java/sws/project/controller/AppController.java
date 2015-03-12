@@ -10,14 +10,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.project.model.Person;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
-import java.util.concurrent.Callable;
 
 /**
  * Main app class controller
@@ -59,13 +55,13 @@ public class AppController {
             hBoxMainDisplay.setVisible(true);
             showHide = true;
         }
-        PopupController controller = new PopupController("Test");
+        OkCancelPopup controller = new OkCancelPopup("Test");
         controller.setOkAction(() -> {
             System.out.println("work already");
             controller.close();
             return null;
         });
-        controller.setMessage("Hi there");
+        controller.setMessageText("Hi there");
         controller.show();
     }
 
