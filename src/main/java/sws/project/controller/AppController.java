@@ -10,12 +10,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.project.model.Person;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
+import java.util.concurrent.Callable;
 
 /**
  * Main app class controller
@@ -48,12 +50,13 @@ public class AppController {
     @FXML
     private void toggleItemListView(ActionEvent event) {
         if (showHide) {
-            removedDisplay = hBoxMainDisplay.getChildren().get(0);
-            hBoxMainDisplay.getChildren().remove(0);
+            //removedDisplay = hBoxMainDisplay.getChildren().get(0);
+            //hBoxMainDisplay.getChildren().remove(0);
+            hBoxMainDisplay.setVisible(false);
             showHide = false;
         }
         else {
-            hBoxMainDisplay.getChildren().add(0, removedDisplay);
+            hBoxMainDisplay.setVisible(true);
             showHide = true;
         }
     }
