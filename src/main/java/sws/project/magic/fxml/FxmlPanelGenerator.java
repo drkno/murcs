@@ -1,0 +1,57 @@
+package sws.project.magic.fxml;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import sws.project.magic.EditPaneGenerator;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+/**
+ *
+ */
+public class FxmlPanelGenerator implements EditPaneGenerator {
+    @Override
+    public Class[] supportedTypes() {
+        return new Class[] {String.class};
+    }
+
+    @Override
+    public Node generate(Field field, Method getter, Method setter, Object from) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/project/String.fxml"));
+        Parent root;
+        try{
+            root = loader.load();
+        }
+        catch (IOException e){
+            throw new UnsupportedOperationException("The FXML file could not be found/opened! Check it exists");
+        }
+
+        if (loader.getController() == null)
+            throw new UnsupportedOperationException("The FXML must specify a controller!");
+
+        if (!(loader.getController() instanceof EditFormController))
+            throw new UnsupportedOperationException("The controller must implement the EditFormController interface");
+
+        EditFormController controller = (EditFormController)loader.getController();
+
+        try{
+            controller.setTitle(field.getName());
+        }catch (Exception e){
+            System.err.println("Unable to get " + field.getName() + " on " + from);
+        }
+
+
+        controller.addChangeListener((p, o, n) -> {
+            try {
+                setter.invoke(from, n);
+            }catch (Exception e){
+                System.err.println("Unable to set " + field.getName() + " on " + from);
+            }
+        });
+
+        return root;
+    }
+}
