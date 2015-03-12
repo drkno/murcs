@@ -1,62 +1,77 @@
 package sws.project.acceptance.stepdefs;
 
+import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Platform;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.junit.Assert;
-import org.loadui.testfx.GuiTest;
+import org.testfx.api.FxRobot;
+import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class ShowHideStepDefs extends ApplicationTest {
 
+    private FxRobot fx;
+    private Stage primaryStage;
+
     @Before
-    public void setup() throws Exception {
-        String[] args = {};
-        launch(sws.project.view.App.class, args);
+    public void setUp() throws Exception {
+        primaryStage = FxToolkit.registerPrimaryStage();
+        FxToolkit.setupApplication(sws.project.view.App.class);
+        fx = new FxRobot();
+        launch(sws.project.view.App.class);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        FxToolkit.cleanupStages();
     }
 
     @When("^I click the View menu$")
     public void I_click_the_View_menu() throws Throwable {
-        moveTo("#viewMenu").clickOn("#viewMenu");
+        fx.moveTo("#viewMenu").clickOn("#viewMenu");
     }
 
     @Given("^The side panel is hidden$")
     public void The_side_panel_is_hidden() throws Throwable {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                GuiTest.find("#vBoxSideDisplay").setVisible(false);
-            }
+        VBox vBoxSideDisplay = (VBox) primaryStage.getScene().lookup("#vBoxSideDisplay");
+        Platform.runLater(() -> {
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
+            vBoxSideDisplay.setVisible(false);
+            assertFalse(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
         });
     }
 
     @And("^I click the Show/Hide Item list button$")
     public void I_click_the_Show_Hide_Item_list_button() throws Throwable {
-        moveTo("#viewShowHide").clickOn("#viewShowHide");
+        fx.moveTo("#viewShowHide").clickOn("#viewShowHide");
     }
 
     @Then("^The side panel shows$")
     public void The_side_panel_shows() throws Throwable {
-        Assert.assertTrue(GuiTest.find("#vBoxSideDisplay").isVisible());
+        assertTrue(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
     }
 
     @Given("^The side panel list is shown$")
     public void The_side_panel_list_is_shown() throws Throwable {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                GuiTest.find("#vBoxSideDisplay").setVisible(true);
-            }
+        VBox vBoxSideDisplay = (VBox) primaryStage.getScene().lookup("#vBoxSideDisplay");
+        Platform.runLater(() -> {
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
+            vBoxSideDisplay.setVisible(true);
+            assertTrue(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
         });
     }
 
     @Then("^The the side panel hides$")
     public void The_the_side_panel_hides() throws Throwable {
-        Assert.assertFalse(GuiTest.find("#vBoxSideDisplay").isVisible());
+        assertFalse(primaryStage.getScene().lookup("#vBoxSideDisplay").isVisible());
     }
 
     @Override

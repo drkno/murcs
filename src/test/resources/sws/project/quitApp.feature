@@ -1,5 +1,6 @@
 Feature: Close the app
 
+  @Manual
   Scenario: Close the app using file menu
     Given I am at the main app window
     When I click the file button in the menu

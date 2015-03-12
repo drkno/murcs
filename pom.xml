@@ -94,25 +94,9 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <groupId>org.loadui</groupId>
-            <artifactId>testFx</artifactId>
-            <version>3.1.2</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.guigarage</groupId>
-            <artifactId>material-design-fx</artifactId>
-            <version>0.7</version>
-		</dependency>
-		<dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>testfx-core</artifactId>
-            <version>4.0.1-alpha</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
