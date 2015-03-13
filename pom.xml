@@ -10,6 +10,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <junit.version>4.12</junit.version>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
     </properties>
     <build>
     <plugins>
@@ -26,26 +29,6 @@
                 <source>1.8</source>
                 <target>1.8</target>
             </configuration>
-        </plugin>
-        <plugin>
-            <groupId>net.masterthought</groupId>
-            <artifactId>maven-cucumber-reporting</artifactId>
-            <version>0.0.5</version>
-            <executions>
-                <execution>
-                    <id>execution</id>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>generate</goal>
-                    </goals>
-                    <configuration>
-                        <projectName>cucumber-jvm-example</projectName>
-                        <outputDirectory>${project.build.directory}/cucumber-html-reports</outputDirectory>
-                        <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
-                        <enableFlashCharts>false</enableFlashCharts>
-                    </configuration>
-                </execution>
-            </executions>
         </plugin>
     </plugins>
     </build>
