@@ -69,7 +69,8 @@ public class AppController {
                 PersistenceManager.Current.saveModel(file.getName());
             }
         }catch (Exception e) {
-            //May it burn in hell
+            GenericPopup popup = new GenericPopup(e);
+            popup.show();
         }
     }
 
@@ -87,7 +88,8 @@ public class AppController {
             }
         }
         catch (Exception e) {
-            //May it burn in hell again
+            GenericPopup popup = new GenericPopup(e);
+            popup.show();
         }
     }
 }
