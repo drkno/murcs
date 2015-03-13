@@ -1,6 +1,9 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Team.
@@ -67,5 +70,45 @@ public class Team extends Model{
      */
     public void setProductOwner(Person productOwner) {
         this.productOwner = productOwner;
+    }
+
+    /**
+     * Adds a person to the project members only if that person is not already a member
+     * @param person to be added
+     * @throws sws.project.exceptions.DuplicateObjectException if the person is already in the team
+     */
+    public void addMember(Person person) throws DuplicateObjectException{
+        if (!members.contains(person) &&
+                !members
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.members.add(person);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds a list of people to the team
+     * @param members People to be added to the team
+     * @throws sws.project.exceptions.DuplicateObjectException if a person is already in a team
+     */
+    public void addMembers(List<Person> members) throws DuplicateObjectException {
+        for (Person member: members) {
+            this.addMember(member);
+        }
+    }
+
+    /**
+     * Removes a person from the project members
+     * @param person to be removed
+     */
+    public void removeMember(Person person) {
+        if (this.members.contains(person)) {
+            this.members.remove(person);
+        }
     }
 }

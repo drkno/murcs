@@ -1,15 +1,13 @@
 Feature: Show or hide the side panel list
 
-  @Manual
   Scenario: Show side panel list
-    Given The side panel is hidden
+    Given the side panel is hidden
     When I click the View menu
     And I click the Show/Hide Item list button
-    Then The side panel shows
+    Then the side panel shows
 
-  @Manual
   Scenario: Hide the side panel list
-    Given The side panel list is shown
+    Given the side panel list is shown
     When I click the View menu
     And I click the Show/Hide Item list button
-    Then The the side panel hides
+    Then the side panel hides

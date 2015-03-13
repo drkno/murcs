@@ -1,29 +1,39 @@
 package sws.project.model;
 
+import sws.project.magic.tracking.TrackValue;
+import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.easyedit.Editable;
+import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+
+import java.io.Serializable;
+
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model {
+public abstract class Model extends ValueTracker implements Serializable{
+    @TrackValue
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String shortName;
+    @TrackValue
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String longName;
 
     /**
      * Gets the short name.
      * @return the short name.
      */
-    public String getShortName() {
-        return shortName;
-    }
+    public String getShortName() { return shortName; }
 
     /**
      * Sets the short name.
      * @param shortName the new short name.
-     * @throws java.lang.IllegalArgumentException if the shortName is invalid
+     * @throws java.lang.Exception if the shortName is invalid
      */
-    public void setShortName(String shortName) {
-        if (shortName == null) throw new IllegalArgumentException("shortname cannot be null!");
+    public void setShortName(String shortName) throws Exception {
+        if (shortName == null || shortName.trim().isEmpty()) throw new Exception("Short Name cannot be empty");
 
-        this.shortName = shortName;
+        this.shortName = shortName.trim();
+        saveCurrentState("Short Name change");
     }
 
     /**
@@ -40,5 +50,6 @@ public abstract class Model {
      */
     public void setLongName(String longName) {
         this.longName = longName;
+        saveCurrentState("Long Name change");
     }
 }

@@ -3,11 +3,11 @@ package sws.project.model;
  * Model of a skill.
  */
 
-public class Skill extends Model{
+public class Skill extends Model {
     /**
      * Possible roles of a team.
      */
-    public enum Role{
+    public enum Role {
         ScrumMaster,
         Developer,
         PO,
@@ -17,6 +17,7 @@ public class Skill extends Model{
 
     /**
      * Gets a description of the skill
+     *
      * @return the description
      */
     public String getDescription() {
@@ -25,6 +26,7 @@ public class Skill extends Model{
 
     /**
      * Sets the description
+     *
      * @param description The new description
      */
     public void setDescription(String description) {
@@ -33,17 +35,18 @@ public class Skill extends Model{
 
     /**
      * Indicates if this skill is a type of Role
+     *
      * @param role The role
      * @return Whether this skill is of the type of the role
      */
-    public boolean isRole(Role role){
+    public boolean isRole(Role role) {
         //This is a quick and dirty solution. Essentially what it does
         //is compare the two strings in the same case, without spaces.
         return getShortName().toLowerCase().replace(" ", "").equals(role.toString().toLowerCase().replace(" ", ""));
     }
 
     @Override
-    public boolean equals(Object object){
-        return object instanceof Skill && ((Skill)object).getLongName().equals(getLongName());
+    public boolean equals(Object object) {
+        return object instanceof Skill && ((Skill) object).getShortName().equals(getShortName());
     }
 }

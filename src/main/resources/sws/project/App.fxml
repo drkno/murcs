@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
+<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="borderPaneMain" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
-          <Menu mnemonicParsing="false" text="File">
+        <menus>
+          <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="newProjectMenuItem" mnemonicParsing="false" onAction="#createNewProject" text="New Project" />
+                  <Menu mnemonicParsing="false" text="New">
+                    <items>
+                        <MenuItem fx:id="fileMenuNewProject" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                    </items>
+                  </Menu>
+                  <MenuItem fx:id="fileOpenProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />
+                  <MenuItem fx:id="fileSaveProject" mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="View">
+            <Menu fx:id="viewMenu" mnemonicParsing="false" text="View">
               <items>
                 <MenuItem fx:id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
               </items>
             </Menu>
+        </menus>
       </MenuBar>
    </top>
    <center>
@@ -26,13 +37,20 @@
                <children>
                   <AnchorPane>
                      <children>
-                        <ChoiceBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                        <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </AnchorPane>
-                  <ListView prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
-            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
          </children>
       </HBox>
    </center>
