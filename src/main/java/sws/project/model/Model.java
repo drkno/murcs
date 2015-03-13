@@ -1,15 +1,19 @@
 package sws.project.model;
 
-import sws.project.model.magic.tracking.TrackValue;
-import sws.project.model.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.TrackValue;
+import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.easyedit.Editable;
+import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 /**
  * Contains the basic model for each object type.
  */
 public abstract class Model extends ValueTracker {
     @TrackValue
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String shortName;
     @TrackValue
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String longName;
 
     /**

@@ -47,9 +47,9 @@ public class GenericPopup extends AnchorPane {
      *
      *      GenericPopup controller = new GenericPopup();
      *      controller.setMessageText("Test message");
-     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {controller.close(); return null;});
-     *      controller.addButton("OK", GenericPopup.Position.RIGHT, () -> {controller.close(); return null;});
-     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, () -> {controller.close(); return null;});
+     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, () -RIGHTARROW {controller.close(); return null;});
+     *      controller.addButton("OK", GenericPopup.Position.RIGHT, () -RIGHTARROW {controller.close(); return null;});
+     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, () -RIGHTARROW {controller.close(); return null;});
      *      controller.show();
      *
      * There are extra features, like you can add and image and title, change the window title as well
@@ -175,7 +175,7 @@ public class GenericPopup extends AnchorPane {
      * Sets the image to appear beside the title.
      *
      * NOTE: If you don't set the title text (not the window text) then this won't appear.
-     * @param image
+     * @param image image to set.
      */
     public void setTitleImage(Image image) {
         messageImage.setImage(image);
