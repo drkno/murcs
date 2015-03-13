@@ -31,7 +31,7 @@ public class PersonTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         skillGenerated = skillGenerator.generate();
         person = new Person();
         skill = new Skill();

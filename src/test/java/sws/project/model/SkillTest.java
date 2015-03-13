@@ -3,6 +3,7 @@ package sws.project.model;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sun.reflect.annotation.ExceptionProxy;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -19,7 +20,7 @@ public class SkillTest {
 
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         skill = new Skill();
         skill2 = new Skill();
         skill3 = new Skill();

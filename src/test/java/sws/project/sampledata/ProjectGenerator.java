@@ -41,12 +41,16 @@ public class ProjectGenerator implements Generator<Project> {
             teams.add(team);
         }
 
-        project.setShortName(shortName);
-        project.setLongName(longName);
+        try {
+            project.setShortName(shortName);
+            project.setLongName(longName);
 
-        project.setDescription(description);
+            project.setDescription(description);
 
-        project.getTeams().addAll(teams);
+            project.getTeams().addAll(teams);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return project;
     }
