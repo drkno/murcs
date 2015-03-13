@@ -10,10 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.model.Model;
@@ -41,7 +38,7 @@ public class AppController implements Initializable {
     @FXML ListView displayList;
 
     @FXML
-    AnchorPane contentPane;
+    GridPane contentPane;
 
     private ObservableList displayListItems;
 
