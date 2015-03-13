@@ -75,6 +75,7 @@ public class Team extends Model{
     /**
      * Adds a person to the project members only if that person is not already a member
      * @param person to be added
+     * @throws sws.project.exceptions.DuplicateObjectException if the person is already in the team
      */
     public void addMember(Person person) throws DuplicateObjectException{
         if (!members.contains(person) &&
@@ -93,6 +94,7 @@ public class Team extends Model{
     /**
      * Adds a list of people to the team
      * @param members People to be added to the team
+     * @throws sws.project.exceptions.DuplicateObjectException if a person is already in a team
      */
     public void addMembers(List<Person> members) throws DuplicateObjectException {
         for (Person member: members) {

@@ -39,6 +39,7 @@ public class Project extends Model {
     /**
      * Adds a team to this project if the project does not already have that team
      * @param team team to add.
+     * @throws sws.project.exceptions.DuplicateObjectException if the project already has that team
      */
     public void addTeam(Team team) throws DuplicateObjectException{
         if (!this.teams.contains(team) &&
@@ -57,6 +58,7 @@ public class Project extends Model {
     /**
      * Adds a list of teams to add to the project
      * @param teams Teams to be added to the project
+     * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
      */
     public void addTeams(List<Team> teams) throws DuplicateObjectException {
         for (Team team: teams) {

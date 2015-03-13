@@ -109,6 +109,7 @@ public class RelationalModel {
     /**
      * Adds a skill to skills only if the skill does not already exist
      * @param skill The skill to add
+     * @throws sws.project.exceptions.DuplicateObjectException if the skill already exists in the relational model
      */
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill) &&
@@ -125,6 +126,7 @@ public class RelationalModel {
     /**
      * Adds a list of skills to the existing list of skills
      * @param skills Skills to be added existing skills
+     * @throws sws.project.exceptions.DuplicateObjectException if a skill is aleady in the relational model
      */
     public void addSkills(List<Skill> skills) throws DuplicateObjectException {
         for (Skill skill: skills) {

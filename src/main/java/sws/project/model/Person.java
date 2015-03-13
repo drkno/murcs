@@ -55,6 +55,7 @@ public class Person extends Model {
     /**
      * Adds a skill to skills only if the person does not already have that skill
      * @param skill The skill to add
+     * @throws sws.project.exceptions.DuplicateObjectException if the person already has that skill
      */
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill) &&
@@ -73,6 +74,7 @@ public class Person extends Model {
     /**
      * Adds a list of skills to the persons skills
      * @param skills Skills to be added to person
+     * @throws sws.project.exceptions.DuplicateObjectException if the person has any of the skills in the list
      */
     public void addSkills(List<Skill> skills) throws DuplicateObjectException {
         for (Skill skill: skills) {
