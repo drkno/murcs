@@ -72,8 +72,8 @@ public class AppController implements Initializable {
             try {
                 pane = EditFormGenerator.generatePane(n);
             } catch (Exception e) {
-                GenericPopup popup = new GenericPopup(e);
-                popup.addButton("Eer... Okay?", GenericPopup.Position.RIGHT, () -> null);
+                //This isn't really something the user should have to deal with
+                e.printStackTrace();
             }
             contentPane.getChildren().add(pane);
         });
