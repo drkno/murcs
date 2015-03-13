@@ -1,57 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="borderPaneMain" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
-            <items>
+          <Menu mnemonicParsing="false" text="File">
                   <Menu mnemonicParsing="false" text="New">
-                    <items>
-                        <MenuItem fx:id="fileMenuNewProject" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
-                    </items>
+                      <MenuItem mnemonicParsing="false" onAction="#createNewProject" text="Project" />
                   </Menu>
-                  <MenuItem fx:id="fileOpenProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />
-                  <MenuItem fx:id="fileSaveProject" mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                  <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
-            </items>
           </Menu>
-            <Menu fx:id="viewMenu" mnemonicParsing="false" text="View">
-              <items>
-                <MenuItem fx:id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
-              </items>
-            </Menu>
-        </menus>
+          <Menu mnemonicParsing="false" text="View">
+              <MenuItem mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+          </Menu>
       </MenuBar>
    </top>
    <center>
       <HBox fx:id="hBoxMainDisplay" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
-               <children>
-                  <AnchorPane>
-                     <children>
-                        <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </AnchorPane>
-                  <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-               </children>
-            </VBox>
-            <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
-            </GridPane>
-         </children>
+          <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
+              <AnchorPane>
+                  <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+              </AnchorPane>
+              <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+          </VBox>
+          <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
+            <columnConstraints>
+              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+          </GridPane>
       </HBox>
    </center>
 </BorderPane>
