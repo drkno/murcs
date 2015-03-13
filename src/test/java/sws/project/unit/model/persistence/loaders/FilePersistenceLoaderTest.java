@@ -1,18 +1,22 @@
 package sws.project.unit.model.persistence.loaders;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
-import sws.project.model.persistence.loaders.PersistenceLoader;
 import sws.project.sampledata.RelationalModelGenerator;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class FilePersistenceLoaderTest {
 
-    private PersistenceLoader loader;
+    private Random random;
+    private ArrayList<String> files;
+    private FilePersistenceLoader loader;
     private RelationalModelGenerator generator;
 
     @Before
@@ -21,12 +25,25 @@ public class FilePersistenceLoaderTest {
         File file = new File(System.getProperty("user.dir"));
         loader.setCurrentWorkingDirectory(file.getAbsolutePath());
         generator = new RelationalModelGenerator();
+        files = new ArrayList<>();
+        random = new Random();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (String file : files) {
+            File f = new File(file);
+            f.delete();
+        }
     }
 
     private String getNewTestFile() throws Exception {
-        File tempFile = File.createTempFile("persistenceManagerTest", ".project", new File(loader.getCurrentWorkingDirectory()));
-        tempFile.deleteOnExit();
-        return tempFile.getName();
+        while (true) {
+            String tempFile = "filePersistenceLoaderTest" + random.nextInt() + ".testProject";
+            if (files.stream().filter(f -> f.equals(tempFile)).findAny().isPresent()) continue;
+            files.add(tempFile);
+            return tempFile;
+        }
     }
 
     @Test
@@ -58,7 +75,7 @@ public class FilePersistenceLoaderTest {
         ArrayList<String> models1 = loader.getModelList();
         String testFile = getNewTestFile();
         loader.saveModel(testFile, generator.generate());
-        ArrayList<String> models2 = loader.getModelList();
+        ArrayList<String> models2 = loader.getModelList(".testProject");
         Assert.assertNotNull(models2);
         Assert.assertTrue(models1.size() < models2.size());
     }
