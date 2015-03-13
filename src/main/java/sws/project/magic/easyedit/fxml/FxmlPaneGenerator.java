@@ -40,7 +40,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             if (root == null)
                 throw new Exception("Failed to load the FXML file (don't know why sorry :'()");
         }
-        catch (IOException e){
+        catch (Exception e){
             throw new IOException("The FXML file \"" + fxmlPath + "\" could not be found/opened! Check it exists and that your path is correct");
         }
 

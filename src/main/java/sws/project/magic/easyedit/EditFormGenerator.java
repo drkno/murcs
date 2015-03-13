@@ -145,7 +145,7 @@ public class EditFormGenerator {
             constructor = editable.editPaneGenerator().getConstructor();
             generator = (EditPaneGenerator) constructor.newInstance();
         } catch (NoSuchMethodException e) {
-            throw new Exception("\"Unable to instantiate a new \" + editable.editPaneGenerator().getName() + \". You should check it has a default constructor.\"");
+            throw new Exception("\"Unable to instantiate a new \"" + editable.editPaneGenerator().getName() + "\". You should check it has a default constructor.\"");
         }
 
         //If there was an argument set on the field, pass it on to the generator
