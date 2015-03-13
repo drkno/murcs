@@ -73,4 +73,13 @@ public class Project extends Model {
             teams.remove(team);
         }
     }
+
+    /**
+     * Returns the short name of the project
+     * @return Short name of the project
+     */
+    @Override
+    public String toString() {
+        return getShortName();
+    }
 }
