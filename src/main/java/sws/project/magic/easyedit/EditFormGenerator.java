@@ -50,7 +50,7 @@ public class EditFormGenerator {
             Method validator = null;
 
             if (!editable.validatorName().isEmpty())
-                validator = clazz.getMethod(editable.validatorName());
+                validator = clazz.getMethod(editable.validatorName(), field.getType());
 
             Node child = generateFor(field, getter, setter, validator, from, editable);
             generated.getChildren().add(child);

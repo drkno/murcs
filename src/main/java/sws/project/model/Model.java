@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 public abstract class Model extends ValueTracker implements Serializable{
     @TrackValue
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", validatorName = "validateShortName")
     private String shortName;
     @TrackValue
     @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
@@ -30,10 +30,19 @@ public abstract class Model extends ValueTracker implements Serializable{
      * @throws java.lang.Exception if the shortName is invalid
      */
     public void setShortName(String shortName) throws Exception {
-        if (shortName == null || shortName.trim().isEmpty()) throw new Exception("Short Name cannot be empty");
+        if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
 
         this.shortName = shortName.trim();
         saveCurrentState("Short Name change");
+    }
+
+    /**
+     * Indicates whether a value is a valid value for 'shortName' to hold
+     * @param value The value
+     * @return Whether the value is valid for 'shortName'
+     */
+    public boolean validateShortName(String value){
+        return value != null && !value.trim().isEmpty();
     }
 
     /**

@@ -41,11 +41,11 @@ public class FxmlPaneGeneratorTest {
         Method getter = this.getClass().getMethod("getter");
         Method setter = this.getClass().getMethod("setter", String.class);
 
-        Node result = generator.generate(field, getter, setter, this);
+        Node result = generator.generate(field, getter, setter, null, this);
         Assert.assertNotNull("Result should not be null having been loaded! Note: This could fail if you don't point it at a valid FXML file", result);
 
         field = this.getClass().getDeclaredField("testString2");
-        result = generator.generate(field, getter, setter, this);
+        result = generator.generate(field, getter, setter, null, this);
 
         Assert.assertNotNull("Result should not be null for field2 either", result);
     }
