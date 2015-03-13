@@ -68,4 +68,20 @@ public class Team extends Model{
     public void setProductOwner(Person productOwner) {
         this.productOwner = productOwner;
     }
+
+    /**
+     * Adds a person to the project members
+     * @param person to be added
+     */
+    public void addMember(Person person) {
+        this.members.add(person);
+    }
+
+    /**
+     * Removes a person from the project members
+     * @param person to be removed
+     */
+    public void removeMember(Person person) {
+        this.members.remove(person);
+    }
 }

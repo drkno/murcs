@@ -61,15 +61,19 @@ public class TeamGenerator implements Generator<Team> {
         if (probOfScrumMaster == 1)
             scrumMaster = members.get(1);
 
-        team.setShortName(shortName);
-        team.setLongName(longName);
+        try {
+            team.setShortName(shortName);
+            team.setLongName(longName);
 
-        team.setDescription(description);
+            team.setDescription(description);
 
-        team.setScrumMaster(scrumMaster);
-        team.setProductOwner(productOwner);
+            team.setScrumMaster(scrumMaster);
+            team.setProductOwner(productOwner);
 
-        team.getMembers().addAll(members);
+            team.getMembers().addAll(members);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return team;
     }

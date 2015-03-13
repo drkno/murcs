@@ -4,13 +4,20 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane fx:id="borderPaneMain" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File" fx:id="fileMenu">
             <items>
+                  <Menu mnemonicParsing="false" text="New">
+                    <items>
+                        <MenuItem fx:id="fileMenuNewProject" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                    </items>
+                  </Menu>
+                  <MenuItem fx:id="fileOpenProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />
+                  <MenuItem fx:id="fileSaveProject" mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
             </items>
           </Menu>

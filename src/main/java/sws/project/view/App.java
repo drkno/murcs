@@ -5,8 +5,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sws.project.model.Project;
+import sws.project.model.RelationalModel;
+import sws.project.model.persistence.PersistenceManager;
+import sws.project.model.persistence.loaders.FilePersistenceLoader;
 
+import javax.management.relation.Relation;
+
+/**
+ * The main app class
+ */
 public class App extends Application{
+
+    public static Stage stage;
 
     /***
      * Starts up the application and sets the min window size to 600x400
@@ -15,6 +26,12 @@ public class App extends Application{
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        if (!PersistenceManager.CurrentPersistenceManagerExists()) {
+            FilePersistenceLoader loader = new FilePersistenceLoader();
+            PersistenceManager.Current = new PersistenceManager(loader);
+        }
+
         Parent parent = FXMLLoader.load(getClass().getResource("/sws/project/App.fxml"));
         primaryStage.setScene(new Scene(parent));
 
@@ -23,6 +40,7 @@ public class App extends Application{
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(400);
         primaryStage.show();
+        stage = primaryStage;
     }
 
     /***

@@ -21,11 +21,12 @@ public abstract class Model extends ValueTracker {
     /**
      * Sets the short name.
      * @param shortName the new short name.
-     * @throws java.lang.IllegalArgumentException if the shortName is invalid
+     * @throws java.lang.Exception if the shortName is invalid
      */
     public void setShortName(String shortName) {
-        if (shortName == null) throw new IllegalArgumentException("shortname cannot be null!");
-        this.shortName = shortName;
+        if (shortName == null || shortName.trim().isEmpty()) throw new Exception("Short Name cannot be empty");
+
+        this.shortName = shortName.trim();
         saveCurrentState("Short Name change");
     }
 
