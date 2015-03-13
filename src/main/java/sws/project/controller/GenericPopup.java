@@ -16,7 +16,8 @@ import sws.project.view.App;
 import java.util.concurrent.Callable;
 
 /**
- * Created by James on 12/03/2015.
+ * Generic popup creator and controller
+ * Created on 12/03/2015.
  */
 public class GenericPopup extends AnchorPane {
 
@@ -105,6 +106,7 @@ public class GenericPopup extends AnchorPane {
     public void addButton(String buttonText, Position position, Callable<Void> func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
+        //And this, is where the magic happens!
         button.setOnAction((a) -> {
             try {
                 func.call();

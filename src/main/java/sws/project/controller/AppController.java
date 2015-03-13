@@ -45,6 +45,12 @@ public class AppController implements Initializable {
 
     private ObservableList displayListItems;
 
+    /***
+     * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
+     * Put all initialisation of GUI in this function.
+     * @param location Location of the fxml that is related to the controller
+     * @param resources Pretty sure it's probably something, don't know what though
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         displayListItems = FXCollections.observableArrayList();
@@ -67,6 +73,10 @@ public class AppController implements Initializable {
         });
     }
 
+    /***
+     * Updates the display list on the left hand side of the screen to the type selected in the choice box.
+     * @param type The type selected in the choice box.
+     */
     private void updateDisplayList(ModelTypes type) {
         displayListItems.clear();
 
@@ -113,6 +123,10 @@ public class AppController implements Initializable {
         }
     }
 
+    /***
+     * Create a new project, opens a dialog to fill out for the new project.
+     * @param event The event that causes the function to be called, namely clicking new project.
+     */
     @FXML
     private void createNewProject(ActionEvent event) {
         CreateProjectPopUpController.displayPopUp(() -> {
@@ -121,6 +135,11 @@ public class AppController implements Initializable {
         });
     }
 
+    /***
+     * Save the current project. Currently you choose where to save the project every time, however it does remember the
+     * last location saved or loaded from.
+     * @param event The event that causes this function to be called, namely clicking save.
+     */
     @FXML
     private void saveProject(ActionEvent event) {
         try {
@@ -139,6 +158,10 @@ public class AppController implements Initializable {
         }
     }
 
+    /***
+     * Opens a specified project file, from a specified location.
+     * @param event The event that causes the function to be called, clicking open.
+     */
     @FXML
     private void openProject(ActionEvent event) {
         try {
