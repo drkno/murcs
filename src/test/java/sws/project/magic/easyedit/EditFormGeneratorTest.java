@@ -1,4 +1,4 @@
-package sws.project.model.magic.easyedit;
+package sws.project.magic.easyedit;
 
 import javafx.scene.Parent;
 import org.junit.Assert;
