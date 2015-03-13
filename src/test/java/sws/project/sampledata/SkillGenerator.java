@@ -6,8 +6,8 @@ import sws.project.model.Skill;
  * Generates random skills
  */
 public class SkillGenerator implements Generator<Skill> {
-    private String[] skills = new String[]{"Falling over", "Backflips", "C#", "Running away screaming"};
-    private String[] descriptions = new String[]{"A very useful skill", "A not very useful skill"};
+    private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming"};
+    private String[] descriptions = {"A very useful skill", "A not very useful skill"};
 
     public SkillGenerator(){
 

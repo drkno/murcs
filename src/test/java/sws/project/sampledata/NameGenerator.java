@@ -8,9 +8,9 @@ import java.util.Random;
 public class NameGenerator {
     private static Random random = new Random();
 
-    private static String[] firstNames = new String[]{"Fred", "Dave", "Joe", "Emma"};
-    private static String[] lastNames = new String[]{"Jones", "Davidson", "Egbert", "Fred"};
-    private static String[] titles = new String[]{"Mr", "Mrs", "Miss", "Ms", "Master"};
+    private static final String[] firstNames = {"Fred", "Dave", "Joe", "Emma"};
+    private static final String[] lastNames = {"Jones", "Davidson", "Egbert", "Fred"};
+    private static final String[] titles = {"Mr", "Mrs", "Miss", "Ms", "Master"};
 
     public static String randomName(){
         return randomName(firstNames, lastNames);
