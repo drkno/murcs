@@ -37,7 +37,7 @@ public class EditFormGeneratorTest {
     @Test
     public void testIsEditable() throws Exception {
         Field editableField = getClass().getDeclaredField("editableString");
-        Field nonEditableField = getClass().getDeclaredField("nonEditable");
+        Field nonEditableField = getClass().getDeclaredField("notEditable");
 
         Assert.assertTrue("Fields marked with the editableString flag should be editableString", EditFormGenerator.isEditable(editableField));
         Assert.assertFalse("Fields not marked with the editableString annotation should not be editableString", EditFormGenerator.isEditable(nonEditableField));
