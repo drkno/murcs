@@ -68,7 +68,13 @@ public class AppController implements Initializable {
             contentPane.getChildren().clear();
             if (n == null) return;
 
-            Parent pane = EditFormGenerator.generatePane(n);
+            Parent pane = null;
+            try {
+                pane = EditFormGenerator.generatePane(n);
+            } catch (Exception e) {
+                GenericPopup popup = new GenericPopup(e);
+                popup.addButton("Eer... Okay?", GenericPopup.Position.RIGHT, () -> null);
+            }
             contentPane.getChildren().add(pane);
         });
     }
