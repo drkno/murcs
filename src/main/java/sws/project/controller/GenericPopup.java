@@ -16,7 +16,8 @@ import sws.project.view.App;
 import java.util.concurrent.Callable;
 
 /**
- * Created by James on 12/03/2015.
+ * Generic popup creator and controller
+ * Created on 12/03/2015.
  */
 public class GenericPopup extends AnchorPane {
 

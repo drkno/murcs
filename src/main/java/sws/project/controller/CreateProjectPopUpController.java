@@ -40,6 +40,11 @@ public class CreateProjectPopUpController {
 
     private static Stage stage;
 
+    /**
+     * Creates a dialog for entering information about a new project. Takes one parameter which is the function to be
+     * called after the new project has been made (usually to update the display list)
+     * @param func The function that you wish to be called after the new project has been made.
+     */
     public static void displayPopUp(Callable<Void> func) {
         try {
             FXMLLoader loader = new FXMLLoader(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
@@ -58,6 +63,11 @@ public class CreateProjectPopUpController {
         }
     }
 
+    /***
+     * Sets up a new project when the ok button is clicked with the information entered. If the short name is nothing
+     * then it will give an error in the create project dialog and the project will not be saved.
+     * @param event The event sent by clicking the ok button in the dialog.
+     */
     @FXML
     private void buttonActionOK(ActionEvent event) {
         try {
@@ -78,11 +88,18 @@ public class CreateProjectPopUpController {
         }
     }
 
+    /***
+     * Sets the dialog to close if the user clicks cancel.
+     * @param event The event sent by clicking the cancel button.
+     */
     @FXML
     private void buttonActionCancel(ActionEvent event) {
         stage.close();
     }
 
+    /***
+     * Clears all of the fields (short name, long name, description)
+     */
     private void clearFields() {
         textFieldShortName.setText("");
         textFieldLongName.setText("");
