@@ -27,11 +27,6 @@ public class EditFormGeneratorTest {
         editableString = value;
     }
 
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
     @Test
     public void testGeneratePane() throws Exception {
         Parent root = EditFormGenerator.generatePane(this);
