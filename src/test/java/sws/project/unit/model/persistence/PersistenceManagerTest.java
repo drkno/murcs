@@ -36,8 +36,8 @@ public class PersistenceManagerTest {
         @Override
         public boolean deleteModel(String persistenceName) {
             try {
-                modelMap.remove(persistenceName);
-                return true;
+                RelationalModel model = modelMap.remove(persistenceName);
+                return model != null;
             }
             catch (Exception e) {
                 return false;
@@ -83,43 +83,57 @@ public class PersistenceManagerTest {
     }
 
     @Test
-    public void testLoadModel() throws Exception {
-
-    }
-
-    @Test
-    public void testSaveModel() throws Exception {
-
-    }
-
-    @Test
-    public void testSaveModel1() throws Exception {
-
+    public void testLoadSaveModel() throws Exception {
+        manager.saveModel("test", generator.generate());
+        Assert.assertNotNull(manager.loadModel("test"));
+        Assert.assertNull(manager.loadModel("test1"));
+        RelationalModel curr = generator.generate();
+        manager.setCurrentModel(curr);
+        manager.saveModel("current");
+        Assert.assertEquals(curr, manager.loadModel("current"));
     }
 
     @Test
     public void testModelExists() throws Exception {
-
+        Assert.assertFalse(manager.modelExists("none"));
+        manager.saveModel("none", generator.generate());
+        Assert.assertTrue(manager.modelExists("none"));
+        Assert.assertFalse(manager.modelExists(null));
+        Assert.assertFalse(manager.modelExists(""));
     }
 
     @Test
     public void testGetModels() throws Exception {
-
+        ArrayList<String> models = manager.getModels();
+        Assert.assertTrue(models.size() == 0);
+        manager.saveModel("1", generator.generate());
+        manager.saveModel("2", generator.generate());
+        manager.saveModel("3", generator.generate());
+        manager.saveModel("4", generator.generate());
+        models = manager.getModels();
+        Assert.assertTrue(models.size() == 4);
+        String[] expected = {"1", "2", "3", "4"};
+        String[] actual = new String[models.size()];
+        models.toArray(actual);
+        Assert.assertArrayEquals(expected, actual);
     }
 
     @Test
     public void testDeleteModel() throws Exception {
-
+        Assert.assertFalse(manager.deleteModel("none"));
+        manager.saveModel("temp", generator.generate());
+        Assert.assertTrue(manager.modelExists("temp"));
+        Assert.assertTrue(manager.deleteModel("temp"));
+        Assert.assertFalse(manager.modelExists("temp"));
     }
 
     @Test
-    public void testGetCurrentModel() throws Exception {
-
-    }
-
-    @Test
-    public void testSetCurrentModel() throws Exception {
-
+    public void testGetSetCurrentModel() throws Exception {
+        Assert.assertNull(manager.getCurrentModel());
+        RelationalModel model = generator.generate();
+        manager.setCurrentModel(model);
+        Assert.assertNotNull(manager.getCurrentModel());
+        Assert.assertEquals(model, manager.getCurrentModel());
     }
 
     @Test
