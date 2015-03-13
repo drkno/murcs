@@ -177,7 +177,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     {
         try
         {
-            File persistenceFile = new File(directory + File.separator + persistentName + ".project");
+            File persistenceFile = new File(directory + File.separator + persistentName);
 
             if(persistenceFile.delete())
             {
