@@ -10,12 +10,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 /**
  * Controller for the project creator popup window.
@@ -34,11 +36,17 @@ public class CreateProjectPopUpController {
     @FXML
     Label labelErrorMessage;
 
+    public Callable completedCallback;
+
     private static Stage stage;
 
-    public static void displayPopUp() {
+    public static void displayPopUp(Callable<Void> func) {
         try {
-            AnchorPane anchorPane = FXMLLoader.load(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
+            AnchorPane anchorPane = loader.load();
+
+            CreateProjectPopUpController controller = loader.getController();
+            controller.completedCallback = func;
             stage = new Stage();
             stage.setScene(new Scene(anchorPane));
             stage.setTitle("Create New Project");
@@ -64,6 +72,7 @@ public class CreateProjectPopUpController {
 
             clearFields();
             stage.close();
+            completedCallback.call();
         } catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package sws.project.controller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.model.Model;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -41,16 +43,21 @@ public class AppController implements Initializable {
     @FXML
     AnchorPane contentPane;
 
+    private ObservableList displayListItems;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        ObservableList<Object> list = displayChoiceBox.getItems();
+        displayListItems = FXCollections.observableArrayList();
+        displayList.setItems(displayListItems);
 
-        for (ModelTypes name : ModelTypes.values()) {
-            list.add(name.toString());
+        for (ModelTypes type : ModelTypes.values()) {
+            displayChoiceBox.getItems().add(type);
         }
         displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((ov, v, nv) -> {
+            displayListItems.clear();
             updateDisplayList(ModelTypes.getModelType(nv.intValue()));
         });
+
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((p, o, n)->{
             contentPane.getChildren().clear();
@@ -68,7 +75,7 @@ public class AppController implements Initializable {
             case Project:
                 Project project = model.getProject();
                 if (project != null) {
-                    displayList.getItems().add(project);
+                    displayListItems.add(project);
                 }
                 break;
             case People:
@@ -107,8 +114,10 @@ public class AppController implements Initializable {
 
     @FXML
     private void createNewProject(ActionEvent event) {
-        CreateProjectPopUpController.displayPopUp();
-        updateDisplayList(ModelTypes.Project);
+        CreateProjectPopUpController.displayPopUp(() -> {
+            updateDisplayList(ModelTypes.Project);
+            return null;
+        });
     }
 
     @FXML
