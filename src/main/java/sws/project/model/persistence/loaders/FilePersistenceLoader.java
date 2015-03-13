@@ -1,6 +1,5 @@
 package sws.project.model.persistence.loaders;
 
-import sws.project.model.Model;
 import sws.project.model.RelationalModel;
 
 import java.io.*;
@@ -40,7 +39,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
 
     /**
      * Sets the current working directory for future lookups.
-     * @param workingDirectory
+     * @param workingDirectory the new working directory.
      */
     public void setCurrentWorkingDirectory(String workingDirectory) {
         this.workingDirectory = workingDirectory;
@@ -103,6 +102,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param name name to save as.
      * @param persistent Model to save.
      * @param directory Directory to save the model in.
+     * @throws Exception when the persistent file could not be loaded.
      */
     public void saveModel(String name, RelationalModel persistent, String directory) throws Exception
     {

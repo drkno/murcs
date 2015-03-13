@@ -101,7 +101,7 @@ public final class PersistenceManager {
 
     /**
      * Returns a list of models that exist in the default location.
-     * @return
+     * @return gets a list of models that exist in the default location.
      */
     public ArrayList<String> getModels()
     {
