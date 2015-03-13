@@ -106,6 +106,7 @@ public class GenericPopup extends AnchorPane {
     public void addButton(String buttonText, Position position, Callable<Void> func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
+        //And this, is where the magic happens!
         button.setOnAction((a) -> {
             try {
                 func.call();
