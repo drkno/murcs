@@ -26,9 +26,9 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
     }
 
     @Override
-    public Node generate(Field field, Method getter, Method setter, Object from) {
+    public Node generate(Field field, Method getter, Method setter, Object from) throws Exception {
         if (fxmlPath == null || fxmlPath.isEmpty())
-            throw new IllegalArgumentException("The FXML path must be set. You can do this when you specify the field is editable like this: @Editable(FxmlPanelGenerator.class, argument=\"pathToFxml\"");
+            throw new Exception("The FXML path must be set. You can do this when you specify the field is editable like this: @Editable(FxmlPanelGenerator.class, argument=\"pathToFxml\"");
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root;
@@ -39,18 +39,20 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
 
         try{
             root = loader.load();
+            if (root == null)
+                throw new Exception("Failed to load the FXML file (don't know why sorry :'()");
         }
         catch (IOException e){
-            throw new UnsupportedOperationException("The FXML file could not be found/opened! Check it exists");
+            throw new IOException("The FXML file \"" + fxmlPath + "\" could not be found/opened! Check it exists and that your path is correct");
         }
 
         if (loader.getController() == null)
-            throw new UnsupportedOperationException("The FXML must specify a controller!");
+            throw new Exception("The FXML must specify a controller! (the controller was null)");
 
         if (!(loader.getController() instanceof EditController))
-            throw new UnsupportedOperationException("The controller must implement the EditFormController interface");
+            throw new Exception("The controller (" + loader.getController().getClass().getName() + ") must implement the EditFormController interface (it doesn't).");
 
-        EditController controller = (EditController)loader.getController();
+        EditController controller = loader.getController();
 
         //Check if the field is actually supported by the controller, otherwise we'd best throw an exception
         boolean supported = false;
@@ -61,9 +63,9 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             }
         }
 
-        //If the field isn't supported, throw an exceptions
+        //If the field isn't supported, throw an exception
         if (!supported)
-            throw new UnsupportedOperationException("The FXML you supplied was valid, but it's controller doesn't support " + field.getType());
+            throw new Exception("The FXML you supplied was valid, but it's controller (" + loader.getController().getClass().getName() + ") doesn't support " + field.getType());
 
         try{
             controller.setTitle(title);
@@ -71,7 +73,8 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             Object value = getter.invoke(from);
             controller.setValue(value);
         }catch (Exception e){
-            System.err.println("Unable to get " + field.getName() + " on " + from);
+            System.err.println("Unable to get " + field.getName() + " from " + from);
+            throw new Exception("Couldn't get the field to tell the controller the current value (this is bad. Check to see if the getter name is valid");
         }
 
 

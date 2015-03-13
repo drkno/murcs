@@ -23,7 +23,7 @@ public interface EditPaneGenerator {
      * @param from The object to change the field on
      * @return The node for editing
      */
-    Node generate(Field field, Method getter, Method setter, Object from);
+    Node generate(Field field, Method getter, Method setter, Object from) throws Exception;
 
     /**
      * Sets the argument on the EditPaneGenerator
