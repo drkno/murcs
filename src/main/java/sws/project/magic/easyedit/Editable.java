@@ -36,6 +36,16 @@ public @interface Editable {
     String setterName() default "";
 
     /**
+     * The name for the validator of the field. This doesn't need
+     * to be specified. The method should take one argument, namely
+     * that the value to validate, which should be of the same type
+     * as the field itself. The method itself should be public
+     *
+     * @return The name of the validator method
+     */
+    String validatorName() default "";
+
+    /**
      * An optional argument specifying an argument to
      * pass on to the generator.
      * @return The argument

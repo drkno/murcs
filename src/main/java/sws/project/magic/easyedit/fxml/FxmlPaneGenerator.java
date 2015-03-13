@@ -26,7 +26,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
     }
 
     @Override
-    public Node generate(Field field, Method getter, Method setter, Object from) throws Exception {
+    public Node generate(Field field, Method getter, Method setter, Method validator, Object from) throws Exception {
         if (fxmlPath == null || fxmlPath.isEmpty())
             throw new Exception("The FXML path must be set. You can do this when you specify the field is editable like this: @Editable(FxmlPanelGenerator.class, argument=\"pathToFxml\"");
 
@@ -65,17 +65,33 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
         if (!supported)
             throw new Exception("The FXML you supplied was valid, but it's controller (" + loader.getController().getClass().getName() + ") doesn't support " + field.getType());
 
-        try{
-            controller.setTitle(title);
+        //Tell the controller what its title should be
+        controller.setTitle(title);
 
+        try{
+            //Get the current value of the field
             Object value = getter.invoke(from);
+            //Tell the controller what its starting value should be
             controller.setValue(value);
         }catch (Exception e){
             System.err.println("Unable to get " + field.getName() + " from " + from);
             throw new Exception("Couldn't get the field to tell the controller the current value (this is bad. Check to see if the getter name is valid");
         }
 
+        //Add a validator which ensures we're getting the correct type
         controller.addValidator(v -> field.getType().isAssignableFrom(v.getClass()));
+
+        //If we have been passed a validator method, we should pass it as an argument to the controller
+        //and trust it does the right thing with it.
+        if (validator != null) controller.addValidator(v -> {
+            try {
+                return (Boolean) validator.invoke(from, v);
+            } catch (Exception e) {
+                System.err.println("Failed to invoke the validator for " + field.getName() + " on " + from + " with value " + v);
+            }
+            return false;
+        });
+
         controller.addChangeListener((p, o, n) -> {
             try {
                 setter.invoke(from, n);

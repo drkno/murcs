@@ -47,7 +47,12 @@ public class EditFormGenerator {
             Method getter = clazz.getMethod(getterName);
             Method setter = clazz.getMethod(setterName, field.getType());
 
-            Node child = generateFor(field, getter, setter, from, editable);
+            Method validator = null;
+
+            if (!editable.validatorName().isEmpty())
+                validator = clazz.getMethod(editable.validatorName());
+
+            Node child = generateFor(field, getter, setter, validator, from, editable);
             generated.getChildren().add(child);
         }
 
@@ -138,7 +143,7 @@ public class EditFormGenerator {
      * @param editable The editable annotation of the
      * @return The node of the edit form
      */
-    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable) throws Exception {
+    private static Node generateFor(final Field field, final Method getter, final Method setter, final Method validator, final Object from, Editable editable) throws Exception {
         Constructor<?> constructor;
         EditPaneGenerator generator;
         try {
@@ -165,6 +170,6 @@ public class EditFormGenerator {
         if (!supported)
             throw new Exception("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.editPaneGenerator().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
 
-        return generator.generate(field, getter, setter, from);
+        return generator.generate(field, getter, setter, validator, from);
     }
 }
