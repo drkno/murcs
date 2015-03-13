@@ -45,6 +45,9 @@ public class ProjectTest {
     @After
     public void tearDown() {
         teamGenerated = null;
+        projectGenerated = null;
+        team = null;
+        project = null;
     }
 
     @Test(expected = Exception.class)

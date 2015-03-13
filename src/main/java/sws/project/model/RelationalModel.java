@@ -26,7 +26,7 @@ public class RelationalModel implements Serializable{
         return version;
     }
 
-    private static final float version = 0.000000000001f;
+    private static final float version = 0.01f;
 
     public RelationalModel() {
         this.unassignedPeople = new ArrayList<>();
@@ -60,11 +60,33 @@ public class RelationalModel implements Serializable{
     }
 
     /**
-     * Adds a person to unassigned people
-     * @param person The new unassigned person
+     * Adds a person to the unassigned people only if that person is not already in 
+     * @param person to be added
+     * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
-    public void addUnassignedPeron(Person person) {
-        this.unassignedPeople.add(person);
+    public void addUnassignedPerson(Person person) throws DuplicateObjectException{
+        if (!this.unassignedPeople.contains(person) &&
+                !this.unassignedPeople
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.unassignedPeople.add(person);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds a list of people to the unassigned people
+     * @param people People to be added to unassigned people
+     * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has a person from the people to be addeed
+     */
+    public void addUnassignedPeople(List<Person> people) throws DuplicateObjectException {
+        for (Person person: people) {
+            this.addUnassignedPerson(person);
+        }
     }
 
     /**
@@ -72,7 +94,9 @@ public class RelationalModel implements Serializable{
      * @param person The unassigned person to remove
      */
     public void removeUnassignedPerson(Person person) {
-        this.unassignedPeople.remove(person);
+        if (this.unassignedPeople.contains(person)) {
+            this.unassignedPeople.remove(person);
+        }
     }
 
     /**
@@ -84,11 +108,33 @@ public class RelationalModel implements Serializable{
     }
 
     /**
-     * Adds a team to the unassigned teams
-     * @param team The new unassigned team
+     * Adds a team to the unassigned teams if the relational model does not already have that team
+     * @param team The unassigned team to add
+     * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has that team
      */
-    public void addUnassignedTeam(Team team) {
-        this.unassignedTeams.add(team);
+    public void addUnassignedTeam(Team team) throws DuplicateObjectException {
+        if (!this.unassignedTeams.contains(team) &&
+                !this.unassignedTeams
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(team.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.unassignedTeams.add(team);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds a list of teams to add to the relational model
+     * @param teams Teams to be added to the relational model
+     * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
+     */
+    public void addUnassignedTeams(List<Team> teams) throws DuplicateObjectException {
+        for (Team team: teams) {
+            this.addUnassignedTeam(team);
+        }
     }
 
     /**
@@ -96,7 +142,9 @@ public class RelationalModel implements Serializable{
      * @param team The unassigned team to remove
      */
     public void removeUnassignedTeam(Team team) {
-        this.unassignedTeams.remove(team);
+        if (this.unassignedTeams.contains(team)) {
+            this.unassignedTeams.remove(team);
+        }
     }
 
     /**

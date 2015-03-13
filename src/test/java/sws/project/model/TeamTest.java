@@ -112,6 +112,4 @@ public class TeamTest {
         team.removeMember(personGenerated);
         assertFalse(team.getMembers().contains(personGenerated));
     }
-
-
 }
