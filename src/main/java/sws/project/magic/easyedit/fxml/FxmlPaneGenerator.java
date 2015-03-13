@@ -75,7 +75,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             throw new Exception("Couldn't get the field to tell the controller the current value (this is bad. Check to see if the getter name is valid");
         }
 
-
+        controller.addValidator(v -> field.getType().isAssignableFrom(v.getClass()));
         controller.addChangeListener((p, o, n) -> {
             try {
                 setter.invoke(from, n);
