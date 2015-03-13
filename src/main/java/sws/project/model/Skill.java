@@ -47,6 +47,6 @@ public class Skill extends Model {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof Skill && ((Skill) object).getShortName().equals(getShortName());
+        return object instanceof Skill && ((Skill) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 }
