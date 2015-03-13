@@ -23,7 +23,7 @@ public interface EditController<T> {
     /**
      * Adds a validator to the form. If any predicate fails then
      * the change listener will not be fired.
-     * @param predicate vaildator to add
+     * @param predicate validator to add
      */
     void addValidator(Predicate<T> predicate);
 
