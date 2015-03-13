@@ -22,8 +22,6 @@ import java.util.concurrent.Callable;
 /**
  * Controller for the project creator popup window.
  * Since there should only be one instance of this PopUp
- *
- * Created by Haydon on 11/03/2015.
  */
 public class CreateProjectPopUpController {
 
