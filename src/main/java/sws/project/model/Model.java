@@ -41,7 +41,7 @@ public abstract class Model extends ValueTracker implements Serializable{
      * @param value The value
      * @return Whether the value is valid for 'shortName'
      */
-    public boolean validateShortName(String value){
+    private boolean validateShortName(String value){
         return value != null && !value.trim().isEmpty();
     }
 

@@ -44,13 +44,18 @@ public class EditFormGenerator {
             if (!editable.setterName().isEmpty())
                 setterName = editable.setterName();
 
-            Method getter = clazz.getMethod(getterName);
-            Method setter = clazz.getMethod(setterName, field.getType());
+            Method getter = findMethodRecursive(clazz, getterName);
+            getter.setAccessible(true);
+
+            Method setter = findMethodRecursive(clazz, setterName, field.getType());
+            setter.setAccessible(true);
 
             Method validator = null;
 
-            if (!editable.validatorName().isEmpty())
-                validator = clazz.getMethod(editable.validatorName(), field.getType());
+            if (!editable.validatorName().isEmpty()) {
+                validator = findMethodRecursive(clazz, editable.validatorName(), field.getType());
+                validator.setAccessible(true);
+            }
 
             Node child = generateFor(field, getter, setter, validator, from, editable);
             generated.getChildren().add(child);
@@ -59,13 +64,46 @@ public class EditFormGenerator {
         return generated;
     }
 
+    /**
+     * Gets all the fields on a class and its ancestors
+     * @param clazz The type to search
+     * @return
+     */
     private static Collection<Field> getFieldsRecursive(Class clazz){
         Collection<Field> fields = new ArrayList<>();
 
         Collections.addAll(fields, clazz.getDeclaredFields());
+        Collections.addAll(fields, clazz.getFields());
+
         if (clazz.getSuperclass() != null)
             fields.addAll(getFieldsRecursive(clazz.getSuperclass()));
         return fields;
+    }
+
+    /**
+     * Finds a method on a class
+     * @param clazz The class to find the method on
+     * @param methodName The name of the method
+     * @param parameters The types of parameters the class takes
+     * @return
+     */
+    private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters){
+        try{
+            return clazz.getMethod(methodName, parameters);
+        }catch (Exception e){
+
+        }
+
+        try{
+            return clazz.getDeclaredMethod(methodName, parameters);
+        }catch (Exception e){
+
+        }
+
+        if (clazz.getSuperclass() != null)
+            return findMethodRecursive(clazz.getSuperclass(), methodName, parameters);
+
+        throw new NoSuchMethodError("There is no " + methodName + " method on the " + clazz.getName() + " object taking " + parameters);
     }
 
     /**
