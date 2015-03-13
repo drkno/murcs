@@ -1,9 +1,11 @@
-package sws.project.magic.easyedit;
+package sws.project.model.magic.easyedit;
 
 import javafx.scene.Parent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.magic.easyedit.Editable;
 import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.lang.reflect.Field;

@@ -56,7 +56,7 @@ public class EditFormGenerator {
     }
 
     /**
-     * Capitalizes the name of field fooBar --> FooBar
+     * Capitalizes the name of field fooBar goes to FooBar
      * @param field The field
      * @return The capitalized name of the field
      */

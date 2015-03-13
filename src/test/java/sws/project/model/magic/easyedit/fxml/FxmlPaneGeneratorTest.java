@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sws.project.magic.easyedit.Editable;
+import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
