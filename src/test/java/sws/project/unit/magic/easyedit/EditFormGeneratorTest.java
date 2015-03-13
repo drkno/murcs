@@ -1,4 +1,4 @@
-package sws.project.magic.easyedit;
+package sws.project.unit.magic.easyedit;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;

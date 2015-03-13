@@ -1,8 +1,9 @@
-package sws.project.model;
+package sws.project.unit.model;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sws.project.model.Skill;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;

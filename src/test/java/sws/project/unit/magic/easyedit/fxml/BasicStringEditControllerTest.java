@@ -1,21 +1,22 @@
-package sws.project.magic.easyedit.fxml;
+package sws.project.unit.magic.easyedit.fxml;
 
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.easyedit.fxml.BasicBooleanEditController;
+import sws.project.magic.easyedit.fxml.BasicStringEditController;
 
 import java.lang.reflect.Field;
 
-public class BasicBooleanEditControllerTest {
-    private BasicBooleanEditController controller;
+public class BasicStringEditControllerTest {
+    private BasicStringEditController controller;
 
     private Text titleText;
-    private RadioButton trueButton;
-    private RadioButton falseButton;
+    private Text invalidText;
+    private TextField valueText;
+
     /**
      * Note: this method will fail if the names of the title/editPaneGenerator texts change
      * @throws Exception
@@ -23,16 +24,16 @@ public class BasicBooleanEditControllerTest {
     @Before
     public void setup() throws Exception{
         new JFXPanel();
-        controller = new BasicBooleanEditController();
+        controller = new BasicStringEditController();
 
         titleText = new Text();
+        invalidText = new Text();
+        invalidText.setVisible(false);
 
-        trueButton = new RadioButton();
-        falseButton = new RadioButton();
+        valueText = new TextField();
 
         inject("titleText", titleText);
-        inject("trueButton", trueButton);
-        inject("falseButton", falseButton);
+        inject("valueText", valueText);
     }
 
     /**
@@ -61,27 +62,22 @@ public class BasicBooleanEditControllerTest {
     public void testSetValue() throws Exception {
         controller.initialize(null, null);
 
-        controller.setValue(true);
-        Assert.assertTrue("The true button should be selected after setting the value to true", trueButton.isSelected());
-        Assert.assertFalse("The false button should not be selected after setting the value to true", falseButton.isSelected());
-
-        /*controller.setValue(false);
-        Assert.assertFalse("The true button should not be selected after setting the editPaneGenerator to false", trueButton.isSelected());
-        Assert.assertTrue("The false button should be selected after setting the editPaneGenerator to false", falseButton.isSelected());*/
+        controller.setValue("Hello World");
+        Assert.assertEquals("the text of 'valueText' should have changed to Hello World", "Hello World", valueText.getText());
     }
 
     @Test
     public void testSupportedTypes() throws Exception {
-        Assert.assertEquals("The controller should support 2 types", 2, controller.supportedTypes().length);
-        Assert.assertTrue("'Boolean' should be supported", containsClass(Boolean.class));
-        Assert.assertTrue("'boolean' should be supported", containsClass(boolean.class));
-    }
+        Class[] returned = controller.supportedTypes();
 
-    private boolean containsClass(Class clazz){
-        for (Class clasz : controller.supportedTypes())
-            if (clasz.equals(clazz))
-                return true;
-        return false;
+        Assert.assertEquals("The BasicStringEditController should only have one supported type", 1,returned.length);
+
+        boolean supported = false;
+        for (Class clazz : returned)
+            if (String.class.equals(clazz))
+                supported = true;
+
+        Assert.assertEquals("The BasicStringEditController should support 'Strings'", true, supported);
     }
 
     @Test
@@ -93,7 +89,7 @@ public class BasicBooleanEditControllerTest {
             changed[0] = true;
         });
 
-        trueButton.setSelected(true);
+        valueText.setText("foo");
         Assert.assertTrue("The change listener should have fired when the text of 'valueText' was changed", changed[0]);
     }
 
@@ -107,27 +103,13 @@ public class BasicBooleanEditControllerTest {
         });
 
         controller.addValidator(s -> true);
-        trueButton.setSelected(true);
+        valueText.setText("foo");
         Assert.assertTrue("The change listener should have fired when the text of 'valueText' was changed", changed[0]);
         changed[0] = false;
 
         controller.addValidator(s -> false);
 
-        falseButton.setSelected(true);
+        valueText.setText("foo");
         Assert.assertFalse("The validator should have stopped the change event being fired!", changed[0]);
-    }
-
-    @Test
-    public void testRadioButtons() throws Exception{
-        controller.initialize(null, null);
-        controller.setValue(true);
-
-        Assert.assertTrue("True should be set", trueButton.isSelected());
-        Assert.assertFalse("False should not be set", falseButton.isSelected());
-
-        falseButton.setSelected(true);
-
-        Assert.assertFalse("True should not be set", trueButton.isSelected());
-        Assert.assertTrue("False should be set", falseButton.isSelected());
     }
 }

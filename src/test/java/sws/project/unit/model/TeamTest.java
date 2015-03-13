@@ -1,10 +1,12 @@
-package sws.project.model;
+package sws.project.unit.model;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.project.exceptions.DuplicateObjectException;
+import sws.project.model.Person;
+import sws.project.model.Team;
 import sws.project.sampledata.Generator;
 import sws.project.sampledata.PersonGenerator;
 import sws.project.sampledata.TeamGenerator;

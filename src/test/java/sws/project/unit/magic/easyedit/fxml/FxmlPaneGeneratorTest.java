@@ -1,4 +1,4 @@
-package sws.project.magic.easyedit.fxml;
+package sws.project.unit.magic.easyedit.fxml;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
