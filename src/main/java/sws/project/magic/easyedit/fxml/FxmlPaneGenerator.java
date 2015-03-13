@@ -33,9 +33,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root;
 
-        String title = EditFormGenerator.getEditable(field).friendlyName();
-        if (title == null || title.isEmpty())
-            title = EditFormGenerator.getFriendlyName(field);
+        String title = EditFormGenerator.getFriendlyName(field);
 
         try{
             root = loader.load();
