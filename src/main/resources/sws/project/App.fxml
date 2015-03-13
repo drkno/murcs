@@ -15,8 +15,8 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
           </Menu>
-          <Menu mnemonicParsing="false" text="View">
-              <MenuItem mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+          <Menu mnemonicParsing="false" id="viewMenu" text="View">
+              <MenuItem mnemonicParsing="false" id="viewShowHide" onAction="#toggleItemListView" text="Show/Hide Item List" />
           </Menu>
       </MenuBar>
    </top>
