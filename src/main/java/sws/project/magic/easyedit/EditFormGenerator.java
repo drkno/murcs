@@ -56,7 +56,7 @@ public class EditFormGenerator {
     }
 
     /**
-     * Capitalizes the name of field fooBar --> FooBar
+     * Capitalizes the name of field fooBar goes to FooBar
      * @param field The field
      * @return The capitalized name of the field
      */
@@ -82,7 +82,13 @@ public class EditFormGenerator {
      * @return The friendly name of the field
      */
     public static String getFriendlyName(Field field) {
-        String raw = field.getName();
+        String raw = null;
+        if (isEditable(field)){
+            raw = getEditable(field).friendlyName();
+        }
+
+        if (raw == null || raw.isEmpty())
+            raw = field.getName();
 
         String result = "";
         for (int i = 0; i < raw.length(); ++i){
