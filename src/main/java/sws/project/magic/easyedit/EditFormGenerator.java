@@ -38,8 +38,6 @@ public class EditFormGenerator {
             String setterName = "set" + capitalizeFieldName(field);
 
             Editable editable = getEditable(field);
-            if (editable.editPaneGenerator() == null)
-                throw new Exception("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
 
             if (!editable.getterName().isEmpty())
                 getterName = editable.getterName();
