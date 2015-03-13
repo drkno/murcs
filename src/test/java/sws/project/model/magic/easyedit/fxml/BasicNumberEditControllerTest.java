@@ -1,4 +1,4 @@
-package sws.project.magic.easyedit.fxml;
+package sws.project.model.magic.easyedit.fxml;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
@@ -6,6 +6,7 @@ import javafx.scene.text.Text;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sws.project.magic.easyedit.fxml.BasicNumberEditController;
 
 import java.lang.reflect.Field;
 
