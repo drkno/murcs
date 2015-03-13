@@ -54,7 +54,6 @@ public class AppController implements Initializable {
             displayChoiceBox.getItems().add(type);
         }
         displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((ov, v, nv) -> {
-            displayListItems.clear();
             updateDisplayList(ModelTypes.getModelType(nv.intValue()));
         });
 
@@ -69,6 +68,8 @@ public class AppController implements Initializable {
     }
 
     private void updateDisplayList(ModelTypes type) {
+        displayListItems.clear();
+
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
         switch (type) {
@@ -148,8 +149,10 @@ public class AppController implements Initializable {
             File file = fileChooser.showOpenDialog(App.stage);
             if (file != null) {
                 PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                PersistenceManager.Current.loadModel(file.getName());
+                RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
+                PersistenceManager.Current.setCurrentModel(model);
             }
+            updateDisplayList(ModelTypes.Project);
         }
         catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);

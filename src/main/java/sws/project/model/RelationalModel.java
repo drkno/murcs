@@ -2,6 +2,7 @@ package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * 11/03/2015
  */
-public class RelationalModel {
+public class RelationalModel implements Serializable{
 
     private Project project;
     private ArrayList<Person> unassignedPeople;
