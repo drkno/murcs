@@ -1,5 +1,6 @@
 package sws.project.magic.easyedit;
 
+import javafx.scene.Parent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,7 @@ public class EditFormGeneratorTest {
     @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "sws/project/String.fxml")
     private String editableString;
 
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "sws/project/String.fxml", friendlyName = "A friendly name")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "sws/project/String.fxml", friendlyName = "A friendly name", getterName = "getEditableString", setterName = "setEditableString")
     private String editableWithName;
 
     private String notEditable;
@@ -31,7 +32,10 @@ public class EditFormGeneratorTest {
 
     @Test
     public void testGeneratePane() throws Exception {
+        Parent root = EditFormGenerator.generatePane(this);
+        Assert.assertNotNull("root should not be null");
 
+        Assert.assertEquals("Root should have two children, one for each editable field on this class", 2, root.getChildrenUnmodifiable().size());
     }
 
     @Test
