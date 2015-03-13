@@ -17,6 +17,16 @@ public class RelationalModel {
     private ArrayList<Team> unassignedTeams;
     private ArrayList<Skill> skills;
 
+    /***
+     * Gets the current application version
+     * @return The current application version.
+     */
+    public static float getVersion() {
+        return version;
+    }
+
+    private static final float version = 0.000000000001f;
+
     public RelationalModel() {
         this.unassignedPeople = new ArrayList<>();
         this.unassignedTeams = new ArrayList<>();
