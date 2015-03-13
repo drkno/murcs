@@ -5,10 +5,12 @@ import sws.project.magic.tracking.ValueTracker;
 import sws.project.magic.easyedit.Editable;
 import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
+import java.io.Serializable;
+
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model extends ValueTracker {
+public abstract class Model extends ValueTracker implements Serializable{
     @TrackValue
     @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String shortName;
