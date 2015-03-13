@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.NoSuchElementException;
 
 /**
  * Uses automagic (and reflection) to generate a form
@@ -19,13 +20,13 @@ public class EditFormGenerator {
      * @param from The object to generate a pane for
      * @return The edit pane
      */
-    public static Parent generatePane(Object from){
+    public static Parent generatePane(Object from) throws Exception{
         VBox generated = new VBox(20);
 
         Class clazz = from.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
-        for (Field field : fields){
+        for (Field field : fields) {
             if (!isEditable(field)) continue;
 
             //field --> getField or setField
@@ -33,23 +34,19 @@ public class EditFormGenerator {
             String setterName = "set" + capitalizeFieldName(field);
 
             Editable editable = getEditable(field);
-            if (editable.editPaneGenerator() == null) throw new UnsupportedOperationException("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
+            if (editable.editPaneGenerator() == null)
+                throw new Exception("Can't create a new type of 'null.' Check you've assigned an EditPaneGenerator to " + field.getName());
 
             if (!editable.getterName().isEmpty())
                 getterName = editable.getterName();
             if (!editable.setterName().isEmpty())
                 setterName = editable.setterName();
 
-            try {
-                Method getter = clazz.getMethod(getterName);
-                Method setter = clazz.getMethod(setterName, field.getType());
+            Method getter = clazz.getMethod(getterName);
+            Method setter = clazz.getMethod(setterName, field.getType());
 
-                Node child = generateFor(field, getter, setter, from, editable);
-                generated.getChildren().add(child);
-
-            }catch (NoSuchMethodException e){
-                continue;
-            }
+            Node child = generateFor(field, getter, setter, from, editable);
+            generated.getChildren().add(child);
         }
 
         return generated;
@@ -124,38 +121,33 @@ public class EditFormGenerator {
      * @param editable The editable annotation of the
      * @return The node of the edit form
      */
-    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable){
+    private static Node generateFor(final Field field, final Method getter, final Method setter, final Object from, Editable editable) throws Exception {
+        Constructor<?> constructor;
+        EditPaneGenerator generator;
         try {
-            Constructor<?> constructor = editable.editPaneGenerator().getConstructor();
-            EditPaneGenerator generator = (EditPaneGenerator)constructor.newInstance();
+            constructor = editable.editPaneGenerator().getConstructor();
+            generator = (EditPaneGenerator) constructor.newInstance();
+        } catch (NoSuchMethodException e) {
+            throw new Exception("\"Unable to instantiate a new \" + editable.editPaneGenerator().getName() + \". You should check it has a default constructor.\"");
+        }
 
-            //If there was an argument set on the field, pass it on to the generator
-            if (editable.argument() != null && !editable.argument().isEmpty())
-                generator.setArgument(editable.argument());
+        //If there was an argument set on the field, pass it on to the generator
+        if (editable.argument() != null && !editable.argument().isEmpty())
+            generator.setArgument(editable.argument());
 
-            Class[] supportedClasses = generator.supportedTypes();
-            boolean supported = false;
+        Class[] supportedClasses = generator.supportedTypes();
+        boolean supported = false;
 
-            for (Class clazz : supportedClasses)
-            {
-                if (field.getType().isAssignableFrom(clazz)) {
-                    supported = true;
-                    break;
-                }
+        for (Class clazz : supportedClasses) {
+            if (field.getType().isAssignableFrom(clazz)) {
+                supported = true;
+                break;
             }
-
-            if (!supported)
-                throw new UnsupportedOperationException("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.editPaneGenerator().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
-
-            return generator.generate(field, getter, setter, from);
-        }catch (NoSuchMethodException e){
-            throw new IllegalArgumentException("Unable to instantiate a new " + editable.editPaneGenerator().getName() + ". You should check it has a default constructor.");
-        }
-        catch (Exception e){
-            if (e instanceof UnsupportedOperationException)
-                throw new UnsupportedOperationException(e.getMessage());
         }
 
-        return new VBox();
+        if (!supported)
+            throw new Exception("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.editPaneGenerator().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+
+        return generator.generate(field, getter, setter, from);
     }
 }
