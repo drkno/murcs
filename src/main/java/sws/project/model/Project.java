@@ -1,6 +1,8 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
+import sws.project.magic.easyedit.Editable;
+import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String description;
     private ArrayList<Team> teams = new ArrayList<>();
 

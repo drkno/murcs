@@ -8,6 +8,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Uses automagic (and reflection) to generate a form
@@ -23,7 +27,7 @@ public class EditFormGenerator {
         VBox generated = new VBox(20);
 
         Class clazz = from.getClass();
-        Field[] fields = clazz.getDeclaredFields();
+        Collection<Field> fields = getFieldsRecursive(from.getClass());
 
         for (Field field : fields){
             if (!isEditable(field)) continue;
@@ -53,6 +57,15 @@ public class EditFormGenerator {
         }
 
         return generated;
+    }
+
+    private static Collection<Field> getFieldsRecursive(Class clazz){
+        Collection<Field> fields = new ArrayList<>();
+
+        Collections.addAll(fields, clazz.getDeclaredFields());
+        if (clazz.getSuperclass() != null)
+            fields.addAll(getFieldsRecursive(clazz.getSuperclass()));
+        return fields;
     }
 
     /**
