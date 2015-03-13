@@ -1,10 +1,10 @@
-package sws.project.model.magic.tracking;
+package sws.project.tracking;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import sws.project.model.magic.tracking.TrackValue;
-import sws.project.model.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.TrackValue;
+import sws.project.magic.tracking.ValueTracker;
 
 public class TrackingObjectTest {
     public class TestObject {

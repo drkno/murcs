@@ -7,13 +7,13 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root type="javafx.scene.layout.AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="400.0" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <VBox alignment="BOTTOM_CENTER" layoutX="237.0" layoutY="58.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
             <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
                <children>
-                  <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="380.0">
+                  <HBox fx:id="titleImageHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="380.0">
                      <children>
                         <ImageView fx:id="messageImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                            <HBox.margin>
@@ -34,17 +34,13 @@
                       </Text>
                </children>
             </VBox>
-                <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="400.0" VBox.vgrow="NEVER">
+                <HBox fx:id="hBoxRight" alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="400.0" spacing="10.0" VBox.vgrow="NEVER">
                     <children>
-                        <Button fx:id="okButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="OK" HBox.hgrow="NEVER">
-                     <HBox.margin>
-                        <Insets right="75.0" />
-                     </HBox.margin></Button>
-                        <Button fx:id="cancelButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="70.0" text="Cancel" HBox.hgrow="NEVER">
-                     <HBox.margin>
-                        <Insets left="75.0" />
-                     </HBox.margin></Button>
+                  <HBox fx:id="hBoxLeft" alignment="CENTER_LEFT" spacing="10.0" HBox.hgrow="ALWAYS" />
                     </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
                 </HBox>
             </children>
             <padding>

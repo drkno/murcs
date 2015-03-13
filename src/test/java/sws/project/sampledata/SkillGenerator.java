@@ -27,11 +27,13 @@ public class SkillGenerator implements Generator<Skill> {
 
         try {
             skill.setShortName(name);
-            skill.setLongName(name);
-            skill.setDescription(description);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
+
+        skill.setLongName(name);
+        skill.setDescription(description);
 
         return skill;
     }

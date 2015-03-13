@@ -1,5 +1,6 @@
 package sws.project.sampledata;
 
+import sws.project.exceptions.DuplicateObjectException;
 import sws.project.model.Person;
 import sws.project.model.Team;
 
@@ -63,16 +64,20 @@ public class TeamGenerator implements Generator<Team> {
 
         try {
             team.setShortName(shortName);
-            team.setLongName(longName);
+        }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
 
-            team.setDescription(description);
+        team.setLongName(longName);
+        team.setDescription(description);
+        team.setScrumMaster(scrumMaster);
+        team.setProductOwner(productOwner);
 
-            team.setScrumMaster(scrumMaster);
-            team.setProductOwner(productOwner);
-
-            team.getMembers().addAll(members);
-        } catch (Exception e) {
-            e.printStackTrace();
+        try {
+            team.addMembers(members);
+        } catch (DuplicateObjectException e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
         return team;

@@ -1,11 +1,17 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
+import sws.project.magic.easyedit.Editable;
+import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Project.
  */
 public class Project extends Model {
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String description;
     private ArrayList<Team> teams = new ArrayList<>();
 
@@ -34,11 +40,33 @@ public class Project extends Model {
     }
 
     /**
-     * Adds a team to this project.
+     * Adds a team to this project if the project does not already have that team
      * @param team team to add.
+     * @throws sws.project.exceptions.DuplicateObjectException if the project already has that team
      */
-    public void addTeam(Team team) {
-        teams.add(team);
+    public void addTeam(Team team) throws DuplicateObjectException{
+        if (!this.teams.contains(team) &&
+                !this.teams
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(team.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.teams.add(team);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds a list of teams to add to the project
+     * @param teams Teams to be added to the project
+     * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
+     */
+    public void addTeams(List<Team> teams) throws DuplicateObjectException {
+        for (Team team: teams) {
+            this.addTeam(team);
+        }
     }
 
     /**
@@ -46,6 +74,17 @@ public class Project extends Model {
      * @param team team to remove.
      */
     public void removeTeam(Team team) {
-        teams.remove(team);
+        if (this.teams.contains(team)) {
+            teams.remove(team);
+        }
+    }
+
+    /**
+     * Returns the short name of the project
+     * @return Short name of the project
+     */
+    @Override
+    public String toString() {
+        return getShortName();
     }
 }

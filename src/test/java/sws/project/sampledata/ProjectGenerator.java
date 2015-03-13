@@ -1,5 +1,6 @@
 package sws.project.sampledata;
 
+import sws.project.exceptions.DuplicateObjectException;
 import sws.project.model.Project;
 import sws.project.model.Team;
 
@@ -43,13 +44,17 @@ public class ProjectGenerator implements Generator<Project> {
 
         try {
             project.setShortName(shortName);
+        }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
             project.setLongName(longName);
-
             project.setDescription(description);
 
-            project.getTeams().addAll(teams);
-        } catch (Exception e) {
-            e.printStackTrace();
+        try{
+            project.addTeams(teams);
+        } catch (DuplicateObjectException e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
         return project;

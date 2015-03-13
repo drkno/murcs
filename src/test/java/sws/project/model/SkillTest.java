@@ -3,14 +3,12 @@ package sws.project.model;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sun.reflect.annotation.ExceptionProxy;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 /**
  * 3/11/2015
- * @author Dion
  */
 public class SkillTest {
 
@@ -32,11 +30,23 @@ public class SkillTest {
     @After
     public void tearDown() {
         skill = null;
+        skill2 = null;
+        skill3 = null;
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void setShortNameTest() throws Exception{
+    @Test (expected = Exception.class)
+    public void setShortNameTest1() throws Exception{
         skill.setShortName(null);
+    }
+
+    @Test(expected = Exception.class)
+    public void setShortNameTest2() throws Exception{
+        skill.setShortName("");
+    }
+
+    @Test(expected = Exception.class)
+    public void setShortNameTest3() throws Exception{
+        skill.setShortName("   \n\r\t");
     }
 
     @Test

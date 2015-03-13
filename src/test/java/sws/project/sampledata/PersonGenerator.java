@@ -35,18 +35,21 @@ public class PersonGenerator implements Generator<Person> {
         for (int i = 0; i < skillCount; ++i)
             skills.add(skillGenerator.generate());
 
-        try {
-            p.setUserId(userId);
+        p.setUserId(userId);
 
+        try {
             p.setShortName(shortName);
-            p.setLongName(longName);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
+
+        p.setLongName(longName);
 
         try {
             p.addSkills(skills);
-        } catch (DuplicateObjectException e) {
+        }
+        catch (DuplicateObjectException e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

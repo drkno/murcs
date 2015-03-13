@@ -10,12 +10,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 /**
  * Controller for the project creator popup window.
@@ -34,11 +36,22 @@ public class CreateProjectPopUpController {
     @FXML
     Label labelErrorMessage;
 
+    public Callable completedCallback;
+
     private static Stage stage;
 
-    public static void displayPopUp() {
+    /**
+     * Creates a dialog for entering information about a new project. Takes one parameter which is the function to be
+     * called after the new project has been made (usually to update the display list)
+     * @param func The function that you wish to be called after the new project has been made.
+     */
+    public static void displayPopUp(Callable<Void> func) {
         try {
-            AnchorPane anchorPane = FXMLLoader.load(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
+            AnchorPane anchorPane = loader.load();
+
+            CreateProjectPopUpController controller = loader.getController();
+            controller.completedCallback = func;
             stage = new Stage();
             stage.setScene(new Scene(anchorPane));
             stage.setTitle("Create New Project");
@@ -50,6 +63,11 @@ public class CreateProjectPopUpController {
         }
     }
 
+    /***
+     * Sets up a new project when the ok button is clicked with the information entered. If the short name is nothing
+     * then it will give an error in the create project dialog and the project will not be saved.
+     * @param event The event sent by clicking the ok button in the dialog.
+     */
     @FXML
     private void buttonActionOK(ActionEvent event) {
         try {
@@ -64,16 +82,24 @@ public class CreateProjectPopUpController {
 
             clearFields();
             stage.close();
+            completedCallback.call();
         } catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
         }
     }
 
+    /***
+     * Sets the dialog to close if the user clicks cancel.
+     * @param event The event sent by clicking the cancel button.
+     */
     @FXML
     private void buttonActionCancel(ActionEvent event) {
         stage.close();
     }
 
+    /***
+     * Clears all of the fields (short name, long name, description)
+     */
     private void clearFields() {
         textFieldShortName.setText("");
         textFieldLongName.setText("");
