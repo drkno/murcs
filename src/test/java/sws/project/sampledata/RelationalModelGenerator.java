@@ -25,16 +25,23 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             RelationalModel model = new RelationalModel();
             model.setProject(projectGenerator.generate());
 
+            //TODO: stop generation of duplicate objects
             /*int rand = random.nextInt(10);
+            ArrayList<Team> unassignedTeams = new ArrayList<>();
             for (int i = 0; i < rand; i++) {
-                model.addUnassignedTeam(teamGenerator.generate());
+                unassignedTeams.add(teamGenerator.generate());
             }
+            unassignedTeams = new ArrayList<Team>(new LinkedHashSet<Team>(unassignedTeams));
+            model.addUnassignedTeams(new ArrayList<>(new HashSet<>(unassignedTeams)));
 
+            ArrayList<Person> unassignedPeople = new ArrayList<>();
             for (Team team : model.getUnassignedTeams()) {
-                model.addUnassignedPeople(team.getMembers());
+                unassignedPeople.addAll(team.getMembers());
             }
+            unassignedPeople = new ArrayList<Person>(new LinkedHashSet<Person>(unassignedPeople));
+            model.addUnassignedPeople(unassignedPeople);
 
-            HashSet<Skill> skills = new HashSet<>();
+            ArrayList<Skill> skills = new ArrayList<>();
             for (Team team : model.getProject().getTeams()) {
                 for (Person person : team.getMembers()) {
                     skills.addAll(person.getSkills());
@@ -43,9 +50,9 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             for (Person person : model.getUnassignedPeople()) {
                 skills.addAll(person.getSkills());
             }
-            ArrayList<Skill> skillsAl = new ArrayList<>();
-            skillsAl.addAll(skills);
-            model.addSkills(skillsAl);*/
+            skills = new ArrayList<Skill>(new LinkedHashSet<Skill>(skills));
+            model.addSkills(skills);*/
+
             return model;
         }
         catch (Exception e) {
