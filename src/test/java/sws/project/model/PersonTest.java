@@ -15,7 +15,6 @@ import static junit.framework.Assert.*;
 
 /**
  * 3/11/2015
- * @author Dion
  */
 public class PersonTest {
 
@@ -31,7 +30,7 @@ public class PersonTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         skillGenerated = skillGenerator.generate();
         person = new Person();
         skill = new Skill();
@@ -45,17 +44,17 @@ public class PersonTest {
         skill = null;
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test (expected = Exception.class)
     public void setShortNameTest1() throws Exception{
         person.setShortName(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest2() throws Exception{
         person.setShortName("");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest3() throws Exception{
         person.setShortName("   \n\r\t");
     }

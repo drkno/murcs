@@ -37,12 +37,19 @@ public class PersonGenerator implements Generator<Person> {
 
         p.setUserId(userId);
 
-        p.setShortName(shortName);
+        try {
+            p.setShortName(shortName);
+        }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
+
         p.setLongName(longName);
 
         try {
             p.addSkills(skills);
-        } catch (DuplicateObjectException e) {
+        }
+        catch (DuplicateObjectException e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

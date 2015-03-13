@@ -18,12 +18,11 @@ public abstract class Model {
     /**
      * Sets the short name.
      * @param shortName the new short name.
-     * @throws java.lang.IllegalArgumentException if the shortName is invalid
+     * @throws java.lang.Exception if the shortName is invalid
      */
-    public void setShortName(String shortName) {
-        if (shortName == null) throw new IllegalArgumentException("ShortName cannot be null");
-
-        this.shortName = shortName;
+    public void setShortName(String shortName) throws Exception {
+        if (shortName == null || shortName.trim().isEmpty()) throw new Exception("Short Name cannot be empty");
+        this.shortName = shortName.trim();
     }
 
     /**

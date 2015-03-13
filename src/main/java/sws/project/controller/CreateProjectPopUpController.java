@@ -52,10 +52,7 @@ public class CreateProjectPopUpController {
 
     @FXML
     private void buttonActionOK(ActionEvent event) {
-
-        if (textFieldShortName.getText().length() == 0) {
-            labelErrorMessage.setText("Short Name cannot be null");
-        } else {
+        try {
             Project project = new Project();
             project.setShortName(textFieldShortName.getText());
             project.setLongName(textFieldLongName.getText());
@@ -67,6 +64,8 @@ public class CreateProjectPopUpController {
 
             clearFields();
             stage.close();
+        } catch (Exception e) {
+            labelErrorMessage.setText(e.getMessage());
         }
     }
 

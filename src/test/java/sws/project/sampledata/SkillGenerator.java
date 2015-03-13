@@ -25,7 +25,13 @@ public class SkillGenerator implements Generator<Skill> {
         String name = NameGenerator.randomElement(skills);
         String description = NameGenerator.randomElement(descriptions);
 
-        skill.setShortName(name);
+        try {
+            skill.setShortName(name);
+        }
+        catch (Exception e) {
+            //Do nothing, don't have to deal with the exception if only generating test data.
+        }
+
         skill.setLongName(name);
         skill.setDescription(description);
 

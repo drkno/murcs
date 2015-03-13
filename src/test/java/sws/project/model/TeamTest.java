@@ -18,8 +18,6 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * 13/03/2015
- *
- * @author Dion
  */
 public class TeamTest {
 
@@ -48,19 +46,22 @@ public class TeamTest {
     @After
     public void tearDown() {
         teamGenerated = null;
+        personGenerated = null;
+        team = null;
+        person = null;
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest1() throws Exception{
         teamGenerated.setShortName(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest2() throws Exception{
         teamGenerated.setShortName("");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest3() throws Exception{
         teamGenerated.setShortName("   \n\r\t");
     }

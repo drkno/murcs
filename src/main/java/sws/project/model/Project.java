@@ -1,6 +1,9 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Project.
@@ -34,11 +37,31 @@ public class Project extends Model {
     }
 
     /**
-     * Adds a team to this project.
+     * Adds a team to this project if the project does not already have that team
      * @param team team to add.
      */
-    public void addTeam(Team team) {
-        teams.add(team);
+    public void addTeam(Team team) throws DuplicateObjectException{
+        if (!this.teams.contains(team) &&
+                !this.teams
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(team.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.teams.add(team);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds a list of teams to add to the project
+     * @param teams Teams to be added to the project
+     */
+    public void addTeams(List<Team> teams) throws DuplicateObjectException {
+        for (Team team: teams) {
+            this.addTeam(team);
+        }
     }
 
     /**
@@ -46,6 +69,8 @@ public class Project extends Model {
      * @param team team to remove.
      */
     public void removeTeam(Team team) {
-        teams.remove(team);
+        if (this.teams.contains(team)) {
+            teams.remove(team);
+        }
     }
 }
