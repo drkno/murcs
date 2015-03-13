@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.magic.easyedit.fxml.BasicBooleanEditController">
+   <children>
+      <Text fx:id="titleText" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
+      <HBox spacing="10">
+         <children>
+            <RadioButton fx:id="trueButton" mnemonicParsing="false" text="True" />
+            <RadioButton fx:id="falseButton" mnemonicParsing="false" text="False" />
+         </children>
+      </HBox>
+   </children>
+</VBox>
