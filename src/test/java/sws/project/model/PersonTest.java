@@ -46,8 +46,18 @@ public class PersonTest {
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void setShortNameTest() throws Exception{
+    public void setShortNameTest1() throws Exception{
         person.setShortName(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setShortNameTest2() throws Exception{
+        person.setShortName("");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setShortNameTest3() throws Exception{
+        person.setShortName("   \n\r\t");
     }
 
     @Test
