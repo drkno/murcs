@@ -103,4 +103,21 @@ public class TrackingIntegerTest {
             Assert.assertEquals("Redo is not possible as there are no saved redo states.", e.getMessage());
         }
     }
+
+    @Test
+    public void maximumUndoRedoStackSizeTest() throws Exception {
+        ValueTracker.setMaximumTrackingSize(3);
+        Assert.assertEquals(3, ValueTracker.getMaximumTrackingSize());
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
+        a.setTestInteger(4);
+        a.setTestInteger(5);
+        ValueTracker.undo();
+        ValueTracker.undo();
+        ValueTracker.undo();
+        Assert.assertFalse(ValueTracker.canUndo());
+        Assert.assertEquals(2, a.getTestInteger());
+    }
 }

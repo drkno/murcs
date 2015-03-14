@@ -66,7 +66,7 @@ public abstract class ValueTracker {
             }
 
             if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
-                _revisionUndoHistory.remove(_revisionUndoHistory.size() - 1);
+                _revisionUndoHistory.remove(0);
             }
         }
         catch (Exception e) {
@@ -111,7 +111,6 @@ public abstract class ValueTracker {
      * @return a description.
      */
     public static String getUndoDescription() {
-        //TODO: use second item on stack if appropriate.
         return _revisionUndoHistory.peek().getDescription();
     }
 
@@ -168,7 +167,7 @@ public abstract class ValueTracker {
      * @return Maximum stack size or less than or equal to 0 if infinite.
      */
     public static int getMaximumTrackingSize() {
-        return maximumUndoRedoStackSize;
+        return maximumUndoRedoStackSize - 1;
     }
 
     /**
@@ -176,6 +175,6 @@ public abstract class ValueTracker {
      * @param maximumUndoRedoStackSize new maximum stack size or less than or equal to 0 if infinite is desired.
      */
     public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
-        ValueTracker.maximumUndoRedoStackSize = maximumUndoRedoStackSize;
+        ValueTracker.maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
     }
 }
