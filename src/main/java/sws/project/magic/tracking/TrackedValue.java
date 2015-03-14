@@ -18,7 +18,7 @@ public class TrackedValue {
      * Instantiates a new tracked object.
      * @param initialObject The object to track.
      * @param fields Fields to track.
-     * @throws Exception Exception if retreiving values failed due to unknown type.
+     * @throws Exception Exception if retrieving values failed due to unknown type.
      */
     public TrackedValue(Object initialObject, ArrayList<Field> fields) throws Exception {
         _fields = fields;
@@ -32,7 +32,7 @@ public class TrackedValue {
      * @param description Description of the change
      * @param initialSave Save all fields rather than just changed.
      * @return A representation of the difference between these states
-     * @throws Exception If retreiving the values of the current object state is not possible.
+     * @throws Exception If retrieving the values of the current object state is not possible.
      */
     public TrackedChange difference(Object obj, String description, boolean initialSave) throws Exception {
         ArrayList<Field> changedFields = new ArrayList<>();
@@ -65,7 +65,38 @@ public class TrackedValue {
     }
 
     /**
-     * Applys the changes in a TrackedChange to this historical view of the object.
+     * Determines what the previous state was if it was lost.
+     * @param original The object that the original value applied to.
+     * @param previous The change before the previous state.
+     * @param description The description of the change.
+     * @return A representation of the previous state.
+     */
+    public TrackedChange dumpChange(Object original, TrackedChange previous, String description) {
+        Field[] previousFields = previous.getFields();
+        Object[] previousValues = previous.getValues();
+
+        ArrayList<Field> changedFields = new ArrayList<>();
+        ArrayList<Object> changedValues = new ArrayList<>();
+
+        for (int i = 0; i < previousFields.length; i++) {
+            int j;
+            for (j = 0; j < _fields.size(); j++) {
+                if (_fields.get(j).equals(previousFields[i])) break;
+            }
+            if (j >= _fields.size()) continue;
+            if (previousValues[i] == null && _values[i] == null || !previousValues[i].equals(_values[i])) {
+                changedFields.add(previousFields[i]);
+                changedValues.add(_values[i]);
+            }
+        }
+
+        previousFields = new Field[changedFields.size()];
+        changedFields.toArray(previousFields);
+        return new TrackedChange(original, previousFields, changedValues.toArray(), description);
+    }
+
+    /**
+     * Applies the changes in a TrackedChange to this historical view of the object.
      * @param state new state of the object.
      */
     public void apply(TrackedChange state) {
@@ -76,6 +107,10 @@ public class TrackedValue {
             int index = _fields.indexOf(fields[i]);
             if (index >= 0) {
                 _values[index] = values[i];
+            }
+            else {
+                System.err.println("Could not update tracker history - this will only have affect" +
+                        " if you attempt to do (not redo) after undoing.");
             }
         }
     }

@@ -58,12 +58,15 @@ public abstract class ValueTracker {
      */
     protected void saveCurrentState(String changeDescription, boolean initialSave) {
         try {
-            TrackedChange value = _currentState.difference(this, changeDescription, initialSave);
-            _revisionUndoHistory.push(value);
-
-            if (!_revisionRedoHistory.isEmpty()) {
+            if (canRedo()) {
+                TrackedChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
+                        _revisionRedoHistory.peek().getDescription());
+                _revisionUndoHistory.push(change);
                 _revisionRedoHistory.clear();
             }
+
+            TrackedChange value = _currentState.difference(this, changeDescription, initialSave);
+            _revisionUndoHistory.push(value);
 
             if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
                 _revisionUndoHistory.remove(0);
@@ -102,8 +105,8 @@ public abstract class ValueTracker {
 
         TrackedChange undoState = _revisionUndoHistory.pop();
         _revisionRedoHistory.push(undoState);
-        undoState.undo();
         applyHistoryChange(undoState);
+        undoState.undo();
     }
 
     /**
