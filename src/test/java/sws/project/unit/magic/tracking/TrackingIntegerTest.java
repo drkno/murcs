@@ -120,4 +120,21 @@ public class TrackingIntegerTest {
         Assert.assertFalse(ValueTracker.canUndo());
         Assert.assertEquals(2, a.getTestInteger());
     }
+
+    @Test
+    public void impossibleRedoAfterActionPerformed() throws Exception {
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
+        ValueTracker.undo();
+        Assert.assertEquals(2, a.getTestInteger());
+        Assert.assertTrue(ValueTracker.canRedo());
+        a.setTestInteger(4);
+        Assert.assertFalse(ValueTracker.canRedo());
+        ValueTracker.undo();
+        Assert.assertEquals(2, a.getTestInteger());
+        ValueTracker.redo();
+        Assert.assertEquals(4, a.getTestInteger());
+    }
 }

@@ -96,4 +96,13 @@ public class TrackedChange {
     public Object[] getValues() {
         return changedValues;
     }
+
+    @Override
+    public String toString() {
+        String resultString = "";
+        for (int i = 0; i < changedFields.length; i++) {
+            resultString += changedFields[i].getName() + ": " + changedValues[i].toString() + "; ";
+        }
+        return resultString;
+    }
 }
