@@ -70,6 +70,16 @@ public class FilePersistenceLoaderTest {
         loader.saveModel(testFile, generator.generate()); // on fail it will throw exception
     }
 
+    /**
+     * Tests saving using an invalid file name.
+     * @throws Exception if the test passes
+     */
+    @Test(expected = Exception.class)
+    public void testInvalidSaveModel() throws Exception {
+        String testFile = "test1234/?%\\:*+5678";
+        loader.saveModel(testFile, generator.generate());
+    }
+
     @Test
     public void testGetModelList() throws Exception {
         ArrayList<String> models1 = loader.getModelList();
