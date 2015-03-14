@@ -10,13 +10,14 @@ import java.util.ArrayList;
  */
 public class FilePersistenceLoader implements PersistenceLoader {
 
-    private String workingDirectory = System.getProperty("user.dir");
+    private String workingDirectory;
 
     /**
-     * Instantiates a new FilePersistenceLoader.
-     * Blank constructor for default usage.
+     * Instantiates a new FilePersistenceLoader, defaulting to the current working directory.
      */
-    public FilePersistenceLoader(){}
+    public FilePersistenceLoader(){
+        this(System.getProperty("user.dir"));
+    }
 
     /**
      * Instantiates a new FilePersistenceLoader.
