@@ -94,7 +94,8 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
 
         controller.addChangeListener((p, o, n) -> {
             try {
-                setter.invoke(from, n);
+                if (setter != null)
+                    setter.invoke(from, n);
             }catch (Exception e){
                 System.err.println("Unable to set " + field.getName() + " on " + from);
             }
