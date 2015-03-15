@@ -82,7 +82,7 @@ public class FilePersistenceLoaderTest {
 
     @Test
     public void testGetModelList() throws Exception {
-        ArrayList<String> models1 = loader.getModelList();
+        ArrayList<String> models1 = loader.getModelList(".testProject");
         String testFile = getNewTestFile();
         loader.saveModel(testFile, generator.generate());
         ArrayList<String> models2 = loader.getModelList(".testProject");
