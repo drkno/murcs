@@ -12,10 +12,10 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", sort = 0)
     @TrackValue
     private String description;
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/Collection.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/Collection.fxml", sort = 99)
     @TrackValue
     private ArrayList<Team> teams = new ArrayList<>();
 
