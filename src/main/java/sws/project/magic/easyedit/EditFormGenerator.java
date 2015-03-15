@@ -47,8 +47,14 @@ public class EditFormGenerator {
             Method getter = findMethodRecursive(clazz, getterName);
             getter.setAccessible(true);
 
-            Method setter = findMethodRecursive(clazz, setterName, field.getType());
-            setter.setAccessible(true);
+            Method setter = null;
+            try {
+                setter = findMethodRecursive(clazz, setterName, field.getType());
+                setter.setAccessible(true);
+            }catch (NoSuchMethodException e){
+                if (editable.setterName() != null && !editable.setterName().isEmpty())
+                    throw e;
+            }
 
             Method validator = null;
 
@@ -87,7 +93,7 @@ public class EditFormGenerator {
      * @param parameters The types of parameters the class takes
      * @return
      */
-    private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters){
+    private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException {
         try{
             return clazz.getMethod(methodName, parameters);
         }catch (Exception e){
@@ -103,7 +109,7 @@ public class EditFormGenerator {
         if (clazz.getSuperclass() != null)
             return findMethodRecursive(clazz.getSuperclass(), methodName, parameters);
 
-        throw new NoSuchMethodError("There is no " + methodName + " method on the " + clazz.getName() + " object taking " + parameters);
+        throw new NoSuchMethodException("There is no " + methodName + " method on the " + clazz.getName() + " object taking " + parameters);
     }
 
     /**
