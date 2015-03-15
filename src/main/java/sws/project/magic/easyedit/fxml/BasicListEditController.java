@@ -1,6 +1,7 @@
 package sws.project.magic.easyedit.fxml;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,7 +21,8 @@ public class BasicListEditController extends BasicEditController<Collection> imp
     @FXML private Text titleText;
     @FXML private ListView listView;
 
-    private ObservableList collection;
+    private ObservableList observableList;
+    private Collection collection;
 
     @Override
     public void setTitle(String title) {
@@ -30,20 +32,22 @@ public class BasicListEditController extends BasicEditController<Collection> imp
 
     @Override
     public void setValue(Collection value) {
-        collection.clear();
-        collection.addAll(value);
+        observableList.clear();
+        observableList.addAll(value);
+
+        this.collection = value;
     }
 
     @Override
     public Class[] supportedTypes() {
-        return new Class[]{Collection.class};
+        return new Class[]{Collection.class, ArrayList.class};
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        collection = FXCollections.observableArrayList();
+        observableList = FXCollections.observableArrayList();
 
-        listView.setItems(collection);
+        listView.setItems(observableList);
         listView.setCellFactory(new Callback<ListView<Object>, ListCell<Object>>() {
             @Override
             public ListCell call(ListView<Object> param) {
@@ -59,6 +63,11 @@ public class BasicListEditController extends BasicEditController<Collection> imp
                 };
                 return cell;
             }
+        });
+        observableList.addListener((ListChangeListener.Change c) -> {
+            if (collection  == null) return;
+            collection.addAll(c.getAddedSubList());
+            collection.removeAll(c.getRemoved());
         });
     }
 }

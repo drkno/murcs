@@ -15,6 +15,7 @@ public class Project extends Model {
     @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     @TrackValue
     private String description;
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/Collection.fxml")
     @TrackValue
     private ArrayList<Team> teams = new ArrayList<>();
 

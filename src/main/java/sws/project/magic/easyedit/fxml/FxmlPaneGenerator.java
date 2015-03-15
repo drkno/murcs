@@ -26,7 +26,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
         return new Class[] {String.class, int.class, Integer.class,
                 Double.class, double.class, Float.class, float.class,
                 Boolean.class, boolean.class,
-                Collection.class};
+                Collection.class, ArrayList.class};
     }
 
     @Override

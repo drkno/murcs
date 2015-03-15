@@ -2,6 +2,7 @@ package sws.project.magic.easyedit;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 import java.lang.annotation.Annotation;
@@ -47,8 +48,14 @@ public class EditFormGenerator {
             Method getter = findMethodRecursive(clazz, getterName);
             getter.setAccessible(true);
 
-            Method setter = findMethodRecursive(clazz, setterName, field.getType());
-            setter.setAccessible(true);
+            Method setter = null;
+            try {
+                setter = findMethodRecursive(clazz, setterName, field.getType());
+                setter.setAccessible(true);
+            }catch (NoSuchMethodException e){
+                if (!editable.setterName().isEmpty())
+                    throw e;
+            }
 
             Method validator = null;
 
@@ -61,7 +68,9 @@ public class EditFormGenerator {
             generated.getChildren().add(child);
         }
 
-        return generated;
+        ScrollPane scroller = new ScrollPane(generated);
+        scroller.setFitToWidth(true);
+        return scroller;
     }
 
     /**
