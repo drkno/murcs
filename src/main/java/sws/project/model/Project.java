@@ -3,6 +3,7 @@ package sws.project.model;
 import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.easyedit.Editable;
 import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+import sws.project.magic.tracking.TrackValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,9 @@ import java.util.List;
  */
 public class Project extends Model {
     @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @TrackValue
     private String description;
+    @TrackValue
     private ArrayList<Team> teams = new ArrayList<>();
 
     /**
@@ -29,6 +32,7 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        saveCurrentState("Description change");
     }
 
     /**
@@ -52,6 +56,7 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
+            saveCurrentState("Team added");
         }
         else {
             throw new DuplicateObjectException();
@@ -76,6 +81,7 @@ public class Project extends Model {
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             teams.remove(team);
+            saveCurrentState("Team removed");
         }
     }
 

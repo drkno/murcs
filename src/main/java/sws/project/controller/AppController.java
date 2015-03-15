@@ -13,7 +13,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
-import sws.project.model.Model;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -22,6 +21,9 @@ import sws.project.view.App;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static sws.project.magic.tracking.ValueTracker.canUndo;
+import static sws.project.magic.tracking.ValueTracker.reset;
 
 /**
  * Main app class controller
@@ -56,18 +58,18 @@ public class AppController implements Initializable {
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((ov, v, nv) -> {
-            updateDisplayList(ModelTypes.getModelType(nv.intValue()));
+        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            updateDisplayList(ModelTypes.getModelType(newValue.intValue()));
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedItemProperty().addListener((p, o, n)->{
+        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
             contentPane.getChildren().clear();
-            if (n == null) return;
+            if (newValue == null) return;
 
             Parent pane = null;
             try {
-                pane = EditFormGenerator.generatePane(n);
+                pane = EditFormGenerator.generatePane(newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -132,10 +134,44 @@ public class AppController implements Initializable {
      */
     @FXML
     private void createNewProject(ActionEvent event) {
-        CreateProjectPopUpController.displayPopUp(() -> {
-            updateDisplayList(ModelTypes.Project);
-            return null;
-        });
+        if (!canUndo()) {
+            CreateProjectPopUpController.displayProjectPopUp(() -> {
+                updateDisplayList(ModelTypes.Project);
+                return null;
+            });
+        }
+        else {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Unsaved Changes");
+            popup.setMessageText("You have unsaved changes to your project.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+                popup.close();
+                // Reset Tracked history
+                reset();
+                // Create a new project
+                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                    updateDisplayList(ModelTypes.Project);
+                    return null;
+                });
+                return null;
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                // Let the user save the project
+                saveProject(null);
+                // Reset Tracked History
+                reset();
+                // Create a new project
+                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                    updateDisplayList(ModelTypes.Project);
+                    return null;
+                });
+                return null;
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.show();
+
+        }
     }
 
     /***

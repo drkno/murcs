@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import jdk.nashorn.internal.codegen.CompilerConstants;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -43,7 +42,7 @@ public class CreateProjectPopUpController {
      * called after the new project has been made (usually to update the display list)
      * @param func The function that you wish to be called after the new project has been made.
      */
-    public static void displayPopUp(Callable<Void> func) {
+    public static void displayProjectPopUp(Callable<Void> func) {
         try {
             FXMLLoader loader = new FXMLLoader(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
             AnchorPane anchorPane = loader.load();

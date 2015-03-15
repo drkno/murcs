@@ -1,6 +1,7 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
+import sws.project.magic.tracking.TrackValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,9 @@ import java.util.List;
  * Model of a person.
  */
 public class Person extends Model {
+    @TrackValue
     private String userId;
+    @TrackValue
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**
@@ -50,6 +53,7 @@ public class Person extends Model {
      */
     public void setUserId(String userId) {
         this.userId = userId;
+        saveCurrentState("User Id change");
     }
 
     /**
@@ -65,6 +69,7 @@ public class Person extends Model {
                     .findAny()
                     .isPresent()) {
             this.skills.add(skill);
+            saveCurrentState("Skill added");
         }
         else {
             throw new DuplicateObjectException();
@@ -89,6 +94,7 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+            saveCurrentState("Skill removed");
         }
     }
 }
