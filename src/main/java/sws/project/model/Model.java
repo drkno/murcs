@@ -12,10 +12,10 @@ import java.io.Serializable;
  */
 public abstract class Model extends ValueTracker implements Serializable{
     @TrackValue
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", validatorName = "validateShortName")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", validatorName = "validateShortName", sort = -2)
     private String shortName;
     @TrackValue
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", sort = -1)
     private String longName;
 
     /**

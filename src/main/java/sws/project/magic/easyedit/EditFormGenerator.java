@@ -31,6 +31,8 @@ public class EditFormGenerator {
         Class clazz = from.getClass();
         Collection<Field> fields = getFieldsRecursive(from.getClass());
 
+        ArrayList<Object[]> nodes = new ArrayList<>();
+
         for (Field field : fields) {
             if (!isEditable(field)) continue;
 
@@ -65,12 +67,29 @@ public class EditFormGenerator {
             }
 
             Node child = generateFor(field, getter, setter, validator, from, editable);
-            generated.getChildren().add(child);
+            int depth = editable.sort();
+
+            insertInto(nodes, new Object[]{depth, child});
+            //generated.getChildren().add(child);
+        }
+
+        for (Object[] nodePair : nodes){
+            generated.getChildren().add((Node)nodePair[1]);
         }
 
         ScrollPane scroller = new ScrollPane(generated);
         scroller.setFitToWidth(true);
         return scroller;
+    }
+
+    private static void insertInto(ArrayList<Object[]> into, Object[] insert){
+        int index = 0;
+        while (index < into.size() && (Integer)into.get(index)[0] <= (Integer)insert[0]){
+            index++;
+        }
+        if (index == into.size())
+            into.add(insert);
+        else into.add(index, insert);
     }
 
     /**

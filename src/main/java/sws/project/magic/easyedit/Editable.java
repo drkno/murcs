@@ -61,4 +61,10 @@ public @interface Editable {
      * @return the friendly name of the field
      */
     String friendlyName() default "";
+
+    /**
+     * Indicates how high up the pane the field should show
+     * @return The position of the pane
+     */
+    int sort() default 0;
 }
