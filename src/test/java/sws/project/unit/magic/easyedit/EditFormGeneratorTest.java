@@ -2,6 +2,7 @@ package sws.project.unit.magic.easyedit;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,10 +13,10 @@ import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 import java.lang.reflect.Field;
 
 public class EditFormGeneratorTest {
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable()
     private String editableString;
 
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", friendlyName = "A friendly name", getterName = "getEditableString", setterName = "setEditableString")
+    @Editable(friendlyName = "A friendly name", getterName = "getEditableString", setterName = "setEditableString")
     private String editableWithName;
 
     private String notEditable;
@@ -42,10 +43,10 @@ public class EditFormGeneratorTest {
 
     @Test
     public void testGeneratePane() throws Exception {
-        Parent root = EditFormGenerator.generatePane(this);
+        ScrollPane root = (ScrollPane)EditFormGenerator.generatePane(this);
         Assert.assertNotNull("root should not be null");
 
-        Assert.assertEquals("Root should have two children, one for each editable field on this class", 2, root.getChildrenUnmodifiable().size());
+        Assert.assertEquals("Root should have two children, one for each editable field on this class", 2, ((Parent)root.getContent()).getChildrenUnmodifiable().size());
     }
 
     @Test

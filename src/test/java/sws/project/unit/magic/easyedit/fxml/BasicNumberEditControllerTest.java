@@ -18,7 +18,7 @@ public class BasicNumberEditControllerTest {
     private TextField numberText;
 
     /**
-     * Note: this method will fail if the names of the title/editPaneGenerator texts change
+     * Note: this method will fail if the names of the title/value texts change
      * @throws Exception
      */
     @Before
@@ -38,8 +38,8 @@ public class BasicNumberEditControllerTest {
 
     /**
      * Injects an object into the controller
-     * @param name The name of the editPaneGenerator to inject
-     * @param value The editPaneGenerator to inject
+     * @param name The name of the value to inject
+     * @param value The value to inject
      * @throws Exception An exception will be thrown if the object is of the wrong type or the field doesn't exist
      */
     private void inject(String name, Object value) throws Exception{
@@ -86,62 +86,5 @@ public class BasicNumberEditControllerTest {
             if (clasz.equals(clazz))
                 return true;
         return false;
-    }
-
-    @Test
-    public void testChangeListening() throws Exception {
-        controller.initialize(null, null);
-
-        final boolean[] changed = {false, false, false};
-        controller.addChangeListener((p, o, n) -> {
-            setFalse(changed);
-
-            if (n instanceof Integer)
-                changed[0] = true;
-            else if (n instanceof Float)
-                changed[1] = true;
-            else if (n instanceof Double)
-                changed[2] = true;
-        });
-
-        numberText.setText("foo");
-        Assert.assertTrue("The change listener should not have fired when the text of 'numberText' was changed to something that is not a number", allFalse(changed));
-
-        numberText.setText("1");
-        Assert.assertTrue("The change listener should have fired when the text of 'numberText' was changed and passed an integer for a whole number (e.g. no decimal places)", changed[0]);
-
-        numberText.setText("1.0");
-        Assert.assertTrue("The change listener should have fired and been passed a float", changed[1]);
-    }
-
-    private void setFalse(boolean[] changes){
-        for (int i = 0; i < changes.length; ++i)
-            changes[i] = false;
-    }
-
-    private boolean allFalse(boolean[] changes){
-        for (boolean b : changes)
-            if (b) return false;
-        return true;
-    }
-
-    @Test
-    public void testValidators() throws Exception{
-        controller.initialize(null, null);
-
-        final boolean[] changed = {false};
-        controller.addChangeListener((p, o, n) -> {
-            changed[0] = true;
-        });
-
-        controller.addValidator(s -> true);
-        numberText.setText("1");
-        Assert.assertTrue("The change listener should have fired when the text of 'numberText' was changed", changed[0]);
-        changed[0] = false;
-
-        controller.addValidator(s -> false);
-
-        numberText.setText("1");
-        Assert.assertFalse("The validator should have stopped the change event being fired!", changed[0]);
     }
 }

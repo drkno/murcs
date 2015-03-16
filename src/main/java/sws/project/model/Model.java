@@ -1,5 +1,6 @@
 package sws.project.model;
 
+import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
 import sws.project.magic.easyedit.Editable;
 import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
 import sws.project.magic.tracking.TrackableValue;
@@ -12,10 +13,10 @@ import java.io.Serializable;
  */
 public abstract class Model extends TrackableObject implements Serializable {
     @TrackableValue
-    @Editable(editPaneGenerator = BasicPaneGenerator.class, validatorName = "validateShortName", sort = -2)
+    @Editable(validatorName = "validateShortName", sort = -2)
     private String shortName;
     @TrackableValue
-    @Editable(editPaneGenerator = BasicPaneGenerator.class, sort = -1)
+    @Editable(sort = -1)
     private String longName;
 
     /**

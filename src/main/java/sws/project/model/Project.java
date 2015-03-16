@@ -12,10 +12,10 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
-    @Editable(editPaneGenerator = BasicPaneGenerator.class, sort = 0)
+    @Editable()
     @TrackableValue
     private String description;
-    @Editable(editPaneGenerator = BasicPaneGenerator.class, sort = 99)
+    @Editable(sort = 99)
     @TrackableValue
     private ArrayList<Team> teams = new ArrayList<>();
 
