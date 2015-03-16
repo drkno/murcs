@@ -1,20 +1,19 @@
 package sws.project.model;
 
-import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
-import sws.project.magic.tracking.TrackValue;
-import sws.project.magic.tracking.ValueTracker;
 import sws.project.magic.easyedit.Editable;
+import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.io.Serializable;
 
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model extends ValueTracker implements Serializable{
-    @TrackValue
+public abstract class Model extends TrackableObject implements Serializable {
+    @TrackableValue
     @Editable(validatorName = "validateShortName", sort = -2)
     private String shortName;
-    @TrackValue
+    @TrackableValue
     @Editable(sort = -1)
     private String longName;
 
@@ -31,7 +30,6 @@ public abstract class Model extends ValueTracker implements Serializable{
      */
     public void setShortName(String shortName) throws Exception {
         if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
-
         this.shortName = shortName.trim();
         saveCurrentState("Short Name change");
     }

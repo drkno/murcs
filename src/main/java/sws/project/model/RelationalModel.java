@@ -1,8 +1,8 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
-import sws.project.magic.tracking.TrackValue;
-import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,15 +13,15 @@ import java.util.List;
  *
  * 11/03/2015
  */
-public class RelationalModel extends ValueTracker implements Serializable{
+public class RelationalModel extends TrackableObject implements Serializable{
 
-    @TrackValue
+    @TrackableValue
     private Project project;
-    @TrackValue
+    @TrackableValue
     private ArrayList<Person> unassignedPeople;
-    @TrackValue
+    @TrackableValue
     private ArrayList<Team> unassignedTeams;
-    @TrackValue
+    @TrackableValue
     private ArrayList<Skill> skills;
 
     /***

@@ -4,7 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import sws.project.magic.tracking.ValueTracker;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;

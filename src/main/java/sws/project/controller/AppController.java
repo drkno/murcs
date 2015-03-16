@@ -16,8 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
-import sws.project.magic.tracking.TrackedChange;
-import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.ValueChange;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -27,7 +26,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static sws.project.magic.tracking.ValueTracker.*;
+import static sws.project.magic.tracking.TrackableObject.*;
 
 /**
  * Main app class controller
@@ -81,8 +80,11 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
-        ValueTracker.addSavedListener(c -> {updateUndoRedoMenuItems(c); return true;});
-        updateUndoRedoMenuItems(null);
+        /*TrackableObject.addSavedListener(c -> {
+            updateUndoRedoMenuItems(c);
+            return true;
+        });
+        updateUndoRedoMenuItems(null);*/
     }
 
     /***
@@ -91,11 +93,7 @@ public class AppController implements Initializable {
      */
     private void updateDisplayList(ModelTypes type) {
         displayListItems.clear();
-        displayList.getSelectionModel().clearSelection();
-
-        if (type == null) {
-            type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        }
+        //displayList.getSelectionModel().clearSelection();
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
@@ -270,8 +268,8 @@ public class AppController implements Initializable {
      * Updates the undo/redo menu to reflect the current undo/redo state.
      * @param change change that has been made
      */
-    private void updateUndoRedoMenuItems(TrackedChange change) {
-        if (!canUndo()) {
+    private void updateUndoRedoMenuItems(ValueChange change) {
+        /*if (!canUndo()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
@@ -289,6 +287,33 @@ public class AppController implements Initializable {
             redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
         }
 
-        updateDisplayList(null);
+        if (change == null) return;
+        Class affectedType = change.getAffectedObject().getClass();
+        if (affectedType.isArray()) {
+            affectedType = affectedType.getComponentType();
+        }
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        Class expectedType = null;
+        switch (type) {
+            case Project:
+                expectedType = Project.class;
+                break;
+            case People:
+                expectedType = Person.class;
+                break;
+            case Team:
+                expectedType = Team.class;
+                break;
+            case Skills:
+                expectedType = Skill.class;
+                break;
+        }
+
+        if (affectedType.equals(expectedType) &&
+                Arrays.stream(change.getFields())
+                        .filter(f -> f.getName().equals("shortName"))
+                        .findAny().isPresent()) {
+            updateDisplayList(type);
+        }*/
     }
 }

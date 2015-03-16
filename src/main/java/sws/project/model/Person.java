@@ -1,7 +1,7 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
-import sws.project.magic.tracking.TrackValue;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.List;
  * Model of a person.
  */
 public class Person extends Model {
-    @TrackValue
+    @TrackableValue
     private String userId;
-    @TrackValue
+    @TrackableValue
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**

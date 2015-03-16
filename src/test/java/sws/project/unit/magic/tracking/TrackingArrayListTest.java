@@ -2,21 +2,22 @@ package sws.project.unit.magic.tracking;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.tracking.TrackValue;
-import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.TrackableObject;
 
 import java.util.ArrayList;
 
 public class TrackingArrayListTest {
-    public class TestArrayList extends ValueTracker {
+    public class TestArrayList extends TrackableObject {
         public TestArrayList() {
             testArrayList = new ArrayList<Integer>();
             testArrayList.add(0);
             saveCurrentState("initial state", true);
         }
 
-        @TrackValue
+        @TrackableValue
         private ArrayList<Integer> testArrayList;
 
         public int getLastValue() {
@@ -29,9 +30,14 @@ public class TrackingArrayListTest {
         }
     }
 
+    @Before
+    public void setup() {
+        TrackableObject.setMergeWaitTime(0);
+    }
+
     @After
     public void tearDown() throws Exception {
-        ValueTracker.reset();
+        TrackableObject.reset();
     }
 
     @Test
@@ -40,11 +46,11 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(2, a.getLastValue());
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(1, a.getLastValue());
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(0, a.getLastValue());
     }
 
@@ -54,15 +60,15 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        ValueTracker.undo();
-        ValueTracker.undo();
-        ValueTracker.undo();
+        TrackableObject.undo();
+        TrackableObject.undo();
+        TrackableObject.undo();
         Assert.assertEquals(0, a.getLastValue());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(1, a.getLastValue());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(2, a.getLastValue());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(3, a.getLastValue());
     }
 
@@ -71,22 +77,22 @@ public class TrackingArrayListTest {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
         a.addValue(2);
-        Assert.assertEquals("test desc.", ValueTracker.getUndoDescription());
-        ValueTracker.undo();
-        Assert.assertEquals("initial state", ValueTracker.getUndoDescription());
-        Assert.assertEquals("test desc.", ValueTracker.getRedoDescription());
-        ValueTracker.undo();
-        Assert.assertEquals("initial state", ValueTracker.getRedoDescription());
+        Assert.assertEquals("test desc.", TrackableObject.getUndoDescription());
+        TrackableObject.undo();
+        Assert.assertEquals("initial state", TrackableObject.getUndoDescription());
+        Assert.assertEquals("test desc.", TrackableObject.getRedoDescription());
+        TrackableObject.undo();
+        Assert.assertEquals("initial state", TrackableObject.getRedoDescription());
     }
 
     @Test
     public void cannotUndoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        ValueTracker.undo();
-        Assert.assertFalse(ValueTracker.canUndo());
+        TrackableObject.undo();
+        Assert.assertFalse(TrackableObject.canUndo());
         try {
-            ValueTracker.undo();
+            TrackableObject.undo();
             Assert.fail();
         }
         catch (Exception e) {
@@ -98,9 +104,9 @@ public class TrackingArrayListTest {
     public void cannotRedoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        Assert.assertFalse(ValueTracker.canRedo());
+        Assert.assertFalse(TrackableObject.canRedo());
         try {
-            ValueTracker.redo();
+            TrackableObject.redo();
             Assert.fail();
         }
         catch (Exception e) {
