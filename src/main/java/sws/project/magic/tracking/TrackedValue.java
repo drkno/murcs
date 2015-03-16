@@ -1,18 +1,14 @@
 package sws.project.magic.tracking;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Tracks the current value of an object.
  */
 public class TrackedValue {
 
-    private final ArrayList<Field> _fields;
-    private Object[] _values;
+    private ArrayList<FieldValuePair> fieldValuePairs;
 
     /**
      * Instantiates a new tracked object.
@@ -21,9 +17,10 @@ public class TrackedValue {
      * @throws Exception Exception if retrieving values failed due to unknown type.
      */
     public TrackedValue(Object initialObject, ArrayList<Field> fields) throws Exception {
-        _fields = fields;
-        _values = new Object[fields.size()];
-        difference(initialObject, null, false);
+        fieldValuePairs = new ArrayList<>();
+        for (Field field : fields) {
+            fieldValuePairs.add(new FieldValuePair(initialObject, field));
+        }
     }
 
     /**
@@ -34,34 +31,23 @@ public class TrackedValue {
      * @return A representation of the difference between these states
      * @throws Exception If retrieving the values of the current object state is not possible.
      */
-    public TrackedChange difference(Object obj, String description, boolean initialSave) throws Exception {
-        ArrayList<Field> changedFields = new ArrayList<>();
-        ArrayList<Object> changedValues = new ArrayList<>();
-        for (int i = 0; i < _fields.size(); i++) {
-            Field field = _fields.get(i);
-            field.setAccessible(true);
-            Object value = field.get(obj);
-            if (value instanceof Collection) {
-                Class<?> clazz = value.getClass();
-                Constructor<?> ctor = clazz.getConstructor(Collection.class);
-                value = ctor.newInstance(new Object[] { value });
-            }
-            else if (value instanceof Map) {
-                Class<?> clazz = value.getClass();
-                Constructor<?> ctor = clazz.getConstructor(Map.class);
-                value = ctor.newInstance(new Object[] { value });
-            }
+    public ValueChange difference(Object obj, String description, boolean initialSave) throws Exception {
+        ArrayList<FieldValuePair> changedFieldValuePairs = new ArrayList<>();
+        for (int i = 0; i < fieldValuePairs.size(); i++) {
+            FieldValuePair pair = fieldValuePairs.get(i);
+            Field field = pair.getField();
+            Object value = FieldValuePair.getValueFromObject(obj, field);
 
-            if (initialSave || value == null && _values[i] == null || !value.equals(_values[i])) {
-                changedFields.add(field);
-                changedValues.add(value);
-                _values[i] = value;
+            if (initialSave || value == null && pair.getValue() == null || !value.equals(pair.getValue())) {
+                FieldValuePair newPair = new FieldValuePair(field, value);
+                changedFieldValuePairs.add(newPair);
+                fieldValuePairs.set(i, newPair);
             }
         }
 
-        Field[] fields = new Field[_fields.size()];
-        changedFields.toArray(fields);
-        return new TrackedChange(obj, fields, changedValues.toArray(), description);
+        FieldValuePair[] pairs = new FieldValuePair[changedFieldValuePairs.size()];
+        changedFieldValuePairs.toArray(pairs);
+        return new ValueChange(obj, pairs, description);
     }
 
     /**
@@ -71,45 +57,45 @@ public class TrackedValue {
      * @param description The description of the change.
      * @return A representation of the previous state.
      */
-    public TrackedChange dumpChange(Object original, TrackedChange previous, String description) {
-        Field[] previousFields = previous.getFields();
-        Object[] previousValues = previous.getValues();
+    public ValueChange dumpChange(Object original, ValueChange previous, String description) throws Exception {
+        FieldValuePair[] previousFieldValuePairs = previous.getChangedFields();
+        ArrayList<FieldValuePair> changedFieldValuePairs = new ArrayList<>();
 
-        ArrayList<Field> changedFields = new ArrayList<>();
-        ArrayList<Object> changedValues = new ArrayList<>();
-
-        for (int i = 0; i < previousFields.length; i++) {
+        for (int i = 0; i < previousFieldValuePairs.length; i++) {
             int j;
-            for (j = 0; j < _fields.size(); j++) {
-                if (_fields.get(j).equals(previousFields[i])) break;
+            for (j = 0; j < fieldValuePairs.size(); j++) {
+                if (fieldValuePairs.get(j).getField().equals(previousFieldValuePairs[i].getField())) {
+                    break;
+                }
             }
-            if (j >= _fields.size()) continue;
-            if (previousValues[i] == null && _values[i] == null || !previousValues[i].equals(_values[i])) {
-                changedFields.add(previousFields[i]);
-                changedValues.add(_values[i]);
+            if (j >= fieldValuePairs.size()) {
+                throw new Exception("Field should exist. Tracker in an inconsistent state.");
+            }
+            if (previousFieldValuePairs[i].getValue() == null && fieldValuePairs.get(j).getValue() == null ||
+                    !previousFieldValuePairs[i].getValue().equals(fieldValuePairs.get(j).getValue())) {
+                changedFieldValuePairs.add(new FieldValuePair(previousFieldValuePairs[i].getField(), fieldValuePairs.get(j).getValue()));
             }
         }
 
-        previousFields = new Field[changedFields.size()];
-        changedFields.toArray(previousFields);
-        return new TrackedChange(original, previousFields, changedValues.toArray(), description);
+        previousFieldValuePairs = new FieldValuePair[changedFieldValuePairs.size()];
+        changedFieldValuePairs.toArray(previousFieldValuePairs);
+        return new ValueChange(original, previousFieldValuePairs, description);
     }
 
     /**
      * Applies the changes in a TrackedChange to this historical view of the object.
      * @param state new state of the object.
      */
-    public void apply(TrackedChange state) {
-        Field[] fields = state.getFields();
-        Object[] values = state.getValues();
+    public void apply(ValueChange state) {
+        FieldValuePair[] fields = state.getChangedFields();
+        for (FieldValuePair field : fields) {
 
-        for (int i = 0; i < fields.length; i++) {
-            int index = _fields.indexOf(fields[i]);
+            int index = fieldValuePairs.indexOf(field);
             if (index >= 0) {
-                _values[index] = values[i];
-            }
-            else {
-                System.err.println("Could not update tracker history - this will only have affect" +
+                fieldValuePairs.get(index).setValue(field.getValue());
+            } else {
+                System.err.println("If you are seeing this message you did something really wrong...\n" +
+                        "Could not update tracker history - this will only have affect" +
                         " if you attempt to do (not redo) after undoing.");
             }
         }

@@ -3,16 +3,16 @@ package sws.project.unit.magic.tracking;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-import sws.project.magic.tracking.TrackValue;
-import sws.project.magic.tracking.ValueTracker;
+import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.TrackableObject;
 
 public class TrackingIntegerTest {
-    public class TestInteger extends ValueTracker {
+    public class TestInteger extends TrackableObject {
         public TestInteger() {
             saveCurrentState("initial state", true);
         }
 
-        @TrackValue
+        @TrackableValue
         private int testInteger = 0;
 
         public int getTestInteger() {
@@ -27,7 +27,7 @@ public class TrackingIntegerTest {
 
     @After
     public void tearDown() throws Exception {
-        ValueTracker.reset();
+        TrackableObject.reset();
     }
 
     @Test
@@ -36,11 +36,11 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(2, a.getTestInteger());
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(1, a.getTestInteger());
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(0, a.getTestInteger());
     }
 
@@ -50,15 +50,15 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        ValueTracker.undo();
-        ValueTracker.undo();
-        ValueTracker.undo();
+        TrackableObject.undo();
+        TrackableObject.undo();
+        TrackableObject.undo();
         Assert.assertEquals(0, a.getTestInteger());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(1, a.getTestInteger());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(2, a.getTestInteger());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(3, a.getTestInteger());
     }
 
@@ -67,22 +67,22 @@ public class TrackingIntegerTest {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
         a.setTestInteger(2);
-        Assert.assertEquals("test desc.", ValueTracker.getUndoDescription());
-        ValueTracker.undo();
-        Assert.assertEquals("initial state", ValueTracker.getUndoDescription());
-        Assert.assertEquals("test desc.", ValueTracker.getRedoDescription());
-        ValueTracker.undo();
-        Assert.assertEquals("initial state", ValueTracker.getRedoDescription());
+        Assert.assertEquals("test desc.", TrackableObject.getUndoDescription());
+        TrackableObject.undo();
+        Assert.assertEquals("initial state", TrackableObject.getUndoDescription());
+        Assert.assertEquals("test desc.", TrackableObject.getRedoDescription());
+        TrackableObject.undo();
+        Assert.assertEquals("initial state", TrackableObject.getRedoDescription());
     }
 
     @Test
     public void cannotUndoTest() throws Exception {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
-        ValueTracker.undo();
-        Assert.assertFalse(ValueTracker.canUndo());
+        TrackableObject.undo();
+        Assert.assertFalse(TrackableObject.canUndo());
         try {
-            ValueTracker.undo();
+            TrackableObject.undo();
             Assert.fail();
         }
         catch (Exception e) {
@@ -94,9 +94,9 @@ public class TrackingIntegerTest {
     public void cannotRedoTest() throws Exception {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
-        Assert.assertFalse(ValueTracker.canRedo());
+        Assert.assertFalse(TrackableObject.canRedo());
         try {
-            ValueTracker.redo();
+            TrackableObject.redo();
             Assert.fail();
         }
         catch (Exception e) {
@@ -106,18 +106,18 @@ public class TrackingIntegerTest {
 
     @Test
     public void maximumUndoRedoStackSizeTest() throws Exception {
-        ValueTracker.setMaximumTrackingSize(3);
-        Assert.assertEquals(3, ValueTracker.getMaximumTrackingSize());
+        TrackableObject.setMaximumTrackingSize(3);
+        Assert.assertEquals(3, TrackableObject.getMaximumTrackingSize());
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
         a.setTestInteger(4);
         a.setTestInteger(5);
-        ValueTracker.undo();
-        ValueTracker.undo();
-        ValueTracker.undo();
-        Assert.assertFalse(ValueTracker.canUndo());
+        TrackableObject.undo();
+        TrackableObject.undo();
+        TrackableObject.undo();
+        Assert.assertFalse(TrackableObject.canUndo());
         Assert.assertEquals(2, a.getTestInteger());
     }
 
@@ -127,14 +127,14 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        ValueTracker.undo();
+        TrackableObject.undo();
         Assert.assertEquals(2, a.getTestInteger());
-        Assert.assertTrue(ValueTracker.canRedo());
+        Assert.assertTrue(TrackableObject.canRedo());
         a.setTestInteger(4);
-        Assert.assertFalse(ValueTracker.canRedo());
-        ValueTracker.undo();
+        Assert.assertFalse(TrackableObject.canRedo());
+        TrackableObject.undo();
         Assert.assertEquals(2, a.getTestInteger());
-        ValueTracker.redo();
+        TrackableObject.redo();
         Assert.assertEquals(4, a.getTestInteger());
     }
 }

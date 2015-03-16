@@ -8,10 +8,10 @@ import java.util.function.Predicate;
 /**
  * Keeps track of specified values so that the changes can be done/undone.
  */
-public abstract class ValueTracker {
-    private static final Stack<TrackedChange> _revisionUndoHistory = new Stack<>();
-    private static final Stack<TrackedChange> _revisionRedoHistory = new Stack<>();
-    private static ArrayList<Predicate<TrackedChange>> changeListeners = new ArrayList<>();
+public abstract class TrackableObject {
+    private static final Stack<ValueChange> _revisionUndoHistory = new Stack<>();
+    private static final Stack<ValueChange> _revisionRedoHistory = new Stack<>();
+    private static ArrayList<Predicate<ValueChange>> changeListeners = new ArrayList<>();
     private static int maximumUndoRedoStackSize = -1;
     private TrackedValue _currentState;
 
@@ -24,11 +24,11 @@ public abstract class ValueTracker {
      * saveCurrentState(String, true) should be called in the constructor of the
      * object if the initial state needs to be tracked.
      */
-    protected ValueTracker() {
+    protected TrackableObject() {
         try {
             ArrayList<Field> trackableFields = new ArrayList<>();
             for (Field field : getClass().getDeclaredFields()) {
-                if (field.isAnnotationPresent(TrackValue.class)) {
+                if (field.isAnnotationPresent(TrackableValue.class)) {
                     trackableFields.add(field);
                 }
             }
@@ -48,7 +48,7 @@ public abstract class ValueTracker {
      * instead.
      * @param changeDescription Description of the changes made since last save.
      */
-    protected void saveCurrentState(String changeDescription) {
+    public void saveCurrentState(String changeDescription) {
         saveCurrentState(changeDescription, false);
     }
 
@@ -58,16 +58,16 @@ public abstract class ValueTracker {
      * @param initialSave If set to true will save the values of all annotated fields regardless of
      *                    the current value or previous value.
      */
-    protected void saveCurrentState(String changeDescription, boolean initialSave) {
+    public void saveCurrentState(String changeDescription, boolean initialSave) {
         try {
             if (canRedo()) {
-                TrackedChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
+                ValueChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
                         _revisionRedoHistory.peek().getDescription());
                 _revisionUndoHistory.push(change);
                 _revisionRedoHistory.clear();
             }
 
-            TrackedChange value = _currentState.difference(this, changeDescription, initialSave);
+            ValueChange value = _currentState.difference(this, changeDescription, initialSave);
             _revisionUndoHistory.push(value);
 
             if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
@@ -88,8 +88,8 @@ public abstract class ValueTracker {
      * object to reflect the applied change.
      * @param state New state that the TrackedValue should reflect.
      */
-    private static void applyHistoryChange(TrackedChange state) {
-        ValueTracker obj = (ValueTracker)state.getAffectedObject();
+    private static void applyHistoryChange(ValueChange state) {
+        TrackableObject obj = (TrackableObject)state.getAffectedObject();
         obj._currentState.apply(state);
     }
 
@@ -102,12 +102,12 @@ public abstract class ValueTracker {
             throw new Exception("Undo is not possible as there are no saved undo states.");
         }
 
-        if (!canRedo()) {
-            TrackedChange current = _revisionUndoHistory.pop();
+        if (!canRedo() && _revisionUndoHistory.size() > 1) {
+            ValueChange current = _revisionUndoHistory.pop();
             _revisionRedoHistory.push(current);
         }
 
-        TrackedChange undoState = _revisionUndoHistory.pop();
+        ValueChange undoState = _revisionUndoHistory.pop();
         _revisionRedoHistory.push(undoState);
         applyHistoryChange(undoState);
         undoState.undo();
@@ -138,7 +138,7 @@ public abstract class ValueTracker {
             throw new Exception("Redo is not possible as there are no saved redo states.");
         }
 
-        TrackedChange redoState = _revisionRedoHistory.pop();
+        ValueChange redoState = _revisionRedoHistory.pop();
         _revisionUndoHistory.push(redoState);
         redoState.redo();
         applyHistoryChange(redoState);
@@ -182,14 +182,14 @@ public abstract class ValueTracker {
      * @param maximumUndoRedoStackSize new maximum stack size or less than or equal to 0 if infinite is desired.
      */
     public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
-        ValueTracker.maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
+        TrackableObject.maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
     }
 
     /**
      * Adds a listener that waits for a save.
      * @param listener listener to call on change.
      */
-    public static void addSavedListener(Predicate<TrackedChange> listener) {
+    public static void addSavedListener(Predicate<ValueChange> listener) {
         changeListeners.add(listener);
     }
 
@@ -197,8 +197,8 @@ public abstract class ValueTracker {
      * Notifies listeners that are waiting for history changes.
      * @param change change that was made
      */
-    private static void notifyListeners(TrackedChange change) {
-        for (Predicate<TrackedChange> listener : changeListeners) {
+    private static void notifyListeners(ValueChange change) {
+        for (Predicate<ValueChange> listener : changeListeners) {
             listener.test(change);
         }
     }
