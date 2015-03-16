@@ -6,22 +6,25 @@ import java.lang.reflect.Field;
  * Tracks an individual change occurrence that can be undone/redone.
  */
 public class ValueChange {
-    private String changeDescription;
-    private Object originalObject;
-    private final FieldValuePair[] changedFieldValues;
-    private boolean undone;
+    private String _changeDescription;
+    private Object _originalObject;
+    private final FieldValuePair[] _changedFieldValues;
+    private boolean _undone;
+    private TrackedState _stateTracker;
 
     /**
      * Instantiates a new TrackedChange that tracks an individual change occurrence.
      * @param originalObject The object that the change occurred on.
      * @param changedFieldValues The fields that had values changed were changed.
      * @param changeDescription Description of the changes made.
+     * @param source Source state tracker.
      */
-    protected ValueChange(Object originalObject, FieldValuePair[] changedFieldValues, String changeDescription) {
-        this.originalObject = originalObject;
-        this.changedFieldValues = changedFieldValues;
-        this.undone = false;
-        this.changeDescription = changeDescription;
+    protected ValueChange(Object originalObject, FieldValuePair[] changedFieldValues, String changeDescription, TrackedState source) {
+        this._originalObject = originalObject;
+        this._changedFieldValues = changedFieldValues;
+        this._undone = false;
+        this._changeDescription = changeDescription;
+        this._stateTracker = source;
     }
 
     /**
@@ -29,7 +32,7 @@ public class ValueChange {
      * @return the description.
      */
     public String getDescription() {
-        return changeDescription;
+        return _changeDescription;
     }
 
     /**
@@ -37,10 +40,10 @@ public class ValueChange {
      * @throws Exception if undo cannot be performed.
      */
     protected void undo() throws Exception {
-        if (undone) {
+        if (_undone) {
             throw new Exception("Cannot undo if already undone!");
         }
-        undone = true;
+        _undone = true;
         toggleValues();
     }
 
@@ -49,10 +52,10 @@ public class ValueChange {
      * @throws Exception If this change has not been undone.
      */
     protected void redo() throws Exception {
-        if (!undone) {
+        if (!_undone) {
             throw new Exception("Cannot redo if already redone!");
         }
-        undone = false;
+        _undone = false;
         toggleValues();
     }
 
@@ -62,10 +65,10 @@ public class ValueChange {
      * wrong happened at this point.
      */
     private void toggleValues() throws Exception {
-        for (FieldValuePair changedFieldValue : changedFieldValues) {
+        for (FieldValuePair changedFieldValue : _changedFieldValues) {
             Field field = changedFieldValue.getField();
-            Object previousValue = field.get(originalObject);
-            field.set(originalObject, changedFieldValue.getValue());
+            Object previousValue = field.get(_originalObject);
+            field.set(_originalObject, changedFieldValue.getValue());
             changedFieldValue.setValue(previousValue);
         }
     }
@@ -75,7 +78,7 @@ public class ValueChange {
      * @return the object.
      */
     public Object getAffectedObject() {
-        return originalObject;
+        return _originalObject;
     }
 
     /**
@@ -83,7 +86,7 @@ public class ValueChange {
      * @return an array of affected fields.
      */
     public FieldValuePair[] getChangedFields() {
-        return changedFieldValues;
+        return _changedFieldValues;
     }
 
     /**
@@ -91,13 +94,13 @@ public class ValueChange {
      * @return true if a changes to values have been made, false otherwise.
      */
     public boolean isDifferent() {
-        return changedFieldValues.length != 0;
+        return _changedFieldValues.length != 0;
     }
 
     @Override
     public String toString() {
         String resultString = "";
-        for (FieldValuePair changedFieldValue : changedFieldValues) {
+        for (FieldValuePair changedFieldValue : _changedFieldValues) {
             resultString += changedFieldValue.toString() + "; ";
         }
         return resultString;
@@ -110,13 +113,13 @@ public class ValueChange {
      * @return true if are on the same fields of an object, false otherwise
      */
     public boolean isEquivalent(ValueChange change, Object affectedObject) {
-        boolean areSame = affectedObject == originalObject;
-        areSame = areSame && change.getChangedFields().length == changedFieldValues.length;
-        areSame = areSame && change.getDescription().equals(changeDescription);
+        boolean areSame = affectedObject == _originalObject;
+        areSame = areSame && change.getChangedFields().length == _changedFieldValues.length;
+        areSame = areSame && change.getDescription().equals(_changeDescription);
         if (!areSame) return false;
         FieldValuePair[] fields = change.getChangedFields();
-        for (int i = 0; i < changedFieldValues.length; i++) {
-            if (!changedFieldValues[i].equals(fields[i])) return false;
+        for (int i = 0; i < _changedFieldValues.length; i++) {
+            if (!_changedFieldValues[i].equals(fields[i])) return false;
         }
         return true;
     }
@@ -127,8 +130,16 @@ public class ValueChange {
      */
     public void assimilate(ValueChange value) {
         FieldValuePair[] fields = value.getChangedFields();
-        for (int i = 0; i < changedFieldValues.length; i++) {
-            changedFieldValues[i] = fields[i];
+        for (int i = 0; i < _changedFieldValues.length; i++) {
+            _changedFieldValues[i] = fields[i];
         }
+    }
+
+    /**
+     * Gets the StateTracker which created this ValueChange.
+     * @return the StateTracker.
+     */
+    protected TrackedState getStateTracker() {
+        return _stateTracker;
     }
 }

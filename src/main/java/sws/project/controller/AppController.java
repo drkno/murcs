@@ -259,6 +259,7 @@ public class AppController implements Initializable {
         catch (Exception e) {
             // something went terribly wrong....
             reset();
+            e.printStackTrace();
         }
         updateUndoRedoMenuItems(null);
     }

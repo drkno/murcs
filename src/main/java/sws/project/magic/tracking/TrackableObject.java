@@ -66,8 +66,8 @@ public abstract class TrackableObject {
     public void saveCurrentState(String changeDescription, boolean saveAll) {
         try {
             if (canRedo()) { // add current state to the undo stack, otherwise it will be lost
-                ValueChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
-                        _revisionRedoHistory.peek().getDescription());
+                ValueChange last = _revisionUndoHistory.peek();
+                ValueChange change = last.getStateTracker().dumpChange(this, _revisionUndoHistory.peek(), last.getDescription());
                 _revisionUndoHistory.push(change);
             }
 
@@ -104,7 +104,7 @@ public abstract class TrackableObject {
             if (_maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == _maximumUndoRedoStackSize) {
                 _revisionUndoHistory.remove(0); // remove bottom item from stack if beyond bounds
             }
-            
+
             notifyListeners(_revisionUndoHistory.peek(), _mergeWaitTime); // notify change listeners
         }
         catch (Exception e) {

@@ -47,7 +47,7 @@ public class TrackedState {
 
         FieldValuePair[] pairs = new FieldValuePair[changedFieldValuePairs.size()];
         changedFieldValuePairs.toArray(pairs);
-        return new ValueChange(obj, pairs, description);
+        return new ValueChange(obj, pairs, description, this);
     }
 
     /**
@@ -80,7 +80,7 @@ public class TrackedState {
 
         previousFieldValuePairs = new FieldValuePair[changedFieldValuePairs.size()];
         changedFieldValuePairs.toArray(previousFieldValuePairs);
-        return new ValueChange(original, previousFieldValuePairs, description);
+        return new ValueChange(original, previousFieldValuePairs, description, this);
     }
 
     /**
