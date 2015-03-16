@@ -12,10 +12,10 @@ import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 import java.lang.reflect.Field;
 
 public class EditFormGeneratorTest {
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @Editable(value = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String editableString;
 
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", friendlyName = "A friendly name", getterName = "getEditableString", setterName = "setEditableString")
+    @Editable(value = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml", friendlyName = "A friendly name", getterName = "getEditableString", setterName = "setEditableString")
     private String editableWithName;
 
     private String notEditable;

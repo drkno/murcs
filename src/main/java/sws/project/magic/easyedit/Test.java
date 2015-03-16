@@ -8,16 +8,15 @@ import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  *
  */
 public class Test extends Application {
-    //@Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    //@Editable(value = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String name;
 
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/Collection.fxml")
+    @Editable(value = FxmlPaneGenerator.class, argument = "/sws/project/Collection.fxml")
     private Collection<String> testStrings = new ArrayList<>();
 
     public Collection<String> getTestStrings() {

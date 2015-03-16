@@ -18,7 +18,7 @@ public class BasicStringEditControllerTest {
     private TextField valueText;
 
     /**
-     * Note: this method will fail if the names of the title/editPaneGenerator texts change
+     * Note: this method will fail if the names of the title/value texts change
      * @throws Exception
      */
     @Before
@@ -38,8 +38,8 @@ public class BasicStringEditControllerTest {
 
     /**
      * Injects an object into the controller
-     * @param name The name of the editPaneGenerator to inject
-     * @param value The editPaneGenerator to inject
+     * @param name The name of the value to inject
+     * @param value The value to inject
      * @throws Exception An exception will be thrown if the object is of the wrong type or the field doesn't exist
      */
     private void inject(String name, Object value) throws Exception{

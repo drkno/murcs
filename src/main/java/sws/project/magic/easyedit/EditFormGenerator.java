@@ -4,13 +4,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import sws.project.magic.tracking.ValueTracker;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.NoSuchElementException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +25,9 @@ public class EditFormGenerator {
      * @return The edit pane
      */
     public static Parent generatePane(Object from) throws Exception{
+        //If the object isn't trackable, give up
+        if (!(from instanceof ValueTracker)) throw new Exception("You probably shouldn't be generating a form for an untrackable object (" + from + ")");
+
         VBox generated = new VBox(20);
 
         Class clazz = from.getClass();
@@ -69,10 +71,11 @@ public class EditFormGenerator {
             Node child = generateFor(field, getter, setter, validator, from, editable);
             int depth = editable.sort();
 
+            //Make sure the nodes are sorted.
             insertInto(nodes, new Object[]{depth, child});
-            //generated.getChildren().add(child);
         }
 
+        //Add all the nodes to the VBox
         for (Object[] nodePair : nodes){
             generated.getChildren().add((Node)nodePair[1]);
         }
@@ -213,10 +216,10 @@ public class EditFormGenerator {
         Constructor<?> constructor;
         EditPaneGenerator generator;
         try {
-            constructor = editable.editPaneGenerator().getConstructor();
+            constructor = editable.value().getConstructor();
             generator = (EditPaneGenerator) constructor.newInstance();
         } catch (NoSuchMethodException e) {
-            throw new Exception("\"Unable to instantiate a new \"" + editable.editPaneGenerator().getName() + "\". You should check it has a default constructor.\"");
+            throw new Exception("\"Unable to instantiate a new \"" + editable.value().getName() + "\". You should check it has a default constructor.\"");
         }
 
         //If there was an argument set on the field, pass it on to the generator
@@ -234,7 +237,7 @@ public class EditFormGenerator {
         }
 
         if (!supported)
-            throw new Exception("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.editPaneGenerator().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
+            throw new Exception("You've tried to generate a Form for the " + field.getName() + " property on the " + from.getClass().getName() + " object using a " + editable.value().getName() + " generator. Check and make sure that the converter is assigned and that it supports the field type.");
 
         return generator.generate(field, getter, setter, validator, from);
     }
