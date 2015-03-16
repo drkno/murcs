@@ -97,4 +97,9 @@ public class Person extends Model {
             saveCurrentState("Skill removed");
         }
     }
+
+    @Override
+    public String toString(){
+        return getShortName();
+    }
 }
