@@ -1,5 +1,6 @@
 package sws.project.controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -44,7 +45,7 @@ public class ProjectEditor implements Initializable {
     }
 
     public static Parent createNew(){
-        return createFor(null);
+        return createFor(new Project());
     }
 
     public static Parent createNew(Callable<Void> onSaved){
@@ -63,6 +64,8 @@ public class ProjectEditor implements Initializable {
             ProjectEditor controller = loader.getController();
             controller.project = project;
             controller.onSaved = onSaved;
+            controller.loadProject();
+
             return anchorPane;
         }catch (Exception e){
             System.err.println("Unable to create a project editor!(this is seriously bad)");
@@ -72,9 +75,11 @@ public class ProjectEditor implements Initializable {
         return null;
     }
 
-    public static void displayWindow(Callable<Void> savedCallback){
+    public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
         try {
-            Parent root = createNew(savedCallback);
+            Parent content = createNew();
+
+            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
@@ -117,6 +122,12 @@ public class ProjectEditor implements Initializable {
             e.printStackTrace();
             return;
         }
+    }
+
+    private void loadProject(){
+        textFieldShortName.setText(project.getShortName());
+        textFieldLongName.setText(project.getLongName());
+        descriptionTextField.setText(project.getDescription());
     }
 
     @Override
