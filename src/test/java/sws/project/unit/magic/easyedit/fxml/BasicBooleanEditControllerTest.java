@@ -17,7 +17,7 @@ public class BasicBooleanEditControllerTest {
     private RadioButton trueButton;
     private RadioButton falseButton;
     /**
-     * Note: this method will fail if the names of the title/editPaneGenerator texts change
+     * Note: this method will fail if the names of the title/value texts change
      * @throws Exception
      */
     @Before
@@ -37,8 +37,8 @@ public class BasicBooleanEditControllerTest {
 
     /**
      * Injects an object into the controller
-     * @param name The name of the editPaneGenerator to inject
-     * @param value The editPaneGenerator to inject
+     * @param name The name of the value to inject
+     * @param value The value to inject
      * @throws Exception An exception will be thrown if the object is of the wrong type or the field doesn't exist
      */
     private void inject(String name, Object value) throws Exception{
@@ -66,8 +66,8 @@ public class BasicBooleanEditControllerTest {
         Assert.assertFalse("The false button should not be selected after setting the value to true", falseButton.isSelected());
 
         /*controller.setValue(false);
-        Assert.assertFalse("The true button should not be selected after setting the editPaneGenerator to false", trueButton.isSelected());
-        Assert.assertTrue("The false button should be selected after setting the editPaneGenerator to false", falseButton.isSelected());*/
+        Assert.assertFalse("The true button should not be selected after setting the value to false", trueButton.isSelected());
+        Assert.assertTrue("The false button should be selected after setting the value to false", falseButton.isSelected());*/
     }
 
     @Test

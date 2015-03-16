@@ -15,8 +15,8 @@ public interface EditController<T> {
     void setTitle(String title);
 
     /**
-     * Sets the editPaneGenerator of the edit controller
-     * @param value The current editPaneGenerator of the edit controller
+     * Sets the value of the edit controller
+     * @param value The current value of the edit controller
      */
     void setValue(T value);
 
@@ -29,7 +29,7 @@ public interface EditController<T> {
 
     /**
      * Adds a new change listener to the form which will
-     * be fired the next time the form has a valid editPaneGenerator
+     * be fired the next time the form has a valid value
      * @param listener The change listener to add
      */
     void addChangeListener(ChangeListener<T> listener);

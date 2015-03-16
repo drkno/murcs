@@ -2,7 +2,6 @@ package sws.project.unit.magic.easyedit.fxml;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +15,10 @@ public class FxmlPaneGeneratorTest {
     private FxmlPaneGenerator generator;
 
     //A string we test the changes for
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class)
+    @Editable(value = FxmlPaneGenerator.class)
     private String testString;
 
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, friendlyName = "A test string")
+    @Editable(value = FxmlPaneGenerator.class, friendlyName = "A test string")
     private String testString2;
 
     @Before
@@ -30,7 +29,7 @@ public class FxmlPaneGeneratorTest {
 
     @Test
     public void testSupportedTypes() throws Exception {
-        Assert.assertEquals("There should be 9 supported types!", 9, generator.supportedTypes().length);
+        Assert.assertEquals("There should be 11 supported types!",11, generator.supportedTypes().length);
     }
 
     @Test

@@ -2,8 +2,8 @@ package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
-import sws.project.magic.tracking.TrackValue;
+import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,11 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
-    @TrackValue
+    @Editable()
+    @TrackableValue
     private String description;
-    @TrackValue
+    @Editable(sort = 99)
+    @TrackableValue
     private ArrayList<Team> teams = new ArrayList<>();
 
     /**

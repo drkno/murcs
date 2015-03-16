@@ -1,5 +1,7 @@
 package sws.project.magic.easyedit;
 
+import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,7 +17,7 @@ public @interface Editable {
      * The type of the generator to use for this field
      * @return The type of generator to use on this field
      */
-    Class<?> editPaneGenerator();
+    Class<?> value() default BasicPaneGenerator.class;
 
     /**
      * The name for the getter for the field. This
@@ -61,4 +63,10 @@ public @interface Editable {
      * @return the friendly name of the field
      */
     String friendlyName() default "";
+
+    /**
+     * Indicates how high up the pane the field should show
+     * @return The position of the pane
+     */
+    int sort() default 0;
 }
