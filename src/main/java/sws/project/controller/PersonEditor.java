@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import sws.project.model.Person;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -69,7 +70,7 @@ public class PersonEditor implements Initializable{
      * @param onSaved The save callback
      * @return The form
      */
-    public static Parent createFor(Person person, Callable<Void> onSaved){
+    private static Parent createFor(Person person, Callable<Void> onSaved, boolean autoSaving) {
         try {
             FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/PersonEditor.fxml"));
             AnchorPane anchorPane = loader.load();
@@ -88,6 +89,10 @@ public class PersonEditor implements Initializable{
         return null;
     }
 
+    public static Parent createFor(Person person, Callable<Void> onSaved) {
+        return createFor(person, onSaved, true);
+    }
+
     /**
      * Displays a new window for creating a new form
      * @param okay The okay callback
@@ -95,7 +100,7 @@ public class PersonEditor implements Initializable{
      */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
         try {
-            Parent content = createNew();
+            Parent content = createFor(new Person(), null, false);
 
             Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
             Scene scene = new Scene(root);
