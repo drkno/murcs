@@ -125,7 +125,7 @@ public class PersonEditor implements Initializable{
 
             //If we haven't added the person yet, throw them in the list of unassigned people
             if (!model.getPeople().contains(person))
-                model.getUnassignedPeople().add(person);
+                model.addUnassignedPerson(person);
 
             //If we have a saved callBack, call it
             if (onSaved != null)
