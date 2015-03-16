@@ -145,7 +145,6 @@ public class ProjectEditor implements Initializable {
 
         }catch (Exception e){
             labelErrorMessage.setText(e.getMessage());
-            e.printStackTrace();
             return;
         }
     }

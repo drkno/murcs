@@ -56,6 +56,10 @@ public class AppController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        App.addListener(e -> {
+            e.consume();
+            fileQuitPress(null);
+        });
         displayListItems = FXCollections.observableArrayList();
         displayList.setItems(displayListItems);
 
@@ -67,7 +71,7 @@ public class AppController implements Initializable {
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue)->{
+        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             contentPane.getChildren().clear();
             if (newValue == null) return;
 
@@ -84,6 +88,8 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
+        updateUndoRedoMenuItems(null);
+
         TrackableObject.addSavedListener(change -> {
             Platform.runLater(() -> {updateUndoRedoMenuItems(change);});
         });
@@ -94,8 +100,11 @@ public class AppController implements Initializable {
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
+        int selectedItem = displayList.getSelectionModel().getSelectedIndex();
+        if (selectedItem != -1)
+            displayList.getSelectionModel().clearSelection(selectedItem);
+
         displayListItems.clear();
-        //displayList.getSelectionModel().clearSelection();
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
@@ -104,6 +113,7 @@ public class AppController implements Initializable {
                 Project project = model.getProject();
                 if (project != null) {
                     displayListItems.add(project);
+                    displayList.getSelectionModel().select(project);
                 }
                 break;
             case People:
@@ -124,7 +134,28 @@ public class AppController implements Initializable {
      */
     @FXML
     private void fileQuitPress(ActionEvent event) {
-        Platform.exit();
+        if (canUndo()) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Unsaved Changes");
+            popup.setMessageText("You have unsaved changes to your project.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+                popup.close();
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                // Let the user save the project
+                saveProject(null);
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.show();
+        }
+        else {
+            Platform.exit();
+        }
     }
 
     /***
@@ -161,6 +192,10 @@ public class AppController implements Initializable {
             popup.setMessageText("You have unsaved changes to your project.");
             popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
                 popup.close();
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
                 // Reset Tracked history
                 reset();
                 // Create a new project
@@ -174,6 +209,10 @@ public class AppController implements Initializable {
                 popup.close();
                 // Let the user save the project
                 saveProject(null);
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
                 // Reset Tracked History
                 reset();
                 // Create a new project
@@ -280,7 +319,7 @@ public class AppController implements Initializable {
             undoMenuItem.setText("Undo...");
         }
         else {
-            undoMenuItem.setDisable(false);
+            undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo \"" + getUndoDescription() +  "\"");
         }
 
@@ -289,7 +328,7 @@ public class AppController implements Initializable {
             redoMenuItem.setText("Redo...");
         }
         else {
-            redoMenuItem.setDisable(false);
+            redoMenuItem.setDisable(true);
             redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
         }
 
