@@ -145,7 +145,7 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            ProjectEditor.displayProjectPopUp(() -> {
+            ProjectEditor.displayWindow(() -> {
                 updateDisplayList(ModelTypes.Project);
                 return null;
             });
@@ -159,7 +159,7 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 reset();
                 // Create a new project
-                ProjectEditor.displayProjectPopUp(() -> {
+                ProjectEditor.displayWindow(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
                 });
@@ -172,7 +172,7 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                ProjectEditor.displayProjectPopUp(() -> {
+                ProjectEditor.displayWindow(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
                 });
@@ -269,51 +269,6 @@ public class AppController implements Initializable {
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
-        /*if (!canUndo()) {
-            undoMenuItem.setDisable(true);
-            undoMenuItem.setText("Undo...");
-        }
-        else {
-            undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo \"" + getUndoDescription() +  "\"");
-        }
 
-        if (!canRedo()) {
-            redoMenuItem.setDisable(true);
-            redoMenuItem.setText("Redo...");
-        }
-        else {
-            redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
-        }
-
-        if (change == null) return;
-        Class affectedType = change.getAffectedObject().getClass();
-        if (affectedType.isArray()) {
-            affectedType = affectedType.getComponentType();
-        }
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class expectedType = null;
-        switch (type) {
-            case Project:
-                expectedType = Project.class;
-                break;
-            case People:
-                expectedType = Person.class;
-                break;
-            case Team:
-                expectedType = Team.class;
-                break;
-            case Skills:
-                expectedType = Skill.class;
-                break;
-        }
-
-        if (affectedType.equals(expectedType) &&
-                Arrays.stream(change.getFields())
-                        .filter(f -> f.getName().equals("shortName"))
-                        .findAny().isPresent()) {
-            updateDisplayList(type);
-        }*/
     }
 }
