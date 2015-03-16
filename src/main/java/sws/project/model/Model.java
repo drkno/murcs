@@ -1,10 +1,8 @@
 package sws.project.model;
 
-import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
 import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
-import sws.project.magic.tracking.TrackableValue;
 import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.io.Serializable;
 
@@ -32,7 +30,6 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public void setShortName(String shortName) throws Exception {
         if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
-
         this.shortName = shortName.trim();
         saveCurrentState("Short Name change");
     }

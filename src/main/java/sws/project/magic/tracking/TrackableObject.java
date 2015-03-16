@@ -13,7 +13,7 @@ public abstract class TrackableObject {
     private static final Stack<ValueChange> _revisionRedoHistory = new Stack<>();
     private static ArrayList<Predicate<ValueChange>> changeListeners = new ArrayList<>();
     private static int maximumUndoRedoStackSize = -1;
-    private TrackedValue _currentState;
+    private TrackedState _currentState;
 
     /**
      * Instantiates a new ValueTracker.
@@ -32,7 +32,7 @@ public abstract class TrackableObject {
                     trackableFields.add(field);
                 }
             }
-            _currentState = new TrackedValue(this, trackableFields);
+            _currentState = new TrackedState(this, trackableFields);
         }
         catch (Exception e) {
             System.err.println("Could not save current state as there is no state to save!");
@@ -55,26 +55,37 @@ public abstract class TrackableObject {
     /**
      * Saves the current state of the calling object.
      * @param changeDescription Description of the changes made since last save.
-     * @param initialSave If set to true will save the values of all annotated fields regardless of
+     * @param saveAll If set to true will save the values of all annotated fields regardless of
      *                    the current value or previous value.
      */
-    public void saveCurrentState(String changeDescription, boolean initialSave) {
+    public void saveCurrentState(String changeDescription, boolean saveAll) {
         try {
-            if (canRedo()) {
+            if (canRedo()) { // add current state to the undo stack, otherwise it will be lost
                 ValueChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
                         _revisionRedoHistory.peek().getDescription());
                 _revisionUndoHistory.push(change);
+            }
+
+            ValueChange value = _currentState.difference(this, changeDescription, saveAll);
+
+            if (!value.isDifferent()) { // check a change was actually made
+                if (canRedo()) { // it wasn't so restore the previous state
+                    _revisionUndoHistory.pop();
+                }
+                return;
+            }
+
+            if (canRedo()) { // clear the undo stack. done here so restore is possible
                 _revisionRedoHistory.clear();
             }
 
-            ValueChange value = _currentState.difference(this, changeDescription, initialSave);
-            _revisionUndoHistory.push(value);
+            _revisionUndoHistory.push(value); // add new change to undo stack
 
             if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
-                _revisionUndoHistory.remove(0);
+                _revisionUndoHistory.remove(0); // remove bottom item from stack if beyond bounds
             }
 
-            notifyListeners(_revisionUndoHistory.peek());
+            notifyListeners(_revisionUndoHistory.peek()); // notify change listeners
         }
         catch (Exception e) {
             System.err.println("Could not save current state as there is no state to save!");

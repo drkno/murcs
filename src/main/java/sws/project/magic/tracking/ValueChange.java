@@ -17,7 +17,7 @@ public class ValueChange {
      * @param changedFieldValues The fields that had values changed were changed.
      * @param changeDescription Description of the changes made.
      */
-    public ValueChange(Object originalObject, FieldValuePair[] changedFieldValues, String changeDescription) {
+    protected ValueChange(Object originalObject, FieldValuePair[] changedFieldValues, String changeDescription) {
         this.originalObject = originalObject;
         this.changedFieldValues = changedFieldValues;
         this.undone = false;
@@ -36,7 +36,7 @@ public class ValueChange {
      * Undoes this change.
      * @throws Exception if undo cannot be performed.
      */
-    public void undo() throws Exception {
+    protected void undo() throws Exception {
         if (undone) {
             throw new Exception("Cannot undo if already undone!");
         }
@@ -48,7 +48,7 @@ public class ValueChange {
      * Redoes this change.
      * @throws Exception If this change has not been undone.
      */
-    public void redo() throws Exception {
+    protected void redo() throws Exception {
         if (!undone) {
             throw new Exception("Cannot redo if already redone!");
         }
@@ -84,6 +84,14 @@ public class ValueChange {
      */
     public FieldValuePair[] getChangedFields() {
         return changedFieldValues;
+    }
+
+    /**
+     * Detects if a change has actually been made.
+     * @return true if a changes to values have been made, false otherwise.
+     */
+    public boolean isDifferent() {
+        return changedFieldValues.length != 0;
     }
 
     @Override

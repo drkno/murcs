@@ -45,7 +45,7 @@ public class FieldValuePair {
      * Sets the stored field value.
      * @param field new field.
      */
-    public void setField(Field field) {
+    protected void setField(Field field) {
         this._field = field;
     }
 
@@ -61,7 +61,7 @@ public class FieldValuePair {
      * Sets the value of the field (in this representation).
      * @param value new value to set.
      */
-    public void setValue(Object value) {
+    protected void setValue(Object value) {
         this._value = value;
     }
 

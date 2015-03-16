@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Tracks the current value of an object.
  */
-public class TrackedValue {
+public class TrackedState {
 
     private ArrayList<FieldValuePair> fieldValuePairs;
 
@@ -16,7 +16,7 @@ public class TrackedValue {
      * @param fields Fields to track.
      * @throws Exception Exception if retrieving values failed due to unknown type.
      */
-    public TrackedValue(Object initialObject, ArrayList<Field> fields) throws Exception {
+    public TrackedState(Object initialObject, ArrayList<Field> fields) throws Exception {
         fieldValuePairs = new ArrayList<>();
         for (Field field : fields) {
             fieldValuePairs.add(new FieldValuePair(initialObject, field));

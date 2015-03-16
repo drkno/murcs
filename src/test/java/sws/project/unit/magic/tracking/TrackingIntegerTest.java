@@ -137,4 +137,15 @@ public class TrackingIntegerTest {
         TrackableObject.redo();
         Assert.assertEquals(4, a.getTestInteger());
     }
+
+    @Test
+    public void saveIgnoredIfValueDidNotChange() throws Exception {
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
+        a.setTestInteger(3);
+        TrackableObject.undo();
+        Assert.assertEquals(2, a.getTestInteger());
+    }
 }
