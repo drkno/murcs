@@ -3,7 +3,7 @@ package sws.project.magic.tracking;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Stack;
-import java.util.function.Predicate;
+import java.util.Timer;
 
 /**
  * Keeps track of specified values so that the changes can be done/undone.
@@ -11,8 +11,11 @@ import java.util.function.Predicate;
 public abstract class TrackableObject {
     private static final Stack<ValueChange> _revisionUndoHistory = new Stack<>();
     private static final Stack<ValueChange> _revisionRedoHistory = new Stack<>();
-    private static ArrayList<Predicate<ValueChange>> changeListeners = new ArrayList<>();
-    private static int maximumUndoRedoStackSize = -1;
+    private static ArrayList<TrackingTask> _changeListeners = new ArrayList<>();
+    private static int _maximumUndoRedoStackSize = -1;
+    private static long _mergeWaitTime = 5000;
+    private static Timer _callbackWaitTimer;
+    private static long _lastSaveTime;
     private TrackedState _currentState;
 
     /**
@@ -26,6 +29,7 @@ public abstract class TrackableObject {
      */
     protected TrackableObject() {
         try {
+            // get all annotated fields
             ArrayList<Field> trackableFields = new ArrayList<>();
             for (Field field : getClass().getDeclaredFields()) {
                 if (field.isAnnotationPresent(TrackableValue.class)) {
@@ -75,13 +79,28 @@ public abstract class TrackableObject {
                 return;
             }
 
+            // stop any outgoing callbacks
+            if (_callbackWaitTimer != null) {
+                _callbackWaitTimer.cancel();
+                _callbackWaitTimer.purge();
+            }
+
             if (canRedo()) { // clear the undo stack. done here so restore is possible
                 _revisionRedoHistory.clear();
             }
 
-            _revisionUndoHistory.push(value); // add new change to undo stack
+            // if less than wait time, changes to the same object can be merged
+            long currentSaveTime = System.currentTimeMillis();
+            if (canUndo() && currentSaveTime - _lastSaveTime < _mergeWaitTime &&
+                    value.isEquivalent(_revisionUndoHistory.peek(), this)) {
+                _revisionUndoHistory.peek().assimilate(value);
+            }
+            else {
+                _revisionUndoHistory.push(value); // add new change to undo stack
+            }
+            _lastSaveTime = currentSaveTime;
 
-            if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
+            if (_maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == _maximumUndoRedoStackSize) {
                 _revisionUndoHistory.remove(0); // remove bottom item from stack if beyond bounds
             }
 
@@ -101,7 +120,7 @@ public abstract class TrackableObject {
      */
     private static void applyHistoryChange(ValueChange state) {
         TrackableObject obj = (TrackableObject)state.getAffectedObject();
-        obj._currentState.apply(state);
+        obj._currentState.apply(state); // apply the changes to the affected objects history tracker
     }
 
     /**
@@ -115,7 +134,7 @@ public abstract class TrackableObject {
 
         if (!canRedo() && _revisionUndoHistory.size() > 1) {
             ValueChange current = _revisionUndoHistory.pop();
-            _revisionRedoHistory.push(current);
+            _revisionRedoHistory.push(current);     // top object of undo stack is current state, so move it
         }
 
         ValueChange undoState = _revisionUndoHistory.pop();
@@ -185,7 +204,7 @@ public abstract class TrackableObject {
      * @return Maximum stack size or less than or equal to 0 if infinite.
      */
     public static int getMaximumTrackingSize() {
-        return maximumUndoRedoStackSize - 1;
+        return _maximumUndoRedoStackSize - 1;
     }
 
     /**
@@ -193,15 +212,15 @@ public abstract class TrackableObject {
      * @param maximumUndoRedoStackSize new maximum stack size or less than or equal to 0 if infinite is desired.
      */
     public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
-        TrackableObject.maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
+        TrackableObject._maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
     }
 
     /**
      * Adds a listener that waits for a save.
      * @param listener listener to call on change.
      */
-    public static void addSavedListener(Predicate<ValueChange> listener) {
-        changeListeners.add(listener);
+    public static void addSavedListener(TrackingTask listener) {
+        _changeListeners.add(listener);
     }
 
     /**
@@ -209,8 +228,26 @@ public abstract class TrackableObject {
      * @param change change that was made
      */
     private static void notifyListeners(ValueChange change) {
-        for (Predicate<ValueChange> listener : changeListeners) {
-            listener.test(change);
+        _callbackWaitTimer = new Timer(false);
+        for (TrackingTask listener : _changeListeners) {
+            listener.setChange(change);
+            _callbackWaitTimer.schedule(listener, _mergeWaitTime);
         }
+    }
+
+    /**
+     * Gets the wait time before changes to the same object become separate.
+     * @return the time to wait.
+     */
+    public static long getMergeWaitTime() {
+        return _mergeWaitTime;
+    }
+
+    /**
+     * Sets the wait time before changes to the same object become separate.
+     * @param mergeWaitTime new time to wait.
+     */
+    public static void setMergeWaitTime(long mergeWaitTime) {
+        _mergeWaitTime = mergeWaitTime;
     }
 }

@@ -2,6 +2,7 @@ package sws.project.unit.magic.tracking;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import sws.project.magic.tracking.TrackableValue;
 import sws.project.magic.tracking.TrackableObject;
@@ -23,6 +24,11 @@ public class TrackingIntegerTest {
             this.testInteger = testInteger;
             saveCurrentState("test desc.");
         }
+    }
+
+    @Before
+    public void setup() {
+        TrackableObject.setMergeWaitTime(0);
     }
 
     @After
@@ -147,5 +153,25 @@ public class TrackingIntegerTest {
         a.setTestInteger(3);
         TrackableObject.undo();
         Assert.assertEquals(2, a.getTestInteger());
+    }
+
+    @Test
+    public void mergeChangesIfLessThanMergeTime() throws Exception {
+        TrackableObject.setMergeWaitTime(1000000); // ~11 days. if a build is going that long we have a problem
+        Assert.assertEquals(TrackableObject.getMergeWaitTime(), 1000000);
+        TestInteger a = new TestInteger();
+        a.setTestInteger(3);
+        a.setTestInteger(2);
+        a.setTestInteger(1);
+        TrackableObject.setMergeWaitTime(0);
+        a.setTestInteger(4);
+        a.setTestInteger(5);
+        TrackableObject.undo();
+        Assert.assertEquals(a.getTestInteger(), 4);
+        TrackableObject.undo();
+        Assert.assertEquals(a.getTestInteger(), 1);
+        TrackableObject.undo();
+        Assert.assertEquals(a.getTestInteger(), 0);
+        Assert.assertFalse(TrackableObject.canUndo());
     }
 }

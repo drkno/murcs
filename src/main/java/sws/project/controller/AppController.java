@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.magic.tracking.TrackableObject;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -81,11 +80,11 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
-        TrackableObject.addSavedListener(c -> {
+        /*TrackableObject.addSavedListener(c -> {
             updateUndoRedoMenuItems(c);
             return true;
         });
-        updateUndoRedoMenuItems(null);
+        updateUndoRedoMenuItems(null);*/
     }
 
     /***

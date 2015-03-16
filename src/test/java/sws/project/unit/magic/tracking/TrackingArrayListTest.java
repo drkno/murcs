@@ -2,6 +2,7 @@ package sws.project.unit.magic.tracking;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import sws.project.magic.tracking.TrackableValue;
 import sws.project.magic.tracking.TrackableObject;
@@ -27,6 +28,11 @@ public class TrackingArrayListTest {
             testArrayList.add(value);
             saveCurrentState("test desc.");
         }
+    }
+
+    @Before
+    public void setup() {
+        TrackableObject.setMergeWaitTime(0);
     }
 
     @After

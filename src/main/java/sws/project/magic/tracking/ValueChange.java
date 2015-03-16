@@ -102,4 +102,33 @@ public class ValueChange {
         }
         return resultString;
     }
+
+    /**
+     * Determines if a change is on the same fields of an object.
+     * @param change change to compare.
+     * @param affectedObject object to compare.
+     * @return true if are on the same fields of an object, false otherwise
+     */
+    public boolean isEquivalent(ValueChange change, Object affectedObject) {
+        boolean areSame = affectedObject == originalObject;
+        areSame = areSame && change.getChangedFields().length == changedFieldValues.length;
+        areSame = areSame && change.getDescription().equals(changeDescription);
+        if (!areSame) return false;
+        FieldValuePair[] fields = change.getChangedFields();
+        for (int i = 0; i < changedFieldValues.length; i++) {
+            if (!changedFieldValues[i].equals(fields[i])) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Merges the changes from a ValueChange into this one.
+     * @param value value change to merge in.
+     */
+    public void assimilate(ValueChange value) {
+        FieldValuePair[] fields = value.getChangedFields();
+        for (int i = 0; i < changedFieldValues.length; i++) {
+            changedFieldValues[i] = fields[i];
+        }
+    }
 }
