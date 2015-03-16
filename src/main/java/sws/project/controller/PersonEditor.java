@@ -2,6 +2,7 @@ package sws.project.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -10,7 +11,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.project.model.Person;
-import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 /**
  *
  */
-public class PersonEditor {
+public class PersonEditor implements Initializable{
     private Person person;
 
     @FXML
@@ -39,7 +39,7 @@ public class PersonEditor {
      * @return The form
      */
     public static Parent createNew(){
-        return createFor(new Project());
+        return createFor(new Person());
     }
 
     /**
@@ -55,12 +55,11 @@ public class PersonEditor {
     /**
      * Creates a new form for editing a person
      *
-     * @param person
-     * @param project The person
+     * @param person The person
      * @return The form
      */
-    public static Parent createFor(Person person, Project project){
-        return createFor(project, null);
+    public static Parent createFor(Person person){
+        return createFor(person, null);
     }
 
     /**
@@ -72,7 +71,7 @@ public class PersonEditor {
      */
     public static Parent createFor(Person person, Callable<Void> onSaved){
         try {
-            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEdit.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/PersonEditor.fxml"));
             AnchorPane anchorPane = loader.load();
 
             PersonEditor controller = loader.getController();
@@ -117,13 +116,16 @@ public class PersonEditor {
     /**
      * Saves the person being edited
      */
-    private void saveProject() {
+    private void savePerson() {
         try {
             person.setShortName(nameTextField.getText());
             person.setLongName(usernameTextField.getText());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
-            model.get
+
+            //If we haven't added the person yet, throw them in the list of unassigned people
+            if (!model.getPeople().contains(person))
+                model.getUnassignedPeople().add(person);
 
             //If we have a saved callBack, call it
             if (onSaved != null)
@@ -140,23 +142,18 @@ public class PersonEditor {
      * Loads the person into the form
      */
     private void loadProject(){
-        textFieldShortName.setText(person.getShortName());
-        textFieldLongName.setText(person.getLongName());
-        descriptionTextField.setText(person.getDescription());
+        nameTextField.setText(person.getShortName());
+        usernameTextField.setText(person.getUserId());
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) saveProject();
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) savePerson();
         });
 
-        textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveProject();
-        });
-
-        descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveProject();
+        usernameTextField.focusedProperty().addListener((p, o, n) -> {
+            if (o && !n)  savePerson();
         });
     }
 }

@@ -100,8 +100,8 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
     public void addUnassignedPerson(Person person) throws DuplicateObjectException{
-        if (!this.unassignedPeople.contains(person) &&
-                !this.unassignedPeople
+        if (!this.getPeople().contains(person) &&
+                !this.getPeople()
                         .stream()
                         .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
                         .findAny()

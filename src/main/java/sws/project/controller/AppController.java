@@ -73,7 +73,10 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                pane = ProjectEditor.createFor((Project)newValue);
+                if (newValue instanceof Project)
+                    pane = ProjectEditor.createFor((Project)newValue);
+                else if (newValue instanceof Person)
+                    pane = PersonEditor.createFor((Person)newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -104,10 +107,13 @@ public class AppController implements Initializable {
                 }
                 break;
             case People:
+                displayListItems.addAll(model.getPeople());
                 break;
             case Team:
+                displayListItems.addAll(model.getTeams());
                 break;
             case Skills:
+                displayListItems.addAll(model.getSkills());
                 break;
         }
     }
