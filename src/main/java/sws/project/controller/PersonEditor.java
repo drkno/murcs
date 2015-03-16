@@ -1,9 +1,7 @@
 package sws.project.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -11,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.project.model.Person;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -21,14 +20,13 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 /**
- * Controller for the project creator popup window.
- * Since there should only be one instance of this PopUp
+ *
  */
-public class ProjectEditor implements Initializable {
-    private Project project;
+public class PersonEditor {
+    private Person person;
 
     @FXML
-    TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    TextField nameTextField, usernameTextField;
 
     @FXML
     Label labelErrorMessage;
@@ -36,7 +34,7 @@ public class ProjectEditor implements Initializable {
     private Callable<Void> onSaved;
 
     /**
-     * Creates a new form for editing a project. It will add the project to
+     * Creates a new form for editing a person. It will add the person to
      * the model automatically as soon as it is valid
      * @return The form
      */
@@ -45,44 +43,46 @@ public class ProjectEditor implements Initializable {
     }
 
     /**
-     * Creates a new form for editing a project with a callback that is called every time
+     * Creates a new form for editing a person with a callback that is called every time
      * a change is made
      * @param onSaved The callback
      * @return the Form
      */
     public static Parent createNew(Callable<Void> onSaved){
-        return createFor(new Project(), null);
+        return createFor(new Person(), null);
     }
 
     /**
-     * Creates a new form for editing a project
-     * @param project The project
+     * Creates a new form for editing a person
+     *
+     * @param person
+     * @param project The person
      * @return The form
      */
-    public static Parent createFor(Project project){
+    public static Parent createFor(Person person, Project project){
         return createFor(project, null);
     }
 
     /**
-     * Creates a new form for editing a project which will call the saved callback
+     * Creates a new form for editing a person which will call the saved callback
      * every time a change is saved
-     * @param project The project
+     * @param person The person
      * @param onSaved The save callback
      * @return The form
      */
-    public static Parent createFor(Project project, Callable<Void> onSaved){
+    public static Parent createFor(Person person, Callable<Void> onSaved){
         try {
             FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEdit.fxml"));
             AnchorPane anchorPane = loader.load();
 
-            ProjectEditor controller = loader.getController();
-            controller.project = project;
+            PersonEditor controller = loader.getController();
+            controller.person = person;
             controller.onSaved = onSaved;
             controller.loadProject();
 
             return anchorPane;
         }catch (Exception e){
-            System.err.println("Unable to create a project editor!(this is seriously bad)");
+            System.err.println("Unable to create a person editor!(this is seriously bad)");
             e.printStackTrace();
         }
 
@@ -115,25 +115,15 @@ public class ProjectEditor implements Initializable {
     }
 
     /**
-     * Saves the project being edited
+     * Saves the person being edited
      */
     private void saveProject() {
         try {
-            project.setShortName(textFieldShortName.getText());
-            project.setLongName(textFieldLongName.getText());
-            project.setDescription(descriptionTextField.getText());
+            person.setShortName(nameTextField.getText());
+            person.setLongName(usernameTextField.getText());
 
-
-            //This line will need to be changed if we support multiple projects
-            //What we're trying to do here is check if the current project already exist
-            //or if we're creating a new one.
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
-            if (model == null || model.getProject() != project) {
-                model = new RelationalModel();
-                model.setProject(project);
-
-                PersistenceManager.Current.setCurrentModel(model);
-            }
+            model.get
 
             //If we have a saved callBack, call it
             if (onSaved != null)
@@ -147,12 +137,12 @@ public class ProjectEditor implements Initializable {
     }
 
     /**
-     * Loads the project into the form
+     * Loads the person into the form
      */
     private void loadProject(){
-        textFieldShortName.setText(project.getShortName());
-        textFieldLongName.setText(project.getLongName());
-        descriptionTextField.setText(project.getDescription());
+        textFieldShortName.setText(person.getShortName());
+        textFieldLongName.setText(person.getLongName());
+        descriptionTextField.setText(person.getDescription());
     }
 
     @Override
