@@ -71,7 +71,7 @@ public class FieldValuePair {
      */
     @Override
     public String toString() {
-        return _field.getName() + ": " + _value.toString();
+        return _field.getName() + ": " + (_value == null ? "null" : _value.toString());
     }
 
     /**

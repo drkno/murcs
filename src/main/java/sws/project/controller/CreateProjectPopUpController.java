@@ -25,10 +25,7 @@ import java.util.concurrent.Callable;
 public class CreateProjectPopUpController {
 
     @FXML
-    TextField textFieldShortName, textFieldLongName;
-
-    @FXML
-    TextArea textAreaDescription;
+    TextField textFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
     Label labelErrorMessage;
@@ -71,7 +68,7 @@ public class CreateProjectPopUpController {
             Project project = new Project();
             project.setShortName(textFieldShortName.getText());
             project.setLongName(textFieldLongName.getText());
-            project.setDescription(textAreaDescription.getText());
+            project.setDescription(descriptionTextField.getText());
 
             RelationalModel model = new RelationalModel();
             model.setProject(project);
@@ -100,7 +97,7 @@ public class CreateProjectPopUpController {
     private void clearFields() {
         textFieldShortName.setText("");
         textFieldLongName.setText("");
-        textAreaDescription.setText("");
+        descriptionTextField.setText("");
     }
 
 }
