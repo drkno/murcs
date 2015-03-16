@@ -9,11 +9,11 @@
    <top>
       <MenuBar BorderPane.alignment="CENTER">
          <menus>
-             <Menu mnemonicParsing="false" text="File">
+             <Menu id="fileMenu" mnemonicParsing="false" text="File">
                 <items>
-                        <Menu mnemonicParsing="false" text="New">
+                        <Menu id="newMenu" mnemonicParsing="false" text="New">
                            <items>
-                               <MenuItem mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                               <MenuItem id="projectOption" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
                            </items>
                         </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />

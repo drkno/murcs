@@ -7,7 +7,6 @@ import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.easyedit.EditPaneGenerator;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -95,10 +94,9 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             }
             return false;
         });
-
-        controller.addChangeListener((p, o, n) -> {
+        controller.addChangeListener((observer, oldValue, newValue) -> {
             try {
-                setter.invoke(from, n);
+                setter.invoke(from, newValue);
             }catch (Exception e){
                 System.err.println("Unable to set " + field.getName() + " on " + from);
             }
