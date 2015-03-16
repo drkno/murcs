@@ -13,7 +13,7 @@
             <VBox>
                <children>
                   <Label text="Short Name" />
-                  <TextField fx:id="textFieldLongName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldShortName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -22,7 +22,7 @@
             <VBox>
                <children>
                   <Label text="Long Name" GridPane.rowIndex="1" />
-                  <TextField fx:id="textFieldShortName" GridPane.columnIndex="1" />
+                  <TextField fx:id="textFieldLongName" GridPane.columnIndex="1" />
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
