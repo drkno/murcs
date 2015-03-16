@@ -77,7 +77,7 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                pane = EditFormGenerator.generatePane(newValue);
+                pane = ProjectEditor.createFor((Project)newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -175,10 +175,10 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            CreateProjectPopUpController.displayProjectPopUp(() -> {
+            ProjectEditor.displayWindow(() -> {
                 updateDisplayList(ModelTypes.Project);
                 return null;
-            });
+            }, null);
         }
         else {
             GenericPopup popup = new GenericPopup();
@@ -193,10 +193,10 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 reset();
                 // Create a new project
-                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                ProjectEditor.displayWindow(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
-                });
+                }, null);
                 return null;
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
@@ -210,10 +210,10 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                ProjectEditor.displayWindow(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
-                });
+                }, null);
                 return null;
             });
             popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
