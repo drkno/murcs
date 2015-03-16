@@ -10,9 +10,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.magic.tracking.TrackedChange;
+import sws.project.magic.tracking.ValueTracker;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -22,8 +27,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static sws.project.magic.tracking.ValueTracker.canUndo;
-import static sws.project.magic.tracking.ValueTracker.reset;
+import static sws.project.magic.tracking.ValueTracker.*;
 
 /**
  * Main app class controller
@@ -32,7 +36,7 @@ import static sws.project.magic.tracking.ValueTracker.reset;
 public class AppController implements Initializable {
 
     @FXML Parent root;
-    @FXML MenuItem fileQuit, newProjectMenuItem;
+    @FXML MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
     @FXML VBox vBoxSideDisplay;
     @FXML HBox hBoxMainDisplay;
     @FXML BorderPane borderPaneMain;
@@ -76,6 +80,9 @@ public class AppController implements Initializable {
             }
             contentPane.getChildren().add(pane);
         });
+
+        ValueTracker.addSavedListener(c -> {updateUndoRedoMenuItems(c); return true;});
+        updateUndoRedoMenuItems(null);
     }
 
     /***
@@ -84,6 +91,11 @@ public class AppController implements Initializable {
      */
     private void updateDisplayList(ModelTypes type) {
         displayListItems.clear();
+        displayList.getSelectionModel().clearSelection();
+
+        if (type == null) {
+            type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        }
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
@@ -220,5 +232,63 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
+    }
+
+    /**
+     * Called when the undo menu item has been clicked.
+     * @param event event arguments.
+     */
+    @FXML
+    private void undoMenuItemClicked(ActionEvent event) {
+        try {
+            undo();
+        }
+        catch (Exception e) {
+            // something went terribly wrong....
+            reset();
+        }
+        updateUndoRedoMenuItems(null);
+    }
+
+    /**
+     * Redo menu item has been clicked.
+     * @param event event arguments.
+     */
+    @FXML
+    private void redoMenuItemClicked(ActionEvent event) {
+        try {
+            redo();
+        }
+        catch (Exception e) {
+            // something went terribly wrong....
+            reset();
+        }
+        updateUndoRedoMenuItems(null);
+    }
+
+    /**
+     * Updates the undo/redo menu to reflect the current undo/redo state.
+     * @param change change that has been made
+     */
+    private void updateUndoRedoMenuItems(TrackedChange change) {
+        if (!canUndo()) {
+            undoMenuItem.setDisable(true);
+            undoMenuItem.setText("Undo...");
+        }
+        else {
+            undoMenuItem.setDisable(false);
+            undoMenuItem.setText("Undo \"" + getUndoDescription() +  "\"");
+        }
+
+        if (!canRedo()) {
+            redoMenuItem.setDisable(true);
+            redoMenuItem.setText("Redo...");
+        }
+        else {
+            redoMenuItem.setDisable(false);
+            redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
+        }
+
+        updateDisplayList(null);
     }
 }

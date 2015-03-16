@@ -3,6 +3,7 @@ package sws.project.magic.tracking;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.function.Predicate;
 
 /**
  * Keeps track of specified values so that the changes can be done/undone.
@@ -10,6 +11,7 @@ import java.util.Stack;
 public abstract class ValueTracker {
     private static final Stack<TrackedChange> _revisionUndoHistory = new Stack<>();
     private static final Stack<TrackedChange> _revisionRedoHistory = new Stack<>();
+    private static ArrayList<Predicate<TrackedChange>> changeListeners = new ArrayList<>();
     private static int maximumUndoRedoStackSize = -1;
     private TrackedValue _currentState;
 
@@ -71,6 +73,8 @@ public abstract class ValueTracker {
             if (maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == maximumUndoRedoStackSize) {
                 _revisionUndoHistory.remove(0);
             }
+
+            notifyListeners(_revisionUndoHistory.peek());
         }
         catch (Exception e) {
             System.err.println("Could not save current state as there is no state to save!");
@@ -179,5 +183,23 @@ public abstract class ValueTracker {
      */
     public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
         ValueTracker.maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
+    }
+
+    /**
+     * Adds a listener that waits for a save.
+     * @param listener listener to call on change.
+     */
+    public static void addSavedListener(Predicate<TrackedChange> listener) {
+        changeListeners.add(listener);
+    }
+
+    /**
+     * Notifies listeners that are waiting for history changes.
+     * @param change change that was made
+     */
+    private static void notifyListeners(TrackedChange change) {
+        for (Predicate<TrackedChange> listener : changeListeners) {
+            listener.test(change);
+        }
     }
 }

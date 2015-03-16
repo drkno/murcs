@@ -1,41 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.input.*?>
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <BorderPane fx:id="borderPaneMain" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
-          <Menu mnemonicParsing="false" text="File">
-                  <Menu mnemonicParsing="false" text="New">
-                      <MenuItem mnemonicParsing="false" onAction="#createNewProject" text="Project" />
-                  </Menu>
-                  <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
-                  <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
-          </Menu>
-          <Menu mnemonicParsing="false" id="viewMenu" text="View">
-              <MenuItem mnemonicParsing="false" id="viewShowHide" onAction="#toggleItemListView" text="Show/Hide Item List" />
-          </Menu>
+         <menus>
+             <Menu mnemonicParsing="false" text="File">
+                <items>
+                        <Menu mnemonicParsing="false" text="New">
+                           <items>
+                               <MenuItem mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                           </items>
+                        </Menu>
+                        <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
+                        <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                    <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
+                </items>
+             </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemClicked" text="Undo" />
+                  <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemClicked" text="Redo" />
+              </items>
+            </Menu>
+             <Menu id="viewMenu" mnemonicParsing="false" text="View">
+                <items>
+                    <MenuItem id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                </items>
+             </Menu>
+         </menus>
       </MenuBar>
    </top>
    <center>
       <HBox fx:id="hBoxMainDisplay" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-          <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
-              <AnchorPane>
-                  <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
-              </AnchorPane>
-              <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-          </VBox>
-          <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
-            <columnConstraints>
-              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-          </GridPane>
+         <children>
+             <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
+                <children>
+                    <AnchorPane>
+                       <children>
+                           <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                       </children>
+                    </AnchorPane>
+                    <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                </children>
+             </VBox>
+             <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
+               <columnConstraints>
+                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+             </GridPane>
+         </children>
       </HBox>
    </center>
 </BorderPane>
