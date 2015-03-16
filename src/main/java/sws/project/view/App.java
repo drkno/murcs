@@ -5,12 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
-
-import javax.management.relation.Relation;
 
 /**
  * The main app class

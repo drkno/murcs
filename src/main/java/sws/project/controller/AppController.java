@@ -31,8 +31,7 @@ import static sws.project.magic.tracking.ValueTracker.reset;
  */
 public class AppController implements Initializable {
 
-    @FXML Parent root;
-    @FXML MenuItem fileQuit, newProjectMenuItem;
+    @FXML MenuItem fileQuit;
     @FXML VBox vBoxSideDisplay;
     @FXML HBox hBoxMainDisplay;
     @FXML BorderPane borderPaneMain;
@@ -52,6 +51,9 @@ public class AppController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //Override onCloseRequest
+        //borderPaneMain.getScene().getWindow();//.setOnCloseRequest(event -> fileQuitPress(null));
+
         displayListItems = FXCollections.observableArrayList();
         displayList.setItems(displayListItems);
 
@@ -83,6 +85,10 @@ public class AppController implements Initializable {
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
+        int selectedItem = displayList.getSelectionModel().getSelectedIndex();
+        if (selectedItem != -1)
+            displayList.getSelectionModel().clearSelection(selectedItem);
+
         displayListItems.clear();
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -92,6 +98,7 @@ public class AppController implements Initializable {
                 Project project = model.getProject();
                 if (project != null) {
                     displayListItems.add(project);
+                    displayList.getSelectionModel().select(project);
                 }
                 break;
             case People:
@@ -109,7 +116,28 @@ public class AppController implements Initializable {
      */
     @FXML
     private void fileQuitPress(ActionEvent event) {
-        Platform.exit();
+        if (canUndo()) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Unsaved Changes");
+            popup.setMessageText("You have unsaved changes to your project.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+                popup.close();
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                // Let the user save the project
+                saveProject(null);
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.show();
+        }
+        else {
+            Platform.exit();
+        }
     }
 
     /***
@@ -146,6 +174,10 @@ public class AppController implements Initializable {
             popup.setMessageText("You have unsaved changes to your project.");
             popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
                 popup.close();
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
                 // Reset Tracked history
                 reset();
                 // Create a new project
@@ -159,6 +191,10 @@ public class AppController implements Initializable {
                 popup.close();
                 // Let the user save the project
                 saveProject(null);
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
                 // Reset Tracked History
                 reset();
                 // Create a new project
