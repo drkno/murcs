@@ -44,18 +44,41 @@ public class ProjectEditor implements Initializable {
         descriptionTextField.setText("");
     }
 
+    /**
+     * Creates a new form for editing a project. It will add the project to
+     * the model automatically as soon as it is valid
+     * @return The form
+     */
     public static Parent createNew(){
         return createFor(new Project());
     }
 
+    /**
+     * Creates a new form for editing a project with a callback that is called every time
+     * a change is made
+     * @param onSaved The callback
+     * @return the Form
+     */
     public static Parent createNew(Callable<Void> onSaved){
         return createFor(new Project(), null);
     }
 
+    /**
+     * Creates a new form for editing a project
+     * @param project The project
+     * @return The form
+     */
     public static Parent createFor(Project project){
         return createFor(project, null);
     }
 
+    /**
+     * Creates a new form for editing a project which will call the saved callback
+     * every time a change is saved
+     * @param project The project
+     * @param onSaved The save callback
+     * @return The form
+     */
     public static Parent createFor(Project project, Callable<Void> onSaved){
         try {
             FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEdit.fxml"));
@@ -75,6 +98,11 @@ public class ProjectEditor implements Initializable {
         return null;
     }
 
+    /**
+     * Displays a new window for creating a new form
+     * @param okay The okay callback
+     * @param cancel The cancelled callback
+     */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
         try {
             Parent content = createNew();
@@ -95,6 +123,9 @@ public class ProjectEditor implements Initializable {
         }
     }
 
+    /**
+     * Saves the project being edited
+     */
     private void saveProject() {
         try {
             project.setShortName(textFieldShortName.getText());
@@ -124,6 +155,9 @@ public class ProjectEditor implements Initializable {
         }
     }
 
+    /**
+     * Loads the project into the form
+     */
     private void loadProject(){
         textFieldShortName.setText(project.getShortName());
         textFieldLongName.setText(project.getLongName());
