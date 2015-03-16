@@ -91,10 +91,10 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
             }
             return false;
         });
-
-        controller.addChangeListener((p, o, n) -> {
+        field
+        controller.addChangeListener((observer, oldValue, newValue) -> {
             try {
-                setter.invoke(from, n);
+                setter.invoke(from, newValue);
             }catch (Exception e){
                 System.err.println("Unable to set " + field.getName() + " on " + from);
             }
