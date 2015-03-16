@@ -5,12 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
+import sws.project.magic.tracking.TrackableObject;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
-
-import javax.management.relation.Relation;
 
 /**
  * The main app class
@@ -49,6 +46,7 @@ public class App extends Application{
      */
     public static void main(String[] args) {
         launch(args);
+        TrackableObject.destroy();
     }
 }
 
