@@ -145,7 +145,7 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            CreateProjectPopUpController.displayProjectPopUp(() -> {
+            ProjectEditor.displayProjectPopUp(() -> {
                 updateDisplayList(ModelTypes.Project);
                 return null;
             });
@@ -159,7 +159,7 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 reset();
                 // Create a new project
-                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                ProjectEditor.displayProjectPopUp(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
                 });
@@ -172,7 +172,7 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                CreateProjectPopUpController.displayProjectPopUp(() -> {
+                ProjectEditor.displayProjectPopUp(() -> {
                     updateDisplayList(ModelTypes.Project);
                     return null;
                 });

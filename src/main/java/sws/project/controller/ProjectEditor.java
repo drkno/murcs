@@ -5,7 +5,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
@@ -22,7 +21,7 @@ import java.util.concurrent.Callable;
  * Controller for the project creator popup window.
  * Since there should only be one instance of this PopUp
  */
-public class CreateProjectPopUpController {
+public class ProjectEditor {
 
     @FXML
     TextField textFieldShortName, textFieldLongName, descriptionTextField;
@@ -41,10 +40,10 @@ public class CreateProjectPopUpController {
      */
     public static void displayProjectPopUp(Callable<Void> func) {
         try {
-            FXMLLoader loader = new FXMLLoader(CreateProjectPopUpController.class.getResource("/sws/project/CreateProjectPopUp.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEdict.fxml"));
             AnchorPane anchorPane = loader.load();
 
-            CreateProjectPopUpController controller = loader.getController();
+            ProjectEditor controller = loader.getController();
             controller.completedCallback = func;
             stage = new Stage();
             stage.setScene(new Scene(anchorPane));
