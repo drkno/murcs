@@ -81,6 +81,11 @@ public class EditFormGenerator {
         return scroller;
     }
 
+    /**
+     * Inserts an element into an array
+     * @param into The array to insert the element into
+     * @param insert The object to insert into the array. Should be an object[] first item as sort key, second item as object
+     */
     private static void insertInto(ArrayList<Object[]> into, Object[] insert){
         int index = 0;
         while (index < into.size() && (Integer)into.get(index)[0] <= (Integer)insert[0]){
@@ -94,7 +99,7 @@ public class EditFormGenerator {
     /**
      * Gets all the fields on a class and its ancestors
      * @param clazz The type to search
-     * @return
+     * @return gets a list of all private/public fields
      */
     private static Collection<Field> getFieldsRecursive(Class clazz){
         Collection<Field> fields = new ArrayList<>();
@@ -112,7 +117,7 @@ public class EditFormGenerator {
      * @param clazz The class to find the method on
      * @param methodName The name of the method
      * @param parameters The types of parameters the class takes
-     * @return
+     * @return Finds a method on the class
      */
     private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{
