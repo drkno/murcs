@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ *A class which maps fields to different FXML generators
  */
 public class BasicPaneGenerator implements EditPaneGenerator {
     private final Map<Class, String> fxmlForFields = new HashMap<>();
