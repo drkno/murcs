@@ -7,8 +7,11 @@ import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.easyedit.EditPaneGenerator;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Generates a panel for a field based on some FXML. This FXML
@@ -22,7 +25,8 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
     public Class[] supportedTypes() {
         return new Class[] {String.class, int.class, Integer.class,
                 Double.class, double.class, Float.class, float.class,
-                Boolean.class, boolean.class};
+                Boolean.class, boolean.class,
+                Collection.class, ArrayList.class};
     }
 
     @Override

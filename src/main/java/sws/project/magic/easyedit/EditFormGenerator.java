@@ -2,6 +2,7 @@ package sws.project.magic.easyedit;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 import java.lang.annotation.Annotation;
@@ -30,6 +31,8 @@ public class EditFormGenerator {
         Class clazz = from.getClass();
         Collection<Field> fields = getFieldsRecursive(from.getClass());
 
+        ArrayList<Object[]> nodes = new ArrayList<>();
+
         for (Field field : fields) {
             if (!isEditable(field)) continue;
 
@@ -47,8 +50,14 @@ public class EditFormGenerator {
             Method getter = findMethodRecursive(clazz, getterName);
             getter.setAccessible(true);
 
-            Method setter = findMethodRecursive(clazz, setterName, field.getType());
-            setter.setAccessible(true);
+            Method setter = null;
+            try {
+                setter = findMethodRecursive(clazz, setterName, field.getType());
+                setter.setAccessible(true);
+            }catch (NoSuchMethodException e){
+                if (!editable.setterName().isEmpty())
+                    throw e;
+            }
 
             Method validator = null;
 
@@ -58,10 +67,29 @@ public class EditFormGenerator {
             }
 
             Node child = generateFor(field, getter, setter, validator, from, editable);
-            generated.getChildren().add(child);
+            int depth = editable.sort();
+
+            insertInto(nodes, new Object[]{depth, child});
+            //generated.getChildren().add(child);
         }
 
-        return generated;
+        for (Object[] nodePair : nodes){
+            generated.getChildren().add((Node)nodePair[1]);
+        }
+
+        ScrollPane scroller = new ScrollPane(generated);
+        scroller.setFitToWidth(true);
+        return scroller;
+    }
+
+    private static void insertInto(ArrayList<Object[]> into, Object[] insert){
+        int index = 0;
+        while (index < into.size() && (Integer)into.get(index)[0] <= (Integer)insert[0]){
+            index++;
+        }
+        if (index == into.size())
+            into.add(insert);
+        else into.add(index, insert);
     }
 
     /**
@@ -87,7 +115,7 @@ public class EditFormGenerator {
      * @param parameters The types of parameters the class takes
      * @return
      */
-    private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters){
+    private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{
             return clazz.getMethod(methodName, parameters);
         }catch (Exception e){
@@ -103,7 +131,7 @@ public class EditFormGenerator {
         if (clazz.getSuperclass() != null)
             return findMethodRecursive(clazz.getSuperclass(), methodName, parameters);
 
-        throw new NoSuchMethodError("There is no " + methodName + " method on the " + clazz.getName() + " object taking " + parameters);
+        throw new NoSuchMethodException("There is no " + methodName + " method on the " + clazz.getName() + " object taking " + parameters);
     }
 
     /**
