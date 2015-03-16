@@ -29,7 +29,7 @@ public class FxmlPaneGeneratorTest {
 
     @Test
     public void testSupportedTypes() throws Exception {
-        Assert.assertEquals("There should be 9 supported types!", 9, generator.supportedTypes().length);
+        Assert.assertEquals("There should be 11 supported types!",11, generator.supportedTypes().length);
     }
 
     @Test

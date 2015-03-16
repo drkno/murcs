@@ -79,37 +79,4 @@ public class BasicStringEditControllerTest {
 
         Assert.assertEquals("The BasicStringEditController should support 'Strings'", true, supported);
     }
-
-    @Test
-    public void testChangeListening() throws Exception {
-        controller.initialize(null, null);
-
-        final boolean[] changed = {false};
-        controller.addChangeListener((p, o, n) -> {
-            changed[0] = true;
-        });
-
-        valueText.setText("foo");
-        Assert.assertTrue("The change listener should have fired when the text of 'valueText' was changed", changed[0]);
-    }
-
-    @Test
-    public void testValidators() throws Exception{
-        controller.initialize(null, null);
-
-        final boolean[] changed = {false};
-        controller.addChangeListener((p, o, n) -> {
-            changed[0] = true;
-        });
-
-        controller.addValidator(s -> true);
-        valueText.setText("foo");
-        Assert.assertTrue("The change listener should have fired when the text of 'valueText' was changed", changed[0]);
-        changed[0] = false;
-
-        controller.addValidator(s -> false);
-
-        valueText.setText("foo");
-        Assert.assertFalse("The validator should have stopped the change event being fired!", changed[0]);
-    }
 }

@@ -25,9 +25,6 @@ public class EditFormGenerator {
      * @return The edit pane
      */
     public static Parent generatePane(Object from) throws Exception{
-        //If the object isn't trackable, give up
-        if (!(from instanceof ValueTracker)) throw new Exception("You probably shouldn't be generating a form for an untrackable object (" + from + ")");
-
         VBox generated = new VBox(20);
 
         Class clazz = from.getClass();
