@@ -104,7 +104,7 @@ public abstract class TrackableObject {
             if (_maximumUndoRedoStackSize > 0 && _revisionUndoHistory.size() - 1 == _maximumUndoRedoStackSize) {
                 _revisionUndoHistory.remove(0); // remove bottom item from stack if beyond bounds
             }
-            System.out.println(value);
+            
             notifyListeners(_revisionUndoHistory.peek(), _mergeWaitTime); // notify change listeners
         }
         catch (Exception e) {
