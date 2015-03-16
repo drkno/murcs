@@ -1,5 +1,7 @@
 package sws.project.magic.easyedit.fxml;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -16,6 +18,8 @@ public class BasicStringEditController extends BasicEditController<String> imple
     @FXML private Text titleText;
     @FXML private TextField valueText;
 
+    private String oldText;
+
     @Override
     public void setTitle(String text) {
         titleText.setText(text);
@@ -24,6 +28,7 @@ public class BasicStringEditController extends BasicEditController<String> imple
     @Override
     public void setValue(String value) {
         valueText.setText(value);
+        oldText = value;
     }
 
     @Override
@@ -33,6 +38,10 @@ public class BasicStringEditController extends BasicEditController<String> imple
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        valueText.textProperty().addListener((p, o, n) -> notifyChanged(p, o, n));
+        valueText.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!(oldValue && !newValue)) return;
+            notifyChanged(valueText.textProperty(), oldText, valueText.getText());
+            oldText = valueText.getText();
+        });
     }
 }

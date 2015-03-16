@@ -18,6 +18,7 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
     @FXML private TextField numberText;
 
     private Number value;
+    private Number oldValue;
 
     @Override
     public void setTitle(String text) {
@@ -27,6 +28,7 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
     @Override
     public void setValue(Number value) {
         numberText.setText(value.toString());
+        oldValue = value;
     }
 
     @Override
@@ -36,7 +38,11 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        numberText.textProperty().addListener((p, o, n) -> convert());
+        numberText.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!(oldValue && !newValue)) return;
+            notifyChanged(null, this.oldValue, value);
+            this.oldValue = value;
+        });
     }
 
     /**
