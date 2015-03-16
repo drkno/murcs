@@ -16,14 +16,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
+import sws.project.model.*;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import static sws.project.magic.tracking.TrackableObject.*;
@@ -80,11 +81,9 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
-        /*TrackableObject.addSavedListener(c -> {
-            updateUndoRedoMenuItems(c);
-            return true;
+        TrackableObject.addSavedListener(change -> {
+            Platform.runLater(() -> {updateUndoRedoMenuItems(change);});
         });
-        updateUndoRedoMenuItems(null);*/
     }
 
     /***
@@ -260,6 +259,7 @@ public class AppController implements Initializable {
         catch (Exception e) {
             // something went terribly wrong....
             reset();
+            e.printStackTrace();
         }
         updateUndoRedoMenuItems(null);
     }
@@ -269,6 +269,52 @@ public class AppController implements Initializable {
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
+        if (!canUndo()) {
+            undoMenuItem.setDisable(true);
+            undoMenuItem.setText("Undo...");
+        }
+        else {
+            undoMenuItem.setDisable(false);
+            undoMenuItem.setText("Undo \"" + getUndoDescription() +  "\"");
+        }
 
+        if (!canRedo()) {
+            redoMenuItem.setDisable(true);
+            redoMenuItem.setText("Redo...");
+        }
+        else {
+            redoMenuItem.setDisable(false);
+            redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
+        }
+
+        if (change == null) return;
+        Class affectedType = change.getAffectedObject().getClass();
+        if (affectedType.isArray()) {
+            affectedType = affectedType.getComponentType();
+        }
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        Class expectedType = null;
+        switch (type) {
+            case Project:
+                expectedType = RelationalModel.class;
+                break;
+            case People:
+                expectedType = Person.class;
+                break;
+            case Team:
+                expectedType = Team.class;
+                break;
+            case Skills:
+                expectedType = Skill.class;
+                break;
+        }
+
+        if (affectedType.equals(expectedType) &&
+                Arrays.stream(change.getChangedFields())
+                        .filter(f -> f.getField().getName().equals("shortName")
+                                || f.getField().getName().equals("project"))
+                        .findAny().isPresent()) {
+            updateDisplayList(type);
+        }
     }
 }

@@ -11,11 +11,12 @@ import java.util.Timer;
 public abstract class TrackableObject {
     private static final Stack<ValueChange> _revisionUndoHistory = new Stack<>();
     private static final Stack<ValueChange> _revisionRedoHistory = new Stack<>();
-    private static ArrayList<TrackingTask> _changeListeners = new ArrayList<>();
+    private static ArrayList<StateSaveListener> _changeListeners = new ArrayList<>();
+    private static Timer _callbackWaitTimer = new Timer(false);
     private static int _maximumUndoRedoStackSize = -1;
-    private static long _mergeWaitTime = 5000;
-    private static Timer _callbackWaitTimer;
+    private static long _mergeWaitTime = 500;
     private static long _lastSaveTime;
+    private static TrackingTask _latestTrackingTask;
     private TrackedState _currentState;
 
     /**
@@ -65,8 +66,8 @@ public abstract class TrackableObject {
     public void saveCurrentState(String changeDescription, boolean saveAll) {
         try {
             if (canRedo()) { // add current state to the undo stack, otherwise it will be lost
-                ValueChange change = _currentState.dumpChange(this, _revisionUndoHistory.peek(),
-                        _revisionRedoHistory.peek().getDescription());
+                ValueChange last = _revisionUndoHistory.peek();
+                ValueChange change = last.getStateTracker().dumpChange(this, _revisionUndoHistory.peek(), last.getDescription());
                 _revisionUndoHistory.push(change);
             }
 
@@ -79,9 +80,9 @@ public abstract class TrackableObject {
                 return;
             }
 
-            // stop any outgoing callbacks
-            if (_callbackWaitTimer != null) {
-                _callbackWaitTimer.cancel();
+            // stop outgoing callbacks
+            if (_latestTrackingTask != null) {
+                _latestTrackingTask.cancel();
                 _callbackWaitTimer.purge();
             }
 
@@ -104,7 +105,7 @@ public abstract class TrackableObject {
                 _revisionUndoHistory.remove(0); // remove bottom item from stack if beyond bounds
             }
 
-            notifyListeners(_revisionUndoHistory.peek()); // notify change listeners
+            notifyListeners(_revisionUndoHistory.peek(), _mergeWaitTime); // notify change listeners
         }
         catch (Exception e) {
             System.err.println("Could not save current state as there is no state to save!");
@@ -141,6 +142,8 @@ public abstract class TrackableObject {
         _revisionRedoHistory.push(undoState);
         applyHistoryChange(undoState);
         undoState.undo();
+        if (_latestTrackingTask != null) _latestTrackingTask.cancel();
+        notifyListeners(_revisionRedoHistory.peek(), 0);
     }
 
     /**
@@ -172,6 +175,8 @@ public abstract class TrackableObject {
         _revisionUndoHistory.push(redoState);
         redoState.redo();
         applyHistoryChange(redoState);
+        if (_latestTrackingTask != null) _latestTrackingTask.cancel();
+        notifyListeners(_revisionUndoHistory.peek(), 0);
     }
 
     /**
@@ -219,7 +224,7 @@ public abstract class TrackableObject {
      * Adds a listener that waits for a save.
      * @param listener listener to call on change.
      */
-    public static void addSavedListener(TrackingTask listener) {
+    public static void addSavedListener(StateSaveListener listener) {
         _changeListeners.add(listener);
     }
 
@@ -227,12 +232,10 @@ public abstract class TrackableObject {
      * Notifies listeners that are waiting for history changes.
      * @param change change that was made
      */
-    private static void notifyListeners(ValueChange change) {
-        _callbackWaitTimer = new Timer(false);
-        for (TrackingTask listener : _changeListeners) {
-            listener.setChange(change);
-            _callbackWaitTimer.schedule(listener, _mergeWaitTime);
-        }
+    private static void notifyListeners(ValueChange change, long wait) {
+        TrackingTask task = new TrackingTask(change, _changeListeners);
+        _latestTrackingTask = task;
+        _callbackWaitTimer.schedule(task, wait);
     }
 
     /**
@@ -249,5 +252,12 @@ public abstract class TrackableObject {
      */
     public static void setMergeWaitTime(long mergeWaitTime) {
         _mergeWaitTime = mergeWaitTime;
+    }
+
+    /**
+     * Stops the callback timer so the application can quit.
+     */
+    public static void destroy() {
+        _callbackWaitTimer.cancel();
     }
 }
