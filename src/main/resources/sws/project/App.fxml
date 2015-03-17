@@ -48,7 +48,7 @@
                   <HBox alignment="TOP_RIGHT" spacing="5.0" VBox.vgrow="SOMETIMES">
                      <children>
                         <Button mnemonicParsing="false" onAction="#addClicked" text="+" />
-                        <Button mnemonicParsing="false" onAction="#removeClicked" text="X" />
+                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" />

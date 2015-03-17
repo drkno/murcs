@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -15,7 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
 import sws.project.model.*;
@@ -42,6 +42,7 @@ public class AppController implements Initializable {
     @FXML BorderPane borderPaneMain;
     @FXML ChoiceBox displayChoiceBox;
     @FXML ListView displayList;
+    @FXML Button removeButton;
 
     @FXML
     GridPane contentPane;
@@ -72,6 +73,9 @@ public class AppController implements Initializable {
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            //The remove button should be greyed out if no item is selected
+            removeButton.setDisable(newValue == null);
+
             contentPane.getChildren().clear();
             if (newValue == null) return;
 
@@ -90,6 +94,14 @@ public class AppController implements Initializable {
         TrackableObject.addSavedListener(change -> {
             Platform.runLater(() -> {updateUndoRedoMenuItems(change);});
         });
+    }
+
+    /**
+     * Updates the display list using the currently selected type of item
+     */
+    private void updateDisplayList(){
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        updateDisplayList(type);
     }
 
     /***
@@ -367,7 +379,7 @@ public class AppController implements Initializable {
 
         try {
             EditorHelper.createNew(clazz, () ->{
-                updateDisplayList(type);
+                updateDisplayList();
                 return null;});
         } catch (Exception e) {
             e.printStackTrace();
@@ -379,6 +391,7 @@ public class AppController implements Initializable {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
 
-        throw new NotImplementedException();
+        model.remove((Model)displayList.getSelectionModel().getSelectedItem());
+        updateDisplayList();
     }
 }
