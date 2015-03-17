@@ -391,7 +391,16 @@ public class AppController implements Initializable {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
 
+        final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
+        if (selectedIndex == -1) return;
+
         model.remove((Model)displayList.getSelectionModel().getSelectedItem());
         updateDisplayList();
+
+        //If there are no items in the displayList, don't try to select something
+        if (displayList.getItems().size() == 0) return;
+
+        //Clamp the selected index at the number of items in the list
+        Platform.runLater(() -> displayList.getSelectionModel().select(Math.max(selectedIndex, displayList.getItems().size())));
     }
 }
