@@ -56,4 +56,23 @@ public enum ModelTypes {
         Model model = (Model)object;
         return getModelType(model.getClass());
     }
+
+    /**
+     * Converts a model type to a class type
+     * @param type the type
+     * @return The class
+     */
+    public static Class<? extends Model> getTypeFromModel(ModelTypes type){
+        switch (type){
+            case Project:
+                return sws.project.model.Project.class;
+            case Team:
+                return sws.project.model.Team.class;
+            case People:
+                return sws.project.model.Person.class;
+            case Skills:
+                return sws.project.model.Skill.class;
+        }
+        return null;
+    }
 }
