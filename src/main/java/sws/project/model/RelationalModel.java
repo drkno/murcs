@@ -11,8 +11,6 @@ import java.util.List;
 
 /**
  * The top level relational model
- *
- * 11/03/2015
  */
 public class RelationalModel extends TrackableObject implements Serializable{
 

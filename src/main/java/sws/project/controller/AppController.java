@@ -32,7 +32,6 @@ import static sws.project.magic.tracking.TrackableObject.*;
 
 /**
  * Main app class controller
- * 11/03/2015
  */
 public class AppController implements Initializable {
 
@@ -78,7 +77,7 @@ public class AppController implements Initializable {
             displayChoiceBox.getItems().add(type);
         }
         displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observer, oldValue, newValue) -> {
-            updateDisplayList(ModelTypes.getModelType(newValue.intValue()));
+            updateDisplayList();
         });
 
         displayChoiceBox.getSelectionModel().select(0);
@@ -208,7 +207,7 @@ public class AppController implements Initializable {
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
             ProjectEditor.displayWindow(() -> {
-                updateDisplayList(ModelTypes.Project);
+                updateDisplayList();
                 return null;
             }, null);
         } else {
@@ -220,12 +219,12 @@ public class AppController implements Initializable {
 
                 RelationalModel model = new RelationalModel();
                 PersistenceManager.Current.setCurrentModel(model);
-                updateDisplayList(ModelTypes.Project);
+                updateDisplayList();
                 // Reset Tracked history
                 reset();
                 // Create a new project
                 ProjectEditor.displayWindow(() -> {
-                    updateDisplayList(ModelTypes.Project);
+                    updateDisplayList();
                     return null;
                 }, null);
                 return null;
@@ -237,12 +236,12 @@ public class AppController implements Initializable {
 
                 RelationalModel model = new RelationalModel();
                 PersistenceManager.Current.setCurrentModel(model);
-                updateDisplayList(ModelTypes.Project);
+                updateDisplayList();
                 // Reset Tracked History
                 reset();
                 // Create a new project
                 ProjectEditor.displayWindow(() -> {
-                    updateDisplayList(ModelTypes.Project);
+                    updateDisplayList();
                     return null;
                 }, null);
                 return null;
@@ -298,7 +297,7 @@ public class AppController implements Initializable {
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
             }
-            updateDisplayList(ModelTypes.Project);
+            updateDisplayList();
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
