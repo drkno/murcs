@@ -10,7 +10,8 @@ import sws.project.model.Team;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Provides helper methods for generating forms for editing and
+ * creating new model objects
  */
 public class EditorHelper {
     /**
