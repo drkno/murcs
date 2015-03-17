@@ -23,6 +23,7 @@ public interface EditPaneGenerator {
      * @param validator The validator for the field. This can quite realistically be null, if no validator is specified
      * @param from The object to change the field on
      * @return The node for editing
+     * @throws java.lang.Exception when class is unsupported
      */
     Node generate(Field field, Method getter, Method setter, Method validator, Object from) throws Exception;
 

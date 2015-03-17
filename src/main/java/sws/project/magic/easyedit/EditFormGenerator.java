@@ -210,6 +210,7 @@ public class EditFormGenerator {
      * @param from The object the field is from
      * @param editable The editable annotation of the
      * @return The node of the edit form
+     * @throws java.lang.Exception when the class is unsupported
      */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Method validator, final Object from, Editable editable) throws Exception {
         Constructor<?> constructor;
