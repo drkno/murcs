@@ -197,7 +197,6 @@ public class AppController implements Initializable {
 
     /**
      * Create a new project, opens a dialog to fill out for the new project.
-     *
      * @param event The event that causes the function to be called, namely clicking new project.
      */
     @FXML
