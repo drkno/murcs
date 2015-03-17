@@ -29,7 +29,7 @@ public enum ModelTypes {
     /**
      * Gets the model type from a model object
      * @param clazz The type of the model object
-     * @return
+     * @return The model type
      */
     public static ModelTypes getModelType(Class<? extends Model> clazz){
         if (clazz == sws.project.model.Project.class)
@@ -42,5 +42,17 @@ public enum ModelTypes {
             return Skills;
 
         throw new IllegalArgumentException("Clazz " + clazz.getName() + " is not supported");
+    }
+
+    /**
+     * Gets the model type of an object.
+     * This object should extend one of the model classes
+     * @param object The object to get the model type for
+     * @return The model type
+     */
+    public static ModelTypes getModelType(Object object){
+        if (!(object instanceof Model)) throw new IllegalArgumentException("object must extend model!");
+
+        return getModelType(object.getClass());
     }
 }
