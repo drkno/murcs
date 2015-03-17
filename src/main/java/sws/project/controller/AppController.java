@@ -18,9 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.Model;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
+import sws.project.model.*;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
@@ -394,12 +392,19 @@ public class AppController implements Initializable {
 
     @FXML
     private void addClicked(ActionEvent event) {
-        Class<? extends Model> clazz;
+        Class<? extends Model> clazz = null;
         if (event.getSource() instanceof MenuItem) {
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
                 case "addPerson":
-                    clazz =
+                    clazz = Person.class;
+                    break;
+                case "addTeam":
+                    clazz = Team.class;
+                    break;
+                case "addSkill":
+                    clazz = Skill.class;
+                    break;
             }
         }
         else {
@@ -408,10 +413,12 @@ public class AppController implements Initializable {
         }
 
         try {
-            EditorHelper.createNew(clazz, () -> {
-                updateDisplayList();
-                return null;
-            });
+            if (clazz != null) {
+                EditorHelper.createNew(clazz, () -> {
+                    updateDisplayList();
+                    return null;
+                });
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
