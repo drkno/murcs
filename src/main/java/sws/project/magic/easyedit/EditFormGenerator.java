@@ -116,6 +116,7 @@ public class EditFormGenerator {
      * @param methodName The name of the method
      * @param parameters The types of parameters the class takes
      * @return Finds a method on the class
+     * @throws java.lang.NoSuchMethodException
      */
     private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{
