@@ -6,11 +6,12 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.UndoRedoManager;
 
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
         public TestInteger() {
-            saveCurrentState("initial state", true);
+            commit("initial state");
         }
 
         @TrackableValue
@@ -22,13 +23,13 @@ public class TrackingMultipleTest {
 
         public void setTestInteger(int testInteger) {
             this.testInteger = testInteger;
-            saveCurrentState("test desc.");
+            commit("test desc.");
         }
     }
 
     public class TestString extends TrackableObject {
         public TestString() {
-            saveCurrentState("initial state", true);
+            commit("initial state");
         }
 
         @TrackableValue
@@ -40,18 +41,19 @@ public class TrackingMultipleTest {
 
         public void setTestString(String testString) {
             this.testString = testString;
-            saveCurrentState("test desc.");
+            commit("test desc.");
         }
     }
 
     @Before
     public void setup() {
-        TrackableObject.setMergeWaitTime(0);
+        UndoRedoManager.setMergeWaitTime(0);
+        UndoRedoManager.setMaximumTrackingSize(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        TrackableObject.reset();
+        UndoRedoManager.reset();
     }
 
     @Test
@@ -64,13 +66,13 @@ public class TrackingMultipleTest {
         b.setTestString("2");
         a.setTestInteger(3);
         b.setTestString("3");
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
     }
@@ -85,20 +87,20 @@ public class TrackingMultipleTest {
         b.setTestString("2");
         a.setTestInteger(3);
         b.setTestString("3");
-        TrackableObject.undo();
-        TrackableObject.undo();
-        TrackableObject.undo();
-        TrackableObject.undo();
+        UndoRedoManager.undo();
+        UndoRedoManager.undo();
+        UndoRedoManager.undo();
+        UndoRedoManager.undo();
 
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(1, a.getTestInteger());
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());;
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
     }
@@ -111,14 +113,14 @@ public class TrackingMultipleTest {
         b.setTestString("1");
         a.setTestInteger(2);
         b.setTestString("2");
-        Assert.assertEquals("test desc.", TrackableObject.getUndoDescription());
-        TrackableObject.undo();
-        Assert.assertEquals("test desc.", TrackableObject.getUndoDescription());
-        Assert.assertEquals("test desc.", TrackableObject.getRedoDescription());
-        TrackableObject.undo();
-        Assert.assertEquals("initial state", TrackableObject.getUndoDescription());
-        Assert.assertEquals("test desc.", TrackableObject.getRedoDescription());
-        TrackableObject.undo();
-        Assert.assertEquals("initial state", TrackableObject.getRedoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getUndoDescription());
+        UndoRedoManager.undo();
+        Assert.assertEquals("test desc.", UndoRedoManager.getUndoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRedoDescription());
+        UndoRedoManager.undo();
+        Assert.assertEquals("initial state", UndoRedoManager.getUndoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRedoDescription());
+        UndoRedoManager.undo();
+        Assert.assertEquals("initial state", UndoRedoManager.getRedoDescription());
     }
 }
