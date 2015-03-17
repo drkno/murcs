@@ -51,8 +51,9 @@ public enum ModelTypes {
      * @return The model type
      */
     public static ModelTypes getModelType(Object object){
-        if (!(object instanceof Model)) throw new IllegalArgumentException("object must extend model!");
+        if (!(object instanceof Model)) throw new IllegalArgumentException("object must extend model! (was " + object.getClass().getName() + ")");
 
-        return getModelType(object.getClass());
+        Model model = (Model)object;
+        return getModelType(model.getClass());
     }
 }

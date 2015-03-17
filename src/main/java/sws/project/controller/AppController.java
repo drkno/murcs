@@ -77,12 +77,7 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                if (newValue instanceof Project)
-                    pane = ProjectEditor.createFor((Project)newValue);
-                else if (newValue instanceof Person)
-                    pane = PersonEditor.createFor((Person)newValue);
-                else if (newValue instanceof Team)
-                    pane = TeamEditor.createFor((Team)newValue);
+                pane = EditorHelper.getEditForm((Model)newValue, null);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -365,11 +360,13 @@ public class AppController implements Initializable {
         }
     }
 
-    private void addButtonClicked(ActionEvent event){
+    @FXML
+    private void addClicked(ActionEvent event){
 
     }
 
-    private void removeButtonClicked(ActionEvent event){
+    @FXML
+    private void removeClicked(ActionEvent event){
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
 
