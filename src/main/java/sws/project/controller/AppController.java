@@ -20,6 +20,7 @@ import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
 import sws.project.model.Model;
+import sws.project.model.Person;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;

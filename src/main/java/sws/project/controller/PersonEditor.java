@@ -81,7 +81,6 @@ public class PersonEditor implements Initializable{
      */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel) {
         try {
-            Parent content = createFor(new Person());
             Parent content = createFor(new Person(), null, false);
 
             Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
