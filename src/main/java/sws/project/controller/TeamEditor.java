@@ -65,14 +65,14 @@ public class TeamEditor implements Initializable{
     public static Parent createFor(Team team, Callable<Void> onSaved){
         try {
             FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/TeamEditor.fxml"));
-            AnchorPane anchorPane = loader.load();
+            Parent parent = loader.load();
 
             TeamEditor controller = loader.getController();
             controller.team = team;
             controller.onSaved = onSaved;
             controller.loadProject();
 
-            return anchorPane;
+            return parent;
         }catch (Exception e){
             System.err.println("Unable to create a team editor!(this is seriously bad)");
             e.printStackTrace();
@@ -116,7 +116,7 @@ public class TeamEditor implements Initializable{
             team.setDescription(descriptionTextField.getText());
 
             team.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
-            team.setScrumMaster((Person)scrumMasterPicker.getSelectionModel().getSelectedItem());
+            team.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
 
