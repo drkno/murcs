@@ -128,7 +128,7 @@ public class TeamEditor implements Initializable{
 
             //If we haven't added the team yet, throw them in the list of unassigned people
             if (!model.getTeams().contains(team))
-                model.addUnassignedTeam(team);
+                model.addTeam(team);
 
             //If we have a saved callBack, call it
             if (onSaved != null)

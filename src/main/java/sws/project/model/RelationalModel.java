@@ -20,7 +20,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     @TrackableValue
     private ArrayList<Person> people;
     @TrackableValue
-    private ArrayList<Team> unassignedTeams;
+    private ArrayList<Team> teams;
     @TrackableValue
     private ArrayList<Skill> skills;
 
@@ -36,7 +36,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
 
     public RelationalModel() {
         this.people = new ArrayList<>();
-        this.unassignedTeams = new ArrayList<>();
+        this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.project = new Project();
         saveCurrentState("Set relational model");
@@ -87,19 +87,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
     }
 
     /**
-     * Gets a list of all teams
-     * @return The teams
-     */
-    public ArrayList<Team> getTeams(){
-        ArrayList<Team> teams = new ArrayList<>();
-
-        teams.addAll(unassignedTeams);
-        if (getProject() != null)
-            teams.addAll(getProject().getTeams());
-        return teams;
-    }
-
-    /**
      * Adds a person to the model if it doesn't exits
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
@@ -146,7 +133,26 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @return The unassigned teams
      */
     public ArrayList<Team> getUnassignedTeams() {
+
+        ArrayList<Team> unassignedTeams = new ArrayList<>();
+        unassignedTeams.addAll(getTeams());
+
+        if (getProject() != null) {
+            //Remove all the teams that are assigned to a project
+            for (Team team : project.getTeams()){
+                unassignedTeams.remove(team);
+            }
+        }
+
         return unassignedTeams;
+    }
+
+    /**
+     * Gets a list of all teams
+     * @return The teams
+     */
+    public ArrayList<Team> getTeams(){
+        return teams;
     }
 
     /**
@@ -154,14 +160,14 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @param team The unassigned team to add
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has that team
      */
-    public void addUnassignedTeam(Team team) throws DuplicateObjectException {
-        if (!this.unassignedTeams.contains(team) &&
-                !this.unassignedTeams
+    public void addTeam(Team team) throws DuplicateObjectException {
+        if (!this.teams.contains(team) &&
+                !this.teams
                         .stream()
                         .filter(s -> s.getShortName().toLowerCase().equals(team.getShortName().toLowerCase()))
                         .findAny()
                         .isPresent()) {
-            this.unassignedTeams.add(team);
+            this.getTeams().add(team);
             saveCurrentState("Unassigned team added");
         }
         else {
@@ -174,9 +180,9 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @param teams Teams to be added to the relational model
      * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
      */
-    public void addUnassignedTeams(List<Team> teams) throws DuplicateObjectException {
+    public void addTeams(List<Team> teams) throws DuplicateObjectException {
         for (Team team: teams) {
-            this.addUnassignedTeam(team);
+            this.addTeam(team);
         }
     }
 
@@ -184,9 +190,9 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * Removes a team from the unassigned teams
      * @param team The unassigned team to remove
      */
-    public void removeUnassignedTeam(Team team) {
-        if (this.unassignedTeams.contains(team)) {
-            this.unassignedTeams.remove(team);
+    public void removeTeam(Team team) {
+        if (this.teams.contains(team)) {
+            this.teams.remove(team);
             saveCurrentState("Unassigned team removed");
         }
     }

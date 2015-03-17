@@ -138,7 +138,7 @@ public class ProjectEditor implements Initializable {
                 PersistenceManager.Current.setCurrentModel(model);
 
                 try {
-                    model.addUnassignedTeam((new TeamGenerator()).generate());
+                    model.addTeam((new TeamGenerator()).generate());
 
                     //Generate us some people
                     for (int i = 0; i < 10; ++i)
