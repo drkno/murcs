@@ -116,7 +116,6 @@ public class AppController implements Initializable {
 
     /**
      * Updates the display list on the left hand side of the screen to the type selected in the choice box.
-     *
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
