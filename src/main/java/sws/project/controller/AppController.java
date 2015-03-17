@@ -257,7 +257,6 @@ public class AppController implements Initializable {
     /**
      * Save the current project. Currently you choose where to save the project every time, however it does remember the
      * last location saved or loaded from.
-     *
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
