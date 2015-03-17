@@ -22,7 +22,7 @@ public class EditFormGenerator {
      * Generates a pane for editing an object
      * @param from The object to generate a pane for
      * @return The edit pane
-     * @throws java.lang.Exception
+     * @throws java.lang.NoSuchMethodException when it can't find a method
      */
     public static Parent generatePane(Object from) throws Exception{
         VBox generated = new VBox(20);
@@ -117,7 +117,7 @@ public class EditFormGenerator {
      * @param methodName The name of the method
      * @param parameters The types of parameters the class takes
      * @return Finds a method on the class
-     * @throws java.lang.NoSuchMethodException
+     * @throws java.lang.NoSuchMethodException When it can't find a method
      */
     private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{
