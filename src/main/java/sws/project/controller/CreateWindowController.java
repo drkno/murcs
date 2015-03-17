@@ -5,11 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -55,7 +53,7 @@ public class CreateWindowController {
     }
 
     public void setContent(Node content){
-        contentPane.add(content, 0, 0);
+        contentPane.getChildren().add(content);
     }
 
     public static Parent newCreateNode(Node content, Callable<Void> okayClicked, Callable<Void> cancelClicked){
