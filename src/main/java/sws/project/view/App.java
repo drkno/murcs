@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.project.controller.AppClosingListener;
-import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.UndoRedoManager;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
 
@@ -68,7 +68,7 @@ public class App extends Application{
      */
     public static void main(String[] args) {
         launch(args);
-        TrackableObject.destroy();
+        UndoRedoManager.destroy();
     }
 }
 

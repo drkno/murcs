@@ -31,7 +31,6 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
         this.shortName = shortName.trim();
-        saveCurrentState("Short Name change");
     }
 
     /**
@@ -57,6 +56,5 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public void setLongName(String longName) {
         this.longName = longName;
-        saveCurrentState("Long Name change");
     }
 }
