@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 /**
- *
+ *  The controller for the team editor
  */
 public class TeamEditor implements Initializable{
     private Team team;
