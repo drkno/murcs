@@ -10,13 +10,14 @@ import java.util.ArrayList;
  */
 public class FilePersistenceLoader implements PersistenceLoader {
 
-    private String workingDirectory = System.getProperty("user.dir");
+    private String workingDirectory;
 
     /**
-     * Instantiates a new FilePersistenceLoader.
-     * Blank constructor for default usage.
+     * Instantiates a new FilePersistenceLoader, defaulting to the current working directory.
      */
-    public FilePersistenceLoader(){}
+    public FilePersistenceLoader(){
+        this(System.getProperty("user.dir"));
+    }
 
     /**
      * Instantiates a new FilePersistenceLoader.
@@ -126,31 +127,42 @@ public class FilePersistenceLoader implements PersistenceLoader {
     }
 
     /**
-     * Gets a list of models that exist.
+     * Gets a list of models that exist, are in the current working directory and have the default extension.
      * @return List of models.
      */
     @Override
     public ArrayList<String> getModelList()
     {
-        return getModelList(getCurrentWorkingDirectory());
+        return getModelList(".project");
+    }
+
+    /**
+     * Gets a list of models that exist and are in the current directory.
+     * @param fileExtension file extension.
+     * @return List of models.
+     */
+    public ArrayList<String> getModelList(String fileExtension)
+    {
+        return getModelList(fileExtension, getCurrentWorkingDirectory());
     }
 
     /**
      * Returns a list of models that exist in a directory.
+     * @param fileExtension File extension to search for
      * @param directory Directory to search
      * @return list of models
      */
-    public static ArrayList<String> getModelList(String directory)
+    public static ArrayList<String> getModelList(String fileExtension, String directory)
     {
         ArrayList<String> persistentList = new ArrayList<String>();
         File dir = new File(directory); // create handle to directory
         for (File f : dir.listFiles())
         {
             String name = f.getName();
-            if (name.endsWith(".project")) // check if it ends with the correct ext
+            if (name.endsWith(fileExtension)) // check if it ends with the correct ext
             {
                 // if it does add
-                persistentList.add(name.substring(0, name.indexOf(".project")));
+                persistentList.add(name.substring(0, name.indexOf(fileExtension)));
             }
         }
         return persistentList;
@@ -177,7 +189,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     {
         try
         {
-            File persistenceFile = new File(directory + File.separator + persistentName + ".project");
+            File persistenceFile = new File(directory + File.separator + persistentName);
 
             if(persistenceFile.delete())
             {

@@ -1,21 +1,20 @@
 package sws.project.model;
 
-import sws.project.magic.tracking.TrackValue;
-import sws.project.magic.tracking.ValueTracker;
 import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.io.Serializable;
 
 /**
  * Contains the basic model for each object type.
  */
-public abstract class Model extends ValueTracker implements Serializable{
-    @TrackValue
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+public abstract class Model extends TrackableObject implements Serializable {
+    @TrackableValue
+    @Editable(validatorName = "validateShortName", sort = -2)
     private String shortName;
-    @TrackValue
-    @Editable(editPaneGenerator = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
+    @TrackableValue
+    @Editable(sort = -1)
     private String longName;
 
     /**
@@ -30,10 +29,18 @@ public abstract class Model extends ValueTracker implements Serializable{
      * @throws java.lang.Exception if the shortName is invalid
      */
     public void setShortName(String shortName) throws Exception {
-        if (shortName == null || shortName.trim().isEmpty()) throw new Exception("Short Name cannot be empty");
-
+        if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
         this.shortName = shortName.trim();
         saveCurrentState("Short Name change");
+    }
+
+    /**
+     * Indicates whether a value is a valid value for 'shortName' to hold
+     * @param value The value
+     * @return Whether the value is valid for 'shortName'
+     */
+    private boolean validateShortName(String value){
+        return value != null && !value.trim().isEmpty();
     }
 
     /**

@@ -9,6 +9,8 @@ import sws.project.magic.easyedit.EditPaneGenerator;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Generates a panel for a field based on some FXML. This FXML
@@ -22,11 +24,12 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
     public Class[] supportedTypes() {
         return new Class[] {String.class, int.class, Integer.class,
                 Double.class, double.class, Float.class, float.class,
-                Boolean.class, boolean.class};
+                Boolean.class, boolean.class,
+                Collection.class, ArrayList.class};
     }
 
     @Override
-    public Node generate(Field field, Method getter, Method setter, Object from) throws Exception {
+    public Node generate(Field field, Method getter, Method setter, Method validator, Object from) throws Exception {
         if (fxmlPath == null || fxmlPath.isEmpty())
             throw new Exception("The FXML path must be set. You can do this when you specify the field is editable like this: @Editable(FxmlPanelGenerator.class, argument=\"pathToFxml\"");
 
@@ -65,20 +68,35 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
         if (!supported)
             throw new Exception("The FXML you supplied was valid, but it's controller (" + loader.getController().getClass().getName() + ") doesn't support " + field.getType());
 
-        try{
-            controller.setTitle(title);
+        //Tell the controller what its title should be
+        controller.setTitle(title);
 
+        try{
+            //Get the current value of the field
             Object value = getter.invoke(from);
+            //Tell the controller what its starting value should be
             controller.setValue(value);
         }catch (Exception e){
             System.err.println("Unable to get " + field.getName() + " from " + from);
             throw new Exception("Couldn't get the field to tell the controller the current value (this is bad. Check to see if the getter name is valid");
         }
 
+        //Add a validator which ensures we're getting the correct type
+        controller.addValidator(v -> field.getType().isAssignableFrom(v.getClass()));
 
-        controller.addChangeListener((p, o, n) -> {
+        //If we have been passed a validator method, we should pass it as an argument to the controller
+        //and trust it does the right thing with it.
+        if (validator != null) controller.addValidator(v -> {
             try {
-                setter.invoke(from, n);
+                return (Boolean) validator.invoke(from, v);
+            } catch (Exception e) {
+                System.err.println("Failed to invoke the validator for " + field.getName() + " on " + from + " with value " + v);
+            }
+            return false;
+        });
+        controller.addChangeListener((observer, oldValue, newValue) -> {
+            try {
+                setter.invoke(from, newValue);
             }catch (Exception e){
                 System.err.println("Unable to set " + field.getName() + " on " + from);
             }

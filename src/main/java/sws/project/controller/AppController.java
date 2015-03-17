@@ -10,13 +10,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.project.magic.easyedit.EditFormGenerator;
-import sws.project.model.Model;
+import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.ValueChange;
+import sws.project.model.Person;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
@@ -26,22 +27,24 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static sws.project.magic.tracking.TrackableObject.*;
+
 /**
  * Main app class controller
  * 11/03/2015
  */
 public class AppController implements Initializable {
 
-    @FXML Parent root;
-    @FXML MenuItem fileQuit, newProjectMenuItem;
-    @FXML VBox vBoxSideDisplay;
-    @FXML HBox hBoxMainDisplay;
-    @FXML BorderPane borderPaneMain;
-    @FXML ChoiceBox displayChoiceBox;
-    @FXML ListView displayList;
+    @FXML private Parent root;
+    @FXML private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    @FXML private VBox vBoxSideDisplay;
+    @FXML private HBox hBoxMainDisplay;
+    @FXML private BorderPane borderPaneMain;
+    @FXML private ChoiceBox displayChoiceBox;
+    @FXML private ListView displayList;
 
     @FXML
-    AnchorPane contentPane;
+    GridPane contentPane;
 
     private ObservableList displayListItems;
 
@@ -53,29 +56,42 @@ public class AppController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        App.addListener(e -> {
+            e.consume();
+            fileQuitPress(null);
+        });
         displayListItems = FXCollections.observableArrayList();
         displayList.setItems(displayListItems);
 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((ov, v, nv) -> {
-            updateDisplayList(ModelTypes.getModelType(nv.intValue()));
+        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observer, oldValue, newValue) -> {
+            updateDisplayList(ModelTypes.getModelType(newValue.intValue()));
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedItemProperty().addListener((p, o, n)->{
+        displayList.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             contentPane.getChildren().clear();
-            if (n == null) return;
+            if (newValue == null) return;
 
             Parent pane = null;
             try {
-                pane = EditFormGenerator.generatePane(n);
+                if (newValue instanceof Project)
+                    pane = ProjectEditor.createFor((Project)newValue);
+                else if (newValue instanceof Person)
+                    pane = PersonEditor.createFor((Person)newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
             }
             contentPane.getChildren().add(pane);
+        });
+
+        updateUndoRedoMenuItems(null);
+
+        TrackableObject.addSavedListener(change -> {
+            Platform.runLater(() -> {updateUndoRedoMenuItems(change);});
         });
     }
 
@@ -84,6 +100,10 @@ public class AppController implements Initializable {
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
+        int selectedItem = displayList.getSelectionModel().getSelectedIndex();
+        if (selectedItem != -1)
+            displayList.getSelectionModel().clearSelection(selectedItem);
+
         displayListItems.clear();
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -93,13 +113,17 @@ public class AppController implements Initializable {
                 Project project = model.getProject();
                 if (project != null) {
                     displayListItems.add(project);
+                    displayList.getSelectionModel().select(project);
                 }
                 break;
             case People:
+                displayListItems.addAll(model.getPeople());
                 break;
             case Team:
+                displayListItems.addAll(model.getTeams());
                 break;
             case Skills:
+                displayListItems.addAll(model.getSkills());
                 break;
         }
     }
@@ -110,7 +134,28 @@ public class AppController implements Initializable {
      */
     @FXML
     private void fileQuitPress(ActionEvent event) {
-        Platform.exit();
+        if (canUndo()) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Unsaved Changes");
+            popup.setMessageText("You have unsaved changes to your project.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+                popup.close();
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                // Let the user save the project
+                saveProject(null);
+                Platform.exit();
+                return null;
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.show();
+        }
+        else {
+            Platform.exit();
+        }
     }
 
     /***
@@ -135,10 +180,52 @@ public class AppController implements Initializable {
      */
     @FXML
     private void createNewProject(ActionEvent event) {
-        CreateProjectPopUpController.displayPopUp(() -> {
-            updateDisplayList(ModelTypes.Project);
-            return null;
-        });
+        if (!canUndo()) {
+            ProjectEditor.displayWindow(() -> {
+                updateDisplayList(ModelTypes.Project);
+                return null;
+            }, null);
+        }
+        else {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Unsaved Changes");
+            popup.setMessageText("You have unsaved changes to your project.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+                popup.close();
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
+                // Reset Tracked history
+                reset();
+                // Create a new project
+                ProjectEditor.displayWindow(() -> {
+                    updateDisplayList(ModelTypes.Project);
+                    return null;
+                }, null);
+                return null;
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                // Let the user save the project
+                saveProject(null);
+
+                RelationalModel model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                updateDisplayList(ModelTypes.Project);
+                // Reset Tracked History
+                reset();
+                // Create a new project
+                ProjectEditor.displayWindow(() -> {
+                    updateDisplayList(ModelTypes.Project);
+                    return null;
+                }, null);
+                return null;
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.show();
+
+        }
     }
 
     /***
@@ -187,5 +274,97 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
+    }
+
+    /**
+     * Called when the undo menu item has been clicked.
+     * @param event event arguments.
+     */
+    @FXML
+    private void undoMenuItemClicked(ActionEvent event) {
+        try {
+            undo();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            reset();
+        }
+        updateUndoRedoMenuItems(null);
+    }
+
+    /**
+     * Redo menu item has been clicked.
+     * @param event event arguments.
+     */
+    @FXML
+    private void redoMenuItemClicked(ActionEvent event) {
+        try {
+            redo();
+        }
+        catch (Exception e) {
+            // something went terribly wrong....
+            reset();
+            e.printStackTrace();
+        }
+        updateUndoRedoMenuItems(null);
+    }
+
+    /**
+     * Updates the undo/redo menu to reflect the current undo/redo state.
+     * @param change change that has been made
+     */
+    private void updateUndoRedoMenuItems(ValueChange change) {
+        undoMenuItem.setDisable(true);
+        redoMenuItem.setDisable(true);
+
+        //CODE BELOW IS WIP
+
+        /*if (!canUndo()) {
+            undoMenuItem.setDisable(true);
+            undoMenuItem.setText("Undo...");
+        }
+        else {
+            undoMenuItem.setDisable(true);
+            undoMenuItem.setText("Undo \"" + getUndoDescription() +  "\"");
+        }
+
+        if (!canRedo()) {
+            redoMenuItem.setDisable(true);
+            redoMenuItem.setText("Redo...");
+        }
+        else {
+            redoMenuItem.setDisable(true);
+            redoMenuItem.setText("Redo \"" + getRedoDescription() +  "\"");
+        }
+
+        if (change == null) return;
+        Class affectedType = change.getAffectedObject().getClass();
+        if (affectedType.isArray()) {
+            affectedType = affectedType.getComponentType();
+        }
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        Class expectedType = null;
+        switch (type) {
+            case Project:
+                expectedType = RelationalModel.class;
+                break;
+            case People:
+                expectedType = Person.class;
+                break;
+            case Team:
+                expectedType = Team.class;
+                break;
+            case Skills:
+                expectedType = Skill.class;
+                break;
+        }
+
+        if (affectedType.equals(expectedType) &&
+                Arrays.stream(change.getChangedFields())
+                        .filter(f -> f.getField().getName().equals("shortName")
+                                || f.getField().getName().equals("project"))
+                        .findAny().isPresent()) {
+            updateDisplayList(type);
+        }*/
     }
 }

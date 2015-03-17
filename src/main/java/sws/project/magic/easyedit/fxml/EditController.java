@@ -15,21 +15,21 @@ public interface EditController<T> {
     void setTitle(String title);
 
     /**
-     * Sets the editPaneGenerator of the edit controller
-     * @param value The current editPaneGenerator of the edit controller
+     * Sets the value of the edit controller
+     * @param value The current value of the edit controller
      */
     void setValue(T value);
 
     /**
      * Adds a validator to the form. If any predicate fails then
      * the change listener will not be fired.
-     * @param predicate vaildator to add
+     * @param predicate validator to add
      */
     void addValidator(Predicate<T> predicate);
 
     /**
      * Adds a new change listener to the form which will
-     * be fired the next time the form has a valid editPaneGenerator
+     * be fired the next time the form has a valid value
      * @param listener The change listener to add
      */
     void addChangeListener(ChangeListener<T> listener);

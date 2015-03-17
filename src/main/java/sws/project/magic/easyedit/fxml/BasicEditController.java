@@ -35,16 +35,16 @@ public abstract class BasicEditController<T> implements EditController<T> {
     }
 
     /**
-     * Notify all the change listeners that we've changed, if the new editPaneGenerator is valid
+     * Notify all the change listeners that we've changed, if the new value is valid
      * @param observable The observable that has changed
-     * @param oldValue The old editPaneGenerator
-     * @param newValue The new editPaneGenerator
+     * @param oldValue The old value
+     * @param newValue The new value
      */
     protected void notifyChanged(ObservableValue<? extends T> observable, T oldValue, T newValue){
         //If nothing has changed, there's no point in us doing anything is there?
         if (oldValue == newValue) return;
 
-        //If our new editPaneGenerator is not valid
+        //If our new value is not valid
         if (!isValid(newValue)) {
             //Show an invalid message and return
             showInvalid();
@@ -61,9 +61,9 @@ public abstract class BasicEditController<T> implements EditController<T> {
     }
 
     /**
-     * Checks to see if a specified editPaneGenerator is valid by our list of predicates
-     * @param value The editPaneGenerator to verify
-     * @return Whether the editPaneGenerator is valid
+     * Checks to see if a specified value is valid by our list of predicates
+     * @param value The value to verify
+     * @return Whether the value is valid
      */
     protected boolean isValid(T value){
         //Check if we're valid. If any validator is false, we're invalid
@@ -77,7 +77,7 @@ public abstract class BasicEditController<T> implements EditController<T> {
     }
 
     /**
-     * Called when the editPaneGenerator in the GUI is changed to something Invalid
+     * Called when the value in the GUI is changed to something Invalid
      */
     protected void showValid(){
         if (invalidNode == null) return;
@@ -85,7 +85,7 @@ public abstract class BasicEditController<T> implements EditController<T> {
     }
 
     /**
-     * Called when the editPaneGenerator in the GUI is changed to something Valid
+     * Called when the value in the GUI is changed to something Valid
      */
     protected void showInvalid(){
         if (invalidNode == null) return;

@@ -1,6 +1,8 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
+import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,11 +13,15 @@ import java.util.List;
  *
  * 11/03/2015
  */
-public class RelationalModel implements Serializable{
+public class RelationalModel extends TrackableObject implements Serializable{
 
+    @TrackableValue
     private Project project;
+    @TrackableValue
     private ArrayList<Person> unassignedPeople;
+    @TrackableValue
     private ArrayList<Team> unassignedTeams;
+    @TrackableValue
     private ArrayList<Skill> skills;
 
     /***
@@ -33,6 +39,7 @@ public class RelationalModel implements Serializable{
         this.unassignedTeams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.project = new Project();
+        saveCurrentState("Set relational model");
     }
 
     /**
@@ -49,6 +56,7 @@ public class RelationalModel implements Serializable{
      */
     public void setProject(Project project) {
         this.project = project;
+        saveCurrentState("Project change");
     }
 
     /**
@@ -60,18 +68,46 @@ public class RelationalModel implements Serializable{
     }
 
     /**
+     * Gets a list of all people.
+     * @return The people
+     */
+    public ArrayList<Person> getPeople(){
+        ArrayList<Person> people = new ArrayList<>();
+        people.addAll(unassignedPeople);
+
+        for (Team t : getTeams())
+            people.addAll(t.getMembers());
+
+        return people;
+    }
+
+    /**
+     * Gets a list of all teams
+     * @return The teams
+     */
+    public ArrayList<Team> getTeams(){
+        ArrayList<Team> teams = new ArrayList<>();
+
+        teams.addAll(unassignedTeams);
+        if (getProject() != null)
+            teams.addAll(getProject().getTeams());
+        return teams;
+    }
+
+    /**
      * Adds a person to the unassigned people only if that person is not already in 
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
     public void addUnassignedPerson(Person person) throws DuplicateObjectException{
-        if (!this.unassignedPeople.contains(person) &&
-                !this.unassignedPeople
+        if (!this.getPeople().contains(person) &&
+                !this.getPeople()
                         .stream()
                         .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
                         .findAny()
                         .isPresent()) {
             this.unassignedPeople.add(person);
+            saveCurrentState("Unassigned person added");
         }
         else {
             throw new DuplicateObjectException();
@@ -96,6 +132,7 @@ public class RelationalModel implements Serializable{
     public void removeUnassignedPerson(Person person) {
         if (this.unassignedPeople.contains(person)) {
             this.unassignedPeople.remove(person);
+            saveCurrentState("Unassigned person removed");
         }
     }
 
@@ -120,6 +157,7 @@ public class RelationalModel implements Serializable{
                         .findAny()
                         .isPresent()) {
             this.unassignedTeams.add(team);
+            saveCurrentState("Unassigned team added");
         }
         else {
             throw new DuplicateObjectException();
@@ -144,6 +182,7 @@ public class RelationalModel implements Serializable{
     public void removeUnassignedTeam(Team team) {
         if (this.unassignedTeams.contains(team)) {
             this.unassignedTeams.remove(team);
+            saveCurrentState("Unassigned team removed");
         }
     }
 
@@ -168,6 +207,7 @@ public class RelationalModel implements Serializable{
                         .findAny()
                         .isPresent()) {
             this.skills.add(skill);
+            saveCurrentState("Skill added");
         }
         else throw new DuplicateObjectException();
     }
@@ -190,6 +230,7 @@ public class RelationalModel implements Serializable{
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+            saveCurrentState("Skill added");
         }
     }
 }
