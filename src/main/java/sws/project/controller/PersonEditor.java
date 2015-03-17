@@ -34,25 +34,6 @@ public class PersonEditor implements Initializable{
     private Callable<Void> onSaved;
 
     /**
-     * Creates a new form for editing a person. It will add the person to
-     * the model automatically as soon as it is valid
-     * @return The form
-     */
-    public static Parent createNew(){
-        return createFor(new Person());
-    }
-
-    /**
-     * Creates a new form for editing a person with a callback that is called every time
-     * a change is made
-     * @param onSaved The callback
-     * @return the Form
-     */
-    public static Parent createNew(Callable<Void> onSaved){
-        return createFor(new Person(), null);
-    }
-
-    /**
      * Creates a new form for editing a person
      *
      * @param person The person
@@ -95,7 +76,7 @@ public class PersonEditor implements Initializable{
      */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
         try {
-            Parent content = createNew();
+            Parent content = createFor(new Person());
 
             Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
             Scene scene = new Scene(root);
