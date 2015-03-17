@@ -10,10 +10,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.project.model.Person;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.sampledata.PersonGenerator;
+import sws.project.sampledata.SkillGenerator;
 import sws.project.view.App;
 
 import java.net.URL;
@@ -134,9 +136,12 @@ public class ProjectEditor implements Initializable {
 
                 PersistenceManager.Current.setCurrentModel(model);
 
-                //Generate us some people
-                for (int i = 0; i < 10; ++i)
-                    model.addUnassignedPerson((new PersonGenerator()).generate());
+                // Generate us some people
+                for (int i = 0; i < 10; ++i){
+                    Person p = (new PersonGenerator()).generate();
+                    model.addUnassignedPerson(p);
+                    model.addSkills(p.getSkills());
+                }
             }
 
             //If we have a saved callBack, call it
