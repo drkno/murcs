@@ -2,7 +2,6 @@ package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.BasicPaneGenerator;
 import sws.project.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
-        saveCurrentState("Description change");
     }
 
     /**
@@ -57,7 +55,6 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
-            saveCurrentState("Team added");
         }
         else {
             throw new DuplicateObjectException();
@@ -82,7 +79,6 @@ public class Project extends Model {
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             teams.remove(team);
-            saveCurrentState("Team removed");
         }
     }
 

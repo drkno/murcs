@@ -39,7 +39,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
         this.unassignedTeams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.project = new Project();
-        saveCurrentState("Set relational model");
     }
 
     /**
@@ -56,7 +55,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
      */
     public void setProject(Project project) {
         this.project = project;
-        saveCurrentState("Project change");
     }
 
     /**
@@ -107,7 +105,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
                         .findAny()
                         .isPresent()) {
             this.unassignedPeople.add(person);
-            saveCurrentState("Unassigned person added");
         }
         else {
             throw new DuplicateObjectException();
@@ -132,7 +129,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeUnassignedPerson(Person person) {
         if (this.unassignedPeople.contains(person)) {
             this.unassignedPeople.remove(person);
-            saveCurrentState("Unassigned person removed");
+            commit("Unassigned person removed");
         }
     }
 
@@ -157,7 +154,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
                         .findAny()
                         .isPresent()) {
             this.unassignedTeams.add(team);
-            saveCurrentState("Unassigned team added");
         }
         else {
             throw new DuplicateObjectException();
@@ -182,7 +178,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeUnassignedTeam(Team team) {
         if (this.unassignedTeams.contains(team)) {
             this.unassignedTeams.remove(team);
-            saveCurrentState("Unassigned team removed");
         }
     }
 
@@ -207,7 +202,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
                         .findAny()
                         .isPresent()) {
             this.skills.add(skill);
-            saveCurrentState("Skill added");
         }
         else throw new DuplicateObjectException();
     }
@@ -230,7 +224,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
-            saveCurrentState("Skill added");
         }
     }
 }
