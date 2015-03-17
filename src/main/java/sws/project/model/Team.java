@@ -111,4 +111,9 @@ public class Team extends Model{
             this.members.remove(person);
         }
     }
+    
+    @Override
+    public String toString(){
+        return getShortName();
+    }
 }
