@@ -10,12 +10,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
-import java.lang.reflect.Array;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.ResourceBundle;
 
 /**
- *
+ * Overrides the methods for creating and using an list view
  */
 public class BasicListEditController extends BasicEditController<Collection> implements Initializable {
     @FXML private Text titleText;

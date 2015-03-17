@@ -15,9 +15,6 @@ import java.util.List;
 
 import static junit.framework.Assert.*;
 
-/**
- * 3/11/2015
- */
 public class PersonTest {
 
     private Person person;

@@ -94,7 +94,7 @@ public class EditFormGenerator {
     /**
      * Gets all the fields on a class and its ancestors
      * @param clazz The type to search
-     * @return
+     * @return Collection of fields
      */
     private static Collection<Field> getFieldsRecursive(Class clazz){
         Collection<Field> fields = new ArrayList<>();
@@ -112,7 +112,7 @@ public class EditFormGenerator {
      * @param clazz The class to find the method on
      * @param methodName The name of the method
      * @param parameters The types of parameters the class takes
-     * @return
+     * @return Method
      */
     private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{

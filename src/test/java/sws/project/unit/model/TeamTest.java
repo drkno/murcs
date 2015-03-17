@@ -18,9 +18,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-/**
- * 13/03/2015
- */
 public class TeamTest {
 
 

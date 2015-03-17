@@ -15,7 +15,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
 import sws.project.model.*;
@@ -35,13 +34,13 @@ import static sws.project.magic.tracking.TrackableObject.*;
  */
 public class AppController implements Initializable {
 
-    @FXML Parent root;
-    @FXML MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
-    @FXML VBox vBoxSideDisplay;
-    @FXML HBox hBoxMainDisplay;
-    @FXML BorderPane borderPaneMain;
-    @FXML ChoiceBox displayChoiceBox;
-    @FXML ListView displayList;
+    @FXML private Parent root;
+    @FXML private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    @FXML private VBox vBoxSideDisplay;
+    @FXML private HBox hBoxMainDisplay;
+    @FXML private BorderPane borderPaneMain;
+    @FXML private ChoiceBox displayChoiceBox;
+    @FXML private ListView displayList;
 
     @FXML
     GridPane contentPane;
@@ -66,12 +65,12 @@ public class AppController implements Initializable {
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observer, oldValue, newValue) -> {
             updateDisplayList(ModelTypes.getModelType(newValue.intValue()));
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        displayList.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             contentPane.getChildren().clear();
             if (newValue == null) return;
 

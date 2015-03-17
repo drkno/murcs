@@ -89,7 +89,7 @@ public class BasicBooleanEditControllerTest {
         controller.initialize(null, null);
 
         final boolean[] changed = {false};
-        controller.addChangeListener((p, o, n) -> {
+        controller.addChangeListener((observer, oldValue, newValue) -> {
             changed[0] = true;
         });
 
@@ -102,7 +102,7 @@ public class BasicBooleanEditControllerTest {
         controller.initialize(null, null);
 
         final boolean[] changed = {false};
-        controller.addChangeListener((p, o, n) -> {
+        controller.addChangeListener((observer, oldValue, newValue) -> {
             changed[0] = true;
         });
 

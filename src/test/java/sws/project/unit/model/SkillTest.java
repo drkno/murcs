@@ -8,9 +8,6 @@ import sws.project.model.Skill;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
-/**
- * 3/11/2015
- */
 public class SkillTest {
 
     private Skill skill;

@@ -70,7 +70,7 @@ public class BasicStringEditControllerTest {
     public void testSupportedTypes() throws Exception {
         Class[] returned = controller.supportedTypes();
 
-        Assert.assertEquals("The BasicStringEditController should only have one supported type", 1,returned.length);
+        Assert.assertEquals("The BasicStringEditController should only have one supported type", 1, returned.length);
 
         boolean supported = false;
         for (Class clazz : returned)

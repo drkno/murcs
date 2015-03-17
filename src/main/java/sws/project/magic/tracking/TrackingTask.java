@@ -22,7 +22,7 @@ public class TrackingTask extends TimerTask {
 
     @Override
     public void run() {
-        _listeners.stream().forEach(l -> l.run(_change));
+        _listeners.forEach(l -> l.run(_change));
         cancel();
     }
 }
