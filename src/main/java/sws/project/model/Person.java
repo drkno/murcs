@@ -62,12 +62,7 @@ public class Person extends Model {
      * @throws sws.project.exceptions.DuplicateObjectException if the person already has that skill
      */
     public void addSkill(Skill skill) throws DuplicateObjectException {
-        if (!skills.contains(skill) &&
-                !skills
-                    .stream()
-                    .filter(s -> s.getShortName().toLowerCase().equals(skill.getShortName().toLowerCase()))
-                    .findAny()
-                    .isPresent()) {
+        if (!skills.contains(skill)) {
             this.skills.add(skill);
             saveCurrentState("Skill added");
         }
@@ -109,7 +104,6 @@ public class Person extends Model {
 
         Person other = (Person)object;
 
-        if (other.getShortName().equalsIgnoreCase(getShortName())) return true;
         if (other.getUserId().equals(getUserId())) return true;
 
         return false;
