@@ -182,7 +182,6 @@ public class AppController implements Initializable {
 
     /**
      * Toggles the view of the display list box at the side.
-     *
      * @param event The event that triggers the function
      */
     @FXML
