@@ -20,16 +20,16 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Allows you to edit a person
  */
 public class PersonEditor implements Initializable{
     private Person person;
 
     @FXML
-    TextField nameTextField, usernameTextField;
+    private TextField nameTextField, usernameTextField;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     private Callable<Void> onSaved;
 
@@ -78,26 +78,24 @@ public class PersonEditor implements Initializable{
         try {
             Parent content = createFor(new Person());
 
-            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
-            Scene scene = new Scene(root);
+        Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
+        Scene scene = new Scene(root);
 
-            Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.setTitle("Create Project");
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.setTitle("Create Project");
 
-            newStage.initModality(Modality.APPLICATION_MODAL);
-            newStage.initOwner(App.stage);
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.initOwner(App.stage);
 
-            newStage.show();
-        }catch (Exception e){
-
-        }
+        newStage.show();
     }
 
     /**
      * Saves the person being edited
      */
     private void savePerson() {
+
         try {
             person.setShortName(nameTextField.getText());
             person.setUserId(usernameTextField.getText());

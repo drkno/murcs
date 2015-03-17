@@ -1,18 +1,20 @@
-package sws.project.magic.easyedit;
+package sws.project.unit.magic.easyedit;
 
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sws.project.magic.easyedit.EditFormGenerator;
+import sws.project.magic.easyedit.Editable;
 import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
+ * Tests the functionallity of Easy Edit
  */
-public class Test extends Application {
+public class EasyEditTest extends Application {
     //@Editable(value = FxmlPaneGenerator.class, argument = "/sws/project/String.fxml")
     private String name;
 

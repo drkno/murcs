@@ -11,14 +11,14 @@ import javafx.stage.Stage;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Creates a new Controller with an Ok and Cancel button
  */
 public class CreateWindowController {
     private Callable<Void> okayClicked;
     private Callable<Void> cancelClicked;
 
     @FXML
-    GridPane contentPane;
+    private GridPane contentPane;
 
     @FXML
     private void cancelButtonClicked(ActionEvent event) {

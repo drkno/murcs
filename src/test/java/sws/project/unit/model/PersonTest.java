@@ -13,11 +13,8 @@ import sws.project.sampledata.SkillGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
-/**
- * 3/11/2015
- */
 public class PersonTest {
 
     private Person person;

@@ -14,11 +14,8 @@ import sws.project.sampledata.TeamGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
-/**
- * 13/03/2015
- */
 public class TeamTest {
 
 

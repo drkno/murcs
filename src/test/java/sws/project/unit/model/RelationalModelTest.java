@@ -9,19 +9,13 @@ import sws.project.model.Person;
 import sws.project.model.RelationalModel;
 import sws.project.model.Skill;
 import sws.project.model.Team;
-import sws.project.sampledata.Generator;
-import sws.project.sampledata.PersonGenerator;
-import sws.project.sampledata.SkillGenerator;
-import sws.project.sampledata.TeamGenerator;
+import sws.project.sampledata.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.*;
 
-/**
- * 13/03/2015
- */
 public class RelationalModelTest {
 
     private static Generator<Team> teamGenerator;

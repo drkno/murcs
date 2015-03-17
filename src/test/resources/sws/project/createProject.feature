@@ -1,4 +1,4 @@
-@Manual @WIP-
+@Manual @WIP
 Feature: Create a new Project from the project creation popup
 
   Scenario: Open popup window

@@ -67,7 +67,7 @@ public class AppController implements Initializable {
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observer, oldValue, newValue) -> {
             updateDisplayList(ModelTypes.getModelType(newValue.intValue()));
         });
 
@@ -295,7 +295,7 @@ public class AppController implements Initializable {
             undo();
         }
         catch (Exception e) {
-            // something went terribly wrong....
+            e.printStackTrace();
             reset();
         }
         updateUndoRedoMenuItems(null);
@@ -323,7 +323,12 @@ public class AppController implements Initializable {
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
-        if (!canUndo()) {
+        undoMenuItem.setDisable(true);
+        redoMenuItem.setDisable(true);
+
+        //CODE BELOW IS WIP
+
+        /*if (!canUndo()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
@@ -370,7 +375,7 @@ public class AppController implements Initializable {
                         .findAny().isPresent()) {
             updateDisplayList(type);
         }
-    }
+    }*/
 
     @FXML
     private void addClicked(ActionEvent event){
@@ -402,5 +407,6 @@ public class AppController implements Initializable {
 
         //Clamp the selected index at the number of items in the list
         Platform.runLater(() -> displayList.getSelectionModel().select(Math.max(selectedIndex, displayList.getItems().size())));
+        }
     }
 }

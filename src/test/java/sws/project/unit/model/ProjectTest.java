@@ -14,13 +14,8 @@ import sws.project.sampledata.TeamGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-/**
- * 13/03/2015
- */
 public class ProjectTest {
 
     private static Generator<Team> teamGenerator;

@@ -81,32 +81,22 @@ public class TrackingStringTest {
         Assert.assertEquals("initial state", TrackableObject.getRedoDescription());
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void cannotUndoTest() throws Exception {
         TestString a = new TestString();
         a.setTestString("string1");
         TrackableObject.undo();
         Assert.assertFalse(TrackableObject.canUndo());
-        try {
-            TrackableObject.undo();
-            Assert.fail();
-        }
-        catch (Exception e) {
-            Assert.assertEquals("Undo is not possible as there are no saved undo states.", e.getMessage());
-        }
+
+        TrackableObject.undo();
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void cannotRedoTest() throws Exception {
         TestString a = new TestString();
         a.setTestString("string1");
         Assert.assertFalse(TrackableObject.canRedo());
-        try {
-            TrackableObject.redo();
-            Assert.fail();
-        }
-        catch (Exception e) {
-            Assert.assertEquals("Redo is not possible as there are no saved redo states.", e.getMessage());
-        }
+
+        TrackableObject.redo();
     }
 }

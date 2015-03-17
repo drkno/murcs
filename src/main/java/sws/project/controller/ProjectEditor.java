@@ -31,10 +31,10 @@ public class ProjectEditor implements Initializable {
     private Project project;
 
     @FXML
-    TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField textFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     private Callable<Void> onSaved;
 

@@ -5,12 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.project.model.Skill;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-/**
- * 3/11/2015
- */
 public class SkillTest {
 
     private Skill skill;
