@@ -24,6 +24,7 @@ import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -393,8 +394,18 @@ public class AppController implements Initializable {
 
     @FXML
     private void addClicked(ActionEvent event) {
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class<? extends Model> clazz = ModelTypes.getTypeFromModel(type);
+        Class<? extends Model> clazz;
+        if (event.getSource() instanceof MenuItem) {
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addPerson":
+                    clazz =
+            }
+        }
+        else {
+            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+            clazz = ModelTypes.getTypeFromModel(type);
+        }
 
         try {
             EditorHelper.createNew(clazz, () -> {
