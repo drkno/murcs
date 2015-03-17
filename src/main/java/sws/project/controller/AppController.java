@@ -60,7 +60,6 @@ public class AppController implements Initializable {
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     *
      * @param location  Location of the fxml that is related to the controller
      * @param resources Pretty sure it's probably something, don't know what though
      */
