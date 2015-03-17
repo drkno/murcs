@@ -102,4 +102,16 @@ public class Person extends Model {
     public String toString(){
         return getShortName();
     }
+
+    @Override
+    public boolean equals(Object object){
+        if (!(object instanceof Person)) return false;
+
+        Person other = (Person)object;
+
+        if (other.getShortName().equalsIgnoreCase(getShortName())) return true;
+        if (other.getUserId().equals(getUserId())) return true;
+
+        return false;
+    }
 }
