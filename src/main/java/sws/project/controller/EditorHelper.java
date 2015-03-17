@@ -1,12 +1,15 @@
 package sws.project.controller;
 
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import sws.project.model.Model;
-import sws.project.model.Person;
-import sws.project.model.Project;
-import sws.project.model.Team;
+import sws.project.view.App;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -17,49 +20,61 @@ public class EditorHelper {
     /**
      * Creates a new form for creating a new object of the specified type
      * @param clazz The type of object to create
-     * @param success Called when the object is successully created
+     * @param okay Called when the object is successully created
      */
-    public static void createNew(Class<? extends Model> clazz, Callable<Void> success) throws Exception{
-        ModelTypes type = ModelTypes.getModelType(clazz);
+    public static void createNew(Class<? extends Model> clazz, Callable<Void> okay){
+        try {
+            Model model = (Model)clazz.getConstructor().newInstance();
+            Parent content = getEditForm(model, null);
 
-        switch (type){
-            case Team:
-                TeamEditor.displayWindow(success, null);
-                break;
-            case Project:
-                ProjectEditor.displayWindow(success, null);
-                break;
-            case Skills:
-                throw new NotImplementedException();
-            case People:
-                PersonEditor.displayWindow(success, null);
-                break;
+            Parent root = CreateWindowController.newCreateNode(content, okay, null);
+            Scene scene = new Scene(root);
+
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+            newStage.setTitle("Create Team");
+
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.initOwner(App.stage);
+
+            newStage.show();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     /**
-     * Creates a new form for editing an object
-     * @param object The object to edit
-     * @param onSaved What to do when the object is saved
+     * Creates a new form for editing a team which will call the saved callback
+     * every time a change is saved
+     * @param model The model item to create
+     * @param onSaved The save callback
      * @return The form
      */
-    public static Parent getEditForm(Model object, Callable<Void> onSaved){
-        ModelTypes type = ModelTypes.getModelType(object);
+    public static Parent getEditForm(Model model, Callable<Void> onSaved){
+        Map<ModelTypes, String> fxmlPaths = new HashMap<>();
+        fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
+        fxmlPaths.put(ModelTypes.Project, "TeamEditor.fxml");
+        fxmlPaths.put(ModelTypes.Project, "PersonEditor.fxml");
+        fxmlPaths.put(ModelTypes.Project, "SkillEditor.fxml");
 
-        Parent node = null;
-        switch (type){
-            case Team:
-                node = TeamEditor.createFor((Team)object, onSaved);
-                break;
-            case Project:
-                node = ProjectEditor.createFor((Project) object, onSaved);
-                break;
-            case Skills:
-                throw new NotImplementedException();
-            case People:
-                node =PersonEditor.createFor((Person) object, onSaved);
-                break;
+        String fxmlPath = "/sws/project/" + fxmlPaths.get(ModelTypes.getModelType(model));
+
+        try {
+            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource(fxmlPath));
+            Parent parent = loader.load();
+
+            GenericEditor controller = loader.getController();
+            controller.setEdit(model);
+            controller.setSavedCallback(onSaved);
+
+            controller.load();
+
+            return parent;
+        }catch (Exception e){
+            System.err.println("Unable to create a team editor!(this is seriously bad)");
+            e.printStackTrace();
         }
-        return node;
+
+        return null;
     }
 }
