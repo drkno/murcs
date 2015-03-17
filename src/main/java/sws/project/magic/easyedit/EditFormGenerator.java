@@ -91,9 +91,7 @@ public class EditFormGenerator {
         while (index < into.size() && (Integer)into.get(index)[0] <= (Integer)insert[0]){
             index++;
         }
-        if (index == into.size())
-            into.add(insert);
-        else into.add(index, insert);
+        into.add(index == into.size() ? 0 : index, insert);
     }
 
     /**
@@ -123,13 +121,13 @@ public class EditFormGenerator {
         try{
             return clazz.getMethod(methodName, parameters);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
         try{
             return clazz.getDeclaredMethod(methodName, parameters);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
         if (clazz.getSuperclass() != null)
