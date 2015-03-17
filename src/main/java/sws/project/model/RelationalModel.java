@@ -123,6 +123,8 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removePerson(Person person) {
         if (this.getPeople().contains(person)) {
             this.getPeople().remove(person);
+            //Remove the person from any team they might be in
+            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
             saveCurrentState("Unassigned person removed");
         }
     }
@@ -192,6 +194,10 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
+
+            if (this.getProject().getTeams().contains(team))
+                this.getProject().getTeams().remove(team);
+
             saveCurrentState("Unassigned team removed");
         }
     }
@@ -210,13 +216,9 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if the skill already exists in the relational model
      */
     public void addSkill(Skill skill) throws DuplicateObjectException {
-        if (!skills.contains(skill) &&
-                !skills
-                        .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(skill.getShortName().toLowerCase()))
-                        .findAny()
-                        .isPresent()) {
+        if (!skills.contains(skill)) {
             this.skills.add(skill);
+
             saveCurrentState("Skill added");
         }
         else throw new DuplicateObjectException();
@@ -240,6 +242,10 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+
+            //Remove the skill from any people who might have it
+            getPeople().stream().filter(person -> person.getSkills().contains(skill)).forEach(person -> person.removeSkill(skill));
+
             saveCurrentState("Skill added");
         }
     }
