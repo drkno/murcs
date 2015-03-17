@@ -279,7 +279,6 @@ public class AppController implements Initializable {
 
     /**
      * Opens a specified project file, from a specified location.
-     *
      * @param event The event that causes the function to be called, clicking open.
      */
     @FXML
