@@ -179,7 +179,6 @@ public class TeamEditor implements Initializable{
      * @param match The list to match
      */
     private void maintainList(Collection update, Collection match){
-        int foo = 6;
         //Add all the items in 'match' but not 'update' to 'update'
         match.stream().filter(p -> !update.contains(p)).forEach(p -> update.add(p));
         //Remove all the items from 'update' that aren't in 'match'
