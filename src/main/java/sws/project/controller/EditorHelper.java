@@ -31,7 +31,7 @@ public class EditorHelper {
             case Skills:
                 throw new NotImplementedException();
             case People:
-                ProjectEditor.displayWindow(success, null);
+                PersonEditor.displayWindow(success, null);
                 break;
         }
     }

@@ -362,7 +362,16 @@ public class AppController implements Initializable {
 
     @FXML
     private void addClicked(ActionEvent event){
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        Class<? extends Model> clazz = ModelTypes.getTypeFromModel(type);
 
+        try {
+            EditorHelper.createNew(clazz, () ->{
+                updateDisplayList(type);
+                return null;});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

@@ -4,12 +4,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import sws.project.model.Person;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
+import sws.project.view.App;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -66,12 +70,37 @@ public class PersonEditor implements Initializable{
     }
 
     /**
+     * Displays a new window for creating a new form
+     * @param okay The okay callback
+     * @param cancel The cancelled callback
+     */
+    public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
+        try {
+            Parent content = createFor(new Person());
+
+            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
+            Scene scene = new Scene(root);
+
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+            newStage.setTitle("Create Project");
+
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.initOwner(App.stage);
+
+            newStage.show();
+        }catch (Exception e){
+
+        }
+    }
+
+    /**
      * Saves the person being edited
      */
     private void savePerson() {
         try {
             person.setShortName(nameTextField.getText());
-            person.setLongName(usernameTextField.getText());
+            person.setUserId(usernameTextField.getText());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
 
