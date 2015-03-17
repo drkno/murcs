@@ -394,6 +394,7 @@ public class AppController implements Initializable {
     private void addClicked(ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
                 case "addPerson":
@@ -408,6 +409,7 @@ public class AppController implements Initializable {
             }
         }
         else {
+            //If pressing the add button at the bottom of the display list
             ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
             clazz = ModelTypes.getTypeFromModel(type);
         }
