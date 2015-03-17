@@ -6,9 +6,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -191,8 +195,29 @@ public class TeamEditor implements Initializable{
      * @param person The team member
      * @return the node representing the team member
      */
-    private Node generateTeamMemberNode(Person person){
-        return new Text(person.getShortName());
+    private Node generateTeamMemberNode(final Person person){
+        Text nameText = new Text(person + "");
+        Button removeButton = new Button("X");
+        removeButton.setOnAction(event -> {
+            team.removeMember(person);
+            saveTeam();
+        });
+
+        GridPane pane = new GridPane();
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+        column1.fillWidthProperty().setValue(true);
+
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.SOMETIMES);
+
+        pane.getColumnConstraints().add(column1);
+        pane.getColumnConstraints().add(column2);
+
+        pane.add(nameText, 0, 0);
+        pane.add(removeButton, 1, 0);
+
+        return pane;
     }
 
     @Override
