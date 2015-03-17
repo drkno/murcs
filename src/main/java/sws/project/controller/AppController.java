@@ -18,12 +18,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.Model;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
+import sws.project.model.*;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
+import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -393,14 +392,35 @@ public class AppController implements Initializable {
 
     @FXML
     private void addClicked(ActionEvent event) {
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class<? extends Model> clazz = ModelTypes.getTypeFromModel(type);
+        Class<? extends Model> clazz = null;
+        if (event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addPerson":
+                    clazz = Person.class;
+                    break;
+                case "addTeam":
+                    clazz = Team.class;
+                    break;
+                case "addSkill":
+                    clazz = Skill.class;
+                    break;
+            }
+        }
+        else {
+            //If pressing the add button at the bottom of the display list
+            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+            clazz = ModelTypes.getTypeFromModel(type);
+        }
 
         try {
-            EditorHelper.createNew(clazz, () -> {
-                updateDisplayList();
-                return null;
-            });
+            if (clazz != null) {
+                EditorHelper.createNew(clazz, () -> {
+                    updateDisplayList();
+                    return null;
+                });
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

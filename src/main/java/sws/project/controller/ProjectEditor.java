@@ -114,9 +114,9 @@ public class ProjectEditor implements Initializable {
     }
 
     /**
-     * Saves the project being edited
+     * Creates a new or updates the current project being edited.
      */
-    private void saveProject() {
+    private void updateProject() {
         try {
             project.setShortName(textFieldShortName.getText());
             project.setLongName(textFieldLongName.getText());
@@ -128,7 +128,9 @@ public class ProjectEditor implements Initializable {
             //or if we're creating a new one.
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
             if (model == null || model.getProject() != project) {
-                model = new RelationalModel();
+                if (PersistenceManager.Current.getCurrentModel() == null) {
+                    model = new RelationalModel();
+                }
                 model.setProject(project);
 
                 PersistenceManager.Current.setCurrentModel(model);
@@ -156,15 +158,15 @@ public class ProjectEditor implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) saveProject();
+            if (oldValue && !newValue) updateProject();
         });
 
         textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveProject();
+            if (o && !n)  updateProject();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveProject();
+            if (o && !n)  updateProject();
         });
     }
 }
