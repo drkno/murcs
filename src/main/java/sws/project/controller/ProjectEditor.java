@@ -1,6 +1,5 @@
 package sws.project.controller;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,6 +13,7 @@ import javafx.stage.Stage;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
+import sws.project.sampledata.PersonGenerator;
 import sws.project.view.App;
 
 import java.net.URL;
@@ -34,15 +34,6 @@ public class ProjectEditor implements Initializable {
     Label labelErrorMessage;
 
     private Callable<Void> onSaved;
-
-    /***
-     * Clears all of the fields (short name, long name, description)
-     */
-    private void clearFields() {
-        textFieldShortName.setText("");
-        textFieldLongName.setText("");
-        descriptionTextField.setText("");
-    }
 
     /**
      * Creates a new form for editing a project. It will add the project to
@@ -81,7 +72,7 @@ public class ProjectEditor implements Initializable {
      */
     public static Parent createFor(Project project, Callable<Void> onSaved){
         try {
-            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEdit.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/ProjectEditor.fxml"));
             AnchorPane anchorPane = loader.load();
 
             ProjectEditor controller = loader.getController();
@@ -142,6 +133,10 @@ public class ProjectEditor implements Initializable {
                 model.setProject(project);
 
                 PersistenceManager.Current.setCurrentModel(model);
+
+                //Generate us some people
+                for (int i = 0; i < 10; ++i)
+                    model.addUnassignedPerson((new PersonGenerator()).generate());
             }
 
             //If we have a saved callBack, call it
@@ -150,7 +145,6 @@ public class ProjectEditor implements Initializable {
 
         }catch (Exception e){
             labelErrorMessage.setText(e.getMessage());
-            e.printStackTrace();
             return;
         }
     }

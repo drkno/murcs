@@ -68,13 +68,40 @@ public class RelationalModel extends TrackableObject implements Serializable{
     }
 
     /**
+     * Gets a list of all people.
+     * @return The people
+     */
+    public ArrayList<Person> getPeople(){
+        ArrayList<Person> people = new ArrayList<>();
+        people.addAll(unassignedPeople);
+
+        for (Team t : getTeams())
+            people.addAll(t.getMembers());
+
+        return people;
+    }
+
+    /**
+     * Gets a list of all teams
+     * @return The teams
+     */
+    public ArrayList<Team> getTeams(){
+        ArrayList<Team> teams = new ArrayList<>();
+
+        teams.addAll(unassignedTeams);
+        if (getProject() != null)
+            teams.addAll(getProject().getTeams());
+        return teams;
+    }
+
+    /**
      * Adds a person to the unassigned people only if that person is not already in 
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
     public void addUnassignedPerson(Person person) throws DuplicateObjectException{
-        if (!this.unassignedPeople.contains(person) &&
-                !this.unassignedPeople
+        if (!this.getPeople().contains(person) &&
+                !this.getPeople()
                         .stream()
                         .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
                         .findAny()

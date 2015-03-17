@@ -11,14 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Generates a basic pane
+ *A class which maps fields to different FXML generators
  */
 public class BasicPaneGenerator implements EditPaneGenerator {
     private final Map<Class, String> fxmlForFields = new HashMap<>();
 
-    /**
-     * Generates a basic pane
-     */
     public BasicPaneGenerator(){
         fxmlForFields.put(Number.class, "/sws/project/Number.fxml");
         fxmlForFields.put(Integer.class, "/sws/project/Number.fxml");
@@ -59,6 +56,6 @@ public class BasicPaneGenerator implements EditPaneGenerator {
 
     @Override
     public void setArgument(String argument) {
-        // Don't set the argument, because idk.
+
     }
 }
