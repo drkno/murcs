@@ -36,24 +36,24 @@ import static sws.project.magic.tracking.TrackableObject.*;
 public class AppController implements Initializable {
 
     @FXML
-    Parent root;
+    private Parent root;
     @FXML
-    MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
     @FXML
-    VBox vBoxSideDisplay;
+    private VBox vBoxSideDisplay;
     @FXML
-    HBox hBoxMainDisplay;
+    private HBox hBoxMainDisplay;
     @FXML
-    BorderPane borderPaneMain;
+    private BorderPane borderPaneMain;
     @FXML
-    ChoiceBox displayChoiceBox;
+    private ChoiceBox displayChoiceBox;
     @FXML
-    ListView displayList;
+    private ListView displayList;
     @FXML
-    Button removeButton;
+    private Button removeButton;
 
     @FXML
-    GridPane contentPane;
+    private GridPane contentPane;
 
     private ObservableList displayListItems;
 
