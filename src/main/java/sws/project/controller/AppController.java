@@ -208,7 +208,8 @@ public class AppController implements Initializable {
                 updateDisplayList();
                 return null;
             }, null);
-        } else {
+        }
+        else {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
