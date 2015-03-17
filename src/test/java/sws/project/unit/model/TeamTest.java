@@ -14,9 +14,7 @@ import sws.project.sampledata.TeamGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * 13/03/2015
@@ -85,7 +83,7 @@ public class TeamTest {
     @Test (expected = DuplicateObjectException.class)
     public void addMemberExceptionTest2() throws Exception {
         team.addMember(personGenerated);
-        person.setShortName(personGenerated.getShortName());
+        person.setUserId(personGenerated.getUserId());
         team.addMember(person);
     }
 
