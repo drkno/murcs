@@ -74,21 +74,24 @@ public class PersonEditor implements Initializable{
      * @param okay The okay callback
      * @param cancel The cancelled callback
      */
-    public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
+    public static void displayWindow(Callable<Void> okay, Callable<Void> cancel) {
         try {
             Parent content = createFor(new Person());
 
-        Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
-        Scene scene = new Scene(root);
+            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
+            Scene scene = new Scene(root);
 
-        Stage newStage = new Stage();
-        newStage.setScene(scene);
-        newStage.setTitle("Create Project");
+            Stage newStage = new Stage();
+            newStage.setScene(scene);
+            newStage.setTitle("Create Project");
 
-        newStage.initModality(Modality.APPLICATION_MODAL);
-        newStage.initOwner(App.stage);
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.initOwner(App.stage);
 
-        newStage.show();
+            newStage.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**

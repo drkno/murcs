@@ -18,13 +18,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.*;
+import sws.project.model.Model;
+import sws.project.model.Project;
+import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import static sws.project.magic.tracking.TrackableObject.*;
@@ -35,24 +36,33 @@ import static sws.project.magic.tracking.TrackableObject.*;
  */
 public class AppController implements Initializable {
 
-    @FXML Parent root;
-    @FXML MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
-    @FXML VBox vBoxSideDisplay;
-    @FXML HBox hBoxMainDisplay;
-    @FXML BorderPane borderPaneMain;
-    @FXML ChoiceBox displayChoiceBox;
-    @FXML ListView displayList;
-    @FXML Button removeButton;
+    @FXML
+    Parent root;
+    @FXML
+    MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    @FXML
+    VBox vBoxSideDisplay;
+    @FXML
+    HBox hBoxMainDisplay;
+    @FXML
+    BorderPane borderPaneMain;
+    @FXML
+    ChoiceBox displayChoiceBox;
+    @FXML
+    ListView displayList;
+    @FXML
+    Button removeButton;
 
     @FXML
     GridPane contentPane;
 
     private ObservableList displayListItems;
 
-    /***
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     * @param location Location of the fxml that is related to the controller
+     *
+     * @param location  Location of the fxml that is related to the controller
      * @param resources Pretty sure it's probably something, don't know what though
      */
     @Override
@@ -81,7 +91,7 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model)newValue, null);
+                pane = EditorHelper.getEditForm((Model) newValue, null);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -92,20 +102,23 @@ public class AppController implements Initializable {
         updateUndoRedoMenuItems(null);
 
         TrackableObject.addSavedListener(change -> {
-            Platform.runLater(() -> {updateUndoRedoMenuItems(change);});
+            Platform.runLater(() -> {
+                updateUndoRedoMenuItems(change);
+            });
         });
     }
 
     /**
      * Updates the display list using the currently selected type of item
      */
-    private void updateDisplayList(){
+    private void updateDisplayList() {
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         updateDisplayList(type);
     }
 
-    /***
+    /**
      * Updates the display list on the left hand side of the screen to the type selected in the choice box.
+     *
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
@@ -137,8 +150,9 @@ public class AppController implements Initializable {
         }
     }
 
-    /***
+    /**
      * Called when the Quit button is pressed in the file menu and quit the current application.
+     *
      * @param event The even that triggers the function
      */
     @FXML
@@ -159,16 +173,19 @@ public class AppController implements Initializable {
                 Platform.exit();
                 return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                return null;
+            });
             popup.show();
-        }
-        else {
+        } else {
             Platform.exit();
         }
     }
 
-    /***
+    /**
      * Toggles the view of the display list box at the side.
+     *
      * @param event The event that triggers the function
      */
     @FXML
@@ -176,15 +193,15 @@ public class AppController implements Initializable {
         if (vBoxSideDisplay.isVisible()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(false);
-        }
-        else {
+        } else {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(true);
         }
     }
 
-    /***
+    /**
      * Create a new project, opens a dialog to fill out for the new project.
+     *
      * @param event The event that causes the function to be called, namely clicking new project.
      */
     @FXML
@@ -194,8 +211,7 @@ public class AppController implements Initializable {
                 updateDisplayList(ModelTypes.Project);
                 return null;
             }, null);
-        }
-        else {
+        } else {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
@@ -231,15 +247,19 @@ public class AppController implements Initializable {
                 }, null);
                 return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {popup.close(); return null;});
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
+                popup.close();
+                return null;
+            });
             popup.show();
 
         }
     }
 
-    /***
+    /**
      * Save the current project. Currently you choose where to save the project every time, however it does remember the
      * last location saved or loaded from.
+     *
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
@@ -254,14 +274,15 @@ public class AppController implements Initializable {
                 PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 PersistenceManager.Current.saveModel(file.getName());
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
     }
 
-    /***
+    /**
      * Opens a specified project file, from a specified location.
+     *
      * @param event The event that causes the function to be called, clicking open.
      */
     @FXML
@@ -278,8 +299,7 @@ public class AppController implements Initializable {
                 PersistenceManager.Current.setCurrentModel(model);
             }
             updateDisplayList(ModelTypes.Project);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
@@ -287,14 +307,14 @@ public class AppController implements Initializable {
 
     /**
      * Called when the undo menu item has been clicked.
+     *
      * @param event event arguments.
      */
     @FXML
     private void undoMenuItemClicked(ActionEvent event) {
         try {
             undo();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             reset();
         }
@@ -303,14 +323,14 @@ public class AppController implements Initializable {
 
     /**
      * Redo menu item has been clicked.
+     *
      * @param event event arguments.
      */
     @FXML
     private void redoMenuItemClicked(ActionEvent event) {
         try {
             redo();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // something went terribly wrong....
             reset();
             e.printStackTrace();
@@ -320,6 +340,7 @@ public class AppController implements Initializable {
 
     /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
+     *
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
@@ -374,32 +395,33 @@ public class AppController implements Initializable {
                                 || f.getField().getName().equals("project"))
                         .findAny().isPresent()) {
             updateDisplayList(type);
-        }
-    }*/
+        }*/
+    }
 
     @FXML
-    private void addClicked(ActionEvent event){
+    private void addClicked(ActionEvent event) {
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         Class<? extends Model> clazz = ModelTypes.getTypeFromModel(type);
 
         try {
-            EditorHelper.createNew(clazz, () ->{
+            EditorHelper.createNew(clazz, () -> {
                 updateDisplayList();
-                return null;});
+                return null;
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void removeClicked(ActionEvent event){
+    private void removeClicked(ActionEvent event) {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
 
         final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
         if (selectedIndex == -1) return;
 
-        model.remove((Model)displayList.getSelectionModel().getSelectedItem());
+        model.remove((Model) displayList.getSelectionModel().getSelectedItem());
         updateDisplayList();
 
         //If there are no items in the displayList, don't try to select something
@@ -407,6 +429,6 @@ public class AppController implements Initializable {
 
         //Clamp the selected index at the number of items in the list
         Platform.runLater(() -> displayList.getSelectionModel().select(Math.max(selectedIndex, displayList.getItems().size())));
-        }
     }
 }
+
