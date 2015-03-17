@@ -175,7 +175,8 @@ public class AppController implements Initializable {
                 return null;
             });
             popup.show();
-        } else {
+        }
+        else {
             Platform.exit();
         }
     }
