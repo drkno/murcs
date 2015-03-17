@@ -15,7 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.project.magic.easyedit.EditFormGenerator;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
 import sws.project.model.*;
@@ -363,5 +363,16 @@ public class AppController implements Initializable {
                         .findAny().isPresent()) {
             updateDisplayList(type);
         }
+    }
+
+    private void addButtonClicked(ActionEvent event){
+
+    }
+
+    private void removeButtonClicked(ActionEvent event){
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        if (model == null) return;
+
+        throw new NotImplementedException();
     }
 }

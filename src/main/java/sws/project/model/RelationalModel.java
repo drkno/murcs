@@ -1,5 +1,6 @@
 package sws.project.model;
 
+import sws.project.controller.ModelTypes;
 import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.TrackableValue;
@@ -242,6 +243,29 @@ public class RelationalModel extends TrackableObject implements Serializable{
         if (skills.contains(skill)) {
             this.skills.remove(skill);
             saveCurrentState("Skill added");
+        }
+    }
+
+    /**
+     * Tries to add the object to the model
+     * @param model the object to add to the model
+     */
+    public void add(Model model) throws DuplicateObjectException{
+        ModelTypes type = ModelTypes.getModelType(model);
+
+        switch (type){
+            case Project:
+                setProject((Project)model);
+                break;
+            case Team:
+                addTeam((Team)model);
+                break;
+            case Skills:
+                addSkill((Skill)model);
+                break;
+            case People:
+                addPerson((Person)model);
+                break;
         }
     }
 }
