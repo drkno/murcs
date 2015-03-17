@@ -44,6 +44,7 @@ public class TeamEditor implements Initializable{
     Label labelErrorMessage;
 
     private Callable<Void> onSaved;
+    private boolean intialized;
 
     /**
      * Creates a new form for editing a team
@@ -110,6 +111,7 @@ public class TeamEditor implements Initializable{
      * Saves the team being edited
      */
     private void saveTeam() {
+        if (!intialized) return;
         try {
             team.setShortName(nameTextField.getText());
             team.setLongName(longNameTextField.getText());
@@ -155,7 +157,9 @@ public class TeamEditor implements Initializable{
 
         scrumMasterPicker.getItems().clear();
         scrumMasterPicker.getItems().addAll(team.getMembers());
-        productOwnerPicker.getSelectionModel().select(team.getScrumMaster());
+        scrumMasterPicker.getSelectionModel().select(team.getScrumMaster());
+
+        intialized = true;
     }
 
     @Override
