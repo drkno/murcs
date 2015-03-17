@@ -21,8 +21,8 @@
             </VBox>
             <VBox>
                <children>
-                  <Label text="Username" GridPane.rowIndex="1" />
-                  <TextField fx:id="usernameTextField" GridPane.columnIndex="1" />
+                  <Label text="Long Name" GridPane.rowIndex="1" />
+                  <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -30,11 +30,47 @@
             </VBox>
             <VBox>
                <children>
-                  <Label text="Skills go here." />
+                  <Label text="Description" GridPane.rowIndex="1" />
+                  <TextField fx:id="descriptionTextField" GridPane.columnIndex="1" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </padding>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Product Owner" />
+                  <AnchorPane>
+                     <children>
+                        <ComboBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                 </padding>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Scrum Master" />
+                  <AnchorPane>
+                     <children>
+                        <ComboBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </AnchorPane>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </padding>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Team Members" GridPane.rowIndex="1" />
+                  <Text fx:id="teamMembersLabel" strokeType="OUTSIDE" strokeWidth="0.0" text="A list of team members" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </padding>
             </VBox>
              <Label fx:id="labelErrorMessage" />
          </children>

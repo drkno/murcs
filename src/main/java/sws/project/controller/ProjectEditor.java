@@ -16,6 +16,7 @@ import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.sampledata.PersonGenerator;
 import sws.project.sampledata.SkillGenerator;
+import sws.project.sampledata.TeamGenerator;
 import sws.project.view.App;
 
 import java.net.URL;
@@ -137,6 +138,8 @@ public class ProjectEditor implements Initializable {
                 PersistenceManager.Current.setCurrentModel(model);
 
                 try {
+                    model.addUnassignedTeam((new TeamGenerator()).generate());
+
                     //Generate us some people
                     for (int i = 0; i < 10; ++i)
                         model.addUnassignedPerson((new PersonGenerator()).generate());

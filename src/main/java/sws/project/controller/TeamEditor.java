@@ -1,17 +1,23 @@
 package sws.project.controller;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.project.model.Person;
 import sws.project.model.RelationalModel;
+import sws.project.model.Team;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
@@ -23,10 +29,16 @@ import java.util.concurrent.Callable;
  *
  */
 public class TeamEditor implements Initializable{
-    private Person person;
+    private Team team;
 
     @FXML
-    TextField nameTextField, usernameTextField;
+    Text teamMembersText;
+
+    @FXML
+    TextField nameTextField, longNameTextField, descriptionTextField;
+
+    @FXML
+    ComboBox productOwnerPicker, scrumMasterPicker;
 
     @FXML
     Label labelErrorMessage;
@@ -34,54 +46,35 @@ public class TeamEditor implements Initializable{
     private Callable<Void> onSaved;
 
     /**
-     * Creates a new form for editing a person. It will add the person to
-     * the model automatically as soon as it is valid
-     * @return The form
-     */
-    public static Parent createNew(){
-        return createFor(new Person());
-    }
-
-    /**
-     * Creates a new form for editing a person with a callback that is called every time
-     * a change is made
-     * @param onSaved The callback
-     * @return the Form
-     */
-    public static Parent createNew(Callable<Void> onSaved){
-        return createFor(new Person(), null);
-    }
-
-    /**
-     * Creates a new form for editing a person
+     * Creates a new form for editing a team
      *
-     * @param person The person
+     * @param team The team
      * @return The form
      */
-    public static Parent createFor(Person person){
-        return createFor(person, null);
+    public static Parent createFor(Team team){
+        return createFor(team, null);
     }
 
     /**
-     * Creates a new form for editing a person which will call the saved callback
+     * Creates a new form for editing a team which will call the saved callback
      * every time a change is saved
-     * @param person The person
+     * @param team The team
      * @param onSaved The save callback
      * @return The form
      */
-    public static Parent createFor(Person person, Callable<Void> onSaved){
+    public static Parent createFor(Team team, Callable<Void> onSaved){
         try {
-            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/PersonEditor.fxml"));
+            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/TeamEditor.fxml"));
             AnchorPane anchorPane = loader.load();
 
             TeamEditor controller = loader.getController();
-            controller.person = person;
+            controller.team = team;
             controller.onSaved = onSaved;
             controller.loadProject();
 
             return anchorPane;
         }catch (Exception e){
-            System.err.println("Unable to create a person editor!(this is seriously bad)");
+            System.err.println("Unable to create a team editor!(this is seriously bad)");
             e.printStackTrace();
         }
 
@@ -95,14 +88,14 @@ public class TeamEditor implements Initializable{
      */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
         try {
-            Parent content = createNew();
+            Parent content = createFor(new Team());
 
             Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
             newStage.setScene(scene);
-            newStage.setTitle("Create Project");
+            newStage.setTitle("Create Team");
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
@@ -114,18 +107,22 @@ public class TeamEditor implements Initializable{
     }
 
     /**
-     * Saves the person being edited
+     * Saves the team being edited
      */
-    private void savePerson() {
+    private void saveTeam() {
         try {
-            person.setShortName(nameTextField.getText());
-            person.setLongName(usernameTextField.getText());
+            team.setShortName(nameTextField.getText());
+            team.setLongName(longNameTextField.getText());
+            team.setDescription(descriptionTextField.getText());
+
+            team.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
+            team.setScrumMaster((Person)scrumMasterPicker.getSelectionModel().getSelectedItem());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
 
-            //If we haven't added the person yet, throw them in the list of unassigned people
-            if (!model.getPeople().contains(person))
-                model.addUnassignedPerson(person);
+            //If we haven't added the team yet, throw them in the list of unassigned people
+            if (!model.getTeams().contains(team))
+                model.addUnassignedTeam(team);
 
             //If we have a saved callBack, call it
             if (onSaved != null)
@@ -138,21 +135,44 @@ public class TeamEditor implements Initializable{
     }
 
     /**
-     * Loads the person into the form
+     * Loads the team into the form
      */
     private void loadProject(){
-        nameTextField.setText(person.getShortName());
-        usernameTextField.setText(person.getUserId());
+        nameTextField.setText(team.getShortName());
+        longNameTextField.setText(team.getLongName());
+        descriptionTextField.setText(team.getDescription());
+
+        String teamMembers = "";
+        for (Person member : team.getMembers()) {
+            if (!teamMembers.isEmpty())
+                teamMembers += ", ";
+            teamMembers += member.toString();
+        }
+
+        productOwnerPicker.getItems().clear();
+        productOwnerPicker.getItems().addAll(team.getMembers());
+        productOwnerPicker.getSelectionModel().select(team.getProductOwner());
+
+        scrumMasterPicker.getItems().clear();
+        scrumMasterPicker.getItems().addAll(team.getMembers());
+        productOwnerPicker.getSelectionModel().select(team.getScrumMaster());
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) savePerson();
+            if (oldValue && !newValue) saveTeam();
         });
 
-        usernameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  savePerson();
+        longNameTextField.focusedProperty().addListener((p, o, n) -> {
+            if (o && !n)  saveTeam();
         });
+
+        descriptionTextField.focusedProperty().addListener((p, o, n) -> {
+            if (o && !n)  saveTeam();
+        });
+
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
     }
 }
