@@ -22,6 +22,7 @@ public class EditFormGenerator {
      * Generates a pane for editing an object
      * @param from The object to generate a pane for
      * @return The edit pane
+     * @throws java.lang.Exception
      */
     public static Parent generatePane(Object from) throws Exception{
         VBox generated = new VBox(20);
