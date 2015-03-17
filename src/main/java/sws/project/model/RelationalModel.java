@@ -268,4 +268,28 @@ public class RelationalModel extends TrackableObject implements Serializable{
                 break;
         }
     }
+
+    /**
+     * Tries to remove an object from the model
+     * @param model the object to remove from the model
+     */
+    public void remove(Model model){
+        ModelTypes type = ModelTypes.getModelType(model);
+
+        switch (type){
+            case Project:
+                if (getProject() == model)
+                    setProject(null);
+                break;
+            case Team:
+                removeTeam((Team)model);
+                break;
+            case Skills:
+                removeSkill((Skill)model);
+                break;
+            case People:
+                removePerson((Person)model);
+                break;
+        }
+    }
 }
