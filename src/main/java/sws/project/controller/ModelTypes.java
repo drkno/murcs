@@ -1,7 +1,5 @@
 package sws.project.controller;
 
-import java.util.Observable;
-
 /**
  * Created by James on 13/03/2015.
  */
