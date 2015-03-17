@@ -189,7 +189,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
 
     /**
      * Removes a team from the unassigned teams
-     * @param team The unassigned team to remove
+     * @param team The team to remove
      */
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
