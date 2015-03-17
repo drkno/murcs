@@ -81,6 +81,8 @@ public class AppController implements Initializable {
                     pane = ProjectEditor.createFor((Project)newValue);
                 else if (newValue instanceof Person)
                     pane = PersonEditor.createFor((Person)newValue);
+                else if (newValue instanceof Skill)
+                    pane = SkillEditor.createFor((Skill)newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
