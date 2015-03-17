@@ -190,7 +190,8 @@ public class AppController implements Initializable {
         if (vBoxSideDisplay.isVisible()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(false);
-        } else {
+        }
+        else {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(true);
         }
