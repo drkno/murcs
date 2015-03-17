@@ -5,8 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.project.model.Skill;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SkillTest {
 

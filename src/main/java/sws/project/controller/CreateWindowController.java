@@ -18,7 +18,7 @@ public class CreateWindowController {
     private Callable<Void> cancelClicked;
 
     @FXML
-    GridPane contentPane;
+    private GridPane contentPane;
 
     @FXML
     private void cancelButtonClicked(ActionEvent event) {

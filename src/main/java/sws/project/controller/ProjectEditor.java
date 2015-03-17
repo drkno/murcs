@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
-import sws.project.sampledata.PersonGenerator;
 import sws.project.view.App;
 
 import java.net.URL;
@@ -28,10 +27,10 @@ public class ProjectEditor implements Initializable {
     private Project project;
 
     @FXML
-    TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField textFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     private Callable<Void> onSaved;
 
@@ -133,10 +132,6 @@ public class ProjectEditor implements Initializable {
                 model.setProject(project);
 
                 PersistenceManager.Current.setCurrentModel(model);
-
-                //Generate us some people
-                for (int i = 0; i < 10; ++i)
-                    model.addUnassignedPerson((new PersonGenerator()).generate());
             }
 
             //If we have a saved callBack, call it

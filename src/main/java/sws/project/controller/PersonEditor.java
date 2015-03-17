@@ -20,16 +20,16 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Callable;
 
 /**
- *
+ * Allows you to edit a person
  */
 public class PersonEditor implements Initializable{
     private Person person;
 
     @FXML
-    TextField nameTextField, usernameTextField;
+    private TextField nameTextField, usernameTextField;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     private Callable<Void> onSaved;
 
@@ -94,32 +94,32 @@ public class PersonEditor implements Initializable{
      * @param cancel The cancelled callback
      */
     public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
-        try {
-            Parent content = createNew();
+        Parent content = createNew();
 
-            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
-            Scene scene = new Scene(root);
+        Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
+        Scene scene = new Scene(root);
 
-            Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.setTitle("Create Project");
+        Stage newStage = new Stage();
+        newStage.setScene(scene);
+        newStage.setTitle("Create Project");
 
-            newStage.initModality(Modality.APPLICATION_MODAL);
-            newStage.initOwner(App.stage);
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        newStage.initOwner(App.stage);
 
-            newStage.show();
-        }catch (Exception e){
-
-        }
+        newStage.show();
     }
 
     /**
      * Saves the person being edited
      */
     private void savePerson() {
+
         try {
             person.setShortName(nameTextField.getText());
-            person.setLongName(usernameTextField.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        person.setLongName(usernameTextField.getText());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
 
@@ -129,12 +129,12 @@ public class PersonEditor implements Initializable{
 
             //If we have a saved callBack, call it
             if (onSaved != null)
-                onSaved.call();
+                try {
+                    onSaved.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        }catch (Exception e){
-            labelErrorMessage.setText(e.getMessage());
-            return;
-        }
     }
 
     /**

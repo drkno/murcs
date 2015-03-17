@@ -17,13 +17,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.*;
+import sws.project.model.Person;
+import sws.project.model.Project;
+import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import static sws.project.magic.tracking.TrackableObject.*;
@@ -285,7 +286,7 @@ public class AppController implements Initializable {
             undo();
         }
         catch (Exception e) {
-            // something went terribly wrong....
+            e.printStackTrace();
             reset();
         }
         updateUndoRedoMenuItems(null);
@@ -313,7 +314,12 @@ public class AppController implements Initializable {
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
-        if (!canUndo()) {
+        undoMenuItem.setDisable(true);
+        redoMenuItem.setDisable(true);
+
+        //CODE BELOW IS WIP
+
+        /*if (!canUndo()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
@@ -359,6 +365,6 @@ public class AppController implements Initializable {
                                 || f.getField().getName().equals("project"))
                         .findAny().isPresent()) {
             updateDisplayList(type);
-        }
+        }*/
     }
 }

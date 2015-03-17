@@ -22,6 +22,7 @@ public class EditFormGenerator {
      * Generates a pane for editing an object
      * @param from The object to generate a pane for
      * @return The edit pane
+     * @throws java.lang.NoSuchMethodException when it can't find a method
      */
     public static Parent generatePane(Object from) throws Exception{
         VBox generated = new VBox(20);
@@ -91,9 +92,7 @@ public class EditFormGenerator {
         while (index < into.size() && (Integer)into.get(index)[0] <= (Integer)insert[0]){
             index++;
         }
-        if (index == into.size())
-            into.add(insert);
-        else into.add(index, insert);
+        into.add(index == into.size() ? 0 : index, insert);
     }
 
     /**
@@ -118,18 +117,19 @@ public class EditFormGenerator {
      * @param methodName The name of the method
      * @param parameters The types of parameters the class takes
      * @return Finds a method on the class
+     * @throws java.lang.NoSuchMethodException When it can't find a method
      */
     private static Method findMethodRecursive(Class clazz, String methodName, Class<?>... parameters) throws NoSuchMethodException{
         try{
             return clazz.getMethod(methodName, parameters);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
         try{
             return clazz.getDeclaredMethod(methodName, parameters);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
 
         if (clazz.getSuperclass() != null)
@@ -212,6 +212,7 @@ public class EditFormGenerator {
      * @param from The object the field is from
      * @param editable The editable annotation of the
      * @return The node of the edit form
+     * @throws java.lang.Exception when the class is unsupported
      */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Method validator, final Object from, Editable editable) throws Exception {
         Constructor<?> constructor;
