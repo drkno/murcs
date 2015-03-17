@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.project.magic.easyedit.EditFormGenerator;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
 import sws.project.model.Model;
@@ -26,6 +27,7 @@ import sws.project.view.App;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import static sws.project.magic.tracking.TrackableObject.*;
@@ -60,8 +62,7 @@ public class AppController implements Initializable {
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     *
-     * @param location  Location of the fxml that is related to the controller
+     * @param location Location of the fxml that is related to the controller
      * @param resources Pretty sure it's probably something, don't know what though
      */
     @Override
@@ -90,7 +91,10 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, null);
+                if (newValue instanceof Project)
+                    pane = ProjectEditor.createFor((Project)newValue);
+                else if (newValue instanceof Person)
+                    pane = PersonEditor.createFor((Person)newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
