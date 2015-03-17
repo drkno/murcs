@@ -297,4 +297,21 @@ public class RelationalModel extends TrackableObject implements Serializable{
                 break;
         }
     }
+
+    /**
+     * Checks to see if an object exists in the model
+     * @param model The model
+     * @return Whether it exists
+     */
+    public boolean exists(Model model){
+        if (model instanceof Project)
+            return getProject() == model;
+        if (model instanceof Team)
+            return getTeams().contains(model);
+        if  (model instanceof Person)
+            return getPeople().contains(model);
+        if (model instanceof Skill)
+            return getSkills().contains(model);
+        return false;
+    }
 }
