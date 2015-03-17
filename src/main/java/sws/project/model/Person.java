@@ -104,8 +104,7 @@ public class Person extends Model {
 
         Person other = (Person)object;
 
-        if (other.getUserId() != null && other.getUserId().equals(getUserId())) return true;
+        return other.getUserId() != null && other.getUserId().equals(getUserId());
 
-        return false;
     }
 }
