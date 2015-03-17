@@ -303,7 +303,6 @@ public class AppController implements Initializable {
 
     /**
      * Called when the undo menu item has been clicked.
-     *
      * @param event event arguments.
      */
     @FXML
@@ -319,7 +318,6 @@ public class AppController implements Initializable {
 
     /**
      * Redo menu item has been clicked.
-     *
      * @param event event arguments.
      */
     @FXML
@@ -336,7 +334,6 @@ public class AppController implements Initializable {
 
     /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
-     *
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
@@ -419,12 +416,6 @@ public class AppController implements Initializable {
 
         model.remove((Model) displayList.getSelectionModel().getSelectedItem());
         updateDisplayList();
-
-        //If there are no items in the displayList, don't try to select something
-        if (displayList.getItems().size() == 0) return;
-
-        //Clamp the selected index at the number of items in the list
-        Platform.runLater(() -> displayList.getSelectionModel().select(Math.max(selectedIndex, displayList.getItems().size())));
     }
 }
 

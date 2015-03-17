@@ -35,16 +35,16 @@ public class TeamEditor implements Initializable{
     private Team team;
 
     @FXML
-    VBox teamMembersContainer;
+    private VBox teamMembersContainer;
 
     @FXML
-    TextField nameTextField, longNameTextField, descriptionTextField;
+    private TextField nameTextField, longNameTextField, descriptionTextField;
 
     @FXML
-    ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     private Callable<Void> onSaved;
     private boolean intialized;
@@ -107,7 +107,7 @@ public class TeamEditor implements Initializable{
 
             newStage.show();
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 
