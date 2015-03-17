@@ -1,17 +1,10 @@
 package sws.project.model;
+
 /**
  * Model of a skill.
  */
 
 public class Skill extends Model {
-    /**
-     * Possible roles of a team.
-     */
-    public enum Role {
-        ScrumMaster,
-        Developer,
-        PO,
-    }
 
     private String description;
 
@@ -48,5 +41,23 @@ public class Skill extends Model {
     @Override
     public boolean equals(Object object) {
         return object instanceof Skill && ((Skill) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+    }
+
+    /**
+     * Possible roles of a team.
+     */
+    public enum Role {
+        ScrumMaster,
+        Developer,
+        PO,
+    }
+
+    /**
+     * Returns the short name of the skill
+     * @return Short name of the skill
+     */
+    @Override
+    public String toString() {
+        return getShortName();
     }
 }
