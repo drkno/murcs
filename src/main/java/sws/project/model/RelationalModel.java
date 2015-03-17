@@ -37,7 +37,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
-        this.project = new Project();
+        this.project = null;
         saveCurrentState("Set relational model");
     }
 
