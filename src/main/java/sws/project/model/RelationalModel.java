@@ -1,8 +1,8 @@
 package sws.project.model;
 
 import sws.project.exceptions.DuplicateObjectException;
-import sws.project.magic.tracking.TrackableValue;
 import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.TrackableValue;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     @TrackableValue
     private Project project;
     @TrackableValue
-    private ArrayList<Person> unassignedPeople;
+    private ArrayList<Person> people;
     @TrackableValue
     private ArrayList<Team> unassignedTeams;
     @TrackableValue
@@ -35,7 +35,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     private static final float version = 0.01f;
 
     public RelationalModel() {
-        this.unassignedPeople = new ArrayList<>();
+        this.people = new ArrayList<>();
         this.unassignedTeams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.project = new Project();
@@ -64,6 +64,17 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @return The unassigned people
      */
     public ArrayList<Person> getUnassignedPeople() {
+
+        ArrayList<Person> unassignedPeople = new ArrayList<>();
+        unassignedPeople.addAll(getPeople());
+        ArrayList<Team> teams = getTeams();
+
+        //Remove all the people who have a team
+        for (Team team : teams){
+            for (Person person : team.getMembers())
+                unassignedPeople.remove(person);
+        }
+
         return unassignedPeople;
     }
 
@@ -72,12 +83,6 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @return The people
      */
     public ArrayList<Person> getPeople(){
-        ArrayList<Person> people = new ArrayList<>();
-        people.addAll(unassignedPeople);
-
-        for (Team t : getTeams())
-            people.addAll(t.getMembers());
-
         return people;
     }
 
@@ -95,18 +100,18 @@ public class RelationalModel extends TrackableObject implements Serializable{
     }
 
     /**
-     * Adds a person to the unassigned people only if that person is not already in 
+     * Adds a person to the model if it doesn't exits
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
-    public void addUnassignedPerson(Person person) throws DuplicateObjectException{
+    public void addPerson(Person person) throws DuplicateObjectException{
         if (!this.getPeople().contains(person) &&
                 !this.getPeople()
                         .stream()
                         .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
                         .findAny()
                         .isPresent()) {
-            this.unassignedPeople.add(person);
+            this.getPeople().add(person);
             saveCurrentState("Unassigned person added");
         }
         else {
@@ -115,13 +120,13 @@ public class RelationalModel extends TrackableObject implements Serializable{
     }
 
     /**
-     * Adds a list of people to the unassigned people
-     * @param people People to be added to unassigned people
+     * Adds a list of people to the model
+     * @param people People to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has a person from the people to be addeed
      */
-    public void addUnassignedPeople(List<Person> people) throws DuplicateObjectException {
+    public void addPeople(List<Person> people) throws DuplicateObjectException {
         for (Person person: people) {
-            this.addUnassignedPerson(person);
+            this.addPerson(person);
         }
     }
 
@@ -129,9 +134,9 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * Removes a person from unassigned people
      * @param person The unassigned person to remove
      */
-    public void removeUnassignedPerson(Person person) {
-        if (this.unassignedPeople.contains(person)) {
-            this.unassignedPeople.remove(person);
+    public void removePerson(Person person) {
+        if (this.getPeople().contains(person)) {
+            this.getPeople().remove(person);
             saveCurrentState("Unassigned person removed");
         }
     }

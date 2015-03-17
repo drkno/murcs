@@ -142,7 +142,7 @@ public class ProjectEditor implements Initializable {
 
                     //Generate us some people
                     for (int i = 0; i < 10; ++i)
-                        model.addUnassignedPerson((new PersonGenerator()).generate());
+                        model.addPerson((new PersonGenerator()).generate());
 
                     //Generate us some skill
                     for (int i = 0; i < 10; ++i)
