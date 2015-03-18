@@ -45,35 +45,35 @@ public class CreateWindowController {
     }
 
     /**
-     * Sets the the cancel Callable
-     * @param cancelClicked to set to cancel Callable
+     * Sets the method that is called when cancel is clicked
+     * @param cancelClicked The method to call when cancel is clicked
      */
     public void setCancelClicked(Callable<Void> cancelClicked) {
         this.cancelClicked = cancelClicked;
     }
 
     /**
-     * Sets the ok Callable
-     * @param okayClicked to set to ok Callabel
+     * Sets the method that is called when okay is clicked
+     * @param okayClicked The callable
      */
     public void setOkayClicked(Callable<Void> okayClicked) {
         this.okayClicked = okayClicked;
     }
 
     /**
-     * Sets the content of the pane
-     * @param content content to add to the pane
+     * Sets the content of the form
+     * @param content The form
      */
     public void setContent(Node content){
-        contentPane.add(content, 0, 0);
+        contentPane.getChildren().add(content);
     }
 
     /**
-     * Creates a new Node
-     * @param content content of the node
-     * @param okayClicked ok button action
-     * @param cancelClicked cancel button action
-     * @return Parent
+     * Creates a new form for with the 'content' node as it's content
+     * @param content The content
+     * @param okayClicked The okay callback
+     * @param cancelClicked The cancel callback
+     * @return The form
      */
     public static Parent newCreateNode(Node content, Callable<Void> okayClicked, Callable<Void> cancelClicked){
         try {
