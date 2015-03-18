@@ -203,6 +203,7 @@ public class AppController implements Initializable {
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
             EditorHelper.createNew(Project.class, ()-> {
+
                 updateDisplayList();
                 return null;
             });
