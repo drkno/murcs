@@ -47,17 +47,6 @@ public class SkillTest {
     }
 
     @Test
-    public void isRoleTest() throws Exception {
-        assertTrue(skill.isRole(Skill.Role.PO));
-
-        skill.setShortName("pO");
-        assertTrue(skill.isRole(Skill.Role.PO));
-
-        skill.setShortName("developer");
-        assertFalse(skill.isRole(Skill.Role.PO));
-    }
-
-    @Test
     public void equalsTest() throws Exception {
         skill2.setShortName("PO");
         assertTrue(skill.equals(skill2));

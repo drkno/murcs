@@ -31,10 +31,10 @@ public class Person extends Model {
      * @param role The role
      * @return Whether the person can take on a role.
      */
-    public boolean canBeRole(Skill.Role role){
+    public boolean canBeRole(String role){
         return getSkills()
                 .stream()
-                .filter(s -> s.isRole(role))
+                .filter(skill -> skill.toString().equals(role))
                 .findFirst()
                 .isPresent();
     }

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The top level relational model
  */
-public class RelationalModel extends TrackableObject implements Serializable{
+public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
     private Project project;
@@ -39,6 +39,22 @@ public class RelationalModel extends TrackableObject implements Serializable{
         this.skills = new ArrayList<>();
         this.project = null;
         saveCurrentState("Set relational model");
+
+        try {
+            Skill productOwner = new Skill();
+            productOwner.setShortName("PO");
+            productOwner.setLongName("Product Owner");
+            productOwner.setDescription("has ability to insult design teams efforts");
+            this.skills.add(productOwner);
+
+            Skill scrumMaster = new Skill();
+            scrumMaster.setShortName("SM");
+            scrumMaster.setLongName("Scrum Master");
+            scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
+            this.skills.add(scrumMaster);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

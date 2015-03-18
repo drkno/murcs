@@ -26,17 +26,10 @@ import java.util.ResourceBundle;
  */
 public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
-    @FXML
-    private VBox teamMembersContainer;
-
-    @FXML
-    private TextField nameTextField, longNameTextField, descriptionTextField;
-
-    @FXML
-    private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
-
-    @FXML
-    private Label labelErrorMessage;
+    @FXML private VBox teamMembersContainer;
+    @FXML private TextField nameTextField, longNameTextField, descriptionTextField;
+    @FXML private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    @FXML private Label labelErrorMessage;
 
     private boolean intialized;
     private boolean loaded;
@@ -51,14 +44,20 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
             edit.setLongName(longNameTextField.getText());
             edit.setDescription(descriptionTextField.getText());
 
-            edit.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
+            edit.setProductOwner((Person) productOwnerPicker.getSelectionModel().getSelectedItem());
             edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
 
             if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
                 edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
             }
 
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            // Sets the product owner and scrum master, no need to check if it's been set
+            Person productOwner = (Person) productOwnerPicker.getSelectionModel().getSelectedItem();
+            edit.setProductOwner(productOwner);
+            Person scrumMaster = (Person) scrumMasterPicker.getSelectionModel().getSelectedItem();
+            edit.setScrumMaster(scrumMaster);
+
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
             //If we haven't added the team yet, throw them in the list of unassigned people
             if (!model.getTeams().contains(edit))
@@ -72,9 +71,8 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
             //more nicely
             load();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
-            return;
         }
     }
 
@@ -156,12 +154,12 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
             if (oldValue && !newValue) saveTeam();
         });
 
-        longNameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue)  saveTeam();
         });
 
-        descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue)  saveTeam();
         });
 
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
