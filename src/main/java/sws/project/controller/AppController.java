@@ -156,19 +156,19 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 Platform.exit();
                 return null;
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                 popup.close();
                 // Let the user save the project
                 saveProject(null);
                 Platform.exit();
                 return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 return null;
             });
@@ -202,8 +202,7 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            EditorHelper.createNew(Project.class, ()-> {
-
+            EditorHelper.createNew(Project.class, () -> {
                 updateDisplayList();
                 return null;
             });
@@ -212,7 +211,7 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, () -> {
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
 
                 RelationalModel model = new RelationalModel();
@@ -227,7 +226,7 @@ public class AppController implements Initializable {
                 });
                 return null;
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                 popup.close();
                 // Let the user save the project
                 saveProject(null);
@@ -238,13 +237,13 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                EditorHelper.createNew(Project.class, ()-> {
+                EditorHelper.createNew(Project.class, () -> {
                     updateDisplayList();
                     return null;
                 });
                 return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 return null;
             });
