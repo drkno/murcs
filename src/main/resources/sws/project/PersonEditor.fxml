@@ -1,43 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.controller.PersonEditor">
-   <children>
-      <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <VBox>
-               <children>
-                  <Label text="Name" />
-                  <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-               </children>
-                <padding>
-                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                </padding>
-            </VBox>
-            <VBox>
-               <children>
-                  <Label text="Username" GridPane.rowIndex="1" />
-                  <TextField fx:id="usernameTextField" GridPane.columnIndex="1" />
-               </children>
-                <padding>
-                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                </padding>
-            </VBox>
-            <VBox>
-               <children>
-                  <Label text="Skills go here." />
-               </children>
-                <padding>
-                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                </padding>
-            </VBox>
-             <Label fx:id="labelErrorMessage" />
-         </children>
-      </VBox>
-   </children>
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="sws.project.controller.PersonEditor">
+    <children>
+        <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox>
+                    <children>
+                        <Label text="Name"/>
+                        <TextField fx:id="nameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                    </padding>
+                </VBox>
+                <VBox>
+                    <children>
+                        <Label text="Username" GridPane.rowIndex="1"/>
+                        <TextField fx:id="usernameTextField" GridPane.columnIndex="1"/>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                    </padding>
+                </VBox>
+                <VBox>
+                    <children>
+                        <Label text="Skills" GridPane.rowIndex="1"/>
+                        <VBox fx:id="skillVBox" VBox.vgrow="ALWAYS"/>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a skill">
+                            <VBox.margin>
+                                <Insets top="10.0"/>
+                            </VBox.margin>
+                        </Text>
+                        <AnchorPane>
+                            <children>
+                                <ChoiceBox fx:id="skillChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0"
+                                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                           AnchorPane.topAnchor="0.0"/>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                    <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                    </padding>
+                </VBox>
+                <Label fx:id="errorMessageLabel"/>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

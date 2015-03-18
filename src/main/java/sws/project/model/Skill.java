@@ -32,6 +32,15 @@ public class Skill extends Model {
     }
 
     /**
+     * Possible roles of a team.
+     */
+    public enum Role {
+        ScrumMaster,
+        Developer,
+        PO,
+    }
+
+    /**
      * Returns the short name of the skill
      * @return Short name of the skill
      */

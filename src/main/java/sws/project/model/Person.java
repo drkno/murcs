@@ -67,7 +67,7 @@ public class Person extends Model {
             saveCurrentState("Skill added");
         }
         else {
-            throw new DuplicateObjectException();
+            throw new DuplicateObjectException("This is actually the same skill");
         }
     }
 

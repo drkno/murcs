@@ -36,7 +36,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
             //This line will need to be changed if we support multiple projects
             //What we're trying to do here is check if the current edit already exist
             //or if we're creating a new one.
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
             if (model == null || model.getProject() != edit) {
                 if (PersistenceManager.Current.getCurrentModel() == null) {
                     model = new RelationalModel();
@@ -50,7 +50,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
             if (onSaved != null)
                 onSaved.call();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
             return;
         }
@@ -59,7 +59,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     /**
      * Loads the edit into the form
      */
-    public void load(){
+    public void load() {
         textFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
@@ -72,11 +72,11 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
         });
 
         textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateProject();
+            if (o && !n) updateProject();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateProject();
+            if (o && !n) updateProject();
         });
     }
 }
