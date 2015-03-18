@@ -30,7 +30,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private VBox teamMembersContainer;
 
     @FXML
-    private TextField nameTextField, longNameTextField, descriptionTextField;
+    private TextField teamNameTextField, longNameTextField, descriptionTextField;
 
     @FXML
     private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
@@ -48,7 +48,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         if (!intialized || !loaded) return;
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(nameTextField.getText());
+            edit.setShortName(teamNameTextField.getText());
             edit.setLongName(longNameTextField.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -83,7 +83,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
      * Loads the team into the form
      */
     public void load(){
-        nameTextField.setText(edit.getShortName());
+        teamNameTextField.setText(edit.getShortName());
         longNameTextField.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
 
@@ -154,7 +154,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        teamNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) saveTeam();
         });
 

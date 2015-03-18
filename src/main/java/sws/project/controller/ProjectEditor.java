@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 public class ProjectEditor extends GenericEditor<Project> implements Initializable {
 
     @FXML
-    private TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
     private Label labelErrorMessage;
@@ -29,7 +29,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     private void updateProject() {
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(textFieldShortName.getText());
+            edit.setShortName(projectTextFieldShortName.getText());
             edit.setLongName(textFieldLongName.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -61,7 +61,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
      * Loads the edit into the form
      */
     public void load(){
-        textFieldShortName.setText(edit.getShortName());
+        projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
         updateProject();
@@ -69,7 +69,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) updateProject();
         });
 

@@ -303,4 +303,14 @@ public class RelationalModel extends TrackableObject implements Serializable{
             return getSkills().contains(model);
         return false;
     }
+
+    public void removePersonWithName(String name) {
+        ArrayList<Person> persons = getPeople();
+        int i = 0;
+        for (Person person : persons) {
+            if (person.getShortName().equals(name))
+                persons.remove(i);
+            i++;
+        }
+    }
 }

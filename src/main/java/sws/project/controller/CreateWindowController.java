@@ -1,5 +1,6 @@
 package sws.project.controller;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,8 +9,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.project.model.Person;
+import sws.project.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +33,7 @@ public class CreateWindowController {
 
     @FXML
     private void cancelButtonClicked(ActionEvent event) {
+        GridPane pane = contentPane;
         if (cancelClicked != null) try {
             cancelClicked.call();
         } catch (Exception e) {
@@ -36,12 +42,21 @@ public class CreateWindowController {
 
         Stage stage = (Stage)contentPane.getScene().getWindow();
         stage.close();
+
+        //removeChanges(pane);
+    }
+
+    private void removeChanges(GridPane contentPane) {
+        if (JavaFXHelpers.getByID(contentPane, "personNameTextField") != null) {
+            String text = ((TextField)JavaFXHelpers.getByID(contentPane, "personNameTextField")).getText();
+            if (!text.equals("")) PersistenceManager.Current.getCurrentModel().removePersonWithName(text);
+        }
     }
 
     @FXML
     private void okayButtonClicked(ActionEvent event) {
         if (okayClicked != null) try {
-            Node node = JavaFXHelpers.getByID(contentPane.getParent(),"labelErrorMessage");
+            Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
             if (node != null && node instanceof Label && !((Label) node).getText().equals("")) return;
             okayClicked.call();
         } catch (Exception e) {

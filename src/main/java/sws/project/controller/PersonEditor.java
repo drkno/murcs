@@ -16,7 +16,7 @@ import java.util.ResourceBundle;
  */
 public class PersonEditor extends GenericEditor<Person> implements Initializable{
     @FXML
-    private TextField nameTextField, usernameTextField;
+    private TextField personNameTextField, usernameTextField;
 
     @FXML
     private Label labelErrorMessage;
@@ -28,7 +28,7 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
 
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(nameTextField.getText());
+            edit.setShortName(personNameTextField.getText());
             edit.setUserId(usernameTextField.getText());
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
@@ -51,14 +51,14 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
      * Loads the edit into the form
      */
     public void load(){
-        nameTextField.setText(edit.getShortName());
+        personNameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
         savePerson();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) savePerson();
         });
 

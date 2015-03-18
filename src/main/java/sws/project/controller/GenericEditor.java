@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
  * A generic class for making editing easier
  */
 public abstract class GenericEditor<T>{
-    protected T edit;
+    public T edit;
     protected Callable<Void> onSaved;
 
     /**
