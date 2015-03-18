@@ -1,13 +1,19 @@
 package sws.project.controller;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
 import java.util.concurrent.Callable;
 
 /**
@@ -19,6 +25,30 @@ public class CreateWindowController {
 
     @FXML
     private GridPane contentPane;
+
+    public static ArrayList<Node> getAllNodes(Parent root) {
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        addAllDescendents(root, nodes);
+        return nodes;
+    }
+
+    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            nodes.add(node);
+            if (node instanceof Parent)
+                addAllDescendents((Parent)node, nodes);
+        }
+    }
+
+    private static Node getByID(Parent root, String id) {
+        ArrayList<Node> nodes = getAllNodes(root);
+        for (Node node : nodes) {
+            if (node.getId() != null && node.getId().equals(id)) {
+                return node;
+            }
+        }
+        return null;
+    }
 
     @FXML
     private void cancelButtonClicked(ActionEvent event) {
@@ -36,6 +66,8 @@ public class CreateWindowController {
     private void okayButtonClicked(ActionEvent event) {
         if (okayClicked != null) try {
             okayClicked.call();
+            Node node = getByID(contentPane.getParent(),"labelErrorMessage");
+            if (node != null && node instanceof Label && !((Label) node).getText().equals("")) return;
         } catch (Exception e) {
             e.printStackTrace();
         }

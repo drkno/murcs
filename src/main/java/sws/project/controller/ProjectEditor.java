@@ -28,6 +28,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
      */
     private void updateProject() {
         try {
+            labelErrorMessage.setText("");
             edit.setShortName(textFieldShortName.getText());
             edit.setLongName(textFieldLongName.getText());
             edit.setDescription(descriptionTextField.getText());
@@ -63,6 +64,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
         textFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
+        updateProject();
     }
 
     @Override
