@@ -38,14 +38,14 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     @FXML
     private Label labelErrorMessage;
 
-    private boolean intialized;
+    private boolean initialized;
     private boolean loaded;
 
     /**
      * Saves the team being edited
      */
     private void saveTeam() {
-        if (!intialized || !loaded) return;
+        if (!initialized || !loaded) return;
         try {
             edit.setShortName(nameTextField.getText());
             edit.setLongName(longNameTextField.getText());
@@ -171,6 +171,6 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
             if (newValue != null) saveTeam();
         });
 
-        intialized = true;
+        initialized = true;
     }
 }
