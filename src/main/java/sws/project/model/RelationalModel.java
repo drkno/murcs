@@ -37,7 +37,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
-        this.project = new Project();
+        this.project = null;
         saveCurrentState("Set relational model");
     }
 
@@ -123,6 +123,8 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removePerson(Person person) {
         if (this.getPeople().contains(person)) {
             this.getPeople().remove(person);
+            //Remove the person from any team they might be in
+            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
             saveCurrentState("Unassigned person removed");
         }
     }
@@ -187,11 +189,15 @@ public class RelationalModel extends TrackableObject implements Serializable{
 
     /**
      * Removes a team from the unassigned teams
-     * @param team The unassigned team to remove
+     * @param team The team to remove
      */
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
+
+            if (this.getProject().getTeams().contains(team))
+                this.getProject().getTeams().remove(team);
+
             saveCurrentState("Unassigned team removed");
         }
     }
@@ -210,13 +216,9 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if the skill already exists in the relational model
      */
     public void addSkill(Skill skill) throws DuplicateObjectException {
-        if (!skills.contains(skill) &&
-                !skills
-                        .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(skill.getShortName().toLowerCase()))
-                        .findAny()
-                        .isPresent()) {
+        if (!skills.contains(skill)) {
             this.skills.add(skill);
+
             saveCurrentState("Skill added");
         }
         else throw new DuplicateObjectException();
@@ -240,6 +242,10 @@ public class RelationalModel extends TrackableObject implements Serializable{
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+
+            //Remove the skill from any people who might have it
+            getPeople().stream().filter(person -> person.getSkills().contains(skill)).forEach(person -> person.removeSkill(skill));
+
             saveCurrentState("Skill added");
         }
     }
@@ -247,6 +253,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     /**
      * Tries to add the object to the model
      * @param model the object to add to the model
+     * @throws sws.project.exceptions.DuplicateObjectException Because you did something silly, like try to add an object that already exists
      */
     public void add(Model model) throws DuplicateObjectException{
         ModelTypes type = ModelTypes.getModelType(model);
@@ -289,5 +296,22 @@ public class RelationalModel extends TrackableObject implements Serializable{
                 removePerson((Person)model);
                 break;
         }
+    }
+
+    /**
+     * Checks to see if an object exists in the model
+     * @param model The model
+     * @return Whether it exists
+     */
+    public boolean exists(Model model){
+        if (model instanceof Project)
+            return getProject() == model;
+        if (model instanceof Team)
+            return getTeams().contains(model);
+        if  (model instanceof Person)
+            return getPeople().contains(model);
+        if (model instanceof Skill)
+            return getSkills().contains(model);
+        return false;
     }
 }

@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.project.controller.AppClosingListener;
 import sws.project.magic.tracking.TrackableObject;
+import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
 
@@ -67,6 +68,10 @@ public class App extends Application{
      * @param args Arguements passed into the main function (they're irrelevant currently)
      */
     public static void main(String[] args) {
+        PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());
+        //Give us an empty model
+        PersistenceManager.Current.setCurrentModel(new RelationalModel());
+
         launch(args);
         TrackableObject.destroy();
     }
