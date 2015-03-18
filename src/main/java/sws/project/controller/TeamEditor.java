@@ -1,11 +1,8 @@
 package sws.project.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -15,101 +12,34 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import sws.project.model.Person;
 import sws.project.model.RelationalModel;
 import sws.project.model.Team;
 import sws.project.model.persistence.PersistenceManager;
-import sws.project.view.App;
 
 import java.net.URL;
 import java.util.Collection;
 import java.util.ResourceBundle;
-import java.util.concurrent.Callable;
 
 /**
  *  The controller for the team editor
  */
-public class TeamEditor implements Initializable{
-    private Team team;
+public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
     @FXML
-    VBox teamMembersContainer;
+    private VBox teamMembersContainer;
 
     @FXML
-    TextField nameTextField, longNameTextField, descriptionTextField;
+    private TextField nameTextField, longNameTextField, descriptionTextField;
 
     @FXML
-    ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
-    private Callable<Void> onSaved;
     private boolean intialized;
     private boolean loaded;
-
-    /**
-     * Creates a new form for editing a team
-     *
-     * @param team The team
-     * @return The form
-     */
-    public static Parent createFor(Team team){
-        return createFor(team, null);
-    }
-
-    /**
-     * Creates a new form for editing a team which will call the saved callback
-     * every time a change is saved
-     * @param team The team
-     * @param onSaved The save callback
-     * @return The form
-     */
-    public static Parent createFor(Team team, Callable<Void> onSaved){
-        try {
-            FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource("/sws/project/TeamEditor.fxml"));
-            Parent parent = loader.load();
-
-            TeamEditor controller = loader.getController();
-            controller.team = team;
-            controller.onSaved = onSaved;
-            controller.loadTeam();
-
-            return parent;
-        }catch (Exception e){
-            System.err.println("Unable to create a team editor!(this is seriously bad)");
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    /**
-     * Displays a new window for creating a new form
-     * @param okay The okay callback
-     * @param cancel The cancelled callback
-     */
-    public static void displayWindow(Callable<Void> okay, Callable<Void> cancel){
-        try {
-            Parent content = createFor(new Team());
-
-            Parent root = CreateWindowController.newCreateNode(content, okay, cancel);
-            Scene scene = new Scene(root);
-
-            Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.setTitle("Create Team");
-
-            newStage.initModality(Modality.APPLICATION_MODAL);
-            newStage.initOwner(App.stage);
-
-            newStage.show();
-        }catch (Exception e){
-
-        }
-    }
 
     /**
      * Saves the team being edited
@@ -117,22 +47,22 @@ public class TeamEditor implements Initializable{
     private void saveTeam() {
         if (!intialized || !loaded) return;
         try {
-            team.setShortName(nameTextField.getText());
-            team.setLongName(longNameTextField.getText());
-            team.setDescription(descriptionTextField.getText());
+            edit.setShortName(nameTextField.getText());
+            edit.setLongName(longNameTextField.getText());
+            edit.setDescription(descriptionTextField.getText());
 
-            team.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
-            team.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
+            edit.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
+            edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
 
             if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
-                team.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
+                edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
             }
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
 
             //If we haven't added the team yet, throw them in the list of unassigned people
-            if (!model.getTeams().contains(team))
-                model.addTeam(team);
+            if (!model.getTeams().contains(edit))
+                model.addTeam(edit);
 
             //If we have a saved callBack, call it
             if (onSaved != null)
@@ -140,7 +70,7 @@ public class TeamEditor implements Initializable{
 
             //Load the team again, to make sure everything is updated. We could probably do this
             //more nicely
-            loadTeam();
+            load();
 
         }catch (Exception e){
             labelErrorMessage.setText(e.getMessage());
@@ -151,22 +81,22 @@ public class TeamEditor implements Initializable{
     /**
      * Loads the team into the form
      */
-    private void loadTeam(){
-        nameTextField.setText(team.getShortName());
-        longNameTextField.setText(team.getLongName());
-        descriptionTextField.setText(team.getDescription());
+    public void load(){
+        nameTextField.setText(edit.getShortName());
+        longNameTextField.setText(edit.getLongName());
+        descriptionTextField.setText(edit.getDescription());
 
         teamMembersContainer.getChildren().clear();
-        for (Person p : team.getMembers()){
+        for (Person p : edit.getMembers()){
             Node node = generateTeamMemberNode(p);
             teamMembersContainer.getChildren().add(node);
         }
 
-        maintainList(productOwnerPicker.getItems(), team.getMembers());
-        productOwnerPicker.getSelectionModel().select(team.getProductOwner());
+        maintainList(productOwnerPicker.getItems(), edit.getMembers());
+        productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
 
-        maintainList(scrumMasterPicker.getItems(), team.getMembers());
-        scrumMasterPicker.getSelectionModel().select(team.getScrumMaster());
+        maintainList(scrumMasterPicker.getItems(), edit.getMembers());
+        scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
 
         //We don't have to maintain the list here, as we want it to clear the selection
         addTeamMemberPicker.getItems().clear();
@@ -199,7 +129,7 @@ public class TeamEditor implements Initializable{
         Text nameText = new Text(person + "");
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
-            team.removeMember(person);
+            edit.removeMember(person);
             saveTeam();
         });
 

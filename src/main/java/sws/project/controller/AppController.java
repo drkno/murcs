@@ -18,9 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.ValueChange;
-import sws.project.model.Model;
-import sws.project.model.Project;
-import sws.project.model.RelationalModel;
+import sws.project.model.*;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
@@ -36,31 +34,30 @@ import static sws.project.magic.tracking.TrackableObject.*;
 public class AppController implements Initializable {
 
     @FXML
-    Parent root;
+    private Parent root;
     @FXML
-    MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
     @FXML
-    VBox vBoxSideDisplay;
+    private VBox vBoxSideDisplay;
     @FXML
-    HBox hBoxMainDisplay;
+    private HBox hBoxMainDisplay;
     @FXML
-    BorderPane borderPaneMain;
+    private BorderPane borderPaneMain;
     @FXML
-    ChoiceBox displayChoiceBox;
+    private ChoiceBox displayChoiceBox;
     @FXML
-    ListView displayList;
+    private ListView displayList;
     @FXML
-    Button removeButton;
+    private Button removeButton;
 
     @FXML
-    GridPane contentPane;
+    private GridPane contentPane;
 
     private ObservableList displayListItems;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     *
      * @param location  Location of the fxml that is related to the controller
      * @param resources Pretty sure it's probably something, don't know what though
      */
@@ -117,7 +114,6 @@ public class AppController implements Initializable {
 
     /**
      * Updates the display list on the left hand side of the screen to the type selected in the choice box.
-     *
      * @param type The type selected in the choice box.
      */
     private void updateDisplayList(ModelTypes type) {
@@ -177,14 +173,14 @@ public class AppController implements Initializable {
                 return null;
             });
             popup.show();
-        } else {
+        }
+        else {
             Platform.exit();
         }
     }
 
     /**
      * Toggles the view of the display list box at the side.
-     *
      * @param event The event that triggers the function
      */
     @FXML
@@ -192,7 +188,8 @@ public class AppController implements Initializable {
         if (vBoxSideDisplay.isVisible()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(false);
-        } else {
+        }
+        else {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
             vBoxSideDisplay.setVisible(true);
         }
@@ -200,17 +197,17 @@ public class AppController implements Initializable {
 
     /**
      * Create a new project, opens a dialog to fill out for the new project.
-     *
      * @param event The event that causes the function to be called, namely clicking new project.
      */
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            ProjectEditor.displayWindow(() -> {
+            EditorHelper.createNew(Project.class, ()-> {
                 updateDisplayList();
                 return null;
-            }, null);
-        } else {
+            });
+        }
+        else {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
@@ -223,10 +220,10 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 reset();
                 // Create a new project
-                ProjectEditor.displayWindow(() -> {
+                EditorHelper.createNew(Project.class, () -> {
                     updateDisplayList();
                     return null;
-                }, null);
+                });
                 return null;
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
@@ -240,10 +237,10 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                ProjectEditor.displayWindow(() -> {
+                EditorHelper.createNew(Project.class, ()-> {
                     updateDisplayList();
                     return null;
-                }, null);
+                });
                 return null;
             });
             popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
@@ -258,7 +255,6 @@ public class AppController implements Initializable {
     /**
      * Save the current project. Currently you choose where to save the project every time, however it does remember the
      * last location saved or loaded from.
-     *
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
@@ -281,7 +277,6 @@ public class AppController implements Initializable {
 
     /**
      * Opens a specified project file, from a specified location.
-     *
      * @param event The event that causes the function to be called, clicking open.
      */
     @FXML
@@ -306,7 +301,6 @@ public class AppController implements Initializable {
 
     /**
      * Called when the undo menu item has been clicked.
-     *
      * @param event event arguments.
      */
     @FXML
@@ -322,7 +316,6 @@ public class AppController implements Initializable {
 
     /**
      * Redo menu item has been clicked.
-     *
      * @param event event arguments.
      */
     @FXML
@@ -339,7 +332,6 @@ public class AppController implements Initializable {
 
     /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
-     *
      * @param change change that has been made
      */
     private void updateUndoRedoMenuItems(ValueChange change) {
@@ -399,14 +391,35 @@ public class AppController implements Initializable {
 
     @FXML
     private void addClicked(ActionEvent event) {
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class<? extends Model> clazz = ModelTypes.getTypeFromModel(type);
+        Class<? extends Model> clazz = null;
+        if (event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addPerson":
+                    clazz = Person.class;
+                    break;
+                case "addTeam":
+                    clazz = Team.class;
+                    break;
+                case "addSkill":
+                    clazz = Skill.class;
+                    break;
+            }
+        }
+        else {
+            //If pressing the add button at the bottom of the display list
+            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+            clazz = ModelTypes.getTypeFromModel(type);
+        }
 
         try {
-            EditorHelper.createNew(clazz, () -> {
-                updateDisplayList();
-                return null;
-            });
+            if (clazz != null) {
+                EditorHelper.createNew(clazz, () -> {
+                    updateDisplayList();
+                    return null;
+                });
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -422,12 +435,6 @@ public class AppController implements Initializable {
 
         model.remove((Model) displayList.getSelectionModel().getSelectedItem());
         updateDisplayList();
-
-        //If there are no items in the displayList, don't try to select something
-        if (displayList.getItems().size() == 0) return;
-
-        //Clamp the selected index at the number of items in the list
-        Platform.runLater(() -> displayList.getSelectionModel().select(Math.max(selectedIndex, displayList.getItems().size())));
     }
 }
 

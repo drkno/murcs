@@ -24,7 +24,7 @@ public final class PersistenceManager {
     /**
      * Currently in use user persistence.
      */
-    private RelationalModel currentModel = new RelationalModel();
+    private RelationalModel currentModel;
 
     /**
      * Currently in use persistence loader.
