@@ -22,7 +22,6 @@ import sws.project.model.*;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
-import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -203,10 +202,10 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!canUndo()) {
-            ProjectEditor.displayWindow(() -> {
+            EditorHelper.createNew(Project.class, ()-> {
                 updateDisplayList();
                 return null;
-            }, null);
+            });
         }
         else {
             GenericPopup popup = new GenericPopup();
@@ -221,10 +220,10 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 reset();
                 // Create a new project
-                ProjectEditor.displayWindow(() -> {
+                EditorHelper.createNew(Project.class, () -> {
                     updateDisplayList();
                     return null;
-                }, null);
+                });
                 return null;
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, () -> {
@@ -238,10 +237,10 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 reset();
                 // Create a new project
-                ProjectEditor.displayWindow(() -> {
+                EditorHelper.createNew(Project.class, ()-> {
                     updateDisplayList();
                     return null;
-                }, null);
+                });
                 return null;
             });
             popup.addButton("Cancel", GenericPopup.Position.RIGHT, () -> {
