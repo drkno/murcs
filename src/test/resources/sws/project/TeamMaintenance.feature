@@ -1,3 +1,4 @@
+@Manual
 Feature: Team Maintenance
 
   Scenario: Create a Team from file menu

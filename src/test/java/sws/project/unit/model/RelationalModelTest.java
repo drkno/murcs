@@ -5,11 +5,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.project.exceptions.DuplicateObjectException;
-import sws.project.model.Person;
-import sws.project.model.RelationalModel;
-import sws.project.model.Skill;
-import sws.project.model.Team;
-import sws.project.sampledata.*;
+import sws.project.model.*;
+import sws.project.sampledata.Generator;
+import sws.project.sampledata.PersonGenerator;
+import sws.project.sampledata.SkillGenerator;
+import sws.project.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ public class RelationalModelTest {
     private Skill skillGenerated;
     private Skill skill;
     private RelationalModel relationalModel;
+    private Project project;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -45,6 +46,8 @@ public class RelationalModelTest {
         relationalModel = new RelationalModel();
         team = new Team();
         skill = new Skill();
+        project = new Project();
+        relationalModel.setProject(project);
     }
 
     @After
