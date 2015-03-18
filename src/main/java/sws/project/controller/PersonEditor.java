@@ -27,6 +27,7 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
     private void savePerson() {
 
         try {
+            labelErrorMessage.setText("");
             edit.setShortName(nameTextField.getText());
             edit.setUserId(usernameTextField.getText());
 
@@ -52,6 +53,7 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
     public void load(){
         nameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
+        savePerson();
     }
 
     @Override

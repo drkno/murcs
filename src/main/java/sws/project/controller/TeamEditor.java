@@ -47,6 +47,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private void saveTeam() {
         if (!intialized || !loaded) return;
         try {
+            labelErrorMessage.setText("");
             edit.setShortName(nameTextField.getText());
             edit.setLongName(longNameTextField.getText());
             edit.setDescription(descriptionTextField.getText());
@@ -104,6 +105,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
         //Set the loaded flag
         loaded = true;
+        saveTeam();
     }
 
     /**
