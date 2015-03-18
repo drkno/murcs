@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.input.*?>
 <?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -14,6 +15,9 @@
                         <Menu id="newMenu" mnemonicParsing="false" text="New">
                            <items>
                                <MenuItem id="projectOption" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                        <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addClicked" text="Team" />
+                        <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
+                        <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
                            </items>
                         </Menu>
                         <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
@@ -47,6 +51,15 @@
                        </children>
                     </AnchorPane>
                     <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                  <HBox alignment="TOP_RIGHT" spacing="5.0" VBox.vgrow="SOMETIMES">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#addClicked" text="+" />
+                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" />
+                     </VBox.margin>
+                  </HBox>
                 </children>
              </VBox>
              <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
