@@ -1,6 +1,7 @@
 package sws.project.controller;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -24,9 +25,10 @@ public class EditorHelper {
      */
     public static void createNew(Class<? extends Model> clazz, Callable<Void> okay){
         try {
-            Model model = (Model)clazz.getConstructor().newInstance();
-            Parent content = getEditForm(model, null);
+            ModelTypes type = ModelTypes.getModelType(clazz);
+            Model newModel = clazz.newInstance();
 
+            Node content = getEditForm(newModel, okay);
             Parent root = CreateWindowController.newCreateNode(content, okay, null);
             Scene scene = new Scene(root);
 
@@ -53,9 +55,9 @@ public class EditorHelper {
     public static Parent getEditForm(Model model, Callable<Void> onSaved){
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
-        fxmlPaths.put(ModelTypes.Project, "TeamEditor.fxml");
-        fxmlPaths.put(ModelTypes.Project, "PersonEditor.fxml");
-        fxmlPaths.put(ModelTypes.Project, "SkillEditor.fxml");
+        fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
+        fxmlPaths.put(ModelTypes.People, "PersonEditor.fxml");
+        fxmlPaths.put(ModelTypes.Skills, "SkillEditor.fxml");
 
         String fxmlPath = "/sws/project/" + fxmlPaths.get(ModelTypes.getModelType(model));
 
