@@ -3,10 +3,7 @@ package sws.project.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -33,7 +30,10 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private TextField nameTextField, longNameTextField, descriptionTextField;
 
     @FXML
-    private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox productOwnerPicker, scrumMasterPicker;
+
+    @FXML
+    private ComboBox<Person> addTeamMemberPicker;
 
     @FXML
     private Label labelErrorMessage;
@@ -58,7 +58,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
                 edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
             }
 
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
             //If we haven't added the team yet, throw them in the list of unassigned people
             if (!model.getTeams().contains(edit))
