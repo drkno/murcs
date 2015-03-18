@@ -26,30 +26,6 @@ public class CreateWindowController {
     @FXML
     private GridPane contentPane;
 
-    public static ArrayList<Node> getAllNodes(Parent root) {
-        ArrayList<Node> nodes = new ArrayList<Node>();
-        addAllDescendents(root, nodes);
-        return nodes;
-    }
-
-    private static void addAllDescendents(Parent parent, ArrayList<Node> nodes) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
-            nodes.add(node);
-            if (node instanceof Parent)
-                addAllDescendents((Parent)node, nodes);
-        }
-    }
-
-    private static Node getByID(Parent root, String id) {
-        ArrayList<Node> nodes = getAllNodes(root);
-        for (Node node : nodes) {
-            if (node.getId() != null && node.getId().equals(id)) {
-                return node;
-            }
-        }
-        return null;
-    }
-
     @FXML
     private void cancelButtonClicked(ActionEvent event) {
         if (cancelClicked != null) try {
@@ -65,9 +41,9 @@ public class CreateWindowController {
     @FXML
     private void okayButtonClicked(ActionEvent event) {
         if (okayClicked != null) try {
-            okayClicked.call();
-            Node node = getByID(contentPane.getParent(),"labelErrorMessage");
+            Node node = JavaFXHelpers.getByID(contentPane.getParent(),"labelErrorMessage");
             if (node != null && node instanceof Label && !((Label) node).getText().equals("")) return;
+            okayClicked.call();
         } catch (Exception e) {
             e.printStackTrace();
         }
