@@ -16,91 +16,52 @@ import sws.project.model.RelationalModel;
 import sws.project.model.Skill;
 import sws.project.model.persistence.PersistenceManager;
 
-import java.util.Collection;
-
 /**
- * Allows you to edit a edit
+ *
  */
 public class PersonEditor extends GenericEditor<Person> {
 
-    private boolean initialized;
-    private boolean loaded;
     @FXML
     private TextField nameTextField, usernameTextField;
 
     @FXML
-    private Label labelErrorMessage;
+    private ChoiceBox<Skill> skillChoiceBox;
 
     @FXML
-    private VBox skillContainer;
+    private VBox skillVBox;
 
     @FXML
-    private ChoiceBox<Skill> addSkillPicker;
+    private Label errorMessageLabel;
 
-    /**
-     * Saves the edit being edited
-     */
-    private void savePerson() {
-        if (!initialized || !loaded) return;
-        try {
-            edit.setShortName(nameTextField.getText());
-            edit.setUserId(usernameTextField.getText());
+    @FXML
+    public void initialize() {
+        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) savePerson();
+        });
 
-            if (addSkillPicker.getSelectionModel().getSelectedItem() != null) {
-                edit.addSkill((Skill) addSkillPicker.getSelectionModel().getSelectedItem());
-            }
+        usernameTextField.focusedProperty().addListener((p, o, n) -> {
+            if (o && !n) savePerson();
+        });
 
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-            //If we haven't added the edit yet, throw them in the list of unassigned people
-            if (!model.getPeople().contains(edit))
-                model.addPerson(edit);
-
-            //If we have a saved callBack, call it
-            if (onSaved != null)
-                onSaved.call();
-
-            //HORRIBLE HORRIBLE WAY TO DO IT!!! IMPLEMENT A CHANGE LISTENER
-            load();
-
-        } catch (Exception e) {
-            labelErrorMessage.setText(e.getMessage());
-            return;
-        }
+        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) savePerson();
+        });
     }
 
-    /**
-     * Loads the edit into the form
-     */
+    @Override
     public void load() {
-
         nameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
 
-        skillContainer.getChildren().clear();
+        skillChoiceBox.getItems().clear();
+        skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
+
+        skillVBox.getChildren().clear();
         for (Skill skill : edit.getSkills()) {
             Node node = generateSkillNode(skill);
-            skillContainer.getChildren().add(node);
+            skillVBox.getChildren().add(node);
+            skillChoiceBox.getItems().remove(skill);
         }
-
-        addSkillPicker.getItems().clear();
-        addSkillPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
-
-        //Set the loaded flag
-        loaded = true;
-    }
-
-    /**
-     * Updates a list so it only has items from a second list. This is necessary because
-     * javafx does trippy things when you clear a list and add all the items back to it
-     * @param update The list to update
-     * @param match The list to match
-     */
-    private void maintainList(Collection update, Collection match){
-        //Add all the items in 'match' but not 'update' to 'update'
-        match.stream().filter(p -> !update.contains(p)).forEach(p -> update.add(p));
-        //Remove all the items from 'update' that aren't in 'match'
-        update.stream().filter(p -> !match.contains(p)).forEach(p -> update.remove(p));
 
     }
 
@@ -116,6 +77,7 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
             savePerson();
+            load();
         });
 
         GridPane pane = new GridPane();
@@ -135,20 +97,32 @@ public class PersonEditor extends GenericEditor<Person> {
         return pane;
     }
 
-    @FXML
-    public void initialize() {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) savePerson();
-        });
+    private void savePerson() {
 
-        usernameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n) savePerson();
-        });
+        try {
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
-        addSkillPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) savePerson();
-        });
+            edit.setShortName(nameTextField.getText());
+            edit.setUserId(usernameTextField.getText());
 
-        initialized = true;
+            Skill selectedSkill = skillChoiceBox.getValue();
+
+            if (selectedSkill != null) {
+                generateSkillNode(selectedSkill);
+                edit.addSkill(selectedSkill);
+            }
+
+            // Save the person if it hasn't been yet
+            if (!model.getPeople().contains(edit))
+                model.addPerson(edit);
+
+            // Call the callback if it exists
+            if (onSaved != null)
+                onSaved.call();
+        } catch (Exception e) {
+            errorMessageLabel.setText(e.getMessage());
+        } finally {
+            load();
+        }
     }
 }
