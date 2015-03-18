@@ -4,7 +4,6 @@ import sws.project.controller.ModelTypes;
 import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.magic.tracking.TrackableValue;
-import sws.project.sampledata.SkillGenerator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,10 +37,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     public RelationalModel() {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
-        SkillGenerator skillGenerator = new SkillGenerator();
         this.skills = new ArrayList<>();
-        this.skills.add(skillGenerator.generate());
-        this.skills.add(skillGenerator.generate());
         this.project = null;
         saveCurrentState("Set relational model");
     }
