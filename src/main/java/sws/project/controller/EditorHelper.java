@@ -34,7 +34,7 @@ public class EditorHelper {
 
             Stage newStage = new Stage();
             newStage.setScene(scene);
-            newStage.setTitle("Create Team");
+            newStage.setTitle("Create " + type.toString());
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
