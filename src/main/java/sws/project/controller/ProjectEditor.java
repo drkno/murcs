@@ -67,6 +67,9 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
         update();
     }
 
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
