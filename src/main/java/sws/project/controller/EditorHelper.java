@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.project.model.Model;
+import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.util.HashMap;
@@ -29,7 +30,10 @@ public class EditorHelper {
             Model newModel = clazz.newInstance();
 
             Node content = getEditForm(newModel, okay);
-            Parent root = CreateWindowController.newCreateNode(content, okay, null);
+            Parent root = CreateWindowController.newCreateNode(content, okay, () -> {
+                PersistenceManager.Current.getCurrentModel().remove(newModel);
+                return null;
+            });
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
