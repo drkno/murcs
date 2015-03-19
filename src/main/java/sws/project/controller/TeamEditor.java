@@ -30,10 +30,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private TextField nameTextField, longNameTextField, descriptionTextField;
 
     @FXML
-    private ChoiceBox productOwnerPicker, scrumMasterPicker;
-
-    @FXML
-    private ComboBox<Person> addTeamMemberPicker;
+    private ComboBox<Person> addTeamMemberPicker, productOwnerPicker, scrumMasterPicker;
 
     @FXML
     private Label labelErrorMessage;
@@ -168,7 +165,13 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) saveTeam();
+            if (newValue != null) {
+                // due to a bug in javafx, this prints a stack trace to the console.
+                // we cant do anything about it at the moment
+                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
+                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
+                saveTeam();
+            }
         });
 
         intialized = true;
