@@ -30,4 +30,10 @@ public abstract class GenericEditor<T>{
      * are up to the user
      */
     public abstract void load();
+
+    /**
+     * Called when attempting to save the object
+     * @throws Exception
+     */
+    public abstract void update() throws Exception;
 }

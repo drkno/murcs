@@ -44,38 +44,43 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     /**
      * Saves the team being edited
      */
-    private void saveTeam() {
+    public void update() throws Exception {
         if (!intialized || !loaded) return;
+        labelErrorMessage.setText("");
+        edit.setShortName(teamNameTextField.getText());
+        edit.setLongName(longNameTextField.getText());
+        edit.setDescription(descriptionTextField.getText());
+
+        edit.setProductOwner((Person) productOwnerPicker.getSelectionModel().getSelectedItem());
+        edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
+
+        if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
+            edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
+        }
+
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        //If we haven't added the team yet, throw them in the list of unassigned people
+        if (!model.getTeams().contains(edit))
+            model.addTeam(edit);
+
+        //If we have a saved callBack, call it
+        if (onSaved != null)
+            onSaved.call();
+
+        //Load the team again, to make sure everything is updated. We could probably do this
+        //more nicely
+        load();
+    }
+
+    /**
+     * Updates the object in memory and handles any exception that might be thrown
+     */
+    private void updateAndHandle(){
         try {
-            labelErrorMessage.setText("");
-            edit.setShortName(teamNameTextField.getText());
-            edit.setLongName(longNameTextField.getText());
-            edit.setDescription(descriptionTextField.getText());
-
-            edit.setProductOwner((Person)productOwnerPicker.getSelectionModel().getSelectedItem());
-            edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
-
-            if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
-                edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
-            }
-
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
-
-            //If we haven't added the team yet, throw them in the list of unassigned people
-            if (!model.getTeams().contains(edit))
-                model.addTeam(edit);
-
-            //If we have a saved callBack, call it
-            if (onSaved != null)
-                onSaved.call();
-
-            //Load the team again, to make sure everything is updated. We could probably do this
-            //more nicely
-            load();
-
+            update();
         }catch (Exception e){
-            labelErrorMessage.setText(e.getMessage());
-            return;
+            this.labelErrorMessage.setText(e.getMessage());
         }
     }
 
@@ -105,7 +110,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
         //Set the loaded flag
         loaded = true;
-        saveTeam();
+        updateAndHandle();
     }
 
     /**
@@ -132,7 +137,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
-            saveTeam();
+            updateAndHandle();
         });
 
         GridPane pane = new GridPane();
@@ -155,22 +160,22 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         teamNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) saveTeam();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         longNameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+            if (o && !n)  updateAndHandle();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+            if (o && !n)  updateAndHandle();
         });
 
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateAndHandle());
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateAndHandle());
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) saveTeam();
+            if (newValue != null) updateAndHandle();
         });
 
         intialized = true;
