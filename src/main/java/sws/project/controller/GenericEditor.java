@@ -19,7 +19,7 @@ public abstract class GenericEditor<T>{
 
     /**
      * Sets the callback that is fired when the object is saved
-     * @param onSaved
+     * @param onSaved callback to set
      */
     public void setSavedCallback(Callable<Void> onSaved){
         this.onSaved = onSaved;
