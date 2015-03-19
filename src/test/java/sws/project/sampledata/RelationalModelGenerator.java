@@ -32,14 +32,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                 unassignedTeams.add(teamGenerator.generate());
             }
             unassignedTeams = new ArrayList<Team>(new LinkedHashSet<Team>(unassignedTeams));
-            model.addUnassignedTeams(new ArrayList<>(new HashSet<>(unassignedTeams)));
+            model.addTeams(new ArrayList<>(new HashSet<>(unassignedTeams)));
 
             ArrayList<Person> unassignedPeople = new ArrayList<>();
             for (Team team : model.getUnassignedTeams()) {
                 unassignedPeople.addAll(team.getMembers());
             }
             unassignedPeople = new ArrayList<Person>(new LinkedHashSet<Person>(unassignedPeople));
-            model.addUnassignedPeople(unassignedPeople);
+            model.addPeople(unassignedPeople);
 
             ArrayList<Skill> skills = new ArrayList<>();
             for (Team team : model.getProject().getTeams()) {

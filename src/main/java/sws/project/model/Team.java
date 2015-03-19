@@ -78,12 +78,7 @@ public class Team extends Model{
      * @throws sws.project.exceptions.DuplicateObjectException if the person is already in the team
      */
     public void addMember(Person person) throws DuplicateObjectException{
-        if (!members.contains(person) &&
-                !members
-                        .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
-                        .findAny()
-                        .isPresent()) {
+        if (!members.contains(person)) {
             this.members.add(person);
         }
         else {
@@ -110,5 +105,10 @@ public class Team extends Model{
         if (this.members.contains(person)) {
             this.members.remove(person);
         }
+    }
+    
+    @Override
+    public String toString(){
+        return getShortName();
     }
 }

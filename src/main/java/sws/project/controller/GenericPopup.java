@@ -30,6 +30,15 @@ public class GenericPopup extends AnchorPane {
         RIGHT
     }
 
+    /**
+     * Enum for specifying if a button should have a default action.
+     */
+    public enum Action {
+        DEFAULT,
+        CANCEL,
+        NONE
+    }
+
     private @FXML Text messageText;
     private @FXML Text messageTitle;
     private @FXML ImageView messageImage;
@@ -48,9 +57,9 @@ public class GenericPopup extends AnchorPane {
      *
      *      GenericPopup controller = new GenericPopup();
      *      controller.setMessageText("Test message");
-     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("OK", GenericPopup.Position.RIGHT, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, () -RIGHTARROW {controller.close(); return null;});
+     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -RIGHTARROW {controller.close(); return null;});
+     *      controller.addButton("DEFAULT", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -RIGHTARROW {controller.close(); return null;});
+     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -RIGHTARROW {controller.close(); return null;});
      *      controller.show();
      *
      * There are extra features, like you can add and image and title, change the window title as well
@@ -102,8 +111,9 @@ public class GenericPopup extends AnchorPane {
      * @param buttonText The text on the button.
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
+     * @param action Default action for button
      */
-    public void addButton(String buttonText, Position position, Callable<Void> func) {
+    public void addButton(String buttonText, Position position, Action action, Callable<Void> func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
@@ -114,6 +124,18 @@ public class GenericPopup extends AnchorPane {
                 //Todo catch this
             }
         });
+
+        switch (action) {
+            case DEFAULT:
+                button.setDefaultButton(true);
+                break;
+            case CANCEL:
+                button.setCancelButton(true);
+                break;
+            case NONE:
+                break;
+        }
+
         switch (position) {
             case LEFT:
                 hBoxLeft.getChildren().add(button);
@@ -200,8 +222,8 @@ public class GenericPopup extends AnchorPane {
      * @param cancelFunction The function you want to call on cancel button click
      */
     public void addOkCancelButtons(Callable<Void> okFunction, Callable<Void> cancelFunction) {
-        addButton("Cancel", Position.RIGHT, cancelFunction);
-        addButton("OK", Position.RIGHT, okFunction);
+        addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
+        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
     /***
@@ -209,6 +231,6 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction Function to call on ok button being clicked.
      */
     public void addOkButton(Callable<Void> okFunction) {
-        addButton("OK", Position.RIGHT, okFunction);
+        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }
