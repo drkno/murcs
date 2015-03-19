@@ -24,30 +24,26 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
     /**
      * Saves the edit being edited
      */
-    public void update() throws Exception {
-        labelErrorMessage.setText("");
-        edit.setShortName(personNameTextField.getText());
-        edit.setUserId(usernameTextField.getText());
+    public void update() {
 
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-        //If we haven't added the edit yet, throw them in the list of unassigned people
-        if (!model.getPeople().contains(edit))
-            model.addPerson(edit);
-
-        //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.call();
-    }
-
-    /**
-     * Updates the object in memory and handles any exception that might be thrown
-     */
-    private void updateAndHandle(){
         try {
-            update();
+            labelErrorMessage.setText("");
+            edit.setShortName(personNameTextField.getText());
+            edit.setUserId(usernameTextField.getText());
+
+            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+
+            //If we haven't added the edit yet, throw them in the list of unassigned people
+            if (!model.getPeople().contains(edit))
+                model.addPerson(edit);
+
+            //If we have a saved callBack, call it
+            if (onSaved != null)
+                onSaved.call();
+
         }catch (Exception e){
-            this.labelErrorMessage.setText(e.getMessage());
+            labelErrorMessage.setText(e.getMessage());
+            return;
         }
     }
 
@@ -57,17 +53,17 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
     public void load(){
         personNameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
-        updateAndHandle();
+        update();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) update();
         });
 
         usernameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateAndHandle();
+            if (o && !n)  update();
         });
     }
 }

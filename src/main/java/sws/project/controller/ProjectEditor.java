@@ -26,39 +26,34 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     /**
      * Creates a new or updates the current edit being edited.
      */
-    public void update() throws Exception {
-        labelErrorMessage.setText("");
-        edit.setShortName(projectTextFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(descriptionTextField.getText());
-
-
-        //This line will need to be changed if we support multiple projects
-        //What we're trying to do here is check if the current edit already exist
-        //or if we're creating a new one.
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null || model.getProject() != edit) {
-            if (PersistenceManager.Current.getCurrentModel() == null) {
-                model = new RelationalModel();
-            }
-            model.setProject(edit);
-
-            PersistenceManager.Current.setCurrentModel(model);
-        }
-
-        //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.call();
-    }
-
-    /**
-     * Updates the object in memory and handles any exception that might be thrown
-     */
-    private void updateAndHandle(){
+    public void update() {
         try {
-            update();
+            labelErrorMessage.setText("");
+            edit.setShortName(projectTextFieldShortName.getText());
+            edit.setLongName(textFieldLongName.getText());
+            edit.setDescription(descriptionTextField.getText());
+
+
+            //This line will need to be changed if we support multiple projects
+            //What we're trying to do here is check if the current edit already exist
+            //or if we're creating a new one.
+            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            if (model == null || model.getProject() != edit) {
+                if (PersistenceManager.Current.getCurrentModel() == null) {
+                    model = new RelationalModel();
+                }
+                model.setProject(edit);
+
+                PersistenceManager.Current.setCurrentModel(model);
+            }
+
+            //If we have a saved callBack, call it
+            if (onSaved != null)
+                onSaved.call();
+
         }catch (Exception e){
-            this.labelErrorMessage.setText(e.getMessage());
+            labelErrorMessage.setText(e.getMessage());
+            return;
         }
     }
 
@@ -69,21 +64,21 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
         projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
-        updateAndHandle();
+        update();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) update();
         });
 
         textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateAndHandle();
+            if (o && !n)  update();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateAndHandle();
+            if (o && !n)  update();
         });
     }
 }

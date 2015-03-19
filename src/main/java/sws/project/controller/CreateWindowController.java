@@ -42,15 +42,6 @@ public class CreateWindowController {
 
         Stage stage = (Stage)contentPane.getScene().getWindow();
         stage.close();
-
-        //removeChanges(pane);
-    }
-
-    private void removeChanges(GridPane contentPane) {
-        if (JavaFXHelpers.getByID(contentPane, "personNameTextField") != null) {
-            String text = ((TextField)JavaFXHelpers.getByID(contentPane, "personNameTextField")).getText();
-            if (!text.equals("")) PersistenceManager.Current.getCurrentModel().removePersonWithName(text);
-        }
     }
 
     @FXML

@@ -32,8 +32,8 @@ public abstract class GenericEditor<T>{
     public abstract void load();
 
     /**
-     * Called when attempting to save the object
-     * @throws Exception
+     * Updates the model in the form
+     * @throws Exception Any exceptions within the form
      */
     public abstract void update() throws Exception;
 }
