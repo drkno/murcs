@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 public class ProjectEditor extends GenericEditor<Project> implements Initializable {
 
     @FXML
-    private TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
     private Label labelErrorMessage;
@@ -26,9 +26,10 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     /**
      * Creates a new or updates the current edit being edited.
      */
-    private void updateProject() {
+    public void update() {
         try {
-            edit.setShortName(textFieldShortName.getText());
+            labelErrorMessage.setText("");
+            edit.setShortName(projectTextFieldShortName.getText());
             edit.setLongName(textFieldLongName.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -60,23 +61,27 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
      * Loads the edit into the form
      */
     public void load(){
-        textFieldShortName.setText(edit.getShortName());
+        projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
+        update();
     }
 
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateProject();
+        projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
         textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateProject();
+            if (o && !n)  update();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  updateProject();
+            if (o && !n)  update();
         });
     }
 }

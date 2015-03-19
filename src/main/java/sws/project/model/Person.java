@@ -5,6 +5,7 @@ import sws.project.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Model of a person.
@@ -101,7 +102,7 @@ public class Person extends Model {
 
         Person other = (Person)object;
 
-        return other.getUserId() != null && other.getUserId().equals(getUserId());
+        return other.getUserId() != null && Objects.equals(other.getUserId(), getUserId());
 
     }
 }

@@ -27,7 +27,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private VBox teamMembersContainer;
 
     @FXML
-    private TextField nameTextField, longNameTextField, descriptionTextField;
+    private TextField teamNameTextField, longNameTextField, descriptionTextField;
 
     @FXML
     private ComboBox<Person> addTeamMemberPicker, productOwnerPicker, scrumMasterPicker;
@@ -41,10 +41,11 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     /**
      * Saves the team being edited
      */
-    private void saveTeam() {
+    public void update() {
         if (!intialized || !loaded) return;
         try {
-            edit.setShortName(nameTextField.getText());
+            labelErrorMessage.setText("");
+            edit.setShortName(teamNameTextField.getText());
             edit.setLongName(longNameTextField.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -79,7 +80,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
      * Loads the team into the form
      */
     public void load(){
-        nameTextField.setText(edit.getShortName());
+        teamNameTextField.setText(edit.getShortName());
         longNameTextField.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
 
@@ -101,6 +102,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
         //Set the loaded flag
         loaded = true;
+        //update();
     }
 
     /**
@@ -127,7 +129,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
-            saveTeam();
+            update();
         });
 
         GridPane pane = new GridPane();
@@ -149,20 +151,20 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) saveTeam();
+        teamNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
         longNameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+            if (o && !n)  update();
         });
 
         descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  saveTeam();
+            if (o && !n)  update();
         });
 
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> update());
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> update());
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -170,7 +172,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
                 // we cant do anything about it at the moment
                 System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
                         "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
-                saveTeam();
+                update();
             }
         });
 

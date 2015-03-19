@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.project.model.Model;
+import sws.project.model.persistence.PersistenceManager;
 import sws.project.view.App;
 
 import java.util.HashMap;
@@ -21,15 +22,19 @@ public class EditorHelper {
     /**
      * Creates a new form for creating a new object of the specified type
      * @param clazz The type of object to create
-     * @param okay Called when the object is successully created
+     * @param updated Called when the object is successully updated
      */
-    public static void createNew(Class<? extends Model> clazz, Callable<Void> okay){
+    public static void createNew(Class<? extends Model> clazz, Callable<Void> updated){
         try {
             ModelTypes type = ModelTypes.getModelType(clazz);
             Model newModel = clazz.newInstance();
 
-            Node content = getEditForm(newModel, okay);
-            Parent root = CreateWindowController.newCreateNode(content, okay, null);
+            Node content = getEditForm(newModel, updated);
+            Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
+                PersistenceManager.Current.getCurrentModel().remove(newModel);
+                updated.call();
+                return null;
+            });
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
