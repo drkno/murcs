@@ -51,6 +51,7 @@ public class PersonEditor extends GenericEditor<Person> implements Initializable
      * Loads the edit into the form
      */
     public void load(){
+        labelErrorMessage.setText("");
         personNameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
         update();

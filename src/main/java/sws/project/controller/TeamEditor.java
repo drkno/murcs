@@ -105,7 +105,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
 
         //Set the loaded flag
         loaded = true;
-        update();
+        //update();
     }
 
     /**
