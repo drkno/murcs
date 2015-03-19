@@ -3,25 +3,174 @@
 	{
 		"selected_items":
 		[
+			[
+				"in",
+				"includegraphics[options]{name}	latex-document"
+			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "main.tex",
+			"settings":
+			{
+				"buffer_size": 880,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.sublime-project",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"sid",
+				"View: Toggle Side Bar"
+			],
+			[
+				"side",
+				"View: Toggle Side Bar"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"set syntax la",
+				"Set Syntax: LaTeXing"
+			],
+			[
+				"lat",
+				"Set Syntax: LaTeX"
+			],
+			[
+				"cle",
+				"Build: Clean up Files"
+			],
+			[
+				"alt",
+				"Set Syntax: LaTeXing"
+			],
+			[
+				"bui",
+				"Build: Build"
+			],
+			[
+				"latxing bu",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"la",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"rem",
+				"Package Control: Remove Package"
+			],
+			[
+				"latex",
+				"Set Syntax: LaTeX"
+			],
+			[
+				"buil",
+				"Set Syntax: NAnt Build File"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"op",
+				"LaTeXing: Open PDF"
+			],
+			[
+				"clean",
+				"Build: Clean up Files"
+			],
+			[
+				"opn",
+				"LaTeXing: Open PDF"
+			],
+			[
+				"cl",
+				"Build: Clean up Files"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"buu",
+				"Build: Build"
+			],
+			[
+				"pdf",
+				"LaTeXing: Open PDF"
+			],
+			[
+				"clea",
+				"Build: Clean up Files"
+			],
+			[
+				"build",
+				"Build: Build"
+			],
+			[
+				"late",
+				"LaTeXing: Jump To PDF"
+			],
+			[
+				"latex ",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"latex cl",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"latexing:cl",
+				"LaTeXing: Clean up (Remove) all Nonessential Files"
+			],
+			[
+				"latexing op",
+				"LaTeXing: Open PDF"
+			],
+			[
+				"latexing r",
+				"LaTeXing: Rebuild Cache"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			]
 		],
-		"width": 0.0
+		"width": 467.0
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 126.0,
 		"history":
 		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
 		]
 	},
 	"distraction_free":
@@ -35,6 +184,21 @@
 	},
 	"file_history":
 	[
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/troubleshooting.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/title.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/preface.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/main.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/main.pdf",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/glossary.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/functionality.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/faq.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/contact_info.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/copyright.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/cover.tex",
+		"/Users/dvanwichen/IdeaProjects/project-1/doc/user_guide/cover.aux",
+		"/Users/dvanwichen/IdeaProjects/project-1/src/main/java/sws/project/controller/AppController.java",
+		"/Users/dvanwichen/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/dvanwichen/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings"
 	],
 	"find":
 	{
@@ -69,8 +233,65 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "main.tex",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 880,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								168,
+								168
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/LaTeXing/support/LaTeX.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "main.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -80,7 +301,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 31.0
 	},
 	"layout":
 	{
@@ -143,12 +364,12 @@
 	"settings":
 	{
 	},
-	"show_minimap": true,
-	"show_open_files": false,
+	"show_minimap": false,
+	"show_open_files": true,
 	"show_tabs": true,
-	"side_bar_visible": true,
+	"side_bar_visible": false,
 	"side_bar_width": 150.0,
-	"status_bar_visible": true,
+	"status_bar_visible": false,
 	"template_settings":
 	{
 	}
