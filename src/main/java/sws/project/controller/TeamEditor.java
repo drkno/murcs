@@ -3,10 +3,7 @@ package sws.project.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -33,7 +30,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     private TextField nameTextField, longNameTextField, descriptionTextField;
 
     @FXML
-    private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ComboBox<Person> addTeamMemberPicker, productOwnerPicker, scrumMasterPicker;
 
     @FXML
     private Label labelErrorMessage;
@@ -58,7 +55,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
                 edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
             }
 
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
             //If we haven't added the team yet, throw them in the list of unassigned people
             if (!model.getTeams().contains(edit))
@@ -168,7 +165,13 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) saveTeam();
+            if (newValue != null) {
+                // due to a bug in javafx, this prints a stack trace to the console.
+                // we cant do anything about it at the moment
+                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
+                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
+                saveTeam();
+            }
         });
 
         intialized = true;
