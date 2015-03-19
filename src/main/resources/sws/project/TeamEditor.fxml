@@ -45,7 +45,7 @@
                         <Label text="Product Owner" />
                         <AnchorPane>
                            <children>
-                              <ChoiceBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <ComboBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </children>
@@ -58,7 +58,7 @@
                         <Label text="Scrum Master" />
                         <AnchorPane>
                            <children>
-                              <ChoiceBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
+                              <ComboBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
                            </children>
                         </AnchorPane>
                      </children>
@@ -77,7 +77,7 @@
                         </Text>
                         <AnchorPane>
                            <children>
-                              <ChoiceBox fx:id="addTeamMemberPicker" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <ComboBox fx:id="addTeamMemberPicker" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </children>
