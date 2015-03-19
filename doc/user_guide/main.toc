@@ -1,9 +1,0 @@
-\contentsline {section}{\numberline {1}Cover}{1}
-\contentsline {section}{\numberline {2}Copyright}{3}
-\contentsline {section}{\numberline {3}Preface}{4}
-\contentsline {section}{\numberline {4}Functionality}{6}
-\contentsline {section}{\numberline {5}Troubleshooting}{7}
-\contentsline {section}{\numberline {6}Frequently Asked Questions}{8}
-\contentsline {section}{\numberline {7}Contact Information}{9}
-\contentsline {subsection}{\numberline {7.1}Testing}{9}
-\contentsline {section}{\numberline {8}Glossary}{10}
