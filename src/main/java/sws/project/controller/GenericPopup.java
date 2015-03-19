@@ -111,6 +111,7 @@ public class GenericPopup extends AnchorPane {
      * @param buttonText The text on the button.
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
+     * @param action Default action for button
      */
     public void addButton(String buttonText, Position position, Action action, Callable<Void> func) {
         Button button = new Button(buttonText);
