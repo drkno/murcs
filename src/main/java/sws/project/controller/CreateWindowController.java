@@ -26,7 +26,8 @@ public class CreateWindowController {
         GridPane pane = contentPane;
         if (cancelClicked != null) try {
             cancelClicked.call();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -42,7 +43,8 @@ public class CreateWindowController {
                 if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
                     return;
                 okayClicked.call();
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }
