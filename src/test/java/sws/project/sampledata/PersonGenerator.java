@@ -35,8 +35,11 @@ public class PersonGenerator implements Generator<Person> {
         for (int i = 0; i < skillCount; ++i)
             skills.add(skillGenerator.generate());
 
-        p.setUserId(userId);
-
+        try {
+            p.setUserId(userId);
+        } catch (Exception e) {
+            return null;
+        }
         try {
             p.setShortName(shortName);
         }

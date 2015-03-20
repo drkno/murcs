@@ -51,7 +51,10 @@ public class Person extends Model {
      * Sets the user id
      * @param userId The new user id
      */
-    public void setUserId(String userId) {
+    public void setUserId(String userId) throws Exception {
+        if (userId == null || userId.isEmpty()) {
+            throw new Exception("User ID cannot be empty");
+        }
         this.userId = userId;
         saveCurrentState("User Id change");
     }

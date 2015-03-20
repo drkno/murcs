@@ -77,7 +77,6 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
             update();
-            load();
         });
 
         GridPane pane = new GridPane();
