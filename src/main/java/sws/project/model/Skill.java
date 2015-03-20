@@ -13,7 +13,6 @@ public class Skill extends Model {
      */
     public static final String SM_NAME = "SM";
 
-
     private String description;
 
     /**
