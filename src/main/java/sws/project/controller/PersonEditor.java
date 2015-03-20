@@ -72,7 +72,7 @@ public class PersonEditor extends GenericEditor<Person> {
      * @return the node representing the team member
      */
     private Node generateSkillNode(final Skill skill) {
-        Text nameText = new Text(skill + "");
+        Text nameText = new Text(skill.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);

@@ -73,11 +73,11 @@ public class ProjectEditor extends GenericEditor<Project> {
         });
 
         textFieldLongName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  update();
+            if (oldValue && !newValue) update();
         });
 
         descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  update();
+            if (oldValue && !newValue) update();
         });
     }
 }
