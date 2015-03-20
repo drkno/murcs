@@ -57,7 +57,6 @@ public class Skill extends Model {
 
     /**
      * Returns the short name of the skill
-     *
      * @return Short name of the skill
      */
     @Override
