@@ -52,7 +52,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
-            e.printStackTrace();
+            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
         }
     }
 
@@ -256,7 +256,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Tries to add the object to the model
      * @param model the object to add to the model
-     * @throws sws.project.exceptions.DuplicateObjectException Because you did something silly, like try to add an object that already exists
+     * @throws sws.project.exceptions.DuplicateObjectException because you did something silly, like try to add an object that already exists
      */
     public void add(Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);

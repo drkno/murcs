@@ -68,7 +68,6 @@ public class PersonEditor extends GenericEditor<Person> {
 
     /**
      * Generates a node for a team member
-     *
      * @param skill The team member
      * @return the node representing the team member
      */

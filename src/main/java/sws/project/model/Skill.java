@@ -3,7 +3,6 @@ package sws.project.model;
 /**
  * Model of a skill.
  */
-
 public class Skill extends Model {
 
     private String description;

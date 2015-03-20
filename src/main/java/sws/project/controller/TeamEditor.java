@@ -59,8 +59,7 @@ public class TeamEditor extends GenericEditor<Team> {
             if (onSaved != null)
                 onSaved.call();
 
-            //Load the team again, to make sure everything is updated. We could probably do this
-            //more nicely
+            //Load the team again, to make sure everything is updated. We could probably do this better
             load();
 
         }
