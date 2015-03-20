@@ -1,24 +1,20 @@
 package sws.project.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 /**
  * Controller for the edit creator popup window.
  * Since there should only be one instance of this PopUp
  */
-public class ProjectEditor extends GenericEditor<Project> implements Initializable {
+public class ProjectEditor extends GenericEditor<Project> {
 
     @FXML
-    private TextField textFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
     private Label labelErrorMessage;
@@ -26,9 +22,10 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     /**
      * Creates a new or updates the current edit being edited.
      */
-    private void updateProject() {
+    public void update() {
         try {
-            edit.setShortName(textFieldShortName.getText());
+            labelErrorMessage.setText("");
+            edit.setShortName(projectTextFieldShortName.getText());
             edit.setLongName(textFieldLongName.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -50,33 +47,37 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
             if (onSaved != null)
                 onSaved.call();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
-            return;
         }
     }
 
     /**
      * Loads the edit into the form
      */
-    public void load() {
-        textFieldShortName.setText(edit.getShortName());
+    public void load(){
+        projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
+        update();
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateProject();
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
+    @FXML
+    public void initialize() {
+        projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
-        textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n) updateProject();
+        textFieldLongName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue)  update();
         });
 
-        descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n) updateProject();
+        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue)  update();
         });
     }
 }

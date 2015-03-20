@@ -9,6 +9,7 @@ import javafx.stage.WindowEvent;
 import sws.project.controller.AppClosingListener;
 import sws.project.magic.tracking.TrackableObject;
 import sws.project.model.RelationalModel;
+import sws.project.magic.tracking.UndoRedoManager;
 import sws.project.model.persistence.PersistenceManager;
 import sws.project.model.persistence.loaders.FilePersistenceLoader;
 
@@ -75,7 +76,7 @@ public class App extends Application{
         PersistenceManager.Current.setCurrentModel(new RelationalModel());
 
         launch(args);
-        TrackableObject.destroy();
+        UndoRedoManager.destroy();
     }
 }
 

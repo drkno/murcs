@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
  * A generic class for making editing easier
  */
 public abstract class GenericEditor<T>{
-    protected T edit;
+    public T edit;
     protected Callable<Void> onSaved;
 
     /**
@@ -19,7 +19,7 @@ public abstract class GenericEditor<T>{
 
     /**
      * Sets the callback that is fired when the object is saved
-     * @param onSaved
+     * @param onSaved callback to set
      */
     public void setSavedCallback(Callable<Void> onSaved){
         this.onSaved = onSaved;
@@ -30,4 +30,10 @@ public abstract class GenericEditor<T>{
      * are up to the user
      */
     public abstract void load();
+
+    /**
+     * Updates the model in the form
+     * @throws Exception Any exceptions within the form
+     */
+    public abstract void update() throws Exception;
 }
