@@ -51,6 +51,7 @@ public class Person extends Model {
     /**
      * Sets the user id
      * @param userId The new user id
+     * @throws java.lang.Exception User id is invalid
      */
     public void setUserId(String userId) throws Exception {
         if (userId == null || userId.isEmpty()) {
