@@ -1,6 +1,5 @@
 package sws.project.controller;
 
-
 import sws.project.model.Model;
 
 /**
