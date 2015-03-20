@@ -12,6 +12,7 @@ import sws.project.view.App;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
@@ -26,26 +27,33 @@ public class EditorHelper {
      */
     public static void createNew(Class<? extends Model> clazz, Callable<Void> updated){
         try {
-            ModelTypes type = ModelTypes.getModelType(clazz);
+            String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
+
+            // This is a simple cheat because I am lazy
+            // DW
+            if (Objects.equals(type, "People")) {
+                type = "Person";
+            }
 
             Node content = getEditForm(newModel, updated);
             Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.call();
+                //updated.call();
                 return null;
             });
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
             newStage.setScene(scene);
-            newStage.setTitle("Create " + type.toString());
+            newStage.setTitle("Create " + type);
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
 
             newStage.show();
-        }catch (Exception e){
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }

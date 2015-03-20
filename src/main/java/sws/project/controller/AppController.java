@@ -412,11 +412,51 @@ public class AppController implements Initializable {
         try {
             if (clazz != null) {
                 EditorHelper.createNew(clazz, () -> {
+                    // Callback after creating the new clazz,
+                    // change the selected type if the type has changed
+                    // then select the item that was just created
                     updateDisplayList();
                     return null;
                 });
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDisplayListAfterCreation(Class <? extends Model> clazz) {
+        try {
+            Model newModel = clazz.newInstance();
+            ModelTypes type = ModelTypes.getModelType(clazz);
+
+            int selectedItem = displayList.getSelectionModel().getSelectedIndex();
+            if (selectedItem != -1)
+                displayList.getSelectionModel().clearSelection(selectedItem);
+
+            displayListItems.clear();
+
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
+            if (model == null) return;
+            switch (type) {
+                case Project:
+                    Project project = model.getProject();
+                    if (project != null) {
+                        displayListItems.add(project);
+                        displayList.getSelectionModel().select(project);
+                    }
+                    break;
+                case People:
+                    displayListItems.addAll(model.getPeople());
+                    break;
+                case Team:
+                    displayListItems.addAll(model.getTeams());
+                    break;
+                case Skills:
+                    displayListItems.addAll(model.getSkills());
+                    break;
+            }
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
