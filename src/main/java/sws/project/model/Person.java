@@ -31,7 +31,7 @@ public class Person extends Model {
     public boolean canBeRole(String role){
         return getSkills()
                 .stream()
-                .filter(skill -> skill.toString().equals(role))
+                .filter(skill -> skill.getShortName().equals(role))
                 .findFirst()
                 .isPresent();
     }

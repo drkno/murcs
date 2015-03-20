@@ -4,6 +4,14 @@ package sws.project.model;
  * Model of a skill.
  */
 public class Skill extends Model {
+    /**
+     * The short name for the product owner
+     */
+    public static final String PO_NAME = "PO";
+    /**
+     * The short name for a scrum master
+     */
+    public static final String SM_NAME = "SM";
 
     private String description;
 
@@ -12,6 +20,7 @@ public class Skill extends Model {
      *
      * @return the description
      */
+
     public String getDescription() {
         return description;
     }
@@ -25,22 +34,30 @@ public class Skill extends Model {
         this.description = description;
     }
 
+    /**
+     * Indicates whether the skill means you can be a scrum master
+     * @return Whether you can be a scrum master
+     */
+    public boolean isScrumMasterSkill(){
+        return SM_NAME.equals(getShortName());
+    }
+
+    /**
+     * Indicates whether the skill means you can be a product owner
+     * @return Whether you can be a product owner
+     */
+    public boolean isProductOwnerSkill(){
+        return PO_NAME.equals(getShortName());
+    }
+
     @Override
     public boolean equals(Object object) {
         return object instanceof Skill && ((Skill) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 
     /**
-     * Possible roles of a team.
-     */
-    public enum Role {
-        ScrumMaster,
-        Developer,
-        PO,
-    }
-
-    /**
      * Returns the short name of the skill
+     *
      * @return Short name of the skill
      */
     @Override
