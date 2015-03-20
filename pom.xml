@@ -113,38 +113,6 @@
                         <goal>latex</goal>
                     </goals>
                 </execution>
-                <execution>
-                    <id>HTML multipage</id>
-                    <configuration>
-                        <settings>
-                            <outputDirectory>reference/html_multipage</outputDirectory>
-                            <tex4htCommandArgs>
-                                <tex4htCommandArg>tex4ht,2</tex4htCommandArg>
-                                <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
-                            </tex4htCommandArgs>
-                        </settings>
-                    </configuration>
-                    <phase>site</phase>
-                    <goals>
-                        <goal>tex4ht</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>HTML singlepage</id>
-                    <configuration>
-                        <settings>
-                            <outputDirectory>reference/html_singlepage</outputDirectory>
-                            <tex4htCommandArgs>
-                                <tex4htCommandArg>tex4ht,1</tex4htCommandArg>
-                                <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
-                            </tex4htCommandArgs>
-                        </settings>
-                    </configuration>
-                    <phase>site</phase>
-                    <goals>
-                        <goal>tex4ht</goal>
-                    </goals>
-                </execution>
             </executions>
         </plugin>
     </plugins>
@@ -158,6 +126,18 @@
                 <configuration>
                     <show>private</show>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.14</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>checkstyle</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>
