@@ -13,8 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.project.model.Person;
 import sws.project.model.RelationalModel;
+import sws.project.model.Skill;
 import sws.project.model.Team;
 import sws.project.model.persistence.PersistenceManager;
+
+import java.util.ArrayList;
 
 /**
  * The controller for the team editor
@@ -86,12 +89,22 @@ public class TeamEditor extends GenericEditor<Team> {
             teamMembersContainer.getChildren().add(node);
         }
 
+        ArrayList<Person> productOwners = new ArrayList<>();
+        //Add all the people with the PO skill to the list of PO's
+        edit.getMembers().stream().filter(p -> p.canBeRole(Skill.PO_NAME)).forEach(p -> productOwners.add(p));
+        productOwners.remove(edit.getScrumMaster());
+
         productOwnerPicker.getItems().clear();
-        productOwnerPicker.getItems().addAll(edit.getMembers());
+        productOwnerPicker.getItems().addAll(productOwners);
         productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
 
+        ArrayList<Person> scrumMasters = new ArrayList<>();
+        //Add all the people with the scrum master skill to the list of scrum masters's
+        edit.getMembers().stream().filter(p -> p.canBeRole(Skill.SM_NAME)).forEach(p -> scrumMasters.add(p));
+        scrumMasters.remove(edit.getProductOwner());
+
         scrumMasterPicker.getItems().clear();
-        scrumMasterPicker.getItems().addAll(edit.getMembers());
+        scrumMasterPicker.getItems().addAll(scrumMasters);
         scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
     }
 
