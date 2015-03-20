@@ -27,6 +27,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import static javafx.scene.control.ListView.*;
+
 /**
  * Main app class controller
  */
@@ -96,11 +98,7 @@ public class AppController implements Initializable {
 
         updateUndoRedoMenuItems(null);
 
-        UndoRedoManager.addSavedListener(change -> {
-            Platform.runLater(() -> {
-                updateUndoRedoMenuItems(change);
-            });
-        });
+        UndoRedoManager.addSavedListener(change -> Platform.runLater(() -> updateUndoRedoMenuItems(change)));
     }
 
     /**
@@ -129,7 +127,7 @@ public class AppController implements Initializable {
                 Project project = model.getProject();
                 if (project != null) {
                     displayListItems.add(project);
-                    displayList.getSelectionModel().select(project);
+                    //displayList.getSelectionModel().select(project);
                 }
                 break;
             case People:
@@ -202,7 +200,7 @@ public class AppController implements Initializable {
     private void createNewProject(ActionEvent event) {
         if (!UndoRedoManager.canUndo()) {
             EditorHelper.createNew(Project.class, () -> {
-                updateDisplayList(ModelTypes.Project);
+                updateDisplayList();
                 return null;
             });
         }
