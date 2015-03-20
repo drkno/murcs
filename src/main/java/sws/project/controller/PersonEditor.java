@@ -36,15 +36,15 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     public void initialize() {
         nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) savePerson();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         usernameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n) savePerson();
+            if (o && !n) updateAndHandle();
         });
 
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) savePerson();
+            if (newValue != null) updateAndHandle();
         });
     }
 
@@ -76,8 +76,7 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
-            savePerson();
-            load();
+            updateAndHandle();
         });
 
         GridPane pane = new GridPane();
@@ -97,32 +96,43 @@ public class PersonEditor extends GenericEditor<Person> {
         return pane;
     }
 
-    private void savePerson() {
-
+    /**
+     * Updates the object in memory and handles any exceptions
+     */
+    private void updateAndHandle() {
         try {
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-            edit.setShortName(nameTextField.getText());
-            edit.setUserId(usernameTextField.getText());
-
-            Skill selectedSkill = skillChoiceBox.getValue();
-
-            if (selectedSkill != null) {
-                generateSkillNode(selectedSkill);
-                edit.addSkill(selectedSkill);
-            }
-
-            // Save the person if it hasn't been yet
-            if (!model.getPeople().contains(edit))
-                model.addPerson(edit);
-
-            // Call the callback if it exists
-            if (onSaved != null)
-                onSaved.call();
+            update();
         } catch (Exception e) {
             errorMessageLabel.setText(e.getMessage());
-        } finally {
-            load();
         }
+    }
+
+    /**
+     * Updates the object in memory
+     *
+     * @throws Exception
+     */
+    public void update() throws Exception {
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        edit.setShortName(nameTextField.getText());
+        edit.setUserId(usernameTextField.getText());
+
+        Skill selectedSkill = skillChoiceBox.getValue();
+
+        if (selectedSkill != null) {
+            generateSkillNode(selectedSkill);
+            edit.addSkill(selectedSkill);
+        }
+
+        // Save the person if it hasn't been yet
+        if (!model.getPeople().contains(edit))
+            model.addPerson(edit);
+
+        // Call the callback if it exists
+        if (onSaved != null)
+            onSaved.call();
+
+        load();
     }
 }
