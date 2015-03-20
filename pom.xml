@@ -86,9 +86,73 @@
                 </execution>
             </executions>
         </plugin>
+        <plugin>
+            <groupId>de.akquinet.maven</groupId>
+            <artifactId>maven-latex-plugin</artifactId>
+            <version>1.2</version>
+            <inherited>false</inherited>
+            <configuration>
+                <settings>
+                    <!-- all tex main documents in this folder (including subfolders) will be processed -->
+                    <texDirectory>${basedir}/doc/user_guide</texDirectory>
+                </settings>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>site</phase>
+                    <goals>
+                        <goal>latex</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>HTML multipage</id>
+                    <configuration>
+                        <settings>
+                            <outputDirectory>reference/html_multipage</outputDirectory>
+                            <tex4htCommandArgs>
+                                <tex4htCommandArg>tex4ht,2</tex4htCommandArg>
+                                <tex4htCommandArg></tex4htCommandArg>
+                                <tex4htCommandArg></tex4htCommandArg>
+                                <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
+                            </tex4htCommandArgs>
+                        </settings>
+                    </configuration>
+                    <phase>site</phase>
+                    <goals>
+                        <goal>tex4ht</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>HTML singlepage</id>
+                    <configuration>
+                        <settings>
+                            <outputDirectory>reference/html_singlepage</outputDirectory>
+                            <tex4htCommandArgs>
+                                <tex4htCommandArg>tex4ht,1</tex4htCommandArg>
+                                <tex4htCommandArg></tex4htCommandArg>
+                                <tex4htCommandArg></tex4htCommandArg>
+                                <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
+                            </tex4htCommandArgs>
+                        </settings>
+                    </configuration>
+                    <phase>site</phase>
+                    <goals>
+                        <goal>tex4ht</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
     </build>
-    <reporting>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-latex-plugin-repo</id>
+            <url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>    <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -97,62 +161,6 @@
                 <configuration>
                     <show>private</show>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>de.akquinet.maven</groupId>
-                <artifactId>maven-latex-plugin</artifactId>
-                <version>1.2</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <settings>
-                        <!-- all tex main documents in this folder (including subfolders) will be processed -->
-                        <texDirectory>${basedir}/doc/user_guide</texDirectory>
-                    </settings>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>site</phase>
-                        <goals>
-                            <goal>latex</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>HTML multipage</id>
-                        <configuration>
-                            <settings>
-                                <outputDirectory>reference/html_multipage</outputDirectory>
-                                <tex4htCommandArgs>
-                                    <tex4htCommandArg>tex4ht,2</tex4htCommandArg>
-                                    <tex4htCommandArg></tex4htCommandArg>
-                                    <tex4htCommandArg></tex4htCommandArg>
-                                    <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
-                                </tex4htCommandArgs>
-                            </settings>
-                        </configuration>
-                        <phase>site</phase>
-                        <goals>
-                            <goal>tex4ht</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>HTML singlepage</id>
-                        <configuration>
-                            <settings>
-                                <outputDirectory>reference/html_singlepage</outputDirectory>
-                                <tex4htCommandArgs>
-                                    <tex4htCommandArg>tex4ht,1</tex4htCommandArg>
-                                    <tex4htCommandArg></tex4htCommandArg>
-                                    <tex4htCommandArg></tex4htCommandArg>
-                                    <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
-                                </tex4htCommandArgs>
-                            </settings>
-                        </configuration>
-                        <phase>site</phase>
-                        <goals>
-                            <goal>tex4ht</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </reporting>
@@ -165,15 +173,6 @@
             </snapshots>
         </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>maven-latex-plugin-repo</id>
-            <url>http://akquinet.github.com/maven-latex-plugin/maven2/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
     <dependencies>
         <dependency>
             <groupId>commons-lang</groupId>
