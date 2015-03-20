@@ -41,9 +41,11 @@ public class App extends Application{
 
         primaryStage.setTitle("project");
         primaryStage.setOnCloseRequest(e -> notifyListeners(e));
-        //Setting up max and min width of app
+
+        // Set up max and min dimensions of main window.
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(400);
+
         primaryStage.show();
         stage = primaryStage;
     }
@@ -66,7 +68,7 @@ public class App extends Application{
 
     /**
      * Main function for starting the app
-     * @param args Arguements passed into the main function (they're irrelevant currently)
+     * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(String[] args) {
         PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());

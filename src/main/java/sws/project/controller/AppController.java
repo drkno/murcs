@@ -429,6 +429,12 @@ public class AppController implements Initializable {
         final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
         if (selectedIndex == -1) return;
 
+        // Ensures you can't delete Product Owner or Scrum Master
+        Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
+        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills)
+            if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM"))
+                return;
+
         model.remove((Model) displayList.getSelectionModel().getSelectedItem());
         updateDisplayList();
     }

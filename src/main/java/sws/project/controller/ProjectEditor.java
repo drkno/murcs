@@ -1,21 +1,17 @@
 package sws.project.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import sws.project.model.Project;
 import sws.project.model.RelationalModel;
 import sws.project.model.persistence.PersistenceManager;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 /**
  * Controller for the edit creator popup window.
  * Since there should only be one instance of this PopUp
  */
-public class ProjectEditor extends GenericEditor<Project> implements Initializable {
+public class ProjectEditor extends GenericEditor<Project> {
 
     @FXML
     private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
@@ -37,7 +33,7 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
             //This line will need to be changed if we support multiple projects
             //What we're trying to do here is check if the current edit already exist
             //or if we're creating a new one.
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
+            RelationalModel model = PersistenceManager.Current.getCurrentModel();
             if (model == null || model.getProject() != edit) {
                 if (PersistenceManager.Current.getCurrentModel() == null) {
                     model = new RelationalModel();
@@ -51,9 +47,9 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
             if (onSaved != null)
                 onSaved.call();
 
-        }catch (Exception e){
+        }
+        catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
-            return;
         }
     }
 
@@ -70,18 +66,18 @@ public class ProjectEditor extends GenericEditor<Project> implements Initializab
     /**
      * Initializes the editor for use, sets up listeners etc.
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) update();
         });
 
-        textFieldLongName.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  update();
+        textFieldLongName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
-        descriptionTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n)  update();
+        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
     }
 }

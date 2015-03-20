@@ -61,8 +61,8 @@ public class PersonTest {
     @Test
     public void canBeRoleTest() throws Exception {
         person.addSkill(skill);
-        assertTrue(person.canBeRole(Skill.Role.PO));
-        assertFalse(person.canBeRole(Skill.Role.ScrumMaster));
+        assertTrue(person.canBeRole("PO"));
+        assertFalse(person.canBeRole("ScrumMaster"));
     }
 
     @Test

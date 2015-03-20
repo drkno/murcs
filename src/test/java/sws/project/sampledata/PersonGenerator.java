@@ -32,11 +32,14 @@ public class PersonGenerator implements Generator<Person> {
         int skillCount = NameGenerator.random(100);
         ArrayList<Skill> skills = new ArrayList<>();
 
-        for (int i = 0; i < skillCount; ++i)
+        for (int i = 0; i < skillCount; i++)
             skills.add(skillGenerator.generate());
 
-        p.setUserId(userId);
-
+        try {
+            p.setUserId(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         try {
             p.setShortName(shortName);
         }

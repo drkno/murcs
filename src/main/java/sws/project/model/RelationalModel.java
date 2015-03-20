@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * The top level relational model
  */
-public class RelationalModel extends TrackableObject implements Serializable{
+public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
     private Project project;
@@ -23,7 +23,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
     @TrackableValue
     private ArrayList<Skill> skills;
 
-    /***
+    /**
      * Gets the current application version
      * @return The current application version.
      */
@@ -38,6 +38,22 @@ public class RelationalModel extends TrackableObject implements Serializable{
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.project = null;
+
+        try {
+            Skill productOwner = new Skill();
+            productOwner.setShortName("PO");
+            productOwner.setLongName("Product Owner");
+            productOwner.setDescription("has ability to insult design teams efforts");
+            this.skills.add(productOwner);
+
+            Skill scrumMaster = new Skill();
+            scrumMaster.setShortName("SM");
+            scrumMaster.setLongName("Scrum Master");
+            scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
+            this.skills.add(scrumMaster);
+        } catch (Exception e) {
+            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
+        }
     }
 
     /**
@@ -67,7 +83,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
         ArrayList<Team> teams = getTeams();
 
         //Remove all the people who have a team
-        for (Team team : teams){
+        for (Team team : teams) {
             for (Person person : team.getMembers())
                 unassignedPeople.remove(person);
         }
@@ -79,7 +95,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * Gets a list of all people.
      * @return The people
      */
-    public ArrayList<Person> getPeople(){
+    public ArrayList<Person> getPeople() {
         return people;
     }
 
@@ -88,7 +104,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has the person
      */
-    public void addPerson(Person person) throws DuplicateObjectException{
+    public void addPerson(Person person) throws DuplicateObjectException {
         if (!this.getPeople().contains(person) &&
                 !this.getPeople()
                         .stream()
@@ -108,7 +124,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if the relational model already has a person from the people to be addeed
      */
     public void addPeople(List<Person> people) throws DuplicateObjectException {
-        for (Person person: people) {
+        for (Person person : people) {
             this.addPerson(person);
         }
     }
@@ -136,9 +152,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
 
         if (getProject() != null) {
             //Remove all the teams that are assigned to a project
-            for (Team team : project.getTeams()){
-                unassignedTeams.remove(team);
-            }
+            project.getTeams().forEach(unassignedTeams::remove);
         }
 
         return unassignedTeams;
@@ -148,7 +162,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * Gets a list of all teams
      * @return The teams
      */
-    public ArrayList<Team> getTeams(){
+    public ArrayList<Team> getTeams() {
         return teams;
     }
 
@@ -177,7 +191,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
      */
     public void addTeams(List<Team> teams) throws DuplicateObjectException {
-        for (Team team: teams) {
+        for (Team team : teams) {
             this.addTeam(team);
         }
     }
@@ -190,7 +204,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
         if (this.teams.contains(team)) {
             this.teams.remove(team);
 
-            if (this.getProject().getTeams().contains(team))
+            if (getProject() != null && this.getProject().getTeams().contains(team))
                 this.getProject().getTeams().remove(team);
         }
     }
@@ -212,7 +226,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
         if (!skills.contains(skill)) {
             this.skills.add(skill);
         }
-        else throw new DuplicateObjectException();
+        else throw new DuplicateObjectException("Skill already exists");
     }
 
     /**
@@ -221,7 +235,7 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @throws sws.project.exceptions.DuplicateObjectException if a skill is aleady in the relational model
      */
     public void addSkills(List<Skill> skills) throws DuplicateObjectException {
-        for (Skill skill: skills) {
+        for (Skill skill : skills) {
             this.addSkill(skill);
         }
     }
@@ -242,23 +256,23 @@ public class RelationalModel extends TrackableObject implements Serializable{
     /**
      * Tries to add the object to the model
      * @param model the object to add to the model
-     * @throws sws.project.exceptions.DuplicateObjectException Because you did something silly, like try to add an object that already exists
+     * @throws sws.project.exceptions.DuplicateObjectException because you did something silly, like try to add an object that already exists
      */
-    public void add(Model model) throws DuplicateObjectException{
+    public void add(Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);
 
-        switch (type){
+        switch (type) {
             case Project:
-                setProject((Project)model);
+                setProject((Project) model);
                 break;
             case Team:
-                addTeam((Team)model);
+                addTeam((Team) model);
                 break;
             case Skills:
-                addSkill((Skill)model);
+                addSkill((Skill) model);
                 break;
             case People:
-                addPerson((Person)model);
+                addPerson((Person) model);
                 break;
         }
     }
@@ -267,22 +281,22 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * Tries to remove an object from the model
      * @param model the object to remove from the model
      */
-    public void remove(Model model){
+    public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
 
-        switch (type){
+        switch (type) {
             case Project:
                 if (getProject() == model)
                     setProject(null);
                 break;
             case Team:
-                removeTeam((Team)model);
+                removeTeam((Team) model);
                 break;
             case Skills:
-                removeSkill((Skill)model);
+                removeSkill((Skill) model);
                 break;
             case People:
-                removePerson((Person)model);
+                removePerson((Person) model);
                 break;
         }
     }
@@ -292,12 +306,12 @@ public class RelationalModel extends TrackableObject implements Serializable{
      * @param model The model
      * @return Whether it exists
      */
-    public boolean exists(Model model){
+    public boolean exists(Model model) {
         if (model instanceof Project)
             return getProject() == model;
         if (model instanceof Team)
             return getTeams().contains(model);
-        if  (model instanceof Person)
+        if (model instanceof Person)
             return getPeople().contains(model);
         if (model instanceof Skill)
             return getSkills().contains(model);

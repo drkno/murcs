@@ -1,24 +1,14 @@
 package sws.project.controller;
 
-import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import sws.project.model.Person;
-import sws.project.model.persistence.PersistenceManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
 import java.util.concurrent.Callable;
 
 /**
@@ -36,7 +26,8 @@ public class CreateWindowController {
         GridPane pane = contentPane;
         if (cancelClicked != null) try {
             cancelClicked.call();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -46,12 +37,16 @@ public class CreateWindowController {
 
     @FXML
     private void okayButtonClicked(ActionEvent event) {
-        if (okayClicked != null) try {
-            Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
-            if (node != null && node instanceof Label && (!(((Label)node).getText() == null) && !(((Label) node).getText().isEmpty()))) return;
-            okayClicked.call();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (okayClicked != null) {
+            try {
+                Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
+                if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
+                    return;
+                okayClicked.call();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         Stage stage = (Stage)contentPane.getScene().getWindow();
@@ -106,4 +101,5 @@ public class CreateWindowController {
         }
         return null;
     }
+
 }
