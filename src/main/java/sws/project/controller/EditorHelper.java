@@ -79,7 +79,7 @@ public class EditorHelper {
             return parent;
         }
         catch (Exception e){
-            System.err.println("Unable to create a team editor!(this is seriously bad)");
+            System.err.println("Unable to create editor!(this is seriously bad)");
             e.printStackTrace();
         }
 
