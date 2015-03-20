@@ -25,7 +25,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @FXML
     private Label labelErrorMessage;
-    
+
     @FXML
     private ChoiceBox<Skill> skillChoiceBox;
 
@@ -124,7 +124,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
             RelationalModel model= PersistenceManager.Current.getCurrentModel();
             Skill selectedSkill = skillChoiceBox.getValue();
-            
+
             if (selectedSkill != null) {
                 generateSkillNode(selectedSkill);
                 edit.addSkill(selectedSkill);

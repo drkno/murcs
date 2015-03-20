@@ -16,10 +16,8 @@ import sws.project.model.RelationalModel;
 import sws.project.model.Team;
 import sws.project.model.persistence.PersistenceManager;
 
-import java.util.Collection;
-
 /**
- *  The controller for the team editor
+ * The controller for the team editor
  */
 public class TeamEditor extends GenericEditor<Team> {
 
@@ -28,14 +26,10 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML private ComboBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
     @FXML private Label labelErrorMessage;
 
-    private boolean initialized;
-    private boolean loaded;
-
     /**
      * Saves the team being edited
      */
     public void update() {
-        if (!initialized || !loaded) return;
         try {
             labelErrorMessage.setText("");
             edit.setShortName(teamNameTextField.getText());
@@ -83,38 +77,23 @@ public class TeamEditor extends GenericEditor<Team> {
         longNameTextField.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
 
-        teamMembersContainer.getChildren().clear();
-        for (Person p : edit.getMembers()){
-            Node node = generateTeamMemberNode(p);
-            teamMembersContainer.getChildren().add(node);
-        }
-
-        maintainList(productOwnerPicker.getItems(), edit.getMembers());
-        productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
-
-        maintainList(scrumMasterPicker.getItems(), edit.getMembers());
-        scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
-
         //We don't have to maintain the list here, as we want it to clear the selection
         addTeamMemberPicker.getItems().clear();
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
-        //Set the loaded flag
-        loaded = true;
-    }
+        teamMembersContainer.getChildren().clear();
+        for (Person person : edit.getMembers()) {
+            Node node = generateMemberNode(person);
+            teamMembersContainer.getChildren().add(node);
+        }
 
-    /**
-     * Updates a list so it only has items from a second list. This is necessary because
-     * javafx does trippy things when you clear a list and add all the items back to it
-     * @param update The list to update
-     * @param match The list to match
-     */
-    private void maintainList(Collection update, Collection match){
-        //Add all the items in 'match' but not 'update' to 'update'
-        match.stream().filter(p -> !update.contains(p)).forEach(p -> update.add(p));
-        //Remove all the items from 'update' that aren't in 'match'
-        update.stream().filter(p -> !match.contains(p)).forEach(p -> update.remove(p));
+        productOwnerPicker.getItems().clear();
+        productOwnerPicker.getItems().addAll(edit.getMembers());
+        productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
 
+        scrumMasterPicker.getItems().clear();
+        scrumMasterPicker.getItems().addAll(edit.getMembers());
+        scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
     }
 
     /**
@@ -122,8 +101,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * @param person The team member
      * @return the node representing the team member
      */
-    private Node generateTeamMemberNode(final Person person){
-        Text nameText = new Text(person + "");
+    private Node generateMemberNode(final Person person) {
+            Text nameText = new Text(person + "");
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
@@ -176,7 +155,5 @@ public class TeamEditor extends GenericEditor<Team> {
                 update();
             }
         });
-
-        initialized = true;
     }
 }

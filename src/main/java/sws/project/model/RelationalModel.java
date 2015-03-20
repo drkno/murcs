@@ -204,7 +204,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
 
-            if (this.getProject().getTeams().contains(team))
+            if (getProject() != null && this.getProject().getTeams().contains(team))
                 this.getProject().getTeams().remove(team);
         }
     }
