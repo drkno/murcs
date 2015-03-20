@@ -47,6 +47,7 @@ public class SkillEditor extends GenericEditor<Skill> {
      */
     private void updateAndHandle(){
         try {
+            labelErrorMessage.setText("");
             update();
         }catch (Exception e){
             labelErrorMessage.setText(e.getMessage());
