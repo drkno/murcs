@@ -20,6 +20,7 @@ import sws.project.model.persistence.PersistenceManager;
  * Allows you to edit a edit
  */
 public class PersonEditor extends GenericEditor<Person> {
+
     @FXML
     private TextField personNameTextField, usernameTextField;
 
@@ -31,9 +32,6 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @FXML
     private VBox skillVBox;
-
-    @FXML
-    private Label errorMessageLabel;
 
     /**
      * Initializes the editor for use, sets up listeners etc.
