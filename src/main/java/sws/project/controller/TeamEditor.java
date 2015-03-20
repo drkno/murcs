@@ -1,10 +1,9 @@
 package sws.project.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -17,18 +16,16 @@ import sws.project.model.RelationalModel;
 import sws.project.model.Team;
 import sws.project.model.persistence.PersistenceManager;
 
-import java.net.URL;
 import java.util.Collection;
-import java.util.ResourceBundle;
 
 /**
  *  The controller for the team editor
  */
-public class TeamEditor extends GenericEditor<Team> implements Initializable{
+public class TeamEditor extends GenericEditor<Team> {
 
     @FXML private VBox teamMembersContainer;
-    @FXML private TextField nameTextField, longNameTextField, descriptionTextField;
-    @FXML private ChoiceBox productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    @FXML private TextField teamNameTextField, longNameTextField, descriptionTextField;
+    @FXML private ComboBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
     @FXML private Label labelErrorMessage;
 
     private boolean initialized;
@@ -37,10 +34,11 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
     /**
      * Saves the team being edited
      */
-    private void saveTeam() {
+    public void update() {
         if (!initialized || !loaded) return;
         try {
-            edit.setShortName(nameTextField.getText());
+            labelErrorMessage.setText("");
+            edit.setShortName(teamNameTextField.getText());
             edit.setLongName(longNameTextField.getText());
             edit.setDescription(descriptionTextField.getText());
 
@@ -71,7 +69,8 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
             //more nicely
             load();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             labelErrorMessage.setText(e.getMessage());
         }
     }
@@ -80,7 +79,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
      * Loads the team into the form
      */
     public void load(){
-        nameTextField.setText(edit.getShortName());
+        teamNameTextField.setText(edit.getShortName());
         longNameTextField.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
 
@@ -128,7 +127,7 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
-            saveTeam();
+            update();
         });
 
         GridPane pane = new GridPane();
@@ -148,25 +147,34 @@ public class TeamEditor extends GenericEditor<Team> implements Initializable{
         return pane;
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) saveTeam();
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
+    @FXML
+    public void initialize() {
+        teamNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
         longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  saveTeam();
+            if (oldValue && !newValue)  update();
         });
 
         descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  saveTeam();
+            if (oldValue && !newValue)  update();
         });
 
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> saveTeam());
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> update());
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> update());
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) saveTeam();
+            if (newValue != null) {
+                // due to a bug in javafx, this prints a stack trace to the console.
+                // we cant do anything about it at the moment
+                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
+                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
+                update();
+            }
         });
 
         initialized = true;

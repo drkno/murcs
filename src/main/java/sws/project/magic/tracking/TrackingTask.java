@@ -22,7 +22,17 @@ public class TrackingTask extends TimerTask {
 
     @Override
     public void run() {
-        _listeners.forEach(l -> l.run(_change));
+        // notify each of the listeners
+        for (int i = 0; i < _listeners.size(); i++) {
+            try {
+                _listeners.get(i).run(_change);
+            }
+            catch (Exception e) {
+                // remove listeners that don't exist.
+                _listeners.remove(i);
+                i--;
+            }
+        }
         cancel();
     }
 }

@@ -5,6 +5,7 @@ import sws.project.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Model of a person.
@@ -53,7 +54,6 @@ public class Person extends Model {
      */
     public void setUserId(String userId) {
         this.userId = userId;
-        saveCurrentState("User Id change");
     }
 
     /**
@@ -64,7 +64,6 @@ public class Person extends Model {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
-            saveCurrentState("Skill added");
         }
         else {
             throw new DuplicateObjectException("This is actually the same skill");
@@ -89,7 +88,6 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
-            saveCurrentState("Skill removed");
         }
     }
 
@@ -104,7 +102,7 @@ public class Person extends Model {
 
         Person other = (Person)object;
 
-        return other.getUserId() != null && other.getUserId().equals(getUserId());
+        return other.getUserId() != null && Objects.equals(other.getUserId(), getUserId());
 
     }
 }

@@ -17,13 +17,15 @@ import sws.project.model.Skill;
 import sws.project.model.persistence.PersistenceManager;
 
 /**
- *
+ * Allows you to edit a edit
  */
 public class PersonEditor extends GenericEditor<Person> {
+    @FXML
+    private TextField personNameTextField, usernameTextField;
 
     @FXML
-    private TextField nameTextField, usernameTextField;
-
+    private Label labelErrorMessage;
+    
     @FXML
     private ChoiceBox<Skill> skillChoiceBox;
 
@@ -33,36 +35,37 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     private Label errorMessageLabel;
 
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
     @FXML
     public void initialize() {
-        nameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) savePerson();
+        personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
-        usernameTextField.focusedProperty().addListener((p, o, n) -> {
-            if (o && !n) savePerson();
+        usernameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) update();
         });
 
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) savePerson();
+            if (newValue != null) update();
         });
     }
 
+    /**
+     * Loads the team into the form
+     */
     @Override
     public void load() {
-        nameTextField.setText(edit.getShortName());
+        labelErrorMessage.setText("");
+        personNameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
 
-        skillVBox.getChildren().clear();
-        for (Skill skill : edit.getSkills()) {
-            Node node = generateSkillNode(skill);
-            skillVBox.getChildren().add(node);
-            skillChoiceBox.getItems().remove(skill);
-        }
-
+        updateSkills();
     }
 
     /**
@@ -76,7 +79,7 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
-            savePerson();
+            update();
             load();
         });
 
@@ -97,16 +100,31 @@ public class PersonEditor extends GenericEditor<Person> {
         return pane;
     }
 
-    private void savePerson() {
+    /**
+     * Updates the list of skills the person has
+     */
+    private void updateSkills() {
+        skillVBox.getChildren().clear();
+        for (Skill skill : edit.getSkills()) {
+            Node node = generateSkillNode(skill);
+            skillVBox.getChildren().add(node);
+            skillChoiceBox.getItems().remove(skill);
+        }
+    }
+
+    /**
+     * Saves the edit being edited
+     */
+    public void update() {
 
         try {
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-            edit.setShortName(nameTextField.getText());
+            labelErrorMessage.setText("");
+            edit.setShortName(personNameTextField.getText());
             edit.setUserId(usernameTextField.getText());
 
+            RelationalModel model= PersistenceManager.Current.getCurrentModel();
             Skill selectedSkill = skillChoiceBox.getValue();
-
+            
             if (selectedSkill != null) {
                 generateSkillNode(selectedSkill);
                 edit.addSkill(selectedSkill);
@@ -119,10 +137,13 @@ public class PersonEditor extends GenericEditor<Person> {
             // Call the callback if it exists
             if (onSaved != null)
                 onSaved.call();
-        } catch (Exception e) {
-            errorMessageLabel.setText(e.getMessage());
-        } finally {
-            load();
+
+        }
+        catch (Exception e){
+            labelErrorMessage.setText(e.getMessage());
+        }
+        finally {
+            updateSkills();
         }
     }
 }

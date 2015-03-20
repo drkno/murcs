@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -22,6 +23,7 @@ public class CreateWindowController {
 
     @FXML
     private void cancelButtonClicked(ActionEvent event) {
+        GridPane pane = contentPane;
         if (cancelClicked != null) try {
             cancelClicked.call();
         } catch (Exception e) {
@@ -34,10 +36,15 @@ public class CreateWindowController {
 
     @FXML
     private void okayButtonClicked(ActionEvent event) {
-        if (okayClicked != null) try {
-            okayClicked.call();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (okayClicked != null) {
+            try {
+                Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
+                if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
+                    return;
+                okayClicked.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         Stage stage = (Stage)contentPane.getScene().getWindow();

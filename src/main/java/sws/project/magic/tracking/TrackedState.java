@@ -56,7 +56,7 @@ public class TrackedState {
      * @param previous The change before the previous state.
      * @param description The description of the change.
      * @return A representation of the previous state.
-     * @throws java.lang.Exception if object specified is of a different type to the previous object.
+     * @throws Exception if object specified is of a different type to the previous object.
      */
     public ValueChange dumpChange(Object original, ValueChange previous, String description) throws Exception {
         FieldValuePair[] previousFieldValuePairs = previous.getChangedFields();

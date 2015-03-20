@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 /**
  * A controller to edit skills
  */
-public class SkillEditor {
+public class SkillEditor extends GenericEditor<Skill> {
 
     @FXML
     TextField shortNameTextField, longNameTextField;
@@ -59,7 +59,7 @@ public class SkillEditor {
             SkillEditor controller = loader.getController();
             controller.skill = skill;
             controller.onSaved = onSaved;
-            controller.loadProject();
+            controller.load();
 
             return anchorPane;
         } catch (Exception e) {
@@ -103,8 +103,9 @@ public class SkillEditor {
     /**
      * Saves the skill being edited
      */
-    private void saveSkill() {
+    public void update() {
         try {
+            labelErrorMessage.setText("");
             skill.setShortName(shortNameTextField.getText());
             skill.setLongName(longNameTextField.getText());
             skill.setDescription(descriptionTextArea.getText());
@@ -128,27 +129,31 @@ public class SkillEditor {
     /**
      * Loads the skill into the form
      */
-    private void loadProject() {
+    @Override
+    public void load() {
         shortNameTextField.setText(skill.getShortName());
         longNameTextField.setText(skill.getLongName());
         descriptionTextArea.setText(skill.getDescription());
     }
 
+    /**
+     * Initializes the editor for use, sets up listeners etc.
+     */
     @FXML
     public void initialize() {
         shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue)
-                saveSkill();
+                update();
         });
 
         longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue)
-                saveSkill();
+                update();
         });
 
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue)
-                saveSkill();
+                update();
         });
     }
 }

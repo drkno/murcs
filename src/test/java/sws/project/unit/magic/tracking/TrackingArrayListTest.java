@@ -4,8 +4,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.tracking.TrackableValue;
 import sws.project.magic.tracking.TrackableObject;
+import sws.project.magic.tracking.TrackableValue;
+import sws.project.magic.tracking.UndoRedoManager;
 
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ public class TrackingArrayListTest {
         public TestArrayList() {
             testArrayList = new ArrayList<Integer>();
             testArrayList.add(0);
-            saveCurrentState("initial state", true);
+            commit("initial state", true);
         }
 
         @TrackableValue
@@ -26,18 +27,18 @@ public class TrackingArrayListTest {
 
         public void addValue(int value) {
             testArrayList.add(value);
-            saveCurrentState("test desc.");
+            commit("test desc.");
         }
     }
 
     @Before
     public void setup() {
-        TrackableObject.setMergeWaitTime(0);
+        UndoRedoManager.setMergeWaitTime(0);
     }
 
     @After
     public void tearDown() throws Exception {
-        TrackableObject.reset();
+        UndoRedoManager.reset();
     }
 
     @Test
@@ -46,11 +47,11 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals(2, a.getLastValue());
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals(1, a.getLastValue());
-        TrackableObject.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals(0, a.getLastValue());
     }
 
@@ -60,15 +61,15 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        TrackableObject.undo();
-        TrackableObject.undo();
-        TrackableObject.undo();
+        UndoRedoManager.undo();
+        UndoRedoManager.undo();
+        UndoRedoManager.undo();
         Assert.assertEquals(0, a.getLastValue());
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals(1, a.getLastValue());
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals(2, a.getLastValue());
-        TrackableObject.redo();
+        UndoRedoManager.redo();
         Assert.assertEquals(3, a.getLastValue());
     }
 
@@ -77,30 +78,30 @@ public class TrackingArrayListTest {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
         a.addValue(2);
-        Assert.assertEquals("test desc.", TrackableObject.getUndoDescription());
-        TrackableObject.undo();
-        Assert.assertEquals("initial state", TrackableObject.getUndoDescription());
-        Assert.assertEquals("test desc.", TrackableObject.getRedoDescription());
-        TrackableObject.undo();
-        Assert.assertEquals("initial state", TrackableObject.getRedoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getUndoDescription());
+        UndoRedoManager.undo();
+        Assert.assertEquals("initial state", UndoRedoManager.getUndoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRedoDescription());
+        UndoRedoManager.undo();
+        Assert.assertEquals("initial state", UndoRedoManager.getRedoDescription());
     }
 
     @Test(expected = Exception.class)
     public void cannotUndoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        TrackableObject.undo();
-        Assert.assertFalse(TrackableObject.canUndo());
+        UndoRedoManager.undo();
+        Assert.assertFalse(UndoRedoManager.canUndo());
 
-        TrackableObject.undo();
+        UndoRedoManager.undo();
     }
 
     @Test(expected = Exception.class)
     public void cannotRedoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        Assert.assertFalse(TrackableObject.canRedo());
+        Assert.assertFalse(UndoRedoManager.canRedo());
 
-        TrackableObject.redo();
+        UndoRedoManager.redo();
     }
 }
