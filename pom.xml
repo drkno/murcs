@@ -95,54 +95,54 @@
                 </execution>
             </executions>
         </plugin>
-        <plugin>
-            <groupId>de.akquinet.maven</groupId>
-            <artifactId>maven-latex-plugin</artifactId>
-            <version>1.1</version>
-            <inherited>false</inherited>
-            <configuration>
-                <settings>
-                    <!-- all tex main documents in this folder (including subfolders) will be processed -->
-                    <texDirectory>${basedir}/doc/user_guide</texDirectory>
-                    <!-- the generated artifacts will be copied to this folder relative to ${project.reporting.outputDirectory} -->
-                    <outputDirectory>.</outputDirectory>
-                    <!-- the working directory, for temporary files and LaTeX processing relative to ${project.build.directory} -->
-                    <tempDirectory>m2latex</tempDirectory>
-                    <!-- clean up the working directory in the end? May be used for debugging -->
-                    <cleanUp>flase</cleanUp>
-                    <!-- path to the TeX scripts, if none, it must be on the system path -->
-                    <texPath/>
-                    <!-- the latex command -->
-                    <texCommand>pdflatex</texCommand>
-                    <!-- the bibtex command -->
-                    <bibtexCommand>bibtex</bibtexCommand>
-                    <!-- the arguments to use when calling latex -->
-                    <texCommandArgs>
-                        <texCommandArg>-interaction=nonstopmode</texCommandArg>
-                        <texCommandArg>--src-specials</texCommandArg>
-                    </texCommandArgs>
-                    <!-- the tex4ht command -->
-                    <tex4htCommand>htlatex</tex4htCommand>
-                    <!-- the argumants to use when calling tex4ht -->
-                    <tex4htCommandArgs>
-                        <tex4htCommandArg>html,2</tex4htCommandArg>
-                        <tex4htCommandArg></tex4htCommandArg>
-                        <tex4htCommandArg></tex4htCommandArg>
-                        <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
-                    </tex4htCommandArgs>
-                </settings>
-            </configuration>
-            <executions>
-                <!-- execute latex goal automatically during the site phase -->
-                <execution>
-                    <phase>site</phase>
-                    <goals>
-                        <goal>latex</goal>
-                        <goal>tex4ht</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+        <!--<plugin>-->
+            <!--<groupId>de.akquinet.maven</groupId>-->
+            <!--<artifactId>maven-latex-plugin</artifactId>-->
+            <!--<version>1.1</version>-->
+            <!--<inherited>false</inherited>-->
+            <!--<configuration>-->
+                <!--<settings>-->
+                    <!--&lt;!&ndash; all tex main documents in this folder (including subfolders) will be processed &ndash;&gt;-->
+                    <!--<texDirectory>${basedir}/doc/user_guide</texDirectory>-->
+                    <!--&lt;!&ndash; the generated artifacts will be copied to this folder relative to ${project.reporting.outputDirectory} &ndash;&gt;-->
+                    <!--<outputDirectory>.</outputDirectory>-->
+                    <!--&lt;!&ndash; the working directory, for temporary files and LaTeX processing relative to ${project.build.directory} &ndash;&gt;-->
+                    <!--<tempDirectory>m2latex</tempDirectory>-->
+                    <!--&lt;!&ndash; clean up the working directory in the end? May be used for debugging &ndash;&gt;-->
+                    <!--<cleanUp>false</cleanUp>-->
+                    <!--&lt;!&ndash; path to the TeX scripts, if none, it must be on the system path &ndash;&gt;-->
+                    <!--<texPath/>-->
+                    <!--&lt;!&ndash; the latex command &ndash;&gt;-->
+                    <!--<texCommand>pdflatex</texCommand>-->
+                    <!--&lt;!&ndash; the bibtex command &ndash;&gt;-->
+                    <!--<bibtexCommand>bibtex</bibtexCommand>-->
+                    <!--&lt;!&ndash; the arguments to use when calling latex &ndash;&gt;-->
+                    <!--<texCommandArgs>-->
+                        <!--<texCommandArg>-interaction=nonstopmode</texCommandArg>-->
+                        <!--<texCommandArg>-src-specials</texCommandArg>-->
+                    <!--</texCommandArgs>-->
+                    <!--&lt;!&ndash; the tex4ht command &ndash;&gt;-->
+                    <!--<tex4htCommand>htlatex</tex4htCommand>-->
+                    <!--&lt;!&ndash; the argumants to use when calling tex4ht &ndash;&gt;-->
+                    <!--<tex4htCommandArgs>-->
+                        <!--<tex4htCommandArg>html,2</tex4htCommandArg>-->
+                        <!--<tex4htCommandArg></tex4htCommandArg>-->
+                        <!--<tex4htCommandArg></tex4htCommandArg>-->
+                        <!--<tex4htCommandArg>-interaction=nonstopmode -src-specials</tex4htCommandArg>-->
+                    <!--</tex4htCommandArgs>-->
+                <!--</settings>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+                <!--&lt;!&ndash; execute latex goal automatically during the site phase &ndash;&gt;-->
+                <!--<execution>-->
+                    <!--<phase>site</phase>-->
+                    <!--<goals>-->
+                        <!--<goal>latex</goal>-->
+                        <!--<goal>tex4ht</goal>-->
+                    <!--</goals>-->
+                <!--</execution>-->
+            <!--</executions>-->
+        <!--</plugin>-->
     </plugins>
     </build>
     <reporting>
