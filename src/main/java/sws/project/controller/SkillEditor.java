@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import sws.project.model.RelationalModel;
 import sws.project.model.Skill;
 import sws.project.model.persistence.PersistenceManager;
@@ -19,6 +20,8 @@ public class SkillEditor extends GenericEditor<Skill> {
     TextArea descriptionTextArea;
     @FXML
     Label labelErrorMessage;
+    @FXML
+    AnchorPane editor;
 
     /**
      * Saves the edit being edited
@@ -32,7 +35,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //If we haven't added the edit yet, throw them in the list of unassigned people
         if (!model.getSkills().contains(edit))
-            model.getSkills().add(edit);
+            model.addSkill(edit);
 
         //If we have a saved callBack, call it
         if (onSaved != null)
@@ -57,6 +60,11 @@ public class SkillEditor extends GenericEditor<Skill> {
         shortNameTextField.setText(edit.getShortName());
         longNameTextField.setText(edit.getLongName());
         descriptionTextArea.setText(edit.getDescription());
+
+        //if 'edit' is ScrumMaster or PO
+        //  then disable the form
+        if (edit.getShortName() != null && (edit.getShortName().equals("PO") || edit.getShortName().equals("SM")))
+            editor.setDisable(true);
     }
 
     @FXML

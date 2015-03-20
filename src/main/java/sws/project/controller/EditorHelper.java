@@ -21,7 +21,7 @@ public class EditorHelper {
     /**
      * Creates a new form for creating a new object of the specified type
      * @param clazz The type of object to create
-     * @param okay Called when the object is successully created
+     * @param okay Called when the object is successfully created
      */
     public static void createNew(Class<? extends Model> clazz, Callable<Void> okay){
         try {

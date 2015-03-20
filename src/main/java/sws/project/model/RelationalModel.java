@@ -247,7 +247,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.skills.add(skill);
 
             saveCurrentState("Skill added");
-        } else throw new DuplicateObjectException();
+        } else throw new DuplicateObjectException("Skill already exists");
     }
 
     /**
