@@ -156,7 +156,7 @@ public class TeamEditor extends GenericEditor<Team> {
         });
 
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                    if (newValue != null) update();
+            if (newValue != null) update();
         });
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) update();
