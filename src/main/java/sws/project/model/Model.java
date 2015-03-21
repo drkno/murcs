@@ -1,5 +1,6 @@
 package sws.project.model;
 
+import sws.project.exceptions.DuplicateObjectException;
 import sws.project.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
@@ -16,7 +17,9 @@ public abstract class Model extends TrackableObject implements Serializable {
      * Gets the short name.
      * @return the short name.
      */
-    public String getShortName() { return shortName; }
+    public String getShortName() {
+        return shortName;
+    }
 
     /**
      * Sets the short name.
@@ -30,10 +33,12 @@ public abstract class Model extends TrackableObject implements Serializable {
 
     /**
      * Indicates whether a value is a valid value for 'shortName' to hold
-     * @param value The value
+     * @param value The value.
      * @return Whether the value is valid for 'shortName'
+     * @throws DuplicateObjectException if there is a duplicate object.
      */
-    private boolean validateShortName(String value){
+    private boolean validateShortName(String value) throws DuplicateObjectException {
+        DuplicateObjectException.CheckForDuplicates(this, value);
         return value != null && !value.trim().isEmpty();
     }
 
