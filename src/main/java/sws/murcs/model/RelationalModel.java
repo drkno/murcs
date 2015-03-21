@@ -33,6 +33,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     private static final float version = 0.01f;
 
+    /**
+     * Sets up a new Relational Model
+     */
     public RelationalModel() {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
@@ -84,8 +87,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         //Remove all the people who have a team
         for (Team team : teams) {
-            for (Person person : team.getMembers())
-                unassignedPeople.remove(person);
+            team.getMembers().forEach(unassignedPeople::remove);
         }
 
         return unassignedPeople;

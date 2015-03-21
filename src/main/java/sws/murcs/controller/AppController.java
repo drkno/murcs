@@ -57,8 +57,8 @@ public class AppController implements Initializable {
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     * @param location  Location of the fxml that is related to the controller
-     * @param resources Pretty sure it's probably something, don't know what though
+     * @param location The location used to resolve relative paths for the root object, or null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -146,7 +146,6 @@ public class AppController implements Initializable {
 
     /**
      * Called when the Quit button is pressed in the file menu and quit the current application.
-     *
      * @param event The even that triggers the function
      */
     @FXML
@@ -163,7 +162,7 @@ public class AppController implements Initializable {
             popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                 popup.close();
                 // Let the user save the project
-                saveProject(null);
+                saveProject();
                 Platform.exit();
                 return null;
             });
@@ -228,7 +227,7 @@ public class AppController implements Initializable {
             popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                 popup.close();
                 // Let the user save the project
-                saveProject(null);
+                saveProject();
 
                 RelationalModel model = new RelationalModel();
                 PersistenceManager.Current.setCurrentModel(model);
@@ -249,6 +248,13 @@ public class AppController implements Initializable {
             popup.show();
 
         }
+    }
+
+    /**
+     * Saves the current project.
+     */
+    private void saveProject() {
+        saveProject(null);
     }
 
     /**

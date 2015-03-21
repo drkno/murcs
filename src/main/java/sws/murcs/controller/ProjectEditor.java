@@ -3,6 +3,8 @@ package sws.murcs.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -22,34 +24,43 @@ public class ProjectEditor extends GenericEditor<Project> {
     /**
      * Creates a new or updates the current edit being edited.
      */
-    public void update() {
+    public void update() throws Exception {
+        labelErrorMessage.setText("");
+        edit.setShortName(projectTextFieldShortName.getText());
+        edit.setLongName(textFieldLongName.getText());
+        edit.setDescription(descriptionTextField.getText());
+
+        //This line will need to be changed if we support multiple projects
+        //What we're trying to do here is check if the current edit already exist
+        //or if we're creating a new one.
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        if (model == null || model.getProject() != edit) {
+            if (PersistenceManager.Current.getCurrentModel() == null) {
+                model = new RelationalModel();
+            }
+            model.setProject(edit);
+
+            PersistenceManager.Current.setCurrentModel(model);
+        }
+
+        //If we have a saved callBack, call it
+        if (onSaved != null)
+            onSaved.call();
+    }
+
+    /**
+     * Updates the object in memory and handles any exception
+     */
+    public void updateAndHandle(){
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(projectTextFieldShortName.getText());
-            edit.setLongName(textFieldLongName.getText());
-            edit.setDescription(descriptionTextField.getText());
-
-
-            //This line will need to be changed if we support multiple projects
-            //What we're trying to do here is check if the current edit already exist
-            //or if we're creating a new one.
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-            if (model == null || model.getProject() != edit) {
-                if (PersistenceManager.Current.getCurrentModel() == null) {
-                    model = new RelationalModel();
-                }
-                model.setProject(edit);
-
-                PersistenceManager.Current.setCurrentModel(model);
-            }
-
-            //If we have a saved callBack, call it
-            if (onSaved != null)
-                onSaved.call();
-
+            update();
+        }
+        catch (DuplicateObjectException | NameInvalidException e) {
+            labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            labelErrorMessage.setText(e.getMessage());
+            //Don't show the user this.
         }
     }
 
@@ -60,7 +71,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
-        update();
+        updateAndHandle();
     }
 
     /**
@@ -69,15 +80,15 @@ public class ProjectEditor extends GenericEditor<Project> {
     @FXML
     public void initialize() {
         projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         textFieldLongName.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
     }
 }

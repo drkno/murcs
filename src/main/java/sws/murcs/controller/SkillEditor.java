@@ -5,6 +5,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -26,7 +28,7 @@ public class SkillEditor extends GenericEditor<Skill> {
     /**
      * Saves the edit being edited
      */
-    public void update() throws Exception {
+    public void update()  throws Exception{
         edit.setShortName(shortNameTextField.getText());
         edit.setLongName(longNameTextField.getText());
         edit.setDescription(descriptionTextArea.getText());
@@ -45,12 +47,16 @@ public class SkillEditor extends GenericEditor<Skill> {
     /**
      * Updates the object in memory and handles any exception
      */
-    private void updateAndHandle(){
+    public void updateAndHandle(){
         try {
             labelErrorMessage.setText("");
             update();
-        }catch (Exception e){
+        }
+        catch (DuplicateObjectException | NameInvalidException e) {
             labelErrorMessage.setText(e.getMessage());
+        }
+        catch (Exception e) {
+            //Don't show the user this.
         }
     }
 
@@ -64,7 +70,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //if 'edit' is ScrumMaster or PO
         //  then disable the form
-        if (edit.getShortName() != null && (edit.getShortName().equals("PO") || edit.getShortName().equals("SM")))
+        if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString())))
             editor.setDisable(true);
     }
 

@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,12 +48,10 @@ public class Person extends Model {
     /**
      * Sets the user id
      * @param userId The new user id
-     * @throws java.lang.Exception User id is invalid
+     * @throws sws.murcs.exceptions.NameInvalidException User id is invalid
      */
-    public void setUserId(String userId) throws Exception {
-        if (userId == null || userId.isEmpty()) {
-            throw new Exception("User ID cannot be empty");
-        }
+    public void setUserId(String userId) throws NameInvalidException {
+        NameInvalidException.validate("User ID", userId);
         this.userId = userId;
     }
 

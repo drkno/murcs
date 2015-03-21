@@ -190,7 +190,6 @@ public class EditFormGenerator {
 
     /**
      * Gets the editable annotation for a specified field
-     *
      * @param field The field to get the editable annotation for
      * @return The editable annotation. Null if there is not one
      */

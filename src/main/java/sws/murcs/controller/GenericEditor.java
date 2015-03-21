@@ -36,4 +36,9 @@ public abstract class GenericEditor<T>{
      * @throws Exception Any exceptions within the form
      */
     public abstract void update() throws Exception;
+
+    /**
+     * Deals with Exceptions that the update method throws and shows the appropriate message to the user
+     */
+    public abstract void updateAndHandle();
 }

@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
@@ -27,19 +28,18 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @throws java.lang.Exception if the shortName is invalid
      */
     public void setShortName(String shortName) throws Exception {
-        if (!validateShortName(shortName)) throw new Exception("Short Name cannot be empty");
+        validateShortName(shortName);
         this.shortName = shortName.trim();
     }
 
     /**
      * Indicates whether a value is a valid value for 'shortName' to hold
      * @param value The value.
-     * @return Whether the value is valid for 'shortName'
      * @throws sws.murcs.exceptions.DuplicateObjectException if there is a duplicate object.
      */
-    private boolean validateShortName(String value) throws DuplicateObjectException {
+    private void validateShortName(String value) throws Exception {
         DuplicateObjectException.CheckForDuplicates(this, value);
-        return value != null && !value.trim().isEmpty();
+        NameInvalidException.validate("Short Name", value);
     }
 
     /**

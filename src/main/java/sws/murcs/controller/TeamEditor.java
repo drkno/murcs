@@ -11,6 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
@@ -32,42 +34,52 @@ public class TeamEditor extends GenericEditor<Team> {
     /**
      * Saves the team being edited
      */
-    public void update() {
+    public void update() throws Exception {
+        labelErrorMessage.setText("");
+        edit.setShortName(teamNameTextField.getText());
+        edit.setLongName(longNameTextField.getText());
+        edit.setDescription(descriptionTextField.getText());
+
+        edit.setProductOwner((Person) productOwnerPicker.getSelectionModel().getSelectedItem());
+        edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
+
+        if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
+            edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
+        }
+
+        // Sets the product owner and scrum master, no need to check if it's been set
+        Person productOwner = (Person) productOwnerPicker.getSelectionModel().getSelectedItem();
+        edit.setProductOwner(productOwner);
+        Person scrumMaster = (Person) scrumMasterPicker.getSelectionModel().getSelectedItem();
+        edit.setScrumMaster(scrumMaster);
+
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        //If we haven't added the team yet, throw them in the list of unassigned people
+        if (!model.getTeams().contains(edit))
+            model.addTeam(edit);
+
+        //If we have a saved callBack, call it
+        if (onSaved != null)
+            onSaved.call();
+
+        //Load the team again, to make sure everything is updated. We could probably do this better
+        load();
+    }
+
+    /**
+     * Updates the object in memory and handles any exception
+     */
+    public void updateAndHandle(){
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(teamNameTextField.getText());
-            edit.setLongName(longNameTextField.getText());
-            edit.setDescription(descriptionTextField.getText());
-
-            edit.setProductOwner((Person) productOwnerPicker.getSelectionModel().getSelectedItem());
-            edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
-
-            if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
-                edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
-            }
-
-            // Sets the product owner and scrum master, no need to check if it's been set
-            Person productOwner = (Person) productOwnerPicker.getSelectionModel().getSelectedItem();
-            edit.setProductOwner(productOwner);
-            Person scrumMaster = (Person) scrumMasterPicker.getSelectionModel().getSelectedItem();
-            edit.setScrumMaster(scrumMaster);
-
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-            //If we haven't added the team yet, throw them in the list of unassigned people
-            if (!model.getTeams().contains(edit))
-                model.addTeam(edit);
-
-            //If we have a saved callBack, call it
-            if (onSaved != null)
-                onSaved.call();
-
-            //Load the team again, to make sure everything is updated. We could probably do this better
-            load();
-
+            update();
+        }
+        catch (DuplicateObjectException | NameInvalidException e) {
+            labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            labelErrorMessage.setText(e.getMessage());
+            //Don't show the user this.
         }
     }
 
@@ -118,7 +130,7 @@ public class TeamEditor extends GenericEditor<Team> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
-            update();
+            updateAndHandle();
         });
 
         GridPane pane = new GridPane();
@@ -144,22 +156,34 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML
     public void initialize() {
         teamNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  update();
+            if (oldValue && !newValue)  updateAndHandle();
         });
 
         descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  update();
+            if (oldValue && !newValue)  updateAndHandle();
         });
 
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) update();
+            if (newValue != null) {
+                // due to a bug in javafx, this prints a stack trace to the console.
+                // we cant do anything about it at the moment
+                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
+                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
+                updateAndHandle();
+            }
         });
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) update();
+            if (newValue != null) {
+                // due to a bug in javafx, this prints a stack trace to the console.
+                // we cant do anything about it at the moment
+                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
+                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
+                updateAndHandle();
+            }
         });
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -168,7 +192,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 // we cant do anything about it at the moment
                 System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
                         "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
-                update();
+                updateAndHandle();
             }
         });
     }

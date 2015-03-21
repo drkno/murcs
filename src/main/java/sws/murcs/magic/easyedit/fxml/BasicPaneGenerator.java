@@ -54,8 +54,6 @@ public class BasicPaneGenerator implements EditPaneGenerator {
         return generator.generate(field, getter, setter, validator, from);
     }
 
-    @Override
     public void setArgument(String argument) {
-
     }
 }

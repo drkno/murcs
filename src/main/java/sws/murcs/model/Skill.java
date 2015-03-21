@@ -4,10 +4,12 @@ package sws.murcs.model;
  * Model of a skill.
  */
 public class Skill extends Model {
+
     /**
      * The short name for the product owner
      */
     public static final String PO_NAME = "PO";
+
     /**
      * The short name for a scrum master
      */
@@ -16,18 +18,23 @@ public class Skill extends Model {
     private String description;
 
     /**
+     * Enum for roles
+     */
+    public enum ROLES {
+        PO,
+        SM
+    }
+
+    /**
      * Gets a description of the skill
-     *
      * @return the description
      */
-
     public String getDescription() {
         return description;
     }
 
     /**
      * Sets the description
-     *
      * @param description The new description
      */
     public void setDescription(String description) {

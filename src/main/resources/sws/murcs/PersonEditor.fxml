@@ -12,7 +12,7 @@
          <children>
             <VBox>
                <children>
-                  <Label text="Name" />
+                  <Label text="Short Name" />
                   <TextField fx:id="personNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
                 <padding>

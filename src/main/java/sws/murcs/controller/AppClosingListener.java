@@ -4,7 +4,6 @@ import javafx.stage.WindowEvent;
 
 /**
  * Interface for overriding window close events
- * 17/03/2015
  */
 public interface AppClosingListener {
 

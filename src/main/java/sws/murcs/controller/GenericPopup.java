@@ -72,8 +72,7 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Constructs a dialog from an exception with an ok option that closes the dialog. Shows the exception message in
-     * the dialog.
+     * Constructs a dialog from an exception.
      * @param exception The exception that you want to feed in to show the exception message.
      */
     public GenericPopup(Exception exception) {
@@ -87,7 +86,6 @@ public class GenericPopup extends AnchorPane {
             loader.load();
         } catch (Exception e) {
             e.printStackTrace();
-            //TODO catch this nicely
         }
         popupScene = new Scene(this, 400, 200);
         popupStage.initOwner(App.stage);
@@ -161,7 +159,6 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Closes the dialog.
-     *
      * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons() with
      * only one lambda expression then the cancel button is automatically set to call this.
      */
@@ -197,7 +194,6 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Sets the image to appear beside the title.
-     *
      * NOTE: If you don't set the title text (not the window text) then this won't appear.
      * @param image image to set.
      */

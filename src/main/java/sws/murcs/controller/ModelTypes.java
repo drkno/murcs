@@ -32,6 +32,7 @@ public enum ModelTypes {
      * @return The model type
      */
     public static ModelTypes getModelType(Class<? extends Model> clazz){
+
         if (clazz == sws.murcs.model.Project.class)
             return Project;
         else if (clazz == sws.murcs.model.Team.class)

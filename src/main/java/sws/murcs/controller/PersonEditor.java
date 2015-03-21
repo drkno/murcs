@@ -11,6 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -39,15 +41,15 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     public void initialize() {
         personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         usernameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) update();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) update();
+            if (newValue != null) updateAndHandle();
         });
     }
 
@@ -56,7 +58,6 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @Override
     public void load() {
-        labelErrorMessage.setText("");
         personNameTextField.setText(edit.getShortName());
         usernameTextField.setText(edit.getUserId());
 
@@ -76,7 +77,7 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
-            update();
+            updateAndHandle();
             load();
         });
 
@@ -112,32 +113,41 @@ public class PersonEditor extends GenericEditor<Person> {
     /**
      * Saves the edit being edited
      */
-    public void update() {
+    public void update() throws Exception{
+        labelErrorMessage.setText("");
+        edit.setShortName(personNameTextField.getText());
+        edit.setUserId(usernameTextField.getText());
 
+        RelationalModel model= PersistenceManager.Current.getCurrentModel();
+        Skill selectedSkill = skillChoiceBox.getValue();
+
+        if (selectedSkill != null) {
+            generateSkillNode(selectedSkill);
+            edit.addSkill(selectedSkill);
+        }
+
+        // Save the person if it hasn't been yet
+        if (!model.getPeople().contains(edit))
+            model.addPerson(edit);
+
+        // Call the callback if it exists
+        if (onSaved != null)
+            onSaved.call();
+    }
+
+    /**
+     * Updates the object in memory and handles any exception
+     */
+    public void updateAndHandle(){
         try {
             labelErrorMessage.setText("");
-            edit.setShortName(personNameTextField.getText());
-            edit.setUserId(usernameTextField.getText());
-
-            RelationalModel model= PersistenceManager.Current.getCurrentModel();
-            Skill selectedSkill = skillChoiceBox.getValue();
-
-            if (selectedSkill != null) {
-                generateSkillNode(selectedSkill);
-                edit.addSkill(selectedSkill);
-            }
-
-            // Save the person if it hasn't been yet
-            if (!model.getPeople().contains(edit))
-                model.addPerson(edit);
-
-            // Call the callback if it exists
-            if (onSaved != null)
-                onSaved.call();
-
+            update();
         }
-        catch (Exception e){
+        catch (DuplicateObjectException | NameInvalidException e) {
             labelErrorMessage.setText(e.getMessage());
+        }
+        catch (Exception e) {
+            //Don't show the user this.
         }
         finally {
             updateSkills();
