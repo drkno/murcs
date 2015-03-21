@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>sws.project</groupId>
-    <artifactId>project</artifactId>
+    <groupId>sws.murcs</groupId>
+    <artifactId>Murcs</artifactId>
     <version>0.0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -23,127 +23,131 @@
         </pluginRepository>
     </pluginRepositories>
     <build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.18.1</version>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.2</version>
-            <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-                <debug>true</debug>
-                <debuglevel>lines,vars,source</debuglevel>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-jar-plugin</artifactId>
-            <version>2.5</version>
-            <configuration>
-                <archive>
-                    <manifest>
-                        <addClasspath>true</addClasspath>
-                        <mainClass>sws.project.view.App</mainClass>
-                    </manifest>
-                </archive>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.4.201502262128</version>
-            <executions>
-                <execution>
-                    <id>default-prepare-agent</id>
-                    <goals>
-                        <goal>prepare-agent</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>default-report</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                        <goal>report</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>default-check</id>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                    <configuration>
-                        <rules>
-                            <!--  implmentation is needed only for Maven 2  -->
-                            <rule implementation="org.jacoco.maven.RuleConfiguration">
-                                <element>BUNDLE</element>
-                                <limits>
-                                    <!--  implmentation is needed only for Maven 2  -->
-                                    <limit implementation="org.jacoco.report.check.Limit">
-                                        <counter>COMPLEXITY</counter>
-                                        <value>COVEREDRATIO</value>
-                                        <minimum>0.60</minimum>
-                                    </limit>
-                                </limits>
-                            </rule>
-                        </rules>
-                    </configuration>
-                </execution>
-            </executions>
-        </plugin>
-        <!--<plugin>-->
-            <!--<groupId>de.akquinet.maven</groupId>-->
-            <!--<artifactId>maven-latex-plugin</artifactId>-->
-            <!--<version>1.1</version>-->
-            <!--<inherited>false</inherited>-->
-            <!--<configuration>-->
-                <!--<settings>-->
-                    <!--&lt;!&ndash; all tex main documents in this folder (including subfolders) will be processed &ndash;&gt;-->
-                    <!--<texDirectory>${basedir}/doc/user_guide</texDirectory>-->
-                    <!--&lt;!&ndash; the generated artifacts will be copied to this folder relative to ${project.reporting.outputDirectory} &ndash;&gt;-->
-                    <!--<outputDirectory>.</outputDirectory>-->
-                    <!--&lt;!&ndash; the working directory, for temporary files and LaTeX processing relative to ${project.build.directory} &ndash;&gt;-->
-                    <!--<tempDirectory>m2latex</tempDirectory>-->
-                    <!--&lt;!&ndash; clean up the working directory in the end? May be used for debugging &ndash;&gt;-->
-                    <!--<cleanUp>false</cleanUp>-->
-                    <!--&lt;!&ndash; path to the TeX scripts, if none, it must be on the system path &ndash;&gt;-->
-                    <!--<texPath/>-->
-                    <!--&lt;!&ndash; the latex command &ndash;&gt;-->
-                    <!--<texCommand>pdflatex</texCommand>-->
-                    <!--&lt;!&ndash; the bibtex command &ndash;&gt;-->
-                    <!--<bibtexCommand>bibtex</bibtexCommand>-->
-                    <!--&lt;!&ndash; the arguments to use when calling latex &ndash;&gt;-->
-                    <!--<texCommandArgs>-->
-                        <!--<texCommandArg>-interaction=nonstopmode</texCommandArg>-->
-                        <!--<texCommandArg>-src-specials</texCommandArg>-->
-                    <!--</texCommandArgs>-->
-                    <!--&lt;!&ndash; the tex4ht command &ndash;&gt;-->
-                    <!--<tex4htCommand>htlatex</tex4htCommand>-->
-                    <!--&lt;!&ndash; the argumants to use when calling tex4ht &ndash;&gt;-->
-                    <!--<tex4htCommandArgs>-->
-                        <!--<tex4htCommandArg>html,2</tex4htCommandArg>-->
-                        <!--<tex4htCommandArg></tex4htCommandArg>-->
-                        <!--<tex4htCommandArg></tex4htCommandArg>-->
-                        <!--<tex4htCommandArg>-interaction=nonstopmode -src-specials</tex4htCommandArg>-->
-                    <!--</tex4htCommandArgs>-->
-                <!--</settings>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-                <!--&lt;!&ndash; execute latex goal automatically during the site phase &ndash;&gt;-->
-                <!--<execution>-->
-                    <!--<phase>site</phase>-->
-                    <!--<goals>-->
-                        <!--<goal>latex</goal>-->
-                        <!--<goal>tex4ht</goal>-->
-                    <!--</goals>-->
-                <!--</execution>-->
-            <!--</executions>-->
-        <!--</plugin>-->
-    </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <debug>true</debug>
+                    <debuglevel>lines,vars,source</debuglevel>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>sws.murcs.view.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.4.201502262128</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <!--  implmentation is needed only for Maven 2  -->
+                                <rule implementation="org.jacoco.maven.RuleConfiguration">
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <!--  implmentation is needed only for Maven 2  -->
+                                        <limit implementation="org.jacoco.report.check.Limit">
+                                            <counter>COMPLEXITY</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.60</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>de.akquinet.maven</groupId>
+                <artifactId>maven-latex-plugin</artifactId>
+                <version>1.1</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <settings>
+                        <!-- all tex main documents in this folder (including subfolders) will be processed -->
+                        <texDirectory>${basedir}/doc/user_guide</texDirectory>
+                    </settings>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>latex</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>HTML multipage</id>
+                        <configuration>
+                            <settings>
+                                <outputDirectory>reference/html_multipage</outputDirectory>
+                                <tex4htCommandArgs>
+                                    <tex4htCommandArg>tex4ht,2</tex4htCommandArg>
+                                    <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
+                                </tex4htCommandArgs>
+                            </settings>
+                        </configuration>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>tex4ht</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>HTML singlepage</id>
+                        <configuration>
+                            <settings>
+                                <outputDirectory>reference/html_singlepage</outputDirectory>
+                                <tex4htCommandArgs>
+                                    <tex4htCommandArg>tex4ht,1</tex4htCommandArg>
+                                    <tex4htCommandArg>-interaction=nonstopmode --src-specials</tex4htCommandArg>
+                                </tex4htCommandArgs>
+                            </settings>
+                        </configuration>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>tex4ht</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <reporting>
         <plugins>
