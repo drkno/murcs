@@ -4,10 +4,12 @@ package sws.project.model;
  * Model of a skill.
  */
 public class Skill extends Model {
+
     /**
      * The short name for the product owner
      */
     public static final String PO_NAME = "PO";
+
     /**
      * The short name for a scrum master
      */
