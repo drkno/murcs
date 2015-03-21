@@ -209,6 +209,7 @@ public class EditFormGenerator {
      * @param field The field to generate an edit node for
      * @param getter The getter for the field
      * @param setter The setter for the field
+     * @param validator The validator
      * @param from The object the field is from
      * @param editable The editable annotation of the
      * @return The node of the edit form
