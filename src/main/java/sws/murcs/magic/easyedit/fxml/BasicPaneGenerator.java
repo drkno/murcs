@@ -17,21 +17,21 @@ public class BasicPaneGenerator implements EditPaneGenerator {
     private final Map<Class, String> fxmlForFields = new HashMap<>();
 
     public BasicPaneGenerator(){
-        fxmlForFields.put(Number.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(Integer.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(int.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(Float.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(float.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(Double.class, "/sws/project/Number.fxml");
-        fxmlForFields.put(double.class, "/sws/project/Number.fxml");
+        fxmlForFields.put(Number.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(Integer.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(int.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(Float.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(float.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(Double.class, "/sws/murcs/Number.fxml");
+        fxmlForFields.put(double.class, "/sws/murcs/Number.fxml");
 
-        fxmlForFields.put(String.class, "/sws/project/String.fxml");
+        fxmlForFields.put(String.class, "/sws/murcs/String.fxml");
 
-        fxmlForFields.put(Boolean.class, "/sws/project/Boolean.fxml");
-        fxmlForFields.put(boolean.class, "/sws/project/Boolean.fxml");
+        fxmlForFields.put(Boolean.class, "/sws/murcs/Boolean.fxml");
+        fxmlForFields.put(boolean.class, "/sws/murcs/Boolean.fxml");
 
-        fxmlForFields.put(Collection.class, "/sws/project/Collection.fxml");
-        fxmlForFields.put(ArrayList.class, "/sws/project/Collection.fxml");
+        fxmlForFields.put(Collection.class, "/sws/murcs/Collection.fxml");
+        fxmlForFields.put(ArrayList.class, "/sws/murcs/Collection.fxml");
     }
 
     @Override

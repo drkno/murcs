@@ -64,7 +64,7 @@ public class EditorHelper {
         fxmlPaths.put(ModelTypes.People, "PersonEditor.fxml");
         fxmlPaths.put(ModelTypes.Skills, "SkillEditor.fxml");
 
-        String fxmlPath = "/sws/project/" + fxmlPaths.get(ModelTypes.getModelType(model));
+        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelTypes.getModelType(model));
 
         try {
             FXMLLoader loader = new FXMLLoader(ProjectEditor.class.getResource(fxmlPath));

@@ -86,7 +86,7 @@ public class CreateWindowController {
      */
     public static Parent newCreateNode(Node content, Callable<Void> okayClicked, Callable<Void> cancelClicked){
         try {
-            FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/project/CreatorWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();
 
             CreateWindowController controller = loader.getController();

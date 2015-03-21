@@ -188,7 +188,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of teams to add to the relational model
      * @param teams Teams to be added to the relational model
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has a team from teams to be added
+     * @throws sws.murcs.exceptions.DuplicateObjectException if the murcs already has a team from teams to be added
      */
     public void addTeams(List<Team> teams) throws DuplicateObjectException {
         for (Team team : teams) {

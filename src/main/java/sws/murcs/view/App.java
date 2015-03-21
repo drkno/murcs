@@ -35,10 +35,10 @@ public class App extends Application{
             PersistenceManager.Current = new PersistenceManager(loader);
         }
 
-        Parent parent = FXMLLoader.load(getClass().getResource("/sws/project/App.fxml"));
+        Parent parent = FXMLLoader.load(getClass().getResource("/sws/murcs/App.fxml"));
         primaryStage.setScene(new Scene(parent));
 
-        primaryStage.setTitle("project");
+        primaryStage.setTitle("Murcs");
         primaryStage.setOnCloseRequest(e -> notifyListeners(e));
 
         // Set up max and min dimensions of main window.
