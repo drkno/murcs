@@ -38,6 +38,7 @@ public class EditorHelper {
 
             Node content = getEditForm(newModel, updated);
             Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
+                // Doubtful this is working
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 updated.call();
                 return null;
@@ -47,6 +48,17 @@ public class EditorHelper {
             Stage newStage = new Stage();
             newStage.setScene(scene);
             newStage.setTitle("Create " + type);
+
+            newStage.setOnCloseRequest(event -> {
+                // Not working due to newModel being null
+                PersistenceManager.Current.getCurrentModel().remove(newModel);
+                try {
+                    updated.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                newStage.close();
+            });
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
