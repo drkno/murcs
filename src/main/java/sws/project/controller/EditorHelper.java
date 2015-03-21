@@ -25,7 +25,7 @@ public class EditorHelper {
      * @param clazz The type of object to create
      * @param updated Called when the object is successully updated
      */
-    public static Model createNew(Class<? extends Model> clazz, Callable<Void> updated){
+    public static void createNew(Class<? extends Model> clazz, Callable<Void> updated){
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -52,12 +52,10 @@ public class EditorHelper {
             newStage.initOwner(App.stage);
 
             newStage.show();
-            return newModel;
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        return null;
     }
 
     /**

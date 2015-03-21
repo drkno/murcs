@@ -20,7 +20,6 @@ public class Project extends Model {
 
     /**
      * Gets a description of the project
-     *
      * @return a description of the project
      */
     public String getDescription() {
@@ -29,7 +28,6 @@ public class Project extends Model {
 
     /**
      * Sets the description of the current project
-     *
      * @param description The description of the project
      */
     public void setDescription(String description) {
@@ -38,7 +36,6 @@ public class Project extends Model {
 
     /**
      * Gets a list of teams working on the project
-     *
      * @return The teams working on this project
      */
     public ArrayList<Team> getTeams() {
@@ -47,7 +44,6 @@ public class Project extends Model {
 
     /**
      * Adds a team to this project if the project does not already have that team
-     *
      * @param team team to add.
      * @throws sws.project.exceptions.DuplicateObjectException if the project already has that team
      */
@@ -66,7 +62,6 @@ public class Project extends Model {
 
     /**
      * Adds a list of teams to add to the project
-     *
      * @param teams Teams to be added to the project
      * @throws sws.project.exceptions.DuplicateObjectException if the project already has a team from teams to be added
      */
@@ -78,7 +73,6 @@ public class Project extends Model {
 
     /**
      * Remove a team from this project.
-     *
      * @param team team to remove.
      */
     public void removeTeam(Team team) {
@@ -89,16 +83,11 @@ public class Project extends Model {
 
     /**
      * Returns the short name of the project
-     *
      * @return Short name of the project
      */
     @Override
     public String toString() {
-        if (getShortName() != null) {
-            return getShortName();
-        } else {
-            return null;
-        }
+        return getShortName();
     }
 }
 

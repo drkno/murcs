@@ -18,7 +18,6 @@ public class Team extends Model {
      * Returns a list of members in the team. Following the
      * Java method of adding to lists, the preferred method
      * of adding is to use getMembers().add(person);
-     *
      * @return A list of the team members
      */
     public ArrayList<Person> getMembers() {
@@ -27,7 +26,6 @@ public class Team extends Model {
 
     /**
      * A description of the team
-     *
      * @return the description
      */
     public String getDescription() {
@@ -36,7 +34,6 @@ public class Team extends Model {
 
     /**
      * Sets the description of the team
-     *
      * @param description the new description
      */
     public void setDescription(String description) {
@@ -45,7 +42,6 @@ public class Team extends Model {
 
     /**
      * Gets the scrum master
-     *
      * @return the scrum master
      */
     public Person getScrumMaster() {
@@ -54,7 +50,6 @@ public class Team extends Model {
 
     /**
      * Sets the scrum master
-     *
      * @param scrumMaster The new scrum master
      */
     public void setScrumMaster(Person scrumMaster) {
@@ -63,7 +58,6 @@ public class Team extends Model {
 
     /**
      * Gets the PO
-     *
      * @return the PO
      */
     public Person getProductOwner() {
@@ -72,7 +66,6 @@ public class Team extends Model {
 
     /**
      * Sets the PO
-     *
      * @param productOwner the new PO
      */
     public void setProductOwner(Person productOwner) {
@@ -81,7 +74,6 @@ public class Team extends Model {
 
     /**
      * Adds a person to the project members only if that person is not already a member
-     *
      * @param person to be added
      * @throws sws.project.exceptions.DuplicateObjectException if the person is already in the team
      */
@@ -95,7 +87,6 @@ public class Team extends Model {
 
     /**
      * Adds a list of people to the team
-     *
      * @param members People to be added to the team
      * @throws sws.project.exceptions.DuplicateObjectException if a person is already in a team
      */
@@ -107,7 +98,6 @@ public class Team extends Model {
 
     /**
      * Removes a person from the project members
-     *
      * @param person to be removed
      */
     public void removeMember(Person person) {
@@ -118,16 +108,11 @@ public class Team extends Model {
 
     /**
      * Returns the string of the short name
-     *
      * @return short name string
      */
     @Override
     public String toString() {
-        if (getShortName() != null) {
-            return getShortName();
-        } else {
-            return null;
-        }
+        return getShortName();
     }
 }
 

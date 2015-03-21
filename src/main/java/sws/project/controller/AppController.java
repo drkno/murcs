@@ -406,7 +406,7 @@ public class AppController implements Initializable {
 
         try {
             if (clazz != null) {
-                Model model = EditorHelper.createNew(clazz, () -> {
+                EditorHelper.createNew(clazz, () -> {
                     updateDisplayList();
                     return null;
                 });

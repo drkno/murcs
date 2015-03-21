@@ -61,12 +61,7 @@ public class Skill extends Model {
      */
     @Override
     public String toString() {
-        if (getShortName() != null) {
-            return getShortName();
-        }
-        else {
-            return null;
-        }
+        return getShortName();
     }
 
 }
