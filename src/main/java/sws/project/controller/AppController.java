@@ -25,9 +25,9 @@ import sws.project.view.App;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
-
-import static javafx.scene.control.ListView.*;
+import java.util.stream.Collectors;
 
 /**
  * Main app class controller
@@ -126,18 +126,21 @@ public class AppController implements Initializable {
             case Project:
                 Project project = model.getProject();
                 if (project != null) {
-                    displayListItems.add(project);
-                    //displayList.getSelectionModel().select(project);
+                    displayListItems.addAll(project);
+                    displayList.getSelectionModel().select(0);
                 }
                 break;
             case People:
                 displayListItems.addAll(model.getPeople());
+                displayList.getSelectionModel().select(0);
                 break;
             case Team:
                 displayListItems.addAll(model.getTeams());
+                displayList.getSelectionModel().select(0);
                 break;
             case Skills:
                 displayListItems.addAll(model.getSkills());
+                displayList.getSelectionModel().select(0);
                 break;
         }
     }
@@ -409,11 +412,12 @@ public class AppController implements Initializable {
 
         try {
             if (clazz != null) {
-                EditorHelper.createNew(clazz, () -> {
+                final Class<? extends Model> finalClazz = clazz;
+                Model model = EditorHelper.createNew(clazz, () -> {
                     // Callback after creating the new clazz,
                     // change the selected type if the type has changed
                     // then select the item that was just created
-                    updateDisplayList();
+                    updateDisplayListAfterCreation(finalClazz);
                     return null;
                 });
             }
@@ -422,37 +426,70 @@ public class AppController implements Initializable {
         }
     }
 
-    private void updateDisplayListAfterCreation(Class <? extends Model> clazz) {
+    private void updateDisplayListAfterCreation(Class<? extends Model> clazz) {
         try {
-            Model newModel = clazz.newInstance();
             ModelTypes type = ModelTypes.getModelType(clazz);
+            Model model = clazz.newInstance();
 
-            int selectedItem = displayList.getSelectionModel().getSelectedIndex();
-            if (selectedItem != -1)
-                displayList.getSelectionModel().clearSelection(selectedItem);
+            if (type == null || model.getShortName() == null) return;
 
-            displayListItems.clear();
+            RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+            if (relationalModel == null) return;
 
-            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-            if (model == null) return;
             switch (type) {
                 case Project:
-                    Project project = model.getProject();
+                    displayChoiceBox.getSelectionModel().select(ModelTypes.Project);
+                    Project project = relationalModel.getProject();
                     if (project != null) {
                         displayListItems.add(project);
                         displayList.getSelectionModel().select(project);
                     }
                     break;
                 case People:
-                    displayListItems.addAll(model.getPeople());
+                    displayChoiceBox.getSelectionModel().select(ModelTypes.People);
+                    // Get the person that has been added, assume that only one person has the same name
+                    List<Person> people = relationalModel.getPeople().stream()
+                            .filter(p -> p.getShortName().toLowerCase().equals(model.getShortName().toLowerCase())).collect(Collectors.toList());
+
+                    if (people.size() == 1) {
+                        displayListItems.add(people.get(0));
+                        displayList.getSelectionModel().select(people.get(0));
+                    }
                     break;
                 case Team:
-                    displayListItems.addAll(model.getTeams());
+                    displayChoiceBox.getSelectionModel().select(ModelTypes.Team);
                     break;
                 case Skills:
-                    displayListItems.addAll(model.getSkills());
+                    displayChoiceBox.getSelectionModel().select(ModelTypes.Skills);
                     break;
             }
+
+//            int selectedItem = displayList.getSelectionModel().getSelectedIndex();
+//            if (selectedItem != -1)
+//                displayList.getSelectionModel().clearSelection(selectedItem);
+//
+//            displayListItems.clear();
+//
+//            RelationalModel model = PersistenceManager.Current.getCurrentModel();
+//            if (model == null) return;
+//            switch (type) {
+//                case Project:
+//                    Project project = model.getProject();
+//                    if (project != null) {
+//                        displayListItems.add(project);
+//                        displayList.getSelectionModel().select(project);
+//                    }
+//                    break;
+//                case People:
+//                    displayListItems.addAll(model.getPeople());
+//                    break;
+//                case Team:
+//                    displayListItems.addAll(model.getTeams());
+//                    break;
+//                case Skills:
+//                    displayListItems.addAll(model.getSkills());
+//                    break;
+//            }
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -52,4 +52,18 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setLongName(String longName) {
         this.longName = longName;
     }
+
+    /**
+     * Returns the string of the short name
+     * @return short name string
+     */
+    @Override
+    public String toString() {
+        if (this.shortName != null) {
+            return this.shortName;
+        }
+        else {
+            return null;
+        }
+    }
 }
