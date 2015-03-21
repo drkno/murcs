@@ -4,9 +4,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.tracking.TrackableObject;
-import sws.project.magic.tracking.TrackableValue;
-import sws.project.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import java.util.ArrayList;
 

@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.view.App;
 
 /**
  * Tests the ability to use CreateProjectPopUp to create a new project
@@ -23,9 +24,9 @@ public class CreateProjectStepDefs extends ApplicationTest {
     @Before
     public void setUp() throws Exception {
         primaryStage = FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(sws.project.view.App.class);
+        FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
-        launch(sws.project.view.App.class);
+        launch(App.class);
     }
 
     @After

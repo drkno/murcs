@@ -6,7 +6,7 @@ import javafx.scene.text.Text;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.easyedit.fxml.BasicStringEditController;
+import sws.murcs.magic.easyedit.fxml.BasicStringEditController;
 
 import java.lang.reflect.Field;
 

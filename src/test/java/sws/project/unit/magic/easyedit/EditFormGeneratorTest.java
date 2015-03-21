@@ -6,9 +6,8 @@ import javafx.scene.control.ScrollPane;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.magic.easyedit.EditFormGenerator;
-import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+import sws.murcs.magic.easyedit.EditFormGenerator;
+import sws.murcs.magic.easyedit.Editable;
 
 import java.lang.reflect.Field;
 

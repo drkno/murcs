@@ -1,6 +1,6 @@
 package sws.project.sampledata;
 
-import sws.project.model.RelationalModel;
+import sws.murcs.model.RelationalModel;
 
 import java.util.Random;
 

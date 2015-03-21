@@ -1,6 +1,6 @@
 package sws.project.sampledata;
 
-import sws.project.model.Skill;
+import sws.murcs.model.Skill;
 
 /**
  * Generates random skills

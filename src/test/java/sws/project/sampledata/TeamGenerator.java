@@ -1,8 +1,8 @@
 package sws.project.sampledata;
 
-import sws.project.exceptions.DuplicateObjectException;
-import sws.project.model.Person;
-import sws.project.model.Team;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.model.Person;
+import sws.murcs.model.Team;
 
 import java.util.ArrayList;
 

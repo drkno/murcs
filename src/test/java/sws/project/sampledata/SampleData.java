@@ -1,9 +1,9 @@
 package sws.project.sampledata;
 
-import sws.project.model.Person;
-import sws.project.model.Project;
-import sws.project.model.Skill;
-import sws.project.model.Team;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Team;
 
 /**
  * Prints random generated data

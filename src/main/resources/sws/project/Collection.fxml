@@ -7,7 +7,7 @@
 
 
 <?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.project.magic.easyedit.fxml.BasicListEditController">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.magic.easyedit.fxml.BasicListEditController">
    <children>
       <Text fx:id="titleText" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
       <ListView fx:id="listView" />

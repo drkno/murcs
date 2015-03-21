@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.model.RelationalModel;
-import sws.project.model.persistence.loaders.FilePersistenceLoader;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import sws.project.sampledata.RelationalModelGenerator;
 
 import java.io.File;

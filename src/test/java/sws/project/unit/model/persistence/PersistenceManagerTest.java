@@ -3,9 +3,9 @@ package sws.project.unit.model.persistence;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.project.model.RelationalModel;
-import sws.project.model.persistence.PersistenceManager;
-import sws.project.model.persistence.loaders.PersistenceLoader;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.model.persistence.loaders.PersistenceLoader;
 import sws.project.sampledata.RelationalModelGenerator;
 
 import java.util.ArrayList;

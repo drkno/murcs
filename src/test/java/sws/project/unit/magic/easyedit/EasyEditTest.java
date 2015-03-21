@@ -4,9 +4,9 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sws.project.magic.easyedit.EditFormGenerator;
-import sws.project.magic.easyedit.Editable;
-import sws.project.magic.easyedit.fxml.FxmlPaneGenerator;
+import sws.murcs.magic.easyedit.EditFormGenerator;
+import sws.murcs.magic.easyedit.Editable;
+import sws.murcs.magic.easyedit.fxml.FxmlPaneGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
