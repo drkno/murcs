@@ -25,9 +25,7 @@ import sws.project.view.App;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * Main app class controller
@@ -408,84 +406,11 @@ public class AppController implements Initializable {
 
         try {
             if (clazz != null) {
-                final Class<? extends Model> finalClazz = clazz;
                 Model model = EditorHelper.createNew(clazz, () -> {
-                    // Callback after creating the new clazz,
-                    // change the selected type if the type has changed
-                    // then select the item that was just created
-                    updateDisplayListAfterCreation(finalClazz);
+                    updateDisplayList();
                     return null;
                 });
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateDisplayListAfterCreation(Class<? extends Model> clazz) {
-        try {
-            ModelTypes type = ModelTypes.getModelType(clazz);
-            Model model = clazz.newInstance();
-
-            if (type == null || model.getShortName() == null) return;
-
-            RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
-            if (relationalModel == null) return;
-
-            switch (type) {
-                case Project:
-                    displayChoiceBox.getSelectionModel().select(ModelTypes.Project);
-                    Project project = relationalModel.getProject();
-                    if (project != null) {
-                        displayListItems.add(project);
-                        displayList.getSelectionModel().select(project);
-                    }
-                    break;
-                case People:
-                    displayChoiceBox.getSelectionModel().select(ModelTypes.People);
-                    // Get the person that has been added, assume that only one person has the same name
-                    List<Person> people = relationalModel.getPeople().stream()
-                            .filter(p -> p.getShortName().toLowerCase().equals(model.getShortName().toLowerCase())).collect(Collectors.toList());
-
-                    if (people.size() == 1) {
-                        displayListItems.add(people.get(0));
-                        displayList.getSelectionModel().select(people.get(0));
-                    }
-                    break;
-                case Team:
-                    displayChoiceBox.getSelectionModel().select(ModelTypes.Team);
-                    break;
-                case Skills:
-                    displayChoiceBox.getSelectionModel().select(ModelTypes.Skills);
-                    break;
-            }
-
-//            int selectedItem = displayList.getSelectionModel().getSelectedIndex();
-//            if (selectedItem != -1)
-//                displayList.getSelectionModel().clearSelection(selectedItem);
-//
-//            displayListItems.clear();
-//
-//            RelationalModel model = PersistenceManager.Current.getCurrentModel();
-//            if (model == null) return;
-//            switch (type) {
-//                case Project:
-//                    Project project = model.getProject();
-//                    if (project != null) {
-//                        displayListItems.add(project);
-//                        displayList.getSelectionModel().select(project);
-//                    }
-//                    break;
-//                case People:
-//                    displayListItems.addAll(model.getPeople());
-//                    break;
-//                case Team:
-//                    displayListItems.addAll(model.getTeams());
-//                    break;
-//                case Skills:
-//                    displayListItems.addAll(model.getSkills());
-//                    break;
-//            }
         }
         catch (Exception e) {
             e.printStackTrace();
