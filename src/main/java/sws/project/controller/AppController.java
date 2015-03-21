@@ -185,14 +185,10 @@ public class AppController implements Initializable {
      */
     @FXML
     private void toggleItemListView(ActionEvent event) {
-        if (vBoxSideDisplay.isVisible()) {
+        if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
-            vBoxSideDisplay.setVisible(false);
         }
-        else {
-            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
-            vBoxSideDisplay.setVisible(true);
-        }
+        vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
     }
 
     /**
