@@ -80,7 +80,8 @@ public class Team extends Model {
     public void addMember(Person person) throws DuplicateObjectException {
         if (!members.contains(person)) {
             this.members.add(person);
-        } else {
+        }
+        else {
             throw new DuplicateObjectException();
         }
     }

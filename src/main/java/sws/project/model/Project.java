@@ -55,7 +55,8 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
-        } else {
+        }
+        else {
             throw new DuplicateObjectException();
         }
     }
