@@ -92,8 +92,9 @@ public class TeamEditor extends GenericEditor<Team> {
         descriptionTextField.setText(edit.getDescription());
 
         //We don't have to maintain the list here, as we want it to clear the selection
-        addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+        addTeamMemberPicker.getSelectionModel().clearSelection();
+        //addTeamMemberPicker.getItems().clear();
+        addTeamMemberPicker.getItems().setAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
         teamMembersContainer.getChildren().clear();
         for (Person person : edit.getMembers()) {
@@ -101,22 +102,18 @@ public class TeamEditor extends GenericEditor<Team> {
             teamMembersContainer.getChildren().add(node);
         }
 
+        //Add all the people with the PO skill to the list of POs
         ArrayList<Person> productOwners = new ArrayList<>();
-        //Add all the people with the PO skill to the list of PO's
         edit.getMembers().stream().filter(p -> p.canBeRole(Skill.PO_NAME)).forEach(p -> productOwners.add(p));
-        productOwners.remove(edit.getScrumMaster());
-
-        productOwnerPicker.getItems().clear();
-        productOwnerPicker.getItems().addAll(productOwners);
+        productOwners.remove(edit.getProductOwner());
+        productOwnerPicker.getItems().setAll(productOwners);
         productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
 
+        //Add all the people with the scrum master skill to the list of scrum masters
         ArrayList<Person> scrumMasters = new ArrayList<>();
-        //Add all the people with the scrum master skill to the list of scrum masters's
         edit.getMembers().stream().filter(p -> p.canBeRole(Skill.SM_NAME)).forEach(p -> scrumMasters.add(p));
-        scrumMasters.remove(edit.getProductOwner());
-
-        scrumMasterPicker.getItems().clear();
-        scrumMasterPicker.getItems().addAll(scrumMasters);
+        scrumMasters.remove(edit.getScrumMaster());
+        scrumMasterPicker.getItems().setAll(scrumMasters);
         scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
     }
 
@@ -126,7 +123,7 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-            Text nameText = new Text(person + "");
+        Text nameText = new Text(person.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeMember(person);
@@ -176,6 +173,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 updateAndHandle();
             }
         });
+
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 // due to a bug in javafx, this prints a stack trace to the console.
