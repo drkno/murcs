@@ -48,7 +48,7 @@
                 <archive>
                     <manifest>
                         <addClasspath>true</addClasspath>
-                        <mainClass>sws.project.view.App</mainClass>
+                        <mainClass>sws.murcs.view.App</mainClass>
                     </manifest>
                 </archive>
             </configuration>
