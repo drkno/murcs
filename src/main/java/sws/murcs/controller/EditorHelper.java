@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.EventNotification;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
@@ -13,7 +14,6 @@ import sws.murcs.view.App;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Callable;
 
 /**
  * Provides helper methods for generating forms for editing and
@@ -25,7 +25,7 @@ public class EditorHelper {
      * @param clazz The type of object to create
      * @param updated Called when the object is successully updated
      */
-    public static void createNew(Class<? extends Model> clazz, Callable<Void> updated){
+    public static void createNew(Class<? extends Model> clazz, EventNotification<Model> updated){
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -37,12 +37,11 @@ public class EditorHelper {
             }
 
             Node content = getEditForm(newModel, updated);
-            Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
+            Parent root = CreateWindowController.newCreateNode(content, newModel, updated, (model) -> {
                 // TODO fix, this is not working as expected, newModel is always null
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.call();
-                return null;
+                updated.eventNotification(model);
             });
             Scene scene = new Scene(root);
 
@@ -55,7 +54,7 @@ public class EditorHelper {
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
-                    updated.call();
+                    updated.eventNotification(newModel);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -76,10 +75,10 @@ public class EditorHelper {
      * Creates a new form for editing a team which will call the saved callback
      * every time a change is saved
      * @param model The model item to create
-     * @param onSaved The save callback
+     * @param okayClicked The save callback
      * @return The form
      */
-    public static Parent getEditForm(Model model, Callable<Void> onSaved){
+    public static Parent getEditForm(Model model, EventNotification<Model> okayClicked){
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
@@ -94,7 +93,7 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            controller.setSavedCallback(onSaved);
+            controller.setSavedCallback(okayClicked);
 
             controller.load();
 

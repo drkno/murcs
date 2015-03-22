@@ -195,10 +195,7 @@ public class AppController implements Initializable {
     @FXML
     private void createNewProject(ActionEvent event) {
         if (!UndoRedoManager.canUndo()) {
-            EditorHelper.createNew(Project.class, () -> {
-                updateDisplayList();
-                return null;
-            });
+            EditorHelper.createNew(Project.class, m -> updateDisplayList());
         }
         else {
             GenericPopup popup = new GenericPopup();
@@ -213,10 +210,7 @@ public class AppController implements Initializable {
                 // Reset Tracked history
                 UndoRedoManager.reset();
                 // Create a new project
-                EditorHelper.createNew(Project.class, () -> {
-                    updateDisplayList();
-                    return null;
-                });
+                EditorHelper.createNew(Project.class, m -> updateDisplayList());
                 return null;
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
@@ -230,10 +224,7 @@ public class AppController implements Initializable {
                 // Reset Tracked History
                 UndoRedoManager.reset();
                 // Create a new project
-                EditorHelper.createNew(Project.class, () -> {
-                    updateDisplayList();
-                    return null;
-                });
+                EditorHelper.createNew(Project.class, m -> updateDisplayList());
                 return null;
             });
             popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
@@ -411,10 +402,7 @@ public class AppController implements Initializable {
         }
 
         if (clazz != null) {
-            EditorHelper.createNew(clazz, () -> {
-                updateDisplayList();
-                return null;
-            });
+            EditorHelper.createNew(clazz, m -> updateDisplayList());
         }
     }
 
