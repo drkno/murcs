@@ -410,16 +410,11 @@ public class AppController implements Initializable {
             clazz = ModelTypes.getTypeFromModel(type);
         }
 
-        try {
-            if (clazz != null) {
-                EditorHelper.createNew(clazz, () -> {
-                    updateDisplayList();
-                    return null;
-                });
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        if (clazz != null) {
+            EditorHelper.createNew(clazz, () -> {
+                updateDisplayList();
+                return null;
+            });
         }
     }
 

@@ -116,4 +116,3 @@ public class Team extends Model {
         return getShortName();
     }
 }
-

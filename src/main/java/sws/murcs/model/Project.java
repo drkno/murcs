@@ -91,4 +91,3 @@ public class Project extends Model {
         return getShortName();
     }
 }
-

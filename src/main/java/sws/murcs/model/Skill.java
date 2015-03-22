@@ -70,5 +70,4 @@ public class Skill extends Model {
     public String toString() {
         return getShortName();
     }
-
 }

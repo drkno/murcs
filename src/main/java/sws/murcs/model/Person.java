@@ -90,10 +90,6 @@ public class Person extends Model {
         }
     }
 
-    /**
-     * Returns the string of the short name
-     * @return short name string
-     */
     @Override
     public String toString() {
         return getShortName();

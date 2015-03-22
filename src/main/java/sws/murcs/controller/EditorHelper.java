@@ -30,15 +30,16 @@ public class EditorHelper {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
 
-            // This is a simple cheat because I am lazy
-            // DW
+            // Works around, As you can't add multiple people at a time, only a single person
+            // This is just the title of the popup dialog.
             if (Objects.equals(type, "People")) {
                 type = "Person";
             }
 
             Node content = getEditForm(newModel, updated);
             Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
-                // Doubtful this is working
+                // TODO fix, this is not working as expected, newModel is always null
+                // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 updated.call();
                 return null;
@@ -50,7 +51,8 @@ public class EditorHelper {
             newStage.setTitle("Create " + type);
 
             newStage.setOnCloseRequest(event -> {
-                // Not working due to newModel being null
+                // TODO fix, this is not working as expected, newModel is always null
+                // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
                     updated.call();
