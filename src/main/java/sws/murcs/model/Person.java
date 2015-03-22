@@ -91,10 +91,15 @@ public class Person extends Model {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return getShortName();
     }
 
+    /**
+     * Checks to see if to people are equal
+     * @param object Person to compare
+     * @return  boolean state
+     */
     @Override
     public boolean equals(Object object){
         if (!(object instanceof Person)) return false;

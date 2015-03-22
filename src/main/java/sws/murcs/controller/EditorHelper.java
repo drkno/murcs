@@ -12,6 +12,7 @@ import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
@@ -26,11 +27,19 @@ public class EditorHelper {
      */
     public static void createNew(Class<? extends Model> clazz, Callable<Void> updated){
         try {
-            ModelTypes type = ModelTypes.getModelType(clazz);
+            String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
+
+            // Works around, As you can't add multiple people at a time, only a single person
+            // This is just the title of the popup dialog.
+            if (Objects.equals(type, "People")) {
+                type = "Person";
+            }
 
             Node content = getEditForm(newModel, updated);
             Parent root = CreateWindowController.newCreateNode(content, updated, () -> {
+                // TODO fix, this is not working as expected, newModel is always null
+                // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 updated.call();
                 return null;
@@ -39,13 +48,26 @@ public class EditorHelper {
 
             Stage newStage = new Stage();
             newStage.setScene(scene);
-            newStage.setTitle("Create " + type.toString());
+            newStage.setTitle("Create " + type);
+
+            newStage.setOnCloseRequest(event -> {
+                // TODO fix, this is not working as expected, newModel is always null
+                // This is a place holder for a proper implementation
+                PersistenceManager.Current.getCurrentModel().remove(newModel);
+                try {
+                    updated.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                newStage.close();
+            });
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
 
             newStage.show();
-        }catch (Exception e){
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
     }

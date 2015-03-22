@@ -24,7 +24,7 @@ import sws.murcs.model.Person;
 public class PersonEditor extends GenericEditor<Person> {
 
     @FXML
-    private TextField personNameTextField, usernameTextField;
+    private TextField personNameTextField, usernameTextField, personFullNameTextField;
 
     @FXML
     private Label labelErrorMessage;
@@ -44,6 +44,10 @@ public class PersonEditor extends GenericEditor<Person> {
             if (oldValue && !newValue) updateAndHandle();
         });
 
+        personFullNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) updateAndHandle();
+        });
+
         usernameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) updateAndHandle();
         });
@@ -59,6 +63,7 @@ public class PersonEditor extends GenericEditor<Person> {
     @Override
     public void load() {
         personNameTextField.setText(edit.getShortName());
+        personFullNameTextField.setText(edit.getLongName());
         usernameTextField.setText(edit.getUserId());
 
         skillChoiceBox.getItems().clear();

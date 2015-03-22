@@ -47,7 +47,7 @@ public class Project extends Model {
      * @param team team to add.
      * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has that team
      */
-    public void addTeam(Team team) throws DuplicateObjectException{
+    public void addTeam(Team team) throws DuplicateObjectException {
         if (!this.teams.contains(team) &&
                 !this.teams
                         .stream()
@@ -67,7 +67,7 @@ public class Project extends Model {
      * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has a team from teams to be added
      */
     public void addTeams(List<Team> teams) throws DuplicateObjectException {
-        for (Team team: teams) {
+        for (Team team : teams) {
             this.addTeam(team);
         }
     }

@@ -96,11 +96,7 @@ public class AppController implements Initializable {
 
         updateUndoRedoMenuItems(null);
 
-        UndoRedoManager.addSavedListener(change -> {
-            Platform.runLater(() -> {
-                updateUndoRedoMenuItems(change);
-            });
-        });
+        UndoRedoManager.addSavedListener(change -> Platform.runLater(() -> updateUndoRedoMenuItems(change)));
     }
 
     /**
@@ -128,18 +124,21 @@ public class AppController implements Initializable {
             case Project:
                 Project project = model.getProject();
                 if (project != null) {
-                    displayListItems.add(project);
-                    displayList.getSelectionModel().select(project);
+                    displayListItems.addAll(project);
+                    displayList.getSelectionModel().select(0);
                 }
                 break;
             case People:
                 displayListItems.addAll(model.getPeople());
+                displayList.getSelectionModel().select(0);
                 break;
             case Team:
                 displayListItems.addAll(model.getTeams());
+                displayList.getSelectionModel().select(0);
                 break;
             case Skills:
                 displayListItems.addAll(model.getSkills());
+                displayList.getSelectionModel().select(0);
                 break;
         }
     }
@@ -183,14 +182,10 @@ public class AppController implements Initializable {
      */
     @FXML
     private void toggleItemListView(ActionEvent event) {
-        if (vBoxSideDisplay.isVisible()) {
+        if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
-            vBoxSideDisplay.setVisible(false);
         }
-        else {
-            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
-            vBoxSideDisplay.setVisible(true);
-        }
+        vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
     }
 
     /**
@@ -201,7 +196,7 @@ public class AppController implements Initializable {
     private void createNewProject(ActionEvent event) {
         if (!UndoRedoManager.canUndo()) {
             EditorHelper.createNew(Project.class, () -> {
-                updateDisplayList(ModelTypes.Project);
+                updateDisplayList();
                 return null;
             });
         }
@@ -415,15 +410,11 @@ public class AppController implements Initializable {
             clazz = ModelTypes.getTypeFromModel(type);
         }
 
-        try {
-            if (clazz != null) {
-                EditorHelper.createNew(clazz, () -> {
-                    updateDisplayList();
-                    return null;
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (clazz != null) {
+            EditorHelper.createNew(clazz, () -> {
+                updateDisplayList();
+                return null;
+            });
         }
     }
 

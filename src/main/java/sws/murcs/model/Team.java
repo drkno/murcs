@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Model of a Team.
  */
-public class Team extends Model{
+public class Team extends Model {
     private String description;
     private ArrayList<Person> members = new ArrayList<>();
     private Person scrumMaster;
@@ -92,7 +92,7 @@ public class Team extends Model{
      * @throws sws.murcs.exceptions.DuplicateObjectException if a person is already in a team
      */
     public void addMembers(List<Person> members) throws DuplicateObjectException {
-        for (Person member: members) {
+        for (Person member : members) {
             this.addMember(member);
         }
     }
@@ -106,9 +106,13 @@ public class Team extends Model{
             this.members.remove(person);
         }
     }
-    
+
+    /**
+     * Returns the string of the short name
+     * @return short name string
+     */
     @Override
-    public String toString(){
+    public String toString() {
         return getShortName();
     }
 }
