@@ -120,6 +120,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     public void update() throws Exception{
         labelErrorMessage.setText("");
+        edit.setLongName(personFullNameTextField.getText());
         edit.setShortName(personNameTextField.getText());
         edit.setUserId(usernameTextField.getText());
 
@@ -153,6 +154,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
         catch (Exception e) {
             //Don't show the user this.
+            e.printStackTrace();
         }
         finally {
             updateSkills();
