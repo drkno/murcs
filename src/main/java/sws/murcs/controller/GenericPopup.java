@@ -11,9 +11,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.EventNotification;
+import sws.murcs.model.Model;
 import sws.murcs.view.App;
-
-import java.util.concurrent.Callable;
 
 /**
  * Generic popup creator and controller
@@ -94,7 +94,7 @@ public class GenericPopup extends AnchorPane {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(() -> {this.close(); return null;});
+            addOkButton(m -> this.close());
         }
     }
 
@@ -102,7 +102,7 @@ public class GenericPopup extends AnchorPane {
     /***
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
      * (either the left hand side or the right hand side) and the function to call when it is clicked (this must be a
-     * function that implements callable or just a lambda function with return null; at the end of it).
+     * function that implements event notifier or just a lambda function with return null; at the end of it).
      *
      * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left the first one added
      * will be the one closest to the left hand side, so keep that in mind.
@@ -111,13 +111,13 @@ public class GenericPopup extends AnchorPane {
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    public void addButton(String buttonText, Position position, Action action, Callable<Void> func) {
+    public void addButton(String buttonText, Position position, Action action, EventNotification<Model> func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
         button.setOnAction((a) -> {
             try {
-                func.call();
+                func.eventNotification(null);
             } catch (Exception e) {
                 //Todo catch this
             }
@@ -208,8 +208,8 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    public void addOkCancelButtons(Callable<Void> okFunction) {
-        addOkCancelButtons(okFunction, () -> {this.close(); return null;});
+    public void addOkCancelButtons(EventNotification<Model> okFunction) {
+        addOkCancelButtons(okFunction, m -> this.close());
     }
 
     /***
@@ -217,7 +217,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    public void addOkCancelButtons(Callable<Void> okFunction, Callable<Void> cancelFunction) {
+    public void addOkCancelButtons(EventNotification<Model> okFunction, EventNotification<Model> cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -226,7 +226,7 @@ public class GenericPopup extends AnchorPane {
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    public void addOkButton(Callable<Void> okFunction) {
+    public void addOkButton(EventNotification<Model> okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

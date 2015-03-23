@@ -65,7 +65,7 @@ public class CreateWindowController {
 
     /**
      * Sets the method that is called when okay is clicked
-     * @param okayClicked The callable
+     * @param okayClicked The Event to notify
      */
     public void setOkayClicked(EventNotification<Model> okayClicked) {
         this.okayClicked = okayClicked;

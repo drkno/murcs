@@ -153,22 +153,17 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
                 Platform.exit();
-                return null;
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 popup.close();
                 // Let the user save the project
                 saveProject();
                 Platform.exit();
-                return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
-                popup.close();
-                return null;
-            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
             popup.show();
         }
         else {
@@ -201,7 +196,7 @@ public class AppController implements Initializable {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, ml -> {
                 popup.close();
 
                 RelationalModel model = new RelationalModel();
@@ -211,9 +206,8 @@ public class AppController implements Initializable {
                 UndoRedoManager.reset();
                 // Create a new project
                 EditorHelper.createNew(Project.class, m -> updateDisplayList());
-                return null;
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, ml -> {
                 popup.close();
                 // Let the user save the project
                 saveProject();
@@ -225,11 +219,9 @@ public class AppController implements Initializable {
                 UndoRedoManager.reset();
                 // Create a new project
                 EditorHelper.createNew(Project.class, m -> updateDisplayList());
-                return null;
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, ml -> {
                 popup.close();
-                return null;
             });
             popup.show();
 
