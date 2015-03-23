@@ -45,7 +45,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.call();
+            onSaved.eventNotification(edit);
     }
 
     /**

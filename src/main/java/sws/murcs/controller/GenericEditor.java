@@ -1,14 +1,15 @@
 package sws.murcs.controller;
 
-import java.util.concurrent.Callable;
+import sws.murcs.EventNotification;
+import sws.murcs.model.Model;
 
 /**
  * A generic class for making editing easier
  */
 public abstract class GenericEditor<T> {
 
-    public T edit;
-    protected Callable<Void> onSaved;
+    protected T edit;
+    protected EventNotification<Model> onSaved;
 
     /**
      * Sets the item that the form is editing
@@ -22,7 +23,7 @@ public abstract class GenericEditor<T> {
      * Sets the callback that is fired when the object is saved
      * @param onSaved callback to set
      */
-    public void setSavedCallback(Callable<Void> onSaved){
+    public void setSavedCallback(EventNotification<Model> onSaved){
         this.onSaved = onSaved;
     }
 
