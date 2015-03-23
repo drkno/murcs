@@ -8,7 +8,7 @@ import sws.murcs.model.Model;
  */
 public abstract class GenericEditor<T> {
 
-    public T edit;
+    protected T edit;
     protected EventNotification<Model> onSaved;
 
     /**

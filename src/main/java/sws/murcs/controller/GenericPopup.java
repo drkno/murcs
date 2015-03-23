@@ -17,7 +17,6 @@ import sws.murcs.view.App;
 
 /**
  * Generic popup creator and controller
- * Created on 12/03/2015.
  */
 public class GenericPopup extends AnchorPane {
 
@@ -103,7 +102,6 @@ public class GenericPopup extends AnchorPane {
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
      * (either the left hand side or the right hand side) and the function to call when it is clicked (this must be a
      * function that implements event notifier or just a lambda function with return null; at the end of it).
-     *
      * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left the first one added
      * will be the one closest to the left hand side, so keep that in mind.
      * @param buttonText The text on the button.
