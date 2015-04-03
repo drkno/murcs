@@ -48,12 +48,23 @@ public class Person extends Model {
     /**
      * Sets the user id
      * @param userId The new user id
-     * @throws sws.murcs.exceptions.NameInvalidException User id is invalid
+     * @throws java.lang.Exception User id is invalid
      */
-    public void setUserId(String userId) throws NameInvalidException {
-        NameInvalidException.validate("User ID", userId);
-        this.userId = userId;
+    public void setUserId(String userId) throws Exception {
+        validateUserId(userId);
+        this.userId = userId.trim();
     }
+
+    /**
+     * Indicates whether a value is a valid value for 'userId' to hold
+     * @param value The value.
+     * @throws sws.murcs.exceptions.DuplicateObjectException if there is a duplicate object.
+     */
+    private void validateUserId(String value) throws Exception {
+        DuplicateObjectException.CheckForDuplicates(this, value);
+        NameInvalidException.validate("User Id", value);
+    }
+
 
     /**
      * Adds a skill to skills only if the person does not already have that skill
