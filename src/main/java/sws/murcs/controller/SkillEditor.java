@@ -69,9 +69,9 @@ public class SkillEditor extends GenericEditor<Skill> {
         descriptionTextArea.setText(edit.getDescription());
 
         //if 'edit' is ScrumMaster or PO
-        //  then disable the form
+        //  then disable the short name as this should be unique but allow the editing of the long name and description
         if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString())))
-            editor.setDisable(true);
+            shortNameTextField.setDisable(true);
     }
 
     @FXML
