@@ -86,7 +86,7 @@ public class AppController implements Initializable {
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, null);
+                pane = EditorHelper.getEditForm((Model) newValue, m -> updateDisplayList());
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
