@@ -21,8 +21,8 @@ public class TrackingObjectTest {
     }
 
     private class TestContainerObject extends TrackableObject {
-        public TestContainerObject() {
-            commit("initial state", true);
+        public TestContainerObject() throws Exception {
+            UndoRedoManager.commit("initial state");
         }
 
         @TrackableValue
@@ -32,20 +32,20 @@ public class TrackingObjectTest {
             return testObject;
         }
 
-        public void setTestObject(TestObject testObject) {
+        public void setTestObject(TestObject testObject) throws Exception {
             this.testObject = testObject;
-            commit("test desc.");
+            UndoRedoManager.commit("test desc.");
         }
     }
 
     @Before
     public void setup() {
-        UndoRedoManager.setMergeWaitTime(0);
+        UndoRedoManager.setMaximumCommits(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        UndoRedoManager.reset();
+        UndoRedoManager.forget(true);
     }
 
     @Test
@@ -54,11 +54,11 @@ public class TrackingObjectTest {
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals("2", a.getTestObject().toString());
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals("1", a.getTestObject().toString());
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(null, a.getTestObject());
     }
 
@@ -68,15 +68,15 @@ public class TrackingObjectTest {
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
         Assert.assertEquals(null, a.getTestObject());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals("1", a.getTestObject().toString());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals("2", a.getTestObject().toString());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals("3", a.getTestObject().toString());
     }
 
@@ -85,30 +85,30 @@ public class TrackingObjectTest {
         TestContainerObject a = new TestContainerObject();
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
-        Assert.assertEquals("test desc.", UndoRedoManager.getUndoDescription());
-        UndoRedoManager.undo();
-        Assert.assertEquals("initial state", UndoRedoManager.getUndoDescription());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRedoDescription());
-        UndoRedoManager.undo();
-        Assert.assertEquals("initial state", UndoRedoManager.getRedoDescription());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
+        UndoRedoManager.revert();
+        Assert.assertEquals("initial state", UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        UndoRedoManager.revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
     }
 
     @Test(expected = Exception.class)
     public void cannotUndoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
         a.setTestObject(new TestObject(1));
-        UndoRedoManager.undo();
-        Assert.assertFalse(UndoRedoManager.canUndo());
+        UndoRedoManager.revert();
+        Assert.assertFalse(UndoRedoManager.canRevert());
 
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
     }
 
     @Test(expected = Exception.class)
     public void cannotRedoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
         a.setTestObject(new TestObject(1));
-        Assert.assertFalse(UndoRedoManager.canRedo());
+        Assert.assertFalse(UndoRedoManager.canRemake());
 
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
     }
 }
