@@ -1,9 +1,10 @@
-package sws.murcs.magic.tracking;
+package tracking;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Tracks an objects field and its associated value.
@@ -11,26 +12,26 @@ import java.util.Map;
 public class FieldValuePair {
     private Field _field;
     private Object _value;
+    private TrackableObject _trackableObject;
 
     /**
      * Creates a new field value pair.
      * @param field field to use.
-     * @param value value to use.
+     * @param source object to get value from.
+     * @throws Exception when source does not have the field specified.
      */
-    public FieldValuePair(Field field, Object value) {
+    public FieldValuePair(Field field, TrackableObject source) throws Exception {
         _field = field;
-        _value = value;
+        _trackableObject = source;
+        _value = getValueFromObject(source, field);
     }
 
     /**
-     * Creates a new field value pair.
-     * @param valueSource source object to retrieve value from.
-     * @param field field to get value from.
-     * @throws Exception if the value does not exist in the provided object.
+     * Restores the saved value to the object.
+     * @throws Exception if something goes wrong.
      */
-    public FieldValuePair(Object valueSource, Field field) throws Exception {
-        _field = field;
-        _value = getValueFromObject(valueSource, field);
+    public void restoreValue() throws Exception {
+        _field.set(_trackableObject, _value);
     }
 
     /**
@@ -76,12 +77,13 @@ public class FieldValuePair {
 
     /**
      * Checks if this FieldValuePair uses the same field as another.
-     * @param other object to check.
+     * @param other FieldValuePair to check.
      * @return true if this FieldValuePair uses the same field as other.
      */
-    @Override
-    public boolean equals(Object other) {
-        return other instanceof FieldValuePair && ((FieldValuePair)other)._field.equals(_field);
+    public boolean equals(FieldValuePair other) {
+        return other._field.equals(_field)
+                && other._trackableObject.equals(_trackableObject)
+                && Objects.equals(other._value, _value);
     }
 
     /**
@@ -91,7 +93,7 @@ public class FieldValuePair {
      * @return the value.
      * @throws Exception if the field does not exist in object.
      */
-    public static Object getValueFromObject(Object object, Field field) throws Exception {
+    private static Object getValueFromObject(Object object, Field field) throws Exception {
         field.setAccessible(true);
         Object value = field.get(object);
         if (value instanceof Collection) {
