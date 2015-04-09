@@ -16,7 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.murcs.magic.tracking.Commit;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -93,9 +92,8 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
-        updateUndoRedoMenuItems(null);
-
-        //UndoRedoManager.addSavedListener(change -> Platform.runLater(() -> updateUndoRedoMenuItems(change)));
+        updateUndoRedoMenuItems(0);
+        UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
     }
 
     /**
@@ -291,10 +289,10 @@ public class AppController implements Initializable {
             UndoRedoManager.revert();
         }
         catch (Exception e) {
+            // Something went very wrong
+            UndoRedoManager.forget();
             e.printStackTrace();
-            //UndoRedoManager.remake();
         }
-        updateUndoRedoMenuItems(null);
     }
 
     /**
@@ -311,14 +309,13 @@ public class AppController implements Initializable {
             UndoRedoManager.forget();
             e.printStackTrace();
         }
-        updateUndoRedoMenuItems(null);
     }
 
     /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
-     * @param change change that has been made
+     * @param change type of change that has been made
      */
-    private void updateUndoRedoMenuItems(Commit change) {
+    private void updateUndoRedoMenuItems(int change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
@@ -337,35 +334,7 @@ public class AppController implements Initializable {
             redoMenuItem.setText("Redo \"" + UndoRedoManager.getRemakeMessage() +  "\"");
         }
 
-        /*if (change == null) return;
-        Class affectedType = change..getAffectedObject().getClass();
-        if (affectedType.isArray()) {
-            affectedType = affectedType.getComponentType();
-        }
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class expectedType = null;
-        switch (type) {
-            case Project:
-                expectedType = RelationalModel.class;
-                break;
-            case People:
-                expectedType = Person.class;
-                break;
-            case Team:
-                expectedType = Team.class;
-                break;
-            case Skills:
-                expectedType = Skill.class;
-                break;
-        }
-
-        if (affectedType.equals(expectedType) &&
-                Arrays.stream(change.getChangedFields())
-                        .filter(f -> f.getField().getName().equals("shortName")
-                                || f.getField().getName().equals("project"))
-                        .findAny().isPresent()) {
-            updateDisplayList(type);
-        }*/
+        // TODO: List refresh code (story: 119, task: 46)
     }
 
     @FXML
