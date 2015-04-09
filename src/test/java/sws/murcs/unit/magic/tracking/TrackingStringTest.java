@@ -76,10 +76,11 @@ public class TrackingStringTest {
         a.setTestString("string2");
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
         UndoRedoManager.revert();
-        Assert.assertEquals("initial state", UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
         UndoRedoManager.revert();
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
     }
 
     @Test(expected = Exception.class)

@@ -120,7 +120,13 @@ public class TrackingMultipleTest {
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
         UndoRedoManager.revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        UndoRedoManager.revert();
         Assert.assertEquals("initial state", UndoRedoManager.getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        UndoRedoManager.revert();
+        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("initial state", UndoRedoManager.getRemakeMessage());
     }
 }

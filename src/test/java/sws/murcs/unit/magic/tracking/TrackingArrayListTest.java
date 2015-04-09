@@ -78,12 +78,14 @@ public class TrackingArrayListTest {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
         a.addValue(2);
+        Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
         UndoRedoManager.revert();
-        Assert.assertEquals("initial state", UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
         UndoRedoManager.revert();
         Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
     }
 
     @Test(expected = Exception.class)
