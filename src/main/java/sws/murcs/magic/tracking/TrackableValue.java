@@ -1,4 +1,4 @@
-package tracking;
+package sws.murcs.magic.tracking;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package tracking;
+package sws.murcs.magic.tracking;
 
 import java.util.ArrayList;
 
