@@ -1,5 +1,7 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.EventNotification;
+
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ public class UndoRedoManager {
     private static ArrayList<TrackableObject> objectsList;
     private static long commitNumber;
     private static long maximumCommits;
+    private static ArrayList<EventNotification<Integer>> changeListeners;
 
     /**
      * "Static" constructor, used so that values are always initialized
@@ -25,6 +28,7 @@ public class UndoRedoManager {
         remakeStack = new ArrayDeque<>();
         commitNumber = 0;
         maximumCommits = -1;
+        changeListeners = new ArrayList<>();
     }
 
     /**
@@ -75,6 +79,9 @@ public class UndoRedoManager {
         if (canRemake()) {
             remakeStack.clear();
         }
+
+        notifyListeners(0);
+
         return commitNumber++;
     }
 
@@ -98,6 +105,7 @@ public class UndoRedoManager {
         if (savedObjects) {
             objectsList.clear();
         }
+        notifyListeners(-2);
     }
 
     /**
@@ -123,6 +131,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
+        notifyListeners(-1);
     }
 
     /**
@@ -164,6 +173,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
+        notifyListeners(1);
     }
 
     /**
@@ -215,5 +225,35 @@ public class UndoRedoManager {
      */
     public static void setMaximumCommits(long maximumCommits) {
         UndoRedoManager.maximumCommits = maximumCommits;
+    }
+
+    /**
+     * Adds a listener for a change in state (eg commit, revert or remake performed)
+     * that will be notified if such a change occurs.
+     * Values passed to the listener will be as follows on an event notification:
+     * -2 : A forget has occurred.
+     * -1 : A revert has occurred.
+     *  0 : A commit has occurred.
+     *  1 : A remake has occurred.
+     * @param eventListener the event listener to add.
+     */
+    public static void addChangeListener(EventNotification<Integer> eventListener) {
+        changeListeners.add(eventListener);
+    }
+
+    /**
+     * Removes an change listener.
+     * @param eventListener listener to remove.
+     */
+    public static void removeChangeListener(EventNotification<Integer> eventListener) {
+        changeListeners.remove(eventListener);
+    }
+
+    /**
+     * Notifies listeners that a change has occurred.
+     * @param changeType the type of change that occurred.
+     */
+    private static void notifyListeners(int changeType) {
+        changeListeners.forEach(l -> l.eventNotification(changeType));
     }
 }
