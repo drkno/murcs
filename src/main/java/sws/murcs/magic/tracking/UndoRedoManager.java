@@ -135,10 +135,10 @@ public class UndoRedoManager {
 
     /**
      * Gets the message associated with the first revert (undo) commit.
-     * @return the commit message.
+     * @return the commit message or null if cannot revert.
      */
     public static String getRevertMessage() {
-        return revertStack.peek().getMessage();
+        return canRevert() ? head.getMessage() : null;
     }
 
     /**
@@ -176,10 +176,10 @@ public class UndoRedoManager {
 
     /**
      * Gets the message associated with the first remake (redo) commit.
-     * @return the commit message.
+     * @return the commit message or null if cannot remake.
      */
     public static String getRemakeMessage() {
-        return remakeStack.peek().getMessage();
+        return canRemake() ? remakeStack.peek().getMessage() : null;
     }
 
     /**
