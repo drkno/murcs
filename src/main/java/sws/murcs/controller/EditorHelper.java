@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sws.murcs.EventNotification;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
@@ -25,7 +24,7 @@ public class EditorHelper {
      * @param clazz The type of object to create
      * @param updated Called when the object is successully updated
      */
-    public static void createNew(Class<? extends Model> clazz, EventNotification<Model> updated){
+    public static void createNew(Class<? extends Model> clazz, ViewUpdate updated){
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -37,12 +36,13 @@ public class EditorHelper {
             }
 
             Node content = getEditForm(newModel, updated);
-            Parent root = CreateWindowController.newCreateNode(content, newModel, updated, (model) -> {
+            Parent root = CreateWindowController.newCreateNode(content, newModel, updated, (m) -> {
                 // TODO fix, this is not working as expected, newModel is always null
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.eventNotification(model);
+                updated.updateListView(null);
             });
+            if (root == null) return;
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
@@ -54,7 +54,7 @@ public class EditorHelper {
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
-                    updated.eventNotification(newModel);
+                    updated.updateListView(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -78,7 +78,7 @@ public class EditorHelper {
      * @param okayClicked The save callback
      * @return The form
      */
-    public static Parent getEditForm(Model model, EventNotification<Model> okayClicked){
+    public static Parent getEditForm(Model model,  ViewUpdate okayClicked){
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
@@ -93,7 +93,7 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            controller.setSavedCallback(okayClicked);
+            GenericEditor.addListener(okayClicked::updateListView);
 
             controller.load();
 
