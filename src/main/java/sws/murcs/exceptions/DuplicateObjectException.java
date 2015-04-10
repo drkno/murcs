@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Duplicate Object Exception
  */
-public class DuplicateObjectException extends Exception {
+public class DuplicateObjectException extends CustomException {
 
     public DuplicateObjectException() {}
 
