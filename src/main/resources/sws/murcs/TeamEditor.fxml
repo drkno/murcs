@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
@@ -43,7 +44,15 @@
                   <VBox>
                      <children>
                         <Label text="Team Members" GridPane.rowIndex="1" />
-                        <VBox fx:id="teamMembersContainer" VBox.vgrow="ALWAYS" />
+                        <ScrollPane fitToWidth="true" maxHeight="100.0">
+                           <content>
+                              <VBox>
+                                 <children>
+                                    <VBox fx:id="teamMembersContainer" alignment="CENTER" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </ScrollPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a member">
                            <VBox.margin>
                               <Insets top="10.0" />
