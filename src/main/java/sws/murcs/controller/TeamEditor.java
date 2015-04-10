@@ -1,11 +1,9 @@
 package sws.murcs.controller;
 
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -25,10 +23,19 @@ import java.util.ArrayList;
  */
 public class TeamEditor extends GenericEditor<Team> {
 
-    @FXML private VBox teamMembersContainer;
-    @FXML private TextField teamNameTextField, longNameTextField, descriptionTextField;
-    @FXML private ComboBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
-    @FXML private Label labelErrorMessage;
+    @FXML
+    private VBox teamMembersContainer;
+
+    @FXML
+    private TextField teamNameTextField, longNameTextField, descriptionTextField;
+
+    @FXML
+    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+
+    @FXML
+    private Label labelErrorMessage;
+
+    private ChangeListener<Person> smpoChangeListener;
 
     /**
      * Saves the team being edited
@@ -39,14 +46,18 @@ public class TeamEditor extends GenericEditor<Team> {
         edit.setLongName(longNameTextField.getText());
         edit.setDescription(descriptionTextField.getText());
 
-        edit.setProductOwner((Person) productOwnerPicker.getValue());
-        edit.setScrumMaster((Person) scrumMasterPicker.getValue());
+        Person productOwner = productOwnerPicker.getValue();
+        edit.setProductOwner(productOwner);
 
-        if (addTeamMemberPicker.getValue() != null) {
-            edit.addMember((Person) addTeamMemberPicker.getValue());
-        }
-        
+        Person scrumMaster = scrumMasterPicker.getValue();
+        edit.setScrumMaster(scrumMaster);
+
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        Person person = addTeamMemberPicker.getValue();
+
+        if (person != null) {
+            edit.addMember(person);
+        }
 
         //If we haven't added the team yet, throw them in the list of unassigned people
         if (!model.getTeams().contains(edit))
@@ -84,10 +95,8 @@ public class TeamEditor extends GenericEditor<Team> {
         longNameTextField.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
 
-        //We don't have to maintain the list here, as we want it to clear the selection
-        addTeamMemberPicker.getSelectionModel().clearSelection();
-        //addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems().setAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+        addTeamMemberPicker.getItems().clear();
+        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
         teamMembersContainer.getChildren().clear();
         for (Person person : edit.getMembers()) {
@@ -95,19 +104,37 @@ public class TeamEditor extends GenericEditor<Team> {
             teamMembersContainer.getChildren().add(node);
         }
 
+        Person productOwner = edit.getProductOwner();
+        Person scrumMaster = edit.getScrumMaster();
+
         //Add all the people with the PO skill to the list of POs
         ArrayList<Person> productOwners = new ArrayList<>();
-        edit.getMembers().stream().filter(p -> p.canBeRole(Skill.PO_NAME)).forEach(p -> productOwners.add(p));
-        productOwners.remove(edit.getProductOwner());
-        productOwnerPicker.getItems().setAll(productOwners);
-        productOwnerPicker.getSelectionModel().select(edit.getProductOwner());
+        edit.getMembers().stream()
+                .filter(p -> p.canBeRole(Skill.PO_NAME))
+                .forEach(p -> productOwners.add(p));
+        productOwners.remove(scrumMaster);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
+        productOwnerPicker.getItems().clear();
+        productOwnerPicker.getItems().addAll(productOwners);
+        if (productOwner != null) {
+            productOwnerPicker.getSelectionModel().select(productOwner);
+        }
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
 
         //Add all the people with the scrum master skill to the list of scrum masters
         ArrayList<Person> scrumMasters = new ArrayList<>();
-        edit.getMembers().stream().filter(p -> p.canBeRole(Skill.SM_NAME)).forEach(p -> scrumMasters.add(p));
-        scrumMasters.remove(edit.getScrumMaster());
-        scrumMasterPicker.getItems().setAll(scrumMasters);
-        scrumMasterPicker.getSelectionModel().select(edit.getScrumMaster());
+        edit.getMembers().stream()
+                .filter(p -> p.canBeRole(Skill.SM_NAME))
+                .forEach(p -> scrumMasters.add(p));
+        scrumMasters.remove(productOwner);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
+        scrumMasterPicker.getItems().clear();
+        scrumMasterPicker.getItems().addAll(scrumMasters);
+        scrumMasterPicker.getSelectionModel().clearSelection();
+        if (scrumMaster != null) {
+            scrumMasterPicker.getSelectionModel().select(scrumMaster);
+        }
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
     }
 
     /**
@@ -157,34 +184,15 @@ public class TeamEditor extends GenericEditor<Team> {
             if (oldValue && !newValue)  updateAndHandle();
         });
 
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                // due to a bug in javafx, this prints a stack trace to the console.
-                // we cant do anything about it at the moment
-                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
-                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
-                updateAndHandle();
-            }
-        });
-
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                // due to a bug in javafx, this prints a stack trace to the console.
-                // we cant do anything about it at the moment
-                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
-                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
-                updateAndHandle();
-            }
-        });
+        // Use a removable listener to work around a selected index flip-flop bug
+        smpoChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue != null) updateAndHandle();
+        };
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
 
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                // due to a bug in javafx, this prints a stack trace to the console.
-                // we cant do anything about it at the moment
-                System.err.println("JavaFX has a bug that prints a stack trace here. There is nothing we can do about it. " +
-                        "If there wasn't a stack trace, it's a miracle, something in Java got BETTER!");
-                updateAndHandle();
-            }
+            if (newValue != null) updateAndHandle();
         });
     }
 }
