@@ -177,11 +177,11 @@ public class TeamEditor extends GenericEditor<Team> {
         });
 
         longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  updateAndHandle();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)  updateAndHandle();
+            if (oldValue && !newValue) updateAndHandle();
         });
 
         // Use a removable listener to work around a selected index flip-flop bug
