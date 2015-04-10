@@ -14,17 +14,23 @@ import java.util.Random;
  * Generates random RelationalModels
  */
 public class RelationalModelGenerator implements Generator<RelationalModel> {
+    private final ProjectGenerator projectGenerator;
+    private final TeamGenerator teamGenerator;
+    private final Random random;
 
-    private ProjectGenerator projectGenerator;
-    private TeamGenerator teamGenerator;
-    private Random random;
-
+    /**
+     * Instantiates a new random RelationalModel generator.
+     */
     public RelationalModelGenerator() {
         projectGenerator = new ProjectGenerator();
         teamGenerator = new TeamGenerator();
         random = new Random();
     }
 
+    /**
+     * Generates a new random relational model.
+     * @return a new random relational model.
+     */
     @Override
     public RelationalModel generate() {
         try {

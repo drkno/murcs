@@ -9,15 +9,25 @@ public class SkillGenerator implements Generator<Skill> {
     private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming", "PO", "SM"};
     private String[] descriptions = {"A very useful skill", "A not very useful skill"};
 
-    public SkillGenerator(){
+    /**
+     * Instantiates a new random skill generator.
+     */
+    public SkillGenerator() {}
 
-    }
-
+    /**
+     * Instantiates a new random skill generator.
+     * @param skillsList skills to generate from.
+     * @param descriptionList descriptions to generate from.
+     */
     public SkillGenerator(String[] skillsList, String[] descriptionList){
         this.skills = skillsList;
         this.descriptions = descriptionList;
     }
 
+    /**
+     * Generates a new random skill.
+     * @return a new random skill.
+     */
     @Override
     public Skill generate() {
         Skill skill = new Skill();

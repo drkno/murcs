@@ -9,27 +9,39 @@ import java.util.ArrayList;
  * Generates random teams with people
  */
 public class TeamGenerator implements Generator<Team> {
-    private String[] teamNames = new String[]{"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
-    private String[] descriptions = new String[]{NameGenerator.getLoremIpsum()};
-
+    private String[] teamNames = {"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
+    private String[] descriptions = {NameGenerator.getLoremIpsum()};
     private float probOfScrumMaster = 0.5f;
     private float probOfProductOwner = 0.5f;
+    private final Generator<Person> personGenerator;
 
-    private Generator<Person> personGenerator;
-
+    /**
+     * Instantiates a new Team generator.
+     */
     public TeamGenerator(){
         personGenerator = new PersonGenerator();
     }
 
+    /**
+     * Instantiates a new Team generator.
+     * @param personGenerator person generator to use.
+     * @param teamNames team names to generate from.
+     * @param descriptions descriptions to generate from.
+     * @param probOfProductOwner probability of a product owner to use.
+     * @param probOfScrumMaster probability of a scrum master to use.
+     */
     public TeamGenerator(Generator<Person> personGenerator, String[] teamNames, String[] descriptions, float probOfProductOwner, float probOfScrumMaster){
         this.personGenerator = personGenerator;
         this.teamNames = teamNames;
         this.descriptions = descriptions;
-
         this.probOfProductOwner = probOfProductOwner;
         this.probOfScrumMaster = probOfScrumMaster;
     }
 
+    /**
+     * Generates a new random team.
+     * @return a new random team.
+     */
     @Override
     public Team generate() {
         Team team = new Team();
@@ -53,8 +65,6 @@ public class TeamGenerator implements Generator<Team> {
         }
 
         productOwner = members.get(0);
-
-
         scrumMaster = members.get(1);
 
         try {
