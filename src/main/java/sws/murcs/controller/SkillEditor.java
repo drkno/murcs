@@ -5,8 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -52,7 +51,7 @@ public class SkillEditor extends GenericEditor<Skill> {
             labelErrorMessage.setText("");
             update();
         }
-        catch (DuplicateObjectException | NameInvalidException e) {
+        catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {

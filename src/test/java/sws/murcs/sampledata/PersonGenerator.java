@@ -1,6 +1,6 @@
 package sws.murcs.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 
@@ -52,7 +52,7 @@ public class PersonGenerator implements Generator<Person> {
         try {
             p.addSkills(skills);
         }
-        catch (DuplicateObjectException e) {
+        catch (CustomException e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

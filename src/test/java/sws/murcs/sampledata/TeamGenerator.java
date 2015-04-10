@@ -1,6 +1,5 @@
 package sws.murcs.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
@@ -71,12 +70,12 @@ public class TeamGenerator implements Generator<Team> {
 
         team.setLongName(longName);
         team.setDescription(description);
-        team.setScrumMaster(scrumMaster);
-        team.setProductOwner(productOwner);
 
         try {
+            team.setScrumMaster(scrumMaster);
+            team.setProductOwner(productOwner);
             team.addMembers(members);
-        } catch (DuplicateObjectException e) {
+        } catch (Exception e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

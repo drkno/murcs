@@ -11,8 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
@@ -75,7 +74,7 @@ public class TeamEditor extends GenericEditor<Team> {
             labelErrorMessage.setText("");
             update();
         }
-        catch (DuplicateObjectException | NameInvalidException e) {
+        catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {

@@ -1,6 +1,6 @@
 package sws.murcs.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
@@ -53,7 +53,7 @@ public class ProjectGenerator implements Generator<Project> {
 
         try{
             project.addTeams(teams);
-        } catch (DuplicateObjectException e) {
+        } catch (CustomException e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

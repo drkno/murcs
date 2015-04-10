@@ -3,8 +3,7 @@ package sws.murcs.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -56,7 +55,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText("");
             update();
         }
-        catch (DuplicateObjectException | NameInvalidException e) {
+        catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
