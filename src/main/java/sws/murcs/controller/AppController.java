@@ -18,13 +18,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
-import sws.murcs.magic.tracking.ValueChange;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 /**
@@ -94,9 +92,8 @@ public class AppController implements Initializable {
             contentPane.getChildren().add(pane);
         });
 
-        updateUndoRedoMenuItems(null);
-
-        UndoRedoManager.addSavedListener(change -> Platform.runLater(() -> updateUndoRedoMenuItems(change)));
+        updateUndoRedoMenuItems(0);
+        UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
     }
 
     /**
@@ -149,7 +146,7 @@ public class AppController implements Initializable {
      */
     @FXML
     private void fileQuitPress(ActionEvent event) {
-        if (UndoRedoManager.canUndo()) {
+        if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
             popup.setMessageText("You have unsaved changes to your project.");
@@ -189,7 +186,7 @@ public class AppController implements Initializable {
      */
     @FXML
     private void createNewProject(ActionEvent event) {
-        if (!UndoRedoManager.canUndo()) {
+        if (!UndoRedoManager.canRevert()) {
             EditorHelper.createNew(Project.class, m -> updateDisplayList());
         }
         else {
@@ -203,7 +200,7 @@ public class AppController implements Initializable {
                 PersistenceManager.Current.setCurrentModel(model);
                 updateDisplayList();
                 // Reset Tracked history
-                UndoRedoManager.reset();
+                UndoRedoManager.forget(true);
                 // Create a new project
                 EditorHelper.createNew(Project.class, m -> updateDisplayList());
             });
@@ -216,7 +213,7 @@ public class AppController implements Initializable {
                 PersistenceManager.Current.setCurrentModel(model);
                 updateDisplayList();
                 // Reset Tracked History
-                UndoRedoManager.reset();
+                UndoRedoManager.forget(true);
                 // Create a new project
                 EditorHelper.createNew(Project.class, m -> updateDisplayList());
             });
@@ -289,13 +286,13 @@ public class AppController implements Initializable {
     @FXML
     private void undoMenuItemClicked(ActionEvent event) {
         try {
-            UndoRedoManager.undo();
+            UndoRedoManager.revert();
         }
         catch (Exception e) {
+            // Something went very wrong
+            UndoRedoManager.forget();
             e.printStackTrace();
-            UndoRedoManager.reset();
         }
-        updateUndoRedoMenuItems(null);
     }
 
     /**
@@ -305,68 +302,39 @@ public class AppController implements Initializable {
     @FXML
     private void redoMenuItemClicked(ActionEvent event) {
         try {
-            UndoRedoManager.redo();
+            UndoRedoManager.remake();
         }
         catch (Exception e) {
             // something went terribly wrong....
-            UndoRedoManager.reset();
+            UndoRedoManager.forget();
             e.printStackTrace();
         }
-        updateUndoRedoMenuItems(null);
     }
 
     /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
-     * @param change change that has been made
+     * @param change type of change that has been made
      */
-    private void updateUndoRedoMenuItems(ValueChange change) {
-        if (!UndoRedoManager.canUndo()) {
+    private void updateUndoRedoMenuItems(int change) {
+        if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
         else {
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo \"" + UndoRedoManager.getUndoDescription() +  "\"");
+            undoMenuItem.setText("Undo \"" + UndoRedoManager.getRevertMessage() +  "\"");
         }
 
-        if (!UndoRedoManager.canRedo()) {
+        if (!UndoRedoManager.canRemake()) {
             redoMenuItem.setDisable(true);
             redoMenuItem.setText("Redo...");
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo \"" + UndoRedoManager.getRedoDescription() +  "\"");
+            redoMenuItem.setText("Redo \"" + UndoRedoManager.getRemakeMessage() +  "\"");
         }
 
-        if (change == null) return;
-        Class affectedType = change.getAffectedObject().getClass();
-        if (affectedType.isArray()) {
-            affectedType = affectedType.getComponentType();
-        }
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        Class expectedType = null;
-        switch (type) {
-            case Project:
-                expectedType = RelationalModel.class;
-                break;
-            case People:
-                expectedType = Person.class;
-                break;
-            case Team:
-                expectedType = Team.class;
-                break;
-            case Skills:
-                expectedType = Skill.class;
-                break;
-        }
-
-        if (affectedType.equals(expectedType) &&
-                Arrays.stream(change.getChangedFields())
-                        .filter(f -> f.getField().getName().equals("shortName")
-                                || f.getField().getName().equals("project"))
-                        .findAny().isPresent()) {
-            updateDisplayList(type);
-        }
+        // TODO: List refresh code (story: 119, task: 46)
     }
 
     @FXML

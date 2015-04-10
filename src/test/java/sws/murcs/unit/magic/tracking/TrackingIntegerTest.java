@@ -10,8 +10,8 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 
 public class TrackingIntegerTest {
     public class TestInteger extends TrackableObject {
-        public TestInteger() {
-            commit("initial state", true);
+        public TestInteger() throws Exception {
+            UndoRedoManager.commit("initial state");
         }
 
         @TrackableValue
@@ -21,21 +21,20 @@ public class TrackingIntegerTest {
             return testInteger;
         }
 
-        public void setTestInteger(int testInteger) {
+        public void setTestInteger(int testInteger) throws Exception {
             this.testInteger = testInteger;
-            commit("test desc.");
+            UndoRedoManager.commit("test desc.");
         }
     }
 
     @Before
     public void setup() {
-        UndoRedoManager.setMergeWaitTime(0);
-        UndoRedoManager.setMaximumTrackingSize(-1);
+        UndoRedoManager.setMaximumCommits(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        UndoRedoManager.reset();
+        UndoRedoManager.forget(true);
     }
 
     @Test
@@ -44,11 +43,11 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(1, a.getTestInteger());
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(0, a.getTestInteger());
     }
 
@@ -58,15 +57,15 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
         Assert.assertEquals(0, a.getTestInteger());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals(1, a.getTestInteger());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals(3, a.getTestInteger());
     }
 
@@ -75,49 +74,50 @@ public class TrackingIntegerTest {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
         a.setTestInteger(2);
-        Assert.assertEquals("test desc.", UndoRedoManager.getUndoDescription());
-        UndoRedoManager.undo();
-        Assert.assertEquals("initial state", UndoRedoManager.getUndoDescription());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRedoDescription());
-        UndoRedoManager.undo();
-        Assert.assertEquals("initial state", UndoRedoManager.getRedoDescription());
+        Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
+        UndoRedoManager.revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        UndoRedoManager.revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
+        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
     }
 
     @Test(expected = Exception.class)
     public void cannotUndoTest() throws Exception {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
-        UndoRedoManager.undo();
-        Assert.assertFalse(UndoRedoManager.canUndo());
-
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
+        Assert.assertFalse(UndoRedoManager.canRevert());
+        UndoRedoManager.revert();
     }
 
     @Test(expected = Exception.class)
     public void cannotRedoTest() throws Exception {
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
-        Assert.assertFalse(UndoRedoManager.canRedo());
+        Assert.assertFalse(UndoRedoManager.canRemake());
 
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
     }
 
     @Test
     public void maximumUndoRedoStackSizeTest() throws Exception {
-        UndoRedoManager.setMaximumTrackingSize(3);
-        Assert.assertEquals(3, UndoRedoManager.getMaximumTrackingSize());
+        UndoRedoManager.setMaximumCommits(3);
+        Assert.assertEquals(3, UndoRedoManager.getMaximumCommits());
         TestInteger a = new TestInteger();
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
         a.setTestInteger(4);
         a.setTestInteger(5);
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
-        Assert.assertFalse(UndoRedoManager.canUndo());
-        UndoRedoManager.setMaximumTrackingSize(-1);
+        Assert.assertFalse(UndoRedoManager.canRevert());
+        UndoRedoManager.setMaximumCommits(-1);
     }
 
     @Test
@@ -126,14 +126,14 @@ public class TrackingIntegerTest {
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
-        Assert.assertTrue(UndoRedoManager.canRedo());
+        Assert.assertTrue(UndoRedoManager.canRemake());
         a.setTestInteger(4);
-        Assert.assertFalse(UndoRedoManager.canRedo());
-        UndoRedoManager.undo();
+        Assert.assertFalse(UndoRedoManager.canRemake());
+        UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.redo();
+        UndoRedoManager.remake();
         Assert.assertEquals(4, a.getTestInteger());
     }
 
@@ -144,27 +144,7 @@ public class TrackingIntegerTest {
         a.setTestInteger(2);
         a.setTestInteger(3);
         a.setTestInteger(3);
-        UndoRedoManager.undo();
+        UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
-    }
-
-    @Test
-    public void mergeChangesIfLessThanMergeTime() throws Exception {
-        UndoRedoManager.setMergeWaitTime(1000000); // ~11 days. if a build is going that long we have a problem
-        Assert.assertEquals(UndoRedoManager.getMergeWaitTime(), 1000000);
-        TestInteger a = new TestInteger();
-        a.setTestInteger(3);
-        a.setTestInteger(2);
-        a.setTestInteger(1);
-        UndoRedoManager.setMergeWaitTime(0);
-        a.setTestInteger(4);
-        a.setTestInteger(5);
-        UndoRedoManager.undo();
-        Assert.assertEquals(a.getTestInteger(), 4);
-        UndoRedoManager.undo();
-        Assert.assertEquals(a.getTestInteger(), 1);
-        UndoRedoManager.undo();
-        Assert.assertEquals(a.getTestInteger(), 0);
-        Assert.assertFalse(UndoRedoManager.canUndo());
     }
 }

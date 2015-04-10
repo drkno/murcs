@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppClosingListener;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
@@ -75,7 +74,6 @@ public class App extends Application{
         PersistenceManager.Current.setCurrentModel(new RelationalModel());
 
         launch(args);
-        UndoRedoManager.destroy();
     }
 }
 
