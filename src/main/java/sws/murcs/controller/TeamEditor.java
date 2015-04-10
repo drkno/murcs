@@ -45,13 +45,7 @@ public class TeamEditor extends GenericEditor<Team> {
         if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
             edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
         }
-
-        // Sets the product owner and scrum master, no need to check if it's been set
-        Person productOwner = (Person) productOwnerPicker.getSelectionModel().getSelectedItem();
-        edit.setProductOwner(productOwner);
-        Person scrumMaster = (Person) scrumMasterPicker.getSelectionModel().getSelectedItem();
-        edit.setScrumMaster(scrumMaster);
-
+        
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         //If we haven't added the team yet, throw them in the list of unassigned people
