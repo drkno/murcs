@@ -39,11 +39,11 @@ public class TeamEditor extends GenericEditor<Team> {
         edit.setLongName(longNameTextField.getText());
         edit.setDescription(descriptionTextField.getText());
 
-        edit.setProductOwner((Person) productOwnerPicker.getSelectionModel().getSelectedItem());
-        edit.setScrumMaster((Person) scrumMasterPicker.getSelectionModel().getSelectedItem());
+        edit.setProductOwner((Person) productOwnerPicker.getValue());
+        edit.setScrumMaster((Person) scrumMasterPicker.getValue());
 
-        if (addTeamMemberPicker.getSelectionModel().getSelectedItem() != null) {
-            edit.addMember((Person) addTeamMemberPicker.getSelectionModel().getSelectedItem());
+        if (addTeamMemberPicker.getValue() != null) {
+            edit.addMember((Person) addTeamMemberPicker.getValue());
         }
         
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
