@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;

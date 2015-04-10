@@ -115,8 +115,8 @@ public class Person extends Model {
     public boolean equals(Object object){
         if (!(object instanceof Person)) return false;
 
-        Person other = (Person)object;
+        Person person = (Person)object;
 
-        return other.getUserId() != null && other.getUserId().equals(getUserId());
+        return person.getShortName().toLowerCase().equals(getShortName().toLowerCase()) || person.getUserId().equals(getUserId());
     }
 }

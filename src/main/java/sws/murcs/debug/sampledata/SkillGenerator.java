@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Skill;
 
@@ -29,6 +29,8 @@ public class SkillGenerator implements Generator<Skill> {
             skill.setShortName(name);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

@@ -6,7 +6,7 @@ import org.junit.Test;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
-import sws.murcs.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.RelationalModelGenerator;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -6,10 +6,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
-import sws.murcs.sampledata.Generator;
-import sws.murcs.sampledata.PersonGenerator;
-import sws.murcs.sampledata.SkillGenerator;
-import sws.murcs.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.SkillGenerator;
+import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
