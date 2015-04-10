@@ -10,16 +10,27 @@ import java.util.ArrayList;
  * Generates random people with skills and roles
  */
 public class PersonGenerator implements Generator<Person> {
-    private Generator<Skill> skillGenerator;
+    private final Generator<Skill> skillGenerator;
 
+    /**
+     * Instantiates a new person generator.
+     */
     public PersonGenerator(){
         skillGenerator = new SkillGenerator();
     }
 
+    /**
+     * Instantiates a new person generator.
+     * @param skillGenerator skill generator to use.
+     */
     public PersonGenerator(Generator<Skill> skillGenerator){
         this.skillGenerator = skillGenerator;
     }
 
+    /**
+     * Generates a new random person.
+     * @return a new random person.
+     */
     @Override
     public Person generate() {
         Person p = new Person();

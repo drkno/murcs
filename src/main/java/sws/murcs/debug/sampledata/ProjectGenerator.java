@@ -10,21 +10,33 @@ import java.util.ArrayList;
  * Generates random projects with teams
  */
 public class ProjectGenerator implements Generator<Project> {
-    private String[] projectNames = new String[]{"A project", "Something exciting"};
-    private String[] descriptions = new String[]{"A very exciting description", NameGenerator.getLoremIpsum()};
+    private String[] projectNames = {"A project", "Something exciting"};
+    private String[] descriptions = {"A very exciting description", NameGenerator.getLoremIpsum()};
+    private final Generator<Team> teamGenerator;
 
-    private Generator<Team> teamGenerator;
-
+    /**
+     * Instantiates a new project generator.
+     */
     public ProjectGenerator(){
         teamGenerator = new TeamGenerator();
     }
 
+    /**
+     * Instantiates a new project generator.
+     * @param teamGenerator team generator to use.
+     * @param projectNames project names to generate project from.
+     * @param descriptions descriptions for projects to generate from.
+     */
     public ProjectGenerator(Generator<Team> teamGenerator, String[] projectNames, String[] descriptions){
         this.teamGenerator = teamGenerator;
         this.projectNames = projectNames;
         this.descriptions = descriptions;
     }
 
+    /**
+     * Generates a new random project.
+     * @return a new random project.
+     */
     @Override
     public Project generate() {
         Project project = new Project();
