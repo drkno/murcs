@@ -67,7 +67,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             for (Team team : model.getProject().getTeams()) {
                 for (Person person : team.getMembers()) {
                     for (Skill newSkill: person.getSkills()) {
-                        if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                        if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
                             skills.add(newSkill);
                         }
                     }
@@ -75,7 +75,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             }
             for (Person person : model.getUnassignedPeople()) {
                 for (Skill newSkill: person.getSkills()) {
-                    if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                    if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
                         skills.add(newSkill);
                     }
                 }
