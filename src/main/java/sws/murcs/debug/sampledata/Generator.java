@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 /**
  * Interface for generating sample data

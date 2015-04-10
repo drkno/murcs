@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import java.util.Random;
 

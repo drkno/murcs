@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
@@ -32,18 +32,25 @@ public class PersonGenerator implements Generator<Person> {
         int skillCount = NameGenerator.random(100);
         ArrayList<Skill> skills = new ArrayList<>();
 
-        for (int i = 0; i < skillCount; i++)
-            skills.add(skillGenerator.generate());
+        for (int i = 0; i < skillCount; i++) {
+            Skill newSkill = skillGenerator.generate();
+            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                skills.add(newSkill);
+            }
+        }
 
         try {
             p.setUserId(userId);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         try {
             p.setShortName(shortName);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
@@ -53,6 +60,8 @@ public class PersonGenerator implements Generator<Person> {
             p.addSkills(skills);
         }
         catch (CustomException e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

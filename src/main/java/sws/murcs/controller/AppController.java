@@ -73,11 +73,12 @@ public class AppController implements Initializable, ViewUpdate{
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedIndexProperty().addListener((observer, oldValue, newValue) -> {
+        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
                 updateListView(null);
             }
             else {
+                // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
             }
         });
@@ -122,6 +123,7 @@ public class AppController implements Initializable, ViewUpdate{
                 updateList(newModelObject, type);
             }
             else {
+                // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
                 consumeChoiceBoxEvent = true;
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 updateList(newModelObject, type);

@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Skill;
 
@@ -6,7 +6,7 @@ import sws.murcs.model.Skill;
  * Generates random skills
  */
 public class SkillGenerator implements Generator<Skill> {
-    private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming"};
+    private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming", "PO", "SM"};
     private String[] descriptions = {"A very useful skill", "A not very useful skill"};
 
     public SkillGenerator(){
@@ -29,6 +29,8 @@ public class SkillGenerator implements Generator<Skill> {
             skill.setShortName(name);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

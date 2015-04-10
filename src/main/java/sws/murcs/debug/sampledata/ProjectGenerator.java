@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
@@ -38,8 +38,10 @@ public class ProjectGenerator implements Generator<Project> {
         ArrayList<Team> teams = new ArrayList<>();
 
         for (int i = 0; i < teamCount; ++i){
-            Team team = teamGenerator.generate();
-            teams.add(team);
+            Team newTeam = teamGenerator.generate();
+            if (!teams.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
+                teams.add(newTeam);
+            }
         }
 
         try {
@@ -47,6 +49,8 @@ public class ProjectGenerator implements Generator<Project> {
         }
         catch (Exception e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
+            e.printStackTrace();
+            return null;
         }
             project.setLongName(longName);
             project.setDescription(description);
@@ -54,6 +58,8 @@ public class ProjectGenerator implements Generator<Project> {
         try{
             project.addTeams(teams);
         } catch (CustomException e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

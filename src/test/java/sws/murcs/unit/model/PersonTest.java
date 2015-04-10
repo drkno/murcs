@@ -7,8 +7,8 @@ import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
-import sws.murcs.sampledata.Generator;
-import sws.murcs.sampledata.SkillGenerator;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.SkillGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
@@ -47,24 +47,22 @@ public class TeamGenerator implements Generator<Team> {
         ArrayList<Person> members = new ArrayList<>();
         for (int i = 0; i < memberCount; ++i){
             Person p = personGenerator.generate();
-            if (NameGenerator.random() < probOfProductOwner/memberCount)
-                productOwner = p;
-            if (NameGenerator.random() < probOfScrumMaster/memberCount)
-                scrumMaster = p;
-
-            members.add(p);
+            if (!members.stream().filter(person -> p.equals(person)).findAny().isPresent()) {
+                members.add(p);
+            }
         }
 
-        if (probOfProductOwner == 1)
-            productOwner = members.get(0);
+        productOwner = members.get(0);
 
-        if (probOfScrumMaster == 1)
-            scrumMaster = members.get(1);
+
+        scrumMaster = members.get(1);
 
         try {
             team.setShortName(shortName);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
@@ -77,6 +75,8 @@ public class TeamGenerator implements Generator<Team> {
             team.addMembers(members);
         } catch (Exception e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
+            e.printStackTrace();
+            return null;
         }
 
         return team;
