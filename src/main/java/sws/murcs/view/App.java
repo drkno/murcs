@@ -7,11 +7,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppClosingListener;
+import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * The main app class
@@ -70,9 +72,17 @@ public class App extends Application{
      */
     public static void main(String[] args) {
         PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());
-        //Give us an empty model
-        PersistenceManager.Current.setCurrentModel(new RelationalModel());
 
+        if (args.length > 0) {
+            for (String s : args) {
+                if (Objects.equals(s, "debug")) {
+                    PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator().generate());
+                }
+            }
+        } else {
+            //Give us an empty model
+            PersistenceManager.Current.setCurrentModel(new RelationalModel());
+        }
         launch(args);
     }
 }

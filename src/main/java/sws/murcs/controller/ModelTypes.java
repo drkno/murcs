@@ -27,6 +27,29 @@ public enum ModelTypes {
     }
 
     /**
+     * Gets the index from a model type
+     * 0: Project
+     * 1: People
+     * 2: Team
+     * 3: Skills
+     * @param type The type of model object
+     * @return The index for selection
+     */
+    public static int getSelectionType(ModelTypes type) {
+        switch (type){
+            case Project:
+                return 0;
+            case People:
+                return 1;
+            case Team:
+                return 2;
+            case Skills:
+                return 3;
+        }
+        return 0;
+    }
+
+    /**
      * Gets the model type from a model object
      * @param clazz The type of the model object
      * @return The model type

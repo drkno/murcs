@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
-import sws.murcs.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.RelationalModelGenerator;
 
 import java.io.File;
 import java.io.IOException;

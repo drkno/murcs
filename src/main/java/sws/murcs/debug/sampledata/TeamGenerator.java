@@ -1,6 +1,5 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
@@ -10,27 +9,39 @@ import java.util.ArrayList;
  * Generates random teams with people
  */
 public class TeamGenerator implements Generator<Team> {
-    private String[] teamNames = new String[]{"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
-    private String[] descriptions = new String[]{NameGenerator.getLoremIpsum()};
-
+    private String[] teamNames = {"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
+    private String[] descriptions = {NameGenerator.getLoremIpsum()};
     private float probOfScrumMaster = 0.5f;
     private float probOfProductOwner = 0.5f;
+    private final Generator<Person> personGenerator;
 
-    private Generator<Person> personGenerator;
-
+    /**
+     * Instantiates a new Team generator.
+     */
     public TeamGenerator(){
         personGenerator = new PersonGenerator();
     }
 
+    /**
+     * Instantiates a new Team generator.
+     * @param personGenerator person generator to use.
+     * @param teamNames team names to generate from.
+     * @param descriptions descriptions to generate from.
+     * @param probOfProductOwner probability of a product owner to use.
+     * @param probOfScrumMaster probability of a scrum master to use.
+     */
     public TeamGenerator(Generator<Person> personGenerator, String[] teamNames, String[] descriptions, float probOfProductOwner, float probOfScrumMaster){
         this.personGenerator = personGenerator;
         this.teamNames = teamNames;
         this.descriptions = descriptions;
-
         this.probOfProductOwner = probOfProductOwner;
         this.probOfScrumMaster = probOfScrumMaster;
     }
 
+    /**
+     * Generates a new random team.
+     * @return a new random team.
+     */
     @Override
     public Team generate() {
         Team team = new Team();
@@ -48,36 +59,34 @@ public class TeamGenerator implements Generator<Team> {
         ArrayList<Person> members = new ArrayList<>();
         for (int i = 0; i < memberCount; ++i){
             Person p = personGenerator.generate();
-            if (NameGenerator.random() < probOfProductOwner/memberCount)
-                productOwner = p;
-            if (NameGenerator.random() < probOfScrumMaster/memberCount)
-                scrumMaster = p;
-
-            members.add(p);
+            if (!members.stream().filter(person -> p.equals(person)).findAny().isPresent()) {
+                members.add(p);
+            }
         }
 
-        if (probOfProductOwner == 1)
-            productOwner = members.get(0);
-
-        if (probOfScrumMaster == 1)
-            scrumMaster = members.get(1);
+        productOwner = members.get(0);
+        scrumMaster = members.get(1);
 
         try {
             team.setShortName(shortName);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
         team.setLongName(longName);
         team.setDescription(description);
-        team.setScrumMaster(scrumMaster);
-        team.setProductOwner(productOwner);
 
         try {
+            team.setScrumMaster(scrumMaster);
+            team.setProductOwner(productOwner);
             team.addMembers(members);
-        } catch (DuplicateObjectException e) {
+        } catch (Exception e) {
             //Do nothing, don't have to deal with the exception if only generating test data.
+            e.printStackTrace();
+            return null;
         }
 
         return team;
