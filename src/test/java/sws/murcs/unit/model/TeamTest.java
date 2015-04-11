@@ -80,6 +80,7 @@ public class TeamTest {
     @Test (expected = DuplicateObjectException.class)
     public void addMemberExceptionTest2() throws Exception {
         team.addMember(personGenerated);
+        person.setShortName(personGenerated.getShortName());
         person.setUserId(personGenerated.getUserId());
         team.addMember(person);
     }
