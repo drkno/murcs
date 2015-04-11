@@ -6,7 +6,7 @@ import sws.murcs.model.Skill;
  * Generates random skills
  */
 public class SkillGenerator implements Generator<Skill> {
-    private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming", "PO", "SM"};
+    private String[] skills = {"Falling over", "Backflips", "C#", "Running away screaming"};
     private String[] descriptions = {"A very useful skill", "A not very useful skill"};
 
     /**
