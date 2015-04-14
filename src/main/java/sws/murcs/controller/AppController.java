@@ -378,6 +378,9 @@ public class AppController implements Initializable, ViewUpdate{
                 case "addSkill":
                     clazz = Skill.class;
                     break;
+                case "addRelease":
+                    clazz = Skill.class;
+                    break;
             }
         }
         else {
