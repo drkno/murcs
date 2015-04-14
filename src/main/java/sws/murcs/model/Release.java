@@ -58,4 +58,9 @@ public class Release extends Model {
     public void setAssociatedProject(Project associatedProject) {
         this.associatedProject = associatedProject;
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Release && ((Release) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+    }
 }

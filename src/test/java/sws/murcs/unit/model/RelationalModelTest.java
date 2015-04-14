@@ -4,12 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
-import sws.murcs.debug.sampledata.Generator;
-import sws.murcs.debug.sampledata.PersonGenerator;
-import sws.murcs.debug.sampledata.SkillGenerator;
-import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +18,7 @@ public class RelationalModelTest {
     private static Generator<Team> teamGenerator;
     private static Generator<Person> personGenerator;
     private static Generator<Skill> skillGenerator;
+    private static Generator<Release> releaseGenerator;
     private Team teamGenerated;
     private Team team;
     private Person unassignedPerson;
@@ -29,6 +27,7 @@ public class RelationalModelTest {
     private Skill skill;
     private RelationalModel relationalModel;
     private Project project;
+    private Release releaseGenerated;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -39,6 +38,7 @@ public class RelationalModelTest {
         teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
         personGenerator = new PersonGenerator(skillGenerator);
         skillGenerator = new SkillGenerator(skills, descriptions);
+        releaseGenerator = new ReleaseGenerator(descriptions);
     }
 
     @Before
@@ -46,6 +46,7 @@ public class RelationalModelTest {
         teamGenerated = new TeamGenerator().generate();
         unassignedPersonGenerated = new PersonGenerator().generate();
         skillGenerated = new SkillGenerator().generate();
+        releaseGenerated = releaseGenerator.generate();
         unassignedPerson = new Person();
         relationalModel = new RelationalModel();
         team = new Team();
@@ -204,5 +205,23 @@ public class RelationalModelTest {
 
         relationalModel.removeSkill(skillGenerated);
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
+    }
+
+    @Test (expected = DuplicateObjectException.class)
+    public void addReleaseTest() throws DuplicateObjectException {
+        relationalModel.addRelease(releaseGenerated);
+        relationalModel.addRelease(releaseGenerated);
+    }
+
+    @Test
+    public void addRemoveReleaseTest() throws DuplicateObjectException {
+        relationalModel.addRelease(releaseGenerated);
+        assertTrue(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.removeRelease(releaseGenerated);
+        assertFalse(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.add(releaseGenerated);
+        assertTrue(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.remove(releaseGenerated);
+        assertFalse(relationalModel.getReleases().contains(releaseGenerated));
     }
 }

@@ -66,6 +66,10 @@ public class DuplicateObjectException extends CustomException {
                 CheckForDuplicateNames(newModel, list, className, param);
                 break;
             }
+            case "Release": {
+                list = model.getReleases();
+                CheckForDuplicateNames(newModel, list, className, param);
+            }
         }
     }
 

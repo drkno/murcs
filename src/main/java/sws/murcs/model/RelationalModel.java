@@ -22,6 +22,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private ArrayList<Team> teams;
     @TrackableValue
     private ArrayList<Skill> skills;
+    @TrackableValue
+    private ArrayList<Release> releases;
 
     /**
      * Gets the current application version
@@ -40,6 +42,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
+        this.releases = new ArrayList<>();
         this.project = null;
 
         try {
@@ -276,7 +279,21 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 addPerson((Person) model);
                 break;
+            case Release:
+                addRelease((Release) model);
+                break;
         }
+    }
+
+    /**
+     * Adds the given release to the list of releases
+     * @param release The release to add
+     * @throws DuplicateObjectException Thrown if the releases given is a duplicate
+     */
+    public void addRelease(Release release) throws DuplicateObjectException {
+        if (!releases.contains(release))
+            this.releases.add(release);
+        else throw new DuplicateObjectException("This release already exists");
     }
 
     /**
@@ -300,7 +317,19 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 removePerson((Person) model);
                 break;
+            case Release:
+                removeRelease((Release) model);
+                break;
         }
+    }
+
+    /**
+     * Removes the specified release from the releases
+     * @param release The release to remove
+     */
+    public void removeRelease(Release release) {
+        if (this.releases.contains(release))
+            releases.remove(release);
     }
 
     /**
@@ -318,5 +347,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (model instanceof Skill)
             return getSkills().contains(model);
         return false;
+    }
+
+    /**
+     * Gets the releases
+     * @return The releases
+     */
+    public ArrayList<Release> getReleases() {
+        return releases;
     }
 }

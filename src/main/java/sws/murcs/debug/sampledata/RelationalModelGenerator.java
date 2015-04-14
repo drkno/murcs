@@ -1,9 +1,6 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,6 +13,7 @@ import java.util.Random;
 public class RelationalModelGenerator implements Generator<RelationalModel> {
     private final ProjectGenerator projectGenerator;
     private final TeamGenerator teamGenerator;
+    private final ReleaseGenerator releaseGenerator;
     private final Random random;
 
     /**
@@ -24,6 +22,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     public RelationalModelGenerator() {
         projectGenerator = new ProjectGenerator();
         teamGenerator = new TeamGenerator();
+        releaseGenerator = new ReleaseGenerator();
         random = new Random();
     }
 
@@ -88,6 +87,15 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             }
             skills = new ArrayList<Skill>(new HashSet<Skill>(skills));
             model.addSkills(skills);
+
+            rand = random.nextInt(10);
+            for (int i = 0; i < rand; i++) {
+                Release newRelease = releaseGenerator.generate();
+                newRelease.setAssociatedProject(model.getProject());
+                if (!model.getReleases().stream().filter(release -> newRelease.equals(release)).findAny().isPresent()) {
+                    model.addRelease(newRelease);
+                }
+            }
 
             return model;
         }

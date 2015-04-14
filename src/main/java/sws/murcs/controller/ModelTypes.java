@@ -11,7 +11,8 @@ public enum ModelTypes {
     Project,
     People,
     Team,
-    Skills;
+    Skills,
+    Release;
 
     /**
      * Gets the model type from an index
@@ -19,6 +20,7 @@ public enum ModelTypes {
      * 1: People
      * 2: Team
      * 3: Skills
+     * 4: Release
      * @param index The index
      * @return The model type
      */
@@ -45,6 +47,8 @@ public enum ModelTypes {
                 return 2;
             case Skills:
                 return 3;
+            case Release:
+                return 4;
         }
         return 0;
     }
@@ -64,6 +68,8 @@ public enum ModelTypes {
             return People;
         else if (clazz == Skill.class)
             return Skills;
+        else if (clazz == Release.class)
+            return Release;
 
         throw new IllegalArgumentException("Clazz " + clazz.getName() + " is not supported");
     }
@@ -96,6 +102,8 @@ public enum ModelTypes {
                 return Person.class;
             case Skills:
                 return Skill.class;
+            case Release:
+                return Release.class;
         }
         return null;
     }
