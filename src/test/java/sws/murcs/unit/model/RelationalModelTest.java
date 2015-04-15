@@ -43,15 +43,20 @@ public class RelationalModelTest {
 
     @Before
     public void setUp() {
-        teamGenerated = new TeamGenerator().generate();
-        unassignedPersonGenerated = new PersonGenerator().generate();
-        skillGenerated = new SkillGenerator().generate();
-        unassignedPerson = new Person();
-        relationalModel = new RelationalModel();
-        team = new Team();
-        skill = new Skill();
-        project = new Project();
-        relationalModel.setProject(project);
+        try {
+            teamGenerated = teamGenerator.generate();
+            unassignedPersonGenerated = personGenerator.generate();
+            skillGenerated = skillGenerator.generate();
+            unassignedPerson = new Person();
+            relationalModel = new RelationalModel();
+            team = new Team();
+            skill = new Skill();
+            project = new Project();
+            relationalModel.addProject(project);
+        }
+        catch (DuplicateObjectException exception) {
+            //
+        }
     }
 
     @After

@@ -142,10 +142,7 @@ public class AppController implements Initializable, ViewUpdate{
 
         switch (type) {
             case Project:
-                Project project = model.getProject();
-                if (project != null) {
-                    displayListItems.addAll(project);
-                }
+                displayListItems.addAll(model.getProjects());
                 break;
             case People:
                 displayListItems.addAll(model.getPeople());
