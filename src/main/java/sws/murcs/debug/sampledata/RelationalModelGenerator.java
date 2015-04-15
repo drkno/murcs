@@ -1,9 +1,6 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,7 +32,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     public RelationalModel generate() {
         try {
             RelationalModel model = new RelationalModel();
-            model.setProject(projectGenerator.generate());
+            model.addProject(projectGenerator.generate());
 
 
             int rand = random.nextInt(10);
@@ -70,14 +67,16 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             model.addPeople(people);
 
             ArrayList<Skill> skills = new ArrayList<>();
-            for (Team team : model.getProject().getTeams()) {
+            for (Project project : model.getProjects()) {
+            for (Team team : project.getTeams()) {
                 for (Person person : team.getMembers()) {
-                    for (Skill newSkill: person.getSkills()) {
+                    for (Skill newSkill : person.getSkills()) {
                         if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
                             skills.add(newSkill);
                         }
                     }
                 }
+            }
             }
             for (Person person : model.getUnassignedPeople()) {
                 for (Skill newSkill: person.getSkills()) {

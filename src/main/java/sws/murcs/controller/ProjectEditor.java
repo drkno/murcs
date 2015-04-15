@@ -24,23 +24,17 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        labelErrorMessage.setText("");
         edit.setShortName(projectTextFieldShortName.getText());
         edit.setLongName(textFieldLongName.getText());
         edit.setDescription(descriptionTextField.getText());
 
-        //This line will need to be changed if we support multiple projects
-        //What we're trying to do here is check if the current edit already exist
-        //or if we're creating a new one.
+        // Save the project if it hasn't been yet
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null || model.getProject() != edit) {
-            if (PersistenceManager.Current.getCurrentModel() == null) {
-                model = new RelationalModel();
-            }
-            model.setProject(edit);
 
-            PersistenceManager.Current.setCurrentModel(model);
         }
+
+        if (!model.getProjects().contains(edit))
+            model.addProject(edit);
 
         //If we have a saved callBack, call it
         if (onSaved != null)

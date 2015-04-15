@@ -15,7 +15,7 @@ import java.util.List;
 public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
-    private Project project;
+    private ArrayList<Project> projects;
     @TrackableValue
     private ArrayList<Person> people;
     @TrackableValue
@@ -40,7 +40,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
-        this.project = null;
+        this.projects = new ArrayList<>();
 
         try {
             Skill productOwner = new Skill();
@@ -60,19 +60,62 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the project
-     * @return The project
+     * Gets the projects
+     * @return The projects
      */
-    public Project getProject() {
-        return project;
+    public ArrayList<Project> getProjects() {
+        return projects;
     }
 
     /**
-     * Sets the project
+     * Adds a new project
      * @param project The new project
      */
-    public void setProject(Project project) {
-        this.project = project;
+    public void addProject(Project project) throws DuplicateObjectException {
+        if (!this.getProjects().contains(project) &&
+                !this.getProjects()
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.projects.add(project);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds all given projects that are not already contained within the model
+     * @param projects A List of projects to be added to the model
+     * @throws DuplicateObjectException If an yof the projects already exist
+     */
+    public void addProjects(List<Project> projects) throws DuplicateObjectException {
+        boolean badProject = false;
+        for (Project project : projects) {
+            if (this.projects.contains(project) ||
+                    this.getProjects()
+                            .stream()
+                            .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
+                            .findAny()
+                            .isPresent()) {
+                badProject = true;
+            }
+            else {
+                this.projects.add(project);
+            }
+        }
+        if (badProject)
+            throw new DuplicateObjectException();
+    }
+
+    /**
+     * Removes the given project if it exists
+     * @param project The project to remove
+     */
+    public void removeProject(Project project) {
+        if (this.projects.contains(project))
+            this.projects.remove(project);
     }
 
     /**
@@ -144,7 +187,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the unassigned teams
+     * Gets all unassigned teams
      * @return The unassigned teams
      */
     public ArrayList<Team> getUnassignedTeams() {
@@ -152,9 +195,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
         ArrayList<Team> unassignedTeams = new ArrayList<>();
         unassignedTeams.addAll(getTeams());
 
-        if (getProject() != null) {
+        if (getProjects() != null) {
             //Remove all the teams that are assigned to a project
-            project.getTeams().forEach(unassignedTeams::remove);
+            getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
         }
 
         return unassignedTeams;
@@ -199,15 +242,18 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes a team from the unassigned teams
+     * Removes a team from the list of teams and from any projects
      * @param team The team to remove
      */
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
+        }
 
-            if (getProject() != null && this.getProject().getTeams().contains(team))
-                this.getProject().getTeams().remove(team);
+        if (this.getProjects() != null && !this.getProjects().isEmpty()) {
+            this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> {
+                project.getTeams().remove(team);
+            });
         }
     }
 
@@ -265,7 +311,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         switch (type) {
             case Project:
-                setProject((Project) model);
+                addProject((Project) model);
                 break;
             case Team:
                 addTeam((Team) model);
@@ -288,8 +334,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         switch (type) {
             case Project:
-                if (getProject() == model)
-                    setProject(null);
+                removeProject((Project) model);
                 break;
             case Team:
                 removeTeam((Team) model);
@@ -310,7 +355,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public boolean exists(Model model) {
         if (model instanceof Project)
-            return getProject() == model;
+            return getProjects().contains(model);
         if (model instanceof Team)
             return getTeams().contains(model);
         if (model instanceof Person)
