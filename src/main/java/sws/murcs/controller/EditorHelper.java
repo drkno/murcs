@@ -84,6 +84,7 @@ public class EditorHelper {
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
         fxmlPaths.put(ModelTypes.People, "PersonEditor.fxml");
         fxmlPaths.put(ModelTypes.Skills, "SkillEditor.fxml");
+        fxmlPaths.put(ModelTypes.Release, "ReleaseEditor.fxml");
 
         String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelTypes.getModelType(model));
 

@@ -27,7 +27,7 @@ public abstract class GenericEditor<T> {
      * Sets the callback that is fired when the object is saved
      * @param onSaved callback to set
      */
-    public void setSavedCallback(EventNotification<T> onSaved){
+    public void setSavedCallback(EventNotification onSaved){
         this.onSaved = onSaved;
     }
 

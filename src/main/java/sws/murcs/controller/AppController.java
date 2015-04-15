@@ -91,7 +91,7 @@ public class AppController implements Initializable, ViewUpdate{
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, this::updateListView);
+                pane = EditorHelper.getEditForm((Model) newValue, m -> updateListView(m));
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -155,6 +155,9 @@ public class AppController implements Initializable, ViewUpdate{
                 break;
             case Skills:
                 displayListItems.addAll(model.getSkills());
+                break;
+            case Release:
+                displayListItems.addAll(model.getReleases());
                 break;
         }
         if (newModelObject != null) {
@@ -379,7 +382,7 @@ public class AppController implements Initializable, ViewUpdate{
                     clazz = Skill.class;
                     break;
                 case "addRelease":
-                    clazz = Skill.class;
+                    clazz = Release.class;
                     break;
             }
         }
