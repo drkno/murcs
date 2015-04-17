@@ -304,6 +304,44 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
+     * Determines whether or not a Model object is in use
+     * @param model The model to check
+     * @return Whether the model object is in use
+     */
+    public boolean inUse(Model model){
+        ModelTypes type = ModelTypes.getModelType(model);
+
+        switch (type) {
+            case Project:
+                //A project can never be used anywhere else in the current
+                //implementation of the relational model
+                return false;
+            case Team:
+                //If there is no project then the team can't be used anywhere
+                if (getProject() == null) return false;
+                //Return whether this team has been assigned to the project
+                return getProject().getTeams().contains(model);
+            case Skills:
+                //Loop through all the people and find out if any of them have this skill
+                for (Person p : getPeople()){
+                    if (p.getSkills().contains(model)){
+                        return true;
+                    }
+                }
+                return false;
+            case People:
+                //Loop through all the teams and see if any of them contain the person
+                for (Team team : getTeams()){
+                    if (team.getMembers().contains(model)){
+                        return true;
+                    }
+                }
+                return false;
+        }
+        return false;
+    }
+
+    /**
      * Checks to see if an object exists in the model
      * @param model The model
      * @return Whether it exists
