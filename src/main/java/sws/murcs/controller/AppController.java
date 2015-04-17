@@ -101,6 +101,7 @@ public class AppController implements Initializable, ViewUpdate{
 
         updateUndoRedoMenuItems(0);
         UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
+        updateListView(null);
     }
 
     /**
