@@ -1,6 +1,6 @@
-package sws.murcs.sampledata;
+package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 
@@ -10,16 +10,27 @@ import java.util.ArrayList;
  * Generates random people with skills and roles
  */
 public class PersonGenerator implements Generator<Person> {
-    private Generator<Skill> skillGenerator;
+    private final Generator<Skill> skillGenerator;
 
+    /**
+     * Instantiates a new person generator.
+     */
     public PersonGenerator(){
         skillGenerator = new SkillGenerator();
     }
 
+    /**
+     * Instantiates a new person generator.
+     * @param skillGenerator skill generator to use.
+     */
     public PersonGenerator(Generator<Skill> skillGenerator){
         this.skillGenerator = skillGenerator;
     }
 
+    /**
+     * Generates a new random person.
+     * @return a new random person.
+     */
     @Override
     public Person generate() {
         Person p = new Person();
@@ -32,18 +43,25 @@ public class PersonGenerator implements Generator<Person> {
         int skillCount = NameGenerator.random(100);
         ArrayList<Skill> skills = new ArrayList<>();
 
-        for (int i = 0; i < skillCount; i++)
-            skills.add(skillGenerator.generate());
+        for (int i = 0; i < skillCount; i++) {
+            Skill newSkill = skillGenerator.generate();
+            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                skills.add(newSkill);
+            }
+        }
 
         try {
             p.setUserId(userId);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         try {
             p.setShortName(shortName);
         }
         catch (Exception e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 
@@ -52,7 +70,9 @@ public class PersonGenerator implements Generator<Person> {
         try {
             p.addSkills(skills);
         }
-        catch (DuplicateObjectException e) {
+        catch (CustomException e) {
+            e.printStackTrace();
+            return null;
             //Do nothing, don't have to deal with the exception if only generating test data.
         }
 

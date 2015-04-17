@@ -7,9 +7,9 @@ import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
-import sws.murcs.sampledata.ProjectGenerator;
-import sws.murcs.sampledata.Generator;
-import sws.murcs.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.ProjectGenerator;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

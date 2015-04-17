@@ -2,10 +2,8 @@ package sws.murcs.exceptions;
 
 /**
  * 22/03/2015
- *
- * @author Dion
  */
-public class NameInvalidException extends Exception {
+public class NameInvalidException extends CustomException {
     
     public NameInvalidException() {}
 

@@ -48,12 +48,23 @@ public class Person extends Model {
     /**
      * Sets the user id
      * @param userId The new user id
-     * @throws sws.murcs.exceptions.NameInvalidException User id is invalid
+     * @throws java.lang.Exception User id is invalid
      */
-    public void setUserId(String userId) throws NameInvalidException {
-        NameInvalidException.validate("User ID", userId);
-        this.userId = userId;
+    public void setUserId(String userId) throws Exception {
+        validateUserId(userId);
+        this.userId = userId.trim();
     }
+
+    /**
+     * Indicates whether a value is a valid value for 'userId' to hold
+     * @param value The value.
+     * @throws sws.murcs.exceptions.DuplicateObjectException if there is a duplicate object.
+     */
+    private void validateUserId(String value) throws Exception {
+        DuplicateObjectException.CheckForDuplicates(this, value);
+        NameInvalidException.validate("User Id", value);
+    }
+
 
     /**
      * Adds a skill to skills only if the person does not already have that skill
@@ -103,9 +114,10 @@ public class Person extends Model {
     @Override
     public boolean equals(Object object){
         if (!(object instanceof Person)) return false;
-
-        Person other = (Person)object;
-
-        return other.getUserId() != null && other.getUserId().equals(getUserId());
+        Person person = (Person)object;
+        String shortName1 = person.getShortName();
+        String shortName2 = getShortName();
+        if (shortName1 == null || shortName2 == null) return shortName1 == shortName2;
+        return shortName1.toLowerCase().equals(shortName2.toLowerCase()) || person.getUserId().equals(getUserId());
     }
 }

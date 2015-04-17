@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.MultipleRolesException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,10 +50,14 @@ public class Team extends Model {
     }
 
     /**
-     * Sets the scrum master
-     * @param scrumMaster The new scrum master
+     * Sets the scrum master.
+     * @param scrumMaster The new scrum master.
+     * @throws MultipleRolesException if the new Scrum Master is already performing another role.
      */
-    public void setScrumMaster(Person scrumMaster) {
+    public void setScrumMaster(Person scrumMaster) throws MultipleRolesException {
+        if (scrumMaster == getProductOwner() && productOwner != null && getProductOwner() != null) {
+            throw new MultipleRolesException("Scrum Master", "Product Owner", scrumMaster, this);
+        }
         this.scrumMaster = scrumMaster;
     }
 
@@ -65,10 +70,14 @@ public class Team extends Model {
     }
 
     /**
-     * Sets the PO
-     * @param productOwner the new PO
+     * Sets the Product Owner.
+     * @param productOwner the new Product Owner.
+     * @throws MultipleRolesException if the new Product Owner is already performing another role.
      */
-    public void setProductOwner(Person productOwner) {
+    public void setProductOwner(Person productOwner) throws MultipleRolesException {
+        if (productOwner == getScrumMaster() && productOwner != null && getScrumMaster() != null) {
+            throw new MultipleRolesException("Product Owner", "Scrum Master", productOwner, this);
+        }
         this.productOwner = productOwner;
     }
 
@@ -115,4 +124,10 @@ public class Team extends Model {
     public String toString() {
         return getShortName();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Team && ((Team) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+    }
+
 }

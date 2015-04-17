@@ -7,9 +7,9 @@ import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
-import sws.murcs.sampledata.Generator;
-import sws.murcs.sampledata.PersonGenerator;
-import sws.murcs.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +80,7 @@ public class TeamTest {
     @Test (expected = DuplicateObjectException.class)
     public void addMemberExceptionTest2() throws Exception {
         team.addMember(personGenerated);
+        person.setShortName(personGenerated.getShortName());
         person.setUserId(personGenerated.getUserId());
         team.addMember(person);
     }

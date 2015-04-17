@@ -6,10 +6,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
-import sws.murcs.sampledata.Generator;
-import sws.murcs.sampledata.PersonGenerator;
-import sws.murcs.sampledata.SkillGenerator;
-import sws.murcs.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.SkillGenerator;
+import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +32,20 @@ public class RelationalModelTest {
 
     @BeforeClass
     public static void oneTimeSetUp() {
-        teamGenerator = new TeamGenerator();
-        personGenerator = new PersonGenerator();
-        skillGenerator = new SkillGenerator();
+        String[] skills = {"skill1", "skill2", "skill3"};
+        String[] descriptions = {"description1", "description2", "description3"};
+        String[] teamNames = {"name1", "name2", "name3"};
+
+        teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
+        personGenerator = new PersonGenerator(skillGenerator);
+        skillGenerator = new SkillGenerator(skills, descriptions);
     }
 
     @Before
     public void setUp() {
-        teamGenerated = teamGenerator.generate();
-        unassignedPersonGenerated = personGenerator.generate();
-        skillGenerated = skillGenerator.generate();
+        teamGenerated = new TeamGenerator().generate();
+        unassignedPersonGenerated = new PersonGenerator().generate();
+        skillGenerated = new SkillGenerator().generate();
         unassignedPerson = new Person();
         relationalModel = new RelationalModel();
         team = new Team();

@@ -1,168 +1,259 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.EventNotification;
+
+import java.lang.reflect.Field;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Stack;
-import java.util.Timer;
 
 /**
  * Manages undo and redo operations.
  */
 public class UndoRedoManager {
-    private static Stack<TrackableObject> _masterUndoStack = new Stack<>();
-    private static Stack<TrackableObject> _masterRedoStack = new Stack<>();
-    private static ArrayList<StateSaveListener> _changeListeners = new ArrayList<>();
-    private static Timer _callbackWaitTimer = new Timer(false);
-    private static TrackingTask _latestTrackingTask;
-    private static long _mergeWaitTime = 500;
-    protected static int _maximumUndoRedoStackSize = -1;
+    private static Commit head;
+    private static ArrayDeque<Commit> revertStack;
+    private static ArrayDeque<Commit> remakeStack;
+    private static ArrayList<TrackableObject> objectsList;
+    private static long commitNumber;
+    private static long maximumCommits;
+    private static ArrayList<EventNotification<Integer>> changeListeners;
 
     /**
-     * Gets the current maximum size of the tracking stack. No more than this number of states can be saved.
-     * @return Maximum stack size or less than or equal to 0 if infinite.
+     * "Static" constructor, used so that values are always initialized
+     * within a method that can have breakpoints set for debugging.
      */
-    public static int getMaximumTrackingSize() {
-        return _maximumUndoRedoStackSize - 1;
-    }
-
-    /**
-     * Sets the current maximum size of the tracking stack. No more than this number of states can be saved.
-     * @param maximumUndoRedoStackSize new maximum stack size or less than or equal to 0 if infinite is desired.
-     */
-    public static void setMaximumTrackingSize(int maximumUndoRedoStackSize) {
-        _maximumUndoRedoStackSize = maximumUndoRedoStackSize + 1;
+    static {
+        objectsList = new ArrayList<>();
+        revertStack = new ArrayDeque<>();
+        remakeStack = new ArrayDeque<>();
+        commitNumber = 0;
+        maximumCommits = -1;
+        changeListeners = new ArrayList<>();
     }
 
     /**
-     * Adds a listener that waits for a save.
-     * @param listener listener to call on change.
+     * Adds an object to be tracked.
+     * @param object new object to be tracked.
      */
-    public static void addSavedListener(StateSaveListener listener) {
-        _changeListeners.add(listener);
+    protected static void add(TrackableObject object) {
+        objectsList.add(object);
     }
 
     /**
-     * Notifies listeners that are waiting for history changes using default wait.
-     * @param change change that was made
+     * Removes an object from tracking.
+     * @param object object to be removed from tracking.
      */
-    protected static void notifyListeners(ValueChange change) {
-        notifyListeners(change, getMergeWaitTime());
+    public static void remove(TrackableObject object) {
+        objectsList.remove(object);
     }
 
     /**
-     * Notifies listeners that are waiting for history changes.
-     * @param change change that was made.
-     * @param wait time to wait before notification
+     * Saves the current state so that it can be restored at a later point in time.
+     * @param message description of changes since last commit.
+     * @return the unique commit number.
+     * @throws Exception if an internal error occurs while committing.
      */
-    protected static void notifyListeners(ValueChange change, long wait) {
-        TrackingTask task = new TrackingTask(change, _changeListeners);
-        _latestTrackingTask = task;
-        _callbackWaitTimer.schedule(task, wait);
-    }
-
-    /**
-     * Gets the wait time before changes to the same object become separate.
-     * @return the time to wait.
-     */
-    public static long getMergeWaitTime() {
-        return _mergeWaitTime;
-    }
-
-    /**
-     * Sets the wait time before changes to the same object become separate.
-     * @param mergeWaitTime new time to wait.
-     */
-    public static void setMergeWaitTime(long mergeWaitTime) {
-        _mergeWaitTime = mergeWaitTime;
-    }
-
-    /**
-     * Stops the callback timer so the application can quit.
-     */
-    public static void destroy() {
-        _callbackWaitTimer.cancel();
-    }
-
-    protected static void abortCallbacks() {
-        if (_latestTrackingTask != null) _latestTrackingTask.cancel();
-        _callbackWaitTimer.purge();
-    }
-
-    public static void reset() {
-        _masterUndoStack.forEach(object -> object.reset());
-        _masterRedoStack.forEach(object -> object.reset());
-        _masterUndoStack.clear();
-        _masterRedoStack.clear();
-    }
-
-    /**
-     * Undoes the most recent change that was saved.
-     * @throws Exception If undo is not possible or critical internal error occurs.
-     */
-    public static void undo() throws Exception {
-        TrackableObject object = _masterUndoStack.pop();
-        object.undo();
-        _masterRedoStack.push(object);
-    }
-
-    /**
-     * Gets the description for the next undo action.
-     * @return a description.
-     */
-    public static String getUndoDescription() {
-        return _masterUndoStack.peek().getUndoDescription();
-    }
-
-    /**
-     * Checks if undo is currently possible given the previously saved states.
-     * @return True if undo is currently possible, false otherwise.
-     */
-    public static boolean canUndo() {
-        if (_masterUndoStack.isEmpty()) {
-            return false;
+    public static long commit(String message) throws Exception {
+        ArrayList<FieldValuePair> pairs = new ArrayList<>();
+        ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
+        for (TrackableObject object : objectsList) {
+            trackableObjects.add(object);
+            for (Field field : object.getTrackedFields()) {
+                pairs.add(new FieldValuePair(field, object));
+            }
         }
-        return _masterUndoStack.peek().canUndo();
-    }
-
-    /**
-     * Redoes the most recent change that was undone.
-     * @throws Exception If redo is not possible or critical internal error occurs.
-     */
-    public static void redo() throws Exception {
-        TrackableObject object = _masterRedoStack.pop();
-        object.redo();
-        _masterUndoStack.push(object);
-    }
-
-    /**
-     * Gets the description for the next redo action.
-     * @return a description.
-     */
-    public static String getRedoDescription() {
-        return _masterRedoStack.peek().getRedoDescription();
-    }
-
-    /**
-     * Checks if redo is currently possible given the previously undone states.
-     * @return True if redo is currently possible, false otherwise.
-     */
-    public static boolean canRedo() {
-        if (_masterRedoStack.isEmpty()) {
-            return false;
+        FieldValuePair[] pairsArray = new FieldValuePair[pairs.size()];
+        pairs.toArray(pairsArray);
+        if (head != null) {
+            revertStack.push(head);
         }
-        return _masterRedoStack.peek().canRedo();
+        head = new Commit(commitNumber, message, pairsArray, trackableObjects);
+        if (canRevert() && head.equals(revertStack.peek())) {
+            revertStack.pop();
+        }
+
+        if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
+            revertStack.removeLast();
+        }
+
+        if (canRemake()) {
+            remakeStack.clear();
+        }
+
+        notifyListeners(0);
+
+        return commitNumber++;
     }
 
     /**
-     * Adds a committed change to the stack.
-     * @param object changed object
+     * Forgets about the current commits.
+     * Does NOT stop tracking currently added objects.
      */
-    protected static void commit(TrackableObject object) {
-        _masterUndoStack.push(object);
+    public static void forget() {
+        forget(false);
+    }
 
-        if (UndoRedoManager._maximumUndoRedoStackSize > 0 &&
-                _masterUndoStack.size() - 1 == UndoRedoManager._maximumUndoRedoStackSize) {
-            TrackableObject obj = _masterUndoStack.pop();
-            obj.removeLastUndoItem();
+    /**
+     * Forgets about the current commits.
+     * @param savedObjects true to forget about current objects added for
+     *                     tracking, false otherwise.
+     */
+    public static void forget(boolean savedObjects) {
+        revertStack.clear();
+        remakeStack.clear();
+        head = null;
+        if (savedObjects) {
+            objectsList.clear();
         }
+        notifyListeners(-2);
+    }
+
+    /**
+     * Reverts the current changes to the last commit sequentially.
+     * @throws Exception if an internal error occurs during the operation.
+     */
+    public static void revert() throws Exception {
+        revert(revertStack.peek().getCommitNumber());
+    }
+
+    /**
+     * Reverts to a specified commit or the initial commit
+     * if the specified commit is not found.
+     * @param commitNumber commit number to revert to.
+     * @throws Exception if an internal error occurs during the operation.
+     */
+    public static void revert(long commitNumber) throws Exception {
+        while (!revertStack.isEmpty()) {
+            remakeStack.push(head);
+            Commit commit = revertStack.pop();
+            commit.apply();
+            objectsList = commit.getTrackableObjects();
+            head = commit;
+            if (commit.getCommitNumber() == commitNumber) break;
+        }
+        notifyListeners(-1);
+    }
+
+    /**
+     * Checks if the revert (undo) operation is available.
+     * @return true if remake can be done, false otherwise.
+     */
+    public static boolean canRevert() {
+        return !revertStack.isEmpty();
+    }
+
+    /**
+     * Gets the message associated with the first revert (undo) commit.
+     * @return the commit message or null if cannot revert.
+     */
+    public static String getRevertMessage() {
+        return canRevert() ? head.getMessage() : null;
+    }
+
+    /**
+     * Remakes (redoes) the current changes from the next commit sequentially.
+     * @throws Exception if an internal error occurs during the operation.
+     */
+    public static void remake() throws Exception {
+        remake(remakeStack.peek().getCommitNumber());
+    }
+
+    /**
+     * Remakes (redoes) to a specified commit or the final commit
+     * if the specified commit is not found.
+     * @param commitNumber commit number to remake to.
+     * @throws Exception if an internal error occurs during the operation.
+     */
+    public static void remake(long commitNumber) throws Exception {
+        while (!remakeStack.isEmpty()) {
+            revertStack.push(head);
+            Commit commit = remakeStack.pop();
+            commit.apply();
+            objectsList = commit.getTrackableObjects();
+            head = commit;
+            if (commit.getCommitNumber() == commitNumber) break;
+        }
+        notifyListeners(1);
+    }
+
+    /**
+     * Checks if the remake (redo) operation is available.
+     * @return true if remake can be done, false otherwise.
+     */
+    public static boolean canRemake() {
+        return !remakeStack.isEmpty();
+    }
+
+    /**
+     * Gets the message associated with the first remake (redo) commit.
+     * @return the commit message or null if cannot remake.
+     */
+    public static String getRemakeMessage() {
+        return canRemake() ? remakeStack.peek().getMessage() : null;
+    }
+
+    /**
+     * Gets the latest commit.
+     * @return the latest commit.
+     */
+    public static Commit getHead() {
+        return head;
+    }
+
+    /**
+     * Reverts the current state to the latest commit.
+     * @throws Exception if an error occurs during this operation.
+     */
+    public static void revertToHead() throws Exception {
+        head.apply();
+    }
+
+    /**
+     * Gets the maximum number of commits that can be made before commits are forgotten.
+     * This can be negative (defaults to -1) for infinite commits, or greater or equal
+     * to zero for a set number.
+     */
+    public static long getMaximumCommits() {
+        return maximumCommits;
+    }
+
+    /**
+     * Sets the Maximum number of commits that can be made before commits are forgotten.
+     * @param maximumCommits new maximum number of commits.
+     *                       This can be negative (defaults to -1) for infinite commits,
+     *                       or greater or equal to zero for a set number.
+     */
+    public static void setMaximumCommits(long maximumCommits) {
+        UndoRedoManager.maximumCommits = maximumCommits;
+    }
+
+    /**
+     * Adds a listener for a change in state (eg commit, revert or remake performed)
+     * that will be notified if such a change occurs.
+     * Values passed to the listener will be as follows on an event notification:
+     * -2 : A forget has occurred.
+     * -1 : A revert has occurred.
+     *  0 : A commit has occurred.
+     *  1 : A remake has occurred.
+     * @param eventListener the event listener to add.
+     */
+    public static void addChangeListener(EventNotification<Integer> eventListener) {
+        changeListeners.add(eventListener);
+    }
+
+    /**
+     * Removes an change listener.
+     * @param eventListener listener to remove.
+     */
+    public static void removeChangeListener(EventNotification<Integer> eventListener) {
+        changeListeners.remove(eventListener);
+    }
+
+    /**
+     * Notifies listeners that a change has occurred.
+     * @param changeType the type of change that occurred.
+     */
+    private static void notifyListeners(int changeType) {
+        changeListeners.forEach(l -> l.eventNotification(changeType));
     }
 }

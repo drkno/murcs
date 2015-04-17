@@ -15,7 +15,7 @@ import sws.murcs.model.Model;
  * Creates a new Controller with an Ok and Cancel button
  */
 public class CreateWindowController {
-    private EventNotification<Model> okayClicked;
+    private ViewUpdate okayClicked;
     private EventNotification<Model> cancelClicked;
 
     private Model model;
@@ -44,7 +44,7 @@ public class CreateWindowController {
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
                     return;
-                okayClicked.eventNotification(model);
+                okayClicked.updateListView(model);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -67,7 +67,7 @@ public class CreateWindowController {
      * Sets the method that is called when okay is clicked
      * @param okayClicked The Event to notify
      */
-    public void setOkayClicked(EventNotification<Model> okayClicked) {
+    public void setOkayClicked(ViewUpdate okayClicked) {
         this.okayClicked = okayClicked;
     }
 
@@ -94,7 +94,7 @@ public class CreateWindowController {
      * @param cancelClicked The cancel callback
      * @return The form
      */
-    public static Parent newCreateNode(Node content, Model model, EventNotification<Model> okayClicked, EventNotification<Model> cancelClicked){
+    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, EventNotification<Model> cancelClicked){
         try {
             FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();
