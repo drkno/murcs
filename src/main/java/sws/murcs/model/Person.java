@@ -3,13 +3,18 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Model of a person.
  */
+@XmlRootElement
+@XmlType(propOrder = {"userId", "skills"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+    @XmlAttribute(name = "id")
     private String userId;
     private ArrayList<Skill> skills = new ArrayList<>();
 
@@ -64,7 +69,6 @@ public class Person extends Model {
         DuplicateObjectException.CheckForDuplicates(this, value);
         NameInvalidException.validate("User Id", value);
     }
-
 
     /**
      * Adds a skill to skills only if the person does not already have that skill

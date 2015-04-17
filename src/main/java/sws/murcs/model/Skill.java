@@ -1,8 +1,14 @@
 package sws.murcs.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Model of a skill.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Skill extends Model {
 
     /**
