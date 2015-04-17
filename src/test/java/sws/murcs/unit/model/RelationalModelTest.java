@@ -4,12 +4,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.*;
 import sws.murcs.debug.sampledata.Generator;
 import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.SkillGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -204,5 +204,15 @@ public class RelationalModelTest {
 
         relationalModel.removeSkill(skillGenerated);
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
+    }
+
+    @Test
+    public void testInUseProject() throws Exception{
+        Project newProject = new Project();
+
+        assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
+
+        relationalModel.setProject(newProject);
+        assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 }
