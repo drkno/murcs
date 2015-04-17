@@ -309,36 +309,80 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return Whether the model object is in use
      */
     public boolean inUse(Model model){
+        return findUsages(model).size() != 0;
+    }
+
+    /**
+     * Returns a list of the model objects that make use of this one
+     * @param model The model to find the usages of
+     * @return The different usages
+     */
+    public ArrayList<Model> findUsages(Model model){
         ModelTypes type = ModelTypes.getModelType(model);
 
-        switch (type) {
+        switch (type){
             case Project:
-                //A project can never be used anywhere else in the current
-                //implementation of the relational model
-                return false;
+                return findUsages((Project)model);
             case Team:
-                //If there is no project then the team can't be used anywhere
-                if (getProject() == null) return false;
-                //Return whether this team has been assigned to the project
-                return getProject().getTeams().contains(model);
-            case Skills:
-                //Loop through all the people and find out if any of them have this skill
-                for (Person p : getPeople()){
-                    if (p.getSkills().contains(model)){
-                        return true;
-                    }
-                }
-                return false;
+                return findUsages((Team)model);
             case People:
-                //Loop through all the teams and see if any of them contain the person
-                for (Team team : getTeams()){
-                    if (team.getMembers().contains(model)){
-                        return true;
-                    }
-                }
-                return false;
+                return findUsages((Person)model);
+            case Skills:
+                return findUsages((Skill)model);
         }
-        return false;
+        return new ArrayList<>();
+    }
+
+    /**
+     * Gets a list of places that a project is used
+     * @param project The project to find the usages of
+     * @return The usages of the project
+     */
+    private ArrayList<Model> findUsages(Project project){
+        return new ArrayList<Model>();
+    }
+
+    /**
+     * Gets a list of the places that a team is used
+     * @param team The team to find the usages of
+     * @return The usages of the team
+     */
+    private ArrayList<Model> findUsages(Team team){
+        ArrayList<Model> usages = new ArrayList<>();
+        if (getProject() != null && getProject().getTeams().contains(team)) {
+            usages.add(getProject());
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a person has been used
+     * @param person The person to find usages for
+     * @return The usages of the person
+     */
+    private ArrayList<Model> findUsages(Person person){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Team team : getTeams()){
+            if (team.getMembers().contains(person)){
+                usages.add(team);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a skill has been used
+     * @param skill The skill to find usages for
+     * @return The usages of the skill
+     */
+    private ArrayList<Model> findUsages(Skill skill){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Person person : getPeople()){
+            if (person.getSkills().contains(skill)){
+                usages.add(person);
+            }
+        }
+        return usages;
     }
 
     /**
