@@ -35,7 +35,7 @@ public class UndoRedoManager {
      * Adds an object to be tracked.
      * @param object new object to be tracked.
      */
-    protected static void add(TrackableObject object) {
+    public static void add(TrackableObject object) {
         objectsList.add(object);
     }
 

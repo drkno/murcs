@@ -15,7 +15,7 @@ public abstract class TrackableObject {
      */
     protected TrackableObject() {
         initialiseTrackedFields();
-        UndoRedoManager.add(this);
+        //TODO: UndoRedoManager.add(this);
     }
 
     /**
