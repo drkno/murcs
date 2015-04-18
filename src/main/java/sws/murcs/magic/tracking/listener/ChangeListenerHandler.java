@@ -37,8 +37,16 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
 
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof ChangeListenerHandler)) return false;
-        Object handler = ((ChangeListenerHandler) other).get();
-        return !(handler == null || !other.equals(this));
+        if (other == null) return false;
+        if (other == this) return true;
+
+        if (other instanceof ChangeListenerHandler) {
+            other = ((ChangeListenerHandler) other).get();
+        }
+
+        if (other instanceof UndoRedoChangeListener) {
+            return other.equals(get());
+        }
+        return false;
     }
 }
