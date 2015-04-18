@@ -4,10 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.Generator;
-import sws.murcs.debug.sampledata.PersonGenerator;
-import sws.murcs.debug.sampledata.SkillGenerator;
-import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
@@ -318,12 +315,17 @@ public class RelationalModelTest {
         relationalModel.getTeams().clear();
         relationalModel.getPeople().clear();
 
-        Team team = teamGenerator.generate();
-        team.getMembers().clear();
-        relationalModel.add(team);
+        //Create a few teams to add people to
+        for (int i = 0; i < 10; i++) {
+            Team team = teamGenerator.generate();
+            team.setShortName(team.getShortName() + i);
+
+            team.getMembers().clear();
+            relationalModel.add(team);
+        }
 
         //Add a few people to the model and to the team
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 100; i++) {
             Person p = personGenerator.generate();
 
             //Avoid duplicates
@@ -331,17 +333,19 @@ public class RelationalModelTest {
             p.setShortName(p.getShortName() + i);
 
             relationalModel.add(p);
-            team.addMember(p);
+            //Add the person to a random team
+            relationalModel.getTeams().get(NameGenerator.random(relationalModel.getTeams().size())).addMember(p);
         }
 
-        assertEquals("There should now be ten people in the team", 10, team.getMembers().size());
-
+        //Remove all the people from the model. This should cascade, removing them from teams too
         for (int i = 0; i < relationalModel.getPeople().size(); ++i){
             relationalModel.remove(relationalModel.getPeople().get(i));
             i--;
         }
 
-        assertEquals("There should now be no people in the team", 0, team.getMembers().size());
+        for (int i = 0; i < relationalModel.getTeams().size(); i++){
+            assertEquals("There should be no people in any team", 0 , relationalModel.getTeams().get(i).getMembers().size());
+        }
     }
 
     @Test
