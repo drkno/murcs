@@ -118,15 +118,8 @@ public class AppController implements Initializable, ViewUpdate{
         else {
             type = ModelTypes.getModelType(newModelObject);
 
-            try {
-                UndoRedoManager.add(newModelObject);
-                UndoRedoManager.commit("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
-            } catch (Exception e) {
-                // This state only occurs if there is a bug or something is very wrong
-                UndoRedoManager.forget();
-                System.err.println("The undo/redo manager encountered an error while attempting to commit a new model object:\n"
-                        + e.toString() + "\nAs a precaution all history has been forgotten.");
-            }
+            UndoRedoManager.add(newModelObject);
+            commitChanges("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
 
             if (selectedType == type) {
                 updateList(newModelObject, type);
@@ -137,6 +130,21 @@ public class AppController implements Initializable, ViewUpdate{
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 updateList(newModelObject, type);
             }
+        }
+    }
+
+    /**
+     * Handles committing changes based on UI actions.
+     * @param message commit message to use.
+     */
+    private void commitChanges(String message) {
+        try {
+            UndoRedoManager.commit(message);
+        } catch (Exception e) {
+            // This state only occurs if there is a bug or something is very wrong
+            UndoRedoManager.forget();
+            System.err.println("The undo/redo manager encountered an error while attempting to commit a change:\n"
+                    + e.toString() + "\nAs a precaution all history has been forgotten.");
         }
     }
 
@@ -432,7 +440,11 @@ public class AppController implements Initializable, ViewUpdate{
 
         popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
             popup.close();
-            model.remove((Model) displayList.getSelectionModel().getSelectedItem());
+            Model item = (Model) displayList.getSelectionModel().getSelectedItem();
+            model.remove(item);
+            UndoRedoManager.remove(item);
+            ModelTypes type = ModelTypes.getModelType(item);
+            commitChanges("deleted " + (type == ModelTypes.People ? "Person" : type.toString()));
             updateListView(null);
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
