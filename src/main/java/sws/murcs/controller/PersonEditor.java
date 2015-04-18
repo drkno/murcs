@@ -57,7 +57,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Loads the team into the form
+     * Loads the person into the form
      */
     @Override
     public void load() {

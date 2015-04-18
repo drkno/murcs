@@ -31,8 +31,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         // Save the project if it hasn't been yet
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
-        }
-
         if (!model.getProjects().contains(edit))
             model.addProject(edit);
 

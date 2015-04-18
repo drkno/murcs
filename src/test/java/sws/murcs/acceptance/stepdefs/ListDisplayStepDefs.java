@@ -62,7 +62,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
         model.addPerson(person1);
         model.addPerson(person2);
         model.addPerson(person3);
-        model.setProject(project);
+        model.addProject(project);
     }
 
     @After
