@@ -1,13 +1,23 @@
-package sws.murcs.magic.tracking;
+package sws.murcs.magic.tracking.listener;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * Manages a handle to a change listener.
+ * Not done the usual way because the UndoRedoManager exists for the entirety of the life
+ * of the program, so failure to remove a listener would cause a [very large] memory leak.
+ */
 public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener> {
     public ChangeListenerHandler(UndoRedoChangeListener referent) {
         super(referent);
     }
 
-    public boolean eventNotification(int status) {
+    /**
+     * Notifies the listener if it still exists of the status change.
+     * @param status the status.
+     * @return true if the notification was successful and it still exists, false otherwise.
+     */
+    public boolean eventNotification(ChangeState status) {
         UndoRedoChangeListener changeListener = get();
         if (changeListener != null && !isEnqueued()) {
             changeListener.undoRedoNotification(status);
@@ -20,7 +30,6 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
     public boolean equals(Object other) {
         if (other == null || !(other instanceof ChangeListenerHandler)) return false;
         Object handler = ((ChangeListenerHandler) other).get();
-        if (handler == null || !other.equals(this)) return false;
-        return true;
+        return !(handler == null || !other.equals(this));
     }
 }

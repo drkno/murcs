@@ -1,5 +1,9 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -52,12 +56,12 @@ public class UndoRedoManager {
      * @throws Exception if an internal error occurs while committing.
      */
     public static long commit(String message) throws Exception {
-        boolean wasMerged = false;
         ArrayList<FieldValuePair> pairs = new ArrayList<>();
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
             trackableObjects.add(object);
-            for (Field field : object.getTrackedFields()) {
+            ArrayList<Field> fields = object.getTrackedFields();
+            for (Field field : fields) {
                 pairs.add(new FieldValuePair(field, object));
             }
         }
@@ -68,8 +72,10 @@ public class UndoRedoManager {
         }
         head = new Commit(commitNumber, message, pairsArray, trackableObjects);
         if (canRevert() && head.equals(revertStack.peek())) {
-            revertStack.pop();
-            wasMerged = true;
+            Commit last = revertStack.pop();
+            if (!last.getMessage().contains(head.getMessage())) {
+                head.modifyMessage(head.getMessage() + ", " + last.getMessage());
+            }
         }
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
@@ -77,7 +83,7 @@ public class UndoRedoManager {
         }
 
         if (canRemake()) remakeStack.clear();
-        if (!wasMerged) notifyListeners(0);
+        notifyListeners(ChangeState.Commit);
 
         return commitNumber++;
     }
@@ -102,7 +108,7 @@ public class UndoRedoManager {
         if (savedObjects) {
             objectsList.clear();
         }
-        notifyListeners(-2);
+        notifyListeners(ChangeState.Forget);
     }
 
     /**
@@ -128,7 +134,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
-        notifyListeners(-1);
+        notifyListeners(ChangeState.Revert);
     }
 
     /**
@@ -170,7 +176,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
-        notifyListeners(1);
+        notifyListeners(ChangeState.Remake);
     }
 
     /**
@@ -227,11 +233,6 @@ public class UndoRedoManager {
     /**
      * Adds a listener for a change in state (eg commit, revert or remake performed)
      * that will be notified if such a change occurs.
-     * Values passed to the listener will be as follows on an event notification:
-     * -2 : A forget has occurred.
-     * -1 : A revert has occurred.
-     *  0 : A commit has occurred.
-     *  1 : A remake has occurred.
      * @param eventListener the event listener to add.
      */
     public static void addChangeListener(UndoRedoChangeListener eventListener) {
@@ -252,7 +253,7 @@ public class UndoRedoManager {
      * Notifies listeners that a change has occurred.
      * @param changeType the type of change that occurred.
      */
-    private static void notifyListeners(int changeType) {
+    private static void notifyListeners(ChangeState changeType) {
         changeListeners.forEach(l -> {
             if (!l.eventNotification(changeType)) changeListeners.remove(l);
         });

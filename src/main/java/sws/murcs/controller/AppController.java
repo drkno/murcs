@@ -16,7 +16,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.murcs.magic.tracking.UndoRedoChangeListener;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -100,8 +101,8 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
             contentPane.getChildren().add(pane);
         });
 
-        undoRedoNotification(0);
-        //UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
+        undoRedoNotification(ChangeState.Commit);
+        UndoRedoManager.addChangeListener(this);
     }
 
     /**
@@ -361,7 +362,7 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
      * @param change type of change that has been made
      */
     @Override
-    public void undoRedoNotification(int change) {
+    public void undoRedoNotification(ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
