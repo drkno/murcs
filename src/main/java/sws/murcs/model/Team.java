@@ -132,6 +132,7 @@ public class Team extends Model {
 
     @Override
     public boolean equals(Object object) {
+        if (object == null) return false;
         return object instanceof Team && ((Team) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 

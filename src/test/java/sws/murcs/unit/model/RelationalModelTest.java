@@ -4,12 +4,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.*;
 import sws.murcs.debug.sampledata.Generator;
 import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.SkillGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -204,5 +204,85 @@ public class RelationalModelTest {
 
         relationalModel.removeSkill(skillGenerated);
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
+    }
+
+    @Test
+    public void testFindUsagesProject() throws Exception{
+        Project newProject = new Project();
+
+        assertEquals("If the project is not attached to the model it should not be in use", 0, relationalModel.findUsages(newProject).size());
+
+        relationalModel.setProject(newProject);
+        assertEquals("Projects should not ever have any usages", 0, relationalModel.findUsages(newProject).size());
+    }
+
+    @Test
+    public void testFindUsagesTeam()throws Exception{
+        relationalModel.setProject(new Project());
+        relationalModel.getTeams().clear();
+
+        Team newTeam = (new TeamGenerator()).generate();
+
+        assertEquals("Teams not attached to the model should not have any usages", 0, relationalModel.findUsages(newTeam).size());
+
+        relationalModel.add(newTeam);
+        assertEquals("A team should have no usages when it is not used", 0, relationalModel.findUsages(newTeam).size());
+
+        relationalModel.getProject().addTeam(newTeam);
+        assertEquals("The team should be used in one place", 1, relationalModel.findUsages(newTeam).size());
+        assertEquals("The team should be used by the project", relationalModel.getProject(), relationalModel.findUsages(newTeam).get(0));
+
+    }
+
+    @Test
+    public void testFindUsagesPerson() throws Exception{
+        relationalModel.getPeople().clear();
+        relationalModel.getTeams().clear();
+
+        Team newTeam = new TeamGenerator().generate();
+        newTeam.getMembers().clear();
+        relationalModel.add(newTeam);
+
+        Person newPerson = new PersonGenerator().generate();
+
+        assertEquals("A person should have no usages before being added to the model", 0, relationalModel.findUsages(newPerson).size());
+
+        relationalModel.add(newPerson);
+        assertEquals("A person should have no usages before being added to team", 0, relationalModel.findUsages(newPerson).size());
+
+        newTeam.addMember(newPerson);
+        assertEquals("A person should have one usage upon being added to a team", 1, relationalModel.findUsages(newPerson).size());
+        assertEquals("After a person has been added to a team that team should be in their usages", newTeam, relationalModel.findUsages(newPerson).get(0));
+    }
+
+    @Test
+    public void testFindUsagesSkill() throws Exception{
+        relationalModel.getPeople().clear();
+        relationalModel.getSkills().clear();
+
+        Person newPerson = new PersonGenerator().generate();
+        newPerson.getSkills().clear();
+        relationalModel.add(newPerson);
+
+        Skill newSkill = new SkillGenerator().generate();
+
+        assertEquals("A skill should have no usages before being added to the model", 0, relationalModel.findUsages(newSkill).size());
+
+        relationalModel.add(newSkill);
+        assertEquals("A skill should have no usages before being added to person", 0, relationalModel.findUsages(newSkill).size());
+
+        newPerson.addSkill(newSkill);
+        assertEquals("A skill should have one usage upon being added to a person", 1, relationalModel.findUsages(newSkill).size());
+        assertEquals("After a skill has been added to a person that person should be in their usages", newPerson, relationalModel.findUsages(newSkill).get(0));
+    }
+
+    @Test
+    public void testInUseProject() throws Exception{
+        Project newProject = new Project();
+
+        assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
+
+        relationalModel.setProject(newProject);
+        assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 }
