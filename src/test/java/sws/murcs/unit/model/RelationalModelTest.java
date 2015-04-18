@@ -36,9 +36,9 @@ public class RelationalModelTest {
         String[] descriptions = {"description1", "description2", "description3"};
         String[] teamNames = {"name1", "name2", "name3"};
 
-        teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
-        personGenerator = new PersonGenerator(skillGenerator);
         skillGenerator = new SkillGenerator(skills, descriptions);
+        personGenerator = new PersonGenerator(skillGenerator);
+        teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
     }
 
     @Before
@@ -284,5 +284,84 @@ public class RelationalModelTest {
 
         relationalModel.setProject(newProject);
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
+    }
+
+    @Test
+    public void testDeletionsCascadeTeam() throws Exception{
+        relationalModel.getTeams().clear();
+
+        Project project = new Project();
+        relationalModel.setProject(project);
+
+        Team team = teamGenerator.generate();
+        relationalModel.add(team);
+
+        project.addTeam(team);
+
+        relationalModel.remove(team);
+        assertEquals("The team should have been removed from the project", 0, project.getTeams().size());
+    }
+
+    @Test
+    public void testDeletionsCascadePerson() throws Exception{
+        //Make sure we're working from a clean slate
+        relationalModel.getTeams().clear();
+        relationalModel.getPeople().clear();
+
+        Team team = teamGenerator.generate();
+        team.getMembers().clear();
+        relationalModel.add(team);
+
+        //Add a few people to the model and to the team
+        for (int i = 0; i < 10; ++i) {
+            Person p = personGenerator.generate();
+
+            //Avoid duplicates
+            p.setUserId(p.getUserId() + i);
+            p.setShortName(p.getShortName() + i);
+
+            relationalModel.add(p);
+            team.addMember(p);
+        }
+
+        assertEquals("There should now be ten people in the team", 10, team.getMembers().size());
+
+        for (int i = 0; i < relationalModel.getPeople().size(); ++i){
+            relationalModel.remove(relationalModel.getPeople().get(i));
+            i--;
+        }
+
+        assertEquals("There should now be no people in the team", 0, team.getMembers().size());
+    }
+
+    @Test
+    public void testDeletionsCascadeSkill() throws Exception{
+        //Make sure we're working from a clean slate
+        relationalModel.getSkills().clear();
+        relationalModel.getPeople().clear();
+
+        Person person = personGenerator.generate();
+        person.getSkills().clear();
+        relationalModel.add(person);
+
+        //Add a few people to the model and to the team
+        for (int i = 0; i < 10; ++i) {
+            Skill skill = skillGenerator.generate();
+
+            //Avoid duplicates
+            skill.setShortName(skill.getShortName() + i);
+
+            relationalModel.add(skill);
+            person.addSkill(skill);
+        }
+
+        assertEquals("The person should now have ten skills", 10, person.getSkills().size());
+
+        for (int i = 0; i < relationalModel.getSkills().size(); ++i){
+            relationalModel.remove(relationalModel.getSkills().get(i));
+            i--;
+        }
+
+        assertEquals("The person should now have no skills", 0, person.getSkills().size());
     }
 }
