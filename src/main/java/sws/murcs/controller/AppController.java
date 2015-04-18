@@ -23,6 +23,7 @@ import sws.murcs.view.App;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -399,14 +400,32 @@ public class AppController implements Initializable, ViewUpdate{
         final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
         if (selectedIndex == -1) return;
 
-        // Ensures you can't delete Product Owner or Scrum Master
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
+
+        // Ensures you can't delete Product Owner or Scrum Master
         if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills)
             if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM"))
                 return;
 
-        model.remove((Model) displayList.getSelectionModel().getSelectedItem());
-        updateListView(null);
+        ArrayList<Model> usages = model.findUsages(selectedItem);
+        GenericPopup popup = new GenericPopup();
+        String message = "Are you sure you want to delete this?";
+        if (usages.size() != 0){
+            message += "\nThis " + ModelTypes.getModelType(selectedItem) + " is used in " + usages.size() + " place(s):";
+            for (Model usage : usages) {
+                message += "\n" + usage.getShortName();
+            }
+        }
+        popup.setTitleText("Really delete?");
+        popup.setMessageText(message);
+
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+            popup.close();
+            model.remove((Model) displayList.getSelectionModel().getSelectedItem());
+            updateListView(null);
+        });
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
+        popup.show();
     }
 }
 
