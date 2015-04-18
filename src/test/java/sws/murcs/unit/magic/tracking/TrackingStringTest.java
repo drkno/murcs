@@ -40,6 +40,7 @@ public class TrackingStringTest {
     @Test
     public void undoTest() throws Exception {
         TestString a = new TestString();
+        UndoRedoManager.add(a);
         a.setTestString("string1");
         a.setTestString("string2");
         a.setTestString("string3");
@@ -47,21 +48,17 @@ public class TrackingStringTest {
         Assert.assertEquals("string2", a.getTestString());
         UndoRedoManager.revert();
         Assert.assertEquals("string1", a.getTestString());
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestString());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestString a = new TestString();
+        UndoRedoManager.add(a);
         a.setTestString("string1");
         a.setTestString("string2");
         a.setTestString("string3");
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestString());
-        UndoRedoManager.remake();
         Assert.assertEquals("string1", a.getTestString());
         UndoRedoManager.remake();
         Assert.assertEquals("string2", a.getTestString());
@@ -72,6 +69,7 @@ public class TrackingStringTest {
     @Test
     public void descriptionTest() throws Exception {
         TestString a = new TestString();
+        UndoRedoManager.add(a);
         a.setTestString("string1");
         a.setTestString("string2");
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());

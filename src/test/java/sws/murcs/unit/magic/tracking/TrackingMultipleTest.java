@@ -58,7 +58,9 @@ public class TrackingMultipleTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -79,7 +81,9 @@ public class TrackingMultipleTest {
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -107,7 +111,9 @@ public class TrackingMultipleTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);

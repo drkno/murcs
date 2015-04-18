@@ -44,6 +44,7 @@ public class TrackingArrayListTest {
     @Test
     public void undoTest() throws Exception {
         TestArrayList a = new TestArrayList();
+        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
@@ -51,21 +52,17 @@ public class TrackingArrayListTest {
         Assert.assertEquals(2, a.getLastValue());
         UndoRedoManager.revert();
         Assert.assertEquals(1, a.getLastValue());
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getLastValue());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestArrayList a = new TestArrayList();
+        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getLastValue());
-        UndoRedoManager.remake();
         Assert.assertEquals(1, a.getLastValue());
         UndoRedoManager.remake();
         Assert.assertEquals(2, a.getLastValue());
@@ -76,6 +73,7 @@ public class TrackingArrayListTest {
     @Test
     public void descriptionTest() throws Exception {
         TestArrayList a = new TestArrayList();
+        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());

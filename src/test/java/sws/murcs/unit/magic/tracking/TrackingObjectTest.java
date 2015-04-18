@@ -51,6 +51,7 @@ public class TrackingObjectTest {
     @Test
     public void undoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
@@ -58,21 +59,17 @@ public class TrackingObjectTest {
         Assert.assertEquals("2", a.getTestObject().toString());
         UndoRedoManager.revert();
         Assert.assertEquals("1", a.getTestObject().toString());
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestObject());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestObject());
-        UndoRedoManager.remake();
         Assert.assertEquals("1", a.getTestObject().toString());
         UndoRedoManager.remake();
         Assert.assertEquals("2", a.getTestObject().toString());
@@ -83,6 +80,7 @@ public class TrackingObjectTest {
     @Test
     public void descriptionTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
