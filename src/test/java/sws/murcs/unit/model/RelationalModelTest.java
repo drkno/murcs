@@ -207,6 +207,34 @@ public class RelationalModelTest {
     }
 
     @Test
+    public void testFindUsagesProject() throws Exception{
+        Project newProject = new Project();
+
+        assertEquals("If the project is not attached to the model it should not be in use", 0, relationalModel.findUsages(newProject).size());
+
+        relationalModel.setProject(newProject);
+        assertEquals("Projects should not ever have any usages", 0, relationalModel.findUsages(newProject).size());
+    }
+
+    @Test
+    public void testFindUsagesTeam()throws Exception{
+        relationalModel.setProject(new Project());
+        relationalModel.getTeams().clear();
+
+        Team newTeam = (new TeamGenerator()).generate();
+
+        assertEquals("Teams not attached to the model should not have any usages", 0, relationalModel.findUsages(newTeam).size());
+
+        relationalModel.add(newTeam);
+        assertEquals("A team should have no usages when it is not used", 0, relationalModel.findUsages(newTeam).size());
+
+        relationalModel.getProject().addTeam(newTeam);
+        assertEquals("The team should be used in one place", 1, relationalModel.findUsages(newTeam).size());
+        assertEquals("The team should be used by the project", relationalModel.getProject(), relationalModel.findUsages(newTeam).get(0));
+
+    }
+
+    @Test
     public void testInUseProject() throws Exception{
         Project newProject = new Project();
 
