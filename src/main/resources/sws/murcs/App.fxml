@@ -22,6 +22,7 @@
                     </Menu>
                     <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
                     <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                    <MenuItem mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
                     <SeparatorMenuItem mnemonicParsing="false" />
                     <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
                 </items>

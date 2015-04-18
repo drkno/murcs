@@ -14,8 +14,10 @@ import java.util.List;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
-    @XmlAttribute(name = "id")
+    @XmlElement(name = "id")
     private String userId;
+    @XmlElementWrapper(name = "skills")
+    @XmlElement(name = "skill")
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**

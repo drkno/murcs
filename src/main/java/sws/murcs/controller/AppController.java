@@ -19,8 +19,10 @@ import javafx.stage.FileChooser;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 
+import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -298,6 +300,28 @@ public class AppController implements Initializable, ViewUpdate{
                 PersistenceManager.Current.setCurrentModel(model);
             }
             updateListView(null);
+        } catch (Exception e) {
+            GenericPopup popup = new GenericPopup(e);
+            popup.show();
+        }
+    }
+
+    /**
+     * Generates a report to a specified location
+     * @param event The event that causes the report to be generate and saved to a chosen file location
+     */
+    @FXML
+    private void generateReport(ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setTitle("Report Save Location");
+            File file = fileChooser.showSaveDialog(App.stage);
+            if (file != null) {
+                ReportGenerator.generate(PersistenceManager.Current.getCurrentModel(), file);
+            }
+
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
