@@ -167,6 +167,17 @@ public class TeamEditor extends GenericEditor<Team> {
         return pane;
     }
 
+    public void updateFields() {
+        if (!teamNameTextField.getText().equals(edit.getShortName()))
+            teamNameTextField.setText(edit.getShortName());
+
+        if (!longNameTextField.getText().equals(edit.getLongName()))
+            longNameTextField.setText(edit.getLongName());
+
+        if (!descriptionTextField.getText().equals(edit.getDescription()))
+            descriptionTextField.setText(edit.getDescription());
+    }
+
     /**
      * Initializes the editor for use, sets up listeners etc.
      */

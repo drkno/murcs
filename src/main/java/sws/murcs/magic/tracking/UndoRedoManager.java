@@ -1,7 +1,5 @@
 package sws.murcs.magic.tracking;
 
-import sws.murcs.EventNotification;
-
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -16,7 +14,7 @@ public class UndoRedoManager {
     private static ArrayList<TrackableObject> objectsList;
     private static long commitNumber;
     private static long maximumCommits;
-    private static ArrayList<EventNotification<Integer>> changeListeners;
+    private static ArrayList<ChangeListenerHandler> changeListeners;
 
     /**
      * "Static" constructor, used so that values are always initialized
@@ -54,6 +52,7 @@ public class UndoRedoManager {
      * @throws Exception if an internal error occurs while committing.
      */
     public static long commit(String message) throws Exception {
+        boolean wasMerged = false;
         ArrayList<FieldValuePair> pairs = new ArrayList<>();
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
@@ -70,17 +69,15 @@ public class UndoRedoManager {
         head = new Commit(commitNumber, message, pairsArray, trackableObjects);
         if (canRevert() && head.equals(revertStack.peek())) {
             revertStack.pop();
+            wasMerged = true;
         }
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
             revertStack.removeLast();
         }
 
-        if (canRemake()) {
-            remakeStack.clear();
-        }
-
-        notifyListeners(0);
+        if (canRemake()) remakeStack.clear();
+        if (!wasMerged) notifyListeners(0);
 
         return commitNumber++;
     }
@@ -237,16 +234,18 @@ public class UndoRedoManager {
      *  1 : A remake has occurred.
      * @param eventListener the event listener to add.
      */
-    public static void addChangeListener(EventNotification<Integer> eventListener) {
-        changeListeners.add(eventListener);
+    public static void addChangeListener(UndoRedoChangeListener eventListener) {
+        ChangeListenerHandler changeListenerHandler = new ChangeListenerHandler(eventListener);
+        changeListeners.add(changeListenerHandler);
     }
 
     /**
      * Removes an change listener.
      * @param eventListener listener to remove.
      */
-    public static void removeChangeListener(EventNotification<Integer> eventListener) {
-        changeListeners.remove(eventListener);
+    public static void removeChangeListener(UndoRedoChangeListener eventListener) {
+        ChangeListenerHandler listener = new ChangeListenerHandler(eventListener);
+        changeListeners.remove(listener);
     }
 
     /**
@@ -254,6 +253,8 @@ public class UndoRedoManager {
      * @param changeType the type of change that occurred.
      */
     private static void notifyListeners(int changeType) {
-        changeListeners.forEach(l -> l.eventNotification(changeType));
+        changeListeners.forEach(l -> {
+            if (!l.eventNotification(changeType)) changeListeners.remove(l);
+        });
     }
 }

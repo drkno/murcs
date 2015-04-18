@@ -159,4 +159,7 @@ public class PersonEditor extends GenericEditor<Person> {
             updateSkills();
         }
     }
+
+    public void updateFields() {
+    }
 }

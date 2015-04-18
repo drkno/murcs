@@ -73,6 +73,9 @@ public class SkillEditor extends GenericEditor<Skill> {
             shortNameTextField.setDisable(true);
     }
 
+    public void updateFields() {
+    }
+
     @FXML
     public void initialize() {
         shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {

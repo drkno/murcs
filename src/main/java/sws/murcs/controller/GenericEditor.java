@@ -1,6 +1,8 @@
 package sws.murcs.controller;
 
 import sws.murcs.EventNotification;
+import sws.murcs.magic.tracking.UndoRedoChangeListener;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Model;
 
 import java.util.ArrayList;
@@ -8,12 +10,23 @@ import java.util.ArrayList;
 /**
  * A generic class for making editing easier
  */
-public abstract class GenericEditor<T> {
+public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     protected T edit;
     protected EventNotification<T> onSaved;
 
     protected static ArrayList<EventNotification<Model>> listeners = new ArrayList<>();
+
+    public GenericEditor() {
+        UndoRedoManager.addChangeListener(this);
+    }
+
+    @Override
+    public void undoRedoNotification(int param) {
+        updateFields();
+    }
+
+    public abstract void updateFields();
 
     /**
      * Sets the item that the form is editing

@@ -73,6 +73,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         updateAndHandle();
     }
 
+    public void updateFields() {
+    }
+
     /**
      * Initializes the editor for use, sets up listeners etc.
      */
