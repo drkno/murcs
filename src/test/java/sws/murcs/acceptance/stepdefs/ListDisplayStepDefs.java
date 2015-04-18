@@ -91,36 +91,33 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @When("^I select an item from the list display$")
     public void I_select_an_item_from_the_list_display() throws Throwable {
-        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        displayList.getSelectionModel().select(0);
+        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("Dave");
     }
 
     @Then("^details of the select item are shown$")
     public void details_of_the_select_item_are_shown() throws Throwable {
         GridPane contentPane = (GridPane) primaryStage.getScene().lookup("#contentPane");
-        TextField shortName = (TextField) contentPane.lookup("#projectTextFieldShortName");
+        TextField shortName = (TextField) contentPane.lookup("#personNameTextField");
         assertNotNull(shortName);
     }
 
     @Given("^I have selected an item from the list display$")
     public void I_have_selected_an_item_from_the_list_display() throws Throwable {
-        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        displayList.getSelectionModel().select(0);
+        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("Dave");
     }
 
     @When("^I edit the items short name$")
     public void I_edit_the_items_short_name() throws Throwable {
-        fx.clickOn("#projectTextFieldShortName").type(KeyCode.A);
-        fx.clickOn("#textFieldLongName");
+        fx.clickOn("#personNameTextField").type(KeyCode.A);
+        fx.clickOn("#personFullNameTextField");
     }
 
     @Then("^the short name is updated in the list display$")
     public void the_short_name_is_updated_in_the_list_display() throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        String name = "";
-        Object test2 = displayList.getSelectionModel().getSelectedItem();
-        Object test = displayList.getChildrenUnmodifiable().get(0);
-        assertTrue(Objects.equals("Testinga", name));
+        String name = displayList.getSelectionModel().getSelectedItem().toString();
+        assertTrue(Objects.equals("Davea", name));
     }
-
 }

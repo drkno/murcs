@@ -73,7 +73,7 @@ public class AppController implements Initializable, ViewUpdate{
         }
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
-                updateListView(null);
+                updateListView(null, true);
             }
             else {
                 // Consume the event, don't update the display
@@ -91,7 +91,8 @@ public class AppController implements Initializable, ViewUpdate{
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, this::updateListView);
+                ViewUpdate update = this;
+                pane = EditorHelper.getEditForm((Model) newValue, update);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -101,30 +102,30 @@ public class AppController implements Initializable, ViewUpdate{
 
         updateUndoRedoMenuItems(0);
         UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
-        updateListView(null);
+        updateListView(null, true);
     }
 
     /**
      * Updates the display list on the left hand side of the screen to the type selected in the choice box.
      * @param newModelObject The type selected in the choice box.
      */
-    public void updateListView(Model newModelObject) {
+    public void updateListView(Model newModelObject, boolean changeSelection) {
         ModelTypes type;
         ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (newModelObject == null) {
-            updateList(null, selectedType);
+            updateList(null, selectedType, changeSelection);
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
             if (selectedType == type) {
-                updateList(newModelObject, type);
+                updateList(newModelObject, type, changeSelection);
             }
             else {
                 // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
                 consumeChoiceBoxEvent = true;
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                updateList(newModelObject, type);
+                updateList(newModelObject, type, changeSelection);
             }
         }
     }
@@ -134,7 +135,7 @@ public class AppController implements Initializable, ViewUpdate{
      * @param newModelObject new model object, that may have been created.
      * @param type type of model object to refresh
      */
-    private void updateList(Model newModelObject, ModelTypes type) {
+    private void updateList(Model newModelObject, ModelTypes type, boolean ChangeSelection) {
         displayList.getSelectionModel().clearSelection();
         displayListItems.clear();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -158,11 +159,12 @@ public class AppController implements Initializable, ViewUpdate{
                 displayListItems.addAll(model.getSkills());
                 break;
         }
-        if (newModelObject != null) {
-            displayList.getSelectionModel().select(newModelObject);
-        }
-        else {
-            displayList.getSelectionModel().select(0);
+        if (ChangeSelection) {
+            if (newModelObject != null) {
+                displayList.getSelectionModel().select(newModelObject);
+            } else {
+                displayList.getSelectionModel().select(0);
+            }
         }
     }
 
@@ -212,43 +214,8 @@ public class AppController implements Initializable, ViewUpdate{
      */
     @FXML
     private void createNewProject(ActionEvent event) {
-        if (!UndoRedoManager.canRevert()) {
-            EditorHelper.createNew(Project.class, this::updateListView);
-        }
-        else {
-            GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Unsaved Changes");
-            popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, ml -> {
-                popup.close();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked history
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, ml -> {
-                popup.close();
-                // Let the user save the project
-                saveProject();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked History
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, ml -> {
-                popup.close();
-            });
-            popup.show();
-
-        }
+        ViewUpdate update = this;
+        EditorHelper.createNew(Project.class, update);
     }
 
     /**
@@ -298,7 +265,7 @@ public class AppController implements Initializable, ViewUpdate{
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
             }
-            updateListView(null);
+            updateListView(null, true);
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
@@ -388,7 +355,8 @@ public class AppController implements Initializable, ViewUpdate{
         }
 
         if (clazz != null) {
-            EditorHelper.createNew(clazz, this::updateListView);
+            ViewUpdate viewUpdate = this;
+            EditorHelper.createNew(clazz, viewUpdate);
         }
     }
 
@@ -407,7 +375,7 @@ public class AppController implements Initializable, ViewUpdate{
                 return;
 
         model.remove((Model) displayList.getSelectionModel().getSelectedItem());
-        updateListView(null);
+        updateListView(null, true);
     }
 }
 

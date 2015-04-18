@@ -40,7 +40,7 @@ public class EditorHelper {
                 // TODO fix, this is not working as expected, newModel is always null
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.updateListView(null);
+                updated.updateListView(null, false);
             });
             if (root == null) return;
             Scene scene = new Scene(root);
@@ -54,7 +54,7 @@ public class EditorHelper {
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
-                    updated.updateListView(null);
+                    updated.updateListView(null, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -93,7 +93,7 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            GenericEditor.addListener(okayClicked::updateListView);
+            controller.setSavedCallback(okayClicked);
 
             controller.load();
 

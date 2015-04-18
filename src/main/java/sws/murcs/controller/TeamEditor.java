@@ -65,7 +65,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit, true);
 
         //Load the team again, to make sure everything is updated. We could probably do this better
         load();
@@ -83,6 +83,7 @@ public class TeamEditor extends GenericEditor<Team> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
+            e.printStackTrace();
             //Don't show the user this.
         }
     }

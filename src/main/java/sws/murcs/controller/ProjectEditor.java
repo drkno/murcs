@@ -44,7 +44,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(null, false);
     }
 
     /**
@@ -59,6 +59,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
+            e.printStackTrace();
             //Don't show the user this.
         }
     }
