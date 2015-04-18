@@ -288,17 +288,27 @@ public class RelationalModelTest {
 
     @Test
     public void testDeletionsCascadeTeam() throws Exception{
+        //Make sure we're working on a clean state
         relationalModel.getTeams().clear();
 
         Project project = new Project();
         relationalModel.setProject(project);
 
-        Team team = teamGenerator.generate();
-        relationalModel.add(team);
+        for (int i = 0; i < 10; i++){
+            Team team = teamGenerator.generate();
+            team.setShortName(team.getLongName() + i);
 
-        project.addTeam(team);
+            relationalModel.add(team);
+            project.addTeam(team);
+        }
 
-        relationalModel.remove(team);
+        assertEquals("The project should now have ten teams", 10, project.getTeams().size());
+
+        for (int i = 0; i < relationalModel.getTeams().size(); i++){
+            relationalModel.remove(relationalModel.getTeams().get(i));
+            i--;
+        }
+
         assertEquals("The team should have been removed from the project", 0, project.getTeams().size());
     }
 
