@@ -74,16 +74,18 @@ public class AppController implements Initializable, ViewUpdate{
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
                 updateListView(null, true);
-            }
-            else {
+            } else {
                 // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
             }
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        displayList.getSelectionModel().selectedIndexProperty().addListener((observable, oldIndex, newIndex) -> {
             //The remove button should be greyed out if no item is selected
+            Object newValue = null;
+            if (newIndex.intValue() >= 0) displayList.getItems().get(c.intValue());
+
             removeButton.setDisable(newValue == null);
 
             contentPane.getChildren().clear();
