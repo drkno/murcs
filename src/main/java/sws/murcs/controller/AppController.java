@@ -117,6 +117,16 @@ public class AppController implements Initializable, ViewUpdate{
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
+
+            try {
+                UndoRedoManager.add(newModelObject);
+                UndoRedoManager.commit("Created new " + (type == ModelTypes.People ? "Person" : type.toString()));
+            } catch (Exception e) {
+                // This state only occurs if there is a bug or something is very wrong
+                System.err.println("The undo/redo manager encountered an error while attempting to commit a new model object:\n" + e.toString());
+                UndoRedoManager.forget();
+            }
+
             if (selectedType == type) {
                 updateList(newModelObject, type);
             }

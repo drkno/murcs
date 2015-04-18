@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableValue;
+
 /**
  * Model of a skill.
  */
@@ -15,6 +17,7 @@ public class Skill extends Model {
      */
     public static final String SM_NAME = "SM";
 
+    @TrackableValue
     private String description;
 
     /**

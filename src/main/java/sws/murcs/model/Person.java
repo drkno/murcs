@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
  * Model of a person.
  */
 public class Person extends Model {
+    @TrackableValue
     private String userId;
+    @TrackableValue
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**
