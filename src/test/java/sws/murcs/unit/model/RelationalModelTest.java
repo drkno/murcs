@@ -4,10 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.Generator;
-import sws.murcs.debug.sampledata.PersonGenerator;
-import sws.murcs.debug.sampledata.SkillGenerator;
-import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
@@ -288,17 +285,27 @@ public class RelationalModelTest {
 
     @Test
     public void testDeletionsCascadeTeam() throws Exception{
+        //Make sure we're working on a clean state
         relationalModel.getTeams().clear();
 
         Project project = new Project();
         relationalModel.setProject(project);
 
-        Team team = teamGenerator.generate();
-        relationalModel.add(team);
+        for (int i = 0; i < 10; i++){
+            Team team = teamGenerator.generate();
+            team.setShortName(team.getLongName() + i);
 
-        project.addTeam(team);
+            relationalModel.add(team);
+            project.addTeam(team);
+        }
 
-        relationalModel.remove(team);
+        assertEquals("The project should now have ten teams", 10, project.getTeams().size());
+
+        for (int i = 0; i < relationalModel.getTeams().size(); i++){
+            relationalModel.remove(relationalModel.getTeams().get(i));
+            i--;
+        }
+
         assertEquals("The team should have been removed from the project", 0, project.getTeams().size());
     }
 
@@ -308,12 +315,17 @@ public class RelationalModelTest {
         relationalModel.getTeams().clear();
         relationalModel.getPeople().clear();
 
-        Team team = teamGenerator.generate();
-        team.getMembers().clear();
-        relationalModel.add(team);
+        //Create a few teams to add people to
+        for (int i = 0; i < 10; i++) {
+            Team team = teamGenerator.generate();
+            team.setShortName(team.getShortName() + i);
+
+            team.getMembers().clear();
+            relationalModel.add(team);
+        }
 
         //Add a few people to the model and to the team
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 100; i++) {
             Person p = personGenerator.generate();
 
             //Avoid duplicates
@@ -321,17 +333,20 @@ public class RelationalModelTest {
             p.setShortName(p.getShortName() + i);
 
             relationalModel.add(p);
-            team.addMember(p);
+            //Add the person to a random team
+            relationalModel.getTeams().get(NameGenerator.random(relationalModel.getTeams().size())).addMember(p);
         }
 
-        assertEquals("There should now be ten people in the team", 10, team.getMembers().size());
-
+        //Remove all the people from the model. This should cascade, removing them from teams too
         for (int i = 0; i < relationalModel.getPeople().size(); ++i){
             relationalModel.remove(relationalModel.getPeople().get(i));
             i--;
         }
 
-        assertEquals("There should now be no people in the team", 0, team.getMembers().size());
+        //Check that there are no people in any team now
+        for (int i = 0; i < relationalModel.getTeams().size(); i++){
+            assertEquals("There should be no people in any team", 0 , relationalModel.getTeams().get(i).getMembers().size());
+        }
     }
 
     @Test
@@ -340,11 +355,16 @@ public class RelationalModelTest {
         relationalModel.getSkills().clear();
         relationalModel.getPeople().clear();
 
-        Person person = personGenerator.generate();
-        person.getSkills().clear();
-        relationalModel.add(person);
+        //Generate some random people
+        for (int i = 0; i < 10; ++i) {
+            Person person = personGenerator.generate();
+            person.setUserId(person.getUserId() + i);
+            person.setShortName(person.getShortName() + i);
+            person.getSkills().clear();
+            relationalModel.add(person);
+        }
 
-        //Add a few people to the model and to the team
+        //Add a few skills to the model and to a random person
         for (int i = 0; i < 10; ++i) {
             Skill skill = skillGenerator.generate();
 
@@ -352,16 +372,17 @@ public class RelationalModelTest {
             skill.setShortName(skill.getShortName() + i);
 
             relationalModel.add(skill);
-            person.addSkill(skill);
+            relationalModel.getPeople().get(NameGenerator.random(relationalModel.getPeople().size())).addSkill(skill);
         }
 
-        assertEquals("The person should now have ten skills", 10, person.getSkills().size());
-
+        //Remove all the skills from the model. This should cascade to the people with the skills being removed
         for (int i = 0; i < relationalModel.getSkills().size(); ++i){
             relationalModel.remove(relationalModel.getSkills().get(i));
             i--;
         }
 
-        assertEquals("The person should now have no skills", 0, person.getSkills().size());
+        for (Person p : relationalModel.getPeople()) {
+            assertEquals("The person should now have no skills", 0, p.getSkills().size());
+        }
     }
 }
