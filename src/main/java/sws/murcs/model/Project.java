@@ -32,6 +32,7 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("set project description");
     }
 
     /**
@@ -55,6 +56,7 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
+            commit("add team to project");
         }
         else {
             throw new DuplicateObjectException();
@@ -79,6 +81,7 @@ public class Project extends Model {
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             teams.remove(team);
+            commit("remove team from project");
         }
     }
 
