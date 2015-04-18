@@ -343,6 +343,7 @@ public class RelationalModelTest {
             i--;
         }
 
+        //Check that there are no people in any team now
         for (int i = 0; i < relationalModel.getTeams().size(); i++){
             assertEquals("There should be no people in any team", 0 , relationalModel.getTeams().get(i).getMembers().size());
         }
@@ -354,11 +355,16 @@ public class RelationalModelTest {
         relationalModel.getSkills().clear();
         relationalModel.getPeople().clear();
 
-        Person person = personGenerator.generate();
-        person.getSkills().clear();
-        relationalModel.add(person);
+        //Generate some random people
+        for (int i = 0; i < 10; ++i) {
+            Person person = personGenerator.generate();
+            person.setUserId(person.getUserId() + i);
+            person.setShortName(person.getShortName() + i);
+            person.getSkills().clear();
+            relationalModel.add(person);
+        }
 
-        //Add a few people to the model and to the team
+        //Add a few skills to the model and to a random person
         for (int i = 0; i < 10; ++i) {
             Skill skill = skillGenerator.generate();
 
@@ -366,16 +372,17 @@ public class RelationalModelTest {
             skill.setShortName(skill.getShortName() + i);
 
             relationalModel.add(skill);
-            person.addSkill(skill);
+            relationalModel.getPeople().get(NameGenerator.random(relationalModel.getPeople().size())).addSkill(skill);
         }
 
-        assertEquals("The person should now have ten skills", 10, person.getSkills().size());
-
+        //Remove all the skills from the model. This should cascade to the people with the skills being removed
         for (int i = 0; i < relationalModel.getSkills().size(); ++i){
             relationalModel.remove(relationalModel.getSkills().get(i));
             i--;
         }
 
-        assertEquals("The person should now have no skills", 0, person.getSkills().size());
+        for (Person p : relationalModel.getPeople()) {
+            assertEquals("The person should now have no skills", 0, p.getSkills().size());
+        }
     }
 }
