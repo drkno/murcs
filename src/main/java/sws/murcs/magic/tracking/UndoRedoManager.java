@@ -254,8 +254,13 @@ public class UndoRedoManager {
      * @param changeType the type of change that occurred.
      */
     private static void notifyListeners(ChangeState changeType) {
-        changeListeners.forEach(l -> {
-            if (!l.eventNotification(changeType)) changeListeners.remove(l);
-        });
+        if (changeListeners.size() == 0) return;
+        ChangeListenerHandler.performGC();
+        for (int i = 0; i < changeListeners.size(); i++) {
+            if (!changeListeners.get(i).eventNotification(changeType)) {
+                changeListeners.remove(i);
+                i--;
+            }
+        }
     }
 }

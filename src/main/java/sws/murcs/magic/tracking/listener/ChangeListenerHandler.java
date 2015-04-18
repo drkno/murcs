@@ -8,6 +8,15 @@ import java.lang.ref.WeakReference;
  * of the program, so failure to remove a listener would cause a [very large] memory leak.
  */
 public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener> {
+    /**
+     * Performs a garbage collection, aimed at collecting former listeners.
+     */
+    public static void performGC() {
+        try {
+            System.gc();
+        } catch (Exception e) {} // not much we can do
+    }
+
     public ChangeListenerHandler(UndoRedoChangeListener referent) {
         super(referent);
     }
