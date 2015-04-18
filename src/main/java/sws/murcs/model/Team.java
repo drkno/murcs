@@ -44,7 +44,7 @@ public class Team extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
-        commit("set team description");
+        commit("edit team");
     }
 
     /**
@@ -65,7 +65,7 @@ public class Team extends Model {
             throw new MultipleRolesException("Scrum Master", "Product Owner", scrumMaster, this);
         }
         this.scrumMaster = scrumMaster;
-        commit("set scrum master");
+        commit("edit team");
     }
 
     /**
@@ -86,7 +86,7 @@ public class Team extends Model {
             throw new MultipleRolesException("Product Owner", "Scrum Master", productOwner, this);
         }
         this.productOwner = productOwner;
-        commit("set product owner");
+        commit("edit team");
     }
 
     /**
@@ -97,7 +97,7 @@ public class Team extends Model {
     public void addMember(Person person) throws DuplicateObjectException {
         if (!members.contains(person)) {
             this.members.add(person);
-            commit("add team member");
+            commit("edit team");
         }
         else {
             throw new DuplicateObjectException();
@@ -122,7 +122,7 @@ public class Team extends Model {
     public void removeMember(Person person) {
         if (this.members.contains(person)) {
             this.members.remove(person);
-            commit("remove team member");
+            commit("edit team");
         }
     }
 

@@ -56,7 +56,7 @@ public class Person extends Model {
     public void setUserId(String userId) throws Exception {
         validateUserId(userId);
         this.userId = userId.trim();
-        commit("Set Person User ID");
+        commit("edit person");
     }
 
     /**
@@ -78,7 +78,7 @@ public class Person extends Model {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
-            commit("add skill to person");
+            commit("edit person");
         }
         else {
             throw new DuplicateObjectException("This is actually the same skill");
@@ -103,7 +103,7 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
-            commit("remove skill from person");
+            commit("edit person");
         }
     }
 

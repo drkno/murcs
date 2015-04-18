@@ -42,7 +42,7 @@ public class Skill extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
-        commit("set skill description");
+        commit("edit skill");
     }
 
     /**

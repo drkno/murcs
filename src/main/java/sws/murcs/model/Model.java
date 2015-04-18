@@ -32,7 +32,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         validateShortName(shortName);
         this.shortName = shortName.trim();
-        commit("set " + getClass().getSimpleName() + " short name");
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
     /**
@@ -59,6 +59,6 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public void setLongName(String longName) {
         this.longName = longName;
-        commit("set " + getClass().getSimpleName() + " long name");
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 }
