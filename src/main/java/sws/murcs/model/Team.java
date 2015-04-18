@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,13 @@ import java.util.List;
  * Model of a Team.
  */
 public class Team extends Model {
+    @TrackableValue
     private String description;
+    @TrackableValue
     private ArrayList<Person> members = new ArrayList<>();
+    @TrackableValue
     private Person scrumMaster;
+    @TrackableValue
     private Person productOwner;
 
     /**
