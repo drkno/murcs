@@ -235,6 +235,48 @@ public class RelationalModelTest {
     }
 
     @Test
+    public void testFindUsagesPerson() throws Exception{
+        relationalModel.getPeople().clear();
+        relationalModel.getTeams().clear();
+
+        Team newTeam = new TeamGenerator().generate();
+        newTeam.getMembers().clear();
+        relationalModel.add(newTeam);
+
+        Person newPerson = new PersonGenerator().generate();
+
+        assertEquals("A person should have no usages before being added to the model", 0, relationalModel.findUsages(newPerson).size());
+
+        relationalModel.add(newPerson);
+        assertEquals("A person should have no usages before being added to team", 0, relationalModel.findUsages(newPerson).size());
+
+        newTeam.addMember(newPerson);
+        assertEquals("A person should have one usage upon being added to a team", 1, relationalModel.findUsages(newPerson).size());
+        assertEquals("After a person has been added to a team that team should be in their usages", newTeam, relationalModel.findUsages(newPerson).get(0));
+    }
+
+    @Test
+    public void testFindUsagesSkill() throws Exception{
+        relationalModel.getPeople().clear();
+        relationalModel.getSkills().clear();
+
+        Person newPerson = new PersonGenerator().generate();
+        newPerson.getSkills().clear();
+        relationalModel.add(newPerson);
+
+        Skill newSkill = new SkillGenerator().generate();
+
+        assertEquals("A skill should have no usages before being added to the model", 0, relationalModel.findUsages(newSkill).size());
+
+        relationalModel.add(newSkill);
+        assertEquals("A skill should have no usages before being added to person", 0, relationalModel.findUsages(newSkill).size());
+
+        newPerson.addSkill(newSkill);
+        assertEquals("A skill should have one usage upon being added to a person", 1, relationalModel.findUsages(newSkill).size());
+        assertEquals("After a skill has been added to a person that person should be in their usages", newPerson, relationalModel.findUsages(newSkill).get(0));
+    }
+
+    @Test
     public void testInUseProject() throws Exception{
         Project newProject = new Project();
 
