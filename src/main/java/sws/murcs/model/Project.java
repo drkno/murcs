@@ -90,4 +90,9 @@ public class Project extends Model {
     public String toString() {
         return getShortName();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        return object instanceof Project && ((Project) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+    }
 }

@@ -32,10 +32,17 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     public RelationalModel generate() {
         try {
             RelationalModel model = new RelationalModel();
-            model.addProject(projectGenerator.generate());
+            int randProjects = NameGenerator.random(5,20);
+            ArrayList<Project> projects = new ArrayList<>();
+            for (int i = 0; i < randProjects; i++) {
+                Project newProject = projectGenerator.generate();
+                if (!projects.stream().filter(team -> newProject.equals(team)).findAny().isPresent()) {
+                    projects.add(newProject);
+                }
+            }
+            model.addProjects(projects);
 
-
-            int rand = random.nextInt(10);
+            int rand = NameGenerator.random(10, 30);
             ArrayList<Team> unassignedTeams = new ArrayList<>();
             for (int i = 0; i < rand; i++) {
                 Team newTeam = teamGenerator.generate();

@@ -41,6 +41,7 @@ public class PersonGenerator implements Generator<Person> {
         String longName = NameGenerator.randomTitle() + " " + shortName;
 
         int skillCount = NameGenerator.random(100);
+        int roles = NameGenerator.random(100);
         ArrayList<Skill> skills = new ArrayList<>();
 
         for (int i = 0; i < skillCount; i++) {
@@ -48,6 +49,26 @@ public class PersonGenerator implements Generator<Person> {
             if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
                 skills.add(newSkill);
             }
+        }
+
+        try {
+            Skill productOwner = new Skill();
+            productOwner.setShortName("PO");
+            productOwner.setLongName("Product Owner");
+            productOwner.setDescription("has ability to insult design teams efforts");
+            if (!skills.stream().filter(skill -> productOwner.equals(skill)).findAny().isPresent()) {
+                skills.add(productOwner);
+            }
+
+            Skill scrumMaster = new Skill();
+            scrumMaster.setShortName("SM");
+            scrumMaster.setLongName("Scrum Master");
+            scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
+            if (!skills.stream().filter(skill -> scrumMaster.equals(skill)).findAny().isPresent()) {
+                skills.add(scrumMaster);
+            }
+        } catch (Exception e) {
+            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
         }
 
         try {
