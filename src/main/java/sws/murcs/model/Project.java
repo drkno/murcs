@@ -1,7 +1,7 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -59,8 +59,7 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
-        }
-        else {
+        } else {
             throw new DuplicateObjectException();
         }
     }

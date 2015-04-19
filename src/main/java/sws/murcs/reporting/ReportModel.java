@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @author dpv11@uclive.ac.nz (Daniel van Wichen)
+ * A model which matches the output of the status reports so it can be directly serialized.
  */
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -23,6 +23,10 @@ public class ReportModel {
     @XmlElement(name = "person")
     private ArrayList<Person> listUnassignedPeople = new ArrayList<>();
 
+    /**
+     * Constructor.
+     * @param relationalModel a relational model
+     */
     public ReportModel(RelationalModel relationalModel) {
         project = relationalModel.getProject();
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
@@ -31,6 +35,9 @@ public class ReportModel {
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName().compareTo(p2.getShortName()));
     }
 
+    /**
+     * An unused constructor that is needed by Jaxb for some reason.
+     */
     @SuppressWarnings("unused")
     private ReportModel() {
     }

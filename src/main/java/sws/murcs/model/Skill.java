@@ -24,14 +24,6 @@ public class Skill extends Model {
     private String description;
 
     /**
-     * Enum for roles
-     */
-    public enum ROLES {
-        PO,
-        SM
-    }
-
-    /**
      * Gets a description of the skill
      * @return the description
      */
@@ -51,7 +43,7 @@ public class Skill extends Model {
      * Indicates whether the skill means you can be a scrum master
      * @return Whether you can be a scrum master
      */
-    public boolean isScrumMasterSkill(){
+    public boolean isScrumMasterSkill() {
         return SM_NAME.equals(getShortName());
     }
 
@@ -59,7 +51,7 @@ public class Skill extends Model {
      * Indicates whether the skill means you can be a product owner
      * @return Whether you can be a product owner
      */
-    public boolean isProductOwnerSkill(){
+    public boolean isProductOwnerSkill() {
         return PO_NAME.equals(getShortName());
     }
 
@@ -75,5 +67,13 @@ public class Skill extends Model {
     @Override
     public String toString() {
         return getShortName();
+    }
+
+    /**
+     * Enum for roles
+     */
+    public enum ROLES {
+        PO,
+        SM
     }
 }

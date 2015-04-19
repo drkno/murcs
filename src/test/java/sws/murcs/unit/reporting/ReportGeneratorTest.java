@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author dpv11@uclive.ac.nz (Daniel van Wichen)
+ * Tests for the ReportGenerator class.
  */
 public class ReportGeneratorTest {
 

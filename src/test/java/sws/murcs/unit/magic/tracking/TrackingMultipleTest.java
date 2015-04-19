@@ -98,7 +98,7 @@ public class TrackingMultipleTest {
         Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals("2", b.getTestString());
-        Assert.assertEquals(2, a.getTestInteger());;
+        Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
