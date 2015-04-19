@@ -1,7 +1,7 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;

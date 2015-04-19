@@ -16,6 +16,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -29,7 +31,7 @@ import java.util.ResourceBundle;
 /**
  * Main app class controller
  */
-public class AppController implements Initializable, ViewUpdate{
+public class AppController implements Initializable, ViewUpdate, UndoRedoChangeListener {
 
     @FXML
     private Parent root;
@@ -75,8 +77,7 @@ public class AppController implements Initializable, ViewUpdate{
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
                 updateListView(null);
-            }
-            else {
+            } else {
                 // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
             }
@@ -100,8 +101,8 @@ public class AppController implements Initializable, ViewUpdate{
             contentPane.getChildren().add(pane);
         });
 
-        updateUndoRedoMenuItems(0);
-        UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
+        undoRedoNotification(ChangeState.Commit);
+        UndoRedoManager.addChangeListener(this);
     }
 
     /**
@@ -117,10 +118,6 @@ public class AppController implements Initializable, ViewUpdate{
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
-
-            UndoRedoManager.add(newModelObject);
-            commitChanges("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
-
             if (selectedType == type) {
                 updateList(newModelObject, type);
             }
@@ -360,14 +357,15 @@ public class AppController implements Initializable, ViewUpdate{
      * Updates the undo/redo menu to reflect the current undo/redo state.
      * @param change type of change that has been made
      */
-    private void updateUndoRedoMenuItems(int change) {
+    @Override
+    public void undoRedoNotification(ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
         else {
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo \"" + UndoRedoManager.getRevertMessage() +  "\"");
+            undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
         }
 
         if (!UndoRedoManager.canRemake()) {
@@ -376,7 +374,7 @@ public class AppController implements Initializable, ViewUpdate{
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo \"" + UndoRedoManager.getRemakeMessage() +  "\"");
+            redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
         // TODO: List refresh code (story: 119, task: 46)
@@ -442,9 +440,6 @@ public class AppController implements Initializable, ViewUpdate{
             popup.close();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            UndoRedoManager.remove(item);
-            ModelTypes type = ModelTypes.getModelType(item);
-            commitChanges("deleted " + (type == ModelTypes.People ? "Person" : type.toString()));
             updateListView(null);
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });

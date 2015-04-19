@@ -25,9 +25,15 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     public void update() throws Exception {
         labelErrorMessage.setText("");
-        edit.setShortName(projectTextFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(descriptionTextField.getText());
+        if (!projectTextFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(projectTextFieldShortName.getText());
+        }
+        if (!textFieldLongName.getText().equals(edit.getLongName())) {
+            edit.setLongName(textFieldLongName.getText());
+        }
+        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
 
         //This line will need to be changed if we support multiple projects
         //What we're trying to do here is check if the current edit already exist
@@ -60,6 +66,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
         catch (Exception e) {
             //Don't show the user this.
+            e.printStackTrace();
         }
     }
 
@@ -67,10 +74,28 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Loads the edit into the form
      */
     public void load(){
-        projectTextFieldShortName.setText(edit.getShortName());
-        textFieldLongName.setText(edit.getLongName());
-        descriptionTextField.setText(edit.getDescription());
+        updateFields();
         updateAndHandle();
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = projectTextFieldShortName.getText();
+        String currentLongName = textFieldLongName.getText();
+        String currentDescription = descriptionTextField.getText();
+
+        if (!currentShortName.equals(edit.getShortName())) {
+            projectTextFieldShortName.setText(edit.getShortName());
+        }
+        if (!currentLongName.equals(edit.getLongName())) {
+            textFieldLongName.setText(edit.getLongName());
+        }
+        if (!currentDescription.equals(edit.getShortName())) {
+            descriptionTextField.setText(edit.getDescription());
+        }
     }
 
     /**

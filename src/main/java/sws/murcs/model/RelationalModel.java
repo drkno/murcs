@@ -5,6 +5,7 @@ import sws.murcs.controller.ModelTypes;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -74,7 +75,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void setProject(Project project) {
         this.project = project;
-        commit("edit model");
     }
 
     /**
@@ -116,7 +116,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
                         .findAny()
                         .isPresent()) {
             this.getPeople().add(person);
-            commit("edit model");
         }
         else {
             throw new DuplicateObjectException();
@@ -143,7 +142,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.getPeople().remove(person);
             //Remove the person from any team they might be in
             getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
-            commit("edit model");
         }
     }
 
@@ -185,7 +183,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
                         .findAny()
                         .isPresent()) {
             this.getTeams().add(team);
-            commit("edit model");
         }
         else {
             throw new DuplicateObjectException();
@@ -213,8 +210,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
             if (getProject() != null && this.getProject().getTeams().contains(team))
                 this.getProject().getTeams().remove(team);
-
-            commit("edit model");
         }
     }
 
@@ -234,7 +229,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
-            commit("edit model");
         }
         else throw new DuplicateObjectException("Skill already exists");
     }
@@ -260,8 +254,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
             //Remove the skill from any people who might have it
             getPeople().stream().filter(person -> person.getSkills().contains(skill)).forEach(person -> person.removeSkill(skill));
-
-            commit("edit model");
         }
     }
 
@@ -289,7 +281,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             default:
                 throw new NotImplementedException();
         }
-        commit("edit model");
+
+        UndoRedoManager.add(model);
+        commit("create " + type.toString().toLowerCase());
     }
 
     /**
@@ -298,6 +292,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
+
+        UndoRedoManager.remove(model);
+        commit("remove " + type.toString().toLowerCase());
 
         switch (type) {
             case Project:
@@ -316,8 +313,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
             default:
                 throw new NotImplementedException();
         }
-
-        commit("edit model");
     }
 
     /**

@@ -61,13 +61,19 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @Override
     public void load() {
-        personNameTextField.setText(edit.getShortName());
-        personFullNameTextField.setText(edit.getLongName());
-        usernameTextField.setText(edit.getUserId());
+        if (!personNameTextField.getText().equals(edit.getShortName())) {
+            personNameTextField.setText(edit.getShortName());
+        }
+        if (!personFullNameTextField.getText().equals(edit.getLongName())) {
+            personFullNameTextField.setText(edit.getLongName());
+        }
+        if (!usernameTextField.getText().equals(edit.getUserId())) {
+            usernameTextField.setText(edit.getUserId());
+        }
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
-
+        skillChoiceBox.getSelectionModel().clearSelection();
         updateSkills();
     }
 
@@ -158,5 +164,12 @@ public class PersonEditor extends GenericEditor<Person> {
         finally {
             updateSkills();
         }
+    }
+
+    /**
+     * Updates the fields in the edit form based on an Undo/Redo callback.
+     */
+    public void updateFields() {
+        load();
     }
 }

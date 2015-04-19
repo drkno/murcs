@@ -1,12 +1,13 @@
 package sws.murcs.unit.magic.tracking;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
@@ -45,8 +46,18 @@ public class TrackingMultipleTest {
         }
     }
 
+    private static Field listenersField;
+
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
+        listenersField.setAccessible(true);
+    }
+
     @Before
-    public void setup() {
+    public void setup() throws IllegalAccessException {
+        UndoRedoManager.forget(true);
+        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
         UndoRedoManager.setMaximumCommits(-1);
     }
 

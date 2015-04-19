@@ -25,7 +25,7 @@ public abstract class TrackableObject {
         trackedFields = new ArrayList<>();
         Class clazz = getClass();
         while (clazz != TrackableObject.class) {
-            for (Field field : getClass().getDeclaredFields()) {
+            for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(TrackableValue.class)) {
                     trackedFields.add(field);
                 }
@@ -63,7 +63,7 @@ public abstract class TrackableObject {
             UndoRedoManager.forget();
             System.err.println("UndoRedoManager broke with error:\n" + e.toString() +
                     "\nAs a precaution all history has been forgotten.");
-            return UndoRedoManager.getHead().getCommitNumber();
+            return UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
         }
     }
 }
