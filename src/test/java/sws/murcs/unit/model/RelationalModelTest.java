@@ -4,19 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.*;
 import sws.murcs.debug.sampledata.Generator;
 import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.SkillGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class RelationalModelTest {
 
@@ -38,9 +36,9 @@ public class RelationalModelTest {
         String[] descriptions = {"description1", "description2", "description3"};
         String[] teamNames = {"name1", "name2", "name3"};
 
-        teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
-        personGenerator = new PersonGenerator(skillGenerator);
         skillGenerator = new SkillGenerator(skills, descriptions);
+        personGenerator = new PersonGenerator(skillGenerator);
+        teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
     }
 
     @Before
