@@ -64,7 +64,7 @@ public class PersonEditor extends GenericEditor<Person> {
         if (!personNameTextField.getText().equals(edit.getShortName())) {
             personNameTextField.setText(edit.getShortName());
         }
-        if (personFullNameTextField.getText().equals(edit.getLongName())) {
+        if (!personFullNameTextField.getText().equals(edit.getLongName())) {
             personFullNameTextField.setText(edit.getLongName());
         }
         if (!usernameTextField.getText().equals(edit.getUserId())) {
@@ -73,7 +73,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
-
+        skillChoiceBox.getSelectionModel().clearSelection();
         updateSkills();
     }
 

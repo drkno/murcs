@@ -60,6 +60,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
         catch (Exception e) {
             //Don't show the user this.
+            e.printStackTrace();
         }
     }
 
