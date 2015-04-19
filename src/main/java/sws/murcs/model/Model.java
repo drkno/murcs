@@ -5,12 +5,17 @@ import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**
  * Contains the basic model for each object type.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Model extends TrackableObject implements Serializable {
+    @XmlAttribute
     @TrackableValue
     private String shortName;
     @TrackableValue
