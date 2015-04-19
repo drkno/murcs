@@ -9,6 +9,7 @@ Feature: Element Deletion
      Given a confirm dialog is displayed for deleting a project
      And I confirm I want to delete
      Then the project is deleted
+     And the deletion can be undone
 
    Scenario: Confirm Team Deletion
      Given I have a team selected
@@ -20,6 +21,7 @@ Feature: Element Deletion
      Given a confirm dialog is displayed for deleting a team
      And I confirm I want to delete
      Then the team is deleted
+     And the deletion can be undone
 
    Scenario: Confirm Person Deletion
      Given I have a person selected
@@ -31,6 +33,7 @@ Feature: Element Deletion
      Given a confirm dialog is displayed for deleting a person
      And I confirm I want to delete
      Then the person is deleted
+     And the deletion can be undone
 
    Scenario: Confirm Skill Deletion
      Given I have a skill selected
@@ -42,3 +45,4 @@ Feature: Element Deletion
      Given a confirm dialog is displayed for deleting a person
      And I confirm I want to delete
      Then the skill is deleted
+     And the deletion can be undone
