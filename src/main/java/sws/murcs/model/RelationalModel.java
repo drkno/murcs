@@ -5,6 +5,7 @@ import sws.murcs.controller.ModelTypes;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -280,6 +281,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             default:
                 throw new NotImplementedException();
         }
+
+        UndoRedoManager.add(model);
+        commit("create " + type.toString().toLowerCase());
     }
 
     /**
@@ -288,6 +292,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
+
+        UndoRedoManager.remove(model);
+        commit("remove " + type.toString().toLowerCase());
 
         switch (type) {
             case Project:

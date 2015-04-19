@@ -118,10 +118,6 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
-
-            UndoRedoManager.add(newModelObject);
-            commitChanges("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
-
             if (selectedType == type) {
                 updateList(newModelObject, type);
             }
@@ -444,9 +440,6 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
             popup.close();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            UndoRedoManager.remove(item);
-            ModelTypes type = ModelTypes.getModelType(item);
-            commitChanges("deleted " + (type == ModelTypes.People ? "Person" : type.toString()));
             updateListView(null);
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
