@@ -84,7 +84,7 @@ public class AppController implements Initializable, ViewUpdate{
         displayList.getSelectionModel().selectedIndexProperty().addListener((observable, oldIndex, newIndex) -> {
             //The remove button should be greyed out if no item is selected
             Object newValue = null;
-            if (newIndex.intValue() >= 0) displayList.getItems().get(c.intValue());
+            if (newIndex.intValue() >= 0) displayList.getItems().get(newIndex.intValue());
 
             removeButton.setDisable(newValue == null);
 
