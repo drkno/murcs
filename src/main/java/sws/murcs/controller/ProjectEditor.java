@@ -67,13 +67,28 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Loads the edit into the form
      */
     public void load(){
-        projectTextFieldShortName.setText(edit.getShortName());
-        textFieldLongName.setText(edit.getLongName());
-        descriptionTextField.setText(edit.getDescription());
+        updateFields();
         updateAndHandle();
     }
 
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
     public void updateFields() {
+        String currentShortName = projectTextFieldShortName.getText();
+        String currentLongName = textFieldLongName.getText();
+        String currentDescription = descriptionTextField.getText();
+
+        if (!currentShortName.equals(edit.getShortName())) {
+            projectTextFieldShortName.setText(edit.getShortName());
+        }
+        if (!currentLongName.equals(edit.getLongName())) {
+            textFieldLongName.setText(edit.getLongName());
+        }
+        if (!currentDescription.equals(edit.getShortName())) {
+            descriptionTextField.setText(edit.getDescription());
+        }
     }
 
     /**
