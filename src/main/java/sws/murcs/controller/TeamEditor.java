@@ -65,7 +65,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.updateListView(edit, true);
+            onSaved.updateListView(edit);
 
         //Load the team again, to make sure everything is updated. We could probably do this better
         load();

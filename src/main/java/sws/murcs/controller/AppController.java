@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 /**
  * Main app class controller
  */
-public class AppController implements Initializable, ViewUpdate{
+public class AppController implements Initializable, ViewUpdate {
 
     @FXML
     private Parent root;
@@ -73,7 +73,7 @@ public class AppController implements Initializable, ViewUpdate{
         }
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
-                updateListView(null, true);
+                updateListView(null);
             } else {
                 // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
@@ -81,53 +81,50 @@ public class AppController implements Initializable, ViewUpdate{
         });
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel().selectedIndexProperty().addListener((observable, oldIndex, newIndex) -> {
-            //The remove button should be greyed out if no item is selected
-            Object newValue = null;
-            if (newIndex.intValue() >= 0) displayList.getItems().get(c.intValue());
+        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                //The remove button should be greyed out if no item is selected
+                removeButton.setDisable(newValue == null);
 
-            removeButton.setDisable(newValue == null);
+                contentPane.getChildren().clear();
+                if (newValue == null) return;
 
-            contentPane.getChildren().clear();
-            if (newValue == null) return;
-
-            Parent pane = null;
-            try {
-                ViewUpdate update = this;
-                pane = EditorHelper.getEditForm((Model) newValue, update);
-            } catch (Exception e) {
-                //This isn't really something the user should have to deal with
-                e.printStackTrace();
-            }
-            contentPane.getChildren().add(pane);
+                Parent pane = null;
+                try {
+                    ViewUpdate update = this;
+                    pane = EditorHelper.getEditForm((Model) newValue, update);
+                } catch (Exception e) {
+                    //This isn't really something the user should have to deal with
+                    e.printStackTrace();
+                }
+                contentPane.getChildren().add(pane);
         });
 
         updateUndoRedoMenuItems(0);
         UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
-        updateListView(null, true);
+        updateListView(null);
     }
 
     /**
      * Updates the display list on the left hand side of the screen to the type selected in the choice box.
      * @param newModelObject The type selected in the choice box.
      */
-    public void updateListView(Model newModelObject, boolean changeSelection) {
+    public void updateListView(Model newModelObject) {
         ModelTypes type;
         ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (newModelObject == null) {
-            updateList(null, selectedType, changeSelection);
+            updateList(null, selectedType);
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
             if (selectedType == type) {
-                updateList(newModelObject, type, changeSelection);
+                updateList(newModelObject, type);
             }
             else {
                 // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
                 consumeChoiceBoxEvent = true;
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                updateList(newModelObject, type, changeSelection);
+                updateList(newModelObject, type);
             }
         }
     }
@@ -137,7 +134,7 @@ public class AppController implements Initializable, ViewUpdate{
      * @param newModelObject new model object, that may have been created.
      * @param type type of model object to refresh
      */
-    private void updateList(Model newModelObject, ModelTypes type, boolean ChangeSelection) {
+    private void updateList(Model newModelObject, ModelTypes type) {
         displayList.getSelectionModel().clearSelection();
         displayListItems.clear();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -158,12 +155,10 @@ public class AppController implements Initializable, ViewUpdate{
                 displayListItems.addAll(model.getSkills());
                 break;
         }
-        if (ChangeSelection) {
-            if (newModelObject != null) {
-                displayList.getSelectionModel().select(newModelObject);
-            } else {
-                displayList.getSelectionModel().select(0);
-            }
+        if (newModelObject != null) {
+            displayList.getSelectionModel().select(newModelObject);
+        } else {
+            displayList.getSelectionModel().select(0);
         }
     }
 
@@ -205,16 +200,6 @@ public class AppController implements Initializable, ViewUpdate{
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
         vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
-    }
-
-    /**
-     * Create a new project, opens a dialog to fill out for the new project.
-     * @param event The event that causes the function to be called, namely clicking new project.
-     */
-    @FXML
-    private void createNewProject(ActionEvent event) {
-        ViewUpdate update = this;
-        EditorHelper.createNew(Project.class, update);
     }
 
     /**
@@ -264,7 +249,7 @@ public class AppController implements Initializable, ViewUpdate{
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
             }
-            updateListView(null, true);
+            updateListView(null);
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
@@ -336,6 +321,9 @@ public class AppController implements Initializable, ViewUpdate{
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
+                case "addProject":
+                    clazz = Project.class;
+                    break;
                 case "addPerson":
                     clazz = Person.class;
                     break;
@@ -374,7 +362,7 @@ public class AppController implements Initializable, ViewUpdate{
                 return;
 
         model.remove((Model) displayList.getSelectionModel().getSelectedItem());
-        updateListView(null, true);
+        updateListView(null);
     }
 }
 

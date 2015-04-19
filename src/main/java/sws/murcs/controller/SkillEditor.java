@@ -40,7 +40,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.updateListView(edit, true);
+            onSaved.updateListView(edit);
     }
 
     /**

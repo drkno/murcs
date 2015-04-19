@@ -40,7 +40,7 @@ public class EditorHelper {
                 // TODO fix, this is not working as expected, newModel is always null
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.updateListView(null, false);
+                updated.updateListView(null);
             });
             if (root == null) return;
             Scene scene = new Scene(root);
@@ -54,7 +54,7 @@ public class EditorHelper {
                 // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
-                    updated.updateListView(null, false);
+                    updated.updateListView(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

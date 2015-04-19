@@ -6,5 +6,5 @@ import sws.murcs.model.Model;
  * Callback interface to update the list view
  */
 public interface ViewUpdate {
-    void updateListView(Model m, boolean changeSelection);
+    void updateListView(Model m);
 }

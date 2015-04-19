@@ -136,7 +136,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
         // Call the callback if it exists
         if (onSaved != null)
-            onSaved.updateListView(edit, true);
+            onSaved.updateListView(edit);
     }
 
     /**

@@ -15,10 +15,10 @@ import sws.murcs.model.persistence.PersistenceManager;
 public class ProjectEditor extends GenericEditor<Project> {
 
     @FXML
-    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
+    TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
-    private Label labelErrorMessage;
+    Label labelErrorMessage;
 
     /**
      * Creates a new or updates the current edit being edited.
@@ -36,7 +36,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.updateListView(null, false);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -63,7 +63,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         projectTextFieldShortName.setText(edit.getShortName());
         textFieldLongName.setText(edit.getLongName());
         descriptionTextField.setText(edit.getDescription());
-        updateAndHandle();
     }
 
     /**

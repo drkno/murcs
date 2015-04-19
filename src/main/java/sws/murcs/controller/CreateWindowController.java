@@ -44,7 +44,7 @@ public class CreateWindowController {
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
                     return;
-                okayClicked.updateListView(model, true);
+                okayClicked.updateListView(model);
             }
             catch (Exception e) {
                 e.printStackTrace();
