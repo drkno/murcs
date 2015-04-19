@@ -381,6 +381,7 @@ public class RelationalModelTest {
             i--;
         }
 
+        //Check that all the skills have been removed from all the people
         for (Person p : relationalModel.getPeople()) {
             assertEquals("The person should now have no skills", 0, p.getSkills().size());
         }
