@@ -1,12 +1,28 @@
 package sws.murcs.controller;
 
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.magic.tracking.UndoRedoManager;
+
+
 /**
  * A generic class for making editing easier
  */
-public abstract class GenericEditor<T> {
+public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     protected T edit;
     protected ViewUpdate onSaved;
+
+    public GenericEditor() {
+        UndoRedoManager.addChangeListener(this);
+    }
+
+    @Override
+    public void undoRedoNotification(ChangeState param) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert) updateFields();
+    }
+
+    public abstract void updateFields();
 
     /**
      * Sets the item that the form is editing

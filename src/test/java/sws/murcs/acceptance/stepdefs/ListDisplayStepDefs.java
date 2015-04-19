@@ -6,6 +6,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import javafx.application.Application;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -33,6 +34,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     private Person person3;
     private Project project;
     private RelationalModel model;
+    private Application app;
 
     @Override
     public void start(Stage stage) throws Exception {}
@@ -40,7 +42,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @Before
     public void setUp() throws Exception {
         primaryStage = FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(App.class);
+        app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
 
@@ -68,6 +70,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @After
     public void tearDown() throws Exception {
         FxToolkit.cleanupStages();
+        FxToolkit.cleanupApplication(app);
     }
 
     @When("^I change the list display type$")

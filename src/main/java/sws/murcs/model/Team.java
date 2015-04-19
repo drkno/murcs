@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +11,13 @@ import java.util.List;
  * Model of a Team.
  */
 public class Team extends Model {
+    @TrackableValue
     private String description;
+    @TrackableValue
     private ArrayList<Person> members = new ArrayList<>();
+    @TrackableValue
     private Person scrumMaster;
+    @TrackableValue
     private Person productOwner;
 
     /**
@@ -39,6 +44,7 @@ public class Team extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit team");
     }
 
     /**
@@ -59,6 +65,7 @@ public class Team extends Model {
             throw new MultipleRolesException("Scrum Master", "Product Owner", scrumMaster, this);
         }
         this.scrumMaster = scrumMaster;
+        commit("edit team");
     }
 
     /**
@@ -79,6 +86,7 @@ public class Team extends Model {
             throw new MultipleRolesException("Product Owner", "Scrum Master", productOwner, this);
         }
         this.productOwner = productOwner;
+        commit("edit team");
     }
 
     /**
@@ -89,6 +97,7 @@ public class Team extends Model {
     public void addMember(Person person) throws DuplicateObjectException {
         if (!members.contains(person)) {
             this.members.add(person);
+            commit("edit team");
         }
         else {
             throw new DuplicateObjectException();
@@ -113,6 +122,7 @@ public class Team extends Model {
     public void removeMember(Person person) {
         if (this.members.contains(person)) {
             this.members.remove(person);
+            commit("edit team");
         }
     }
 
@@ -127,7 +137,7 @@ public class Team extends Model {
 
     @Override
     public boolean equals(Object object) {
-        return object != null && object instanceof Team && ((Team) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+        if (object == null) return false;
+        return object instanceof Team && ((Team) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
-
 }

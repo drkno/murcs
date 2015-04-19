@@ -40,6 +40,7 @@ public class TrackingIntegerTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -47,21 +48,17 @@ public class TrackingIntegerTest {
         Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.revert();
         Assert.assertEquals(1, a.getTestInteger());
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getTestInteger());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getTestInteger());
-        UndoRedoManager.remake();
         Assert.assertEquals(1, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals(2, a.getTestInteger());
@@ -72,6 +69,7 @@ public class TrackingIntegerTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
@@ -107,6 +105,7 @@ public class TrackingIntegerTest {
         UndoRedoManager.setMaximumCommits(3);
         Assert.assertEquals(3, UndoRedoManager.getMaximumCommits());
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -123,6 +122,7 @@ public class TrackingIntegerTest {
     @Test
     public void impossibleRedoAfterActionPerformed() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -140,6 +140,7 @@ public class TrackingIntegerTest {
     @Test
     public void saveIgnoredIfValueDidNotChange() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);

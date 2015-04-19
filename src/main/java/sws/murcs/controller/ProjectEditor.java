@@ -15,18 +15,24 @@ import sws.murcs.model.persistence.PersistenceManager;
 public class ProjectEditor extends GenericEditor<Project> {
 
     @FXML
-    TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
+    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
 
     @FXML
-    Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     /**
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        edit.setShortName(projectTextFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(descriptionTextField.getText());
+        if (!projectTextFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(projectTextFieldShortName.getText());
+        }
+        if (!textFieldLongName.getText().equals(edit.getLongName())) {
+            edit.setLongName(textFieldLongName.getText());
+        }
+        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
 
         // Save the project if it hasn't been yet
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -60,9 +66,27 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Loads the edit into the form
      */
     public void load(){
-        projectTextFieldShortName.setText(edit.getShortName());
-        textFieldLongName.setText(edit.getLongName());
-        descriptionTextField.setText(edit.getDescription());
+        updateFields();
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = projectTextFieldShortName.getText();
+        String currentLongName = textFieldLongName.getText();
+        String currentDescription = descriptionTextField.getText();
+
+        if (currentShortName == null && !currentShortName.equals(edit.getShortName())) {
+            projectTextFieldShortName.setText(edit.getShortName());
+        }
+        if (currentLongName == null && !currentLongName.equals(edit.getLongName())) {
+            textFieldLongName.setText(edit.getLongName());
+        }
+        if (currentDescription == null && !currentDescription.equals(edit.getShortName())) {
+            descriptionTextField.setText(edit.getDescription());
+        }
     }
 
     /**

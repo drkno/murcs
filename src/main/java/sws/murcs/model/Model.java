@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
 import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import java.io.Serializable;
 
@@ -10,8 +11,9 @@ import java.io.Serializable;
  * Contains the basic model for each object type.
  */
 public abstract class Model extends TrackableObject implements Serializable {
+    @TrackableValue
     private String shortName;
-
+    @TrackableValue
     private String longName;
 
     /**
@@ -30,6 +32,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         validateShortName(shortName);
         this.shortName = shortName.trim();
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
     /**
@@ -56,5 +59,6 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public void setLongName(String longName) {
         this.longName = longName;
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 }

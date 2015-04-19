@@ -64,8 +64,8 @@ public class TeamGenerator implements Generator<Team> {
             }
         }
 
-        if (members.size() > 0) productOwner = members.get(0);
-        if (members.size() > 1) scrumMaster = members.get(1);
+        productOwner = members.get(0);
+        scrumMaster = members.get(1);
 
         try {
             team.setShortName(shortName);

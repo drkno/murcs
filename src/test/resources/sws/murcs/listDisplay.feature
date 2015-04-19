@@ -1,4 +1,4 @@
- Feature: ListDisplay
+Feature: ListDisplay
 
     Scenario: Change the list display type, update list items
       When I change the list display type

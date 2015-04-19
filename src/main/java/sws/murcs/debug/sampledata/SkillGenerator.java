@@ -229,8 +229,6 @@ public class SkillGenerator implements Generator<Skill> {
             "Problem solving",
             "Responsibility",
             "Sense of humor",
-            "PO",
-            "SM"
     };
     private String[] descriptions = {"A very useful skill", "A not very useful skill"};
 

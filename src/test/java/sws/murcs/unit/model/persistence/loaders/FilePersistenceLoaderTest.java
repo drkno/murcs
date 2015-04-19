@@ -62,7 +62,6 @@ public class FilePersistenceLoaderTest {
         loader.saveModel(testFile, model);
         RelationalModel loadModel = loader.loadModel(testFile);
         Assert.assertNotNull(loadModel);
-        Assert.assertTrue(loadModel.getProjects().size() == 1);
         Assert.assertEquals(loadModel.getProjects().get(0).getShortName(), model.getProjects().get(0).getShortName());
     }
 

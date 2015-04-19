@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
  * Model of a person.
  */
 public class Person extends Model {
+    @TrackableValue
     private String userId;
+    @TrackableValue
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**
@@ -53,6 +56,7 @@ public class Person extends Model {
     public void setUserId(String userId) throws Exception {
         validateUserId(userId);
         this.userId = userId.trim();
+        commit("edit person");
     }
 
     /**
@@ -74,6 +78,7 @@ public class Person extends Model {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
+            commit("edit person");
         }
         else {
             throw new DuplicateObjectException("This is actually the same skill");
@@ -98,6 +103,7 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+            commit("edit person");
         }
     }
 
