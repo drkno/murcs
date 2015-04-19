@@ -79,6 +79,7 @@ public class App extends Application{
                 if (Objects.equals(s, "debug")) {
                     PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator().generate());
                     RelationalModel model = PersistenceManager.Current.getCurrentModel();
+                    UndoRedoManager.forget();
                     UndoRedoManager.add(model);
                     model.getPeople().forEach(p -> UndoRedoManager.add(p));
                     model.getTeams().forEach(t -> UndoRedoManager.add(t));
@@ -91,6 +92,8 @@ public class App extends Application{
             //Give us an empty model
             PersistenceManager.Current.setCurrentModel(new RelationalModel());
             UndoRedoManager.add(PersistenceManager.Current.getCurrentModel());
+            UndoRedoManager.forget();
+            try{UndoRedoManager.commit("Initial State");} catch (Exception e){}
         }
         launch(args);
     }

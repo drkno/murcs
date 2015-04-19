@@ -25,9 +25,15 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     public void update() throws Exception {
         labelErrorMessage.setText("");
-        edit.setShortName(projectTextFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(descriptionTextField.getText());
+        if (!projectTextFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(projectTextFieldShortName.getText());
+        }
+        if (!textFieldLongName.getText().equals(edit.getLongName())) {
+            edit.setLongName(textFieldLongName.getText());
+        }
+        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
 
         //This line will need to be changed if we support multiple projects
         //What we're trying to do here is check if the current edit already exist
