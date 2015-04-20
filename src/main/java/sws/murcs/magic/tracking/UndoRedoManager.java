@@ -261,7 +261,7 @@ public class UndoRedoManager {
      */
     private static void notifyListeners(ChangeState changeType) {
         if (changeListeners.size() == 0) return;
-        ChangeListenerHandler.performGC();
+        //ChangeListenerHandler.performGC(); Disabled as forcing a GC is very sloooowwwww
         for (int i = 0; i < changeListeners.size(); i++) {
             if (!changeListeners.get(i).eventNotification(changeType)) {
                 changeListeners.remove(i);
