@@ -56,7 +56,7 @@ public class SkillEditor extends GenericEditor<Skill> {
         }
         catch (Exception e) {
             e.printStackTrace();
-            //Don't show the user this.
+            //Output any other exception to the console
         }
     }
 

@@ -84,7 +84,7 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         catch (Exception e) {
             e.printStackTrace();
-            //Don't show the user this.
+            //Output any other exception to the console
         }
     }
 

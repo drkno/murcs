@@ -75,15 +75,15 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
             ArrayList<Skill> skills = new ArrayList<>();
             for (Project project : model.getProjects()) {
-            for (Team team : project.getTeams()) {
-                for (Person person : team.getMembers()) {
-                    for (Skill newSkill : person.getSkills()) {
-                        if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
-                            skills.add(newSkill);
+                for (Team team : project.getTeams()) {
+                    for (Person person : team.getMembers()) {
+                        for (Skill newSkill : person.getSkills()) {
+                            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
+                                skills.add(newSkill);
+                            }
                         }
                     }
                 }
-            }
             }
             for (Person person : model.getUnassignedPeople()) {
                 for (Skill newSkill: person.getSkills()) {

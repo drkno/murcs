@@ -1,6 +1,5 @@
 package sws.murcs.model;
 
-import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.ModelTypes;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
@@ -196,10 +195,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
         ArrayList<Team> unassignedTeams = new ArrayList<>();
         unassignedTeams.addAll(getTeams());
 
-        if (getProjects() != null) {
-            //Remove all the teams that are assigned to a project
-            getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
-        }
+        //Remove all the teams that are assigned to a project
+        getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
 
         return unassignedTeams;
     }
@@ -251,11 +248,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        if (this.getProjects() != null && !this.getProjects().isEmpty()) {
-            this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> {
-                project.getTeams().remove(team);
-            });
-        }
+        this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> project.getTeams().remove(team));
     }
 
     /**
@@ -324,7 +317,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 addPerson((Person) model);
                 break;
             default:
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
         }
     }
 
@@ -349,7 +342,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 removePerson((Person) model);
                 break;
             default:
-                throw new NotImplementedException();
+                throw new UnsupportedOperationException();
         }
     }
 

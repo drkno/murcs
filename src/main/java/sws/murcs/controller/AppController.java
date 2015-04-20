@@ -86,21 +86,21 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                //The remove button should be greyed out if no item is selected
-                removeButton.setDisable(newValue == null);
+            //The remove button should be greyed out if no item is selected
+            removeButton.setDisable(newValue == null);
 
-                contentPane.getChildren().clear();
-                if (newValue == null) return;
+            contentPane.getChildren().clear();
+            if (newValue == null) return;
 
-                Parent pane = null;
-                try {
-                    ViewUpdate update = this;
-                    pane = EditorHelper.getEditForm((Model) newValue, update);
-                } catch (Exception e) {
-                    //This isn't really something the user should have to deal with
-                    e.printStackTrace();
-                }
-                contentPane.getChildren().add(pane);
+            Parent pane = null;
+            try {
+                ViewUpdate update = this;
+                pane = EditorHelper.getEditForm((Model) newValue, update);
+            } catch (Exception e) {
+                //This isn't really something the user should have to deal with
+                e.printStackTrace();
+            }
+            contentPane.getChildren().add(pane);
         });
 
         undoRedoNotification(ChangeState.Commit);

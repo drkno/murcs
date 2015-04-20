@@ -157,7 +157,7 @@ public class PersonEditor extends GenericEditor<Person> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            //Output any other exception to the console
             e.printStackTrace();
         }
         finally {
