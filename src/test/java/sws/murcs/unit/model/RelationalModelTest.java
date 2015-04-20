@@ -188,15 +188,15 @@ public class RelationalModelTest {
     @Test
     public void addSkillsTest() throws Exception {
         List<Skill> testSkills = new ArrayList<>();
-        assertEquals(relationalModel.getSkills().size(), 2);
+        assertEquals(2, relationalModel.getSkills().size());
         testSkills.add(skillGenerated);
 
         relationalModel.addSkills(testSkills);
         assertTrue(relationalModel.getSkills().contains(skillGenerated));
 
         testSkills.add(skillGenerated);
-        assertEquals(testSkills.size(), 2);
-        assertEquals(relationalModel.getSkills().size(), 3);
+        assertEquals(2, testSkills.size());
+        assertEquals(3, relationalModel.getSkills().size());
     }
 
     @Test
