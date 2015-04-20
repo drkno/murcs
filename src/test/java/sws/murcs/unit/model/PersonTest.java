@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.debug.sampledata.Generator;
@@ -26,6 +27,7 @@ public class PersonTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         skillGenerator = new SkillGenerator();
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before

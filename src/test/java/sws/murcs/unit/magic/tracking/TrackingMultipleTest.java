@@ -52,6 +52,7 @@ public class TrackingMultipleTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
+        UndoRedoManager.setDisabled(false);
     }
 
     @Before

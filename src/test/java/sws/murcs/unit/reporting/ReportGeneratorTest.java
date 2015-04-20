@@ -3,6 +3,7 @@ package sws.murcs.unit.reporting;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.reporting.ReportGenerator;
 
@@ -25,6 +26,7 @@ public class ReportGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(true);
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
         tempReport = Files.createTempFile("", "").toFile();

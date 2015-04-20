@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class RelationalModelTest {
         personGenerator = new PersonGenerator(skillGenerator);
         teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
         projectGenerator = new ProjectGenerator();
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before

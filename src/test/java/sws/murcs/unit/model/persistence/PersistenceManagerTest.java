@@ -3,6 +3,7 @@ package sws.murcs.unit.model.persistence;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
@@ -62,6 +63,7 @@ public class PersistenceManagerTest {
     public void setUp() throws Exception {
         manager = new PersistenceManager(new TestLoader());
         generator = new RelationalModelGenerator();
+        UndoRedoManager.setDisabled(true);
     }
 
     @Test

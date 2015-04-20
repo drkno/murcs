@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
@@ -38,6 +39,7 @@ public class FilePersistenceLoaderTest {
         generator = new RelationalModelGenerator();
         files = new ArrayList<>();
         random = new Random();
+        UndoRedoManager.setDisabled(true);
     }
 
     @After

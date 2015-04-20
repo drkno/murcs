@@ -270,10 +270,18 @@ public class UndoRedoManager {
         }
     }
 
+    /**
+     * Sets the disabled state of the Undo/Redo manager.
+     * @param isDisabled new state.
+     */
     public static void setDisabled(boolean isDisabled) {
         disabled = isDisabled;
     }
 
+    /**
+     * Sets if the Undo/Redo manager is disabled.
+     * @return current disabled state.
+     */
     public static boolean getDisable() {
         return disabled;
     }
