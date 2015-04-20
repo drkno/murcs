@@ -90,6 +90,7 @@ public class CreateWindowController {
     /**
      * Creates a new form for with the 'content' node as it's content
      * @param content The content
+     * @param model The model
      * @param okayClicked The okay callback
      * @param cancelClicked The cancel callback
      * @return The form

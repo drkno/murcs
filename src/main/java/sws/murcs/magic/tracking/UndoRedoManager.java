@@ -215,6 +215,7 @@ public class UndoRedoManager {
      * Gets the maximum number of commits that can be made before commits are forgotten.
      * This can be negative (defaults to -1) for infinite commits, or greater or equal
      * to zero for a set number.
+     * @return The maximum number of commits
      */
     public static long getMaximumCommits() {
         return maximumCommits;

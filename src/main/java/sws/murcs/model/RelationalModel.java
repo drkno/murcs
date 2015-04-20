@@ -70,6 +70,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a new project
      * @param project The new project
+     * @throws DuplicateObjectException if the project already exists
      */
     public void addProject(Project project) throws DuplicateObjectException {
         if (!this.getProjects().contains(project) &&
