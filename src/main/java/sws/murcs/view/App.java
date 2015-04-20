@@ -77,9 +77,10 @@ public class App extends Application{
         if (args.length > 0) {
             for (String s : args) {
                 if (Objects.equals(s, "debug")) {
+                    UndoRedoManager.setDisabled(true);
                     PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator().generate());
                     RelationalModel model = PersistenceManager.Current.getCurrentModel();
-                    UndoRedoManager.forget();
+                    UndoRedoManager.setDisabled(false);
                     UndoRedoManager.add(model);
                     model.getPeople().forEach(p -> UndoRedoManager.add(p));
                     model.getTeams().forEach(t -> UndoRedoManager.add(t));
