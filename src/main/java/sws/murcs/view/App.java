@@ -85,7 +85,7 @@ public class App extends Application{
                     model.getPeople().forEach(p -> UndoRedoManager.add(p));
                     model.getTeams().forEach(t -> UndoRedoManager.add(t));
                     model.getSkills().forEach(k -> UndoRedoManager.add(k));
-                    UndoRedoManager.add(model.getProject());
+                    model.getProjects().forEach(l -> UndoRedoManager.add(l));
                     try{UndoRedoManager.commit("Generate Model Data");} catch (Exception e){}
                 }
             }

@@ -11,13 +11,14 @@ import sws.murcs.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 public class RelationalModelTest {
 
     private static Generator<Team> teamGenerator;
     private static Generator<Person> personGenerator;
     private static Generator<Skill> skillGenerator;
+    private static Generator<Project> projectGenerator;
     private Team teamGenerated;
     private Team team;
     private Person unassignedPerson;
@@ -25,30 +26,37 @@ public class RelationalModelTest {
     private Skill skillGenerated;
     private Skill skill;
     private RelationalModel relationalModel;
-    private Project project;
+    private Project projectGenerated;
 
     @BeforeClass
     public static void oneTimeSetUp() {
         String[] skills = {"skill1", "skill2", "skill3"};
         String[] descriptions = {"description1", "description2", "description3"};
         String[] teamNames = {"name1", "name2", "name3"};
+        String[] projectNames = {"A project", "I have no idea what I am doing :P"};
 
         skillGenerator = new SkillGenerator(skills, descriptions);
         personGenerator = new PersonGenerator(skillGenerator);
         teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
+        projectGenerator = new ProjectGenerator();
     }
 
     @Before
     public void setUp() {
-        teamGenerated = new TeamGenerator().generate();
-        unassignedPersonGenerated = new PersonGenerator().generate();
-        skillGenerated = new SkillGenerator().generate();
-        unassignedPerson = new Person();
-        relationalModel = new RelationalModel();
-        team = new Team();
-        skill = new Skill();
-        project = new Project();
-        relationalModel.setProject(project);
+        try {
+            teamGenerated = teamGenerator.generate();
+            unassignedPersonGenerated = personGenerator.generate();
+            skillGenerated = skillGenerator.generate();
+            projectGenerated = projectGenerator.generate();
+            unassignedPerson = new Person();
+            relationalModel = new RelationalModel();
+            team = new Team();
+            skill = new Skill();
+            relationalModel.addProject(projectGenerated);
+        }
+        catch (DuplicateObjectException exception) {
+            //
+        }
     }
 
     @After
@@ -180,15 +188,16 @@ public class RelationalModelTest {
     @Test
     public void addSkillsTest() throws Exception {
         List<Skill> testSkills = new ArrayList<>();
-        assertEquals(relationalModel.getSkills().size(), 2);
+        relationalModel.getSkills().clear();
+        assertEquals(0, relationalModel.getSkills().size());
         testSkills.add(skillGenerated);
 
         relationalModel.addSkills(testSkills);
         assertTrue(relationalModel.getSkills().contains(skillGenerated));
 
         testSkills.add(skillGenerated);
-        assertEquals(testSkills.size(), 2);
-        assertEquals(relationalModel.getSkills().size(), 3);
+        assertEquals(2, testSkills.size());
+        assertEquals(1, relationalModel.getSkills().size());
     }
 
     @Test
@@ -205,18 +214,16 @@ public class RelationalModelTest {
 
     @Test
     public void testFindUsagesProject() throws Exception{
-        Project newProject = new Project();
+        Project newProject = projectGenerated;
 
         assertEquals("If the project is not attached to the model it should not be in use", 0, relationalModel.findUsages(newProject).size());
-
-        relationalModel.setProject(newProject);
         assertEquals("Projects should not ever have any usages", 0, relationalModel.findUsages(newProject).size());
     }
 
     @Test
     public void testFindUsagesTeam()throws Exception{
-        relationalModel.setProject(new Project());
         relationalModel.getTeams().clear();
+        relationalModel.getProjects().forEach(p -> p.getTeams().clear());
 
         Team newTeam = (new TeamGenerator()).generate();
 
@@ -225,9 +232,9 @@ public class RelationalModelTest {
         relationalModel.add(newTeam);
         assertEquals("A team should have no usages when it is not used", 0, relationalModel.findUsages(newTeam).size());
 
-        relationalModel.getProject().addTeam(newTeam);
+        relationalModel.getProjects().get(0).addTeam(newTeam);
         assertEquals("The team should be used in one place", 1, relationalModel.findUsages(newTeam).size());
-        assertEquals("The team should be used by the project", relationalModel.getProject(), relationalModel.findUsages(newTeam).get(0));
+        assertEquals("The team should be used by the project", relationalModel.getProjects().get(0), relationalModel.findUsages(newTeam).get(0));
 
     }
 
@@ -275,11 +282,10 @@ public class RelationalModelTest {
 
     @Test
     public void testInUseProject() throws Exception{
-        Project newProject = new Project();
+        Project newProject = projectGenerated;
 
         assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
 
-        relationalModel.setProject(newProject);
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 
@@ -288,8 +294,8 @@ public class RelationalModelTest {
         //Make sure we're working on a clean state
         relationalModel.getTeams().clear();
 
-        Project project = new Project();
-        relationalModel.setProject(project);
+        Project project = projectGenerated;
+        project.getTeams().clear();
 
         for (int i = 0; i < 10; i++){
             Team team = teamGenerator.generate();

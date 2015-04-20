@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -16,24 +15,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 /**
  * Main app class controller
  */
-public class AppController implements Initializable, ViewUpdate, UndoRedoChangeListener {
+public class AppController implements  ViewUpdate, UndoRedoChangeListener {
 
     @FXML
     private Parent root;
@@ -61,11 +57,9 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     * @param location The location used to resolve relative paths for the root object, or null if the location is not known.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -95,7 +89,8 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, this::updateListView);
+                ViewUpdate update = this;
+                pane = EditorHelper.getEditForm((Model) newValue, update);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -105,6 +100,7 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
+        updateListView(null);
     }
 
     /**
@@ -161,10 +157,7 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
 
         switch (type) {
             case Project:
-                Project project = model.getProject();
-                if (project != null) {
-                    displayListItems.addAll(project);
-                }
+                displayListItems.addAll(model.getProjects());
                 break;
             case People:
                 displayListItems.addAll(model.getPeople());
@@ -222,51 +215,6 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
         vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
-    }
-
-    /**
-     * Create a new project, opens a dialog to fill out for the new project.
-     * @param event The event that causes the function to be called, namely clicking new project.
-     */
-    @FXML
-    private void createNewProject(ActionEvent event) {
-        if (!UndoRedoManager.canRevert()) {
-            EditorHelper.createNew(Project.class, this::updateListView);
-        }
-        else {
-            GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Unsaved Changes");
-            popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, ml -> {
-                popup.close();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked history
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, ml -> {
-                popup.close();
-                // Let the user save the project
-                saveProject();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked History
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, ml -> {
-                popup.close();
-            });
-            popup.show();
-
-        }
     }
 
     /**
@@ -411,6 +359,9 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
+                case "addProject":
+                    clazz = Project.class;
+                    break;
                 case "addPerson":
                     clazz = Person.class;
                     break;
@@ -429,7 +380,8 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
         }
 
         if (clazz != null) {
-            EditorHelper.createNew(clazz, this::updateListView);
+            ViewUpdate viewUpdate = this;
+            EditorHelper.createNew(clazz, viewUpdate);
         }
     }
 

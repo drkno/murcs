@@ -10,7 +10,17 @@ import java.util.ArrayList;
  * Generates random projects with teams
  */
 public class ProjectGenerator implements Generator<Project> {
-    private String[] projectNames = {"A project", "Something exciting"};
+    private String[] projectNames = {"A project",
+            "Something exciting",
+            "Cold Star",
+            "Unique Jazz",
+            "Tasty Heart",
+            "Frostbite Serious",
+            "Accidentally Alarm",
+            "Nervous Butter",
+            "Deserted Tea",
+            "Rare Albatross"
+    };
     private String[] descriptions = {"A very exciting description", NameGenerator.getLoremIpsum()};
     private final Generator<Team> teamGenerator;
 
@@ -46,7 +56,7 @@ public class ProjectGenerator implements Generator<Project> {
 
         String description = NameGenerator.randomElement(descriptions);
 
-        int teamCount = NameGenerator.random(1, 50);
+        int teamCount = NameGenerator.random(10, 50);
         ArrayList<Team> teams = new ArrayList<>();
 
         for (int i = 0; i < teamCount; ++i){

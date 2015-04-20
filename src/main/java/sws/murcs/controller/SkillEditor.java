@@ -40,7 +40,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -55,7 +55,8 @@ public class SkillEditor extends GenericEditor<Skill> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 

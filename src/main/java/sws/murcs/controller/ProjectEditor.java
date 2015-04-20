@@ -24,33 +24,25 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        labelErrorMessage.setText("");
-        if (!projectTextFieldShortName.getText().equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !projectTextFieldShortName.getText().equals(edit.getShortName())) {
             edit.setShortName(projectTextFieldShortName.getText());
         }
-        if (!textFieldLongName.getText().equals(edit.getLongName())) {
+        if (edit.getLongName() != null && !textFieldLongName.getText().equals(edit.getLongName())) {
             edit.setLongName(textFieldLongName.getText());
         }
-        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+        if (edit.getDescription() != null && !descriptionTextField.getText().equals(edit.getDescription())) {
             edit.setDescription(descriptionTextField.getText());
         }
 
-        //This line will need to be changed if we support multiple projects
-        //What we're trying to do here is check if the current edit already exist
-        //or if we're creating a new one.
+        // Save the project if it hasn't been yet
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null || model.getProject() != edit) {
-            if (PersistenceManager.Current.getCurrentModel() == null) {
-                model = new RelationalModel();
-            }
-            model.setProject(edit);
 
-            PersistenceManager.Current.setCurrentModel(model);
-        }
+        if (!model.getProjects().contains(edit))
+            model.addProject(edit);
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -65,8 +57,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
             e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 
@@ -75,7 +67,6 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     public void load(){
         updateFields();
-        updateAndHandle();
     }
 
     /**
@@ -86,15 +77,20 @@ public class ProjectEditor extends GenericEditor<Project> {
         String currentShortName = projectTextFieldShortName.getText();
         String currentLongName = textFieldLongName.getText();
         String currentDescription = descriptionTextField.getText();
-
-        if (!currentShortName.equals(edit.getShortName())) {
-            projectTextFieldShortName.setText(edit.getShortName());
+        if (currentShortName != null) {
+            if (!currentShortName.equals(edit.getShortName())) {
+                projectTextFieldShortName.setText(edit.getShortName());
+            }
         }
-        if (!currentLongName.equals(edit.getLongName())) {
-            textFieldLongName.setText(edit.getLongName());
+        if (currentLongName != null) {
+            if (!currentLongName.equals(edit.getLongName())) {
+                textFieldLongName.setText(edit.getLongName());
+            }
         }
-        if (!currentDescription.equals(edit.getShortName())) {
-            descriptionTextField.setText(edit.getDescription());
+        if (currentDescription != null) {
+            if (!currentDescription.equals(edit.getShortName())) {
+                descriptionTextField.setText(edit.getDescription());
+            }
         }
     }
 

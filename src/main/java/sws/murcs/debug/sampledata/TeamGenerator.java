@@ -51,10 +51,10 @@ public class TeamGenerator implements Generator<Team> {
 
         String description = NameGenerator.randomElement(descriptions);
 
-        Person productOwner = null;
-        Person scrumMaster = null;
+        Person productOwner;
+        Person scrumMaster;
 
-        int memberCount = NameGenerator.random(3, 10);
+        int memberCount = NameGenerator.random(3, 15);
 
         ArrayList<Person> members = new ArrayList<>();
         for (int i = 0; i < memberCount; ++i){
@@ -64,8 +64,8 @@ public class TeamGenerator implements Generator<Team> {
             }
         }
 
-        if (members.size() > 0) productOwner = members.get(0);
-        if (members.size() > 1) scrumMaster = members.get(1);
+        productOwner = members.get(0);
+        scrumMaster = members.get(1);
 
         try {
             team.setShortName(shortName);

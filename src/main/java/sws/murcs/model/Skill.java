@@ -3,7 +3,6 @@ package sws.murcs.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import sws.murcs.magic.tracking.TrackableValue;
 
 /**

@@ -5,11 +5,11 @@ import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class TrackingIntegerTest {
+
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
             UndoRedoManager.commit("initial state");

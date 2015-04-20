@@ -57,7 +57,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Loads the team into the form
+     * Loads the person into the form
      */
     @Override
     public void load() {
@@ -78,9 +78,9 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Generates a node for a team member
-     * @param skill The team member
-     * @return the node representing the team member
+     * Generates a node for a skill
+     * @param skill The skill
+     * @return the node representing the skill
      */
     private Node generateSkillNode(final Skill skill) {
         Text nameText = new Text(skill.toString());
@@ -124,7 +124,6 @@ public class PersonEditor extends GenericEditor<Person> {
      * Saves the edit being edited
      */
     public void update() throws Exception{
-        labelErrorMessage.setText("");
         edit.setLongName(personFullNameTextField.getText());
         edit.setShortName(personNameTextField.getText());
         edit.setUserId(usernameTextField.getText());
@@ -143,7 +142,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
         // Call the callback if it exists
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -158,7 +157,7 @@ public class PersonEditor extends GenericEditor<Person> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            //Output any other exception to the console
             e.printStackTrace();
         }
         finally {
