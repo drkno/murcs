@@ -12,7 +12,7 @@ public class TrackingIntegerTest {
 
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -24,7 +24,7 @@ public class TrackingIntegerTest {
 
         public void setTestInteger(int testInteger) throws Exception {
             this.testInteger = testInteger;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 

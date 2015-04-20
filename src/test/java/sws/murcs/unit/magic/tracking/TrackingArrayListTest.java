@@ -14,7 +14,7 @@ public class TrackingArrayListTest {
         public TestArrayList() throws Exception {
             testArrayList = new ArrayList<Integer>();
             testArrayList.add(0);
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -26,7 +26,7 @@ public class TrackingArrayListTest {
 
         public void addValue(int value) throws Exception {
             testArrayList.add(value);
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 

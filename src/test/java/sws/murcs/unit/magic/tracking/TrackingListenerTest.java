@@ -22,7 +22,7 @@ public class TrackingListenerTest {
 
         public void setTestInteger(int testInteger) throws Exception {
             this.testInteger = testInteger;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 

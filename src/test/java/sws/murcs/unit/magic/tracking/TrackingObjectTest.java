@@ -23,7 +23,7 @@ public class TrackingObjectTest {
 
     private class TestContainerObject extends TrackableObject {
         public TestContainerObject() throws Exception {
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -35,7 +35,7 @@ public class TrackingObjectTest {
 
         public void setTestObject(TestObject testObject) throws Exception {
             this.testObject = testObject;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 

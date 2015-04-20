@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -24,13 +24,13 @@ public class TrackingMultipleTest {
 
         public void setTestInteger(int testInteger) throws Exception {
             this.testInteger = testInteger;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 
     public class TestString extends TrackableObject {
         public TestString() throws Exception {
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -42,7 +42,7 @@ public class TrackingMultipleTest {
 
         public void setTestString(String testString) throws Exception {
             this.testString = testString;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 
