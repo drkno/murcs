@@ -141,6 +141,8 @@ public class TrackingListenerTest {
         Assert.assertTrue(handlers.get(0).equals(listener));
         Assert.assertFalse(listener.getCalled());
         listener = null;
+        ChangeListenerHandler.performGC();
+        Thread.sleep(1000);
         UndoRedoManager.commit("test commit");
         Assert.assertTrue(handlers.size() == 0);
     }

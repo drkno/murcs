@@ -28,13 +28,18 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Saves the edit being edited
      */
     public void update()  throws Exception{
-        if (!shortNameTextField.getText().equals(edit.getShortName())) {
-            edit.setShortName(shortNameTextField.getText());
+        String shortName = shortNameTextField.getText();
+        if (shortName == null || !shortName.equals(edit.getShortName())) {
+            edit.setShortName(shortName);
         }
-        if (!longNameTextField.getText().equals(edit.getLongName())) {
-            edit.setLongName(longNameTextField.getText());
+
+        String longName = longNameTextField.getText();
+        if (longName == null || !longName.equals(edit.getLongName())) {
+            edit.setLongName(longName);
         }
-        if (!descriptionTextArea.getText().equals(edit.getDescription())) {
+
+        String description = descriptionTextArea.getText();
+        if (description == null || !description.equals(edit.getDescription())) {
             edit.setDescription(descriptionTextArea.getText());
         }
 
