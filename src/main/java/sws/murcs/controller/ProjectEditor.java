@@ -24,13 +24,17 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        if (!projectTextFieldShortName.getText().equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !projectTextFieldShortName.getText().equals(edit.getShortName())) {
             edit.setShortName(projectTextFieldShortName.getText());
         }
-        if (!textFieldLongName.getText().equals(edit.getLongName())) {
+        System.out.println(textFieldLongName);
+        System.out.println(edit);
+        System.out.println(edit.getLongName());
+        System.out.println(textFieldLongName.getText());
+        if (edit.getLongName() != null && !textFieldLongName.getText().equals(edit.getLongName())) {
             edit.setLongName(textFieldLongName.getText());
         }
-        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+        if (edit.getDescription() != null && !descriptionTextField.getText().equals(edit.getDescription())) {
             edit.setDescription(descriptionTextField.getText());
         }
 
@@ -77,15 +81,20 @@ public class ProjectEditor extends GenericEditor<Project> {
         String currentShortName = projectTextFieldShortName.getText();
         String currentLongName = textFieldLongName.getText();
         String currentDescription = descriptionTextField.getText();
-
-        if (currentShortName == null && !currentShortName.equals(edit.getShortName())) {
-            projectTextFieldShortName.setText(edit.getShortName());
+        if (currentShortName != null) {
+            if (!currentShortName.equals(edit.getShortName())) {
+                projectTextFieldShortName.setText(edit.getShortName());
+            }
         }
-        if (currentLongName == null && !currentLongName.equals(edit.getLongName())) {
-            textFieldLongName.setText(edit.getLongName());
+        if (currentLongName != null) {
+            if (!currentLongName.equals(edit.getLongName())) {
+                textFieldLongName.setText(edit.getLongName());
+            }
         }
-        if (currentDescription == null && !currentDescription.equals(edit.getShortName())) {
-            descriptionTextField.setText(edit.getDescription());
+        if (currentDescription != null) {
+            if (!currentDescription.equals(edit.getShortName())) {
+                descriptionTextField.setText(edit.getDescription());
+            }
         }
     }
 
