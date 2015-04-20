@@ -28,9 +28,15 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Saves the edit being edited
      */
     public void update()  throws Exception{
-        edit.setShortName(shortNameTextField.getText());
-        edit.setLongName(longNameTextField.getText());
-        edit.setDescription(descriptionTextArea.getText());
+        if (!shortNameTextField.getText().equals(edit.getShortName())) {
+            edit.setShortName(shortNameTextField.getText());
+        }
+        if (!longNameTextField.getText().equals(edit.getLongName())) {
+            edit.setLongName(longNameTextField.getText());
+        }
+        if (!descriptionTextArea.getText().equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextArea.getText());
+        }
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
