@@ -29,13 +29,6 @@ public class TrackingArrayListTest {
             UndoRedoManager.commit("test desc.");
         }
     }
-    private static Field listenersField;
-
-    @BeforeClass
-    public static void setupClass() throws Exception {
-        listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
-        listenersField.setAccessible(true);
-    }
 
     private static Field listenersField;
 
