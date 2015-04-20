@@ -4,16 +4,21 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Model of a Team.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Team extends Model {
     @TrackableValue
     private String description;
     @TrackableValue
+    @XmlElementWrapper(name = "members")
+    @XmlElement(name = "person")
     private ArrayList<Person> members = new ArrayList<>();
     @TrackableValue
     private Person scrumMaster;
@@ -140,4 +145,5 @@ public class Team extends Model {
         if (object == null) return false;
         return object instanceof Team && ((Team) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
+
 }

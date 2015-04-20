@@ -4,6 +4,8 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,8 @@ public class Project extends Model {
     private String description;
     @Editable(sort = 99)
     @TrackableValue
+    @XmlElementWrapper(name = "teams")
+    @XmlElement(name = "team")
     private ArrayList<Team> teams = new ArrayList<>();
 
     /**
