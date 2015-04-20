@@ -128,7 +128,6 @@
                         <reports>
                             <report>index</report>
                             <report>summary</report>
-                            <report>dependencies</report>
                             <report>license</report>
                             <report>plugins</report>
                             <report>plugin-management</report>
@@ -149,6 +148,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.2</version>
                 <configuration>
                     <linkXref>true</linkXref>
                     <targetjdk>1.8</targetjdk>
@@ -169,14 +169,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.1</version>
+                <version>2.10.3</version>
                 <configuration>
                     <show>private</show>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.14</version>
+                <version>2.15</version>
                 <reportSets>
                     <reportSet>
                         <reports>

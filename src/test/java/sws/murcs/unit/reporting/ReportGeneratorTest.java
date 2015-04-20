@@ -101,7 +101,7 @@ public class ReportGeneratorTest {
         project.setDescription("We are building a fitness tracking application for the world");
         project.addTeam(team1);
 
-        relationalModel.setProject(project);
+        relationalModel.addProject(project);
         relationalModel.addTeam(team2);
         relationalModel.addPerson(person4);
     }

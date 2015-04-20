@@ -1,12 +1,13 @@
 package sws.murcs.unit.magic.tracking;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class TrackingObjectTest {
     public class TestObject {
@@ -38,8 +39,18 @@ public class TrackingObjectTest {
         }
     }
 
+    private static Field listenersField;
+
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
+        listenersField.setAccessible(true);
+    }
+
     @Before
-    public void setup() {
+    public void setup() throws Exception{
+        UndoRedoManager.forget(true);
+        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
         UndoRedoManager.setMaximumCommits(-1);
     }
 
@@ -51,6 +62,7 @@ public class TrackingObjectTest {
     @Test
     public void undoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
@@ -58,21 +70,17 @@ public class TrackingObjectTest {
         Assert.assertEquals("2", a.getTestObject().toString());
         UndoRedoManager.revert();
         Assert.assertEquals("1", a.getTestObject().toString());
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestObject());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, a.getTestObject());
-        UndoRedoManager.remake();
         Assert.assertEquals("1", a.getTestObject().toString());
         UndoRedoManager.remake();
         Assert.assertEquals("2", a.getTestObject().toString());
@@ -83,6 +91,7 @@ public class TrackingObjectTest {
     @Test
     public void descriptionTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
+        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());

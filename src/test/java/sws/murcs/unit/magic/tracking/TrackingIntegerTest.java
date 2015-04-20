@@ -1,14 +1,16 @@
 package sws.murcs.unit.magic.tracking;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class TrackingIntegerTest {
+
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
             UndoRedoManager.commit("initial state");
@@ -26,9 +28,18 @@ public class TrackingIntegerTest {
             UndoRedoManager.commit("test desc.");
         }
     }
+    private static Field listenersField;
+
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
+        listenersField.setAccessible(true);
+    }
 
     @Before
-    public void setup() {
+    public void setup() throws Exception{
+        UndoRedoManager.forget(true);
+        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
         UndoRedoManager.setMaximumCommits(-1);
     }
 
@@ -40,6 +51,7 @@ public class TrackingIntegerTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -47,21 +59,17 @@ public class TrackingIntegerTest {
         Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.revert();
         Assert.assertEquals(1, a.getTestInteger());
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getTestInteger());
     }
 
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
         UndoRedoManager.revert();
         UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        Assert.assertEquals(0, a.getTestInteger());
-        UndoRedoManager.remake();
         Assert.assertEquals(1, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals(2, a.getTestInteger());
@@ -72,6 +80,7 @@ public class TrackingIntegerTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
@@ -107,6 +116,7 @@ public class TrackingIntegerTest {
         UndoRedoManager.setMaximumCommits(3);
         Assert.assertEquals(3, UndoRedoManager.getMaximumCommits());
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -123,6 +133,7 @@ public class TrackingIntegerTest {
     @Test
     public void impossibleRedoAfterActionPerformed() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -140,6 +151,7 @@ public class TrackingIntegerTest {
     @Test
     public void saveIgnoredIfValueDidNotChange() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);

@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppClosingListener;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
@@ -77,11 +78,22 @@ public class App extends Application{
             for (String s : args) {
                 if (Objects.equals(s, "debug")) {
                     PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator().generate());
+                    RelationalModel model = PersistenceManager.Current.getCurrentModel();
+                    UndoRedoManager.forget();
+                    UndoRedoManager.add(model);
+                    model.getPeople().forEach(p -> UndoRedoManager.add(p));
+                    model.getTeams().forEach(t -> UndoRedoManager.add(t));
+                    model.getSkills().forEach(k -> UndoRedoManager.add(k));
+                    model.getProjects().forEach(l -> UndoRedoManager.add(l));
+                    try{UndoRedoManager.commit("Generate Model Data");} catch (Exception e){}
                 }
             }
         } else {
             //Give us an empty model
             PersistenceManager.Current.setCurrentModel(new RelationalModel());
+            UndoRedoManager.add(PersistenceManager.Current.getCurrentModel());
+            UndoRedoManager.forget();
+            try{UndoRedoManager.commit("Initial State");} catch (Exception e){}
         }
         launch(args);
     }

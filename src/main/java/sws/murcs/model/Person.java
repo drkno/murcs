@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -14,8 +15,10 @@ import java.util.List;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+    @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+    @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
     private ArrayList<Skill> skills = new ArrayList<>();
@@ -60,6 +63,7 @@ public class Person extends Model {
     public void setUserId(String userId) throws Exception {
         validateUserId(userId);
         this.userId = userId.trim();
+        commit("edit person");
     }
 
     /**
@@ -80,7 +84,9 @@ public class Person extends Model {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
-        } else {
+            commit("edit person");
+        }
+        else {
             throw new DuplicateObjectException("This is actually the same skill");
         }
     }
@@ -103,6 +109,7 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+            commit("edit person");
         }
     }
 

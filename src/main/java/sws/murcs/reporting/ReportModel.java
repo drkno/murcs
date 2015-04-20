@@ -15,7 +15,9 @@ import java.util.Collections;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportModel {
-    private Project project;
+    @XmlElementWrapper(name = "projects")
+    @XmlElement(name = "project")
+    private ArrayList<Project> projects = new ArrayList<>();
     @XmlElementWrapper(name = "unassignedTeams")
     @XmlElement(name = "team")
     private ArrayList<Team> listUnassignedTeams = new ArrayList<>();
@@ -28,7 +30,7 @@ public class ReportModel {
      * @param relationalModel a relational model
      */
     public ReportModel(RelationalModel relationalModel) {
-        project = relationalModel.getProject();
+        projects.addAll(relationalModel.getProjects());
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName().compareTo(t2.getShortName()));
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());

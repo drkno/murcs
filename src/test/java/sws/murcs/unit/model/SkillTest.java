@@ -19,7 +19,7 @@ public class SkillTest {
         skill = new Skill();
         skill2 = new Skill();
         skill3 = new Skill();
-        skill.setShortName("PO");
+        skill.setShortName("OMG");
         skill2.setShortName("A very good skill to have");
         skill3.setShortName("Something worth while");
     }
@@ -48,7 +48,7 @@ public class SkillTest {
 
     @Test
     public void equalsTest() throws Exception {
-        skill2.setShortName("PO");
+        skill2.setShortName("OMG");
         assertTrue(skill.equals(skill2));
         assertFalse(skill.equals(skill3));
     }

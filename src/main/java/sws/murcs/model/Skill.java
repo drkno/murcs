@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableValue;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,6 +23,7 @@ public class Skill extends Model {
      */
     public static final String SM_NAME = "SM";
 
+    @TrackableValue
     private String description;
 
     /**
@@ -37,6 +40,7 @@ public class Skill extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit skill");
     }
 
     /**

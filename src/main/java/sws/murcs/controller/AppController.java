@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -17,20 +16,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
 
 /**
  * Main app class controller
  */
-public class AppController implements Initializable, ViewUpdate{
+public class AppController implements  ViewUpdate, UndoRedoChangeListener {
 
     @FXML
     private Parent root;
@@ -58,11 +57,9 @@ public class AppController implements Initializable, ViewUpdate{
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     * @param location The location used to resolve relative paths for the root object, or null if the location is not known.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -76,8 +73,7 @@ public class AppController implements Initializable, ViewUpdate{
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
                 updateListView(null);
-            }
-            else {
+            } else {
                 // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
             }
@@ -93,7 +89,8 @@ public class AppController implements Initializable, ViewUpdate{
 
             Parent pane = null;
             try {
-                pane = EditorHelper.getEditForm((Model) newValue, this::updateListView);
+                ViewUpdate update = this;
+                pane = EditorHelper.getEditForm((Model) newValue, update);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -101,8 +98,9 @@ public class AppController implements Initializable, ViewUpdate{
             contentPane.getChildren().add(pane);
         });
 
-        updateUndoRedoMenuItems(0);
-        UndoRedoManager.addChangeListener(changeType -> Platform.runLater(() -> updateUndoRedoMenuItems(changeType)));
+        undoRedoNotification(ChangeState.Commit);
+        UndoRedoManager.addChangeListener(this);
+        updateListView(null);
     }
 
     /**
@@ -118,6 +116,10 @@ public class AppController implements Initializable, ViewUpdate{
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
+
+            UndoRedoManager.add(newModelObject);
+            commitChanges("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
+
             if (selectedType == type) {
                 updateList(newModelObject, type);
             }
@@ -127,6 +129,21 @@ public class AppController implements Initializable, ViewUpdate{
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 updateList(newModelObject, type);
             }
+        }
+    }
+
+    /**
+     * Handles committing changes based on UI actions.
+     * @param message commit message to use.
+     */
+    private void commitChanges(String message) {
+        try {
+            UndoRedoManager.commit(message);
+        } catch (Exception e) {
+            // This state only occurs if there is a bug or something is very wrong
+            UndoRedoManager.forget();
+            System.err.println("The undo/redo manager encountered an error while attempting to commit a change:\n"
+                    + e.toString() + "\nAs a precaution all history has been forgotten.");
         }
     }
 
@@ -144,10 +161,7 @@ public class AppController implements Initializable, ViewUpdate{
 
         switch (type) {
             case Project:
-                Project project = model.getProject();
-                if (project != null) {
-                    displayListItems.addAll(project);
-                }
+                displayListItems.addAll(model.getProjects());
                 break;
             case People:
                 displayListItems.addAll(model.getPeople());
@@ -205,51 +219,6 @@ public class AppController implements Initializable, ViewUpdate{
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
         vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
-    }
-
-    /**
-     * Create a new project, opens a dialog to fill out for the new project.
-     * @param event The event that causes the function to be called, namely clicking new project.
-     */
-    @FXML
-    private void createNewProject(ActionEvent event) {
-        if (!UndoRedoManager.canRevert()) {
-            EditorHelper.createNew(Project.class, this::updateListView);
-        }
-        else {
-            GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Unsaved Changes");
-            popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, ml -> {
-                popup.close();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked history
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, ml -> {
-                popup.close();
-                // Let the user save the project
-                saveProject();
-
-                RelationalModel model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
-                updateListView(null);
-                // Reset Tracked History
-                UndoRedoManager.forget(true);
-                // Create a new project
-                EditorHelper.createNew(Project.class, this::updateListView);
-            });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, ml -> {
-                popup.close();
-            });
-            popup.show();
-
-        }
     }
 
     /**
@@ -364,14 +333,15 @@ public class AppController implements Initializable, ViewUpdate{
      * Updates the undo/redo menu to reflect the current undo/redo state.
      * @param change type of change that has been made
      */
-    private void updateUndoRedoMenuItems(int change) {
+    @Override
+    public void undoRedoNotification(ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
         else {
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo \"" + UndoRedoManager.getRevertMessage() +  "\"");
+            undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
         }
 
         if (!UndoRedoManager.canRemake()) {
@@ -380,7 +350,7 @@ public class AppController implements Initializable, ViewUpdate{
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo \"" + UndoRedoManager.getRemakeMessage() +  "\"");
+            redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
         // TODO: List refresh code (story: 119, task: 46)
@@ -393,6 +363,9 @@ public class AppController implements Initializable, ViewUpdate{
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
+                case "addProject":
+                    clazz = Project.class;
+                    break;
                 case "addPerson":
                     clazz = Person.class;
                     break;
@@ -411,7 +384,8 @@ public class AppController implements Initializable, ViewUpdate{
         }
 
         if (clazz != null) {
-            EditorHelper.createNew(clazz, this::updateListView);
+            ViewUpdate viewUpdate = this;
+            EditorHelper.createNew(clazz, viewUpdate);
         }
     }
 
@@ -423,14 +397,36 @@ public class AppController implements Initializable, ViewUpdate{
         final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
         if (selectedIndex == -1) return;
 
-        // Ensures you can't delete Product Owner or Scrum Master
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
+
+        // Ensures you can't delete Product Owner or Scrum Master
         if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills)
             if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM"))
                 return;
 
-        model.remove((Model) displayList.getSelectionModel().getSelectedItem());
-        updateListView(null);
+        ArrayList<Model> usages = model.findUsages(selectedItem);
+        GenericPopup popup = new GenericPopup();
+        String message = "Are you sure you want to delete this?";
+        if (usages.size() != 0){
+            message += "\nThis " + ModelTypes.getModelType(selectedItem) + " is used in " + usages.size() + " place(s):";
+            for (Model usage : usages) {
+                message += "\n" + usage.getShortName();
+            }
+        }
+        popup.setTitleText("Really delete?");
+        popup.setMessageText(message);
+
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+            popup.close();
+            Model item = (Model) displayList.getSelectionModel().getSelectedItem();
+            model.remove(item);
+            UndoRedoManager.remove(item);
+            ModelTypes type = ModelTypes.getModelType(item);
+            commitChanges("deleted " + (type == ModelTypes.People ? "Person" : type.toString()));
+            updateListView(null);
+        });
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
+        popup.show();
     }
 }
 

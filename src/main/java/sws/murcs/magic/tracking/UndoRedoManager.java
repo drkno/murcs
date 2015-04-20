@@ -1,6 +1,8 @@
 package sws.murcs.magic.tracking;
 
-import sws.murcs.EventNotification;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
@@ -16,7 +18,7 @@ public class UndoRedoManager {
     private static ArrayList<TrackableObject> objectsList;
     private static long commitNumber;
     private static long maximumCommits;
-    private static ArrayList<EventNotification<Integer>> changeListeners;
+    private static ArrayList<ChangeListenerHandler> changeListeners;
 
     /**
      * "Static" constructor, used so that values are always initialized
@@ -35,7 +37,7 @@ public class UndoRedoManager {
      * Adds an object to be tracked.
      * @param object new object to be tracked.
      */
-    protected static void add(TrackableObject object) {
+    public static void add(TrackableObject object) {
         objectsList.add(object);
     }
 
@@ -58,7 +60,8 @@ public class UndoRedoManager {
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
             trackableObjects.add(object);
-            for (Field field : object.getTrackedFields()) {
+            ArrayList<Field> fields = object.getTrackedFields();
+            for (Field field : fields) {
                 pairs.add(new FieldValuePair(field, object));
             }
         }
@@ -69,18 +72,18 @@ public class UndoRedoManager {
         }
         head = new Commit(commitNumber, message, pairsArray, trackableObjects);
         if (canRevert() && head.equals(revertStack.peek())) {
-            revertStack.pop();
+            Commit last = revertStack.pop();
+            if (!last.getMessage().contains(head.getMessage())) {
+                head.modifyMessage(head.getMessage() + ", " + last.getMessage());
+            }
         }
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
             revertStack.removeLast();
         }
 
-        if (canRemake()) {
-            remakeStack.clear();
-        }
-
-        notifyListeners(0);
+        if (canRemake()) remakeStack.clear();
+        notifyListeners(ChangeState.Commit);
 
         return commitNumber++;
     }
@@ -105,7 +108,7 @@ public class UndoRedoManager {
         if (savedObjects) {
             objectsList.clear();
         }
-        notifyListeners(-2);
+        notifyListeners(ChangeState.Forget);
     }
 
     /**
@@ -131,7 +134,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
-        notifyListeners(-1);
+        notifyListeners(ChangeState.Revert);
     }
 
     /**
@@ -173,7 +176,7 @@ public class UndoRedoManager {
             head = commit;
             if (commit.getCommitNumber() == commitNumber) break;
         }
-        notifyListeners(1);
+        notifyListeners(ChangeState.Remake);
     }
 
     /**
@@ -212,6 +215,7 @@ public class UndoRedoManager {
      * Gets the maximum number of commits that can be made before commits are forgotten.
      * This can be negative (defaults to -1) for infinite commits, or greater or equal
      * to zero for a set number.
+     * @return The maximum number of commits
      */
     public static long getMaximumCommits() {
         return maximumCommits;
@@ -230,30 +234,34 @@ public class UndoRedoManager {
     /**
      * Adds a listener for a change in state (eg commit, revert or remake performed)
      * that will be notified if such a change occurs.
-     * Values passed to the listener will be as follows on an event notification:
-     * -2 : A forget has occurred.
-     * -1 : A revert has occurred.
-     *  0 : A commit has occurred.
-     *  1 : A remake has occurred.
      * @param eventListener the event listener to add.
      */
-    public static void addChangeListener(EventNotification<Integer> eventListener) {
-        changeListeners.add(eventListener);
+    public static void addChangeListener(UndoRedoChangeListener eventListener) {
+        ChangeListenerHandler changeListenerHandler = new ChangeListenerHandler(eventListener);
+        changeListeners.add(changeListenerHandler);
     }
 
     /**
      * Removes an change listener.
      * @param eventListener listener to remove.
      */
-    public static void removeChangeListener(EventNotification<Integer> eventListener) {
-        changeListeners.remove(eventListener);
+    public static void removeChangeListener(UndoRedoChangeListener eventListener) {
+        ChangeListenerHandler listener = new ChangeListenerHandler(eventListener);
+        changeListeners.remove(listener);
     }
 
     /**
      * Notifies listeners that a change has occurred.
      * @param changeType the type of change that occurred.
      */
-    private static void notifyListeners(int changeType) {
-        changeListeners.forEach(l -> l.eventNotification(changeType));
+    private static void notifyListeners(ChangeState changeType) {
+        if (changeListeners.size() == 0) return;
+        ChangeListenerHandler.performGC();
+        for (int i = 0; i < changeListeners.size(); i++) {
+            if (!changeListeners.get(i).eventNotification(changeType)) {
+                changeListeners.remove(i);
+                i--;
+            }
+        }
     }
 }

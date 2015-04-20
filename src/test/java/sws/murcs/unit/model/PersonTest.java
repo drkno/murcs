@@ -33,7 +33,7 @@ public class PersonTest {
         skillGenerated = skillGenerator.generate();
         person = new Person();
         skill = new Skill();
-        skill.setShortName("PO");
+        skill.setShortName("LOL");
     }
 
     @After
@@ -61,7 +61,7 @@ public class PersonTest {
     @Test
     public void canBeRoleTest() throws Exception {
         person.addSkill(skill);
-        assertTrue(person.canBeRole("PO"));
+        assertTrue(person.canBeRole("LOL"));
         assertFalse(person.canBeRole("ScrumMaster"));
     }
 

@@ -16,7 +16,7 @@ public abstract class ReportGenerator {
      * Generates an xml report to file from a relational model.
      * @param relationalModel the model from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException
+     * @throws JAXBException Exceptions fro JAXB
      */
     public static void generate(RelationalModel relationalModel, File file) throws JAXBException {
         ReportModel reportModel = new ReportModel(relationalModel);

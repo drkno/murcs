@@ -1,28 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <project shortName="FITR">
-        <longName>Fitness is Training Right</longName>
-        <description>We are building a fitness tracking application for the world</description>
-        <teams>
-            <team shortName="Sengineers">
-                <longName>Software Engineers</longName>
-                <description>We are the best software engineers in the world</description>
-                <members>
-                    <person shortName="Daniel">
-                        <longName>Daniel van Wichen</longName>
-                        <id>dpv11</id>
-                        <skills>
-                            <skill shortName="Python">
-                                <longName>Python 2.7</longName>
-                                <description>A simple object-oriented language perfect for beginners</description>
-                            </skill>
-                            <skill shortName="PO">
-                                <longName>Product Owner</longName>
-                                <description>Has ability to insult design teams efforts</description>
-                            </skill>
-                        </skills>
-                    </person>
-                    <person shortName="Dion">
+    <projects>
+        <project shortName="FITR">
+            <longName>Fitness is Training Right</longName>
+            <description>We are building a fitness tracking application for the world</description>
+            <teams>
+                <team shortName="Sengineers">
+                    <longName>Software Engineers</longName>
+                    <description>We are the best software engineers in the world</description>
+                    <members>
+                        <person shortName="Daniel">
+                            <longName>Daniel van Wichen</longName>
+                            <id>dpv11</id>
+                            <skills>
+                                <skill shortName="Python">
+                                    <longName>Python 2.7</longName>
+                                    <description>A simple object-oriented language perfect for beginners</description>
+                                </skill>
+                                <skill shortName="PO">
+                                    <longName>Product Owner</longName>
+                                    <description>Has ability to insult design teams efforts</description>
+                                </skill>
+                            </skills>
+                        </person>
+                        <person shortName="Dion">
+                            <longName>Dion Wooley</longName>
+                            <id>dmw99</id>
+                            <skills>
+                                <skill shortName="C">
+                                    <longName>C99</longName>
+                                    <description>C99 is older than the current C standard, namely, C11</description>
+                                </skill>
+                                <skill shortName="Python">
+                                    <longName>Python 2.7</longName>
+                                    <description>A simple object-oriented language perfect for beginners</description>
+                                </skill>
+                                <skill shortName="SM">
+                                    <longName>Scrum Master</longName>
+                                    <description>Is able to manage the efforts of a team and resolve difficulties</description>
+                                </skill>
+                            </skills>
+                        </person>
+                    </members>
+                    <scrumMaster shortName="Dion">
                         <longName>Dion Wooley</longName>
                         <id>dmw99</id>
                         <skills>
@@ -39,43 +59,25 @@
                                 <description>Is able to manage the efforts of a team and resolve difficulties</description>
                             </skill>
                         </skills>
-                    </person>
-                </members>
-                <scrumMaster shortName="Dion">
-                    <longName>Dion Wooley</longName>
-                    <id>dmw99</id>
-                    <skills>
-                        <skill shortName="C">
-                            <longName>C99</longName>
-                            <description>C99 is older than the current C standard, namely, C11</description>
-                        </skill>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="SM">
-                            <longName>Scrum Master</longName>
-                            <description>Is able to manage the efforts of a team and resolve difficulties</description>
-                        </skill>
-                    </skills>
-                </scrumMaster>
-                <productOwner shortName="Daniel">
-                    <longName>Daniel van Wichen</longName>
-                    <id>dpv11</id>
-                    <skills>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="PO">
-                            <longName>Product Owner</longName>
-                            <description>Has ability to insult design teams efforts</description>
-                        </skill>
-                    </skills>
-                </productOwner>
-            </team>
-        </teams>
-    </project>
+                    </scrumMaster>
+                    <productOwner shortName="Daniel">
+                        <longName>Daniel van Wichen</longName>
+                        <id>dpv11</id>
+                        <skills>
+                            <skill shortName="Python">
+                                <longName>Python 2.7</longName>
+                                <description>A simple object-oriented language perfect for beginners</description>
+                            </skill>
+                            <skill shortName="PO">
+                                <longName>Product Owner</longName>
+                                <description>Has ability to insult design teams efforts</description>
+                            </skill>
+                        </skills>
+                    </productOwner>
+                </team>
+            </teams>
+        </project>
+    </projects>
     <unassignedTeams>
         <team shortName="Riding Solo">
             <longName>One man can conquer the world</longName>

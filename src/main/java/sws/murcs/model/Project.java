@@ -36,6 +36,7 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit project");
     }
 
     /**
@@ -59,7 +60,8 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
-        } else {
+        }
+        else {
             throw new DuplicateObjectException();
         }
     }
@@ -82,6 +84,7 @@ public class Project extends Model {
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             teams.remove(team);
+            commit("edit project");
         }
     }
 
@@ -92,5 +95,10 @@ public class Project extends Model {
     @Override
     public String toString() {
         return getShortName();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object != null && getShortName() != null && object instanceof Project && ((Project) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 }

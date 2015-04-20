@@ -1,9 +1,6 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,10 +32,17 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     public RelationalModel generate() {
         try {
             RelationalModel model = new RelationalModel();
-            model.setProject(projectGenerator.generate());
+            int randProjects = NameGenerator.random(5,20);
+            ArrayList<Project> projects = new ArrayList<>();
+            for (int i = 0; i < randProjects; i++) {
+                Project newProject = projectGenerator.generate();
+                if (!projects.stream().filter(team -> newProject.equals(team)).findAny().isPresent()) {
+                    projects.add(newProject);
+                }
+            }
+            model.addProjects(projects);
 
-
-            int rand = random.nextInt(10);
+            int rand = NameGenerator.random(10, 30);
             ArrayList<Team> unassignedTeams = new ArrayList<>();
             for (int i = 0; i < rand; i++) {
                 Team newTeam = teamGenerator.generate();
@@ -70,11 +74,13 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             model.addPeople(people);
 
             ArrayList<Skill> skills = new ArrayList<>();
-            for (Team team : model.getProject().getTeams()) {
-                for (Person person : team.getMembers()) {
-                    for (Skill newSkill: person.getSkills()) {
-                        if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
-                            skills.add(newSkill);
+            for (Project project : model.getProjects()) {
+                for (Team team : project.getTeams()) {
+                    for (Person person : team.getMembers()) {
+                        for (Skill newSkill : person.getSkills()) {
+                            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
+                                skills.add(newSkill);
+                            }
                         }
                     }
                 }
