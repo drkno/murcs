@@ -27,10 +27,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (edit.getShortName() != null && !projectTextFieldShortName.getText().equals(edit.getShortName())) {
             edit.setShortName(projectTextFieldShortName.getText());
         }
-        System.out.println(textFieldLongName);
-        System.out.println(edit);
-        System.out.println(edit.getLongName());
-        System.out.println(textFieldLongName.getText());
         if (edit.getLongName() != null && !textFieldLongName.getText().equals(edit.getLongName())) {
             edit.setLongName(textFieldLongName.getText());
         }
