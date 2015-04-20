@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -25,14 +24,12 @@ import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
 /**
  * Main app class controller
  */
-public class AppController implements Initializable, ViewUpdate, UndoRedoChangeListener {
+public class AppController implements  ViewUpdate, UndoRedoChangeListener {
 
     @FXML
     private Parent root;
@@ -60,11 +57,9 @@ public class AppController implements Initializable, ViewUpdate, UndoRedoChangeL
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
-     * @param location The location used to resolve relative paths for the root object, or null if the location is not known.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
