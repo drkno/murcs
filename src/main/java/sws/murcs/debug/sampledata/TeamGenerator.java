@@ -9,11 +9,22 @@ import java.util.ArrayList;
  * Generates random teams with people
  */
 public class TeamGenerator implements Generator<Team> {
+    public static final int LOW_STRESS_MAX = 5;
+    public static final int LOW_STRESS_MIN = 1;
+
+    public static final int MEDIUM_STRESS_MAX = 10;
+    public static final int MEDIUM_STRESS_MIN = 5;
+
+    public static final int HIGH_STRESS_MAX = 20;
+    public static final int HIGH_STRESS_MIN = 10;
+
     private String[] teamNames = {"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
     private String[] descriptions = {NameGenerator.getLoremIpsum()};
     private float probOfScrumMaster = 0.5f;
     private float probOfProductOwner = 0.5f;
-    private final Generator<Person> personGenerator;
+
+    private Generator<Person> personGenerator;
+    private ArrayList<Person> personPool;
 
     /**
      * Instantiates a new Team generator.
@@ -39,9 +50,57 @@ public class TeamGenerator implements Generator<Team> {
     }
 
     /**
-     * Generates a new random team.
-     * @return a new random team.
+     * Sets the person generator
+     * @param personGenerator The person generator
      */
+    public void setPersonGenerator(Generator<Person> personGenerator){
+        this.personGenerator = personGenerator;
+    }
+
+    /**
+     * Sets the person pool. If null, people will be randomly generated
+     * @param personPool The person pool
+     */
+    public void setPersonPool(ArrayList<Person> personPool){
+        this.personPool = personPool;
+    }
+
+    /**
+     * Generates the members of a team
+     * @param min The min members
+     * @param max The max members
+     * @return The members
+     */
+    private ArrayList<Person> generateMembers(int min, int max){
+        ArrayList<Person> generated = new ArrayList<>();
+        int personCount = NameGenerator.random(min, max);
+
+        //If we haven't been given a pool of person, make some up
+        if (personPool == null){
+            for (int i = 0; i < personCount; i++){
+                Person newPerson = personGenerator.generate();
+                if (!generated.stream().filter(person -> newPerson.equals(person)).findAny().isPresent()) {
+                    generated.add(newPerson);
+                }
+            }
+        }else{
+            //If there are more person than we have just assign all of them
+            if (personCount > personPool.size()) personCount = personPool.size();
+
+            for (int i = 0; i < personCount; i++){
+                //Remove the person so we can't pick it again. We'll put it back when we're done
+                Person skill = personPool.remove(NameGenerator.random(personPool.size()));
+                generated.add(skill);
+            }
+
+            //Put all the skills we took out back
+            for (Person person : generated)
+                personPool.add(person);
+        }
+
+        return generated;
+    }
+
     @Override
     public Team generate() {
         Team team = new Team();
@@ -54,15 +113,7 @@ public class TeamGenerator implements Generator<Team> {
         Person productOwner;
         Person scrumMaster;
 
-        int memberCount = NameGenerator.random(3, 15);
-
-        ArrayList<Person> members = new ArrayList<>();
-        for (int i = 0; i < memberCount; ++i){
-            Person p = personGenerator.generate();
-            if (!members.stream().filter(person -> p.equals(person)).findAny().isPresent()) {
-                members.add(p);
-            }
-        }
+        ArrayList<Person> members = generateMembers(3, 15);
 
         productOwner = members.get(0);
         scrumMaster = members.get(1);

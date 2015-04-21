@@ -60,6 +60,7 @@ public class Project extends Model {
                         .findAny()
                         .isPresent()) {
             this.teams.add(team);
+            commit("edit project");
         }
         else {
             throw new DuplicateObjectException();

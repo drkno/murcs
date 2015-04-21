@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class TrackingStringTest {
     public class TestString extends TrackableObject {
         public TestString() throws Exception {
-            UndoRedoManager.commit("initial state");
+            commit("initial state");
         }
 
         @TrackableValue
@@ -24,7 +24,7 @@ public class TrackingStringTest {
 
         public void setTestString(String testString) throws Exception {
             this.testString = testString;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 
@@ -34,10 +34,11 @@ public class TrackingStringTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
+        UndoRedoManager.setDisabled(false);
     }
 
     @Before
-    public void setup() throws Exception{
+    public void setup() throws IllegalAccessException {
         UndoRedoManager.forget(true);
         listenersField.set(null, new ArrayList<ChangeListenerHandler>());
         UndoRedoManager.setMaximumCommits(-1);

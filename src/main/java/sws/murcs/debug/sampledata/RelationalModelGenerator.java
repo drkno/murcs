@@ -1,117 +1,160 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Random;
 
 /**
  * Generates random RelationalModels
  */
 public class RelationalModelGenerator implements Generator<RelationalModel> {
+    public enum Stress{
+        High,
+        Medium,
+        Low,
+    }
+
     private final ProjectGenerator projectGenerator;
     private final TeamGenerator teamGenerator;
+    private final PersonGenerator personGenerator;
+    private final SkillGenerator skillGenerator;
+
     private final ReleaseGenerator releaseGenerator;
     private final Random random;
+
+    private Stress stress;
 
     /**
      * Instantiates a new random RelationalModel generator.
      */
-    public RelationalModelGenerator() {
-        projectGenerator = new ProjectGenerator();
+    public RelationalModelGenerator(Stress stress) {
+        this.stress = stress;
+
+        skillGenerator = new SkillGenerator();
+        personGenerator = new PersonGenerator();
+        personGenerator.setSkillGenerator(skillGenerator);
+
         teamGenerator = new TeamGenerator();
+        teamGenerator.setPersonGenerator(personGenerator);
+
+        projectGenerator = new ProjectGenerator();
+        projectGenerator.setTeamGenerator(teamGenerator);
+
         releaseGenerator = new ReleaseGenerator();
         random = new Random();
     }
 
+    private ArrayList<Model> generateItems(Generator<? extends Model> generator, int min, int max){
+        ArrayList<Model> items = new ArrayList<>();
+
+        int count = NameGenerator.random(min, max);
+
+        for (int i = 0; i < count; i++){
+            Model g = generator.generate();
+            if (!items.stream().filter(m -> g.equals(m)).findAny().isPresent())
+                items.add(g);
+        }
+        return items;
+    }
+
     /**
-     * Generates a new random relational model.
-     * @return a new random relational model.
+     * Calculates a minimum given a stress level
+     * @param stress The stress
+     * @param lowMin The low min
+     * @param mediumMin The medium min
+     * @param highMin The high min
+     * @return The min
      */
+    private int getMin(Stress stress, int lowMin, int mediumMin, int highMin){
+        switch (stress){
+            case Low:
+                return lowMin;
+            case Medium:
+                return mediumMin;
+            case High:
+                return highMin;
+        }
+        return lowMin;
+    }
+
+    /**
+     * Gets a max clamp for a given stress level
+     * @param stress The stress
+     * @param lowMax The low max
+     * @param mediumMax The medium max
+     * @param highMax The high max
+     * @return The max
+     */
+    private int getMax(Stress stress, int lowMax, int mediumMax, int highMax){
+        switch (stress)     {
+            case Low:
+                return lowMax;
+            case Medium:
+                return mediumMax;
+            case High:
+                return highMax;
+        }
+        return lowMax;
+    }
+
     @Override
-    public RelationalModel generate() {
-        try {
+    public RelationalModel generate(){
+        try{
             RelationalModel model = new RelationalModel();
-            int randProjects = NameGenerator.random(5,20);
-            ArrayList<Project> projects = new ArrayList<>();
-            for (int i = 0; i < randProjects; i++) {
-                Project newProject = projectGenerator.generate();
-                if (!projects.stream().filter(team -> newProject.equals(team)).findAny().isPresent()) {
-                    projects.add(newProject);
-                }
-            }
-            model.addProjects(projects);
 
-            int rand = NameGenerator.random(10, 30);
-            ArrayList<Team> unassignedTeams = new ArrayList<>();
-            for (int i = 0; i < rand; i++) {
-                Team newTeam = teamGenerator.generate();
-                if (!unassignedTeams.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
-                    unassignedTeams.add(newTeam);
-                }
-            }
-            unassignedTeams = new ArrayList<Team>(new LinkedHashSet<Team>(unassignedTeams));
-            model.addTeams(unassignedTeams);
-
-            ArrayList<Person> people = new ArrayList<>();
-            for (Team team : model.getUnassignedTeams()) {
-                for (Person person: team.getMembers()) {
-                    if (!people.stream().filter(existingPerson -> person.equals(existingPerson)).findAny().isPresent()) {
-                        people.add(person);
-                    }
-                }
-            }
-
-            for (Team team : model.getTeams()) {
-                for (Person person: team.getMembers()) {
-                    if (!people.stream().filter(existingPerson -> person.equals(existingPerson)).findAny().isPresent()) {
-                        people.add(person);
-                    }
-                }
-            }
-
-            people = new ArrayList<Person>(new LinkedHashSet<Person>(people));
-            model.addPeople(people);
-
+            int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN, SkillGenerator.HIGH_STRESS_MIN),
+                    max = getMax(stress, SkillGenerator.LOW_STRESS_MAX, SkillGenerator.MEDIUM_STRESS_MAX, SkillGenerator.HIGH_STRESS_MAX);
             ArrayList<Skill> skills = new ArrayList<>();
-            for (Project project : model.getProjects()) {
-                for (Team team : project.getTeams()) {
-                    for (Person person : team.getMembers()) {
-                        for (Skill newSkill : person.getSkills()) {
-                            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
-                                skills.add(newSkill);
-                            }
-                        }
-                    }
-                }
+            for (Model m : generateItems(skillGenerator, min, max)){
+                skills.add((Skill)m);
             }
-            for (Person person : model.getUnassignedPeople()) {
-                for (Skill newSkill: person.getSkills()) {
-                    if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
-                        skills.add(newSkill);
-                    }
-                }
-            }
-            skills = new ArrayList<Skill>(new HashSet<Skill>(skills));
-            model.addSkills(skills);
 
-            rand = random.nextInt(10);
-            for (int i = 0; i < rand; i++) {
-                Release newRelease = releaseGenerator.generate();
-                newRelease.setAssociatedProject(model.getProjects().get(0));
-                if (!model.getReleases().stream().filter(release -> newRelease.equals(release)).findAny().isPresent()) {
-                    model.addRelease(newRelease);
-                }
+            personGenerator.setSkillPool(skills);
+            ArrayList<Person> people = new ArrayList<>();
+            min = getMin(stress, PersonGenerator.LOW_STRESS_MIN, PersonGenerator.MEDIUM_STRESS_MIN, PersonGenerator.HIGH_STRESS_MIN);
+            max = getMax(stress, PersonGenerator.LOW_STRESS_MAX, PersonGenerator.MEDIUM_STRESS_MAX, PersonGenerator.HIGH_STRESS_MAX);
+            for (Model m : generateItems(personGenerator, min, max)){
+                people.add((Person)m);
             }
+
+            teamGenerator.setPersonPool(people);
+            ArrayList<Team> teams = new ArrayList<>();
+            min = getMin(stress, TeamGenerator.LOW_STRESS_MIN, TeamGenerator.MEDIUM_STRESS_MIN, TeamGenerator.HIGH_STRESS_MIN);
+            max = getMax(stress, TeamGenerator.LOW_STRESS_MAX, TeamGenerator.MEDIUM_STRESS_MAX, TeamGenerator.HIGH_STRESS_MAX);
+            for (Model m : generateItems(teamGenerator, min, max)){
+                teams.add((Team)m);
+            }
+
+            projectGenerator.setTeamPool(teams);
+            ArrayList<Project> projects = new ArrayList<>();
+            min = getMin(stress, ProjectGenerator.LOW_STRESS_MIN, ProjectGenerator.MEDIUM_STRESS_MIN, ProjectGenerator.HIGH_STRESS_MIN);
+            max = getMax(stress, ProjectGenerator.LOW_STRESS_MAX, ProjectGenerator.MEDIUM_STRESS_MAX, ProjectGenerator.HIGH_STRESS_MAX);
+            for (Model m : generateItems(projectGenerator, min, max)){
+                projects.add((Project)m);
+            }
+            
+            releaseGenerator.setProjectPool(projects);
+            ArrayList<Release> releases = new ArrayList<>();
+            min = getMin(stress, ReleaseGenerator.LOW_STRESS_MIN, ReleaseGenerator.MEDIUM_STRESS_MIN, ReleaseGenerator.HIGH_STRESS_MIN);
+            max = getMax(stress, ReleaseGenerator.LOW_STRESS_MAX, ReleaseGenerator.MEDIUM_STRESS_MAX, ReleaseGenerator.HIGH_STRESS_MAX);
+            for (Model m: generateItems(releaseGenerator, min, max)) {
+                releases.add((Release)m);
+            }
+            
+
+            model.addSkills(skills);
+            model.addPeople(people);
+            model.addTeams(teams);
+            model.addProjects(projects);
+            model.addReleases(releases);
 
             return model;
         }
-        catch (Exception e) {
-            // do nothing
+        catch (DuplicateObjectException e){
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 }

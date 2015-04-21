@@ -6,6 +6,15 @@ import sws.murcs.model.Skill;
  * Generates random skills
  */
 public class SkillGenerator implements Generator<Skill> {
+    public static final int LOW_STRESS_MAX = 3;
+    public static final int LOW_STRESS_MIN = 1;
+
+    public static final int MEDIUM_STRESS_MAX = 20;
+    public static final int MEDIUM_STRESS_MIN = 3;
+
+    public static final int HIGH_STRESS_MAX = 100;
+    public static final int HIGH_STRESS_MIN = 20;
+
     private String[] skills = {"Falling over",
             "Backflips",
             "C#",
@@ -247,10 +256,6 @@ public class SkillGenerator implements Generator<Skill> {
         this.descriptions = descriptionList;
     }
 
-    /**
-     * Generates a new random skill.
-     * @return a new random skill.
-     */
     @Override
     public Skill generate() {
         Skill skill = new Skill();

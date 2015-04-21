@@ -3,6 +3,7 @@ package sws.murcs.unit.model;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Skill;
 
 import static org.junit.Assert.*;
@@ -22,6 +23,7 @@ public class SkillTest {
         skill.setShortName("OMG");
         skill2.setShortName("A very good skill to have");
         skill3.setShortName("Something worth while");
+        UndoRedoManager.setDisabled(true);
     }
 
     @After

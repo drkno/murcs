@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
@@ -38,10 +39,11 @@ public class RelationalModelTest {
         String[] projectNames = {"A project", "I have no idea what I am doing :P"};
 
         skillGenerator = new SkillGenerator(skills, descriptions);
-        releaseGenerator = new ReleaseGenerator(descriptions);
         personGenerator = new PersonGenerator(skillGenerator);
         teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
         projectGenerator = new ProjectGenerator();
+        releaseGenerator = new ReleaseGenerator(projectGenerator, descriptions);
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before
@@ -391,6 +393,7 @@ public class RelationalModelTest {
             i--;
         }
 
+        //Check that all the skills have been removed from all the people
         for (Person p : relationalModel.getPeople()) {
             assertEquals("The person should now have no skills", 0, p.getSkills().size());
         }

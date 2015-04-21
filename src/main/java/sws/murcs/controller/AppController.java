@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 /**
  * Main app class controller
  */
-public class AppController implements  ViewUpdate, UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
     @FXML
     private Parent root;
@@ -116,10 +117,6 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
         }
         else {
             type = ModelTypes.getModelType(newModelObject);
-
-            UndoRedoManager.add(newModelObject);
-            commitChanges("created new " + (type == ModelTypes.People ? "Person" : type.toString()));
-
             if (selectedType == type) {
                 updateList(newModelObject, type);
             }
@@ -356,7 +353,19 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
-        // TODO: List refresh code (story: 119, task: 46)
+        //Store the selected index
+        int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
+
+        //If no item is selected we don't need to execute the following code
+        if (selectedIndex == -1) return;
+
+        //Add and remove the item to force an update
+        //Store the currently selected object
+        Object current = displayListItems.remove(selectedIndex);
+        displayListItems.add(selectedIndex, current);
+
+        //Restore the selection
+        displayList.getSelectionModel().select(selectedIndex);
     }
 
     @FXML
@@ -426,9 +435,6 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
             popup.close();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            UndoRedoManager.remove(item);
-            ModelTypes type = ModelTypes.getModelType(item);
-            commitChanges("deleted " + (type == ModelTypes.People ? "Person" : type.toString()));
             updateListView(null);
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });

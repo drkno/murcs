@@ -28,9 +28,20 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Saves the edit being edited
      */
     public void update()  throws Exception{
-        edit.setShortName(shortNameTextField.getText());
-        edit.setLongName(longNameTextField.getText());
-        edit.setDescription(descriptionTextArea.getText());
+        String shortName = shortNameTextField.getText();
+        if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
+            edit.setShortName(shortName);
+        }
+
+        String longName = longNameTextField.getText();
+        if (longName == null || edit.getLongName() == null || !longName.equals(edit.getLongName())) {
+            edit.setLongName(longName);
+        }
+
+        String description = descriptionTextArea.getText();
+        if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextArea.getText());
+        }
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -81,13 +92,13 @@ public class SkillEditor extends GenericEditor<Skill> {
         String currentLongName = longNameTextField.getText();
         String currentDescription = descriptionTextArea.getText();
 
-        if (!currentShortName.equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
             shortNameTextField.setText(edit.getShortName());
         }
-        if (!currentLongName.equals(edit.getLongName())) {
+        if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
             longNameTextField.setText(edit.getLongName());
         }
-        if (!currentDescription.equals(edit.getShortName())) {
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
             descriptionTextArea.setText(edit.getDescription());
         }
     }
