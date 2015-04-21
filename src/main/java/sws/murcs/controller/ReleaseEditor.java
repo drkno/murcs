@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import sws.murcs.exceptions.CustomException;
@@ -30,26 +31,37 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @FXML
     private ChoiceBox<Project> projectChoiceBox;
 
+    private ChangeListener<Project> projectChangeListener;
+
     @Override
     public void updateFields() {
         String currentShortName = shortNameTextField.getText();
         String currentDescription = descriptionTextArea.getText();
         LocalDate currentReleaseDate = releaseDatePicker.getValue();
+        Project currentAssociatedProject = edit.getAssociatedProject();
 
-        if (!currentShortName.equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
             shortNameTextField.setText(edit.getShortName());
         }
-        if (!currentDescription.equals(edit.getDescription())) {
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getDescription())) {
             descriptionTextArea.setText(edit.getDescription());
         }
-        if (!currentReleaseDate.equals(edit.getReleaseDate())) {
+        if (edit.getReleaseDate() != null && !currentReleaseDate.equals(edit.getReleaseDate())) {
             releaseDatePicker.setValue(edit.getReleaseDate());
         }
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
+        projectChoiceBox.getItems().clear();
+        projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
+        if (currentAssociatedProject != null) {
+            projectChoiceBox.getSelectionModel().select(currentAssociatedProject);
+        }
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
         //Todo set up project stuff
     }
 
     @Override
     public void load() {
+        releaseDatePicker.setValue(LocalDate.now());
         updateFields();
     }
 
@@ -58,7 +70,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         edit.setShortName(shortNameTextField.getText());
         edit.setDescription(descriptionTextArea.getText());
         edit.setReleaseDate(releaseDatePicker.getValue());
-        //Todo link in the project selection as well
+        edit.setAssociatedProject(projectChoiceBox.getValue());
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -104,5 +116,11 @@ public class ReleaseEditor extends GenericEditor<Release> {
             if (oldValue && !newValue)
                 updateAndHandle();
         });
+
+        projectChangeListener = (observable, oldValue, newValue) -> {
+            if (newValue != null) updateAndHandle();
+        };
+
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
     }
 }

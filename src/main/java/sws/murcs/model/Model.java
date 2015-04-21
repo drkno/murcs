@@ -1,7 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 
@@ -47,7 +47,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     private void validateShortName(String value) throws Exception {
         DuplicateObjectException.CheckForDuplicates(this, value);
-        NameInvalidException.validate("Short Name", value);
+        InvalidParameterException.validate("Short Name", value);
     }
 
     /**

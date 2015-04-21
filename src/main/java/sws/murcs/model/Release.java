@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.InvalidParameterException;
+
 import java.time.LocalDate;
 
 /**
@@ -55,7 +57,8 @@ public class Release extends Model {
      * Sets the project that the release is associated with.
      * @param associatedProject The associated project
      */
-    public void setAssociatedProject(Project associatedProject) {
+    public void setAssociatedProject(Project associatedProject) throws Exception{
+        InvalidParameterException.validate("Associated Project", associatedProject);
         this.associatedProject = associatedProject;
     }
 
