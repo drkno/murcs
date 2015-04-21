@@ -349,7 +349,15 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
-        // TODO: List refresh code (story: 119, task: 46)
+        int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
+
+        //If no item is selected we don't need to execute the following code
+        if (selectedIndex == -1) return;
+
+        //Add and remove the item to force an update
+        //Store the currently selected object
+        Object current = displayListItems.remove(selectedIndex);
+        displayListItems.add(selectedIndex, current);
     }
 
     @FXML
