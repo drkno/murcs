@@ -10,7 +10,17 @@ import java.util.ArrayList;
  * Generates random people with skills and roles
  */
 public class PersonGenerator implements Generator<Person> {
-    private final Generator<Skill> skillGenerator;
+    public static final int LOW_STRESS_MAX = 5;
+    public static final int LOW_STRESS_MIN = 2;
+
+    public static final int MEDIUM_STRESS_MAX = 50;
+    public static final int MEDIUM_STRESS_MIN = 5;
+
+    public static final int HIGH_STRESS_MAX = 500;
+    public static final int HIGH_STRESS_MIN = 50;
+
+    private Generator<Skill> skillGenerator;
+    private ArrayList<Skill> skillPool;
 
     /**
      * Instantiates a new person generator.
@@ -27,8 +37,60 @@ public class PersonGenerator implements Generator<Person> {
         this.skillGenerator = skillGenerator;
     }
 
+    /**
+     * Sets the skill generator for this generator
+     * @param skillGenerator The skill generator
+     */
+    public void setSkillGenerator(Generator<Skill> skillGenerator){
+        this.skillGenerator = skillGenerator;
+    }
+
+    /**
+     * Sets the pool of skills to assign from. If null, skills will be generated
+     * @param skillPool The skill pool
+     */
+    public void setSkillPool(ArrayList<Skill> skillPool){
+        this.skillPool = skillPool;
+    }
+
+    /**
+     * Generates skills for a person
+     * @param min The minimum number of skills
+     * @param max The max number of skills
+     * @return The skills
+     */
+    private ArrayList<Skill> generateSkills(int min, int max){
+        ArrayList<Skill> generated = new ArrayList<>();
+        int skillCount = NameGenerator.random(min, max);
+
+        //If we haven't been given a pool of skills, make some up
+        if (skillPool == null){
+            for (int i = 0; i < skillCount; i++){
+                Skill newSkill = skillGenerator.generate();
+                if (!generated.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                    generated.add(newSkill);
+                }
+            }
+        }else{
+            //If there are more skills than we have just assign all of them
+            if (skillCount > skillPool.size()) skillCount = skillPool.size();
+
+            for (int i = 0; i < skillCount; i++){
+                //Remove the skill so we can't pick it again. We'll put it back when we're done
+                Skill skill = skillPool.remove(NameGenerator.random(skillPool.size()));
+                generated.add(skill);
+            }
+
+            //Put all the skills we took out back
+            for (Skill skill : generated)
+                skillPool.add(skill);
+        }
+
+        return generated;
+    }
+
     @Override
-    public Person generate(Stress stress) {
+    public Person generate() {
         Person p = new Person();
 
         String userId = NameGenerator.randomString(10, "0123456789");
@@ -36,16 +98,7 @@ public class PersonGenerator implements Generator<Person> {
         String shortName = NameGenerator.randomName();
         String longName = NameGenerator.randomTitle() + " " + shortName;
 
-        int skillCount = NameGenerator.random(100);
-        int roles = NameGenerator.random(100);
-        ArrayList<Skill> skills = new ArrayList<>();
-
-        for (int i = 0; i < skillCount; i++) {
-            Skill newSkill = skillGenerator.generate(stress);
-            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
-                skills.add(newSkill);
-            }
-        }
+        ArrayList<Skill> skills = generateSkills(0, 100);
 
         try {
             Skill productOwner = new Skill();

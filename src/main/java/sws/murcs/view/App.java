@@ -6,8 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -78,7 +78,7 @@ public class App extends Application{
             for (String s : args) {
                 if (Objects.equals(s, "debug")) {
                     UndoRedoManager.setDisabled(true);
-                    PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator().generate());
+                    PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(RelationalModelGenerator.Stress.Low).generate());
                     RelationalModel model = PersistenceManager.Current.getCurrentModel();
                     UndoRedoManager.setDisabled(false);
                     UndoRedoManager.add(model);
