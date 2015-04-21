@@ -84,13 +84,13 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @Override
     public void load() {
-        if (!personNameTextField.getText().equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !personNameTextField.getText().equals(edit.getShortName())) {
             personNameTextField.setText(edit.getShortName());
         }
-        if (!personFullNameTextField.getText().equals(edit.getLongName())) {
+        if (edit.getLongName() != null && !personFullNameTextField.getText().equals(edit.getLongName())) {
             personFullNameTextField.setText(edit.getLongName());
         }
-        if (!usernameTextField.getText().equals(edit.getUserId())) {
+        if (edit.getUserId() != null && !usernameTextField.getText().equals(edit.getUserId())) {
             usernameTextField.setText(edit.getUserId());
         }
 
@@ -146,13 +146,13 @@ public class PersonEditor extends GenericEditor<Person> {
      * Saves the edit being edited
      */
     public void update() throws Exception {
-        if (!personFullNameTextField.getText().equals(edit.getLongName())) {
-            edit.setLongName(personFullNameTextField.getText());
-        }
-        if (!personNameTextField.getText().equals(edit.getShortName())) {
+        if (edit.getShortName() == null || !personNameTextField.getText().equals(edit.getShortName())) {
             edit.setShortName(personNameTextField.getText());
         }
-        if (!usernameTextField.getText().equals(edit.getUserId())) {
+        if (edit.getLongName() == null || !personFullNameTextField.getText().equals(edit.getLongName())) {
+            edit.setLongName(personFullNameTextField.getText());
+        }
+        if (edit.getUserId() == null || !usernameTextField.getText().equals(edit.getUserId())) {
             edit.setUserId(usernameTextField.getText());
         }
 
