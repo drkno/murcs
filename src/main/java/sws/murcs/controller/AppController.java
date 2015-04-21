@@ -349,6 +349,7 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
+        //Store the selected index
         int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
 
         //If no item is selected we don't need to execute the following code
@@ -358,6 +359,9 @@ public class AppController implements  ViewUpdate, UndoRedoChangeListener {
         //Store the currently selected object
         Object current = displayListItems.remove(selectedIndex);
         displayListItems.add(selectedIndex, current);
+
+        //Restore the selection
+        displayList.getSelectionModel().select(selectedIndex);
     }
 
     @FXML
