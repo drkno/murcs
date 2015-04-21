@@ -27,12 +27,8 @@ public class PersonGenerator implements Generator<Person> {
         this.skillGenerator = skillGenerator;
     }
 
-    /**
-     * Generates a new random person.
-     * @return a new random person.
-     */
     @Override
-    public Person generate() {
+    public Person generate(Stress stress) {
         Person p = new Person();
 
         String userId = NameGenerator.randomString(10, "0123456789");
@@ -45,7 +41,7 @@ public class PersonGenerator implements Generator<Person> {
         ArrayList<Skill> skills = new ArrayList<>();
 
         for (int i = 0; i < skillCount; i++) {
-            Skill newSkill = skillGenerator.generate();
+            Skill newSkill = skillGenerator.generate(stress);
             if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
                 skills.add(newSkill);
             }

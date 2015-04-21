@@ -43,12 +43,8 @@ public class ProjectGenerator implements Generator<Project> {
         this.descriptions = descriptions;
     }
 
-    /**
-     * Generates a new random project.
-     * @return a new random project.
-     */
     @Override
-    public Project generate() {
+    public Project generate(Stress stress) {
         Project project = new Project();
 
         String shortName = NameGenerator.randomElement(projectNames);
@@ -60,7 +56,7 @@ public class ProjectGenerator implements Generator<Project> {
         ArrayList<Team> teams = new ArrayList<>();
 
         for (int i = 0; i < teamCount; ++i){
-            Team newTeam = teamGenerator.generate();
+            Team newTeam = teamGenerator.generate(stress);
             if (!teams.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
                 teams.add(newTeam);
             }

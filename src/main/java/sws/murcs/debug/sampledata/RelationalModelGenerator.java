@@ -24,18 +24,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         random = new Random();
     }
 
-    /**
-     * Generates a new random relational model.
-     * @return a new random relational model.
-     */
     @Override
-    public RelationalModel generate() {
+    public RelationalModel generate(Stress stress) {
         try {
             RelationalModel model = new RelationalModel();
             int randProjects = NameGenerator.random(5,20);
             ArrayList<Project> projects = new ArrayList<>();
             for (int i = 0; i < randProjects; i++) {
-                Project newProject = projectGenerator.generate();
+                Project newProject = projectGenerator.generate(stress);
                 if (!projects.stream().filter(team -> newProject.equals(team)).findAny().isPresent()) {
                     projects.add(newProject);
                 }

@@ -247,12 +247,8 @@ public class SkillGenerator implements Generator<Skill> {
         this.descriptions = descriptionList;
     }
 
-    /**
-     * Generates a new random skill.
-     * @return a new random skill.
-     */
     @Override
-    public Skill generate() {
+    public Skill generate(Stress stress) {
         Skill skill = new Skill();
 
         String name = NameGenerator.randomElement(skills);

@@ -38,12 +38,8 @@ public class TeamGenerator implements Generator<Team> {
         this.probOfScrumMaster = probOfScrumMaster;
     }
 
-    /**
-     * Generates a new random team.
-     * @return a new random team.
-     */
     @Override
-    public Team generate() {
+    public Team generate(Stress stress) {
         Team team = new Team();
 
         String shortName = NameGenerator.randomElement(teamNames);
@@ -58,7 +54,7 @@ public class TeamGenerator implements Generator<Team> {
 
         ArrayList<Person> members = new ArrayList<>();
         for (int i = 0; i < memberCount; ++i){
-            Person p = personGenerator.generate();
+            Person p = personGenerator.generate(stress);
             if (!members.stream().filter(person -> p.equals(person)).findAny().isPresent()) {
                 members.add(p);
             }
