@@ -11,6 +11,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -103,9 +104,17 @@ public class ReportGeneratorTest {
         project.setDescription("We are building a fitness tracking application for the world");
         project.addTeam(team1);
 
+        //Release
+        Release release = new Release();
+        release.setShortName("Now");
+        release.setDescription("This current time");
+        release.setReleaseDate(LocalDate.of(2015, 4, 22));
+        release.setAssociatedProject(project);
+
         relationalModel.addProject(project);
         relationalModel.addTeam(team2);
         relationalModel.addPerson(person4);
+        relationalModel.addRelease(release);
     }
 
     @After

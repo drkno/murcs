@@ -1,9 +1,6 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
@@ -18,6 +15,9 @@ public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
     private ArrayList<Project> projects = new ArrayList<>();
+    @XmlElementWrapper(name = "releases")
+    @XmlElement(name = "release")
+    private ArrayList<Release> releases = new ArrayList<>();
     @XmlElementWrapper(name = "unassignedTeams")
     @XmlElement(name = "team")
     private ArrayList<Team> listUnassignedTeams = new ArrayList<>();
@@ -31,6 +31,7 @@ public class ReportModel {
      */
     public ReportModel(RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
+        releases.addAll(relationalModel.getReleases());
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName().compareTo(t2.getShortName()));
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
