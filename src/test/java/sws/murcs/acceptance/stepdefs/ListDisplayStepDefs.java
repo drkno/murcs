@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
@@ -41,6 +42,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @Before
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(true);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
