@@ -2,15 +2,25 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Model of a person.
  */
+@XmlRootElement
+@XmlType(propOrder = {"userId", "skills"})
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+    @TrackableValue
+    @XmlElement(name = "id")
     private String userId;
+    @TrackableValue
+    @XmlElementWrapper(name = "skills")
+    @XmlElement(name = "skill")
     private ArrayList<Skill> skills = new ArrayList<>();
 
     /**
@@ -29,7 +39,7 @@ public class Person extends Model {
      * @param role The role
      * @return Whether the person can take on a role.
      */
-    public boolean canBeRole(String role){
+    public boolean canBeRole(String role) {
         return getSkills()
                 .stream()
                 .filter(skill -> skill.getShortName().equals(role))
@@ -53,6 +63,7 @@ public class Person extends Model {
     public void setUserId(String userId) throws Exception {
         validateUserId(userId);
         this.userId = userId.trim();
+        commit("edit person");
     }
 
     /**
@@ -65,7 +76,6 @@ public class Person extends Model {
         NameInvalidException.validate("User Id", value);
     }
 
-
     /**
      * Adds a skill to skills only if the person does not already have that skill
      * @param skill The skill to add
@@ -74,6 +84,7 @@ public class Person extends Model {
     public void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
+            commit("edit person");
         }
         else {
             throw new DuplicateObjectException("This is actually the same skill");
@@ -86,7 +97,7 @@ public class Person extends Model {
      * @throws sws.murcs.exceptions.DuplicateObjectException if the person has any of the skills in the list
      */
     public void addSkills(List<Skill> skills) throws DuplicateObjectException {
-        for (Skill skill: skills) {
+        for (Skill skill : skills) {
             this.addSkill(skill);
         }
     }
@@ -98,6 +109,7 @@ public class Person extends Model {
     public void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
+            commit("edit person");
         }
     }
 
@@ -109,12 +121,12 @@ public class Person extends Model {
     /**
      * Checks to see if to people are equal
      * @param object Person to compare
-     * @return  boolean state
+     * @return boolean state
      */
     @Override
-    public boolean equals(Object object){
+    public boolean equals(Object object) {
         if (!(object instanceof Person)) return false;
-        Person person = (Person)object;
+        Person person = (Person) object;
         String shortName1 = person.getShortName();
         String shortName2 = getShortName();
         if (shortName1 == null || shortName2 == null) return shortName1 == shortName2;

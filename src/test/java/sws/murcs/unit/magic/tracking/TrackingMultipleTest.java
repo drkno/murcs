@@ -1,12 +1,13 @@
 package sws.murcs.unit.magic.tracking;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
@@ -45,8 +46,18 @@ public class TrackingMultipleTest {
         }
     }
 
+    private static Field listenersField;
+
+    @BeforeClass
+    public static void setupClass() throws Exception {
+        listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
+        listenersField.setAccessible(true);
+    }
+
     @Before
-    public void setup() {
+    public void setup() throws Exception{
+        UndoRedoManager.forget(true);
+        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
         UndoRedoManager.setMaximumCommits(-1);
     }
 
@@ -58,7 +69,9 @@ public class TrackingMultipleTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -79,7 +92,9 @@ public class TrackingMultipleTest {
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -98,7 +113,7 @@ public class TrackingMultipleTest {
         Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals("2", b.getTestString());
-        Assert.assertEquals(2, a.getTestInteger());;
+        Assert.assertEquals(2, a.getTestInteger());
         UndoRedoManager.remake();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
@@ -107,7 +122,9 @@ public class TrackingMultipleTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
+        UndoRedoManager.add(a);
         TestString b = new TestString();
+        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);

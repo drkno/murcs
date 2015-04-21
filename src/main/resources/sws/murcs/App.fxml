@@ -14,7 +14,7 @@
                 <items>
                     <Menu id="newMenu" mnemonicParsing="false" text="New">
                        <items>
-                        <MenuItem id="projectOption" mnemonicParsing="false" onAction="#createNewProject" text="Project" />
+                        <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addClicked" text="Project" />
                         <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addClicked" text="Team" />
                         <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
                         <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
@@ -23,6 +23,7 @@
                     </Menu>
                     <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
                     <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                    <MenuItem mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
                     <SeparatorMenuItem mnemonicParsing="false" />
                     <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
                 </items>

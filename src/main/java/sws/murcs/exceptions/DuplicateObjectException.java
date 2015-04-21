@@ -57,8 +57,8 @@ public class DuplicateObjectException extends CustomException {
                 break;
             }
             case "Project": {
-                list = new ArrayList<Project>(1) {{model.getProject();}};
-                CheckForDuplicateNames(newModel, list, className, param);
+                ArrayList<Project> projects = model.getProjects();
+                CheckForDuplicateNames(newModel, projects, className, param);
                 break;
             }
             case "Team": {

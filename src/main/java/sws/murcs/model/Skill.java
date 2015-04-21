@@ -1,8 +1,16 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableValue;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Model of a skill.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Skill extends Model {
 
     /**
@@ -15,15 +23,8 @@ public class Skill extends Model {
      */
     public static final String SM_NAME = "SM";
 
+    @TrackableValue
     private String description;
-
-    /**
-     * Enum for roles
-     */
-    public enum ROLES {
-        PO,
-        SM
-    }
 
     /**
      * Gets a description of the skill
@@ -39,13 +40,14 @@ public class Skill extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit skill");
     }
 
     /**
      * Indicates whether the skill means you can be a scrum master
      * @return Whether you can be a scrum master
      */
-    public boolean isScrumMasterSkill(){
+    public boolean isScrumMasterSkill() {
         return SM_NAME.equals(getShortName());
     }
 
@@ -53,7 +55,7 @@ public class Skill extends Model {
      * Indicates whether the skill means you can be a product owner
      * @return Whether you can be a product owner
      */
-    public boolean isProductOwnerSkill(){
+    public boolean isProductOwnerSkill() {
         return PO_NAME.equals(getShortName());
     }
 
@@ -69,5 +71,13 @@ public class Skill extends Model {
     @Override
     public String toString() {
         return getShortName();
+    }
+
+    /**
+     * Enum for roles
+     */
+    public enum ROLES {
+        PO,
+        SM
     }
 }

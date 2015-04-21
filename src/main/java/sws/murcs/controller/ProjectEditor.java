@@ -24,27 +24,25 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        labelErrorMessage.setText("");
-        edit.setShortName(projectTextFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(descriptionTextField.getText());
-
-        //This line will need to be changed if we support multiple projects
-        //What we're trying to do here is check if the current edit already exist
-        //or if we're creating a new one.
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null || model.getProject() != edit) {
-            if (PersistenceManager.Current.getCurrentModel() == null) {
-                model = new RelationalModel();
-            }
-            model.setProject(edit);
-
-            PersistenceManager.Current.setCurrentModel(model);
+        if (edit.getShortName() != null && !projectTextFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(projectTextFieldShortName.getText());
         }
+        if (edit.getLongName() != null && !textFieldLongName.getText().equals(edit.getLongName())) {
+            edit.setLongName(textFieldLongName.getText());
+        }
+        if (edit.getDescription() != null && !descriptionTextField.getText().equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
+
+        // Save the project if it hasn't been yet
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        if (!model.getProjects().contains(edit))
+            model.addProject(edit);
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -59,7 +57,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 
@@ -67,10 +66,32 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Loads the edit into the form
      */
     public void load(){
-        projectTextFieldShortName.setText(edit.getShortName());
-        textFieldLongName.setText(edit.getLongName());
-        descriptionTextField.setText(edit.getDescription());
-        updateAndHandle();
+        updateFields();
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = projectTextFieldShortName.getText();
+        String currentLongName = textFieldLongName.getText();
+        String currentDescription = descriptionTextField.getText();
+        if (currentShortName != null) {
+            if (!currentShortName.equals(edit.getShortName())) {
+                projectTextFieldShortName.setText(edit.getShortName());
+            }
+        }
+        if (currentLongName != null) {
+            if (!currentLongName.equals(edit.getLongName())) {
+                textFieldLongName.setText(edit.getLongName());
+            }
+        }
+        if (currentDescription != null) {
+            if (!currentDescription.equals(edit.getShortName())) {
+                descriptionTextField.setText(edit.getDescription());
+            }
+        }
     }
 
     /**

@@ -94,7 +94,7 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            GenericEditor.addListener(okayClicked::updateListView);
+            controller.setSavedCallback(okayClicked);
 
             controller.load();
 

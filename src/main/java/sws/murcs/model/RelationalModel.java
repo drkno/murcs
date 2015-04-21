@@ -15,7 +15,7 @@ import java.util.List;
 public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
-    private Project project;
+    private ArrayList<Project> projects;
     @TrackableValue
     private ArrayList<Person> people;
     @TrackableValue
@@ -43,7 +43,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
         this.releases = new ArrayList<>();
-        this.project = null;
+        this.projects = new ArrayList<>();
 
         try {
             Skill productOwner = new Skill();
@@ -63,19 +63,63 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the project
-     * @return The project
+     * Gets the projects
+     * @return The projects
      */
-    public Project getProject() {
-        return project;
+    public ArrayList<Project> getProjects() {
+        return projects;
     }
 
     /**
-     * Sets the project
+     * Adds a new project
      * @param project The new project
+     * @throws DuplicateObjectException if the project already exists
      */
-    public void setProject(Project project) {
-        this.project = project;
+    public void addProject(Project project) throws DuplicateObjectException {
+        if (!this.getProjects().contains(project) &&
+                !this.getProjects()
+                        .stream()
+                        .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
+                        .findAny()
+                        .isPresent()) {
+            this.projects.add(project);
+        }
+        else {
+            throw new DuplicateObjectException();
+        }
+    }
+
+    /**
+     * Adds all given projects that are not already contained within the model
+     * @param projects A List of projects to be added to the model
+     * @throws DuplicateObjectException If an yof the projects already exist
+     */
+    public void addProjects(List<Project> projects) throws DuplicateObjectException {
+        boolean badProject = false;
+        for (Project project : projects) {
+            if (this.projects.contains(project) ||
+                    this.getProjects()
+                            .stream()
+                            .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
+                            .findAny()
+                            .isPresent()) {
+                badProject = true;
+            }
+            else {
+                this.projects.add(project);
+            }
+        }
+        if (badProject)
+            throw new DuplicateObjectException();
+    }
+
+    /**
+     * Removes the given project if it exists
+     * @param project The project to remove
+     */
+    public void removeProject(Project project) {
+        if (this.projects.contains(project))
+            this.projects.remove(project);
     }
 
     /**
@@ -147,7 +191,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the unassigned teams
+     * Gets all unassigned teams
      * @return The unassigned teams
      */
     public ArrayList<Team> getUnassignedTeams() {
@@ -155,10 +199,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
         ArrayList<Team> unassignedTeams = new ArrayList<>();
         unassignedTeams.addAll(getTeams());
 
-        if (getProject() != null) {
-            //Remove all the teams that are assigned to a project
-            project.getTeams().forEach(unassignedTeams::remove);
-        }
+        //Remove all the teams that are assigned to a project
+        getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
 
         return unassignedTeams;
     }
@@ -202,16 +244,15 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes a team from the unassigned teams
+     * Removes a team from the list of teams and from any projects
      * @param team The team to remove
      */
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
-
-            if (getProject() != null && this.getProject().getTeams().contains(team))
-                this.getProject().getTeams().remove(team);
         }
+
+        this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> project.getTeams().remove(team));
     }
 
     /**
@@ -268,7 +309,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         switch (type) {
             case Project:
-                setProject((Project) model);
+                addProject((Project) model);
                 break;
             case Team:
                 addTeam((Team) model);
@@ -282,6 +323,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Release:
                 addRelease((Release) model);
                 break;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
@@ -305,8 +348,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         switch (type) {
             case Project:
-                if (getProject() == model)
-                    setProject(null);
+                removeProject((Project) model);
                 break;
             case Team:
                 removeTeam((Team) model);
@@ -320,6 +362,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Release:
                 removeRelease((Release) model);
                 break;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 
@@ -333,13 +377,97 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
+     * Determines whether or not a Model object is in use
+     * @param model The model to check
+     * @return Whether the model object is in use
+     */
+    public boolean inUse(Model model){
+        return findUsages(model).size() != 0;
+    }
+
+    /**
+     * Returns a list of the model objects that make use of this one
+     * @param model The model to find the usages of
+     * @return The different usages
+     */
+    public ArrayList<Model> findUsages(Model model){
+        ModelTypes type = ModelTypes.getModelType(model);
+
+        switch (type){
+            case Project:
+                return findUsages((Project)model);
+            case Team:
+                return findUsages((Team)model);
+            case People:
+                return findUsages((Person)model);
+            case Skills:
+                return findUsages((Skill)model);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Gets a list of places that a project is used
+     * @param project The project to find the usages of
+     * @return The usages of the project
+     */
+    private ArrayList<Model> findUsages(Project project){
+        return new ArrayList<Model>();
+    }
+
+    /**
+     * Gets a list of the places that a team is used
+     * @param team The team to find the usages of
+     * @return The usages of the team
+     */
+    private ArrayList<Model> findUsages(Team team){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Project p : getProjects()) {
+            if (p.getTeams().contains(team)) {
+                usages.add(p);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a person has been used
+     * @param person The person to find usages for
+     * @return The usages of the person
+     */
+    private ArrayList<Model> findUsages(Person person){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Team team : getTeams()){
+            if (team.getMembers().contains(person)){
+                usages.add(team);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a skill has been used
+     * @param skill The skill to find usages for
+     * @return The usages of the skill
+     */
+    private ArrayList<Model> findUsages(Skill skill){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Person person : getPeople()){
+            if (person.getSkills().contains(skill)){
+                usages.add(person);
+            }
+        }
+        return usages;
+    }
+
+    /**
      * Checks to see if an object exists in the model
      * @param model The model
      * @return Whether it exists
      */
     public boolean exists(Model model) {
         if (model instanceof Project)
-            return getProject() == model;
+            return getProjects().contains(model);
         if (model instanceof Team)
             return getTeams().contains(model);
         if (model instanceof Person)

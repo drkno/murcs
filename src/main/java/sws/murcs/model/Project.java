@@ -1,9 +1,11 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,8 @@ public class Project extends Model {
     private String description;
     @Editable(sort = 99)
     @TrackableValue
+    @XmlElementWrapper(name = "teams")
+    @XmlElement(name = "team")
     private ArrayList<Team> teams = new ArrayList<>();
 
     /**
@@ -32,6 +36,7 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit project");
     }
 
     /**
@@ -79,6 +84,7 @@ public class Project extends Model {
     public void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             teams.remove(team);
+            commit("edit project");
         }
     }
 
@@ -89,5 +95,10 @@ public class Project extends Model {
     @Override
     public String toString() {
         return getShortName();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object != null && getShortName() != null && object instanceof Project && ((Project) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 }

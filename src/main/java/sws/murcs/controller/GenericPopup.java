@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -46,6 +47,8 @@ public class GenericPopup extends AnchorPane {
     private @FXML HBox hBoxLeft;
     //Contains right align buttons
     private @FXML HBox hBoxRight;
+
+    private @FXML GridPane contentPane;
 
     private Stage popupStage;
     private Scene popupScene;
@@ -148,8 +151,11 @@ public class GenericPopup extends AnchorPane {
      */
     public void show() {
         if (messageTitle.getText().equals("Title")) {
-            titleImageHBox.managedProperty().bind(titleImageHBox.visibleProperty());
-            titleImageHBox.setVisible(false);
+            contentPane.getRowConstraints().get(0).setMinHeight(0);
+            contentPane.getRowConstraints().get(0).setMaxHeight(0);
+
+            messageImage.setVisible(false);
+            messageTitle.setVisible(false);
             popupStage.setHeight(150);
         }
         popupStage.show();

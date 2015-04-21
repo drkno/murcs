@@ -6,10 +6,9 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import javax.management.relation.Relation;
+import java.time.LocalDate;
 
 /**
  * Created by James on 15/04/2015.
@@ -32,12 +31,26 @@ public class ReleaseEditor extends GenericEditor<Release> {
     private ChoiceBox<Project> projectChoiceBox;
 
     @Override
-    public void load() {
-        shortNameTextField.setText(edit.getShortName());
-        descriptionTextArea.setText(edit.getDescription());
-        releaseDatePicker.setValue(edit.getReleaseDate());
+    public void updateFields() {
+        String currentShortName = shortNameTextField.getText();
+        String currentDescription = descriptionTextArea.getText();
+        LocalDate currentReleaseDate = releaseDatePicker.getValue();
 
+        if (!currentShortName.equals(edit.getShortName())) {
+            shortNameTextField.setText(edit.getShortName());
+        }
+        if (!currentDescription.equals(edit.getDescription())) {
+            descriptionTextArea.setText(edit.getDescription());
+        }
+        if (!currentReleaseDate.equals(edit.getReleaseDate())) {
+            releaseDatePicker.setValue(edit.getReleaseDate());
+        }
         //Todo set up project stuff
+    }
+
+    @Override
+    public void load() {
+        updateFields();
     }
 
     @Override
@@ -55,7 +68,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
         //If there is a saved callback then call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     @Override
@@ -68,6 +81,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
+            e.printStackTrace();
             //We don't want these exceptions shown to the user
         }
     }

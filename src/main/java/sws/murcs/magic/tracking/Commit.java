@@ -71,4 +71,12 @@ public class Commit {
         }
         return true;
     }
+
+    /**
+     * Adjusts the message contained with this commit.
+     * @param newMessage message to replace it with.
+     */
+    public void modifyMessage(String newMessage) {
+        message = newMessage;
+    }
 }
