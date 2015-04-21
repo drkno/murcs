@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sws.murcs.controller.AppClosingListener;
+import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
