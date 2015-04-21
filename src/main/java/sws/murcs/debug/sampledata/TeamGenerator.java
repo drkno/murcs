@@ -9,6 +9,13 @@ import java.util.ArrayList;
  * Generates random teams with people
  */
 public class TeamGenerator implements Generator<Team> {
+    private final int HIGH_STRESS_MAX = 100;
+    private final int HIGH_STRESS_MIN = 10;
+    private final int MEDIUM_STRESS_MAX = 10;
+    private final int MEDIUM_STRESS_MIN = 3;
+    private final int LOW_STRESS_MAX = 3;
+    private final int LOW_STRESS_MIN = 0;
+
     private String[] teamNames = {"Foo", "Bar", "New team", "SENGineers", "Fred's Team"};
     private String[] descriptions = {NameGenerator.getLoremIpsum()};
     private float probOfScrumMaster = 0.5f;
@@ -50,7 +57,25 @@ public class TeamGenerator implements Generator<Team> {
         Person productOwner;
         Person scrumMaster;
 
-        int memberCount = NameGenerator.random(3, 15);
+        //Determine how many members a team should have
+        int minMembers =  0;
+        int maxMembers = 0;
+        switch (stress){
+            case High:
+                minMembers = HIGH_STRESS_MIN;
+                maxMembers = HIGH_STRESS_MAX;
+                break;
+            case Medium:
+                minMembers = MEDIUM_STRESS_MIN;
+                maxMembers = MEDIUM_STRESS_MAX;
+                break;
+            case Low:
+                minMembers = LOW_STRESS_MIN;
+                maxMembers = LOW_STRESS_MAX;
+                break;
+        }
+
+        int memberCount = NameGenerator.random(minMembers, maxMembers);
 
         ArrayList<Person> members = new ArrayList<>();
         for (int i = 0; i < memberCount; ++i){
