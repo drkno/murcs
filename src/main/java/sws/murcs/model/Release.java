@@ -18,7 +18,7 @@ public class Release extends Model {
     @TrackableValue
     private String description;
     @TrackableValue
-    private LocalDate releaseDate;
+    private LocalDate releaseDate = LocalDate.now();
     @TrackableValue
     private Project associatedProject;
 

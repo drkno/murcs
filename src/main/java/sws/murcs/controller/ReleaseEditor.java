@@ -33,6 +33,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     private ChangeListener<Project> projectChangeListener;
 
+    /**
+     * Updates the fields in the release editor pane
+     */
     @Override
     public void updateFields() {
         String currentShortName = shortNameTextField.getText();
@@ -46,7 +49,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (edit.getDescription() != null && !currentDescription.equals(edit.getDescription())) {
             descriptionTextArea.setText(edit.getDescription());
         }
-        if (edit.getReleaseDate() != null && !currentReleaseDate.equals(edit.getReleaseDate())) {
+        if (currentReleaseDate == null || (edit.getReleaseDate() != null && !currentReleaseDate.equals(edit.getReleaseDate()))) {
             releaseDatePicker.setValue(edit.getReleaseDate());
         }
         projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
@@ -59,12 +62,18 @@ public class ReleaseEditor extends GenericEditor<Release> {
         //Todo set up project stuff
     }
 
+    /**
+     * Loads the release editor pane
+     */
     @Override
     public void load() {
-        releaseDatePicker.setValue(LocalDate.now());
         updateFields();
     }
 
+    /**
+     * Updates the release editor pane
+     * @throws Exception
+     */
     @Override
     public void update() throws Exception {
         edit.setShortName(shortNameTextField.getText());
@@ -83,6 +92,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
             onSaved.updateListView(edit);
     }
 
+    /**
+     * Updates the release editor pane and handles any exceptions that it throws
+     */
     @Override
     public void updateAndHandle() {
         try {

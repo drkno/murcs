@@ -55,7 +55,7 @@
                     <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                   <HBox alignment="TOP_RIGHT" spacing="5.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#addClicked" text="+" />
+                        <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" text="+" />
                         <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X" />
                      </children>
                      <VBox.margin>
