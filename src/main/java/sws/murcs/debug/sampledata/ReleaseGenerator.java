@@ -15,7 +15,6 @@ public class ReleaseGenerator implements Generator<Release> {
     public static final int LOW_STRESS_MIN = 1;
     public static final int LOW_STRESS_MAX = 10;
 
-
     public static final int MEDIUM_STRESS_MIN = 10;
     public static final int MEDIUM_STRESS_MAX = 20;
 
@@ -36,7 +35,8 @@ public class ReleaseGenerator implements Generator<Release> {
     /**
      * Sets up a random release
      */
-    public ReleaseGenerator() {this.projectGenerator = new ProjectGenerator();
+    public ReleaseGenerator() {
+        this.projectGenerator = new ProjectGenerator();
     }
 
     /**

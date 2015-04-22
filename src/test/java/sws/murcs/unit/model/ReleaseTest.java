@@ -7,9 +7,6 @@ import sws.murcs.model.Release;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by James on 15/04/2015.
- */
 public class ReleaseTest {
 
     private Release release1;

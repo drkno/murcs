@@ -71,7 +71,8 @@ public class PersonGenerator implements Generator<Person> {
                     generated.add(newSkill);
                 }
             }
-        }else{
+        }
+        else{
             //If there are more skills than we have just assign all of them
             if (skillCount > skillPool.size()) skillCount = skillPool.size();
 

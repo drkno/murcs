@@ -83,7 +83,8 @@ public class TeamGenerator implements Generator<Team> {
                     generated.add(newPerson);
                 }
             }
-        }else{
+        }
+        else{
             //If there are more person than we have just assign all of them
             if (personCount > personPool.size()) personCount = personPool.size();
 

@@ -24,11 +24,6 @@ import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * 22/04/2015
- *
- * @author Dion
- */
 public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     private FxRobot fx;
@@ -68,8 +63,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }
-
-
 
     @And("^I have selected the release view from the display list type$")
     public void I_have_selected_the_release_view_from_the_display_list_type() throws Throwable {
