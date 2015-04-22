@@ -43,5 +43,5 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the skill is deleted
+     Then the release is deleted
      And the deletion can be undone
