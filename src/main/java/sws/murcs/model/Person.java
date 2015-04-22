@@ -1,7 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.*;
@@ -73,7 +73,7 @@ public class Person extends Model {
      */
     private void validateUserId(String value) throws Exception {
         DuplicateObjectException.CheckForDuplicates(this, value);
-        NameInvalidException.validate("User Id", value);
+        InvalidParameterException.validate("User Id", value);
     }
 
     /**

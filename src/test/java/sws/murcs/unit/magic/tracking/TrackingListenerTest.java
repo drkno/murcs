@@ -22,7 +22,7 @@ public class TrackingListenerTest {
 
         public void setTestInteger(int testInteger) throws Exception {
             this.testInteger = testInteger;
-            UndoRedoManager.commit("test desc.");
+            commit("test desc.");
         }
     }
 
@@ -60,6 +60,7 @@ public class TrackingListenerTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
+        UndoRedoManager.setDisabled(false);
     }
 
     @Before
@@ -140,6 +141,8 @@ public class TrackingListenerTest {
         Assert.assertTrue(handlers.get(0).equals(listener));
         Assert.assertFalse(listener.getCalled());
         listener = null;
+        ChangeListenerHandler.performGC();
+        Thread.sleep(1000);
         UndoRedoManager.commit("test commit");
         Assert.assertTrue(handlers.size() == 0);
     }

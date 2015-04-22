@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.*;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class RelationalModelTest {
     private static Generator<Person> personGenerator;
     private static Generator<Skill> skillGenerator;
     private static Generator<Project> projectGenerator;
+    private static Generator<Release> releaseGenerator;
     private Team teamGenerated;
     private Team team;
     private Person unassignedPerson;
@@ -27,6 +29,7 @@ public class RelationalModelTest {
     private Skill skill;
     private RelationalModel relationalModel;
     private Project projectGenerated;
+    private Release releaseGenerated;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -39,6 +42,8 @@ public class RelationalModelTest {
         personGenerator = new PersonGenerator(skillGenerator);
         teamGenerator = new TeamGenerator(personGenerator, teamNames, descriptions, 0.5f, 0.5f);
         projectGenerator = new ProjectGenerator();
+        releaseGenerator = new ReleaseGenerator(projectGenerator, descriptions);
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before
@@ -48,6 +53,7 @@ public class RelationalModelTest {
             unassignedPersonGenerated = personGenerator.generate();
             skillGenerated = skillGenerator.generate();
             projectGenerated = projectGenerator.generate();
+            releaseGenerated = releaseGenerator.generate();
             unassignedPerson = new Person();
             relationalModel = new RelationalModel();
             team = new Team();
@@ -387,8 +393,27 @@ public class RelationalModelTest {
             i--;
         }
 
+        //Check that all the skills have been removed from all the people
         for (Person p : relationalModel.getPeople()) {
             assertEquals("The person should now have no skills", 0, p.getSkills().size());
         }
+    }
+
+    @Test (expected = DuplicateObjectException.class)
+    public void addReleaseTest() throws DuplicateObjectException {
+        relationalModel.addRelease(releaseGenerated);
+        relationalModel.addRelease(releaseGenerated);
+    }
+
+    @Test
+    public void addRemoveReleaseTest() throws DuplicateObjectException {
+        relationalModel.addRelease(releaseGenerated);
+        assertTrue(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.removeRelease(releaseGenerated);
+        assertFalse(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.add(releaseGenerated);
+        assertTrue(relationalModel.getReleases().contains(releaseGenerated));
+        relationalModel.remove(releaseGenerated);
+        assertFalse(relationalModel.getReleases().contains(releaseGenerated));
     }
 }

@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.magic.tracking.UndoRedoManager;

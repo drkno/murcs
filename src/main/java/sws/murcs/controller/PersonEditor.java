@@ -54,6 +54,29 @@ public class PersonEditor extends GenericEditor<Person> {
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) updateAndHandle();
         });
+
+        skillChoiceBox.getItems().clear();
+        skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
+    }
+
+    /**
+     * Updates the object in memory and handles any exception
+     */
+    public void updateAndHandle(){
+        try {
+            labelErrorMessage.setText("");
+            update();
+        }
+        catch (CustomException e) {
+            labelErrorMessage.setText(e.getMessage());
+        }
+        catch (Exception e) {
+            //Output any other exception to the console
+            e.printStackTrace();
+        }
+        finally {
+            updateSkills();
+        }
     }
 
     /**
@@ -61,18 +84,16 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @Override
     public void load() {
-        if (!personNameTextField.getText().equals(edit.getShortName())) {
+        if (edit.getShortName() != null && !personNameTextField.getText().equals(edit.getShortName())) {
             personNameTextField.setText(edit.getShortName());
         }
-        if (!personFullNameTextField.getText().equals(edit.getLongName())) {
+        if (edit.getLongName() != null && !personFullNameTextField.getText().equals(edit.getLongName())) {
             personFullNameTextField.setText(edit.getLongName());
         }
-        if (!usernameTextField.getText().equals(edit.getUserId())) {
+        if (edit.getUserId() != null && !usernameTextField.getText().equals(edit.getUserId())) {
             usernameTextField.setText(edit.getUserId());
         }
 
-        skillChoiceBox.getItems().clear();
-        skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
         skillChoiceBox.getSelectionModel().clearSelection();
         updateSkills();
     }
@@ -87,6 +108,7 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
+            skillChoiceBox.getItems().add(skill);
             updateAndHandle();
             load();
         });
@@ -123,10 +145,16 @@ public class PersonEditor extends GenericEditor<Person> {
     /**
      * Saves the edit being edited
      */
-    public void update() throws Exception{
-        edit.setLongName(personFullNameTextField.getText());
-        edit.setShortName(personNameTextField.getText());
-        edit.setUserId(usernameTextField.getText());
+    public void update() throws Exception {
+        if (edit.getShortName() == null || !personNameTextField.getText().equals(edit.getShortName())) {
+            edit.setShortName(personNameTextField.getText());
+        }
+        if (edit.getLongName() == null || !personFullNameTextField.getText().equals(edit.getLongName())) {
+            edit.setLongName(personFullNameTextField.getText());
+        }
+        if (edit.getUserId() == null || !usernameTextField.getText().equals(edit.getUserId())) {
+            edit.setUserId(usernameTextField.getText());
+        }
 
         RelationalModel model= PersistenceManager.Current.getCurrentModel();
         Skill selectedSkill = skillChoiceBox.getValue();
@@ -143,26 +171,6 @@ public class PersonEditor extends GenericEditor<Person> {
         // Call the callback if it exists
         if (onSaved != null)
             onSaved.updateListView(edit);
-    }
-
-    /**
-     * Updates the object in memory and handles any exception
-     */
-    public void updateAndHandle(){
-        try {
-            labelErrorMessage.setText("");
-            update();
-        }
-        catch (CustomException e) {
-            labelErrorMessage.setText(e.getMessage());
-        }
-        catch (Exception e) {
-            //Output any other exception to the console
-            e.printStackTrace();
-        }
-        finally {
-            updateSkills();
-        }
     }
 
     /**

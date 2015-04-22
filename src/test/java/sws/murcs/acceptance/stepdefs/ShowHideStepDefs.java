@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 
 import static org.junit.Assert.assertFalse;
@@ -24,6 +25,7 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @Before
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(true);
         primaryStage = FxToolkit.registerPrimaryStage();
         FxToolkit.setupApplication(App.class);
         fx = new FxRobot();

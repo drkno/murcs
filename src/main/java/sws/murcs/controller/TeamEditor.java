@@ -41,10 +41,20 @@ public class TeamEditor extends GenericEditor<Team> {
      * Saves the team being edited
      */
     public void update() throws Exception {
-        labelErrorMessage.setText("");
-        edit.setShortName(teamNameTextField.getText());
-        edit.setLongName(longNameTextField.getText());
-        edit.setDescription(descriptionTextField.getText());
+        String shortName = teamNameTextField.getText();
+        if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
+            edit.setShortName(shortName);
+        }
+
+        String longName = longNameTextField.getText();
+        if (longName == null || edit.getLongName() == null || !longName.equals(edit.getLongName())) {
+            edit.setLongName(longName);
+        }
+
+        String description = descriptionTextField.getText();
+        if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
 
         Person productOwner = productOwnerPicker.getValue();
         edit.setProductOwner(productOwner);
@@ -54,6 +64,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         Person person = addTeamMemberPicker.getValue();
+
 
         if (person != null) {
             edit.addMember(person);
@@ -130,13 +141,16 @@ public class TeamEditor extends GenericEditor<Team> {
      * Done so that Undo/Redo can update the editing pane without losing current selection.
      */
     public void updateFields() {
-        if (!teamNameTextField.getText().equals(edit.getShortName())) {
+        String currentShortName = teamNameTextField.getText();
+        String currentLongName = longNameTextField.getText();
+        String currentDescription = descriptionTextField.getText();
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
             teamNameTextField.setText(edit.getShortName());
         }
-        if (!longNameTextField.getText().equals(edit.getLongName())) {
+        if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
             longNameTextField.setText(edit.getLongName());
         }
-        if (!descriptionTextField.getText().equals(edit.getDescription())) {
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
             descriptionTextField.setText(edit.getDescription());
         }
 

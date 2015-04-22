@@ -3,6 +3,7 @@ package sws.murcs.unit.reporting;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.reporting.ReportGenerator;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +27,7 @@ public class ReportGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(true);
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
         tempReport = Files.createTempFile("", "").toFile();
@@ -101,9 +104,17 @@ public class ReportGeneratorTest {
         project.setDescription("We are building a fitness tracking application for the world");
         project.addTeam(team1);
 
+        //Release
+        Release release = new Release();
+        release.setShortName("Now");
+        release.setDescription("This current time");
+        release.setReleaseDate(LocalDate.of(2015, 4, 22));
+        release.setAssociatedProject(project);
+
         relationalModel.addProject(project);
         relationalModel.addTeam(team2);
         relationalModel.addPerson(person4);
+        relationalModel.addRelease(release);
     }
 
     @After

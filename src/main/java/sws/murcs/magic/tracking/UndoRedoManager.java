@@ -19,6 +19,7 @@ public class UndoRedoManager {
     private static long commitNumber;
     private static long maximumCommits;
     private static ArrayList<ChangeListenerHandler> changeListeners;
+    private static boolean disabled;
 
     /**
      * "Static" constructor, used so that values are always initialized
@@ -28,9 +29,10 @@ public class UndoRedoManager {
         objectsList = new ArrayList<>();
         revertStack = new ArrayDeque<>();
         remakeStack = new ArrayDeque<>();
+        changeListeners = new ArrayList<>();
         commitNumber = 0;
         maximumCommits = -1;
-        changeListeners = new ArrayList<>();
+        disabled = false;
     }
 
     /**
@@ -56,6 +58,7 @@ public class UndoRedoManager {
      * @throws Exception if an internal error occurs while committing.
      */
     public static long commit(String message) throws Exception {
+        if (disabled) return -1;
         ArrayList<FieldValuePair> pairs = new ArrayList<>();
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
@@ -237,6 +240,7 @@ public class UndoRedoManager {
      * @param eventListener the event listener to add.
      */
     public static void addChangeListener(UndoRedoChangeListener eventListener) {
+        if (disabled) return;
         ChangeListenerHandler changeListenerHandler = new ChangeListenerHandler(eventListener);
         changeListeners.add(changeListenerHandler);
     }
@@ -246,6 +250,7 @@ public class UndoRedoManager {
      * @param eventListener listener to remove.
      */
     public static void removeChangeListener(UndoRedoChangeListener eventListener) {
+        if (disabled) return;
         ChangeListenerHandler listener = new ChangeListenerHandler(eventListener);
         changeListeners.remove(listener);
     }
@@ -256,12 +261,28 @@ public class UndoRedoManager {
      */
     private static void notifyListeners(ChangeState changeType) {
         if (changeListeners.size() == 0) return;
-        ChangeListenerHandler.performGC();
+        //ChangeListenerHandler.performGC(); Disabled as forcing a GC is very sloooowwwww
         for (int i = 0; i < changeListeners.size(); i++) {
             if (!changeListeners.get(i).eventNotification(changeType)) {
                 changeListeners.remove(i);
                 i--;
             }
         }
+    }
+
+    /**
+     * Sets the disabled state of the Undo/Redo manager.
+     * @param isDisabled new state.
+     */
+    public static void setDisabled(boolean isDisabled) {
+        disabled = isDisabled;
+    }
+
+    /**
+     * Sets if the Undo/Redo manager is disabled.
+     * @return current disabled state.
+     */
+    public static boolean getDisable() {
+        return disabled;
     }
 }

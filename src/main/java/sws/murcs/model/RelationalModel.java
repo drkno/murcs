@@ -4,6 +4,7 @@ import sws.murcs.controller.ModelTypes;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private ArrayList<Team> teams;
     @TrackableValue
     private ArrayList<Skill> skills;
+    @TrackableValue
+    private ArrayList<Release> releases;
 
     /**
      * Gets the current application version
@@ -31,7 +34,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         return version;
     }
 
-    private static final float version = 0.01f;
+    private static final float version = 0.02f;
 
     /**
      * Sets up a new Relational Model
@@ -40,6 +43,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
+        this.releases = new ArrayList<>();
         this.projects = new ArrayList<>();
 
         try {
@@ -317,9 +321,26 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 addPerson((Person) model);
                 break;
+            case Release:
+                addRelease((Release) model);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
+
+        UndoRedoManager.add(model);
+        commit("create " + type.toString().toLowerCase());
+    }
+
+    /**
+     * Adds the given release to the list of releases
+     * @param release The release to add
+     * @throws DuplicateObjectException Thrown if the releases given is a duplicate
+     */
+    public void addRelease(Release release) throws DuplicateObjectException {
+        if (!releases.contains(release))
+            this.releases.add(release);
+        else throw new DuplicateObjectException("This release already exists");
     }
 
     /**
@@ -328,6 +349,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
+
+        UndoRedoManager.remove(model);
+        commit("remove " + type.toString().toLowerCase());
 
         switch (type) {
             case Project:
@@ -342,9 +366,21 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 removePerson((Person) model);
                 break;
+            case Release:
+                removeRelease((Release) model);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * Removes the specified release from the releases
+     * @param release The release to remove
+     */
+    public void removeRelease(Release release) {
+        if (this.releases.contains(release))
+            releases.remove(release);
     }
 
     /**
@@ -446,5 +482,24 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (model instanceof Skill)
             return getSkills().contains(model);
         return false;
+    }
+
+    /**
+     * Gets the releases
+     * @return The releases
+     */
+    public ArrayList<Release> getReleases() {
+        return releases;
+    }
+
+    /**
+     * Adds an arraylist of releases to the project
+     * @param releases The releases to be added
+     * @throws DuplicateObjectException
+     */
+    public void addReleases(ArrayList<Release> releases) throws DuplicateObjectException{
+        for (Release release : releases) {
+            addRelease(release);
+        }
     }
 }

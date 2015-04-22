@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.listeners;
 
 import javafx.stage.WindowEvent;
 

@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
@@ -37,8 +38,6 @@ public class EditorHelper {
 
             Node content = getEditForm(newModel, updated);
             Parent root = CreateWindowController.newCreateNode(content, newModel, updated, (m) -> {
-                // TODO fix, this is not working as expected, newModel is always null
-                // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 updated.updateListView(null);
             });
@@ -50,8 +49,6 @@ public class EditorHelper {
             newStage.setTitle("Create " + type);
 
             newStage.setOnCloseRequest(event -> {
-                // TODO fix, this is not working as expected, newModel is always null
-                // This is a place holder for a proper implementation
                 PersistenceManager.Current.getCurrentModel().remove(newModel);
                 try {
                     updated.updateListView(null);
@@ -84,6 +81,7 @@ public class EditorHelper {
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
         fxmlPaths.put(ModelTypes.People, "PersonEditor.fxml");
         fxmlPaths.put(ModelTypes.Skills, "SkillEditor.fxml");
+        fxmlPaths.put(ModelTypes.Release, "ReleaseEditor.fxml");
 
         String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelTypes.getModelType(model));
 
