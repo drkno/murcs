@@ -73,13 +73,13 @@ public class ReleaseEditor extends GenericEditor<Release> {
      */
     @Override
     public void update() throws Exception {
-        if (!edit.getShortName().equals(shortNameTextField.getText()))
+        if (edit.getShortName() == null || !edit.getShortName().equals(shortNameTextField.getText()))
             edit.setShortName(shortNameTextField.getText());
-        if (!edit.getDescription().equals(descriptionTextArea.getText()))
+        if (edit.getDescription() == null || !edit.getDescription().equals(descriptionTextArea.getText()))
             edit.setDescription(descriptionTextArea.getText());
-        if (!edit.getReleaseDate().equals(releaseDatePicker.getValue()))
+        if (edit.getReleaseDate() == null || !edit.getReleaseDate().equals(releaseDatePicker.getValue()))
             edit.setReleaseDate(releaseDatePicker.getValue());
-        if (!edit.getAssociatedProject().equals(projectChoiceBox.getValue()))
+        if (edit.getAssociatedProject() == null || !edit.getAssociatedProject().equals(projectChoiceBox.getValue()))
             edit.setAssociatedProject(projectChoiceBox.getValue());
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
