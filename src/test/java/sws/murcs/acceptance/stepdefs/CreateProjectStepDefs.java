@@ -4,7 +4,6 @@ import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -30,16 +29,6 @@ public class CreateProjectStepDefs extends ApplicationTest {
     @After
     public void tearDown() throws Exception {
         FxToolkit.cleanupStages();
-    }
-
-    @When("^I click the File menu$")
-    public void When_I_click_the_File_menu() throws Throwable {
-        fx.moveTo("#fileMenu").clickOn("#fileMenu");
-    }
-
-    @And("^I click the New selection$")
-    public void And_I_click_the_New_selection() throws Throwable {
-        fx.moveTo("#newMenu").clickOn("#newMenu");
     }
 
     @And("^I click the Project selection$")
