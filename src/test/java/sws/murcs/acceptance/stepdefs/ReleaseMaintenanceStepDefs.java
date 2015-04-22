@@ -1,6 +1,5 @@
 package sws.murcs.acceptance.stepdefs;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -10,12 +9,10 @@ import cucumber.api.java.en.When;
 import javafx.application.Application;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-import sws.murcs.controller.EditorHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
@@ -24,7 +21,6 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import java.time.LocalDate;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 
@@ -78,13 +74,13 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @And("^I have selected the release view from the display list type$")
     public void I_have_selected_the_release_view_from_the_display_list_type() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Release");
-        ((ListView)primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(null);
+        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(null));
     }
 
     @And("^a release is selected from the list$")
     public void a_release_is_selected_from_the_list() throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        displayList.getSelectionModel().select(0);
+        interact(() -> displayList.getSelectionModel().select(0));
     }
 
     @When("^I click on the remove button$")
