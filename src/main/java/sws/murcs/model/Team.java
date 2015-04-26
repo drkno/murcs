@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,10 @@ import java.util.List;
  * Model of a Team.
  */
 public class Team extends Model {
+
     private String description;
-    private ArrayList<Person> members = new ArrayList<>();
+    private List<WorkAllocation> allocations = new ArrayList<>();
+    private List<Person> members = new ArrayList<>();
     private Person scrumMaster;
     private Person productOwner;
 
@@ -21,8 +24,8 @@ public class Team extends Model {
      * of adding is to use getMembers().add(person);
      * @return A list of the team members
      */
-    public ArrayList<Person> getMembers() {
-        return members;
+    public List<Person> getMembers() {
+        return this.members;
     }
 
     /**
@@ -30,7 +33,7 @@ public class Team extends Model {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -42,11 +45,49 @@ public class Team extends Model {
     }
 
     /**
+     * Adds a work period to a team
+     * @param workAllocation The work period to be done on a project
+     * @throws DuplicateObjectException
+     */
+    public void addAllocation(WorkAllocation workAllocation) throws DuplicateObjectException {
+        LocalDate startDate = workAllocation.getStartDate();
+        LocalDate endDate = workAllocation.getEndDate();
+
+        int index = 0;
+        for (WorkAllocation allocation : this.allocations) {
+            if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
+                // TODO Create my own exception like "OverlappedAllocationException"
+                throw new DuplicateObjectException("Work Dates Overlap");
+            }
+            if (allocation.getStartDate().isBefore(startDate)) {
+                // Increment the index where the allocation will be placed if it does get placed
+                index++;
+            }
+            else if (allocation.getStartDate().isAfter(endDate)) {
+                // At this point we've checked all overlapping allocations and haven't found any errors
+                break;
+            }
+        }
+        this.allocations.add(index, workAllocation);
+    }
+
+    /**
+     * Removes a project allocation from the list based on its scheduled start and end dates
+     * as a team can only be at work on one project at any one time
+     * @param allocation The work allocation to be removed
+     */
+    public void removeAllocation(WorkAllocation allocation) {
+        if (this.allocations.contains(allocation)) {
+            this.allocations.remove(allocation);
+        }
+    }
+
+    /**
      * Gets the scrum master
      * @return the scrum master
      */
     public Person getScrumMaster() {
-        return scrumMaster;
+        return this.scrumMaster;
     }
 
     /**
@@ -66,7 +107,7 @@ public class Team extends Model {
      * @return the PO
      */
     public Person getProductOwner() {
-        return productOwner;
+        return this.productOwner;
     }
 
     /**

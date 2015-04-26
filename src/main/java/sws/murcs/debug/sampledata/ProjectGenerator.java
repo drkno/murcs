@@ -1,10 +1,16 @@
 package sws.murcs.debug.sampledata;
 
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Generates random projects with teams
@@ -47,12 +53,31 @@ public class ProjectGenerator implements Generator<Project> {
         String description = NameGenerator.randomElement(descriptions);
 
         int teamCount = NameGenerator.random(1, 50);
-        ArrayList<Team> teams = new ArrayList<>();
+        List<WorkAllocation> allocations = new ArrayList<>();
 
-        for (int i = 0; i < teamCount; ++i){
+        Random random = new Random();
+        for (int i = 0; i < teamCount; ++i) {
+
+            // Generate a new team
             Team newTeam = teamGenerator.generate();
-            if (!teams.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
-                teams.add(newTeam);
+            if (allocations.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
+                continue;
+            }
+
+            // Make the startDate somewhere between now and three weeks from now
+            int wait = random.nextInt(21);
+            LocalDate startDate = LocalDate.now().plus(wait, ChronoUnit.DAYS);
+
+            // Make the endDate somewhere between the startDate and two weeks from then
+            int duration = random.nextInt(14);
+            LocalDate endDate = startDate.plus(duration, ChronoUnit.DAYS);
+
+            try {
+                WorkAllocation allocation = new WorkAllocation(project, newTeam, startDate, endDate);
+                project.addAllocation(allocation);
+            }
+            catch (DuplicateObjectException e) {
+                // Ignored
             }
         }
 
@@ -64,11 +89,11 @@ public class ProjectGenerator implements Generator<Project> {
             e.printStackTrace();
             return null;
         }
-            project.setLongName(longName);
-            project.setDescription(description);
+        project.setLongName(longName);
+        project.setDescription(description);
 
-        try{
-            project.addTeams(teams);
+        try {
+            project.addAllocations(allocations);
         } catch (CustomException e) {
             e.printStackTrace();
             return null;

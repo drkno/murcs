@@ -55,7 +55,7 @@ public class RelationalModelTest {
             relationalModel.addProject(project);
         }
         catch (DuplicateObjectException exception) {
-            //
+            // Ignored
         }
     }
 
@@ -118,50 +118,50 @@ public class RelationalModelTest {
     }
 
     @Test
-    public void addUnassignedTeamTest() throws Exception {
-        assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
+    public void addTeamTest() throws Exception {
+        assertFalse(relationalModel.getTeams().contains(teamGenerated));
 
         relationalModel.addTeam(teamGenerated);
-        assertTrue(relationalModel.getUnassignedTeams().contains(teamGenerated));
+        assertTrue(relationalModel.getTeams().contains(teamGenerated));
     }
 
     @Test (expected = DuplicateObjectException.class)
-    public void addUnassignedTeamExceptionTest1() throws Exception {
+    public void addTeamExceptionTest1() throws Exception {
         relationalModel.addTeam(teamGenerated);
         relationalModel.addTeam(teamGenerated);
     }
 
     @Test (expected = DuplicateObjectException.class)
-    public void addUnassignedTeamExceptionTest2() throws Exception {
+    public void addTeamExceptionTest2() throws Exception {
         relationalModel.addTeam(teamGenerated);
         team.setShortName(teamGenerated.getShortName());
         relationalModel.addTeam(teamGenerated);
     }
 
     @Test
-    public void addUnassignedTeamsTest() throws Exception {
-        List<Team> testUnassignedTeams = new ArrayList<>();
-        assertEquals(relationalModel.getUnassignedTeams().size(), 0);
-        testUnassignedTeams.add(teamGenerated);
+    public void addTeamsTest() throws Exception {
+        List<Team> testTeams = new ArrayList<>();
+        assertEquals(relationalModel.getTeams().size(), 0);
+        testTeams.add(teamGenerated);
 
-        relationalModel.addTeams(testUnassignedTeams);
-        assertTrue(relationalModel.getUnassignedTeams().contains(teamGenerated));
+        relationalModel.addTeams(testTeams);
+        assertTrue(relationalModel.getTeams().contains(teamGenerated));
 
-        testUnassignedTeams.add(teamGenerated);
-        assertEquals(testUnassignedTeams.size(), 2);
-        assertEquals(relationalModel.getUnassignedTeams().size(), 1);
+        testTeams.add(teamGenerated);
+        assertEquals(testTeams.size(), 2);
+        assertEquals(relationalModel.getTeams().size(), 1);
     }
 
     @Test
-    public void removeUnassignedTeamTest() throws Exception {
+    public void removeTeamTest() throws Exception {
         relationalModel.addTeam(teamGenerated);
-        assertTrue(relationalModel.getUnassignedTeams().contains(teamGenerated));
+        assertTrue(relationalModel.getTeams().contains(teamGenerated));
 
         relationalModel.removeTeam(teamGenerated);
-        assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
+        assertFalse(relationalModel.getTeams().contains(teamGenerated));
 
         relationalModel.removeTeam(teamGenerated);
-        assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
+        assertFalse(relationalModel.getTeams().contains(teamGenerated));
     }
 
     @Test

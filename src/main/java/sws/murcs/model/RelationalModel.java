@@ -55,7 +55,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
-            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
+            // will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
         }
     }
 
@@ -187,23 +187,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets all unassigned teams
-     * @return The unassigned teams
-     */
-    public ArrayList<Team> getUnassignedTeams() {
-
-        ArrayList<Team> unassignedTeams = new ArrayList<>();
-        unassignedTeams.addAll(getTeams());
-
-        if (getProjects() != null) {
-            //Remove all the teams that are assigned to a project
-            getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
-        }
-
-        return unassignedTeams;
-    }
-
-    /**
      * Gets a list of all teams
      * @return The teams
      */
@@ -251,9 +234,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
 
         if (this.getProjects() != null && !this.getProjects().isEmpty()) {
-            this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> {
-                project.getTeams().remove(team);
-            });
+            for (Project project : projects) {
+                project.getAllocations().stream().filter(allocation -> allocation.getTeam() == team).forEach(project::removeAllocation);
+            }
         }
     }
 

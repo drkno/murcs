@@ -2,10 +2,7 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Generates random RelationalModels
@@ -34,27 +31,18 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             RelationalModel model = new RelationalModel();
             model.addProject(projectGenerator.generate());
 
-
             int rand = random.nextInt(10);
-            ArrayList<Team> unassignedTeams = new ArrayList<>();
+            List<Team> unassignedTeams = new ArrayList<>();
             for (int i = 0; i < rand; i++) {
                 Team newTeam = teamGenerator.generate();
                 if (!unassignedTeams.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
                     unassignedTeams.add(newTeam);
                 }
             }
-            unassignedTeams = new ArrayList<Team>(new LinkedHashSet<Team>(unassignedTeams));
+            unassignedTeams = new ArrayList<>(new LinkedHashSet<>(unassignedTeams));
             model.addTeams(unassignedTeams);
 
             ArrayList<Person> people = new ArrayList<>();
-            for (Team team : model.getUnassignedTeams()) {
-                for (Person person: team.getMembers()) {
-                    if (!people.stream().filter(existingPerson -> person.equals(existingPerson)).findAny().isPresent()) {
-                        people.add(person);
-                    }
-                }
-            }
-
             for (Team team : model.getTeams()) {
                 for (Person person: team.getMembers()) {
                     if (!people.stream().filter(existingPerson -> person.equals(existingPerson)).findAny().isPresent()) {
@@ -62,21 +50,20 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                     }
                 }
             }
-
-            people = new ArrayList<Person>(new LinkedHashSet<Person>(people));
+            people = new ArrayList<>(new LinkedHashSet<>(people));
             model.addPeople(people);
 
             ArrayList<Skill> skills = new ArrayList<>();
             for (Project project : model.getProjects()) {
-            for (Team team : project.getTeams()) {
-                for (Person person : team.getMembers()) {
-                    for (Skill newSkill : person.getSkills()) {
-                        if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
-                            skills.add(newSkill);
+                for (WorkAllocation allocation : project.getAllocations()) {
+                    for (Person person : allocation.getTeam().getMembers()) {
+                        for (Skill newSkill : person.getSkills()) {
+                            if (!skills.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent() && !newSkill.isProductOwnerSkill() && !newSkill.isScrumMasterSkill()) {
+                                skills.add(newSkill);
+                            }
                         }
                     }
                 }
-            }
             }
             for (Person person : model.getUnassignedPeople()) {
                 for (Skill newSkill: person.getSkills()) {
@@ -85,7 +72,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                     }
                 }
             }
-            skills = new ArrayList<Skill>(new HashSet<Skill>(skills));
+            skills = new ArrayList<>(new HashSet<>(skills));
             model.addSkills(skills);
 
             return model;

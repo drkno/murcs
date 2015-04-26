@@ -10,7 +10,10 @@ import sws.murcs.model.Team;
 import sws.murcs.debug.sampledata.ProjectGenerator;
 import sws.murcs.debug.sampledata.Generator;
 import sws.murcs.debug.sampledata.TeamGenerator;
+import sws.murcs.model.WorkAllocation;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +23,10 @@ public class ProjectTest {
 
     private static Generator<Team> teamGenerator;
     private static Generator<Project> projectGenerator;
-    private Team teamGenerated;
-    private Project projectGenerated;
-    private Team team;
-    private Project project;
+    private WorkAllocation generatedAllocation;
+    private Project generatedProject;
+    private WorkAllocation constructedAllocation;
+    private Project constructedProject;
 
     @BeforeClass
     public static void oneTimeSetUp() {
@@ -33,79 +36,84 @@ public class ProjectTest {
 
     @Before
     public void setUp() {
-        teamGenerated = teamGenerator.generate();
-        projectGenerated = projectGenerator.generate();
-        team = new Team();
-        project = new Project();
+        Team generatedTeam = teamGenerator.generate();
+        generatedProject = projectGenerator.generate();
+        Team constructedTeam = new Team();
+        constructedProject = new Project();
+
+        LocalDate startDate = LocalDate.now().minus(1, ChronoUnit.DAYS);
+        LocalDate endDate = LocalDate.now().plus(1, ChronoUnit.DAYS);
+        generatedAllocation = new WorkAllocation(generatedProject, generatedTeam, startDate, endDate);
+        constructedAllocation = new WorkAllocation(constructedProject, constructedTeam, startDate, endDate);
     }
 
     @After
     public void tearDown() {
-        teamGenerated = null;
-        projectGenerated = null;
-        team = null;
-        project = null;
+        generatedAllocation = null;
+        generatedProject = null;
+        constructedAllocation = null;
+        constructedProject = null;
     }
 
     @Test(expected = Exception.class)
     public void setShortNameTest1() throws Exception {
-        projectGenerated.setShortName(null);
+        generatedProject.setShortName(null);
     }
 
     @Test(expected = Exception.class)
     public void setShortNameTest2() throws Exception {
-        projectGenerated.setShortName("");
+        generatedProject.setShortName("");
     }
 
     @Test(expected = Exception.class)
     public void setShortNameTest3() throws Exception {
-        projectGenerated.setShortName("   \n\r\t");
+        generatedProject.setShortName("   \n\r\t");
     }
 
     @Test
-    public void addTeamTest() throws Exception {
-        assertFalse(project.getTeams().contains(teamGenerated));
+    public void addTeamAllocationTest() throws Exception {
+        assertFalse(constructedProject.getAllocations().contains(generatedAllocation));
 
-        project.addTeam(teamGenerated);
-        assertTrue(project.getTeams().contains(teamGenerated));
+        constructedProject.addAllocation(generatedAllocation);
+        assertTrue(constructedProject.getAllocations().contains(generatedAllocation));
     }
 
     @Test (expected = DuplicateObjectException.class)
-    public void addTeamExceptionTest1() throws Exception {
-        project.addTeam(teamGenerated);
-        project.addTeam(teamGenerated);
+    public void addTeamAllocationExceptionTest1() throws Exception {
+        constructedProject.addAllocation(generatedAllocation);
+        constructedProject.addAllocation(generatedAllocation);
     }
 
     @Test (expected = DuplicateObjectException.class)
-    public void addTeamExceptionTest2() throws Exception {
-        project.addTeam(teamGenerated);
-        team.setShortName(teamGenerated.getShortName());
-        project.addTeam(teamGenerated);
+    public void addTeamAllocationExceptionTest2() throws Exception {
+        constructedProject.addAllocation(generatedAllocation);
+        constructedAllocation.getTeam().setShortName(generatedAllocation.getTeam().getShortName());
+        constructedProject.addAllocation(generatedAllocation);
     }
 
     @Test
-    public void addTeamsTest() throws Exception {
-        List<Team> testTeams = new ArrayList<>();
-        assertEquals(project.getTeams().size(), 0);
-        testTeams.add(teamGenerated);
+    public void addTeamAllocationsTest() throws Exception {
+        List<WorkAllocation> testAllocations = new ArrayList<>();
+        assertEquals(constructedProject.getAllocations().size(), 0);
+        testAllocations.add(generatedAllocation);
 
-        project.addTeams(testTeams);
-        assertTrue(project.getTeams().contains(teamGenerated));
+        constructedProject.addAllocations(testAllocations);
+        assertTrue(constructedProject.getAllocations().contains(generatedAllocation));
 
-        testTeams.add(teamGenerated);
-        assertEquals(testTeams.size(), 2);
-        assertEquals(project.getTeams().size(), 1);
+        testAllocations.add(generatedAllocation);
+        assertEquals(testAllocations.size(), 2);
+        assertEquals(constructedProject.getAllocations().size(), 1);
     }
 
     @Test
-    public void removeTeamTest() throws Exception {
-        project.addTeam(teamGenerated);
-        assertTrue(project.getTeams().contains(teamGenerated));
+    public void removeTeamAllocationTest() throws Exception {
+        constructedProject.addAllocation(generatedAllocation);
+        assertTrue(constructedProject.getAllocations().contains(generatedAllocation));
 
-        project.removeTeam(teamGenerated);
-        assertFalse(project.getTeams().contains(teamGenerated));
+        constructedProject.removeAllocation(generatedAllocation);
+        assertFalse(constructedProject.getAllocations().contains(generatedAllocation));
 
-        project.removeTeam(teamGenerated);
-        assertFalse(project.getTeams().contains(teamGenerated));
+        constructedProject.removeAllocation(generatedAllocation);
+        assertFalse(constructedProject.getAllocations().contains(generatedAllocation));
     }
 }

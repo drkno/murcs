@@ -4,6 +4,7 @@ import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,19 +12,20 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
+
     @Editable()
     @TrackableValue
     private String description;
     @Editable(sort = 99)
     @TrackableValue
-    private ArrayList<Team> teams = new ArrayList<>();
+    private List<WorkAllocation> allocations = new ArrayList<>();
 
     /**
      * Gets a description of the project
      * @return a description of the project
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -35,50 +37,70 @@ public class Project extends Model {
     }
 
     /**
-     * Gets a list of teams working on the project
-     * @return The teams working on this project
+     * Gets a list of all ongoing and future work periods
+     * @return The list of team allocations
      */
-    public ArrayList<Team> getTeams() {
-        return teams;
+    public List<WorkAllocation> getAllocations() {
+        LocalDate currentDate = LocalDate.now();
+        List<WorkAllocation> allocations = new ArrayList<>();
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getEndDate().isBefore(currentDate)) {
+                continue;
+            }
+            allocations.add(allocation);
+        }
+        return allocations;
     }
 
     /**
      * Adds a team to this project if the project does not already have that team
-     * @param team team to add.
+     * @param workAllocation The allocation to add
      * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has that team
      */
-    public void addTeam(Team team) throws DuplicateObjectException {
-        if (!this.teams.contains(team) &&
-                !this.teams
-                        .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(team.getShortName().toLowerCase()))
-                        .findAny()
-                        .isPresent()) {
-            this.teams.add(team);
+    public void addAllocation(WorkAllocation workAllocation) throws DuplicateObjectException {
+        Team team = workAllocation.getTeam();
+        LocalDate startDate = workAllocation.getStartDate();
+        LocalDate endDate = workAllocation.getEndDate();
+
+        int index = 0;
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getTeam() == team) {
+                // Check that this team isn't overlapping with itself
+                if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
+                    // TODO Create my own exception like "OverlappedAllocationException"
+                    throw new DuplicateObjectException("Work Dates Overlap");
+                }
+            }
+            if (allocation.getStartDate().isBefore(startDate)) {
+                // Increment the index where the allocation will be placed if it does get placed
+                index++;
+            }
+            else if (allocation.getStartDate().isAfter(endDate)) {
+                // At this point we've checked all overlapping allocations and haven't found any errors
+                break;
+            }
         }
-        else {
-            throw new DuplicateObjectException();
+        this.allocations.add(index, workAllocation);
+    }
+
+    /**
+     * Adds a list of allocations to add to the project
+     * @param allocations Teams to be added to the project
+     * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has a team from allocations to be added
+     */
+    public void addAllocations(List<WorkAllocation> allocations) throws DuplicateObjectException {
+        for (WorkAllocation allocation : allocations) {
+            this.addAllocation(allocation);
         }
     }
 
     /**
-     * Adds a list of teams to add to the project
-     * @param teams Teams to be added to the project
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the project already has a team from teams to be added
+     * Remove a teams work period from this project.
+     * @param allocation Team to deallocate to remove.
      */
-    public void addTeams(List<Team> teams) throws DuplicateObjectException {
-        for (Team team : teams) {
-            this.addTeam(team);
-        }
-    }
-
-    /**
-     * Remove a team from this project.
-     * @param team team to remove.
-     */
-    public void removeTeam(Team team) {
-        if (this.teams.contains(team)) {
-            teams.remove(team);
+    public void removeAllocation(WorkAllocation allocation) {
+        if (this.allocations.contains(allocation)) {
+            this.allocations.remove(allocation);
         }
     }
 

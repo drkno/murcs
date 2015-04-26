@@ -6,14 +6,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ProjectEditor">
+<AnchorPane prefHeight="375.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ProjectEditor">
    <children>
       <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox>
                <children>
                   <Label text="Short Name" />
-                  <TextField fx:id="projectTextFieldShortName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldShortName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -31,11 +31,49 @@
             <VBox>
                <children>
                   <Label text="Description" />
-                  <TextField fx:id="descriptionTextField" />
+                  <TextField fx:id="textFieldDescription" />
                </children>
                 <padding>
                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                 </padding>
+            </VBox>
+            <VBox spacing="10.0">
+               <children>
+                  <Label text="Teams" GridPane.rowIndex="1" />
+                  <TableView fx:id="teamsViewer" prefHeight="200.0" prefWidth="200.0">
+                    <columns>
+                      <TableColumn fx:id="tableColumnTeams" prefWidth="178.0" text="Team" />
+                      <TableColumn fx:id="tableColumnStartDates" minWidth="0.0" prefWidth="100.0" text="Start Date" />
+                        <TableColumn fx:id="tableColumnEndDates" prefWidth="100.0" text="End Date" />
+                    </columns>
+                  </TableView>
+                  <Button mnemonicParsing="false" onAction="#buttonUnscheduleTeamClick" text="Unschedule Team" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a team">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Text>
+                  <HBox alignment="CENTER" spacing="30.0">
+                     <children>
+                        <DatePicker fx:id="datePickerStartDate" />
+                        <DatePicker fx:id="datePickerEndDate" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </HBox>
+                  <AnchorPane>
+                     <children>
+                        <ChoiceBox fx:id="choiceBoxAddTeam" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </padding>
             </VBox>
              <Label fx:id="labelErrorMessage" />
          </children>

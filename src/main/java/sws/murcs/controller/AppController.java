@@ -369,7 +369,7 @@ public class AppController implements Initializable, ViewUpdate{
                 case "addPerson":
                     clazz = Person.class;
                     break;
-                case "addTeam":
+                case "addAllocation":
                     clazz = Team.class;
                     break;
                 case "addSkill":
