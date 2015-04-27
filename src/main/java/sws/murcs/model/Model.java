@@ -21,7 +21,6 @@ public abstract class Model extends TrackableObject implements Serializable {
     private String shortName;
     @TrackableValue
     private String longName;
-
     private ModelObjectProperty<String> shortNameProperty;
 
     /**
@@ -71,11 +70,16 @@ public abstract class Model extends TrackableObject implements Serializable {
         commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
+    /**
+     * Listenable property for the shortName.
+     * @return property for the shortName.
+     */
     public ModelObjectProperty<String> getToStringProperty() {
         if (shortNameProperty == null) {
             try {
                 shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
             } catch (Exception e) {
+                System.err.println("Couldn't create property for shortName. Failed with error:");
                 e.printStackTrace();
             }
         }
