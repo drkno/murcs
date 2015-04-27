@@ -1,22 +1,17 @@
 package sws.murcs.acceptance.stepdefs;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import javafx.application.Application;
-import javafx.scene.Node;
 import javafx.scene.control.ListView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
-import org.testfx.service.query.NodeQuery;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -24,10 +19,7 @@ import sws.murcs.view.App;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.testfx.framework.junit.ApplicationTest.launch;
 
 public class ElementDeletionStepDefs extends ApplicationTest{
 
@@ -56,6 +48,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         model = new RelationalModel();
         PersistenceManager.Current.setCurrentModel(model);
 
+        UndoRedoManager.setDisabled(false);
         project = new Project();
         project.setShortName("Testing");
 
@@ -78,11 +71,13 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         release.setAssociatedProject(project);
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        model.addProject(project);
-        model.addPerson(person);
-        model.addRelease(release);
-        model.addTeam(team);
-        model.addSkill(skill);
+        UndoRedoManager.setDisabled(false);
+        model.add(project);
+        model.add(person);
+        model.add(release);
+        model.add(team);
+        model.add(skill);
+        UndoRedoManager.setDisabled(false);
     }
 
     @After
@@ -115,6 +110,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @And("^I confirm I want to delete$")
     public void I_confirm_I_want_to_delete() throws Throwable {
+        UndoRedoManager.setDisabled(false);
         fx.clickOn("Yes");
     }
 
