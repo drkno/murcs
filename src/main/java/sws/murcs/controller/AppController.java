@@ -129,21 +129,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Handles committing changes based on UI actions.
-     * @param message commit message to use.
-     */
-    private void commitChanges(String message) {
-        try {
-            UndoRedoManager.commit(message);
-        } catch (Exception e) {
-            // This state only occurs if there is a bug or something is very wrong
-            UndoRedoManager.forget();
-            System.err.println("The undo/redo manager encountered an error while attempting to commit a change:\n"
-                    + e.toString() + "\nAs a precaution all history has been forgotten.");
-        }
-    }
-
-    /**
      * Updates the display list on the left hand side of the screen.
      * @param newModelObject new model object, that may have been created.
      * @param type type of model object to refresh
