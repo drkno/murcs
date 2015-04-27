@@ -1,11 +1,12 @@
 package sws.murcs.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
  * A dumb information carrier used to represent a work schedule by a Team on a Project
  */
-public class WorkAllocation {
+public class WorkAllocation implements Serializable {
 
     private final Project project;
     private final Team team;
