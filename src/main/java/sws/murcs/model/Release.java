@@ -76,7 +76,13 @@ public class Release extends Model {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof Release && ((Release) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+        if (object == null || !(object instanceof Release)) return false;
+        Release release = (Release)object;
+        if (release == this) return true;
+        String rShortName = release.getShortName();
+        String shortName = getShortName();
+        if (shortName == null || rShortName == null) return shortName == rShortName;
+        return rShortName.toLowerCase().equals(shortName.toLowerCase());
     }
 
     @Override

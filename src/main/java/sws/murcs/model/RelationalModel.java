@@ -338,8 +338,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws DuplicateObjectException Thrown if the releases given is a duplicate
      */
     public void addRelease(Release release) throws DuplicateObjectException {
-        if (!releases.contains(release))
+        if (!releases.contains(release)) {
             this.releases.add(release);
+        }
         else throw new DuplicateObjectException("This release already exists");
     }
 
@@ -349,9 +350,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
-
-        UndoRedoManager.remove(model);
-        commit("remove " + type.toString().toLowerCase());
 
         switch (type) {
             case Project:
@@ -372,6 +370,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             default:
                 throw new UnsupportedOperationException();
         }
+
+        UndoRedoManager.remove(model);
+        commit("remove " + type.toString().toLowerCase());
     }
 
     /**
@@ -379,8 +380,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param release The release to remove
      */
     public void removeRelease(Release release) {
-        if (this.releases.contains(release))
+        if (this.releases.contains(release)) {
             releases.remove(release);
+            UndoRedoManager.remove(release);
+            commit("remove release");
+        }
     }
 
     /**
