@@ -41,8 +41,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             model.addProject(edit);
 
         //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
+//        if (onSaved != null)
+//            onSaved.updateListView(edit);
     }
 
     /**

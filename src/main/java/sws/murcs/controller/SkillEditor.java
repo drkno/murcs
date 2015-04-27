@@ -50,8 +50,8 @@ public class SkillEditor extends GenericEditor<Skill> {
             model.addSkill(edit);
 
         //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
+//        if (onSaved != null)
+//            onSaved.updateListView(edit);
     }
 
     /**

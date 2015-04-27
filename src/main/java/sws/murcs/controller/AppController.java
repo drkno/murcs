@@ -1,7 +1,6 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -65,8 +65,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             e.consume();
             fileQuitPress(null);
         });
-        displayListItems = FXCollections.observableArrayList();
-        displayList.setItems(displayListItems);
 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
@@ -151,28 +149,32 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void updateList(Model newModelObject, ModelTypes type) {
         displayList.getSelectionModel().clearSelection();
-        displayListItems.clear();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         if (model == null) return;
 
+        ModelObservableArrayList arrayList = null;
         switch (type) {
             case Project:
-                displayListItems.addAll(model.getProjects());
+                arrayList = model.getProjects();
                 break;
             case People:
-                displayListItems.addAll(model.getPeople());
+                arrayList = model.getPeople();
                 break;
             case Team:
-                displayListItems.addAll(model.getTeams());
+                arrayList = model.getTeams();
                 break;
             case Skills:
-                displayListItems.addAll(model.getSkills());
+                arrayList = model.getSkills();
                 break;
             case Release:
-                displayListItems.addAll(model.getReleases());
+                arrayList = model.getReleases();
                 break;
+            default: throw new NotImplementedException();
         }
+        displayListItems = arrayList;
+        displayList.setItems(displayListItems);
+
         if (newModelObject != null) {
             displayList.getSelectionModel().select(newModelObject);
         }
@@ -352,20 +354,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
-
-        //Store the selected index
-        int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
-
-        //If no item is selected we don't need to execute the following code
-        if (selectedIndex == -1) return;
-
-        //Add and remove the item to force an update
-        //Store the currently selected object
-        Object current = displayListItems.remove(selectedIndex);
-        displayListItems.add(selectedIndex, current);
-
-        //Restore the selection
-        displayList.getSelectionModel().select(selectedIndex);
     }
 
     @FXML

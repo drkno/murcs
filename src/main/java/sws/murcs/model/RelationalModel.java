@@ -16,15 +16,15 @@ import java.util.List;
 public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
-    private ArrayList<Project> projects;
+    private ModelObservableArrayList<Project> projects;
     @TrackableValue
-    private ArrayList<Person> people;
+    private ModelObservableArrayList<Person> people;
     @TrackableValue
-    private ArrayList<Team> teams;
+    private ModelObservableArrayList<Team> teams;
     @TrackableValue
-    private ArrayList<Skill> skills;
+    private ModelObservableArrayList<Skill> skills;
     @TrackableValue
-    private ArrayList<Release> releases;
+    private ModelObservableArrayList<Release> releases;
 
     /**
      * Gets the current application version
@@ -40,11 +40,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Sets up a new Relational Model
      */
     public RelationalModel() {
-        this.people = new ArrayList<>();
-        this.teams = new ArrayList<>();
-        this.skills = new ArrayList<>();
-        this.releases = new ArrayList<>();
-        this.projects = new ArrayList<>();
+        this.people = new ModelObservableArrayList<Person>();
+        this.teams = new ModelObservableArrayList<Team>();
+        this.skills = new ModelObservableArrayList<Skill>();
+        this.releases = new ModelObservableArrayList<Release>();
+        this.projects = new ModelObservableArrayList<Project>();
 
         try {
             Skill productOwner = new Skill();
@@ -67,7 +67,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the projects
      * @return The projects
      */
-    public ArrayList<Project> getProjects() {
+    public ModelObservableArrayList<Project> getProjects() {
         return projects;
     }
 
@@ -131,7 +131,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         ArrayList<Person> unassignedPeople = new ArrayList<>();
         unassignedPeople.addAll(getPeople());
-        ArrayList<Team> teams = getTeams();
+        ModelObservableArrayList<Team> teams = getTeams();
 
         //Remove all the people who have a team
         for (Team team : teams) {
@@ -145,7 +145,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets a list of all people.
      * @return The people
      */
-    public ArrayList<Person> getPeople() {
+    public ModelObservableArrayList<Person> getPeople() {
         return people;
     }
 
@@ -210,7 +210,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets a list of all teams
      * @return The teams
      */
-    public ArrayList<Team> getTeams() {
+    public ModelObservableArrayList<Team> getTeams() {
         return teams;
     }
 
@@ -260,7 +260,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the skills
      * @return The skills
      */
-    public ArrayList<Skill> getSkills() {
+    public ModelObservableArrayList<Skill> getSkills() {
         return skills;
     }
 
@@ -488,7 +488,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the releases
      * @return The releases
      */
-    public ArrayList<Release> getReleases() {
+    public ModelObservableArrayList<Release> getReleases() {
         return releases;
     }
 

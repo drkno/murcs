@@ -89,8 +89,8 @@ public class ReleaseEditor extends GenericEditor<Release> {
             model.addRelease(edit);
 
         //If there is a saved callback then call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
+//        if (onSaved != null)
+//            onSaved.updateListView(edit);
     }
 
     /**

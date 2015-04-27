@@ -21,6 +21,8 @@ public abstract class Model extends TrackableObject implements Serializable {
     @TrackableValue
     private String longName;
 
+    private ModelObjectProperty<String> shortNameProperty;
+
     /**
      * Gets the short name.
      * @return the short name.
@@ -37,6 +39,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         validateShortName(shortName);
         this.shortName = shortName.trim();
+        if (shortNameProperty != null) shortNameProperty.notifyChanged();
         commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
@@ -65,5 +68,16 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setLongName(String longName) {
         this.longName = longName;
         commit("edit " + getClass().getSimpleName().toLowerCase());
+    }
+
+    public ModelObjectProperty<String> getToStringProperty() {
+        if (shortNameProperty == null) {
+            try {
+                shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return shortNameProperty;
     }
 }

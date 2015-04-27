@@ -169,8 +169,8 @@ public class PersonEditor extends GenericEditor<Person> {
             model.addPerson(edit);
 
         // Call the callback if it exists
-        if (onSaved != null)
-            onSaved.updateListView(edit);
+//        if (onSaved != null)
+//            onSaved.updateListView(edit);
     }
 
     /**
