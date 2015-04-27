@@ -26,6 +26,7 @@ import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.testfx.framework.junit.ApplicationTest.launch;
 
 public class ElementDeletionStepDefs extends ApplicationTest{
@@ -45,7 +46,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     public void start(Stage stage) throws Exception {}
 
     @Before
-    public void setUp() throws Exception {
+    public void setUpStuff() throws Exception {
         UndoRedoManager.setDisabled(true);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
@@ -78,6 +79,10 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
         model.addProject(project);
+        model.addPerson(person);
+        model.addRelease(release);
+        model.addTeam(team);
+        model.addSkill(skill);
     }
 
     @After
@@ -100,31 +105,31 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @Then("^a confirm dialog is displayed$")
     public void a_confirm_dialog_is_displayed() throws Throwable {
         Text messageText = fx.lookup("#messageText").queryFirst();
-        assertEquals("Are you sure you want to delete this?", messageText.getText());
+        assertTrue(messageText.getText().contains("Are you sure you want to delete this?"));
     }
 
     @And("^all the places that the object is used are displayed$")
     public void all_the_places_that_the_object_is_used_are_displayed() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        //Todo if necessary
     }
 
     @And("^I confirm I want to delete$")
     public void I_confirm_I_want_to_delete() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        fx.clickOn("Yes");
     }
 
-    @Then("^the project is deleted$")
-    public void the_project_is_deleted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+    @Then("^the model is deleted$")
+    public void the_model_is_deleted() throws Throwable {
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        assertTrue(displayList.getItems().size() == 0);
     }
 
     @And("^the deletion can be undone$")
     public void the_deletion_can_be_undone() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
+        fx.clickOn("#editMenu");
+        fx.clickOn("#undoMenuItem");
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        assertTrue(displayList.getItems().size() == 1);
     }
 
     @Given("^I have a team selected$")
@@ -133,22 +138,10 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
-    @Then("^the team is deleted$")
-    public void the_team_is_deleted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
-    }
-
     @Given("^I have a person selected$")
     public void I_have_a_person_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Person");
+        fx.clickOn("#displayChoiceBox").clickOn("People");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
-    }
-
-    @Then("^the person is deleted$")
-    public void the_person_is_deleted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
     }
 
     @Given("^I have a skill selected$")
@@ -157,21 +150,9 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
-    @Then("^the skill is deleted$")
-    public void the_skill_is_deleted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
-    }
-
     @Given("^I have a release selected$")
     public void I_have_a_release_selected() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Release");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
-    }
-
-    @Then("^the release is deleted$")
-    public void the_release_is_deleted() throws Throwable {
-        // Express the Regexp above with the code you wish you had
-        throw new PendingException();
     }
 }

@@ -7,7 +7,7 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the project is deleted
+     Then the model is deleted
      And the deletion can be undone
 
    Scenario: Deleting a Team
@@ -16,7 +16,7 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the team is deleted
+     Then the model is deleted
      And the deletion can be undone
 
    Scenario: Deleting a Person
@@ -25,7 +25,7 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the person is deleted
+     Then the model is deleted
      And the deletion can be undone
 
    Scenario: Deleting a Skill
@@ -34,7 +34,7 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the skill is deleted
+     Then the model is deleted
      And the deletion can be undone
 
    Scenario: Deleting a Release
@@ -43,5 +43,5 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the release is deleted
+     Then the model is deleted
      And the deletion can be undone

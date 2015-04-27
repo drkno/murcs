@@ -28,7 +28,7 @@
                     <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
                 </items>
              </Menu>
-            <Menu mnemonicParsing="false" text="Edit">
+            <Menu id="editMenu" mnemonicParsing="false" text="Edit">
               <items>
                 <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemClicked" text="Undo" />
                   <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemClicked" text="Redo" />
