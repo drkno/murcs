@@ -1,9 +1,10 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableValue;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import sws.murcs.magic.tracking.TrackableValue;
 
 /**
  * Model of a skill.
@@ -60,7 +61,11 @@ public class Skill extends Model {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof Skill && ((Skill) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+        if (object == null || !(object instanceof Skill)) return false;
+        String shortNameO = ((Skill) object).getShortName();
+        String shortName = getShortName();
+        if (shortName == null || shortNameO == null) return shortName == shortNameO;
+        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
     }
 
     /**
