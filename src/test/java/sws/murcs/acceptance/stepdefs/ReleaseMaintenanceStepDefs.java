@@ -38,7 +38,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Before
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
