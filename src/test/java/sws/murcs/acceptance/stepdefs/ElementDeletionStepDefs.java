@@ -39,7 +39,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Before
     public void setUpStuff() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
@@ -48,7 +48,6 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         model = new RelationalModel();
         PersistenceManager.Current.setCurrentModel(model);
 
-        UndoRedoManager.setDisabled(false);
         project = new Project();
         project.setShortName("Testing");
 
@@ -71,13 +70,11 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         release.setAssociatedProject(project);
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        UndoRedoManager.setDisabled(false);
         model.add(project);
         model.add(person);
         model.add(release);
         model.add(team);
         model.add(skill);
-        UndoRedoManager.setDisabled(false);
     }
 
     @After
