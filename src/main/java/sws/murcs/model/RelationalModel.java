@@ -5,6 +5,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -4,6 +4,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.observable.ModelObjectProperty;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

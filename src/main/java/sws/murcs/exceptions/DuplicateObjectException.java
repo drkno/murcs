@@ -1,7 +1,7 @@
 package sws.murcs.exceptions;
 
 import sws.murcs.model.Model;
-import sws.murcs.model.ModelObservableArrayList;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
