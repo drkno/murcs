@@ -50,7 +50,7 @@ public class FieldValuePair {
             /* fixme: todo: this is a workaround for refreshing the shortName in the side list
            if anything else is ever shown in that list this should be removed. */
             if (_field.getName().equals("shortName")) {
-                ((Model)_trackableObject).getToStringProperty().notifyChanged();
+                ((Model)_trackableObject).getShortNameProperty().notifyChanged();
             }
         }
     }

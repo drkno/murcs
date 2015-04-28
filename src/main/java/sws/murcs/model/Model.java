@@ -74,7 +74,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      * Listenable property for the shortName.
      * @return property for the shortName.
      */
-    public ModelObjectProperty<String> getToStringProperty() {
+    public ModelObjectProperty<String> getShortNameProperty() {
         if (shortNameProperty == null) {
             try {
                 shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
