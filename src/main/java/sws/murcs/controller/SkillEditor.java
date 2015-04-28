@@ -28,9 +28,20 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Saves the edit being edited
      */
     public void update()  throws Exception{
-        edit.setShortName(shortNameTextField.getText());
-        edit.setLongName(longNameTextField.getText());
-        edit.setDescription(descriptionTextArea.getText());
+        String shortName = shortNameTextField.getText();
+        if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
+            edit.setShortName(shortName);
+        }
+
+        String longName = longNameTextField.getText();
+        if (longName == null || edit.getLongName() == null || !longName.equals(edit.getLongName())) {
+            edit.setLongName(longName);
+        }
+
+        String description = descriptionTextArea.getText();
+        if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextArea.getText());
+        }
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -40,7 +51,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -55,7 +66,8 @@ public class SkillEditor extends GenericEditor<Skill> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 
@@ -63,14 +75,32 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Loads the edit into the form
      */
     public void load() {
-        shortNameTextField.setText(edit.getShortName());
-        longNameTextField.setText(edit.getLongName());
-        descriptionTextArea.setText(edit.getDescription());
+        updateFields();
 
         //if 'edit' is ScrumMaster or PO
         //  then disable the short name as this should be unique but allow the editing of the long name and description
         if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString())))
             shortNameTextField.setDisable(true);
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = shortNameTextField.getText();
+        String currentLongName = longNameTextField.getText();
+        String currentDescription = descriptionTextArea.getText();
+
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
+            shortNameTextField.setText(edit.getShortName());
+        }
+        if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
+            longNameTextField.setText(edit.getLongName());
+        }
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
+            descriptionTextArea.setText(edit.getDescription());
+        }
     }
 
     @FXML

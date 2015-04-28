@@ -8,17 +8,27 @@ import sws.murcs.model.*;
  */
 public enum ModelTypes {
 
-    Project,
-    People,
-    Team,
-    Skills;
+    Project(0, sws.murcs.model.Project.class),
+    People(1, sws.murcs.model.Person.class),
+    Team(2, sws.murcs.model.Team.class),
+    Skills(3, sws.murcs.model.Skill.class),
+    Release(4, sws.murcs.model.Release.class);
+
+    private int index;
+    private Class clazz;
+
+    /**
+     * Instantiates a new ModelType.
+     * @param index index of the ModelType.
+     * @param clazz class of the ModelType.
+     */
+    ModelTypes(int index, Class clazz) {
+        this.index = index;
+        this.clazz = clazz;
+    }
 
     /**
      * Gets the model type from an index
-     * 0: Project
-     * 1: People
-     * 2: Team
-     * 3: Skills
      * @param index The index
      * @return The model type
      */
@@ -36,17 +46,7 @@ public enum ModelTypes {
      * @return The index for selection
      */
     public static int getSelectionType(ModelTypes type) {
-        switch (type){
-            case Project:
-                return 0;
-            case People:
-                return 1;
-            case Team:
-                return 2;
-            case Skills:
-                return 3;
-        }
-        return 0;
+        return type.index;
     }
 
     /**
@@ -55,17 +55,11 @@ public enum ModelTypes {
      * @return The model type
      */
     public static ModelTypes getModelType(Class<? extends Model> clazz){
+        for (ModelTypes type : values()) {
+            if (type.clazz == clazz) return type;
+        }
 
-        if (clazz == sws.murcs.model.Project.class)
-            return Project;
-        else if (clazz == sws.murcs.model.Team.class)
-            return Team;
-        else if (clazz == Person.class)
-            return People;
-        else if (clazz == Skill.class)
-            return Skills;
-
-        throw new IllegalArgumentException("Clazz " + clazz.getName() + " is not supported");
+        throw new IllegalArgumentException("Class " + clazz.getName() + " is not supported");
     }
 
     /**
@@ -87,16 +81,6 @@ public enum ModelTypes {
      * @return The class
      */
     public static Class<? extends Model> getTypeFromModel(ModelTypes type){
-        switch (type){
-            case Project:
-                return sws.murcs.model.Project.class;
-            case Team:
-                return sws.murcs.model.Team.class;
-            case People:
-                return Person.class;
-            case Skills:
-                return Skill.class;
-        }
-        return null;
+        return type.clazz;
     }
 }

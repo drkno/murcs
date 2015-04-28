@@ -4,9 +4,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,9 +36,10 @@ public class FilePersistenceLoaderTest {
         loader = new FilePersistenceLoader();
         File file = new File(System.getProperty("user.dir"));
         loader.setCurrentWorkingDirectory(file.getAbsolutePath());
-        generator = new RelationalModelGenerator();
+        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Low);
         files = new ArrayList<>();
         random = new Random();
+        UndoRedoManager.setDisabled(true);
     }
 
     @After

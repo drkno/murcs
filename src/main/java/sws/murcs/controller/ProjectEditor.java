@@ -34,9 +34,15 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        edit.setShortName(textFieldShortName.getText());
-        edit.setLongName(textFieldLongName.getText());
-        edit.setDescription(textFieldDescription.getText());
+        if (edit.getShortName() == null || !textFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(textFieldShortName.getText());
+        }
+        if (edit.getLongName() == null || !textFieldLongName.getText().equals(edit.getLongName())) {
+            edit.setLongName(textFieldLongName.getText());
+        }
+        if (edit.getDescription() == null || !textFieldDescription.getText().equals(edit.getDescription())) {
+            edit.setDescription(textFieldDescription.getText());
+        }
 
         // Save the project if it hasn't been yet
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -67,7 +73,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
@@ -82,7 +88,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 
@@ -90,14 +97,29 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Loads the edit into the form
      */
     public void load(){
-        textFieldShortName.setText(edit.getShortName());
-        textFieldLongName.setText(edit.getLongName());
-        textFieldDescription.setText(edit.getDescription());
+        updateFields();
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = textFieldShortName.getText();
+        String currentLongName = textFieldLongName.getText();
+        String currentDescription = textFieldDescription.getText();
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
+            textFieldShortName.setText(edit.getShortName());
+        }
+        if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
+            textFieldLongName.setText(edit.getLongName());
+        }
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
+            textFieldDescription.setText(edit.getDescription());
+        }
 
         choiceBoxAddTeam.getItems().setAll(PersistenceManager.Current.getCurrentModel().getTeams());
         observableAllocations.setAll(edit.getAllocations());
-
-        updateAndHandle();
     }
 
     /**

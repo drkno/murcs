@@ -4,6 +4,7 @@ import sws.murcs.controller.ModelTypes;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private ArrayList<Team> teams;
     @TrackableValue
     private ArrayList<Skill> skills;
+    @TrackableValue
+    private ArrayList<Release> releases;
 
     /**
      * Gets the current application version
@@ -31,7 +34,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         return version;
     }
 
-    private static final float version = 0.01f;
+    private static final float version = 0.02f;
 
     /**
      * Sets up a new Relational Model
@@ -40,6 +43,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         this.people = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.skills = new ArrayList<>();
+        this.releases = new ArrayList<>();
         this.projects = new ArrayList<>();
 
         try {
@@ -70,6 +74,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a new project
      * @param project The new project
+     * @throws DuplicateObjectException if the project already exists
      */
     public void addProject(Project project) throws DuplicateObjectException {
         if (!this.getProjects().contains(project) &&
@@ -238,6 +243,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 project.getAllocations().stream().filter(allocation -> allocation.getTeam() == team).forEach(project::removeAllocation);
             }
         }
+
+        this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> project.getTeams().remove(team));
     }
 
     /**
@@ -305,7 +312,26 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 addPerson((Person) model);
                 break;
+            case Release:
+                addRelease((Release) model);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
+
+        UndoRedoManager.add(model);
+        commit("create " + type.toString().toLowerCase());
+    }
+
+    /**
+     * Adds the given release to the list of releases
+     * @param release The release to add
+     * @throws DuplicateObjectException Thrown if the releases given is a duplicate
+     */
+    public void addRelease(Release release) throws DuplicateObjectException {
+        if (!releases.contains(release))
+            this.releases.add(release);
+        else throw new DuplicateObjectException("This release already exists");
     }
 
     /**
@@ -314,6 +340,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
+
+        UndoRedoManager.remove(model);
+        commit("remove " + type.toString().toLowerCase());
 
         switch (type) {
             case Project:
@@ -328,7 +357,105 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case People:
                 removePerson((Person) model);
                 break;
+            case Release:
+                removeRelease((Release) model);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * Removes the specified release from the releases
+     * @param release The release to remove
+     */
+    public void removeRelease(Release release) {
+        if (this.releases.contains(release))
+            releases.remove(release);
+    }
+
+    /**
+     * Determines whether or not a Model object is in use
+     * @param model The model to check
+     * @return Whether the model object is in use
+     */
+    public boolean inUse(Model model){
+        return findUsages(model).size() != 0;
+    }
+
+    /**
+     * Returns a list of the model objects that make use of this one
+     * @param model The model to find the usages of
+     * @return The different usages
+     */
+    public ArrayList<Model> findUsages(Model model){
+        ModelTypes type = ModelTypes.getModelType(model);
+
+        switch (type){
+            case Project:
+                return findUsages((Project)model);
+            case Team:
+                return findUsages((Team)model);
+            case People:
+                return findUsages((Person)model);
+            case Skills:
+                return findUsages((Skill)model);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Gets a list of places that a project is used
+     * @param project The project to find the usages of
+     * @return The usages of the project
+     */
+    private ArrayList<Model> findUsages(Project project){
+        return new ArrayList<Model>();
+    }
+
+    /**
+     * Gets a list of the places that a team is used
+     * @param team The team to find the usages of
+     * @return The usages of the team
+     */
+    private ArrayList<Model> findUsages(Team team){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Project p : getProjects()) {
+            if (p.getTeams().contains(team)) {
+                usages.add(p);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a person has been used
+     * @param person The person to find usages for
+     * @return The usages of the person
+     */
+    private ArrayList<Model> findUsages(Person person){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Team team : getTeams()){
+            if (team.getMembers().contains(person)){
+                usages.add(team);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places a skill has been used
+     * @param skill The skill to find usages for
+     * @return The usages of the skill
+     */
+    private ArrayList<Model> findUsages(Skill skill){
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Person person : getPeople()){
+            if (person.getSkills().contains(skill)){
+                usages.add(person);
+            }
+        }
+        return usages;
     }
 
     /**
@@ -346,5 +473,24 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (model instanceof Skill)
             return getSkills().contains(model);
         return false;
+    }
+
+    /**
+     * Gets the releases
+     * @return The releases
+     */
+    public ArrayList<Release> getReleases() {
+        return releases;
+    }
+
+    /**
+     * Adds an arraylist of releases to the project
+     * @param releases The releases to be added
+     * @throws DuplicateObjectException
+     */
+    public void addReleases(ArrayList<Release> releases) throws DuplicateObjectException{
+        for (Release release : releases) {
+            addRelease(release);
+        }
     }
 }

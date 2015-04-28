@@ -41,10 +41,20 @@ public class TeamEditor extends GenericEditor<Team> {
      * Saves the team being edited
      */
     public void update() throws Exception {
-        labelErrorMessage.setText("");
-        edit.setShortName(teamNameTextField.getText());
-        edit.setLongName(longNameTextField.getText());
-        edit.setDescription(descriptionTextField.getText());
+        String shortName = teamNameTextField.getText();
+        if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
+            edit.setShortName(shortName);
+        }
+
+        String longName = longNameTextField.getText();
+        if (longName == null || edit.getLongName() == null || !longName.equals(edit.getLongName())) {
+            edit.setLongName(longName);
+        }
+
+        String description = descriptionTextField.getText();
+        if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
+            edit.setDescription(descriptionTextField.getText());
+        }
 
         Person productOwner = productOwnerPicker.getValue();
         edit.setProductOwner(productOwner);
@@ -54,6 +64,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         Person person = addTeamMemberPicker.getValue();
+
 
         if (person != null) {
             edit.addMember(person);
@@ -65,7 +76,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         //If we have a saved callBack, call it
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
 
         //Load the team again, to make sure everything is updated. We could probably do this better
         load();
@@ -83,7 +94,8 @@ public class TeamEditor extends GenericEditor<Team> {
             labelErrorMessage.setText(e.getMessage());
         }
         catch (Exception e) {
-            //Don't show the user this.
+            e.printStackTrace();
+            //Output any other exception to the console
         }
     }
 
@@ -91,9 +103,56 @@ public class TeamEditor extends GenericEditor<Team> {
      * Loads the team into the form
      */
     public void load(){
-        teamNameTextField.setText(edit.getShortName());
-        longNameTextField.setText(edit.getLongName());
-        descriptionTextField.setText(edit.getDescription());
+        updateFields();
+    }
+
+    /**
+     * Generates a node for a team member
+     * @param person The team member
+     * @return the node representing the team member
+     */
+    private Node generateMemberNode(final Person person) {
+        Text nameText = new Text(person.toString());
+        Button removeButton = new Button("X");
+        removeButton.setOnAction(event -> {
+            edit.removeMember(person);
+            updateAndHandle();
+        });
+
+        GridPane pane = new GridPane();
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+        column1.fillWidthProperty().setValue(true);
+
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.SOMETIMES);
+
+        pane.getColumnConstraints().add(column1);
+        pane.getColumnConstraints().add(column2);
+
+        pane.add(nameText, 0, 0);
+        pane.add(removeButton, 1, 0);
+
+        return pane;
+    }
+
+    /**
+     * Sets the fields in the editing pane if and only if they are different to the current values.
+     * Done so that Undo/Redo can update the editing pane without losing current selection.
+     */
+    public void updateFields() {
+        String currentShortName = teamNameTextField.getText();
+        String currentLongName = longNameTextField.getText();
+        String currentDescription = descriptionTextField.getText();
+        if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
+            teamNameTextField.setText(edit.getShortName());
+        }
+        if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
+            longNameTextField.setText(edit.getLongName());
+        }
+        if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
+            descriptionTextField.setText(edit.getDescription());
+        }
 
         addTeamMemberPicker.getItems().clear();
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
@@ -135,36 +194,6 @@ public class TeamEditor extends GenericEditor<Team> {
             scrumMasterPicker.getSelectionModel().select(scrumMaster);
         }
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
-    }
-
-    /**
-     * Generates a node for a team member
-     * @param person The team member
-     * @return the node representing the team member
-     */
-    private Node generateMemberNode(final Person person) {
-        Text nameText = new Text(person.toString());
-        Button removeButton = new Button("X");
-        removeButton.setOnAction(event -> {
-            edit.removeMember(person);
-            updateAndHandle();
-        });
-
-        GridPane pane = new GridPane();
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
-
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
-
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
-
-        pane.add(nameText, 0, 0);
-        pane.add(removeButton, 1, 0);
-
-        return pane;
     }
 
     /**

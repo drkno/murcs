@@ -1,17 +1,24 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.NameInvalidException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.io.Serializable;
 
 /**
  * Contains the basic model for each object type.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Model extends TrackableObject implements Serializable {
+    @TrackableValue
+    @XmlAttribute
     private String shortName;
-
+    @TrackableValue
     private String longName;
 
     /**
@@ -30,6 +37,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         validateShortName(shortName);
         this.shortName = shortName.trim();
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
     /**
@@ -39,7 +47,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     private void validateShortName(String value) throws Exception {
         DuplicateObjectException.CheckForDuplicates(this, value);
-        NameInvalidException.validate("Short Name", value);
+        InvalidParameterException.validate("Short Name", value);
     }
 
     /**
@@ -56,5 +64,6 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public void setLongName(String longName) {
         this.longName = longName;
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 }

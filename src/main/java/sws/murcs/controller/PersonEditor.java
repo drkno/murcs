@@ -54,20 +54,47 @@ public class PersonEditor extends GenericEditor<Person> {
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) updateAndHandle();
         });
-    }
-
-    /**
-     * Loads the team into the form
-     */
-    @Override
-    public void load() {
-        personNameTextField.setText(edit.getShortName());
-        personFullNameTextField.setText(edit.getLongName());
-        usernameTextField.setText(edit.getUserId());
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
+    }
 
+    /**
+     * Updates the object in memory and handles any exception
+     */
+    public void updateAndHandle(){
+        try {
+            labelErrorMessage.setText("");
+            update();
+        }
+        catch (CustomException e) {
+            labelErrorMessage.setText(e.getMessage());
+        }
+        catch (Exception e) {
+            //Output any other exception to the console
+            e.printStackTrace();
+        }
+        finally {
+            updateSkills();
+        }
+    }
+
+    /**
+     * Loads the person into the form
+     */
+    @Override
+    public void load() {
+        if (edit.getShortName() != null && !personNameTextField.getText().equals(edit.getShortName())) {
+            personNameTextField.setText(edit.getShortName());
+        }
+        if (edit.getLongName() != null && !personFullNameTextField.getText().equals(edit.getLongName())) {
+            personFullNameTextField.setText(edit.getLongName());
+        }
+        if (edit.getUserId() != null && !usernameTextField.getText().equals(edit.getUserId())) {
+            usernameTextField.setText(edit.getUserId());
+        }
+
+        skillChoiceBox.getSelectionModel().clearSelection();
         updateSkills();
     }
 
@@ -81,6 +108,7 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             edit.removeSkill(skill);
+            skillChoiceBox.getItems().add(skill);
             updateAndHandle();
             load();
         });
@@ -117,10 +145,16 @@ public class PersonEditor extends GenericEditor<Person> {
     /**
      * Saves the edit being edited
      */
-    public void update() throws Exception{
-        edit.setLongName(personFullNameTextField.getText());
-        edit.setShortName(personNameTextField.getText());
-        edit.setUserId(usernameTextField.getText());
+    public void update() throws Exception {
+        if (edit.getShortName() == null || !personNameTextField.getText().equals(edit.getShortName())) {
+            edit.setShortName(personNameTextField.getText());
+        }
+        if (edit.getLongName() == null || !personFullNameTextField.getText().equals(edit.getLongName())) {
+            edit.setLongName(personFullNameTextField.getText());
+        }
+        if (edit.getUserId() == null || !usernameTextField.getText().equals(edit.getUserId())) {
+            edit.setUserId(usernameTextField.getText());
+        }
 
         RelationalModel model= PersistenceManager.Current.getCurrentModel();
         Skill selectedSkill = skillChoiceBox.getValue();
@@ -136,26 +170,13 @@ public class PersonEditor extends GenericEditor<Person> {
 
         // Call the callback if it exists
         if (onSaved != null)
-            onSaved.eventNotification(edit);
+            onSaved.updateListView(edit);
     }
 
     /**
-     * Updates the object in memory and handles any exception
+     * Updates the fields in the edit form based on an Undo/Redo callback.
      */
-    public void updateAndHandle(){
-        try {
-            labelErrorMessage.setText("");
-            update();
-        }
-        catch (CustomException e) {
-            labelErrorMessage.setText(e.getMessage());
-        }
-        catch (Exception e) {
-            //Don't show the user this.
-            e.printStackTrace();
-        }
-        finally {
-            updateSkills();
-        }
+    public void updateFields() {
+        load();
     }
 }

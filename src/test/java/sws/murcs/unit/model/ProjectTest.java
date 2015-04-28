@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 import sws.murcs.debug.sampledata.ProjectGenerator;
@@ -32,6 +33,7 @@ public class ProjectTest {
     public static void oneTimeSetUp() {
         teamGenerator = new TeamGenerator();
         projectGenerator = new ProjectGenerator();
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before

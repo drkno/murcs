@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.debug.sampledata.Generator;
@@ -26,6 +27,7 @@ public class PersonTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         skillGenerator = new SkillGenerator();
+        UndoRedoManager.setDisabled(true);
     }
 
     @Before
@@ -33,7 +35,7 @@ public class PersonTest {
         skillGenerated = skillGenerator.generate();
         person = new Person();
         skill = new Skill();
-        skill.setShortName("PO");
+        skill.setShortName("LOL");
     }
 
     @After
@@ -61,7 +63,7 @@ public class PersonTest {
     @Test
     public void canBeRoleTest() throws Exception {
         person.addSkill(skill);
-        assertTrue(person.canBeRole("PO"));
+        assertTrue(person.canBeRole("LOL"));
         assertFalse(person.canBeRole("ScrumMaster"));
     }
 

@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import sws.murcs.EventNotification;
+import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 
 /**
@@ -16,7 +16,7 @@ import sws.murcs.model.Model;
  */
 public class CreateWindowController {
     private ViewUpdate okayClicked;
-    private EventNotification<Model> cancelClicked;
+    private ViewUpdate cancelClicked;
 
     private Model model;
 
@@ -27,7 +27,7 @@ public class CreateWindowController {
     private void cancelButtonClicked(ActionEvent event) {
         GridPane pane = contentPane;
         if (cancelClicked != null) try {
-            cancelClicked.eventNotification(model);
+            cancelClicked.updateListView(model);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class CreateWindowController {
      * Sets the method that is called when cancel is clicked
      * @param cancelClicked The method to call when cancel is clicked
      */
-    public void setCancelClicked(EventNotification<Model> cancelClicked) {
+    public void setCancelClicked(ViewUpdate cancelClicked) {
         this.cancelClicked = cancelClicked;
     }
 
@@ -90,11 +90,12 @@ public class CreateWindowController {
     /**
      * Creates a new form for with the 'content' node as it's content
      * @param content The content
+     * @param model The model
      * @param okayClicked The okay callback
      * @param cancelClicked The cancel callback
      * @return The form
      */
-    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, EventNotification<Model> cancelClicked){
+    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, ViewUpdate cancelClicked){
         try {
             FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();

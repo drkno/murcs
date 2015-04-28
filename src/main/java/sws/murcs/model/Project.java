@@ -1,10 +1,12 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class Project extends Model {
     private String description;
     @Editable(sort = 99)
     @TrackableValue
+    @XmlElementWrapper(name = "teams")
+    @XmlElement(name = "team")
     private List<WorkAllocation> allocations = new ArrayList<>();
 
     /**
@@ -34,6 +38,7 @@ public class Project extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
+        commit("edit project");
     }
 
     /**
@@ -81,6 +86,7 @@ public class Project extends Model {
             }
         }
         this.allocations.add(index, workAllocation);
+        commit("edit project");
     }
 
     /**
@@ -101,6 +107,7 @@ public class Project extends Model {
     public void removeAllocation(WorkAllocation allocation) {
         if (this.allocations.contains(allocation)) {
             this.allocations.remove(allocation);
+            commit("edit project");
         }
     }
 
@@ -111,5 +118,10 @@ public class Project extends Model {
     @Override
     public String toString() {
         return getShortName();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return object != null && getShortName() != null && object instanceof Project && ((Project) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
     }
 }

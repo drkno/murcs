@@ -15,7 +15,6 @@ public abstract class TrackableObject {
      */
     protected TrackableObject() {
         initialiseTrackedFields();
-        UndoRedoManager.add(this);
     }
 
     /**
@@ -25,7 +24,7 @@ public abstract class TrackableObject {
         trackedFields = new ArrayList<>();
         Class clazz = getClass();
         while (clazz != TrackableObject.class) {
-            for (Field field : getClass().getDeclaredFields()) {
+            for (Field field : clazz.getDeclaredFields()) {
                 if (field.isAnnotationPresent(TrackableValue.class)) {
                     trackedFields.add(field);
                 }
@@ -47,5 +46,23 @@ public abstract class TrackableObject {
      */
     public void stopTracking() {
         UndoRedoManager.remove(this);
+    }
+
+    /**
+     * Wrapper around commit to deal with exceptions.
+     * @param message commit message to use.
+     * @return the commit number.
+     */
+    protected long commit(String message) {
+        try {
+            return UndoRedoManager.commit(message);
+        }
+        catch (Exception e) {
+            // Something is very broken if we reach here
+            UndoRedoManager.forget();
+            System.err.println("UndoRedoManager broke with error:\n" + e.toString() +
+                    "\nAs a precaution all history has been forgotten.");
+            return UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+        }
     }
 }
