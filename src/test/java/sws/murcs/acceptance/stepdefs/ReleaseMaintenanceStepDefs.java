@@ -55,7 +55,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         release.setAssociatedProject(project);
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        model.addProject(project);
+        model.add(project);
     }
 
     @After
@@ -121,7 +121,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.Current.getCurrentModel().addRelease(release);
+        PersistenceManager.Current.getCurrentModel().add(release);
     }
 
     @When("^I edit the values of the release$")

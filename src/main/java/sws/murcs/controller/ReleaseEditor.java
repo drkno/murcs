@@ -86,7 +86,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
         //If it hasn't been added to the relational model yet then add it
         if (!model.getReleases().contains(edit))
-            model.addRelease(edit);
+            model.add(edit);
 
         //If there is a saved callback then call it
 //        if (onSaved != null)

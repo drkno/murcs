@@ -77,7 +77,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param project The new project
      * @throws DuplicateObjectException if the project already exists
      */
-    public void addProject(Project project) throws DuplicateObjectException {
+    private void addProject(Project project) throws DuplicateObjectException {
         if (!this.getProjects().contains(project) &&
                 !this.getProjects()
                         .stream()
@@ -94,7 +94,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds all given projects that are not already contained within the model
      * @param projects A List of projects to be added to the model
-     * @throws DuplicateObjectException If an yof the projects already exist
+     * @throws DuplicateObjectException If one of the projects already exist
      */
     public void addProjects(List<Project> projects) throws DuplicateObjectException {
         boolean badProject = false;
@@ -119,7 +119,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Removes the given project if it exists
      * @param project The project to remove
      */
-    public void removeProject(Project project) {
+    private void removeProject(Project project) {
         if (this.projects.contains(project))
             this.projects.remove(project);
     }
@@ -153,9 +153,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a person to the model if it doesn't exits
      * @param person to be added
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the relational model already has the person
+     * @throws DuplicateObjectException if the relational model already has the person
      */
-    public void addPerson(Person person) throws DuplicateObjectException {
+    private void addPerson(Person person) throws DuplicateObjectException {
         if (!this.getPeople().contains(person) &&
                 !this.getPeople()
                         .stream()
@@ -172,7 +172,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of people to the model
      * @param people People to be added
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the relational model already has a person from the people to be addeed
+     * @throws DuplicateObjectException if the relational model already has a person from the people to be added
      */
     public void addPeople(List<Person> people) throws DuplicateObjectException {
         for (Person person : people) {
@@ -184,7 +184,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Removes a person from unassigned people
      * @param person The unassigned person to remove
      */
-    public void removePerson(Person person) {
+    private void removePerson(Person person) {
         if (this.getPeople().contains(person)) {
             this.getPeople().remove(person);
             //Remove the person from any team they might be in
@@ -218,9 +218,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a team to the unassigned teams if the relational model does not already have that team
      * @param team The unassigned team to add
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the relational model already has that team
+     * @throws DuplicateObjectException if the relational model already has the team.
      */
-    public void addTeam(Team team) throws DuplicateObjectException {
+    private void addTeam(Team team) throws DuplicateObjectException {
         if (!this.teams.contains(team) &&
                 !this.teams
                         .stream()
@@ -237,7 +237,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of teams to add to the relational model
      * @param teams Teams to be added to the relational model
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the murcs already has a team from teams to be added
+     * @throws DuplicateObjectException if the murcs already has a team from teams to be added
      */
     public void addTeams(List<Team> teams) throws DuplicateObjectException {
         for (Team team : teams) {
@@ -249,7 +249,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Removes a team from the list of teams and from any projects
      * @param team The team to remove
      */
-    public void removeTeam(Team team) {
+    private void removeTeam(Team team) {
         if (this.teams.contains(team)) {
             this.teams.remove(team);
         }
@@ -268,9 +268,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a skill to skills only if the skill does not already exist
      * @param skill The skill to add
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the skill already exists in the relational model
+     * @throws DuplicateObjectException if the skill already exists in the relational model
      */
-    public void addSkill(Skill skill) throws DuplicateObjectException {
+    private void addSkill(Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
             this.skills.add(skill);
         }
@@ -280,7 +280,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of skills to the existing list of skills
      * @param skills Skills to be added existing skills
-     * @throws sws.murcs.exceptions.DuplicateObjectException if a skill is aleady in the relational model
+     * @throws DuplicateObjectException if a skill is already in the relational model
      */
     public void addSkills(List<Skill> skills) throws DuplicateObjectException {
         for (Skill skill : skills) {
@@ -292,7 +292,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Removes a skill from skills
      * @param skill The skill to remove
      */
-    public void removeSkill(Skill skill) {
+    private void removeSkill(Skill skill) {
         if (skills.contains(skill)) {
             this.skills.remove(skill);
 
@@ -304,7 +304,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Tries to add the object to the model
      * @param model the object to add to the model
-     * @throws sws.murcs.exceptions.DuplicateObjectException because you did something silly, like try to add an object that already exists
+     * @throws DuplicateObjectException because you tried to add an object that already exists
      */
     public void add(Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);
@@ -331,18 +331,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         UndoRedoManager.add(model);
         commit("create " + type.toString().toLowerCase());
-    }
-
-    /**
-     * Adds the given release to the list of releases
-     * @param release The release to add
-     * @throws DuplicateObjectException Thrown if the releases given is a duplicate
-     */
-    public void addRelease(Release release) throws DuplicateObjectException {
-        if (!releases.contains(release)) {
-            this.releases.add(release);
-        }
-        else throw new DuplicateObjectException("This release already exists");
     }
 
     /**
@@ -377,14 +365,43 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
+     * Adds the given release to the list of releases
+     * @param release The release to add
+     * @throws DuplicateObjectException Thrown if the releases given is a duplicate
+     */
+    private void addRelease(Release release) throws DuplicateObjectException {
+        if (!releases.contains(release)) {
+            this.releases.add(release);
+        }
+        else throw new DuplicateObjectException("This release already exists");
+    }
+
+    /**
      * Removes the specified release from the releases
      * @param release The release to remove
      */
-    public void removeRelease(Release release) {
+    private void removeRelease(Release release) {
         if (this.releases.contains(release)) {
             releases.remove(release);
-            UndoRedoManager.remove(release);
-            commit("remove release");
+        }
+    }
+
+    /**
+     * Gets the releases
+     * @return The releases
+     */
+    public ModelObservableArrayList<Release> getReleases() {
+        return releases;
+    }
+
+    /**
+     * Adds an arraylist of releases to the project
+     * @param releases The releases to be added
+     * @throws DuplicateObjectException
+     */
+    public void addReleases(ArrayList<Release> releases) throws DuplicateObjectException{
+        for (Release release : releases) {
+            addRelease(release);
         }
     }
 
@@ -487,24 +504,5 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (model instanceof Skill)
             return getSkills().contains(model);
         return false;
-    }
-
-    /**
-     * Gets the releases
-     * @return The releases
-     */
-    public ModelObservableArrayList<Release> getReleases() {
-        return releases;
-    }
-
-    /**
-     * Adds an arraylist of releases to the project
-     * @param releases The releases to be added
-     * @throws DuplicateObjectException
-     */
-    public void addReleases(ArrayList<Release> releases) throws DuplicateObjectException{
-        for (Release release : releases) {
-            addRelease(release);
-        }
     }
 }

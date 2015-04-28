@@ -58,7 +58,7 @@ public class RelationalModelTest {
             relationalModel = new RelationalModel();
             team = new Team();
             skill = new Skill();
-            relationalModel.addProject(projectGenerated);
+            relationalModel.add(projectGenerated);
         }
         catch (DuplicateObjectException exception) {
             //
@@ -80,21 +80,21 @@ public class RelationalModelTest {
     public void addUnassignedPersonTest() throws Exception {
         assertFalse(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
 
-        relationalModel.addPerson(unassignedPersonGenerated);
+        relationalModel.add(unassignedPersonGenerated);
         assertTrue(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addUnassignedPersonExceptionTest1() throws Exception {
-        relationalModel.addPerson(unassignedPersonGenerated);
-        relationalModel.addPerson(unassignedPersonGenerated);
+        relationalModel.add(unassignedPersonGenerated);
+        relationalModel.add(unassignedPersonGenerated);
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addUnassignedPersonExceptionTest2() throws Exception {
-        relationalModel.addPerson(unassignedPersonGenerated);
+        relationalModel.add(unassignedPersonGenerated);
         unassignedPerson.setShortName(unassignedPersonGenerated.getShortName());
-        relationalModel.addPerson(unassignedPerson);
+        relationalModel.add(unassignedPerson);
     }
 
     @Test
@@ -113,13 +113,13 @@ public class RelationalModelTest {
 
     @Test
     public void removeUnassignedPersonTest() throws Exception {
-        relationalModel.addPerson(unassignedPersonGenerated);
+        relationalModel.add(unassignedPersonGenerated);
         assertTrue(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
 
-        relationalModel.removePerson(unassignedPersonGenerated);
+        relationalModel.remove(unassignedPersonGenerated);
         assertFalse(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
 
-        relationalModel.removePerson(unassignedPersonGenerated);
+        relationalModel.remove(unassignedPersonGenerated);
         assertFalse(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
     }
 
@@ -127,21 +127,21 @@ public class RelationalModelTest {
     public void addUnassignedTeamTest() throws Exception {
         assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
 
-        relationalModel.addTeam(teamGenerated);
+        relationalModel.add(teamGenerated);
         assertTrue(relationalModel.getUnassignedTeams().contains(teamGenerated));
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addUnassignedTeamExceptionTest1() throws Exception {
-        relationalModel.addTeam(teamGenerated);
-        relationalModel.addTeam(teamGenerated);
+        relationalModel.add(teamGenerated);
+        relationalModel.add(teamGenerated);
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addUnassignedTeamExceptionTest2() throws Exception {
-        relationalModel.addTeam(teamGenerated);
+        relationalModel.add(teamGenerated);
         team.setShortName(teamGenerated.getShortName());
-        relationalModel.addTeam(teamGenerated);
+        relationalModel.add(teamGenerated);
     }
 
     @Test
@@ -160,13 +160,13 @@ public class RelationalModelTest {
 
     @Test
     public void removeUnassignedTeamTest() throws Exception {
-        relationalModel.addTeam(teamGenerated);
+        relationalModel.add(teamGenerated);
         assertTrue(relationalModel.getUnassignedTeams().contains(teamGenerated));
 
-        relationalModel.removeTeam(teamGenerated);
+        relationalModel.remove(teamGenerated);
         assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
 
-        relationalModel.removeTeam(teamGenerated);
+        relationalModel.remove(teamGenerated);
         assertFalse(relationalModel.getUnassignedTeams().contains(teamGenerated));
     }
 
@@ -174,21 +174,21 @@ public class RelationalModelTest {
     public void addSkillTest() throws Exception {
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
 
-        relationalModel.addSkill(skillGenerated);
+        relationalModel.add(skillGenerated);
         assertTrue(relationalModel.getSkills().contains(skillGenerated));
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addSkillExceptionTest1() throws Exception {
-        relationalModel.addSkill(skillGenerated);
-        relationalModel.addSkill(skillGenerated);
+        relationalModel.add(skillGenerated);
+        relationalModel.add(skillGenerated);
     }
 
     @Test (expected = DuplicateObjectException.class)
     public void addSkillExceptionTest2() throws Exception {
-        relationalModel.addSkill(skillGenerated);
+        relationalModel.add(skillGenerated);
         skill.setShortName(skillGenerated.getShortName());
-        relationalModel.addSkill(skill);
+        relationalModel.add(skill);
     }
 
     @Test
@@ -208,13 +208,13 @@ public class RelationalModelTest {
 
     @Test
     public void removeSkillTest() throws Exception {
-        relationalModel.addSkill(skillGenerated);
+        relationalModel.add(skillGenerated);
         assertTrue(relationalModel.getSkills().contains(skillGenerated));
 
-        relationalModel.removeSkill(skillGenerated);
+        relationalModel.remove(skillGenerated);
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
 
-        relationalModel.removeSkill(skillGenerated);
+        relationalModel.remove(skillGenerated);
         assertFalse(relationalModel.getSkills().contains(skillGenerated));
     }
 
@@ -401,15 +401,15 @@ public class RelationalModelTest {
 
     @Test (expected = DuplicateObjectException.class)
     public void addReleaseTest() throws DuplicateObjectException {
-        relationalModel.addRelease(releaseGenerated);
-        relationalModel.addRelease(releaseGenerated);
+        relationalModel.add(releaseGenerated);
+        relationalModel.add(releaseGenerated);
     }
 
     @Test
     public void addRemoveReleaseTest() throws DuplicateObjectException {
-        relationalModel.addRelease(releaseGenerated);
+        relationalModel.add(releaseGenerated);
         assertTrue(relationalModel.getReleases().contains(releaseGenerated));
-        relationalModel.removeRelease(releaseGenerated);
+        relationalModel.remove(releaseGenerated);
         assertFalse(relationalModel.getReleases().contains(releaseGenerated));
         relationalModel.add(releaseGenerated);
         assertTrue(relationalModel.getReleases().contains(releaseGenerated));

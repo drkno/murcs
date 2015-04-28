@@ -111,10 +111,10 @@ public class ReportGeneratorTest {
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
         release.setAssociatedProject(project);
 
-        relationalModel.addProject(project);
-        relationalModel.addTeam(team2);
-        relationalModel.addPerson(person4);
-        relationalModel.addRelease(release);
+        relationalModel.add(project);
+        relationalModel.add(team2);
+        relationalModel.add(person4);
+        relationalModel.add(release);
     }
 
     @After

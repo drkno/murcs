@@ -47,7 +47,7 @@ public class SkillEditor extends GenericEditor<Skill> {
 
         //If we haven't added the edit yet, throw them in the list of unassigned people
         if (!model.getSkills().contains(edit))
-            model.addSkill(edit);
+            model.add(edit);
 
         //If we have a saved callBack, call it
 //        if (onSaved != null)

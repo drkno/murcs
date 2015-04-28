@@ -72,7 +72,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         //If we haven't added the team yet, throw them in the list of unassigned people
         if (!model.getTeams().contains(edit))
-            model.addTeam(edit);
+            model.add(edit);
 
         //If we have a saved callBack, call it
 //        if (onSaved != null)

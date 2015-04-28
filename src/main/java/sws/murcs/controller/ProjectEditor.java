@@ -38,7 +38,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         if (!model.getProjects().contains(edit))
-            model.addProject(edit);
+            model.add(edit);
 
         //If we have a saved callBack, call it
 //        if (onSaved != null)

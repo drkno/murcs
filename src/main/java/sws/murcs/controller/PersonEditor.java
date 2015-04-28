@@ -166,7 +166,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
         // Save the person if it hasn't been yet
         if (!model.getPeople().contains(edit))
-            model.addPerson(edit);
+            model.add(edit);
 
         // Call the callback if it exists
 //        if (onSaved != null)

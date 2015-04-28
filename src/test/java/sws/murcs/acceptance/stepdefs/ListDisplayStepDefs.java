@@ -63,10 +63,10 @@ public class ListDisplayStepDefs extends ApplicationTest {
         project = new Project();
         project.setShortName("Testing");
 
-        model.addPerson(person1);
-        model.addPerson(person2);
-        model.addPerson(person3);
-        model.addProject(project);
+        model.add(person1);
+        model.add(person2);
+        model.add(person3);
+        model.add(project);
     }
 
     @After
