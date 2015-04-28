@@ -409,7 +409,18 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 return findUsages((Person)model);
             case Skills:
                 return findUsages((Skill)model);
+            case Release:
+                return findUsages((Release)model);
         }
+        throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for " + model.getClass().getName() + ") in Relational Model. You should fix this");
+    }
+
+    /**
+     * Gets a list of all the places a release is used
+     * @param release The release
+     * @return The places the release is used
+     */
+    private ArrayList<Model> findUsages(Release release){
         return new ArrayList<>();
     }
 
@@ -419,7 +430,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the project
      */
     private ArrayList<Model> findUsages(Project project){
-        return new ArrayList<Model>();
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Release release : getReleases()){
+            if (release.getAssociatedProject() == project) {
+                usages.add(release);
+            }
+        }
+        return usages;
     }
 
     /**
@@ -481,7 +498,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
             return getPeople().contains(model);
         if (model instanceof Skill)
             return getSkills().contains(model);
-        return false;
+        if (model instanceof Release)
+            return getReleases().contains(model);
+
+        throw new UnsupportedOperationException("We don't know what to do with this model (exists for " + model.getClass().getName() + ") in Relational Model. You should fix this");
     }
 
     /**
