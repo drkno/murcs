@@ -5,6 +5,7 @@ import sws.murcs.model.*;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A model which matches the output of the status reports so it can be directly serialized.
@@ -14,16 +15,19 @@ import java.util.Collections;
 public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
-    private ArrayList<Project> projects = new ArrayList<>();
+    private List<Project> projects = new ArrayList<>();
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
-    private ArrayList<Release> releases = new ArrayList<>();
-    @XmlElementWrapper(name = "unassignedTeams")
+    private List<Release> releases = new ArrayList<>();
+    @XmlElementWrapper(name = "teams")
     @XmlElement(name = "team")
-    private ArrayList<Team> listUnassignedTeams = new ArrayList<>();
+    private List<Team> teams = new ArrayList<>();
+    @XmlElementWrapper(name = "workAllocations")
+    @XmlElement(name = "workAllocation")
+    private List<WorkAllocation> workAllocations = new ArrayList<>();
     @XmlElementWrapper(name = "unassignedPeople")
     @XmlElement(name = "person")
-    private ArrayList<Person> listUnassignedPeople = new ArrayList<>();
+    private List<Person> listUnassignedPeople = new ArrayList<>();
 
     /**
      * Constructor.
@@ -32,8 +36,8 @@ public class ReportModel {
     public ReportModel(RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
         releases.addAll(relationalModel.getReleases());
-        listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
-        Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName().compareTo(t2.getShortName()));
+        teams.addAll(relationalModel.getTeams());
+        workAllocations.addAll(relationalModel.getAllAllocations());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName().compareTo(p2.getShortName()));
     }

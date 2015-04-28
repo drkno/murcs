@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -102,9 +103,13 @@ public class ReportGeneratorTest {
         project.setShortName("FITR");
         project.setLongName("Fitness is Training Right");
         project.setDescription("We are building a fitness tracking application for the world");
-        project.addTeam(team1);
 
-        //Release
+        // Work Allocation
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation = new WorkAllocation(project, team1, startDate, endDate);
+
+        // Release
         Release release = new Release();
         release.setShortName("Now");
         release.setDescription("This current time");
@@ -114,6 +119,7 @@ public class ReportGeneratorTest {
         relationalModel.addProject(project);
         relationalModel.addTeam(team2);
         relationalModel.addPerson(person4);
+        relationalModel.addAllocation(allocation);
         relationalModel.addRelease(release);
     }
 

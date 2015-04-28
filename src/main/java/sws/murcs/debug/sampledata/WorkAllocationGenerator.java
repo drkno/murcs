@@ -4,73 +4,70 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Generates random work allocations for teams on projects
  */
 public class WorkAllocationGenerator {
 
-    private Generator<Project> projectGenerator;
-    private Generator<Team> teamGenerator;
-
-    private List<Project> projectPool;
-    private List<Team> teamPool;
+    private ArrayList<Project> projectPool;
+    private ArrayList<Team> teamPool;
 
     /**
-     * Instantiates a new Project and Team generator
-     */
-    public WorkAllocationGenerator() {
-        this.projectGenerator = new ProjectGenerator();
-        this.teamGenerator = new TeamGenerator();
-    }
-
-    /**
-     * Instantiates a new Project and Team generator
-     * @param projectGenerator The project generator to use
-     * @param teamGenerator The team generator to use
-     */
-    public WorkAllocationGenerator(Generator<Project> projectGenerator, Generator<Team> teamGenerator) {
-        this.projectGenerator = projectGenerator;
-        this.teamGenerator = teamGenerator;
-    }
-
-    /**
-     * Sets the project generator
-     * @param projectGenerator The project generator
-     */
-    public void setProjectGenerator(Generator<Project> projectGenerator) {
-        this.projectGenerator = projectGenerator;
-    }
-
-    /**
-     * Sets the team generator
-     * @param teamGenerator The team generator
-     */
-    public void setTeamGenerator(Generator<Team> teamGenerator) {
-        this.teamGenerator = teamGenerator;
-    }
-
-    /**
-     * Sets the project pool. If null, projects will be randomly generated
+     * Sets the project pool
      * @param projectPool The project pool
      */
-    public void setProjectPool(List<Project> projectPool) {
+    public void setProjectPool(ArrayList<Project> projectPool) {
         this.projectPool = projectPool;
     }
 
     /**
-     * Sets the team pool. If null, teams will be randomly generated
+     * Sets the team pool
      * @param teamPool The team pool
      */
-    public void setTeamPool(List<Team> teamPool) {
+    public void setTeamPool(ArrayList<Team> teamPool) {
         this.teamPool = teamPool;
     }
 
-    public List<WorkAllocation> generate() {
-        List<WorkAllocation> allocations = new ArrayList<>();
+    /**
+     * Creates work allocations to occupy a team for the next six months
+     * @param team The team to create work for
+     * @return List of work allocations
+     */
+    private ArrayList<WorkAllocation> createWork(Team team) {
+        Random random = new Random();
+        int numProjects = projectPool.size();
+        ArrayList<WorkAllocation> allocations = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate;
+        LocalDate endDate = currentDate;
+        while (endDate.isBefore(currentDate.plus(6, ChronoUnit.MONTHS))) {
+            startDate = endDate.plus(random.nextInt(7)+1, ChronoUnit.DAYS);
+            endDate = startDate.plus(random.nextInt(21)+1, ChronoUnit.DAYS);
+            Project project = projectPool.get(random.nextInt(numProjects));
+            allocations.add(new WorkAllocation(project, team, startDate, endDate));
+        }
+        return allocations;
+    }
 
+    /**
+     * Creates a list of work allocations for all the given teams on any of the given projects
+     * @return The list of work allocations
+     */
+    public ArrayList<WorkAllocation> generate() {
+        if (projectPool == null || teamPool == null || projectPool.isEmpty() || teamPool.isEmpty()) {
+            return null;
+        }
+
+        ArrayList<WorkAllocation> allocations = new ArrayList<>();
+        for (Team team : teamPool) {
+            allocations.addAll(createWork(team));
+        }
         return allocations;
     }
 }

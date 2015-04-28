@@ -5,6 +5,7 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random projects with teams
@@ -80,18 +81,19 @@ public class ProjectGenerator implements Generator<Project> {
         int teamCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of teams, make some up
-        if (teamPool == null){
-            for (int i = 0; i < teamCount; i++){
+        if (teamPool == null) {
+            for (int i = 0; i < teamCount; i++) {
                 Team newTeam = teamGenerator.generate();
-                if (!generated.stream().filter(team -> newTeam.equals(team)).findAny().isPresent()) {
+                if (!generated.stream().filter(newTeam::equals).findAny().isPresent()) {
                     generated.add(newTeam);
                 }
             }
-        }else{
+        }
+        else {
             //If there are more teams than we have just assign all of them
             if (teamCount > teamPool.size()) teamCount = teamPool.size();
 
-            for (int i = 0; i < teamCount; i++){
+            for (int i = 0; i < teamCount; i++) {
                 //Remove the team so we can't pick it again. We'll put it back when we're done
                 Team team = teamPool.remove(NameGenerator.random(teamPool.size()));
                 generated.add(team);
@@ -111,10 +113,9 @@ public class ProjectGenerator implements Generator<Project> {
 
         String shortName = NameGenerator.randomElement(projectNames);
         String longName = NameGenerator.randomString(1000);
-
         String description = NameGenerator.randomElement(descriptions);
 
-        ArrayList<Team> teams = generateTeams(10, 50);
+        //List<Team> teams = generateTeams(10, 50);
 
         try {
             project.setShortName(shortName);
@@ -126,14 +127,6 @@ public class ProjectGenerator implements Generator<Project> {
         }
         project.setLongName(longName);
         project.setDescription(description);
-
-        try{
-            project.addTeams(teams);
-        } catch (CustomException e) {
-            e.printStackTrace();
-            return null;
-            //Do nothing, don't have to deal with the exception if only generating test data.
-        }
 
         return project;
     }

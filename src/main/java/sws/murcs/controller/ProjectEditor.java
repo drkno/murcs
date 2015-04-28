@@ -59,13 +59,10 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerStartDate.setValue(null);
             datePickerEndDate.setValue(null);
 
-            // Attempt to update the model
-            // If the work is successfully added to the team then it will
-            // certainly be able to be added to the project
+            // Save this work allocation to the model
             WorkAllocation allocation = new WorkAllocation(edit, selectedTeam, startDate, endDate);
-            selectedTeam.addAllocation(allocation);
-            edit.addAllocation(allocation);
-            observableAllocations.setAll(edit.getAllocations()); // This way, the list remains ordered
+            model.addAllocation(allocation);
+            observableAllocations.setAll(model.getProjectsAllocations(edit)); // This way, the list remains ordered
         }
 
         if (!model.getProjects().contains(edit))
@@ -105,6 +102,8 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Done so that Undo/Redo can update the editing pane without losing current selection.
      */
     public void updateFields() {
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
         String currentShortName = textFieldShortName.getText();
         String currentLongName = textFieldLongName.getText();
         String currentDescription = textFieldDescription.getText();
@@ -118,8 +117,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             textFieldDescription.setText(edit.getDescription());
         }
 
-        choiceBoxAddTeam.getItems().setAll(PersistenceManager.Current.getCurrentModel().getTeams());
-        observableAllocations.setAll(edit.getAllocations());
+        choiceBoxAddTeam.getItems().setAll(model.getTeams());
+        observableAllocations.setAll(model.getProjectsAllocations(edit));
     }
 
     /**
@@ -161,8 +160,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
-        allocation.getTeam().removeAllocation(allocation);
-        edit.removeAllocation(allocation);
+        PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
         observableAllocations.remove(rowNumber);
     }
 }

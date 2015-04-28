@@ -90,7 +90,7 @@ public class PersonTest {
 
     @Test
     public void addSkillsTest() throws Exception {
-        List<Skill> testSkills = new ArrayList<>();
+        ArrayList<Skill> testSkills = new ArrayList<>();
         assertEquals(person.getSkills().size(), 0);
         testSkills.add(skillGenerated);
 

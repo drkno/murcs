@@ -13,12 +13,10 @@ import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class TeamTest {
-
 
     private static Generator<Team> teamGenerator;
     private static Generator<Person> personGenerator;
@@ -89,7 +87,7 @@ public class TeamTest {
 
     @Test
     public void addMembersTest() throws Exception {
-        List<Person> testPeople = new ArrayList<>();
+        ArrayList<Person> testPeople = new ArrayList<>();
         assertEquals(team.getMembers().size(), 0);
         testPeople.add(personGenerated);
 

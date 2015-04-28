@@ -9,8 +9,9 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -99,7 +100,7 @@ public class RelationalModelTest {
 
     @Test
     public void addUnassignedPeopleTest() throws Exception {
-        List<Person> testUnassignedPeople = new ArrayList<>();
+        ArrayList<Person> testUnassignedPeople = new ArrayList<>();
         assertEquals(relationalModel.getUnassignedPeople().size(), 0);
         testUnassignedPeople.add(unassignedPersonGenerated);
 
@@ -146,7 +147,7 @@ public class RelationalModelTest {
 
     @Test
     public void addTeamsTest() throws Exception {
-        List<Team> testTeams = new ArrayList<>();
+        ArrayList<Team> testTeams = new ArrayList<>();
         assertEquals(relationalModel.getTeams().size(), 0);
         testTeams.add(teamGenerated);
 
@@ -193,7 +194,7 @@ public class RelationalModelTest {
 
     @Test
     public void addSkillsTest() throws Exception {
-        List<Skill> testSkills = new ArrayList<>();
+        ArrayList<Skill> testSkills = new ArrayList<>();
         relationalModel.getSkills().clear();
         assertEquals(0, relationalModel.getSkills().size());
         testSkills.add(skillGenerated);
@@ -219,7 +220,7 @@ public class RelationalModelTest {
     }
 
     @Test
-    public void testFindUsagesProject() throws Exception{
+    public void testFindUsagesProject() throws Exception {
         Project newProject = projectGenerated;
 
         assertEquals("If the project is not attached to the model it should not be in use", 0, relationalModel.findUsages(newProject).size());
@@ -227,9 +228,9 @@ public class RelationalModelTest {
     }
 
     @Test
-    public void testFindUsagesTeam()throws Exception{
+    public void testFindUsagesTeam() throws Exception {
         relationalModel.getTeams().clear();
-        relationalModel.getProjects().forEach(p -> p.getTeams().clear());
+        relationalModel.getProjects().forEach(p -> relationalModel.getProjectsAllocations(p).clear());
 
         Team newTeam = (new TeamGenerator()).generate();
 
@@ -238,14 +239,17 @@ public class RelationalModelTest {
         relationalModel.add(newTeam);
         assertEquals("A team should have no usages when it is not used", 0, relationalModel.findUsages(newTeam).size());
 
-        relationalModel.getProjects().get(0).addTeam(newTeam);
+        Project p = relationalModel.getProjects().get(0);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(3, ChronoUnit.DAYS);
+        relationalModel.addAllocation(new WorkAllocation(p, newTeam, startDate, endDate));
         assertEquals("The team should be used in one place", 1, relationalModel.findUsages(newTeam).size());
         assertEquals("The team should be used by the project", relationalModel.getProjects().get(0), relationalModel.findUsages(newTeam).get(0));
 
     }
 
     @Test
-    public void testFindUsagesPerson() throws Exception{
+    public void testFindUsagesPerson() throws Exception {
         relationalModel.getPeople().clear();
         relationalModel.getTeams().clear();
 
@@ -266,7 +270,7 @@ public class RelationalModelTest {
     }
 
     @Test
-    public void testFindUsagesSkill() throws Exception{
+    public void testFindUsagesSkill() throws Exception {
         relationalModel.getPeople().clear();
         relationalModel.getSkills().clear();
 
@@ -287,7 +291,7 @@ public class RelationalModelTest {
     }
 
     @Test
-    public void testInUseProject() throws Exception{
+    public void testInUseProject() throws Exception {
         Project newProject = projectGenerated;
 
         assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
@@ -295,30 +299,14 @@ public class RelationalModelTest {
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 
-    @Test
-    public void testDeletionsCascadeTeam() throws Exception{
-        //Make sure we're working on a clean state
-        relationalModel.getTeams().clear();
-
-        Project project = projectGenerated;
-        project.getTeams().clear();
-
-        for (int i = 0; i < 10; i++){
-            Team team = teamGenerator.generate();
-            team.setShortName(team.getLongName() + i);
-
-            relationalModel.add(team);
-            project.addTeam(team);
-        }
-
-        assertEquals("The project should now have ten teams", 10, project.getTeams().size());
-
-        for (int i = 0; i < relationalModel.getTeams().size(); i++){
-            relationalModel.remove(relationalModel.getTeams().get(i));
-            i--;
-        }
-
-        assertEquals("The team should have been removed from the project", 0, project.getTeams().size());
+    @Test (expected = DuplicateObjectException.class)
+    public void testOverlappedWork() throws Exception {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        relationalModel.addAllocation(allocation1);
+        relationalModel.addAllocation(allocation2);
     }
 
     @Test

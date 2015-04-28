@@ -61,10 +61,11 @@ public class FilePersistenceLoaderTest {
     public void testLoadModel() throws Exception {
         String testFile = getNewTestFile();
         RelationalModel model = generator.generate();
+        int numProjects = model.getProjects().size();
         loader.saveModel(testFile, model);
         RelationalModel loadModel = loader.loadModel(testFile);
         Assert.assertNotNull(loadModel);
-        Assert.assertTrue(loadModel.getProjects().size() == 1);
+        Assert.assertEquals(numProjects, loadModel.getProjects().size());
         Assert.assertEquals(loadModel.getProjects().get(0).getShortName(), model.getProjects().get(0).getShortName());
     }
 

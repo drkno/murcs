@@ -26,6 +26,7 @@ import sws.murcs.view.App;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main app class controller
@@ -441,4 +442,3 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         popup.show();
     }
 }
-
