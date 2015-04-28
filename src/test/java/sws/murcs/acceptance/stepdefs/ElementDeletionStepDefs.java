@@ -80,7 +80,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
-                model.addProject(project2);
+                model.add(project2);
                 model.add(person);
                 model.add(release);
                 model.add(team);
