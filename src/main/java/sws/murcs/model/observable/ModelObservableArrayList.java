@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Observable ArrayList type with custom callback property for object toStrings().
@@ -17,6 +18,21 @@ import java.util.ArrayList;
  */
 public class ModelObservableArrayList<T extends Model> extends ObservableArrayList<T> implements Serializable {
     private ArrayList<T> backingField;
+
+    /**
+     * Default constructor.
+     */
+    public ModelObservableArrayList() {
+        super();
+    }
+
+    /**
+     * Clones from existing collection.
+     * @param c original collection.
+     */
+    public ModelObservableArrayList(Collection c) {
+        super(c);
+    }
 
     /**
      * Work around for Observable array lists not being serializable.
