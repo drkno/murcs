@@ -14,7 +14,8 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The main app class
@@ -73,30 +74,35 @@ public class App extends Application{
      */
     public static void main(String[] args) {
         PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());
+        UndoRedoManager.setDisabled(true);
 
-        if (args.length > 0) {
-            for (String s : args) {
-                if (Objects.equals(s, "debug")) {
-                    UndoRedoManager.setDisabled(true);
-                    PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(RelationalModelGenerator.Stress.Low).generate());
-                    RelationalModel model = PersistenceManager.Current.getCurrentModel();
-                    UndoRedoManager.setDisabled(false);
-                    UndoRedoManager.add(model);
-                    model.getPeople().forEach(p -> UndoRedoManager.add(p));
-                    model.getTeams().forEach(t -> UndoRedoManager.add(t));
-                    model.getSkills().forEach(k -> UndoRedoManager.add(k));
-                    model.getProjects().forEach(l -> UndoRedoManager.add(l));
-                    model.getReleases().forEach(r -> UndoRedoManager.add(r));
-                    try{UndoRedoManager.commit("Generate Model Data");} catch (Exception e){}
+        List<String> argsList = Arrays.asList(args);
+        int debug = argsList.indexOf("debug");
+
+        if (debug >= 0) {
+            RelationalModelGenerator.Stress stressLevel = RelationalModelGenerator.Stress.Low;
+            if (debug+1 < args.length) {
+                switch (args[debug+1]) {
+                    case "low": stressLevel = RelationalModelGenerator.Stress.Low; break;
+                    case "med": stressLevel = RelationalModelGenerator.Stress.Medium; break;
+                    case "high": stressLevel = RelationalModelGenerator.Stress.High; break;
                 }
             }
+            PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
         } else {
             //Give us an empty model
             PersistenceManager.Current.setCurrentModel(new RelationalModel());
-            UndoRedoManager.add(PersistenceManager.Current.getCurrentModel());
-            UndoRedoManager.forget();
-            try{UndoRedoManager.commit("Initial State");} catch (Exception e){}
         }
+
+        UndoRedoManager.setDisabled(false);
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        UndoRedoManager.add(model);
+        model.getPeople().forEach(p -> UndoRedoManager.add(p));
+        model.getTeams().forEach(t -> UndoRedoManager.add(t));
+        model.getSkills().forEach(k -> UndoRedoManager.add(k));
+        model.getProjects().forEach(l -> UndoRedoManager.add(l));
+        model.getReleases().forEach(r -> UndoRedoManager.add(r));
+        try{UndoRedoManager.commit("Initial State");} catch (Exception e){}
         launch(args);
     }
 }
