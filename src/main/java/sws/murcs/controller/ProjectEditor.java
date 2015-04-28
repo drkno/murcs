@@ -33,16 +33,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (edit.getDescription() == null || !descriptionTextField.getText().equals(edit.getDescription())) {
             edit.setDescription(descriptionTextField.getText());
         }
-
-        // Save the project if it hasn't been yet
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-        if (!model.getProjects().contains(edit))
-            model.add(edit);
-
-        //If we have a saved callBack, call it
-//        if (onSaved != null)
-//            onSaved.updateListView(edit);
     }
 
     /**

@@ -155,22 +155,12 @@ public class PersonEditor extends GenericEditor<Person> {
         if (edit.getUserId() == null || !usernameTextField.getText().equals(edit.getUserId())) {
             edit.setUserId(usernameTextField.getText());
         }
-
-        RelationalModel model= PersistenceManager.Current.getCurrentModel();
         Skill selectedSkill = skillChoiceBox.getValue();
 
         if (selectedSkill != null) {
             generateSkillNode(selectedSkill);
             edit.addSkill(selectedSkill);
         }
-
-        // Save the person if it hasn't been yet
-        if (!model.getPeople().contains(edit))
-            model.add(edit);
-
-        // Call the callback if it exists
-//        if (onSaved != null)
-//            onSaved.updateListView(edit);
     }
 
     /**

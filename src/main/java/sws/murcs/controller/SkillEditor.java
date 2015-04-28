@@ -42,16 +42,6 @@ public class SkillEditor extends GenericEditor<Skill> {
         if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
             edit.setDescription(descriptionTextArea.getText());
         }
-
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-        //If we haven't added the edit yet, throw them in the list of unassigned people
-        if (!model.getSkills().contains(edit))
-            model.add(edit);
-
-        //If we have a saved callBack, call it
-//        if (onSaved != null)
-//            onSaved.updateListView(edit);
     }
 
     /**

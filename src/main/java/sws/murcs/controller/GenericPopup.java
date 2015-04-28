@@ -12,8 +12,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.view.App;
+
+import java.util.function.Consumer;
+import java.util.concurrent.Callable;
 
 /**
  * Generic popup creator and controller
@@ -111,16 +115,12 @@ public class GenericPopup extends AnchorPane {
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    public void addButton(String buttonText, Position position, Action action, ViewUpdate func) {
+    public void addButton(String buttonText, Position position, Action action, Consumer func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
         button.setOnAction((a) -> {
-            try {
-                func.updateListView(null);
-            } catch (Exception e) {
-                //Todo catch this
-            }
+            func.accept(null);
         });
 
         switch (action) {
@@ -211,7 +211,7 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    public void addOkCancelButtons(ViewUpdate okFunction) {
+    public void addOkCancelButtons(Consumer okFunction) {
         addOkCancelButtons(okFunction, m -> this.close());
     }
 
@@ -220,7 +220,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    public void addOkCancelButtons(ViewUpdate okFunction, ViewUpdate cancelFunction) {
+    public void addOkCancelButtons(Consumer okFunction, Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -229,7 +229,7 @@ public class GenericPopup extends AnchorPane {
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    public void addOkButton(ViewUpdate okFunction) {
+    public void addOkButton(Consumer okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

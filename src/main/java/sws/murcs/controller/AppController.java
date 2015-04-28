@@ -50,6 +50,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private Button removeButton;
     @FXML
     private GridPane contentPane;
+
     private boolean consumeChoiceBoxEvent = false;
 
     /**
@@ -68,7 +69,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
             if (!consumeChoiceBoxEvent) {
-                updateListView(null);
+                updateList();
             } else {
                 // Consume the event, don't update the display
                 consumeChoiceBoxEvent = false;
@@ -85,8 +86,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
             Parent pane = null;
             try {
-                ViewUpdate update = this;
-                pane = EditorHelper.getEditForm((Model) newValue, update);
+                pane = EditorHelper.getEditForm((Model) newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -96,40 +96,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
-        updateListView(null);
-    }
-
-    /**
-     * Updates the display list on the left hand side of the screen to the type selected in the choice box.
-     * @param newModelObject The type selected in the choice box.
-     */
-    public void updateListView(Model newModelObject) {
-        ModelTypes type;
-        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-
-        if (newModelObject == null) {
-            updateList(null, selectedType);
-        }
-        else {
-            type = ModelTypes.getModelType(newModelObject);
-            if (selectedType == type) {
-                updateList(newModelObject, type);
-            }
-            else {
-                // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
-                consumeChoiceBoxEvent = true;
-                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                updateList(newModelObject, type);
-            }
-        }
+        updateList();
     }
 
     /**
      * Updates the display list on the left hand side of the screen.
-     * @param newModelObject new model object, that may have been created.
-     * @param type type of model object to refresh
      */
-    private void updateList(Model newModelObject, ModelTypes type) {
+    private void updateList() {
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -145,13 +119,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             default: throw new NotImplementedException();
         }
         displayList.setItems(arrayList);
-
-        if (newModelObject != null) {
-            displayList.getSelectionModel().select(newModelObject);
-        }
-        else {
-            displayList.getSelectionModel().select(0);
-        }
+        displayList.getSelectionModel().select(0);
     }
 
     /**
@@ -241,7 +209,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
             }
-            updateListView(null);
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
@@ -358,8 +325,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         if (clazz != null) {
-            ViewUpdate viewUpdate = this;
-            EditorHelper.createNew(clazz, viewUpdate);
+            EditorHelper.createNew(clazz, this);
         }
     }
 
@@ -390,14 +356,35 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         popup.setTitleText("Really delete?");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            updateListView(null);
         });
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
+    }
+
+    @Override
+    public void selectItem(Model param) {
+        ModelTypes type;
+        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+
+        if (param == null) {
+            displayList.getSelectionModel().select(0);
+        }
+        else {
+            type = ModelTypes.getModelType(param);
+            if (selectedType == type) {
+                displayList.getSelectionModel().select(param);
+            }
+            else {
+                // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
+                consumeChoiceBoxEvent = true;
+                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
+                displayList.getSelectionModel().select(param);
+            }
+        }
     }
 }
 

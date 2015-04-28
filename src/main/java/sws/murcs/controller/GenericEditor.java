@@ -12,7 +12,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     protected T edit;
-    protected ViewUpdate onSaved;
 
     public GenericEditor() {
         UndoRedoManager.addChangeListener(this);
@@ -31,14 +30,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public void setEdit(T toEdit){
         this.edit = toEdit;
-    }
-
-    /**
-     * Sets the callback that is fired when the object is saved
-     * @param onSaved callback to set
-     */
-    public void setSavedCallback(ViewUpdate onSaved){
-        this.onSaved = onSaved;
     }
 
     /**
