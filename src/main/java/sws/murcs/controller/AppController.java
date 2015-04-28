@@ -131,6 +131,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
+            popup.setTitleText("Do you wish to save changes?");
             popup.setMessageText("You have unsaved changes to your project.");
             popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
