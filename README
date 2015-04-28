@@ -7,7 +7,7 @@ Using  the Application
 Information about using the application and/or troubleshooting can be found in the userguide (doc/user_guide/seng302t1_user_guide.pdf)
 
 Running the Tests
-The Tests are located in the src/tests directory. There are two types of tests in the tests directory: Acceptance and Unit.
+The Tests are located in the src/test directory. There are two types of tests in the tests directory: Acceptance and Unit. Note: The feature files are located in the 'resources' folder within said directory
 
 Unit Tests
 In order to run the unit tests, open the project in an IDE of your choice (we recommend Intellij by Jetbrains) and right click the unit folder (src/test/java/sws.murcs/unit) and select the 'Run Tests' option from the context menu and the tests should run.
