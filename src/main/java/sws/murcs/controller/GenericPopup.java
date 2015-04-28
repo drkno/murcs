@@ -3,27 +3,22 @@ package sws.murcs.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.view.App;
-
 import java.util.function.Consumer;
-import java.util.concurrent.Callable;
 
 /**
  * Generic popup creator and controller
  */
 public class GenericPopup extends AnchorPane {
-
 
     /***
      * Enum for specifying which side of the dialog you want the button to appear on.
@@ -42,10 +37,12 @@ public class GenericPopup extends AnchorPane {
         NONE
     }
 
-    private @FXML Text messageText;
-    private @FXML Text messageTitle;
+    private String messageTextString = null;
+    private @FXML Label messageText;
+    private String messageTitleString = null;
+    private @FXML Label messageTitle;
+
     private @FXML ImageView messageImage;
-    private @FXML HBox titleImageHBox;
     //Contains left aligned buttons
     private @FXML HBox hBoxLeft;
     //Contains right align buttons
@@ -92,10 +89,18 @@ public class GenericPopup extends AnchorPane {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        popupScene = new Scene(this, 400, 200);
+        popupScene = new Scene(this);
         popupStage.initOwner(App.stage);
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
+        popupStage.setResizable(false);
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo.png")));
+        messageImage.setImage(iconImage);
+
+        if (messageTitleString != null) messageTitle.setText(messageTitleString);
+        if (messageTextString != null) messageText.setText(messageTextString);
 
         if (exception != null) {
             setMessageText(exception.getMessage());
@@ -175,7 +180,10 @@ public class GenericPopup extends AnchorPane {
      * @param message The message you want to show on the dialog.
      */
     public void setMessageText(String message) {
-        messageText.setText(message);
+        if (message == null) return;
+        if (messageText == null)
+            messageTextString = message;
+        else messageText.setText(message);
     }
 
     /***
@@ -192,7 +200,9 @@ public class GenericPopup extends AnchorPane {
      */
     public void setTitleText(String titleText) {
         if (titleText == null) return;
-        messageTitle.setText(titleText);
+        if (messageTitle == null)
+            messageTitleString = titleText;
+        else messageTitle.setText(titleText);
     }
 
     /***
