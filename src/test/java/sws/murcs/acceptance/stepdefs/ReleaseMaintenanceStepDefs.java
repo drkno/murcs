@@ -38,7 +38,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Before
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
@@ -67,7 +66,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @And("^I have selected the release view from the display list type$")
     public void I_have_selected_the_release_view_from_the_display_list_type() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Release");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(null));
+        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
     @And("^a release is selected from the list$")
