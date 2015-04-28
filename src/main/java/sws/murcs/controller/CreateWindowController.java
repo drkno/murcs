@@ -10,13 +10,16 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
+import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.function.Consumer;
 
 /**
  * Creates a new Controller with an Ok and Cancel button
  */
 public class CreateWindowController {
     private ViewUpdate okayClicked;
-    private ViewUpdate cancelClicked;
+    private Consumer cancelClicked;
 
     private Model model;
 
@@ -26,13 +29,7 @@ public class CreateWindowController {
     @FXML
     private void cancelButtonClicked(ActionEvent event) {
         GridPane pane = contentPane;
-        if (cancelClicked != null) try {
-            cancelClicked.updateListView(model);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        cancelClicked.accept(null);
         Stage stage = (Stage)contentPane.getScene().getWindow();
         stage.close();
     }
@@ -41,10 +38,11 @@ public class CreateWindowController {
     private void okayButtonClicked(ActionEvent event) {
         if (okayClicked != null) {
             try {
+                PersistenceManager.Current.getCurrentModel().add(model);
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
                     return;
-                okayClicked.updateListView(model);
+                okayClicked.selectItem(model);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -59,7 +57,7 @@ public class CreateWindowController {
      * Sets the method that is called when cancel is clicked
      * @param cancelClicked The method to call when cancel is clicked
      */
-    public void setCancelClicked(ViewUpdate cancelClicked) {
+    public void setCancelClicked(Consumer cancelClicked) {
         this.cancelClicked = cancelClicked;
     }
 
@@ -95,7 +93,7 @@ public class CreateWindowController {
      * @param cancelClicked The cancel callback
      * @return The form
      */
-    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, ViewUpdate cancelClicked){
+    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, Consumer cancelClicked){
         try {
             FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();

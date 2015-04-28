@@ -309,6 +309,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     public void add(Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);
 
+        long commitNumber = UndoRedoManager.getHead().getCommitNumber();
+
         switch (type) {
             case Project:
                 addProject((Project) model);
@@ -329,6 +331,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 throw new UnsupportedOperationException();
         }
 
+        try {
+            UndoRedoManager.assimilate(commitNumber);
+        } catch (Exception e) {
+            // This should never happen
+            e.printStackTrace();
+        }
         UndoRedoManager.add(model);
         commit("create " + type.toString().toLowerCase());
     }
@@ -339,6 +347,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
+        long commitNumber = UndoRedoManager.getHead().getCommitNumber();
 
         switch (type) {
             case Project:
@@ -360,6 +369,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 throw new UnsupportedOperationException();
         }
 
+        try {
+            UndoRedoManager.assimilate(commitNumber);
+        } catch (Exception e) {
+            // This should never happen
+            e.printStackTrace();
+        }
         UndoRedoManager.remove(model);
         commit("remove " + type.toString().toLowerCase());
     }

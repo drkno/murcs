@@ -62,21 +62,11 @@ public class TeamEditor extends GenericEditor<Team> {
         Person scrumMaster = scrumMasterPicker.getValue();
         edit.setScrumMaster(scrumMaster);
 
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
         Person person = addTeamMemberPicker.getValue();
-
 
         if (person != null) {
             edit.addMember(person);
         }
-
-        //If we haven't added the team yet, throw them in the list of unassigned people
-        if (!model.getTeams().contains(edit))
-            model.add(edit);
-
-        //If we have a saved callBack, call it
-//        if (onSaved != null)
-//            onSaved.updateListView(edit);
 
         //Load the team again, to make sure everything is updated. We could probably do this better
         load();
