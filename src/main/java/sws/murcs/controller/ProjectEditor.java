@@ -5,8 +5,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.persistence.PersistenceManager;
 
 /**
  * Controller for the edit creator popup window.

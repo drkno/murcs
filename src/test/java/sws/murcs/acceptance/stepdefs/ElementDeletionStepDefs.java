@@ -29,7 +29,6 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     private FxRobot fx;
     private Stage primaryStage;
     private Project project;
-    private Project project2;
     private Release release;
     private Person person;
     private Skill skill;
@@ -41,58 +40,49 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @Override
     public void start(Stage stage) throws Exception {}
 
-    @Before
-    public void setUpStuff() throws Exception {
-        UndoRedoManager.forget(true);
-        //UndoRedoManager.setDisabled(false);
+    @Before("@ElementDeletion")
+    public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
 
-        fx.interact(() -> {
-            model = new RelationalModel();
-            PersistenceManager.Current.setCurrentModel(model);
+        model = new RelationalModel();
+        PersistenceManager.Current.setCurrentModel(model);
+        UndoRedoManager.forget(true);
+        UndoRedoManager.add(model);
 
-            project = new Project();
-            project2 = new Project();
-            try {
-                project.setShortName("Testing");
-                project2.setShortName("Testing2");
+        project = new Project();
+        project.setShortName("Testing");
 
-                skill = new Skill();
-                skill.setShortName("Skill");
-                skill.setDescription("A skill");
+        skill = new Skill();
+        skill.setShortName("Skill");
+        skill.setDescription("A skill");
 
-                person = new Person();
-                person.setUserId("foo123");
-                person.setShortName("Things");
-                person.addSkill(skill);
+        person = new Person();
+        person.setUserId("foo123");
+        person.setShortName("Things");
+        person.addSkill(skill);
 
-                team = new Team();
-                team.setShortName("team");
-                team.setDescription("A team");
-                team.addMember(person);
+        team = new Team();
+        team.setShortName("team");
+        team.setDescription("A team");
+        team.addMember(person);
 
-                release = new Release();
-                release.setShortName("TestRelease");
-                release.setAssociatedProject(project);
-                release.setReleaseDate(LocalDate.of(2015, 4, 22));
+        release = new Release();
+        release.setShortName("TestRelease");
+        release.setAssociatedProject(project);
+        release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-                model.add(project);
-                model.add(project2);
-                model.add(person);
-                model.add(release);
-                model.add(team);
-                model.add(skill);
-            }
-            catch (Exception e) {
-                //Do nothing
-            }
-        });
+        model.add(project);
+        model.add(person);
+        model.add(release);
+        model.add(team);
+        model.add(skill);
     }
 
-    @After
+    @After("@ElementDeletion")
     public void tearDown() throws Exception {
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
@@ -100,6 +90,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Given("^I have a project selected$")
     public void I_have_a_project_selected() throws Throwable {
+        fx.clickOn("#displayChoiceBox").clickOn("People");
         fx.clickOn("#displayChoiceBox").clickOn("Project");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
@@ -129,23 +120,21 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Then("^the model is deleted$")
     public void the_model_is_deleted() throws Throwable {
-        interact(() -> {
-            ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-            assertTrue(displayList.getItems().size() == 1);
-        });
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        assertTrue(displayList.getItems().size() == 0);
     }
 
-    @And("^the deletion can be undone$")
-    public void the_deletion_can_be_undone() throws Throwable {
+    @And("^\"([^\"]*)\" deletion can be undone$")
+    public void the_deletion_of_a_type_can_be_undone(String type) throws Throwable {
         fx.clickOn("#editMenu");
         fx.moveBy(-10, 0);
         fx.clickOn("#undoMenuItem");
-        fx.clickOn("#displayChoiceBox").clickOn("People");
-        fx.clickOn("#displayChoiceBox").clickOn("Project");
-        interact(() -> {
-            int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
-            assertTrue(displayListSize == 2);
-        });
+        fx.clickOn("#displayChoiceBox").clickOn(type);
+        fx.clickOn("#editMenu");
+        int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
+        fx.clickOn("#editMenu");
+        fx.moveBy(-10, 0);
+        assertTrue(displayListSize == 1);
 
     }
 
@@ -163,7 +152,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Given("^I have a skill selected$")
     public void I_have_a_skill_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Skill");
+        fx.clickOn("#displayChoiceBox").clickOn("Skills");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 

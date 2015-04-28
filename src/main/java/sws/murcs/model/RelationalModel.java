@@ -122,6 +122,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private void removeProject(Project project) {
         if (this.projects.contains(project))
             this.projects.remove(project);
+        //Remove any releases that are associated with the project
+        getReleases().stream().filter(release -> release.getAssociatedProject() == project).forEach(this::remove);
     }
 
     /**
@@ -446,6 +448,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 return findUsages((Person)model);
             case Skills:
                 return findUsages((Skill)model);
+            case Release:
+                return findUsages((Release)model);
         }
         return new ArrayList<>();
     }
@@ -456,7 +460,22 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the project
      */
     private ArrayList<Model> findUsages(Project project){
-        return new ArrayList<Model>();
+        ArrayList<Model> usages = new ArrayList<>();
+        for (Release r : getReleases()) {
+            if (r.getAssociatedProject().equals(project)) {
+                usages.add(r);
+            }
+        }
+        return usages;
+    }
+
+    /**
+     * Gets a list of places that a release is used
+     * @param release The release to find the usages of
+     * @return The usages of the release
+     */
+    private ArrayList<Model> findUsages(Release release) {
+        return new ArrayList<>();
     }
 
     /**
@@ -518,6 +537,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             return getPeople().contains(model);
         if (model instanceof Skill)
             return getSkills().contains(model);
+        if (model instanceof Release)
+            return getReleases().contains(model);
         return false;
     }
 }

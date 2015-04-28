@@ -23,7 +23,7 @@ public class EditorHelper {
     /**
      * Creates a new form for creating a new object of the specified type
      * @param clazz The type of object to create
-     * @param updated Called when the object is successully updated
+     * @param update Called when the object is successully updated
      */
     public static void createNew(Class<? extends Model> clazz, ViewUpdate update){
         try {

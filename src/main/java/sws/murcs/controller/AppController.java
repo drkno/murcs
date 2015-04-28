@@ -51,8 +51,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private GridPane contentPane;
 
-    private boolean consumeChoiceBoxEvent = false;
-
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
@@ -67,14 +65,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
-            if (!consumeChoiceBoxEvent) {
-                updateList();
-            } else {
-                // Consume the event, don't update the display
-                consumeChoiceBoxEvent = false;
-            }
-        });
+        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> updateList());
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -109,7 +100,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (model == null) return;
 
-        ModelObservableArrayList arrayList = null;
+        ModelObservableArrayList arrayList;
         switch (type) {
             case Project: arrayList = model.getProjects(); break;
             case People: arrayList = model.getPeople(); break;
@@ -245,11 +236,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void undoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.revert();
+            selectItem(null);
         }
         catch (Exception e) {
             // Something went very wrong
             UndoRedoManager.forget();
-            e.printStackTrace();
         }
     }
 
@@ -261,6 +252,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void redoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.remake();
+            selectItem(null);
         }
         catch (Exception e) {
             // something went terribly wrong....
@@ -379,8 +371,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 displayList.getSelectionModel().select(param);
             }
             else {
-                // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
-                consumeChoiceBoxEvent = true;
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 displayList.getSelectionModel().select(param);
             }

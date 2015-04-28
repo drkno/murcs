@@ -40,16 +40,17 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {}
 
-    @Before
+    @Before("@ListDisplay")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
-
         model = new RelationalModel();
         PersistenceManager.Current.setCurrentModel(model);
+        UndoRedoManager.forget(true);
+        UndoRedoManager.add(model);
 
         person1 = new Person();
         person1.setShortName("John");
@@ -67,9 +68,10 @@ public class ListDisplayStepDefs extends ApplicationTest {
         model.add(person2);
         model.add(person3);
         model.add(project);
+
     }
 
-    @After
+    @After("@ListDisplay")
     public void tearDown() throws Exception {
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);

@@ -1,3 +1,4 @@
+@ListDisplay
 Feature: ListDisplay
 
     Scenario: Change the list display type, update list items

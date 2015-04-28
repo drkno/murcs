@@ -36,8 +36,9 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @Override
     public void start(Stage stage) throws Exception {}
 
-    @Before
+    @Before("@ReleaseMaintenance")
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
@@ -45,6 +46,8 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
         model = new RelationalModel();
         PersistenceManager.Current.setCurrentModel(model);
+        UndoRedoManager.forget(true);
+        UndoRedoManager.add(model);
 
         project = new Project();
         project.setShortName("Testing");
@@ -57,7 +60,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         model.add(project);
     }
 
-    @After
+    @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
