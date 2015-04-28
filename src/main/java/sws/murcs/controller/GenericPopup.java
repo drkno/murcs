@@ -96,7 +96,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.setResizable(false);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
 
         if (messageTitleString != null) messageTitle.setText(messageTitleString);
