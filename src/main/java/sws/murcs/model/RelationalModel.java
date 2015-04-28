@@ -125,7 +125,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         //Remove all the releases associated with the project
         for (int i = 0; i < getReleases().size(); i++){
             if (getReleases().get(i).getAssociatedProject() == project) {
-                getProjects().remove(i);
+                removeRelease(getReleases().get(i));
                 i--;
             }
         }
