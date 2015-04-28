@@ -37,9 +37,7 @@ public class GenericPopup extends AnchorPane {
         NONE
     }
 
-    private String messageTextString = null;
     private @FXML Label messageText;
-    private String messageTitleString = null;
     private @FXML Label messageTitle;
 
     private @FXML ImageView messageImage;
@@ -98,9 +96,6 @@ public class GenericPopup extends AnchorPane {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
-
-        if (messageTitleString != null) messageTitle.setText(messageTitleString);
-        if (messageTextString != null) messageText.setText(messageTextString);
 
         if (exception != null) {
             setMessageText(exception.getMessage());
@@ -181,9 +176,7 @@ public class GenericPopup extends AnchorPane {
      */
     public void setMessageText(String message) {
         if (message == null) return;
-        if (messageText == null)
-            messageTextString = message;
-        else messageText.setText(message);
+        messageText.setText(message);
     }
 
     /***
@@ -200,9 +193,7 @@ public class GenericPopup extends AnchorPane {
      */
     public void setTitleText(String titleText) {
         if (titleText == null) return;
-        if (messageTitle == null)
-            messageTitleString = titleText;
-        else messageTitle.setText(titleText);
+        messageTitle.setText(titleText);
     }
 
     /***
