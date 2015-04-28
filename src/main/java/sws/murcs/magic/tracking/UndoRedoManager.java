@@ -294,7 +294,7 @@ public class UndoRedoManager {
      */
     public static void assimilate(long commitNumber) throws Exception {
         if (canRemake()) throw new Exception("Cannot assimilate while remake is possible.");
-        if (head.getCommitNumber() == commitNumber)return;
+        if (head == null || head.getCommitNumber() == commitNumber)return;
         while (!revertStack.isEmpty()) {
             if (revertStack.peek().getCommitNumber() == commitNumber)break;
             revertStack.pop();

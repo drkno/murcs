@@ -309,7 +309,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     public void add(Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);
 
-        long commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
 
         switch (type) {
             case Project:
@@ -347,7 +347,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public void remove(Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
-        long commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
 
         switch (type) {
             case Project:
