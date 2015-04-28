@@ -285,4 +285,19 @@ public class UndoRedoManager {
     public static boolean getDisable() {
         return disabled;
     }
+
+    /**
+     * Removes history until a specific commit number.
+     * WARNING: this is the nuclear option, you will not get history back.
+     * @param commitNumber commit number to remove until.
+     * @throws Exception If you use this method when remake is possible.
+     */
+    public static void assimilate(long commitNumber) throws Exception {
+        if (canRemake()) throw new Exception("Cannot assimilate while remake is possible.");
+        while (!revertStack.isEmpty()) {
+            if (remakeStack.peek().getCommitNumber() == commitNumber) break;
+            remakeStack.pop();
+        }
+        notifyListeners(ChangeState.Assimilate);
+    }
 }

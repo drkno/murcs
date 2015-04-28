@@ -7,5 +7,6 @@ public enum ChangeState {
     Forget,
     Revert,
     Commit,
-    Remake
+    Remake,
+    Assimilate
 }
