@@ -21,7 +21,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     private String shortName;
     @TrackableValue
     private String longName;
-    private ModelObjectProperty<String> shortNameProperty;
+    private transient ModelObjectProperty<String> shortNameProperty;
 
     /**
      * Gets the short name.
