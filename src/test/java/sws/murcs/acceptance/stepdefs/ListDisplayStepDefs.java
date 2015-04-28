@@ -42,6 +42,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @Before
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(true);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();

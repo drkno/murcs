@@ -1,3 +1,4 @@
+@Manual
 Feature: Release Maintenance
 
   Scenario: Create a new Release from the file menu
