@@ -1,7 +1,6 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -49,11 +48,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private ListView displayList;
     @FXML
     private Button removeButton;
-
     @FXML
     private GridPane contentPane;
-
-    private ObservableList displayListItems;
     private boolean consumeChoiceBoxEvent = false;
 
     /**
@@ -141,25 +137,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         ModelObservableArrayList arrayList = null;
         switch (type) {
-            case Project:
-                arrayList = model.getProjects();
-                break;
-            case People:
-                arrayList = model.getPeople();
-                break;
-            case Team:
-                arrayList = model.getTeams();
-                break;
-            case Skills:
-                arrayList = model.getSkills();
-                break;
-            case Release:
-                arrayList = model.getReleases();
-                break;
+            case Project: arrayList = model.getProjects(); break;
+            case People: arrayList = model.getPeople(); break;
+            case Team: arrayList = model.getTeams(); break;
+            case Skills: arrayList = model.getSkills(); break;
+            case Release: arrayList = model.getReleases(); break;
             default: throw new NotImplementedException();
         }
-        displayListItems = arrayList;
-        displayList.setItems(displayListItems);
+        displayList.setItems(arrayList);
 
         if (newModelObject != null) {
             displayList.getSelectionModel().select(newModelObject);
