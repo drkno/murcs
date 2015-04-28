@@ -121,6 +121,14 @@ public class RelationalModel extends TrackableObject implements Serializable {
     public void removeProject(Project project) {
         if (this.projects.contains(project))
             this.projects.remove(project);
+
+        //Remove all the releases associated with the project
+        for (int i = 0; i < getReleases().size(); i++){
+            if (getReleases().get(i).getAssociatedProject() == project) {
+                getProjects().remove(i);
+                i--;
+            }
+        }
     }
 
     /**
@@ -370,7 +378,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 removeRelease((Release) model);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("We don't know what to do with this model (remove for " + model.getClass().getName() + ") in Relational Model. You should fix this");
         }
     }
 
