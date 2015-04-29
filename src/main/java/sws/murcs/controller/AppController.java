@@ -13,7 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -107,7 +106,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Team: arrayList = model.getTeams(); break;
             case Skills: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
-            default: throw new NotImplementedException();
+            default: throw new UnsupportedOperationException();
         }
         displayList.setItems(arrayList);
         displayList.getSelectionModel().select(0);
