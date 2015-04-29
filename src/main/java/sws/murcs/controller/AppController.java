@@ -2,12 +2,17 @@ package sws.murcs.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -25,6 +30,7 @@ import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 
 import java.io.File;
+import java.security.Key;
 import java.util.ArrayList;
 
 /**
@@ -33,9 +39,8 @@ import java.util.ArrayList;
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
     @FXML
-    private Parent root;
-    @FXML
-    private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    private MenuItem fileQuit, undoMenuItem, redoMenuItem, openProject, saveProject, generateReport, addProject,
+            addTeam, addPerson, addSkill, addRelease, showHide;
     @FXML
     private VBox vBoxSideDisplay;
     @FXML
@@ -85,9 +90,45 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             contentPane.getChildren().add(pane);
         });
 
+        setUpShortCuts();
+
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    /**
+     * Sets up the keyboard shortcuts for the application
+     */
+    private void setUpShortCuts() {
+        //Menu item short cuts
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+        saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+
+        //Key combinations for things other than menu items
+        borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
+    }
+
+    /**
+     * Handles keys being pressed
+     * @param event Key event
+     */
+    private void handleKey(KeyEvent event) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN).match(event)) {
+            addClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+            removeClicked(null);
+        }
     }
 
     /**
@@ -288,7 +329,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void addClicked(ActionEvent event) {
         Class<? extends Model> clazz = null;
-        if (event.getSource() instanceof MenuItem) {
+        if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
