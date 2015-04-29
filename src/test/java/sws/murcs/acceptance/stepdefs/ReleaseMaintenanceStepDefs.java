@@ -23,6 +23,7 @@ import sws.murcs.view.App;
 import java.time.LocalDate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
@@ -56,7 +57,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
                 release = new Release();
                 release.setShortName("TestRelease");
-                release.setAssociatedProject(project);
+                project.addRelease(release);
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
@@ -121,7 +122,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
         Release release1 = (Release) displayList.getItems().get(0);
         assertEquals("Release",release1.getShortName());
-        assertEquals(project, release1.getAssociatedProject());
+        assertTrue(project.getReleases().contains(release1));
     }
 
     @And("^I click on the add button$")
@@ -149,6 +150,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         Release release1 = (Release) displayList.getItems().get(0);
         assertEquals("TestReleaseFoo", release1.getShortName());
         assertEquals("This is really important", release1.getDescription());
-        assertEquals(project, release1.getAssociatedProject());
+        assertTrue(project.getReleases().contains(release1));
     }
 }

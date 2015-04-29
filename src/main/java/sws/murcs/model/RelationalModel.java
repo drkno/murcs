@@ -124,11 +124,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.projects.remove(project);
 
         //Remove all the releases associated with the project
-        for (int i = 0; i < getReleases().size(); i++){
-            if (getReleases().get(i).getAssociatedProject() == project) {
-                removeRelease(getReleases().get(i));
-                i--;
-            }
+        for (Release release : project.getReleases()){
+            removeRelease(release);
         }
     }
 
@@ -476,10 +473,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     private ArrayList<Model> findUsages(Project project){
         ArrayList<Model> usages = new ArrayList<>();
-        for (Release release : getReleases()){
-            if (release.getAssociatedProject() == project) {
-                usages.add(release);
-            }
+        for (Release release : project.getReleases()){
+            usages.add(release);
         }
         return usages;
     }

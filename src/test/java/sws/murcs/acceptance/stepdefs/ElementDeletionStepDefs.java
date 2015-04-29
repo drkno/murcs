@@ -71,7 +71,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
                 release = new Release();
                 release.setShortName("TestRelease");
-                release.setAssociatedProject(project);
+                project.addRelease(release);
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
