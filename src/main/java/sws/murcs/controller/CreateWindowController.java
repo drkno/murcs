@@ -40,7 +40,6 @@ public class CreateWindowController {
     private void okayButtonClicked(ActionEvent event) {
         if (okayClicked != null) {
             try {
-                //
                 contentPane.requestFocus();
                 PersistenceManager.Current.getCurrentModel().add(model);
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");

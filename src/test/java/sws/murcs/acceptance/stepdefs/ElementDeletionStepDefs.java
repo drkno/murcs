@@ -1,6 +1,3 @@
-//This does not work properly and may never work properly but just in case it is left here so it can be
-//changed in the future to work
-//
 package sws.murcs.acceptance.stepdefs;
 
 import cucumber.api.java.After;

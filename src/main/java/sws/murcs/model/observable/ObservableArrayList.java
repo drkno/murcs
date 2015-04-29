@@ -12,6 +12,7 @@ import java.util.Collection;
  * @param <T> type of the list, expected to extend Model.
  */
 public class ObservableArrayList<T extends Model> extends ObservableListWrapper<T> {
+
     /**
      * Creates a new empty ModelObservableArrayList with the default callback.
      */

@@ -8,7 +8,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
-import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import java.util.HashMap;
@@ -59,7 +58,6 @@ public class EditorHelper {
      * Creates a new form for editing a team which will call the saved callback
      * every time a change is saved
      * @param model The model item to create
-     * @param okayClicked The save callback
      * @return The form
      */
     public static Parent getEditForm(Model model){
