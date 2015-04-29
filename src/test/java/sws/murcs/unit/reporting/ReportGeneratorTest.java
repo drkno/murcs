@@ -6,12 +6,16 @@ import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.reporting.ReportGenerator;
+import sws.murcs.reporting.ReportModel;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -102,9 +106,13 @@ public class ReportGeneratorTest {
         project.setShortName("FITR");
         project.setLongName("Fitness is Training Right");
         project.setDescription("We are building a fitness tracking application for the world");
-        project.addTeam(team1);
 
-        //Release
+        // Work Allocation
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation = new WorkAllocation(project, team1, startDate, endDate);
+
+        // Release
         Release release = new Release();
         release.setShortName("Now");
         release.setDescription("This current time");
@@ -114,6 +122,7 @@ public class ReportGeneratorTest {
         relationalModel.add(project);
         relationalModel.add(team2);
         relationalModel.add(person4);
+        relationalModel.addAllocation(allocation);
         relationalModel.add(release);
     }
 

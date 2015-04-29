@@ -6,7 +6,6 @@ import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Model of a person.
@@ -96,7 +95,7 @@ public class Person extends Model {
      * @param skills Skills to be added to person
      * @throws sws.murcs.exceptions.DuplicateObjectException if the person has any of the skills in the list
      */
-    public void addSkills(List<Skill> skills) throws DuplicateObjectException {
+    public void addSkills(ArrayList<Skill> skills) throws DuplicateObjectException {
         for (Skill skill : skills) {
             this.addSkill(skill);
         }

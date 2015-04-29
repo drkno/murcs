@@ -2,18 +2,13 @@
 Feature: Status Reports
 
   Scenario:
-    When I click the File menu
-    And I click "Generate Report" from the menu
-    Then A Save File Dialog appears
+    When I generate a status report
+    Then a Save File Dialog appears
 
   Scenario:
-    Given The Save File Dialog appears
-    When I choose an appropriate save location
-    And I specify a filename
-    And I click the "Save" button in the dialog
-    Then The report is saved to the given file location
+    Given I choose to save a report
+    Then the report is saved
 
   Scenario:
-    Given The Save File Dialog appears
-    When I click the cancel button
-    Then Generate Report operation is canceled smoothly
+    Given I cancel saving a report
+    Then the report is not saved

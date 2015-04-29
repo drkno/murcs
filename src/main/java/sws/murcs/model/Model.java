@@ -16,6 +16,7 @@ import java.io.Serializable;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Model extends TrackableObject implements Serializable {
+
     @TrackableValue
     @XmlAttribute
     private String shortName;

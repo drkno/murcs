@@ -4,12 +4,13 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.List;
 
 /**
  * Generates random RelationalModels
  */
 public class RelationalModelGenerator implements Generator<RelationalModel> {
+
     public enum Stress{
         High,
         Medium,
@@ -20,9 +21,8 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     private final TeamGenerator teamGenerator;
     private final PersonGenerator personGenerator;
     private final SkillGenerator skillGenerator;
-
     private final ReleaseGenerator releaseGenerator;
-    private final Random random;
+    private final WorkAllocationGenerator workAllocationGenerator;
 
     private Stress stress;
 
@@ -43,7 +43,8 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         projectGenerator.setTeamGenerator(teamGenerator);
 
         releaseGenerator = new ReleaseGenerator();
-        random = new Random();
+
+        workAllocationGenerator = new WorkAllocationGenerator();
     }
 
     private ArrayList<Model> generateItems(Generator<? extends Model> generator, int min, int max){
@@ -53,7 +54,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
         for (int i = 0; i < count; i++){
             Model g = generator.generate();
-            if (!items.stream().filter(m -> g.equals(m)).findAny().isPresent())
+            if (!items.stream().filter(g::equals).findAny().isPresent())
                 items.add(g);
         }
         return items;
@@ -104,8 +105,8 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         try{
             RelationalModel model = new RelationalModel();
 
-            int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN, SkillGenerator.HIGH_STRESS_MIN),
-                    max = getMax(stress, SkillGenerator.LOW_STRESS_MAX, SkillGenerator.MEDIUM_STRESS_MAX, SkillGenerator.HIGH_STRESS_MAX);
+            int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN, SkillGenerator.HIGH_STRESS_MIN);
+            int max = getMax(stress, SkillGenerator.LOW_STRESS_MAX, SkillGenerator.MEDIUM_STRESS_MAX, SkillGenerator.HIGH_STRESS_MAX);
             ArrayList<Skill> skills = new ArrayList<>();
             for (Model m : generateItems(skillGenerator, min, max)){
                 skills.add((Skill)m);
@@ -134,21 +135,26 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             for (Model m : generateItems(projectGenerator, min, max)){
                 projects.add((Project)m);
             }
-            
+
             releaseGenerator.setProjectPool(projects);
             ArrayList<Release> releases = new ArrayList<>();
             min = getMin(stress, ReleaseGenerator.LOW_STRESS_MIN, ReleaseGenerator.MEDIUM_STRESS_MIN, ReleaseGenerator.HIGH_STRESS_MIN);
             max = getMax(stress, ReleaseGenerator.LOW_STRESS_MAX, ReleaseGenerator.MEDIUM_STRESS_MAX, ReleaseGenerator.HIGH_STRESS_MAX);
-            for (Model m: generateItems(releaseGenerator, min, max)) {
+            for (Model m : generateItems(releaseGenerator, min, max)) {
                 releases.add((Release)m);
             }
-            
+
+            workAllocationGenerator.setProjectPool(projects);
+            workAllocationGenerator.setTeamPool(teams);
+            ArrayList<WorkAllocation> allocations = workAllocationGenerator.generate();
+
 
             model.addSkills(skills);
             model.addPeople(people);
             model.addTeams(teams);
             model.addProjects(projects);
             model.addReleases(releases);
+            model.addAllocations(allocations);
 
             return model;
         }

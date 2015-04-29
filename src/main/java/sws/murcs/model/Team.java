@@ -4,6 +4,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import java.time.LocalDate;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Team extends Model {
+
     @TrackableValue
     private String description;
     @TrackableValue
@@ -32,7 +34,7 @@ public class Team extends Model {
      * @return A list of the team members
      */
     public ArrayList<Person> getMembers() {
-        return members;
+        return this.members;
     }
 
     /**
@@ -40,7 +42,7 @@ public class Team extends Model {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     /**
@@ -57,7 +59,7 @@ public class Team extends Model {
      * @return the scrum master
      */
     public Person getScrumMaster() {
-        return scrumMaster;
+        return this.scrumMaster;
     }
 
     /**
@@ -78,7 +80,7 @@ public class Team extends Model {
      * @return the PO
      */
     public Person getProductOwner() {
-        return productOwner;
+        return this.productOwner;
     }
 
     /**
@@ -114,7 +116,7 @@ public class Team extends Model {
      * @param members People to be added to the team
      * @throws sws.murcs.exceptions.DuplicateObjectException if a person is already in a team
      */
-    public void addMembers(List<Person> members) throws DuplicateObjectException {
+    public void addMembers(ArrayList<Person> members) throws DuplicateObjectException {
         for (Person member : members) {
             this.addMember(member);
         }

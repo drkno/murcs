@@ -1,10 +1,18 @@
 package sws.murcs.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.persistence.PersistenceManager;
+
+import java.time.LocalDate;
 
 /**
  * Controller for the edit creator popup window.
@@ -12,25 +20,53 @@ import sws.murcs.model.Project;
  */
 public class ProjectEditor extends GenericEditor<Project> {
 
-    @FXML
-    private TextField projectTextFieldShortName, textFieldLongName, descriptionTextField;
+    @FXML private TextField textFieldShortName, textFieldLongName, textFieldDescription;
+    @FXML private TableView<WorkAllocation> teamsViewer;
+    @FXML private TableColumn<WorkAllocation, Team> tableColumnTeams;
+    @FXML private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates, tableColumnEndDates;
+    @FXML private DatePicker datePickerStartDate, datePickerEndDate;
+    @FXML private ChoiceBox<Team> choiceBoxAddTeam;
+    @FXML private Label labelErrorMessage;
 
-    @FXML
-    private Label labelErrorMessage;
+    ObservableList<WorkAllocation> observableAllocations;
 
     /**
      * Creates a new or updates the current edit being edited.
      */
     public void update() throws Exception {
-        if (edit.getShortName() == null || !projectTextFieldShortName.getText().equals(edit.getShortName())) {
-            edit.setShortName(projectTextFieldShortName.getText());
+        if (edit.getShortName() == null || !textFieldShortName.getText().equals(edit.getShortName())) {
+            edit.setShortName(textFieldShortName.getText());
         }
         if (edit.getLongName() == null || !textFieldLongName.getText().equals(edit.getLongName())) {
             edit.setLongName(textFieldLongName.getText());
         }
-        if (edit.getDescription() == null || !descriptionTextField.getText().equals(edit.getDescription())) {
-            edit.setDescription(descriptionTextField.getText());
+        if (edit.getDescription() == null || !textFieldDescription.getText().equals(edit.getDescription())) {
+            edit.setDescription(textFieldDescription.getText());
         }
+
+        // Save the project if it hasn't been yet
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        // Extract details of a work period
+        LocalDate startDate = datePickerStartDate.getValue();
+        LocalDate endDate = datePickerEndDate.getValue();
+        Team selectedTeam = choiceBoxAddTeam.getValue();
+
+        if (selectedTeam != null && startDate != null && endDate != null) {
+
+            // Clear user inputs for work period
+            choiceBoxAddTeam.getSelectionModel().clearSelection();
+            datePickerStartDate.setValue(null);
+            datePickerEndDate.setValue(null);
+
+            // Save this work allocation to the model
+            WorkAllocation allocation = new WorkAllocation(edit, selectedTeam, startDate, endDate);
+            model.addAllocation(allocation);
+            observableAllocations.setAll(model.getProjectsAllocations(edit)); // This way, the list remains ordered
+        }
+
+        if (!model.getProjects().contains(edit))
+            model.add(edit);
     }
 
     /**
@@ -63,18 +99,23 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Done so that Undo/Redo can update the editing pane without losing current selection.
      */
     public void updateFields() {
-        String currentShortName = projectTextFieldShortName.getText();
+        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+
+        String currentShortName = textFieldShortName.getText();
         String currentLongName = textFieldLongName.getText();
-        String currentDescription = descriptionTextField.getText();
+        String currentDescription = textFieldDescription.getText();
         if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
-            projectTextFieldShortName.setText(edit.getShortName());
+            textFieldShortName.setText(edit.getShortName());
         }
         if (edit.getLongName() != null && !currentLongName.equals(edit.getLongName())) {
             textFieldLongName.setText(edit.getLongName());
         }
         if (edit.getDescription() != null && !currentDescription.equals(edit.getShortName())) {
-            descriptionTextField.setText(edit.getDescription());
+            textFieldDescription.setText(edit.getDescription());
         }
+
+        choiceBoxAddTeam.getItems().setAll(model.getTeams());
+        observableAllocations.setAll(model.getProjectsAllocations(edit));
     }
 
     /**
@@ -82,7 +123,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     @FXML
     public void initialize() {
-        projectTextFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) updateAndHandle();
         });
 
@@ -90,8 +131,42 @@ public class ProjectEditor extends GenericEditor<Project> {
             if (oldValue && !newValue) updateAndHandle();
         });
 
-        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        textFieldDescription.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) updateAndHandle();
         });
+
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) updateAndHandle();
+        });
+
+        datePickerStartDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) updateAndHandle();
+        });
+
+        datePickerEndDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) updateAndHandle();
+        });
+
+        observableAllocations = FXCollections.observableArrayList();
+        tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
+        tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        teamsViewer.setItems(observableAllocations);
+    }
+
+    /**
+     * Called by the "Unschedule Work" button
+     * Removes a work period from both the project and team
+     */
+    @FXML
+    private void buttonUnscheduleTeamClick() {
+        if (teamsViewer.getSelectionModel().getSelectedIndex() == -1) {
+            return;
+        }
+
+        int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
+        WorkAllocation allocation = observableAllocations.get(rowNumber);
+        PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
+        observableAllocations.remove(rowNumber);
     }
 }

@@ -376,4 +376,3 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 }
-

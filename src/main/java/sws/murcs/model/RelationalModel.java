@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.controller.ModelTypes;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -8,6 +9,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +20,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
     private ModelObservableArrayList<Project> projects;
+    @TrackableValue
+    private ArrayList<WorkAllocation> allocations;
     @TrackableValue
     private ModelObservableArrayList<Person> people;
     @TrackableValue
@@ -41,6 +45,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Sets up a new Relational Model
      */
     public RelationalModel() {
+        this.allocations = new ArrayList<>();
         this.people = new ModelObservableArrayList<Person>();
         this.teams = new ModelObservableArrayList<Team>();
         this.skills = new ModelObservableArrayList<Skill>();
@@ -60,7 +65,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
-            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
+            // will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
         }
     }
 
@@ -96,7 +101,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param projects A List of projects to be added to the model
      * @throws DuplicateObjectException If one of the projects already exist
      */
-    public void addProjects(List<Project> projects) throws DuplicateObjectException {
+    public void addProjects(ArrayList<Project> projects) throws DuplicateObjectException {
         boolean badProject = false;
         for (Project project : projects) {
             if (this.projects.contains(project) ||
@@ -134,16 +139,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The unassigned people
      */
     public ArrayList<Person> getUnassignedPeople() {
-
         ArrayList<Person> unassignedPeople = new ArrayList<>();
-        unassignedPeople.addAll(getPeople());
-        ModelObservableArrayList<Team> teams = getTeams();
-
-        //Remove all the people who have a team
-        for (Team team : teams) {
-            team.getMembers().forEach(unassignedPeople::remove);
+        for (Person p : getPeople()){
+            if (!getTeams().stream().anyMatch(t -> t.getMembers().contains(p))){
+                unassignedPeople.add(p);
+            }
         }
-
         return unassignedPeople;
     }
 
@@ -179,7 +180,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param people People to be added
      * @throws DuplicateObjectException if the relational model already has a person from the people to be added
      */
-    public void addPeople(List<Person> people) throws DuplicateObjectException {
+    public void addPeople(ArrayList<Person> people) throws DuplicateObjectException {
         for (Person person : people) {
             this.addPerson(person);
         }
@@ -195,21 +196,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
             //Remove the person from any team they might be in
             getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
         }
-    }
-
-    /**
-     * Gets all unassigned teams
-     * @return The unassigned teams
-     */
-    public ArrayList<Team> getUnassignedTeams() {
-
-        ArrayList<Team> unassignedTeams = new ArrayList<>();
-        unassignedTeams.addAll(getTeams());
-
-        //Remove all the teams that are assigned to a project
-        getProjects().forEach(p -> p.getTeams().forEach(unassignedTeams::remove));
-
-        return unassignedTeams;
     }
 
     /**
@@ -244,7 +230,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param teams Teams to be added to the relational model
      * @throws DuplicateObjectException if the murcs already has a team from teams to be added
      */
-    public void addTeams(List<Team> teams) throws DuplicateObjectException {
+    public void addTeams(ArrayList<Team> teams) throws DuplicateObjectException {
         for (Team team : teams) {
             this.addTeam(team);
         }
@@ -259,7 +245,93 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        this.getProjects().stream().filter(project -> project.getTeams().contains(team)).forEach(project -> project.getTeams().remove(team));
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getTeam() == team) {
+                removeAllocation(allocation);
+            }
+        }
+    }
+
+    /**
+     * Adds a work allocation to the model
+     * @param workAllocation The work period to be added
+     * @throws DuplicateObjectException
+     */
+    public void addAllocation(WorkAllocation workAllocation) throws CustomException {
+        Team team = workAllocation.getTeam();
+        LocalDate startDate = workAllocation.getStartDate();
+        LocalDate endDate = workAllocation.getEndDate();
+
+        if (startDate.isAfter(endDate))
+            throw new CustomException("End Date is before Start Date");
+
+        int index = 0;
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getTeam() == team) {
+                // Check that this team isn't overlapping with itself
+                if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
+                    throw new DuplicateObjectException("Work Dates Overlap");
+                }
+            }
+            if (allocation.getStartDate().isBefore(startDate)) {
+                // Increment the index where the allocation will be placed if it does get placed
+                index++;
+            }
+            else if (allocation.getStartDate().isAfter(endDate)) {
+                // At this point we've checked all overlapping allocations and haven't found any errors
+                break;
+            }
+        }
+        this.allocations.add(index, workAllocation);
+        commit("edit project");
+    }
+
+    public void addAllocations(ArrayList<WorkAllocation> allocations) {
+
+    }
+
+    /**
+     * Removes a given allocation
+     * @param allocation The work allocation to remove
+     */
+    public void removeAllocation(WorkAllocation allocation) {
+        if (this.allocations.contains(allocation)) {
+            this.allocations.remove(allocation);
+        }
+        commit("edit project");
+    }
+
+    /**
+     * Gets a list of all a projects future and ongoing work allocations
+     * @param project The project to check allocations for
+     * @return A list of work allocations
+     */
+    public ArrayList<WorkAllocation> getProjectsAllocations(Project project) {
+        LocalDate currentDate = LocalDate.now();
+        ArrayList<WorkAllocation> allocations = new ArrayList<>();
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getProject() == project) {
+                if (allocation.getEndDate().isAfter(currentDate)) {
+                    allocations.add(allocation);
+                }
+            }
+        }
+        return allocations;
+    }
+
+    /**
+     * Gets a list of all allocations that haven't already gone by
+     * @return The list
+     */
+    public ArrayList<WorkAllocation> getAllAllocations() {
+        LocalDate currentDate = LocalDate.now();
+        ArrayList<WorkAllocation> allocations = new ArrayList<>();
+        for (WorkAllocation allocation : this.allocations) {
+            if (allocation.getEndDate().isAfter(currentDate)) {
+                allocations.add(allocation);
+            }
+        }
+        return allocations;
     }
 
     /**
@@ -287,7 +359,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param skills Skills to be added existing skills
      * @throws DuplicateObjectException if a skill is already in the relational model
      */
-    public void addSkills(List<Skill> skills) throws DuplicateObjectException {
+    public void addSkills(ArrayList<Skill> skills) throws DuplicateObjectException {
         for (Skill skill : skills) {
             this.addSkill(skill);
         }
@@ -484,11 +556,14 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param team The team to find the usages of
      * @return The usages of the team
      */
-    private ArrayList<Model> findUsages(Team team){
+    private ArrayList<Model> findUsages(Team team) {
         ArrayList<Model> usages = new ArrayList<>();
-        for (Project p : getProjects()) {
-            if (p.getTeams().contains(team)) {
-                usages.add(p);
+        for (Project project : getProjects()) {
+            for (WorkAllocation allocation : getProjectsAllocations(project)) {
+                if (allocation.getTeam() == team) {
+                    usages.add(project);
+                    break; // Move to checking the next project for this team
+                }
             }
         }
         return usages;

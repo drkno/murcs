@@ -5,7 +5,9 @@ import sws.murcs.model.RelationalModel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
+import java.time.LocalDate;
 
 /**
  * Contains a static method for generating the xml status report from the relational model.
@@ -19,9 +21,9 @@ public abstract class ReportGenerator {
      * @throws JAXBException Exceptions fro JAXB
      */
     public static void generate(RelationalModel relationalModel, File file) throws JAXBException {
-        ReportModel reportModel = new ReportModel(relationalModel);
+        ReportHeader reportModel = new ReportHeader(relationalModel);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(ReportModel.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);

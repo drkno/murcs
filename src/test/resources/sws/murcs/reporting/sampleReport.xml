@@ -1,10 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projects>
-        <project shortName="FITR">
-            <longName>Fitness is Training Right</longName>
-            <description>We are building a fitness tracking application for the world</description>
-            <teams>
+    <projectVersion>0.02</projectVersion>
+    <dateGenerated>2015-04-29</dateGenerated>
+    <content>
+        <projects>
+            <project shortName="FITR">
+                <longName>Fitness is Training Right</longName>
+                <description>We are building a fitness tracking application for the world</description>
+                <releases>
+                    <release shortName="Now">
+                        <description>This current time</description>
+                        <releaseDate/>
+                    </release>
+                </releases>
+            </project>
+        </projects>
+        <releases>
+            <release shortName="Now">
+                <description>This current time</description>
+                <releaseDate/>
+            </release>
+        </releases>
+        <teams>
+            <team shortName="Riding Solo">
+                <longName>One man can conquer the world</longName>
+                <members>
+                    <person shortName="Haydon">
+                        <longName>Haydon Baddock</longName>
+                        <id>hbk67</id>
+                        <skills>
+                            <skill shortName="Python">
+                                <longName>Python 2.7</longName>
+                                <description>A simple object-oriented language perfect for beginners</description>
+                            </skill>
+                            <skill shortName="C">
+                                <longName>C99</longName>
+                                <description>C99 is older than the current C standard, namely, C11</description>
+                            </skill>
+                        </skills>
+                    </person>
+                </members>
+            </team>
+        </teams>
+        <workAllocations>
+            <workAllocation>
+                <project shortName="FITR">
+                    <longName>Fitness is Training Right</longName>
+                    <description>We are building a fitness tracking application for the world</description>
+                    <releases>
+                        <release shortName="Now">
+                            <description>This current time</description>
+                            <releaseDate/>
+                        </release>
+                    </releases>
+                </project>
                 <team shortName="Sengineers">
                     <longName>Software Engineers</longName>
                     <description>We are the best software engineers in the world</description>
@@ -75,46 +124,15 @@
                         </skills>
                     </productOwner>
                 </team>
-            </teams>
-            <releases>
-                <release shortName="Now">
-                    <description>This current time</description>
-                    <releaseDate/>
-                </release>
-            </releases>
-        </project>
-    </projects>
-    <releases>
-        <release shortName="Now">
-            <description>This current time</description>
-            <releaseDate/>
-        </release>
-    </releases>
-    <unassignedTeams>
-        <team shortName="Riding Solo">
-            <longName>One man can conquer the world</longName>
-            <members>
-                <person shortName="Haydon">
-                    <longName>Haydon Baddock</longName>
-                    <id>hbk67</id>
-                    <skills>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="C">
-                            <longName>C99</longName>
-                            <description>C99 is older than the current C standard, namely, C11</description>
-                        </skill>
-                    </skills>
-                </person>
-            </members>
-        </team>
-    </unassignedTeams>
-    <unassignedPeople>
-        <person shortName="Unallocated">
-            <id>null123</id>
-            <skills/>
-        </person>
-    </unassignedPeople>
+                <startDate>2015-04-29</startDate>
+                <endDate>2015-05-06</endDate>
+            </workAllocation>
+        </workAllocations>
+        <unassignedPeople>
+            <person shortName="Unallocated">
+                <id>null123</id>
+                <skills/>
+            </person>
+        </unassignedPeople>
+    </content>
 </report>

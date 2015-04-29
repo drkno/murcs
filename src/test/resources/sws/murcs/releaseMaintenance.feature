@@ -11,7 +11,7 @@ Feature: Release Maintenance
     Given I have selected the release view from the display list type
     And I click on the add button
     And I fill in valid information in the popup
-    And Click Ok
+    When Click Ok
     Then A release is made with the given information
 
   Scenario: Remove release using the remove button

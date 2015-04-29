@@ -4,6 +4,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random teams with people
@@ -29,7 +30,7 @@ public class TeamGenerator implements Generator<Team> {
     /**
      * Instantiates a new Team generator.
      */
-    public TeamGenerator(){
+    public TeamGenerator() {
         personGenerator = new PersonGenerator();
     }
 
@@ -41,7 +42,7 @@ public class TeamGenerator implements Generator<Team> {
      * @param probOfProductOwner probability of a product owner to use.
      * @param probOfScrumMaster probability of a scrum master to use.
      */
-    public TeamGenerator(Generator<Person> personGenerator, String[] teamNames, String[] descriptions, float probOfProductOwner, float probOfScrumMaster){
+    public TeamGenerator(Generator<Person> personGenerator, String[] teamNames, String[] descriptions, float probOfProductOwner, float probOfScrumMaster) {
         this.personGenerator = personGenerator;
         this.teamNames = teamNames;
         this.descriptions = descriptions;
@@ -61,7 +62,7 @@ public class TeamGenerator implements Generator<Team> {
      * Sets the person pool. If null, people will be randomly generated
      * @param personPool The person pool
      */
-    public void setPersonPool(ArrayList<Person> personPool){
+    public void setPersonPool(ArrayList<Person> personPool) {
         this.personPool = personPool;
     }
 
