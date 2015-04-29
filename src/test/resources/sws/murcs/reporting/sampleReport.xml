@@ -1,67 +1,89 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projects>
-        <project shortName="FITR">
-            <longName>Fitness is Training Right</longName>
-            <description>We are building a fitness tracking application for the world</description>
-        </project>
-    </projects>
-    <releases>
-        <release shortName="Now">
-            <description>This current time</description>
-            <releaseDate/>
-            <associatedProject shortName="FITR">
-                <longName>Fitness is Training Right</longName>
-                <description>We are building a fitness tracking application for the world</description>
-            </associatedProject>
-        </release>
-    </releases>
-    <teams>
-        <team shortName="Riding Solo">
-            <longName>One man can conquer the world</longName>
-            <members>
-                <person shortName="Haydon">
-                    <longName>Haydon Baddock</longName>
-                    <id>hbk67</id>
-                    <skills>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="C">
-                            <longName>C99</longName>
-                            <description>C99 is older than the current C standard, namely, C11</description>
-                        </skill>
-                    </skills>
-                </person>
-            </members>
-        </team>
-    </teams>
-    <workAllocations>
-        <workAllocation>
+    <projectVersion>0.02</projectVersion>
+    <dateGenerated>2015-04-29</dateGenerated>
+    <content>
+        <projects>
             <project shortName="FITR">
                 <longName>Fitness is Training Right</longName>
                 <description>We are building a fitness tracking application for the world</description>
             </project>
-            <team shortName="Sengineers">
-                <longName>Software Engineers</longName>
-                <description>We are the best software engineers in the world</description>
+        </projects>
+        <releases>
+            <release shortName="Now">
+                <description>This current time</description>
+                <releaseDate/>
+                <associatedProject shortName="FITR">
+                    <longName>Fitness is Training Right</longName>
+                    <description>We are building a fitness tracking application for the world</description>
+                </associatedProject>
+            </release>
+        </releases>
+        <teams>
+            <team shortName="Riding Solo">
+                <longName>One man can conquer the world</longName>
                 <members>
-                    <person shortName="Daniel">
-                        <longName>Daniel van Wichen</longName>
-                        <id>dpv11</id>
+                    <person shortName="Haydon">
+                        <longName>Haydon Baddock</longName>
+                        <id>hbk67</id>
                         <skills>
                             <skill shortName="Python">
                                 <longName>Python 2.7</longName>
                                 <description>A simple object-oriented language perfect for beginners</description>
                             </skill>
-                            <skill shortName="PO">
-                                <longName>Product Owner</longName>
-                                <description>Has ability to insult design teams efforts</description>
+                            <skill shortName="C">
+                                <longName>C99</longName>
+                                <description>C99 is older than the current C standard, namely, C11</description>
                             </skill>
                         </skills>
                     </person>
-                    <person shortName="Dion">
+                </members>
+            </team>
+        </teams>
+        <workAllocations>
+            <workAllocation>
+                <project shortName="FITR">
+                    <longName>Fitness is Training Right</longName>
+                    <description>We are building a fitness tracking application for the world</description>
+                </project>
+                <team shortName="Sengineers">
+                    <longName>Software Engineers</longName>
+                    <description>We are the best software engineers in the world</description>
+                    <members>
+                        <person shortName="Daniel">
+                            <longName>Daniel van Wichen</longName>
+                            <id>dpv11</id>
+                            <skills>
+                                <skill shortName="Python">
+                                    <longName>Python 2.7</longName>
+                                    <description>A simple object-oriented language perfect for beginners</description>
+                                </skill>
+                                <skill shortName="PO">
+                                    <longName>Product Owner</longName>
+                                    <description>Has ability to insult design teams efforts</description>
+                                </skill>
+                            </skills>
+                        </person>
+                        <person shortName="Dion">
+                            <longName>Dion Wooley</longName>
+                            <id>dmw99</id>
+                            <skills>
+                                <skill shortName="C">
+                                    <longName>C99</longName>
+                                    <description>C99 is older than the current C standard, namely, C11</description>
+                                </skill>
+                                <skill shortName="Python">
+                                    <longName>Python 2.7</longName>
+                                    <description>A simple object-oriented language perfect for beginners</description>
+                                </skill>
+                                <skill shortName="SM">
+                                    <longName>Scrum Master</longName>
+                                    <description>Is able to manage the efforts of a team and resolve difficulties</description>
+                                </skill>
+                            </skills>
+                        </person>
+                    </members>
+                    <scrumMaster shortName="Dion">
                         <longName>Dion Wooley</longName>
                         <id>dmw99</id>
                         <skills>
@@ -78,49 +100,31 @@
                                 <description>Is able to manage the efforts of a team and resolve difficulties</description>
                             </skill>
                         </skills>
-                    </person>
-                </members>
-                <scrumMaster shortName="Dion">
-                    <longName>Dion Wooley</longName>
-                    <id>dmw99</id>
-                    <skills>
-                        <skill shortName="C">
-                            <longName>C99</longName>
-                            <description>C99 is older than the current C standard, namely, C11</description>
-                        </skill>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="SM">
-                            <longName>Scrum Master</longName>
-                            <description>Is able to manage the efforts of a team and resolve difficulties</description>
-                        </skill>
-                    </skills>
-                </scrumMaster>
-                <productOwner shortName="Daniel">
-                    <longName>Daniel van Wichen</longName>
-                    <id>dpv11</id>
-                    <skills>
-                        <skill shortName="Python">
-                            <longName>Python 2.7</longName>
-                            <description>A simple object-oriented language perfect for beginners</description>
-                        </skill>
-                        <skill shortName="PO">
-                            <longName>Product Owner</longName>
-                            <description>Has ability to insult design teams efforts</description>
-                        </skill>
-                    </skills>
-                </productOwner>
-            </team>
-            <startDate>2015-04-29</startDate>
-            <endDate>2015-05-06</endDate>
-        </workAllocation>
-    </workAllocations>
-    <unassignedPeople>
-        <person shortName="Unallocated">
-            <id>null123</id>
-            <skills/>
-        </person>
-    </unassignedPeople>
+                    </scrumMaster>
+                    <productOwner shortName="Daniel">
+                        <longName>Daniel van Wichen</longName>
+                        <id>dpv11</id>
+                        <skills>
+                            <skill shortName="Python">
+                                <longName>Python 2.7</longName>
+                                <description>A simple object-oriented language perfect for beginners</description>
+                            </skill>
+                            <skill shortName="PO">
+                                <longName>Product Owner</longName>
+                                <description>Has ability to insult design teams efforts</description>
+                            </skill>
+                        </skills>
+                    </productOwner>
+                </team>
+                <startDate>2015-04-29</startDate>
+                <endDate>2015-05-06</endDate>
+            </workAllocation>
+        </workAllocations>
+        <unassignedPeople>
+            <person shortName="Unallocated">
+                <id>null123</id>
+                <skills/>
+            </person>
+        </unassignedPeople>
+    </content>
 </report>

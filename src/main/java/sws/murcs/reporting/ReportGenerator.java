@@ -21,9 +21,9 @@ public abstract class ReportGenerator {
      * @throws JAXBException Exceptions fro JAXB
      */
     public static void generate(RelationalModel relationalModel, File file) throws JAXBException {
-        ReportModel reportModel = new ReportModel(relationalModel);
+        ReportHeader reportModel = new ReportHeader(relationalModel);
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(ReportModel.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
