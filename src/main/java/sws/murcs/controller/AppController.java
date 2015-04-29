@@ -237,7 +237,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void undoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.revert();
-            selectItem(null);
         }
         catch (Exception e) {
             // Something went very wrong
@@ -253,7 +252,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void redoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.remake();
-            selectItem(null);
         }
         catch (Exception e) {
             // something went terribly wrong....

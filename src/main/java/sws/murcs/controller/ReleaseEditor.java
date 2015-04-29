@@ -4,13 +4,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
+/**
+ * An editor for editing/creating a release
+ */
 public class ReleaseEditor extends GenericEditor<Release> {
 
     @FXML
@@ -37,7 +42,10 @@ public class ReleaseEditor extends GenericEditor<Release> {
      */
     @Override
     public void updateFields() {
-        associatedProject = PersistenceManager.Current.getCurrentModel().getProjects().stream().filter(project -> project.getReleases().contains(edit)).findFirst().get();
+        Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects().stream().filter(project -> project.getReleases().contains(edit)).findFirst();
+        if (projectCheck.isPresent()) {
+            associatedProject = projectCheck.get();
+        }
 
         String currentShortName = shortNameTextField.getText();
         String currentDescription = descriptionTextArea.getText();
@@ -68,6 +76,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @Override
     public void load() {
         updateFields();
+        updateAndHandle();
     }
 
     /**
@@ -94,6 +103,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
             if (associatedProject != null) {
                 associatedProject.addRelease(edit);
+            }
+            else {
+                throw new InvalidParameterException("There needs to be an associated project");
             }
 
             UndoRedoManager.commit("edit release");

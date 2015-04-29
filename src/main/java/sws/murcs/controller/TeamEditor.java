@@ -43,6 +43,19 @@ public class TeamEditor extends GenericEditor<Team> {
      * Saves the team being edited
      */
     public void update() throws Exception {
+
+        Person productOwner = productOwnerPicker.getValue();
+        edit.setProductOwner(productOwner);
+
+        Person scrumMaster = scrumMasterPicker.getValue();
+        edit.setScrumMaster(scrumMaster);
+
+        Person person = addTeamMemberPicker.getValue();
+
+        if (person != null) {
+            edit.addMember(person);
+        }
+
         String shortName = teamNameTextField.getText();
         if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
             edit.setShortName(shortName);
@@ -57,21 +70,6 @@ public class TeamEditor extends GenericEditor<Team> {
         if (description == null || edit.getDescription() == null || !description.equals(edit.getDescription())) {
             edit.setDescription(descriptionTextField.getText());
         }
-
-        Person productOwner = productOwnerPicker.getValue();
-        edit.setProductOwner(productOwner);
-
-        Person scrumMaster = scrumMasterPicker.getValue();
-        edit.setScrumMaster(scrumMaster);
-
-        Person person = addTeamMemberPicker.getValue();
-
-        if (person != null) {
-            edit.addMember(person);
-        }
-
-        //fixme Load the team again, to make sure everything is updated. We could probably do this better
-        load();
     }
 
     /**
@@ -89,13 +87,16 @@ public class TeamEditor extends GenericEditor<Team> {
             e.printStackTrace();
             //Output any other exception to the console
         }
+        finally {
+            updateFields();
+        }
     }
 
     /**
      * Loads the team into the form
      */
     public void load(){
-        updateFields();
+        updateAndHandle();
     }
 
     /**
@@ -148,6 +149,14 @@ public class TeamEditor extends GenericEditor<Team> {
 
         addTeamMemberPicker.getItems().clear();
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+
+        // removes all the people you've added to the current team you're editing
+        for (int i = 0; i < addTeamMemberPicker.getItems().size(); i++) {
+            if (edit.getMembers().contains(addTeamMemberPicker.getItems().get(i))) {
+                addTeamMemberPicker.getItems().remove(i);
+                i--;
+            }
+        }
 
         teamMembersContainer.getChildren().clear();
         for (Person person : edit.getMembers()) {
