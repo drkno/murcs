@@ -11,7 +11,6 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The top level relational model
@@ -245,9 +244,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        for (WorkAllocation allocation : this.allocations) {
+        for (int i = 0; i < allocations.size(); i++) {
+            WorkAllocation allocation = allocations.get(i);
             if (allocation.getTeam() == team) {
                 removeAllocation(allocation);
+                i--;
             }
         }
     }
