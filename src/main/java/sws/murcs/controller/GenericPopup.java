@@ -3,23 +3,22 @@ package sws.murcs.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.view.App;
+import java.util.function.Consumer;
 
 /**
  * Generic popup creator and controller
  */
 public class GenericPopup extends AnchorPane {
-
 
     /***
      * Enum for specifying which side of the dialog you want the button to appear on.
@@ -38,10 +37,10 @@ public class GenericPopup extends AnchorPane {
         NONE
     }
 
-    private @FXML Text messageText;
-    private @FXML Text messageTitle;
+    private @FXML Label messageText;
+    private @FXML Label messageTitle;
+
     private @FXML ImageView messageImage;
-    private @FXML HBox titleImageHBox;
     //Contains left aligned buttons
     private @FXML HBox hBoxLeft;
     //Contains right align buttons
@@ -88,10 +87,15 @@ public class GenericPopup extends AnchorPane {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        popupScene = new Scene(this, 400, 200);
+        popupScene = new Scene(this);
         popupStage.initOwner(App.stage);
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
+        popupStage.setResizable(false);
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        messageImage.setImage(iconImage);
 
         if (exception != null) {
             setMessageText(exception.getMessage());
@@ -111,16 +115,12 @@ public class GenericPopup extends AnchorPane {
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    public void addButton(String buttonText, Position position, Action action, ViewUpdate func) {
+    public void addButton(String buttonText, Position position, Action action, Consumer func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
         button.setOnAction((a) -> {
-            try {
-                func.updateListView(null);
-            } catch (Exception e) {
-                //Todo catch this
-            }
+            func.accept(null);
         });
 
         switch (action) {
@@ -175,6 +175,7 @@ public class GenericPopup extends AnchorPane {
      * @param message The message you want to show on the dialog.
      */
     public void setMessageText(String message) {
+        if (message == null) return;
         messageText.setText(message);
     }
 
@@ -211,7 +212,7 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    public void addOkCancelButtons(ViewUpdate okFunction) {
+    public void addOkCancelButtons(Consumer okFunction) {
         addOkCancelButtons(okFunction, m -> this.close());
     }
 
@@ -220,7 +221,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    public void addOkCancelButtons(ViewUpdate okFunction, ViewUpdate cancelFunction) {
+    public void addOkCancelButtons(Consumer okFunction, Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -229,7 +230,7 @@ public class GenericPopup extends AnchorPane {
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    public void addOkButton(ViewUpdate okFunction) {
+    public void addOkButton(Consumer okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

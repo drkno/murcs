@@ -8,7 +8,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
-import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import java.util.HashMap;
@@ -23,9 +22,9 @@ public class EditorHelper {
     /**
      * Creates a new form for creating a new object of the specified type
      * @param clazz The type of object to create
-     * @param updated Called when the object is successully updated
+     * @param update Called when the object is successully updated
      */
-    public static void createNew(Class<? extends Model> clazz, ViewUpdate updated){
+    public static void createNew(Class<? extends Model> clazz, ViewUpdate update) {
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -36,27 +35,14 @@ public class EditorHelper {
                 type = "Person";
             }
 
-            Node content = getEditForm(newModel, updated);
-            Parent root = CreateWindowController.newCreateNode(content, newModel, updated, (m) -> {
-                PersistenceManager.Current.getCurrentModel().remove(newModel);
-                updated.updateListView(null);
-            });
+            Node content = getEditForm(newModel);
+            Parent root = CreateWindowController.newCreateNode(content, newModel, update, null);
             if (root == null) return;
             Scene scene = new Scene(root);
 
             Stage newStage = new Stage();
             newStage.setScene(scene);
             newStage.setTitle("Create " + type);
-
-            newStage.setOnCloseRequest(event -> {
-                PersistenceManager.Current.getCurrentModel().remove(newModel);
-                try {
-                    updated.updateListView(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                newStage.close();
-            });
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
@@ -72,10 +58,9 @@ public class EditorHelper {
      * Creates a new form for editing a team which will call the saved callback
      * every time a change is saved
      * @param model The model item to create
-     * @param okayClicked The save callback
      * @return The form
      */
-    public static Parent getEditForm(Model model,  ViewUpdate okayClicked){
+    public static Parent getEditForm(Model model) {
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
@@ -91,8 +76,6 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            controller.setSavedCallback(okayClicked);
-
             controller.load();
 
             return parent;

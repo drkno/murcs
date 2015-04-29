@@ -1,12 +1,10 @@
 package sws.murcs.exceptions;
 
 import sws.murcs.model.Model;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.Person;
-import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.util.ArrayList;
 
 /**
  * Duplicate Object Exception
@@ -43,7 +41,7 @@ public class DuplicateObjectException extends CustomException {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return; // as is called in the constructor of RelationalModel
         String className = newModel.getClass().getSimpleName();
-        ArrayList<? extends Model> list = null;
+        ModelObservableArrayList<? extends Model> list = null;
         switch (className) {
             case "Skill": {
                 list = model.getSkills();
@@ -51,14 +49,14 @@ public class DuplicateObjectException extends CustomException {
                 break;
             }
             case "Person": {
-                ArrayList<Person> people = model.getPeople();
-                CheckForDuplicateNames(newModel, people, className, param);
-                CheckForDuplicateUserIds(newModel, people, param);
+                list = model.getPeople();
+                CheckForDuplicateNames(newModel, list, className, param);
+                CheckForDuplicateUserIds(newModel, (ModelObservableArrayList<Person>)list, param);
                 break;
             }
             case "Project": {
-                ArrayList<Project> projects = model.getProjects();
-                CheckForDuplicateNames(newModel, projects, className, param);
+                list = model.getProjects();
+                CheckForDuplicateNames(newModel, list, className, param);
                 break;
             }
             case "Team": {
@@ -73,7 +71,7 @@ public class DuplicateObjectException extends CustomException {
         }
     }
 
-    private static void CheckForDuplicateNames(Model newModel, ArrayList<? extends Model> modelClass, String className, String simpleName) throws DuplicateObjectException {
+    private static void CheckForDuplicateNames(Model newModel, ModelObservableArrayList<? extends Model> modelClass, String className, String simpleName) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getShortName().equals(simpleName) && o != newModel)
                 .findAny()
@@ -82,7 +80,7 @@ public class DuplicateObjectException extends CustomException {
         }
     }
 
-    private static void CheckForDuplicateUserIds(Model newModel, ArrayList<Person> modelClass, String simpleId) throws DuplicateObjectException {
+    private static void CheckForDuplicateUserIds(Model newModel, ModelObservableArrayList<Person> modelClass, String simpleId) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getUserId().equals(simpleId) && o != newModel)
                 .findAny()

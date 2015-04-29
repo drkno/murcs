@@ -1,8 +1,6 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -15,11 +13,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.*;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
@@ -49,12 +49,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private ListView displayList;
     @FXML
     private Button removeButton;
-
     @FXML
     private GridPane contentPane;
-
-    private ObservableList displayListItems;
-    private boolean consumeChoiceBoxEvent = false;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -66,20 +62,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             e.consume();
             fileQuitPress(null);
         });
-        displayListItems = FXCollections.observableArrayList();
-        displayList.setItems(displayListItems);
 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
-            if (!consumeChoiceBoxEvent) {
-                updateListView(null);
-            } else {
-                // Consume the event, don't update the display
-                consumeChoiceBoxEvent = false;
-            }
-        });
+        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> updateList());
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -91,8 +78,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
             Parent pane = null;
             try {
-                ViewUpdate update = this;
-                pane = EditorHelper.getEditForm((Model) newValue, update);
+                pane = EditorHelper.getEditForm((Model) newValue);
             } catch (Exception e) {
                 //This isn't really something the user should have to deal with
                 e.printStackTrace();
@@ -102,84 +88,30 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
-        updateListView(null);
-    }
-
-    /**
-     * Updates the display list on the left hand side of the screen to the type selected in the choice box.
-     * @param newModelObject The type selected in the choice box.
-     */
-    public void updateListView(Model newModelObject) {
-        ModelTypes type;
-        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-
-        if (newModelObject == null) {
-            updateList(null, selectedType);
-        }
-        else {
-            type = ModelTypes.getModelType(newModelObject);
-            if (selectedType == type) {
-                updateList(newModelObject, type);
-            }
-            else {
-                // Set listener event to be consumed, because when the displayChoiceBox is changed it fire an event.
-                consumeChoiceBoxEvent = true;
-                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                updateList(newModelObject, type);
-            }
-        }
-    }
-
-    /**
-     * Handles committing changes based on UI actions.
-     * @param message commit message to use.
-     */
-    private void commitChanges(String message) {
-        try {
-            UndoRedoManager.commit(message);
-        } catch (Exception e) {
-            // This state only occurs if there is a bug or something is very wrong
-            UndoRedoManager.forget();
-            System.err.println("The undo/redo manager encountered an error while attempting to commit a change:\n"
-                    + e.toString() + "\nAs a precaution all history has been forgotten.");
-        }
+        updateList();
     }
 
     /**
      * Updates the display list on the left hand side of the screen.
-     * @param newModelObject new model object, that may have been created.
-     * @param type type of model object to refresh
      */
-    private void updateList(Model newModelObject, ModelTypes type) {
+    private void updateList() {
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
-        displayListItems.clear();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         if (model == null) return;
 
+        ModelObservableArrayList arrayList;
         switch (type) {
-            case Project:
-                displayListItems.addAll(model.getProjects());
-                break;
-            case People:
-                displayListItems.addAll(model.getPeople());
-                break;
-            case Team:
-                displayListItems.addAll(model.getTeams());
-                break;
-            case Skills:
-                displayListItems.addAll(model.getSkills());
-                break;
-            case Release:
-                displayListItems.addAll(model.getReleases());
-                break;
+            case Project: arrayList = model.getProjects(); break;
+            case People: arrayList = model.getPeople(); break;
+            case Team: arrayList = model.getTeams(); break;
+            case Skills: arrayList = model.getSkills(); break;
+            case Release: arrayList = model.getReleases(); break;
+            default: throw new NotImplementedException();
         }
-        if (newModelObject != null) {
-            displayList.getSelectionModel().select(newModelObject);
-        }
-        else {
-            displayList.getSelectionModel().select(0);
-        }
+        displayList.setItems(arrayList);
+        displayList.getSelectionModel().select(0);
     }
 
     /**
@@ -191,6 +123,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
+            popup.setTitleText("Do you wish to save changes?");
             popup.setMessageText("You have unsaved changes to your project.");
             popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
@@ -269,7 +202,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
             }
-            updateListView(null);
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
@@ -306,11 +238,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void undoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.revert();
+            selectItem(null);
         }
         catch (Exception e) {
             // Something went very wrong
             UndoRedoManager.forget();
-            e.printStackTrace();
         }
     }
 
@@ -322,6 +254,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void redoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.remake();
+            selectItem(null);
         }
         catch (Exception e) {
             // something went terribly wrong....
@@ -353,20 +286,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
-
-        //Store the selected index
-        int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
-
-        //If no item is selected we don't need to execute the following code
-        if (selectedIndex == -1) return;
-
-        //Add and remove the item to force an update
-        //Store the currently selected object
-        Object current = displayListItems.remove(selectedIndex);
-        displayListItems.add(selectedIndex, current);
-
-        //Restore the selection
-        displayList.getSelectionModel().select(selectedIndex);
     }
 
     @FXML
@@ -400,8 +319,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         if (clazz != null) {
-            ViewUpdate viewUpdate = this;
-            EditorHelper.createNew(clazz, viewUpdate);
+            EditorHelper.createNew(clazz, this);
         }
     }
 
@@ -432,13 +350,32 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         popup.setTitleText("Really delete?");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            updateListView(null);
         });
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> { popup.close(); });
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
+    }
+
+    @Override
+    public void selectItem(Model param) {
+        ModelTypes type;
+        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+
+        if (param == null) {
+            displayList.getSelectionModel().select(0);
+        }
+        else {
+            type = ModelTypes.getModelType(param);
+            if (selectedType == type) {
+                displayList.getSelectionModel().select(param);
+            }
+            else {
+                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
+                displayList.getSelectionModel().select(param);
+            }
+        }
     }
 }

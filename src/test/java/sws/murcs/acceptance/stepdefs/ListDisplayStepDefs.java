@@ -40,37 +40,49 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {}
 
-    @Before
+    @Before("@ListDisplay")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
 
-        person1 = new Person();
-        person1.setShortName("John");
-        person1.setUserId("abc123");
-        person2 = new Person();
-        person2.setShortName("Dave");
-        person2.setUserId("def456");
-        person3 = new Person();
-        person3.setShortName("Jim");
-        person3.setUserId("ghi789");
-        project = new Project();
-        project.setShortName("Testing");
+                person1 = new Person();
+                person1.setShortName("John");
+                person1.setUserId("abc123");
+                person2 = new Person();
+                person2.setShortName("Dave");
+                person2.setUserId("def456");
+                person3 = new Person();
+                person3.setShortName("Jim");
+                person3.setUserId("ghi789");
+                project = new Project();
+                project.setShortName("Testing");
 
-        model.addPerson(person1);
-        model.addPerson(person2);
-        model.addPerson(person3);
-        model.addProject(project);
+                model.add(person1);
+                model.add(person2);
+                model.add(person3);
+                model.add(project);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 
-    @After
+    @After("@ListDisplay")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

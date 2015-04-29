@@ -4,31 +4,53 @@ import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import javafx.application.Application;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 /**
  * Tests the ability to use CreateProjectPopUp to create a new project
  */
-public class CreateProjectStepDefs extends ApplicationTest {
+public class ProjectMaintenanceStepDefs extends ApplicationTest {
 
     private FxRobot fx;
     private Stage primaryStage;
+    private Application app;
+    private RelationalModel model;
 
-    @Before
+    @Before("@ProjectMaintenance")
     public void setUp() throws Exception {
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(App.class);
+        app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
+
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    @After
+    @After("@ProjectMaintenance")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
+        FxToolkit.cleanupApplication(app);
     }
 
     @And("^I click the Project selection$")
