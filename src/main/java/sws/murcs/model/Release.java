@@ -1,6 +1,5 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,8 +18,6 @@ public class Release extends Model {
     private String description;
     @TrackableValue
     private LocalDate releaseDate = LocalDate.now();
-    @TrackableValue
-    private Project associatedProject;
 
     /**
      * Gets the release date for the release.
@@ -53,24 +50,6 @@ public class Release extends Model {
      */
     public void setDescription(String description) {
         this.description = description;
-        commit("edit release");
-    }
-
-    /**
-     * Gets the Project that the release is associated with.
-     * @return The associated project
-     */
-    public Project getAssociatedProject() {
-        return associatedProject;
-    }
-
-    /**
-     * Sets the project that the release is associated with.
-     * @param associatedProject The associated project
-     */
-    public void setAssociatedProject(Project associatedProject) throws Exception{
-        InvalidParameterException.validate("Associated Project", associatedProject);
-        this.associatedProject = associatedProject;
         commit("edit release");
     }
 

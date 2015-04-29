@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -84,6 +83,9 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @Override
     public void load() {
+        skillChoiceBox.getSelectionModel().clearSelection();
+        updateSkills();
+
         if (edit.getShortName() != null && !personNameTextField.getText().equals(edit.getShortName())) {
             personNameTextField.setText(edit.getShortName());
         }
@@ -94,8 +96,7 @@ public class PersonEditor extends GenericEditor<Person> {
             usernameTextField.setText(edit.getUserId());
         }
 
-        skillChoiceBox.getSelectionModel().clearSelection();
-        updateSkills();
+        updateAndHandle();
     }
 
     /**

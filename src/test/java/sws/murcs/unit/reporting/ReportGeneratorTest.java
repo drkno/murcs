@@ -109,7 +109,7 @@ public class ReportGeneratorTest {
         release.setShortName("Now");
         release.setDescription("This current time");
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
-        release.setAssociatedProject(project);
+        project.addRelease(release);
 
         relationalModel.add(project);
         relationalModel.add(team2);
