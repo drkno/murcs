@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -100,7 +101,6 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     public void load(){
         updateAndHandle();
-        labelErrorMessage.setText("");
     }
 
     /**
