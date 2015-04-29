@@ -122,8 +122,14 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private void removeProject(Project project) {
         if (this.projects.contains(project))
             this.projects.remove(project);
-        //Remove any releases that are associated with the project
-        getReleases().stream().filter(release -> release.getAssociatedProject() == project).forEach(this::remove);
+
+        //Remove all the releases associated with the project
+        for (int i = 0; i < getReleases().size(); i++){
+            if (getReleases().get(i).getAssociatedProject() == project) {
+                removeRelease(getReleases().get(i));
+                i--;
+            }
+        }
     }
 
     /**
@@ -368,7 +374,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 removeRelease((Release) model);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("We don't know what to do with this model (remove for " + model.getClass().getName() + ") in Relational Model. You should fix this");
         }
 
         try {
@@ -451,6 +457,15 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Release:
                 return findUsages((Release)model);
         }
+        throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for " + model.getClass().getName() + ") in Relational Model. You should fix this");
+    }
+
+    /**
+     * Gets a list of all the places a release is used
+     * @param release The release
+     * @return The places the release is used
+     */
+    private ArrayList<Model> findUsages(Release release){
         return new ArrayList<>();
     }
 
@@ -461,21 +476,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     private ArrayList<Model> findUsages(Project project){
         ArrayList<Model> usages = new ArrayList<>();
-        for (Release r : getReleases()) {
-            if (r.getAssociatedProject().equals(project)) {
-                usages.add(r);
+        for (Release release : getReleases()){
+            if (release.getAssociatedProject() == project) {
+                usages.add(release);
             }
         }
         return usages;
-    }
-
-    /**
-     * Gets a list of places that a release is used
-     * @param release The release to find the usages of
-     * @return The usages of the release
-     */
-    private ArrayList<Model> findUsages(Release release) {
-        return new ArrayList<>();
     }
 
     /**
@@ -539,6 +545,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             return getSkills().contains(model);
         if (model instanceof Release)
             return getReleases().contains(model);
-        return false;
+
+        throw new UnsupportedOperationException("We don't know what to do with this model (exists for " + model.getClass().getName() + ") in Relational Model. You should fix this");
     }
 }

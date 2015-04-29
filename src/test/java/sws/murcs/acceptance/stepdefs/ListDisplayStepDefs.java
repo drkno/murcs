@@ -47,32 +47,42 @@ public class ListDisplayStepDefs extends ApplicationTest {
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
-        UndoRedoManager.add(model);
 
-        person1 = new Person();
-        person1.setShortName("John");
-        person1.setUserId("abc123");
-        person2 = new Person();
-        person2.setShortName("Dave");
-        person2.setUserId("def456");
-        person3 = new Person();
-        person3.setShortName("Jim");
-        person3.setUserId("ghi789");
-        project = new Project();
-        project.setShortName("Testing");
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
 
-        model.add(person1);
-        model.add(person2);
-        model.add(person3);
-        model.add(project);
+                person1 = new Person();
+                person1.setShortName("John");
+                person1.setUserId("abc123");
+                person2 = new Person();
+                person2.setShortName("Dave");
+                person2.setUserId("def456");
+                person3 = new Person();
+                person3.setShortName("Jim");
+                person3.setUserId("ghi789");
+                project = new Project();
+                project.setShortName("Testing");
+
+                model.add(person1);
+                model.add(person2);
+                model.add(person3);
+                model.add(project);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
 
     }
 
     @After("@ListDisplay")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

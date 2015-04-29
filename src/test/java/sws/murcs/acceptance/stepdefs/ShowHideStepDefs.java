@@ -36,14 +36,23 @@ public class ShowHideStepDefs extends ApplicationTest {
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
-        UndoRedoManager.add(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @After("@ShowHide")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

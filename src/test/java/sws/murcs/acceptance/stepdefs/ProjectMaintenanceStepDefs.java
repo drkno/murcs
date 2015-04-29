@@ -32,14 +32,23 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
-        UndoRedoManager.add(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @After("@ProjectMaintenance")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

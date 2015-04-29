@@ -44,24 +44,32 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
-        UndoRedoManager.add(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
 
-        project = new Project();
-        project.setShortName("Testing");
+                project = new Project();
+                project.setShortName("Testing");
 
-        release = new Release();
-        release.setShortName("TestRelease");
-        release.setAssociatedProject(project);
-        release.setReleaseDate(LocalDate.of(2015, 4, 22));
+                release = new Release();
+                release.setShortName("TestRelease");
+                release.setAssociatedProject(project);
+                release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        model.add(project);
+                model.add(project);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

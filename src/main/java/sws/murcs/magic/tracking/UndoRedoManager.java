@@ -271,6 +271,13 @@ public class UndoRedoManager {
     }
 
     /**
+     * Clears all listeners
+     */
+    public static void forgetListeners() {
+        changeListeners.clear();
+    }
+
+    /**
      * Sets the disabled state of the Undo/Redo manager.
      * @param isDisabled new state.
      */

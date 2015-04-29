@@ -9,8 +9,8 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import javafx.application.Application;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -48,42 +48,51 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
-        UndoRedoManager.add(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
 
-        project = new Project();
-        project.setShortName("Testing");
+                project = new Project();
+                project.setShortName("Testing");
 
-        skill = new Skill();
-        skill.setShortName("Skill");
-        skill.setDescription("A skill");
+                skill = new Skill();
+                skill.setShortName("Skill");
+                skill.setDescription("A skill");
 
-        person = new Person();
-        person.setUserId("foo123");
-        person.setShortName("Things");
-        person.addSkill(skill);
+                person = new Person();
+                person.setUserId("foo123");
+                person.setShortName("Things");
+                person.addSkill(skill);
 
-        team = new Team();
-        team.setShortName("team");
-        team.setDescription("A team");
-        team.addMember(person);
+                team = new Team();
+                team.setShortName("team");
+                team.setDescription("A team");
+                team.addMember(person);
 
-        release = new Release();
-        release.setShortName("TestRelease");
-        release.setAssociatedProject(project);
-        release.setReleaseDate(LocalDate.of(2015, 4, 22));
+                release = new Release();
+                release.setShortName("TestRelease");
+                release.setAssociatedProject(project);
+                release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        model.add(project);
-        model.add(person);
-        model.add(release);
-        model.add(team);
-        model.add(skill);
+                model.add(project);
+                model.add(person);
+                model.add(release);
+                model.add(team);
+                model.add(skill);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @After("@ElementDeletion")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }
@@ -102,10 +111,8 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Then("^a confirm dialog is displayed$")
     public void a_confirm_dialog_is_displayed() throws Throwable {
-        fx.interact(() -> {
-            Text messageText = fx.lookup("#messageText").queryFirst();
-            assertTrue(messageText.getText().contains("Are you sure you want to delete this?"));
-        });
+        Label messageText = fx.lookup("#messageText").queryFirst();
+        assertTrue(messageText.getText().contains("Are you sure you want to delete this?"));
     }
 
     @And("^all the places that the object is used are displayed$")

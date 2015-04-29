@@ -1,3 +1,4 @@
+@NOW
 @ElementDeletion
 Feature: Element Deletion
 
