@@ -96,6 +96,7 @@ public class GenericPopup extends AnchorPane {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
+        popupStage.getIcons().add(iconImage);
 
         if (exception != null) {
             setMessageText(exception.getMessage());
@@ -203,8 +204,6 @@ public class GenericPopup extends AnchorPane {
      */
     public void setTitleImage(Image image) {
         messageImage.setImage(image);
-        messageImage.setFitWidth(50);
-        messageImage.setFitHeight(50);
     }
 
     /***
