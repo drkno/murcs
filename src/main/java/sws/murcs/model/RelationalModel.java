@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.controller.ModelTypes;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -20,7 +21,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     @TrackableValue
     private ModelObservableArrayList<Project> projects;
     @TrackableValue
-    private ModelObservableArrayList<WorkAllocation> allocations;
+    private ArrayList<WorkAllocation> allocations;
     @TrackableValue
     private ModelObservableArrayList<Person> people;
     @TrackableValue
@@ -44,7 +45,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Sets up a new Relational Model
      */
     public RelationalModel() {
-        this.allocations = new ModelObservableArrayList<WorkAllocation>();
+        this.allocations = new ArrayList<>();
         this.people = new ModelObservableArrayList<Person>();
         this.teams = new ModelObservableArrayList<Team>();
         this.skills = new ModelObservableArrayList<Skill>();
@@ -259,10 +260,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param workAllocation The work period to be added
      * @throws DuplicateObjectException
      */
-    public void addAllocation(WorkAllocation workAllocation) throws DuplicateObjectException {
+    public void addAllocation(WorkAllocation workAllocation) throws CustomException {
         Team team = workAllocation.getTeam();
         LocalDate startDate = workAllocation.getStartDate();
         LocalDate endDate = workAllocation.getEndDate();
+
+        if (startDate.isAfter(endDate))
+            throw new CustomException("End Date is before Start Date");
 
         int index = 0;
         for (WorkAllocation allocation : this.allocations) {
@@ -297,6 +301,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.allocations.contains(allocation)) {
             this.allocations.remove(allocation);
         }
+        commit("edit project");
     }
 
     /**

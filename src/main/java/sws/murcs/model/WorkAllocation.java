@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;

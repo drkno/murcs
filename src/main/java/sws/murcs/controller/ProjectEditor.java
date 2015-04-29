@@ -66,11 +66,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         if (!model.getProjects().contains(edit))
-            model.addProject(edit);
-
-        //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
+            model.add(edit);
     }
 
     /**
@@ -142,6 +138,14 @@ public class ProjectEditor extends GenericEditor<Project> {
             if (newValue != null) updateAndHandle();
         });
 
+        datePickerStartDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) updateAndHandle();
+        });
+
+        datePickerEndDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) updateAndHandle();
+        });
+
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
@@ -158,6 +162,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (teamsViewer.getSelectionModel().getSelectedIndex() == -1) {
             return;
         }
+
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
         PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
