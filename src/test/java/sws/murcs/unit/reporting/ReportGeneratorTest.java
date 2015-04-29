@@ -6,7 +6,10 @@ import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.reporting.ReportGenerator;
+import sws.murcs.reporting.ReportModel;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

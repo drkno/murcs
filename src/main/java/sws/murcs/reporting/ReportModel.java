@@ -15,7 +15,7 @@ import java.util.List;
 public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
-    private List<Project> projects = new ArrayList<>();
+    private List<Project> projects= new ArrayList<>();
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
     private List<Release> releases = new ArrayList<>();
