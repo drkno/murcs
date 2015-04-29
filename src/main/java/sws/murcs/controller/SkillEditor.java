@@ -6,9 +6,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
-import sws.murcs.model.persistence.PersistenceManager;
 
 /**
  * A controller to edit skills
@@ -71,6 +69,8 @@ public class SkillEditor extends GenericEditor<Skill> {
         //  then disable the short name as this should be unique but allow the editing of the long name and description
         if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString())))
             shortNameTextField.setDisable(true);
+
+        updateAndHandle();
     }
 
     /**

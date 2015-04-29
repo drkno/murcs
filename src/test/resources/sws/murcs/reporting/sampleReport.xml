@@ -7,16 +7,18 @@
             <project shortName="FITR">
                 <longName>Fitness is Training Right</longName>
                 <description>We are building a fitness tracking application for the world</description>
+                <releases>
+                    <release shortName="Now">
+                        <description>This current time</description>
+                        <releaseDate/>
+                    </release>
+                </releases>
             </project>
         </projects>
         <releases>
             <release shortName="Now">
                 <description>This current time</description>
                 <releaseDate/>
-                <associatedProject shortName="FITR">
-                    <longName>Fitness is Training Right</longName>
-                    <description>We are building a fitness tracking application for the world</description>
-                </associatedProject>
             </release>
         </releases>
         <teams>
@@ -45,6 +47,12 @@
                 <project shortName="FITR">
                     <longName>Fitness is Training Right</longName>
                     <description>We are building a fitness tracking application for the world</description>
+                    <releases>
+                        <release shortName="Now">
+                            <description>This current time</description>
+                            <releaseDate/>
+                        </release>
+                    </releases>
                 </project>
                 <team shortName="Sengineers">
                     <longName>Software Engineers</longName>

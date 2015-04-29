@@ -91,6 +91,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     public void load(){
         updateFields();
+        updateAndHandle();
     }
 
     /**

@@ -41,10 +41,11 @@ public class CreateWindowController {
         if (okayClicked != null) {
             try {
                 contentPane.requestFocus();
-                PersistenceManager.Current.getCurrentModel().add(model);
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
                     return;
+                if (model == null) return;
+                PersistenceManager.Current.getCurrentModel().add(model);
                 okayClicked.selectItem(model);
             }
             catch (Exception e) {

@@ -119,7 +119,7 @@ public class ReleaseGenerator implements Generator<Release> {
         }
 
         try {
-            r.setAssociatedProject(projects.get(NameGenerator.random(projects.size())));
+            projects.get(NameGenerator.random(projects.size())).addRelease(r);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

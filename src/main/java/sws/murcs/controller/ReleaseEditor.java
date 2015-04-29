@@ -4,13 +4,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
+/**
+ * An editor for editing/creating a release
+ */
 public class ReleaseEditor extends GenericEditor<Release> {
 
     @FXML
@@ -30,15 +35,22 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     private ChangeListener<Project> projectChangeListener;
 
+    private Project associatedProject;
+
     /**
      * Updates the fields in the release editor pane
      */
     @Override
     public void updateFields() {
+        Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects().stream().filter(project -> project.getReleases().contains(edit)).findFirst();
+        if (projectCheck.isPresent()) {
+            associatedProject = projectCheck.get();
+        }
+
         String currentShortName = shortNameTextField.getText();
         String currentDescription = descriptionTextArea.getText();
         LocalDate currentReleaseDate = releaseDatePicker.getValue();
-        Project currentAssociatedProject = edit.getAssociatedProject();
+        Project currentAssociatedProject = associatedProject;
 
         if (edit.getShortName() != null && !currentShortName.equals(edit.getShortName())) {
             shortNameTextField.setText(edit.getShortName());
@@ -64,6 +76,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @Override
     public void load() {
         updateFields();
+        updateAndHandle();
     }
 
     /**
@@ -78,8 +91,25 @@ public class ReleaseEditor extends GenericEditor<Release> {
             edit.setDescription(descriptionTextArea.getText());
         if (edit.getReleaseDate() == null || !edit.getReleaseDate().equals(releaseDatePicker.getValue()))
             edit.setReleaseDate(releaseDatePicker.getValue());
-        if (edit.getAssociatedProject() == null || !edit.getAssociatedProject().equals(projectChoiceBox.getValue()))
-            edit.setAssociatedProject(projectChoiceBox.getValue());
+        if (associatedProject == null || !associatedProject.equals(projectChoiceBox.getValue())) {
+
+            //We've just changed what project we are associating this with so remove the release from the last one
+            if (associatedProject != null){
+                associatedProject.removeRelease(edit);
+            }
+
+            //Update the associated project
+            associatedProject = projectChoiceBox.getValue();
+
+            if (associatedProject != null) {
+                associatedProject.addRelease(edit);
+            }
+            else {
+                throw new InvalidParameterException("There needs to be an associated project");
+            }
+
+            UndoRedoManager.commit("edit release");
+        }
     }
 
     /**

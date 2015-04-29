@@ -1,21 +1,22 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.magic.easyedit.Editable;
 import sws.murcs.magic.tracking.TrackableValue;
 
-import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Model of a Project.
  */
 public class Project extends Model {
-
-    @Editable()
     @TrackableValue
     private String description;
+
+    @TrackableValue
+    @XmlElementWrapper(name = "releases")
+    @XmlElement(name = "release")
+    private ArrayList<Release> releases = new ArrayList<>();
 
     /**
      * Gets a description of the project
@@ -32,6 +33,32 @@ public class Project extends Model {
     public void setDescription(String description) {
         this.description = description;
         commit("edit project");
+    }
+
+    /**
+     * Gets a list of releases associated with the project
+     * @return The releases for this project
+     */
+    public ArrayList<Release> getReleases() {return releases;}
+
+    /**
+     * Adds a release to the project
+     * @param release The release to add
+     */
+    public void addRelease(Release release){
+        if (!getReleases().contains(release)) {
+            releases.add(release);
+        }
+    }
+
+    /**
+     * Removes a release from the project
+     * @param release The release to remove
+     */
+    public void removeRelease(Release release){
+        if (releases.contains(release)) {
+            releases.remove(release);
+        }
     }
 
     /**

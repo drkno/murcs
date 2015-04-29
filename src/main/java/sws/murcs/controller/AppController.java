@@ -26,7 +26,6 @@ import sws.murcs.view.App;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Main app class controller
@@ -238,7 +237,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void undoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.revert();
-            selectItem(null);
         }
         catch (Exception e) {
             // Something went very wrong
@@ -254,7 +252,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void redoMenuItemClicked(ActionEvent event) {
         try {
             UndoRedoManager.remake();
-            selectItem(null);
         }
         catch (Exception e) {
             // something went terribly wrong....
@@ -301,7 +298,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 case "addPerson":
                     clazz = Person.class;
                     break;
-                case "addAllocation":
+                case "addTeam":
                     clazz = Team.class;
                     break;
                 case "addSkill":
