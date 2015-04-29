@@ -48,9 +48,6 @@ public class CreateWindowController {
                 PersistenceManager.Current.getCurrentModel().add(model);
                 okayClicked.selectItem(model);
             }
-//            catch (CustomException e) {
-//                ((Label)JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage")).setText(e.getMessage());
-//            }
             catch (Exception e) {
                 e.printStackTrace();
             }

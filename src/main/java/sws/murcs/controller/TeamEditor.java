@@ -43,7 +43,6 @@ public class TeamEditor extends GenericEditor<Team> {
      * Saves the team being edited
      */
     public void update() throws Exception {
-
         Person productOwner = productOwnerPicker.getValue();
         edit.setProductOwner(productOwner);
 
