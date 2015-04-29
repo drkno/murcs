@@ -81,7 +81,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     /**
      * Updates the release editor pane
-     * @throws Exception
+     * @throws Exception when updating fails.
      */
     @Override
     public void update() throws Exception {

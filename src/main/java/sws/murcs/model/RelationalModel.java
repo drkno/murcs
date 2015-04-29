@@ -256,7 +256,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a work allocation to the model
      * @param workAllocation The work period to be added
-     * @throws DuplicateObjectException
+     * @throws DuplicateObjectException when attempting to add a duplicate object.
      */
     public void addAllocation(WorkAllocation workAllocation) throws CustomException {
         Team team = workAllocation.getTeam();
@@ -490,7 +490,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds an arraylist of releases to the project
      * @param releases The releases to be added
-     * @throws DuplicateObjectException
+     * @throws DuplicateObjectException when attempting to add a duplicate release.
      */
     public void addReleases(ArrayList<Release> releases) throws DuplicateObjectException{
         for (Release release : releases) {
