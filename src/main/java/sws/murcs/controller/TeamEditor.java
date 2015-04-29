@@ -43,11 +43,15 @@ public class TeamEditor extends GenericEditor<Team> {
      * Saves the team being edited
      */
     public void update() throws Exception {
-        Person productOwner = productOwnerPicker.getValue();
-        edit.setProductOwner(productOwner);
+        if (productOwnerPicker.getValue() != null && !productOwnerPicker.getValue().equals(edit.getProductOwner())) {
+            Person productOwner = productOwnerPicker.getValue();
+            edit.setProductOwner(productOwner);
+        }
 
-        Person scrumMaster = scrumMasterPicker.getValue();
-        edit.setScrumMaster(scrumMaster);
+        if (scrumMasterPicker.getValue() != null && !scrumMasterPicker.getValue().equals(edit.getScrumMaster())) {
+            Person scrumMaster = scrumMasterPicker.getValue();
+            edit.setScrumMaster(scrumMaster);
+        }
 
         Person person = addTeamMemberPicker.getValue();
 
