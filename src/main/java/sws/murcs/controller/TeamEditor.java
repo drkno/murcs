@@ -100,6 +100,7 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     public void load(){
         updateAndHandle();
+        labelErrorMessage.setText("");
     }
 
     /**
