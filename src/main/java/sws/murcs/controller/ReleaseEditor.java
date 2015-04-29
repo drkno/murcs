@@ -56,7 +56,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
             projectChoiceBox.getSelectionModel().select(currentAssociatedProject);
         }
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
-        //Todo set up project stuff
     }
 
     /**
@@ -81,16 +80,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
             edit.setReleaseDate(releaseDatePicker.getValue());
         if (edit.getAssociatedProject() == null || !edit.getAssociatedProject().equals(projectChoiceBox.getValue()))
             edit.setAssociatedProject(projectChoiceBox.getValue());
-
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
-
-        //If it hasn't been added to the relational model yet then add it
-        if (!model.getReleases().contains(edit))
-            model.addRelease(edit);
-
-        //If there is a saved callback then call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
     }
 
     /**

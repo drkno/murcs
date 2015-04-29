@@ -1,10 +1,10 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.model.Model;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Tracks an objects field and its associated value.
@@ -31,7 +31,28 @@ public class FieldValuePair {
      * @throws Exception if something goes wrong.
      */
     public void restoreValue() throws Exception {
-        _field.set(_trackableObject, _value);
+        if (_value instanceof Collection) {
+            Collection list1 = (Collection) _value;
+            Collection list2 = (Collection) _field.get(_trackableObject);
+
+            Set add = new HashSet<>(list1);
+            add.removeAll(list2);
+
+            Set remove = new HashSet<>(list2);
+            remove.removeAll(list1);
+
+            list2.removeAll(remove);
+            list2.addAll(add);
+        }
+        else {
+            _field.set(_trackableObject, _value);
+
+            /* fixme: todo: this is a workaround for refreshing the shortName in the side list
+           if anything else is ever shown in that list this should be removed. */
+            if (_field.getName().equals("shortName")) {
+                ((Model)_trackableObject).getShortNameProperty().notifyChanged();
+            }
+        }
     }
 
     /**

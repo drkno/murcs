@@ -36,30 +36,40 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @Override
     public void start(Stage stage) throws Exception {}
 
-    @Before
+    @Before("@ReleaseMaintenance")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
 
-        model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
 
-        project = new Project();
-        project.setShortName("Testing");
+                project = new Project();
+                project.setShortName("Testing");
 
-        release = new Release();
-        release.setShortName("TestRelease");
-        release.setAssociatedProject(project);
-        release.setReleaseDate(LocalDate.of(2015, 4, 22));
+                release = new Release();
+                release.setShortName("TestRelease");
+                release.setAssociatedProject(project);
+                release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
-        model.addProject(project);
+                model.add(project);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    @After
+    @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }
@@ -67,7 +77,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @And("^I have selected the release view from the display list type$")
     public void I_have_selected_the_release_view_from_the_display_list_type() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Release");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(null));
+        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
     @And("^a release is selected from the list$")
@@ -121,7 +131,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.Current.getCurrentModel().addRelease(release);
+        PersistenceManager.Current.getCurrentModel().add(release);
     }
 
     @When("^I edit the values of the release$")

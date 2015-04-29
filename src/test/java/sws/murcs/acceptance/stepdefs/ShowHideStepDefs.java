@@ -6,6 +6,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -13,6 +14,8 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import static org.junit.Assert.assertFalse;
@@ -22,19 +25,36 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     private FxRobot fx;
     private Stage primaryStage;
+    private Application app;
+    private RelationalModel model;
 
-    @Before
+    @Before("@ShowHide")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
-        FxToolkit.setupApplication(App.class);
+        app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
         launch(App.class);
+
+        interact(() -> {
+            try {
+                model = new RelationalModel();
+                PersistenceManager.Current.setCurrentModel(model);
+                UndoRedoManager.forget(true);
+                UndoRedoManager.add(model);
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    @After
+    @After("@ShowHide")
     public void tearDown() throws Exception {
+        UndoRedoManager.forgetListeners();
+        UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
+        FxToolkit.cleanupApplication(app);
     }
 
     @When("^I click the View menu$")

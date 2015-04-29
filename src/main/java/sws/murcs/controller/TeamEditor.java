@@ -3,7 +3,10 @@ package sws.murcs.controller;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -11,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -62,23 +64,13 @@ public class TeamEditor extends GenericEditor<Team> {
         Person scrumMaster = scrumMasterPicker.getValue();
         edit.setScrumMaster(scrumMaster);
 
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
         Person person = addTeamMemberPicker.getValue();
-
 
         if (person != null) {
             edit.addMember(person);
         }
 
-        //If we haven't added the team yet, throw them in the list of unassigned people
-        if (!model.getTeams().contains(edit))
-            model.addTeam(edit);
-
-        //If we have a saved callBack, call it
-        if (onSaved != null)
-            onSaved.updateListView(edit);
-
-        //Load the team again, to make sure everything is updated. We could probably do this better
+        //fixme Load the team again, to make sure everything is updated. We could probably do this better
         load();
     }
 

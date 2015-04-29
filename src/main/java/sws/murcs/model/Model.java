@@ -4,6 +4,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.observable.ModelObjectProperty;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -20,6 +21,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     private String shortName;
     @TrackableValue
     private String longName;
+    private transient ModelObjectProperty<String> shortNameProperty;
 
     /**
      * Gets the short name.
@@ -37,6 +39,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setShortName(String shortName) throws Exception {
         validateShortName(shortName);
         this.shortName = shortName.trim();
+        if (shortNameProperty != null) shortNameProperty.notifyChanged();
         commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 
@@ -65,5 +68,21 @@ public abstract class Model extends TrackableObject implements Serializable {
     public void setLongName(String longName) {
         this.longName = longName;
         commit("edit " + getClass().getSimpleName().toLowerCase());
+    }
+
+    /**
+     * Listenable property for the shortName.
+     * @return property for the shortName.
+     */
+    public ModelObjectProperty<String> getShortNameProperty() {
+        if (shortNameProperty == null) {
+            try {
+                shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
+            } catch (Exception e) {
+                System.err.println("Couldn't create property for shortName. Failed with error:");
+                e.printStackTrace();
+            }
+        }
+        return shortNameProperty;
     }
 }
