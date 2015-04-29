@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
@@ -43,6 +44,9 @@ public class App extends Application{
 
         primaryStage.setTitle("Murcs");
         primaryStage.setOnCloseRequest(e -> notifyListeners(e));
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        primaryStage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window.
         primaryStage.setMinWidth(600);

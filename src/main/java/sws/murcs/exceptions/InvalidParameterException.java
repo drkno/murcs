@@ -53,7 +53,7 @@ public class InvalidParameterException extends CustomException {
      * Validates a string (basically if it's null or empty it will throw an exception)
      * @param type The type of value it is (description of it)
      * @param value The string value itself to check for null or empty
-     * @throws InvalidParameterException
+     * @throws InvalidParameterException when the string is invalid.
      */
     public static void validate(String type, String value) throws InvalidParameterException {
        if (value == null || value.trim().isEmpty()) throw new InvalidParameterException(type + " cannot be empty");
@@ -63,7 +63,7 @@ public class InvalidParameterException extends CustomException {
      * Validates any Model object, checks to see if it is null and throws the exception if it is
      * @param type The type of model it is (ie, release, project, etc.)
      * @param value The value of the model being checked for null
-     * @throws InvalidParameterException
+     * @throws InvalidParameterException when the model object is invalid.
      */
     public static void validate(String type, Model value) throws InvalidParameterException {
         if (value == null) throw new InvalidParameterException(type + " cannot be empty");

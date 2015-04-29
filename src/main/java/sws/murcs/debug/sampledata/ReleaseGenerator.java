@@ -5,7 +5,6 @@ import sws.murcs.model.Release;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -60,7 +59,7 @@ public class ReleaseGenerator implements Generator<Release> {
 
     /**
      * Sets the project generator for use in creating more projects if necessary
-     * @param projectGenerator
+     * @param projectGenerator project generator to use while generating releases.
      */
     public void setProjectGenerator(Generator<Project> projectGenerator) {
         this.projectGenerator = projectGenerator;

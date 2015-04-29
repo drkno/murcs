@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.listeners.ViewUpdate;
@@ -43,6 +44,9 @@ public class EditorHelper {
             Stage newStage = new Stage();
             newStage.setScene(scene);
             newStage.setTitle("Create " + type);
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            newStage.getIcons().add(iconImage);
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
