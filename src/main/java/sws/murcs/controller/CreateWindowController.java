@@ -96,7 +96,7 @@ public class CreateWindowController {
      * @param cancelClicked The cancel callback
      * @return The form
      */
-    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, Consumer cancelClicked){
+    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, Consumer cancelClicked) {
         try {
             FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();

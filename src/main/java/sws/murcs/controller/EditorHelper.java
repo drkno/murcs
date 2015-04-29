@@ -24,7 +24,7 @@ public class EditorHelper {
      * @param clazz The type of object to create
      * @param update Called when the object is successully updated
      */
-    public static void createNew(Class<? extends Model> clazz, ViewUpdate update){
+    public static void createNew(Class<? extends Model> clazz, ViewUpdate update) {
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -60,7 +60,7 @@ public class EditorHelper {
      * @param model The model item to create
      * @return The form
      */
-    public static Parent getEditForm(Model model){
+    public static Parent getEditForm(Model model) {
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");

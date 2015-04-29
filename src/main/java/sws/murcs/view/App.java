@@ -102,7 +102,7 @@ public class App extends Application{
         model.getSkills().forEach(k -> UndoRedoManager.add(k));
         model.getProjects().forEach(l -> UndoRedoManager.add(l));
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
-        try{UndoRedoManager.commit("Initial State");} catch (Exception e){}
+        try{UndoRedoManager.commit("Initial State");} catch (Exception e) {}
         launch(args);
     }
 }
