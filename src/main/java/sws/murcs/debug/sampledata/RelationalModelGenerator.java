@@ -1,6 +1,5 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
@@ -158,7 +157,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
             return model;
         }
-        catch (DuplicateObjectException e){
+        catch (Exception e){
             e.printStackTrace();
         }
         return null;
