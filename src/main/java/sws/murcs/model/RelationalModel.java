@@ -11,6 +11,8 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * The top level relational model
@@ -18,17 +20,17 @@ import java.util.ArrayList;
 public class RelationalModel extends TrackableObject implements Serializable {
 
     @TrackableValue
-    private ModelObservableArrayList<Project> projects;
+    private List<Project> projects;
     @TrackableValue
-    private ArrayList<WorkAllocation> allocations;
+    private List<WorkAllocation> allocations;
     @TrackableValue
-    private ModelObservableArrayList<Person> people;
+    private List<Person> people;
     @TrackableValue
-    private ModelObservableArrayList<Team> teams;
+    private List<Team> teams;
     @TrackableValue
-    private ModelObservableArrayList<Skill> skills;
+    private List<Skill> skills;
     @TrackableValue
-    private ModelObservableArrayList<Release> releases;
+    private List<Release> releases;
 
     /**
      * Gets the current application version
@@ -65,6 +67,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.skills.add(scrumMaster);
         } catch (Exception e) {
             // will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
+            e.printStackTrace();
         }
     }
 
@@ -72,7 +75,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the projects
      * @return The projects
      */
-    public ModelObservableArrayList<Project> getProjects() {
+    public List<Project> getProjects() {
         return projects;
     }
 
@@ -151,7 +154,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets a list of all people.
      * @return The people
      */
-    public ModelObservableArrayList<Person> getPeople() {
+    public List<Person> getPeople() {
         return people;
     }
 
@@ -201,7 +204,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets a list of all teams
      * @return The teams
      */
-    public ModelObservableArrayList<Team> getTeams() {
+    public List<Team> getTeams() {
         return teams;
     }
 
@@ -287,8 +290,18 @@ public class RelationalModel extends TrackableObject implements Serializable {
         commit("edit project");
     }
 
-    public void addAllocations(ArrayList<WorkAllocation> allocations) {
-
+    /**
+     * Adds a list of allocations to the existing allocations.
+     * @param allocations allocations to add.
+     * @throws Exception when adding the allocations failed.
+     */
+    public void addAllocations(List<WorkAllocation> allocations) throws Exception {
+        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+        for (WorkAllocation allocation : allocations) {
+            addAllocation(allocation);
+        }
+        UndoRedoManager.assimilate(commitNumber);
+        commit("edit project");
     }
 
     /**
@@ -303,35 +316,19 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all a projects future and ongoing work allocations
+     * Gets a list of all a projects work allocations
      * @param project The project to check allocations for
      * @return A list of work allocations
      */
-    public ArrayList<WorkAllocation> getProjectsAllocations(Project project) {
-        LocalDate currentDate = LocalDate.now();
-        ArrayList<WorkAllocation> allocations = new ArrayList<>();
-        for (WorkAllocation allocation : this.allocations) {
-            if (allocation.getProject() == project) {
-                if (allocation.getEndDate().isAfter(currentDate)) {
-                    allocations.add(allocation);
-                }
-            }
-        }
-        return allocations;
+    public List<WorkAllocation> getProjectsAllocations(Project project) {
+        return allocations.stream().filter(a -> a.getProject().equals(project)).collect(Collectors.toList());
     }
 
     /**
-     * Gets a list of all allocations that haven't already gone by
-     * @return The list
+     * Gets a list of all allocations
+     * @return A list of allocations
      */
-    public ArrayList<WorkAllocation> getAllAllocations() {
-        LocalDate currentDate = LocalDate.now();
-        ArrayList<WorkAllocation> allocations = new ArrayList<>();
-        for (WorkAllocation allocation : this.allocations) {
-            if (allocation.getEndDate().isAfter(currentDate)) {
-                allocations.add(allocation);
-            }
-        }
+    public List<WorkAllocation> getAllAllocations() {
         return allocations;
     }
 
@@ -339,7 +336,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the skills
      * @return The skills
      */
-    public ModelObservableArrayList<Skill> getSkills() {
+    public List<Skill> getSkills() {
         return skills;
     }
 
@@ -483,7 +480,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the releases
      * @return The releases
      */
-    public ModelObservableArrayList<Release> getReleases() {
+    public List<Release> getReleases() {
         return releases;
     }
 

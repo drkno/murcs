@@ -1,10 +1,12 @@
 package sws.murcs.exceptions;
 
 import sws.murcs.model.Model;
-import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.List;
 
 /**
  * Duplicate Object Exception
@@ -41,7 +43,7 @@ public class DuplicateObjectException extends CustomException {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return; // as is called in the constructor of RelationalModel
         String className = newModel.getClass().getSimpleName();
-        ModelObservableArrayList<? extends Model> list = null;
+        List<? extends Model> list = null;
         switch (className) {
             case "Skill": {
                 list = model.getSkills();
@@ -71,7 +73,7 @@ public class DuplicateObjectException extends CustomException {
         }
     }
 
-    private static void CheckForDuplicateNames(Model newModel, ModelObservableArrayList<? extends Model> modelClass, String className, String simpleName) throws DuplicateObjectException {
+    private static void CheckForDuplicateNames(Model newModel, List<? extends Model> modelClass, String className, String simpleName) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getShortName().equals(simpleName) && o != newModel)
                 .findAny()
@@ -80,7 +82,7 @@ public class DuplicateObjectException extends CustomException {
         }
     }
 
-    private static void CheckForDuplicateUserIds(Model newModel, ModelObservableArrayList<Person> modelClass, String simpleId) throws DuplicateObjectException {
+    private static void CheckForDuplicateUserIds(Model newModel, List<Person> modelClass, String simpleId) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getUserId().equals(simpleId) && o != newModel)
                 .findAny()
