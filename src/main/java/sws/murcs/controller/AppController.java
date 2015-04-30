@@ -25,6 +25,7 @@ import sws.murcs.view.App;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main app class controller
@@ -99,7 +100,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (model == null) return;
 
-        ModelObservableArrayList arrayList;
+        List arrayList;
         switch (type) {
             case Project: arrayList = model.getProjects(); break;
             case People: arrayList = model.getPeople(); break;
@@ -108,7 +109,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Release: arrayList = model.getReleases(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems(arrayList);
+        displayList.setItems((ModelObservableArrayList)arrayList);
         displayList.getSelectionModel().select(0);
     }
 
