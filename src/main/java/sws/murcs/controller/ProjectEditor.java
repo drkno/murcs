@@ -64,9 +64,6 @@ public class ProjectEditor extends GenericEditor<Project> {
             model.addAllocation(allocation);
             observableAllocations.setAll(model.getProjectsAllocations(edit)); // This way, the list remains ordered
         }
-
-        if (!model.getProjects().contains(edit))
-            model.add(edit);
     }
 
     /**
