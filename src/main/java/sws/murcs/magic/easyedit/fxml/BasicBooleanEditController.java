@@ -20,12 +20,12 @@ public class BasicBooleanEditController extends BasicEditController<Boolean> imp
     @FXML private RadioButton trueButton, falseButton;
 
     @Override
-    public void setTitle(String text) {
+    public void setTitle(final String text) {
         titleText.setText(text);
     }
 
     @Override
-    public void setValue(Boolean value) {
+    public void setValue(final Boolean value) {
         trueButton.setSelected(value);
         falseButton.setSelected(!value);
     }
@@ -36,7 +36,7 @@ public class BasicBooleanEditController extends BasicEditController<Boolean> imp
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(final URL location, final ResourceBundle resources) {
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().add(trueButton);
         toggleGroup.getToggles().add(falseButton);

@@ -88,7 +88,7 @@ public class FxmlPaneGenerator implements EditPaneGenerator {
         //and trust it does the right thing with it.
         if (validator != null) controller.addValidator(v -> {
             try {
-                return (Boolean) validator.invoke(from, v);
+                return validator.invoke(from, v);
             } catch (Exception e) {
                 System.err.println("Failed to invoke the validator for " + field.getName() + " on " + from + " with value " + v);
             }
