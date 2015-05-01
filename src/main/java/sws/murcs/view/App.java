@@ -86,10 +86,10 @@ public class App extends Application{
         if (debug >= 0) {
             RelationalModelGenerator.Stress stressLevel = RelationalModelGenerator.Stress.Low;
             if (debug+1 < args.length) {
-                switch (args[debug+1]) {
+                switch (args[debug+1].substring(0, 3).toLowerCase()) {
                     case "low": stressLevel = RelationalModelGenerator.Stress.Low; break;
                     case "med": stressLevel = RelationalModelGenerator.Stress.Medium; break;
-                    case "high": stressLevel = RelationalModelGenerator.Stress.High; break;
+                    case "hig": stressLevel = RelationalModelGenerator.Stress.High; break;
                 }
             }
             PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
