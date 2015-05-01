@@ -140,12 +140,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
         fx.clickOn("#editMenu");
         fx.moveBy(-10, 0);
-        if (type.equals("Skills")) {
-            assertTrue(displayListSize == 3);
-        }
-        else {
-            assertTrue(displayListSize == 1);
-        }
+        assertTrue(displayListSize == (type.equals("Skills") ? 3: 1));
 
     }
 
