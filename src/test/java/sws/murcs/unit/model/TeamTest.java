@@ -4,13 +4,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
-import sws.murcs.debug.sampledata.Generator;
-import sws.murcs.debug.sampledata.PersonGenerator;
-import sws.murcs.debug.sampledata.TeamGenerator;
 
 import java.util.ArrayList;
 

@@ -20,20 +20,45 @@ import java.time.LocalDate;
  */
 public class ProjectEditor extends GenericEditor<Project> {
 
+    /**
+     * The text fields for the names and description of the project.
+     */
     @FXML private TextField textFieldShortName, textFieldLongName, textFieldDescription;
+    /**
+     * The table view for work allocations.
+     */
     @FXML private TableView<WorkAllocation> teamsViewer;
+    /**
+     * The table column for the team.
+     */
     @FXML private TableColumn<WorkAllocation, Team> tableColumnTeams;
+    /**
+     * The table column for the start and end dates.
+     */
     @FXML private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates, tableColumnEndDates;
+    /**
+     * The datepickers for the start and end dates.
+     */
     @FXML private DatePicker datePickerStartDate, datePickerEndDate;
+    /**
+     * The choice box for the team you want to allocate.
+     */
     @FXML private ChoiceBox<Team> choiceBoxAddTeam;
+    /**
+     * The error message label for the window.
+     */
     @FXML private Label labelErrorMessage;
 
-    ObservableList<WorkAllocation> observableAllocations;
+    /**
+     * The list of teams allocated to the project.
+     */
+    private ObservableList<WorkAllocation> observableAllocations;
 
     /**
      * Creates a new or updates the current edit being edited.
+     * @throws Exception The exception thrown when invalid input is given.
      */
-    public void update() throws Exception {
+    public final void update() throws Exception {
         if (edit.getShortName() == null || !textFieldShortName.getText().equals(edit.getShortName())) {
             edit.setShortName(textFieldShortName.getText());
         }
@@ -67,9 +92,9 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Updates the object in memory and handles any exception
+     * Updates the object in memory and handles any exception.
      */
-    public void updateAndHandle(){
+    public final void updateAndHandle() {
         try {
             labelErrorMessage.setText("");
             update();
@@ -84,9 +109,9 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Loads the edit into the form
+     * Loads the edit into the form.
      */
-    public void load(){
+    public final void load() {
         updateFields();
         updateAndHandle();
     }
@@ -95,7 +120,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Sets the fields in the editing pane if and only if they are different to the current values.
      * Done so that Undo/Redo can update the editing pane without losing current selection.
      */
-    public void updateFields() {
+    public final void updateFields() {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         String currentShortName = textFieldShortName.getText();
@@ -119,7 +144,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      * Initializes the editor for use, sets up listeners etc.
      */
     @FXML
-    public void initialize() {
+    public final void initialize() {
         textFieldShortName.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) updateAndHandle();
         });
@@ -152,8 +177,8 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Called by the "Unschedule Work" button
-     * Removes a work period from both the project and team
+     * Called by the "Unschedule Work" button.
+     * Removes a work period from both the project and team.
      */
     @FXML
     private void buttonUnscheduleTeamClick() {

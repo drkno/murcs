@@ -11,5 +11,5 @@ public interface AppClosingListener {
      * Override quit.
      * @param e Window close event to consume.
      */
-    public void quit(WindowEvent e);
+    void quit(WindowEvent e);
 }

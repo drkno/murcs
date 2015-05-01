@@ -1,11 +1,9 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random projects with teams

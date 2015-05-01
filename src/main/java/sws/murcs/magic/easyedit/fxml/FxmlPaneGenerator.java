@@ -3,8 +3,8 @@ package sws.murcs.magic.easyedit.fxml;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import sws.murcs.magic.easyedit.EditPaneGenerator;
 import sws.murcs.magic.easyedit.EditFormGenerator;
+import sws.murcs.magic.easyedit.EditPaneGenerator;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
