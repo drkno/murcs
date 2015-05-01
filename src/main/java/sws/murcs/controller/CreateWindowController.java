@@ -135,7 +135,7 @@ public class CreateWindowController {
 
             return root;
         } catch (Exception e) {
-            System.err.println("Unable to create a project editor!(this is seriously bad)");
+            System.err.println("Unable to create a model editor! Reference the stack trace for the cause and inform the developers.");
             e.printStackTrace();
         }
         return null;

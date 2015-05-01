@@ -4,7 +4,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
-
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)

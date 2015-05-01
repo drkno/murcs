@@ -60,7 +60,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private BorderPane borderPaneMain;
     /**
-     *
+     * The choice box for selecting the model type to be
+     * displayed in the list.
      */
     @FXML
     private ChoiceBox displayChoiceBox;
