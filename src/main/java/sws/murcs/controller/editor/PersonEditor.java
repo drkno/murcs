@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;

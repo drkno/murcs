@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

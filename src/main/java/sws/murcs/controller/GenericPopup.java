@@ -158,7 +158,7 @@ public class GenericPopup extends AnchorPane {
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    final void addButton(final String buttonText, final Position position, final Action action, final Consumer func) {
+    public final void addButton(final String buttonText, final Position position, final Action action, final Consumer func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
@@ -195,7 +195,7 @@ public class GenericPopup extends AnchorPane {
      * Shows the dialog, this should be the last thing you call after setting up your dialog. If you have not set up a
      * title the dialog will automatically remove it and resize.
      */
-    final void show() {
+    public final void show() {
         if (messageTitle.getText().equals("Title")) {
             contentPane.getRowConstraints().get(0).setMinHeight(0);
             contentPane.getRowConstraints().get(0).setMaxHeight(0);
@@ -217,7 +217,7 @@ public class GenericPopup extends AnchorPane {
      * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons() with
      * only one lambda expression then the cancel button is automatically set to call this.
      */
-    final void close() {
+    public final void close() {
         popupStage.close();
     }
 
@@ -226,7 +226,7 @@ public class GenericPopup extends AnchorPane {
      * make it too long.
      * @param message The message you want to show on the dialog.
      */
-    final void setMessageText(final String message) {
+    public final void setMessageText(final String message) {
         if (message == null) return;
         messageText.setText(message);
     }
@@ -235,7 +235,7 @@ public class GenericPopup extends AnchorPane {
      * Sets the title of the window (the bit that appears in the bar at the top)
      * @param title The window title.
      */
-    final void setWindowTitle(final String title) {
+    public final void setWindowTitle(final String title) {
         popupStage.setTitle(title);
     }
 
@@ -243,7 +243,7 @@ public class GenericPopup extends AnchorPane {
      * Sets the title of the message (appears alongside the title image)
      * @param titleText The title of the message.
      */
-    final void setTitleText(final String titleText) {
+    public final void setTitleText(final String titleText) {
         if (titleText == null) return;
         messageTitle.setText(titleText);
     }
@@ -253,7 +253,7 @@ public class GenericPopup extends AnchorPane {
      * NOTE: If you don't set the title text (not the window text) then this won't appear.
      * @param image image to set.
      */
-    final void setTitleImage(final Image image) {
+    public final void setTitleImage(final Image image) {
         messageImage.setImage(image);
     }
 
@@ -262,7 +262,7 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    final void addOkCancelButtons(final Consumer okFunction) {
+    public final void addOkCancelButtons(final Consumer okFunction) {
         addOkCancelButtons(okFunction, m -> this.close());
     }
 
@@ -271,7 +271,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
+    public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -280,7 +280,7 @@ public class GenericPopup extends AnchorPane {
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    final void addOkButton(final Consumer okFunction) {
+    public final void addOkButton(final Consumer okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

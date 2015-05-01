@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;

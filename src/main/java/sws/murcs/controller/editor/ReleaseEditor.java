@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;

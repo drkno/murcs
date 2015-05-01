@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.ModelTypes;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
