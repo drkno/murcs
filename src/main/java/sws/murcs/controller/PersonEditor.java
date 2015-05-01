@@ -51,19 +51,27 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     final void initialize() {
         personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         personFullNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         usernameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) updateAndHandle();
+            if (newValue != null) {
+                updateAndHandle();
+            }
         });
 
         skillChoiceBox.getItems().clear();
@@ -71,7 +79,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Updates the object in memory and handles any exception
+     * Updates the object in memory and handles any exception.
      */
     public final void updateAndHandle(){
         try {
@@ -91,7 +99,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Loads the person into the form
+     * Loads the person into the form.
      */
     @Override
     public final void load() {
@@ -112,7 +120,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Generates a node for a skill
+     * Generates a node for a skill.
      * @param skill The skill
      * @return the node representing the skill
      */
@@ -144,7 +152,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Updates the list of skills the person has
+     * Updates the list of skills the person has.
      */
     private void updateSkills() {
         skillVBox.getChildren().clear();

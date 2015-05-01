@@ -1,6 +1,6 @@
 package sws.murcs.controller;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Model;
 
 /**
  * A enum of the different types of model that

@@ -5,7 +5,6 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random people with skills and roles

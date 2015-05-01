@@ -1,12 +1,10 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;

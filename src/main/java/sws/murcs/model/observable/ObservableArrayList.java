@@ -3,6 +3,7 @@ package sws.murcs.model.observable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.beans.Observable;
 import sws.murcs.model.Model;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

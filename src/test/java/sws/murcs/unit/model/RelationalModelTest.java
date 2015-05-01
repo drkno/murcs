@@ -1,6 +1,5 @@
 package sws.murcs.unit.model;
 
-import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;

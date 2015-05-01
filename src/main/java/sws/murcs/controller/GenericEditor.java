@@ -1,10 +1,8 @@
 package sws.murcs.controller;
 
-import sws.murcs.listeners.ViewUpdate;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.magic.tracking.UndoRedoManager;
-
 
 /**
  * A generic class for making editing easier.
