@@ -64,7 +64,7 @@ public class Commit {
      * @param other other commit.
      * @return true if they are the same, false otherwise.
      */
-    public boolean equals(Commit other) {
+    final boolean equals(final Commit other) {
         if (fieldValuePairs.length != other.fieldValuePairs.length) return false;
         for (int i = 0; i < fieldValuePairs.length; i++) {
             if (!fieldValuePairs[i].equals(other.fieldValuePairs[i])) return false;
