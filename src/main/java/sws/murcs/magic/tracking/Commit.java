@@ -18,7 +18,7 @@ public class Commit {
      * @param fieldValuePairs the set of fields and values to set.
      * @param trackableObjects objects that were being tracked.
      */
-    protected Commit(long commitNumber, String message, FieldValuePair[] fieldValuePairs, ArrayList<TrackableObject> trackableObjects) {
+    protected Commit(final long commitNumber, final String message, final FieldValuePair[] fieldValuePairs, final ArrayList<TrackableObject> trackableObjects) {
         this.commitNumber = commitNumber;
         this.message = message;
         this.fieldValuePairs = fieldValuePairs;
@@ -64,7 +64,7 @@ public class Commit {
      * @param other other commit.
      * @return true if they are the same, false otherwise.
      */
-    public boolean equals(Commit other) {
+    final boolean equals(final Commit other) {
         if (fieldValuePairs.length != other.fieldValuePairs.length) return false;
         for (int i = 0; i < fieldValuePairs.length; i++) {
             if (!fieldValuePairs[i].equals(other.fieldValuePairs[i])) return false;

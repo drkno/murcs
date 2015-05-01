@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Main app class controller
+ * Main app class controller.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
@@ -70,8 +70,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             //The remove button should be greyed out if no item is selected or built in skills (PO or SM) are selected
-            removeButton.setDisable(newValue == null || newValue instanceof Skill &&
-                    (((Skill)newValue).getShortName().equals("PO") || ((Skill)newValue).getShortName().equals("SM")));
+            removeButton.setDisable(newValue == null || newValue instanceof Skill
+                    && (((Skill) newValue).getShortName().equals("PO") || ((Skill) newValue).getShortName().equals("SM")));
 
             contentPane.getChildren().clear();
             if (newValue == null) return;
@@ -110,7 +110,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Release: arrayList = model.getReleases(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList)arrayList);
+        displayList.setItems((ModelObservableArrayList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
@@ -119,7 +119,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The even that triggers the function
      */
     @FXML
-    private void fileQuitPress(ActionEvent event) {
+    private void fileQuitPress(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
@@ -148,7 +148,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that triggers the function
      */
     @FXML
-    private void toggleItemListView(ActionEvent event) {
+    private void toggleItemListView(final ActionEvent event) {
         if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
@@ -168,7 +168,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
-    private void saveProject(ActionEvent event) {
+    private void saveProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Project");
@@ -190,7 +190,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that causes the function to be called, clicking open.
      */
     @FXML
-    private void openProject(ActionEvent event) {
+    private void openProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
@@ -210,18 +210,18 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Old or corrupted project!");
-            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. " +
-                    "Please use the version it was created with to open the file.");
+            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
+                    + "Please use the version it was created with to open the file.");
             popup.show();
         }
     }
 
     /**
-     * Generates a report to a specified location
+     * Generates a report to a specified location.
      * @param event The event that causes the report to be generate and saved to a chosen file location
      */
     @FXML
-    private void generateReport(ActionEvent event) {
+    private void generateReport(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
@@ -244,10 +244,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void undoMenuItemClicked(ActionEvent event) {
-        try {
-            UndoRedoManager.revert();
-        }
+    private void undoMenuItemClicked(final ActionEvent event) {
+        try { UndoRedoManager.revert();}
         catch (Exception e) {
             // Something went very wrong
             UndoRedoManager.forget();
@@ -259,10 +257,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void redoMenuItemClicked(ActionEvent event) {
-        try {
-            UndoRedoManager.remake();
-        }
+    private void redoMenuItemClicked(final ActionEvent event) {
+        try { UndoRedoManager.remake();}
         catch (Exception e) {
             // something went terribly wrong....
             UndoRedoManager.forget();
@@ -275,7 +271,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param change type of change that has been made
      */
     @Override
-    public void undoRedoNotification(ChangeState change) {
+    public void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
@@ -295,8 +291,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
+    /**
+     * Function that is called when a new model is wanted to be created
+     * @param event The event of the add button being called
+     */
     @FXML
-    private void addClicked(ActionEvent event) {
+    private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -317,6 +317,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 case "addRelease":
                     clazz = Release.class;
                     break;
+                default:
+                    break;
             }
         }
         else {
@@ -330,8 +332,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
+    /**
+     * Function that is called when you want to delete a model
+     * @param event Event that sends you to the remove clicked function
+     */
     @FXML
-    private void removeClicked(ActionEvent event) {
+    private void removeClicked(final ActionEvent event) {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return;
 
@@ -348,7 +354,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         ArrayList<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
-        if (usages.size() != 0){
+        if (usages.size() != 0) {
             message += "\nThis " + ModelTypes.getModelType(selectedItem) + " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
@@ -367,18 +373,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     @Override
-    public void selectItem(Model param) {
+    public void selectItem(final Model param) {
         ModelTypes type;
         ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
-        if (param == null) {
-            displayList.getSelectionModel().select(0);
-        }
+        if (param == null) { displayList.getSelectionModel().select(0);}
         else {
             type = ModelTypes.getModelType(param);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(param);
-            }
+            if (selectedType == type) { displayList.getSelectionModel().select(param);}
             else {
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 displayList.getSelectionModel().select(param);

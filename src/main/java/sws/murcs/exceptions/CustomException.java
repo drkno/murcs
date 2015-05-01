@@ -16,7 +16,7 @@ public class CustomException extends Exception {
      * Instantiates a new CustomException.
      * @param message exception message to use.
      */
-    public CustomException(String message) {
+    public CustomException(final String message) {
         super(message);
     }
 
@@ -24,7 +24,7 @@ public class CustomException extends Exception {
      * Instantiates a new CustomException.
      * @param cause exception that caused this exception.
      */
-    public CustomException(Throwable cause) {
+    public CustomException(final Throwable cause) {
         super(cause);
     }
 
@@ -33,7 +33,7 @@ public class CustomException extends Exception {
      * @param message exception message to use.
      * @param cause exception that caused this exception.
      */
-    public CustomException(String message, Throwable cause) {
+    public CustomException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
@@ -44,7 +44,7 @@ public class CustomException extends Exception {
      * @param enableSuppression ignore when thrown inside a finally block.
      * @param writableStackTrace whether or not a stack trace should be writable.
      */
-    public CustomException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public CustomException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

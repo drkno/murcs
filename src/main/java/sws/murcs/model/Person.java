@@ -71,7 +71,7 @@ public class Person extends Model {
      * @throws sws.murcs.exceptions.DuplicateObjectException if there is a duplicate object.
      */
     private void validateUserId(String value) throws Exception {
-        DuplicateObjectException.CheckForDuplicates(this, value);
+        DuplicateObjectException.checkForDuplicates(this, value);
         InvalidParameterException.validate("User Id", value);
     }
 
