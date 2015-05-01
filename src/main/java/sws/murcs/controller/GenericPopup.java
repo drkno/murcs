@@ -99,10 +99,6 @@ public class GenericPopup extends AnchorPane {
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
 
-        if (exception == null && !buttonsDefined) {
-            addOkButton(m -> this.close());
-        }
-
         if (exception != null) {
             setMessageText(exception.getMessage());
             addOkButton(m -> this.close());
@@ -165,6 +161,11 @@ public class GenericPopup extends AnchorPane {
             messageTitle.setVisible(false);
             popupStage.setHeight(150);
         }
+
+        if (!buttonsDefined) {
+            addOkButton(m -> this.close());
+        }
+
         popupStage.show();
     }
 
