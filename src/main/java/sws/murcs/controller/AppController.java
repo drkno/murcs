@@ -69,8 +69,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //The remove button should be greyed out if no item is selected
-            removeButton.setDisable(newValue == null);
+            //The remove button should be greyed out if no item is selected or built in skills (PO or SM) are selected
+            removeButton.setDisable(newValue == null || newValue instanceof Skill &&
+                    (((Skill)newValue).getShortName().equals("PO") || ((Skill)newValue).getShortName().equals("SM")));
 
             contentPane.getChildren().clear();
             if (newValue == null) return;
