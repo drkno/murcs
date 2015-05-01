@@ -8,6 +8,9 @@ import java.time.LocalDate;
 
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
+/**'
+ * A class that gets the information needed for the header of the report, such as the product version and date generated
+ */
 public class ReportHeader {
 
     private float projectVersion;

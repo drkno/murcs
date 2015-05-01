@@ -51,6 +51,7 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @After("@ShowHide")
     public void tearDown() throws Exception {
+        PersistenceManager.Current.setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

@@ -1,5 +1,6 @@
 package sws.murcs.acceptance.stepdefs;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
@@ -88,6 +89,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @After("@ElementDeletion")
     public void tearDown() throws Exception {
+        PersistenceManager.Current.setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
@@ -138,7 +140,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
         fx.clickOn("#editMenu");
         fx.moveBy(-10, 0);
-        assertTrue(displayListSize == 1);
+        assertTrue(displayListSize == (type.equals("Skills") ? 3: 1));
 
     }
 
@@ -157,12 +159,19 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @Given("^I have a skill selected$")
     public void I_have_a_skill_selected() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Skills");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
+        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(2));
     }
 
     @Given("^I have a release selected$")
     public void I_have_a_release_selected() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Release");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
+    }
+
+    //This is a special case as there are 2 default skills
+    @Then("^the skill is deleted$")
+    public void the_skill_is_deleted() throws Throwable {
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        assertTrue(displayList.getItems().size() == 2);
     }
 }
