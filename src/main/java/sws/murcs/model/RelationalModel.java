@@ -196,7 +196,17 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.getPeople().contains(person)) {
             this.getPeople().remove(person);
             //Remove the person from any team they might be in
-            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
+            //Check to see if they assigned a role in any team and if so remove them from this role
+            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> {
+                try {
+                    if (team.getProductOwner().equals(person)) team.setProductOwner(null);
+                    if (team.getScrumMaster().equals(person)) team.setScrumMaster(null);
+                } catch (Exception e) {
+                    //If this happens we're in deep doodoo
+                    e.printStackTrace();
+                }
+                team.removeMember(person);
+            });
         }
     }
 
