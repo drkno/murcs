@@ -1,5 +1,6 @@
 package sws.murcs.unit.model;
 
+import com.sun.org.apache.bcel.internal.generic.DUP;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -12,6 +13,7 @@ import sws.murcs.model.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -119,7 +121,6 @@ public class RelationalModelTest {
 
         relationalModel.remove(unassignedPersonGenerated);
         assertFalse(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
-
         relationalModel.remove(unassignedPersonGenerated);
         assertFalse(relationalModel.getUnassignedPeople().contains(unassignedPersonGenerated));
     }
@@ -403,5 +404,14 @@ public class RelationalModelTest {
         assertTrue(relationalModel.getReleases().contains(releaseGenerated));
         relationalModel.remove(releaseGenerated);
         assertFalse(relationalModel.getReleases().contains(releaseGenerated));
+    }
+
+    @Test
+    public void getUnassignedTeamsTest() throws Exception {
+        team.setShortName("Foo");
+        relationalModel.add(team);
+        List<Team> teams = relationalModel.getUnassignedTeams();
+        assertTrue(relationalModel.getUnassignedTeams().contains(team));
+        assertTrue(relationalModel.getUnassignedTeams().get(0).getShortName().equals("Foo"));
     }
 }

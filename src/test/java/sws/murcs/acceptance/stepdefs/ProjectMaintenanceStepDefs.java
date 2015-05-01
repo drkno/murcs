@@ -34,6 +34,7 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
 
         interact(() -> {
             try {
+                PersistenceManager.Current.setCurrentModel(null);
                 model = new RelationalModel();
                 PersistenceManager.Current.setCurrentModel(model);
                 UndoRedoManager.forget(true);

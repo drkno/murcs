@@ -199,8 +199,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             //Check to see if they assigned a role in any team and if so remove them from this role
             getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> {
                 try {
-                    if (team.getProductOwner().equals(person)) team.setProductOwner(null);
-                    if (team.getScrumMaster().equals(person)) team.setScrumMaster(null);
+                    if (team.getProductOwner() != null && team.getProductOwner().equals(person)) team.setProductOwner(null);
+                    if (team.getScrumMaster() != null && team.getScrumMaster().equals(person)) team.setScrumMaster(null);
                 } catch (Exception e) {
                     //If this happens we're in deep doodoo
                     e.printStackTrace();
@@ -216,6 +216,20 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public List<Team> getTeams() {
         return teams;
+    }
+
+    /**
+     * Gets a list of all the teams that aren't assigned to any project currently.
+     * @return the unassigned teams
+     */
+    public List<Team> getUnassignedTeams() {
+        List<Team> unassignedTeams = new ArrayList<Team>();
+        for (Team team : teams) {
+            if (!allocations.stream().filter(a -> a.getTeam().equals(team)).findAny().isPresent()) {
+                unassignedTeams.add(team);
+            }
+        }
+        return unassignedTeams;
     }
 
     /**

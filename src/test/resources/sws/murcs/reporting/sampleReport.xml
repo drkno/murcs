@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
     <projectVersion>0.02</projectVersion>
-    <dateGenerated>2015-04-29</dateGenerated>
+    <dateGenerated>2015-05-01</dateGenerated>
     <content>
         <projects>
             <project shortName="FITR">
@@ -10,17 +10,11 @@
                 <releases>
                     <release shortName="Now">
                         <description>This current time</description>
-                        <releaseDate/>
+                        <releaseDate>2015-04-22</releaseDate>
                     </release>
                 </releases>
             </project>
         </projects>
-        <releases>
-            <release shortName="Now">
-                <description>This current time</description>
-                <releaseDate/>
-            </release>
-        </releases>
         <teams>
             <team shortName="Riding Solo">
                 <longName>One man can conquer the world</longName>
@@ -50,7 +44,7 @@
                     <releases>
                         <release shortName="Now">
                             <description>This current time</description>
-                            <releaseDate/>
+                            <releaseDate>2015-04-22</releaseDate>
                         </release>
                     </releases>
                 </project>
@@ -124,10 +118,31 @@
                         </skills>
                     </productOwner>
                 </team>
-                <startDate>2015-04-29</startDate>
-                <endDate>2015-05-06</endDate>
+                <startDate>2015-05-01</startDate>
+                <endDate>2015-05-08</endDate>
             </workAllocation>
         </workAllocations>
+        <unassignedTeams>
+            <team shortName="Riding Solo">
+                <longName>One man can conquer the world</longName>
+                <members>
+                    <person shortName="Haydon">
+                        <longName>Haydon Baddock</longName>
+                        <id>hbk67</id>
+                        <skills>
+                            <skill shortName="Python">
+                                <longName>Python 2.7</longName>
+                                <description>A simple object-oriented language perfect for beginners</description>
+                            </skill>
+                            <skill shortName="C">
+                                <longName>C99</longName>
+                                <description>C99 is older than the current C standard, namely, C11</description>
+                            </skill>
+                        </skills>
+                    </person>
+                </members>
+            </team>
+        </unassignedTeams>
         <unassignedPeople>
             <person shortName="Unallocated">
                 <id>null123</id>

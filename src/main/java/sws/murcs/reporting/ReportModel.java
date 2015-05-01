@@ -22,6 +22,9 @@ public class ReportModel {
     @XmlElementWrapper(name = "workAllocations")
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations = new ArrayList<>();
+    @XmlElementWrapper(name = "unassignedTeams")
+    @XmlElement(name = "team")
+    private List<Team> listUnassignedTeams = new ArrayList<>();
     @XmlElementWrapper(name = "unassignedPeople")
     @XmlElement(name = "person")
     private List<Person> listUnassignedPeople = new ArrayList<>();
@@ -34,6 +37,7 @@ public class ReportModel {
         projects.addAll(relationalModel.getProjects());
         teams.addAll(relationalModel.getTeams());
         workAllocations.addAll(relationalModel.getAllAllocations());
+        listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName().compareTo(p2.getShortName()));
     }
