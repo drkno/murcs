@@ -6,26 +6,26 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ProjectEditor">
+<AnchorPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ProjectEditor">
    <children>
       <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <VBox>
                <children>
                   <Label text="Short Name" />
-                  <TextField fx:id="textFieldShortName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </VBox>
             <VBox>
                <children>
                   <Label text="Long Name" GridPane.rowIndex="1" />
-                  <TextField fx:id="textFieldLongName" GridPane.columnIndex="1" />
+                  <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                </children>
             </VBox>
             <VBox>
                <children>
                   <Label text="Description" />
-                  <TextField fx:id="textFieldDescription" />
+                  <TextField fx:id="descriptionTextField" />
                </children>
             </VBox>
             <Separator prefWidth="200.0">

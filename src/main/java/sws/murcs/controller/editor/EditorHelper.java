@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.CreateWindowController;
+import sws.murcs.controller.ModelTypes;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
@@ -80,7 +82,7 @@ public class EditorHelper {
 
             GenericEditor controller = loader.getController();
             controller.setEdit(model);
-            controller.load();
+            controller.loadObject();
 
             return parent;
         }

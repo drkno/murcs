@@ -50,7 +50,7 @@ public class App extends Application{
 
         // Set up max and min dimensions of main window.
         primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(400);
+        primaryStage.setMinHeight(600);
 
         primaryStage.show();
         stage = primaryStage;
