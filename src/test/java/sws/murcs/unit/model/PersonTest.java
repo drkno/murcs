@@ -4,15 +4,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.SkillGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
-import sws.murcs.debug.sampledata.Generator;
-import sws.murcs.debug.sampledata.SkillGenerator;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

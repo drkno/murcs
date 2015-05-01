@@ -16,15 +16,12 @@ public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
     private List<Project> projects= new ArrayList<>();
-    @XmlElementWrapper(name = "releases")
-    @XmlElement(name = "release")
-    private List<Release> releases = new ArrayList<>();
-    @XmlElementWrapper(name = "teams")
-    @XmlElement(name = "team")
-    private List<Team> teams = new ArrayList<>();
     @XmlElementWrapper(name = "workAllocations")
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations = new ArrayList<>();
+    @XmlElementWrapper(name = "unassignedTeams")
+    @XmlElement(name = "team")
+    private List<Team> listUnassignedTeams = new ArrayList<>();
     @XmlElementWrapper(name = "unassignedPeople")
     @XmlElement(name = "person")
     private List<Person> listUnassignedPeople = new ArrayList<>();
@@ -35,11 +32,11 @@ public class ReportModel {
      */
     public ReportModel(RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
-        releases.addAll(relationalModel.getReleases());
-        teams.addAll(relationalModel.getTeams());
         workAllocations.addAll(relationalModel.getAllAllocations());
+        listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName().compareTo(p2.getShortName()));
+        Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName().compareTo(t2.getShortName()));
     }
 
     /**

@@ -19,20 +19,26 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The main app class
+ * The main app class.
  */
-public class App extends Application{
+public class App extends Application {
 
+    /**
+     * The main stage of the application.
+     */
     public static Stage stage;
+    /**
+     * An list of listeners relating to the app closing.
+     */
     private static ArrayList<AppClosingListener> listeners = new ArrayList<>();
 
     /***
-     * Starts up the application and sets the min window size to 600x400
+     * Starts up the application and sets the min window size to 600x400.
      * @param primaryStage The main Stage
      * @throws Exception A loading exception from loading the fxml
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
 
         if (!PersistenceManager.CurrentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
@@ -57,26 +63,26 @@ public class App extends Application{
     }
 
     /**
-     * Call quit on all of the event listeners
+     * Call quit on all of the event listeners.
      * @param e Window event to consume to avoid the application quitting prematurely
      */
-    private static void notifyListeners(WindowEvent e) {
+    private static void notifyListeners(final WindowEvent e) {
         listeners.forEach(l -> l.quit(e));
     }
 
     /**
-     * Adds a listener to the list of listeners
+     * Adds a listener to the list of listeners.
      * @param listener to add to list of listeners
      */
-    public static void addListener(AppClosingListener listener) {
+    public static void addListener(final AppClosingListener listener) {
         listeners.add(listener);
     }
 
     /**
-     * Main function for starting the app
+     * Main function for starting the app.
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());
         UndoRedoManager.setDisabled(true);
 
@@ -85,11 +91,12 @@ public class App extends Application{
 
         if (debug >= 0) {
             RelationalModelGenerator.Stress stressLevel = RelationalModelGenerator.Stress.Low;
-            if (debug+1 < args.length) {
-                switch (args[debug+1]) {
+            if (debug + 1 < args.length) {
+                switch (args[debug + 1].substring(0, 3).toLowerCase()) {
                     case "low": stressLevel = RelationalModelGenerator.Stress.Low; break;
                     case "med": stressLevel = RelationalModelGenerator.Stress.Medium; break;
-                    case "high": stressLevel = RelationalModelGenerator.Stress.High; break;
+                    case "hig": stressLevel = RelationalModelGenerator.Stress.High; break;
+                    default: break;
                 }
             }
             PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
@@ -100,13 +107,12 @@ public class App extends Application{
 
         UndoRedoManager.setDisabled(false);
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        UndoRedoManager.add(model);
-        model.getPeople().forEach(p -> UndoRedoManager.add(p));
-        model.getTeams().forEach(t -> UndoRedoManager.add(t));
-        model.getSkills().forEach(k -> UndoRedoManager.add(k));
-        model.getProjects().forEach(l -> UndoRedoManager.add(l));
-        model.getReleases().forEach(r -> UndoRedoManager.add(r));
-        try{UndoRedoManager.commit("Initial State");} catch (Exception e) {}
+        try {
+            UndoRedoManager.importModel(model);
+        } catch (Exception e) {
+            //There is a problem if this fails
+            e.printStackTrace();
+        }
         launch(args);
     }
 }

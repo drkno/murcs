@@ -120,12 +120,12 @@ public class FieldValuePair {
         if (value instanceof Collection) {
             Class<?> clazz = value.getClass();
             Constructor<?> ctor = clazz.getConstructor(Collection.class);
-            value = ctor.newInstance(new Object[] { value });
+            value = ctor.newInstance(value);
         }
         else if (value instanceof Map) {
             Class<?> clazz = value.getClass();
             Constructor<?> ctor = clazz.getConstructor(Map.class);
-            value = ctor.newInstance(new Object[] { value });
+            value = ctor.newInstance(value);
         }
         return value;
     }

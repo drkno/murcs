@@ -5,6 +5,7 @@ import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 

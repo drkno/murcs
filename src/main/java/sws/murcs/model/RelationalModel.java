@@ -196,7 +196,17 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.getPeople().contains(person)) {
             this.getPeople().remove(person);
             //Remove the person from any team they might be in
-            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> team.removeMember(person));
+            //Check to see if they assigned a role in any team and if so remove them from this role
+            getTeams().stream().filter(team -> team.getMembers().contains(person)).forEach(team -> {
+                try {
+                    if (team.getProductOwner() != null && team.getProductOwner().equals(person)) team.setProductOwner(null);
+                    if (team.getScrumMaster() != null && team.getScrumMaster().equals(person)) team.setScrumMaster(null);
+                } catch (Exception e) {
+                    //If this happens we're in deep doodoo
+                    e.printStackTrace();
+                }
+                team.removeMember(person);
+            });
         }
     }
 
@@ -206,6 +216,20 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public List<Team> getTeams() {
         return teams;
+    }
+
+    /**
+     * Gets a list of all the teams that aren't assigned to any project currently.
+     * @return the unassigned teams
+     */
+    public List<Team> getUnassignedTeams() {
+        List<Team> unassignedTeams = new ArrayList<Team>();
+        for (Team team : teams) {
+            if (!allocations.stream().filter(a -> a.getTeam().equals(team)).findAny().isPresent()) {
+                unassignedTeams.add(team);
+            }
+        }
+        return unassignedTeams;
     }
 
     /**
@@ -474,6 +498,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.releases.contains(release)) {
             releases.remove(release);
         }
+
+        //Now remove it from the project
+        projects.stream().filter(project -> project.getReleases().contains(release)).forEach(project -> {
+            project.removeRelease(release);
+        });
     }
 
     /**
