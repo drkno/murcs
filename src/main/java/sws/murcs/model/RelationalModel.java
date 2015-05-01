@@ -474,6 +474,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (this.releases.contains(release)) {
             releases.remove(release);
         }
+
+        //Now remove it from the project
+        for (Project project : projects) {
+            if (project.getReleases().contains(release)) {
+                project.removeRelease(release);
+            }
+        }
     }
 
     /**
