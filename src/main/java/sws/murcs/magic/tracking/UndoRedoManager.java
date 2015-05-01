@@ -3,6 +3,7 @@ package sws.murcs.magic.tracking;
 import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.RelationalModel;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
@@ -309,5 +310,23 @@ public class UndoRedoManager {
         if (canRevert())
             head = revertStack.pop();
         notifyListeners(ChangeState.Assimilate);
+    }
+
+    /**
+     * Imports a relational model, so that it can be tracked by the undo/redo manager.
+     * WARNING: will forget about anything relating to previous models or objects that
+     * are currently being tracked.
+     * @param model model to import.
+     * @throws Exception when committing the changes fail.
+     */
+    public static void importModel(RelationalModel model) throws Exception {
+        forget(true);
+        UndoRedoManager.add(model);
+        model.getPeople().forEach(p -> UndoRedoManager.add(p));
+        model.getTeams().forEach(t -> UndoRedoManager.add(t));
+        model.getSkills().forEach(k -> UndoRedoManager.add(k));
+        model.getProjects().forEach(l -> UndoRedoManager.add(l));
+        model.getReleases().forEach(r -> UndoRedoManager.add(r));
+        commit("open project");
     }
 }
