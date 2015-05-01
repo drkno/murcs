@@ -224,6 +224,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void generateReport(ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
             fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
             fileChooser.setTitle("Report Save Location");
