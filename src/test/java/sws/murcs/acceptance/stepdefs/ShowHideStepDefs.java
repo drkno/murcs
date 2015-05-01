@@ -38,7 +38,6 @@ public class ShowHideStepDefs extends ApplicationTest {
 
         interact(() -> {
             try {
-                PersistenceManager.Current.setCurrentModel(null);
                 model = new RelationalModel();
                 PersistenceManager.Current.setCurrentModel(model);
                 UndoRedoManager.forget(true);
@@ -52,6 +51,7 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @After("@ShowHide")
     public void tearDown() throws Exception {
+        PersistenceManager.Current.setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

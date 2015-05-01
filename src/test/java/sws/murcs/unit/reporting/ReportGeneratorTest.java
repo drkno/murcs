@@ -101,6 +101,10 @@ public class ReportGeneratorTest {
         team2.setLongName("One man can conquer the world");
         team2.addMember(person3);
 
+        Team team3 = new Team();
+        team3.setShortName("Lonely");
+        team3.setLongName("Mr Lonely");
+
         // Project
         Project project = new Project();
         project.setShortName("FITR");
@@ -120,7 +124,9 @@ public class ReportGeneratorTest {
         project.addRelease(release);
 
         relationalModel.add(project);
+        relationalModel.add(team1);
         relationalModel.add(team2);
+        relationalModel.add(team3);
         relationalModel.add(person4);
         relationalModel.addAllocation(allocation);
         relationalModel.add(release);
