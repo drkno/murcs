@@ -27,6 +27,6 @@ public abstract class ReportGenerator {
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        jaxbMarshaller.marshal(reportModel, file);
+        jaxbMarshaller.marshal(reportModel, System.out);
     }
 }
