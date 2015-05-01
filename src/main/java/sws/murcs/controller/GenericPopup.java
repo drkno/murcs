@@ -50,6 +50,7 @@ public class GenericPopup extends AnchorPane {
 
     private Stage popupStage;
     private Scene popupScene;
+    private boolean buttonsDefined;
 
     /***
      * Constructs a new Generic Popup. In order to use you need to at least set the message and add at least 1 button
@@ -98,6 +99,10 @@ public class GenericPopup extends AnchorPane {
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
 
+        if (exception == null && !buttonsDefined) {
+            addOkButton(m -> this.close());
+        }
+
         if (exception != null) {
             setMessageText(exception.getMessage());
             addOkButton(m -> this.close());
@@ -143,6 +148,8 @@ public class GenericPopup extends AnchorPane {
                 hBoxRight.getChildren().add(button);
                 break;
         }
+
+        buttonsDefined = true;
     }
 
     /***

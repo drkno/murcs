@@ -199,12 +199,18 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             if (file != null) {
                 PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
+                if (model == null) {
+                    throw new Exception("Project was not opened.");
+                }
                 PersistenceManager.Current.setCurrentModel(model);
                 updateList();
                 UndoRedoManager.importModel(model);
             }
         } catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Old or corrupted project!");
+            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. " +
+                    "Please use the version it was created with to open the file.");
             popup.show();
         }
     }
