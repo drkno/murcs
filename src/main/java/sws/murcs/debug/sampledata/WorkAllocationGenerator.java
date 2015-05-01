@@ -7,7 +7,6 @@ import sws.murcs.model.WorkAllocation;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -43,10 +42,10 @@ public class WorkAllocationGenerator {
         Random random = new Random();
         int numProjects = projectPool.size();
         ArrayList<WorkAllocation> allocations = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().minus(6, ChronoUnit.MONTHS);
         LocalDate startDate;
         LocalDate endDate = currentDate;
-        while (endDate.isBefore(currentDate.plus(6, ChronoUnit.MONTHS))) {
+        while (endDate.isBefore(LocalDate.now().plus(6, ChronoUnit.MONTHS))) {
             startDate = endDate.plus(random.nextInt(7)+1, ChronoUnit.DAYS);
             endDate = startDate.plus(random.nextInt(21)+1, ChronoUnit.DAYS);
             Project project = projectPool.get(random.nextInt(numProjects));
