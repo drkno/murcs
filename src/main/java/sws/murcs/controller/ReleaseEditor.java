@@ -2,7 +2,11 @@ package sws.murcs.controller;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -14,7 +18,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 /**
- * An editor for editing/creating a release
+ * An editor for editing/creating a release.
  */
 public class ReleaseEditor extends GenericEditor<Release> {
 
@@ -38,10 +42,10 @@ public class ReleaseEditor extends GenericEditor<Release> {
     private Project associatedProject;
 
     /**
-     * Updates the fields in the release editor pane
+     * Updates the fields in the release editor pane.
      */
     @Override
-    public void updateFields() {
+    public final void updateFields() {
         Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects().stream().filter(project -> project.getReleases().contains(edit)).findFirst();
         if (projectCheck.isPresent()) {
             associatedProject = projectCheck.get();
@@ -71,20 +75,20 @@ public class ReleaseEditor extends GenericEditor<Release> {
     }
 
     /**
-     * Loads the release editor pane
+     * Loads the release editor pane.
      */
     @Override
-    public void load() {
+    public final void load() {
         updateFields();
         updateAndHandle();
     }
 
     /**
-     * Updates the release editor pane
+     * Updates the release editor pane.
      * @throws Exception when updating fails.
      */
     @Override
-    public void update() throws Exception {
+    public final void update() throws Exception {
         if (edit.getShortName() == null || !edit.getShortName().equals(shortNameTextField.getText()))
             edit.setShortName(shortNameTextField.getText());
         if (edit.getDescription() == null || !edit.getDescription().equals(descriptionTextArea.getText()))
@@ -113,10 +117,10 @@ public class ReleaseEditor extends GenericEditor<Release> {
     }
 
     /**
-     * Updates the release editor pane and handles any exceptions that it throws
+     * Updates the release editor pane and handles any exceptions that it throws.
      */
     @Override
-    public void updateAndHandle() {
+    public final void updateAndHandle() {
         try {
             labelErrorMessage.setText("");
             update();
@@ -131,7 +135,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
     }
 
     @FXML
-    public void initialize() {
+    public final void initialize() {
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue)
                 updateAndHandle();

@@ -1,11 +1,18 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Model;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 
 import java.util.ArrayList;
 
 /**
- * Generates random RelationalModels
+ * Generates random RelationalModels.
  */
 public class RelationalModelGenerator implements Generator<RelationalModel> {
 
@@ -28,7 +35,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
      * Instantiates a new random RelationalModel generator.
      * @param stress the stress level to use. Stress level determines the amount of data generated.
      */
-    public RelationalModelGenerator(Stress stress) {
+    public RelationalModelGenerator(final Stress stress) {
         this.stress = stress;
 
         skillGenerator = new SkillGenerator();
@@ -46,7 +53,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         workAllocationGenerator = new WorkAllocationGenerator();
     }
 
-    private ArrayList<Model> generateItems(Generator<? extends Model> generator, int min, int max){
+    private ArrayList<Model> generateItems(final Generator<? extends Model> generator, final int min, final int max) {
         ArrayList<Model> items = new ArrayList<>();
 
         int count = NameGenerator.random(min, max);
@@ -60,14 +67,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     }
 
     /**
-     * Calculates a minimum given a stress level
+     * Calculates a minimum given a stress level.
      * @param stress The stress
      * @param lowMin The low min
      * @param mediumMin The medium min
      * @param highMin The high min
      * @return The min
      */
-    private int getMin(Stress stress, int lowMin, int mediumMin, int highMin){
+    private int getMin(final Stress stress, final int lowMin, final int mediumMin, final int highMin) {
         switch (stress){
             case Low:
                 return lowMin;
@@ -75,19 +82,21 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                 return mediumMin;
             case High:
                 return highMin;
+            default:
+                break;
         }
         return lowMin;
     }
 
     /**
-     * Gets a max clamp for a given stress level
+     * Gets a max clamp for a given stress level.
      * @param stress The stress
      * @param lowMax The low max
      * @param mediumMax The medium max
      * @param highMax The high max
      * @return The max
      */
-    private int getMax(Stress stress, int lowMax, int mediumMax, int highMax){
+    private int getMax(final Stress stress, final int lowMax, final int mediumMax, final int highMax) {
         switch (stress)     {
             case Low:
                 return lowMax;
@@ -95,13 +104,15 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                 return mediumMax;
             case High:
                 return highMax;
+            default:
+                break;
         }
         return lowMax;
     }
 
     @Override
-    public RelationalModel generate(){
-        try{
+    public final RelationalModel generate() {
+        try {
             RelationalModel model = new RelationalModel();
 
             int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN, SkillGenerator.HIGH_STRESS_MIN);
@@ -157,7 +168,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
             return model;
         }
-        catch (Exception e){
+        catch (Exception e) {
             e.printStackTrace();
         }
         return null;
