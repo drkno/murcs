@@ -201,6 +201,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 PersistenceManager.Current.setCurrentModel(model);
                 updateList();
+                UndoRedoManager.importModel(model);
             }
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);

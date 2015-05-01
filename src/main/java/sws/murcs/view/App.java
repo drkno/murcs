@@ -100,13 +100,7 @@ public class App extends Application{
 
         UndoRedoManager.setDisabled(false);
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        UndoRedoManager.add(model);
-        model.getPeople().forEach(p -> UndoRedoManager.add(p));
-        model.getTeams().forEach(t -> UndoRedoManager.add(t));
-        model.getSkills().forEach(k -> UndoRedoManager.add(k));
-        model.getProjects().forEach(l -> UndoRedoManager.add(l));
-        model.getReleases().forEach(r -> UndoRedoManager.add(r));
-        try{UndoRedoManager.commit("Initial State");} catch (Exception e) {}
+        try{UndoRedoManager.importModel(model);} catch (Exception e) {}
         launch(args);
     }
 }
