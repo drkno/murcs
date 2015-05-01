@@ -16,9 +16,6 @@ public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
     private List<Project> projects= new ArrayList<>();
-    @XmlElementWrapper(name = "releases")
-    @XmlElement(name = "release")
-    private List<Release> releases = new ArrayList<>();
     @XmlElementWrapper(name = "teams")
     @XmlElement(name = "team")
     private List<Team> teams = new ArrayList<>();
@@ -35,7 +32,6 @@ public class ReportModel {
      */
     public ReportModel(RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
-        releases.addAll(relationalModel.getReleases());
         teams.addAll(relationalModel.getTeams());
         workAllocations.addAll(relationalModel.getAllAllocations());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
