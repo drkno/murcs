@@ -1,6 +1,5 @@
 package sws.murcs.controller;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -112,8 +111,22 @@ public class TeamEditor extends GenericEditor<Team> {
         Text nameText = new Text(person.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
-            edit.removeMember(person);
-            updateAndHandle();
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Remove Team Member");
+            String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+            if (edit.getScrumMaster() != null && edit.getScrumMaster().equals(person)) {
+                message += "\nThey are currently the teams Scrum Master.";
+            }
+            if (edit.getProductOwner() != null && edit.getProductOwner().equals(person)) {
+                message += "\nThey are currently the teams Product Owner.";
+            }
+            popup.setMessageText(message);
+            popup.addOkCancelButtons(p -> {
+                edit.removeMember(person);
+                updateAndHandle();
+                popup.close();
+            });
+            popup.show();
         });
 
         GridPane pane = new GridPane();
