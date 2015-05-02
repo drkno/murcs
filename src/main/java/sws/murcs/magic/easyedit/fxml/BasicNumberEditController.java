@@ -21,25 +21,27 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
     private Number oldValue;
 
     @Override
-    public void setTitle(String text) {
+    public final void setTitle(final String text) {
         titleText.setText(text);
     }
 
     @Override
-    public void setValue(Number value) {
+    public final void setValue(final Number value) {
         numberText.setText(value.toString());
         oldValue = value;
     }
 
     @Override
-    public Class[] supportedTypes() {
+    public final Class[] supportedTypes() {
         return new Class[]{Number.class, Integer.class, int.class, Float.class, float.class, Double.class, double.class};
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public final void initialize(final URL location, final ResourceBundle resources) {
         numberText.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!(oldValue && !newValue)) return;
+            if (!(oldValue && !newValue)) {
+                return;
+            }
             notifyChanged(null, this.oldValue, value);
             this.oldValue = value;
         });
@@ -47,19 +49,19 @@ public class BasicNumberEditController extends BasicEditController<Number> imple
 
     /**
      * Trys to convert the text in 'numberText' to a number, in the following order
-     * Integer, Float, Double and notifies any listeners that it has changed
+     * Integer, Float, Double and notifies any listeners that it has changed.
      */
-    private void convert(){
+    private void convert() {
         Number value;
-        try{
+        try {
             value = Integer.parseInt(numberText.getText());
-        }catch (Exception e1){
+        } catch (Exception e1) {
             try {
                 value = Float.parseFloat(numberText.getText());
-            }catch (Exception e2){
+            } catch (Exception e2) {
                 try {
                     value = Double.parseDouble(numberText.getText());
-                }catch (Exception e3){
+                } catch (Exception e3) {
                     showInvalid();
                     return;
                 }

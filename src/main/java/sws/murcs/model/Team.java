@@ -4,7 +4,11 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
 /**
@@ -31,75 +35,79 @@ public class Team extends Model {
      * of adding is to use getMembers().add(person);
      * @return A list of the team members
      */
-    public ArrayList<Person> getMembers() {
+    public final ArrayList<Person> getMembers() {
         return this.members;
     }
 
     /**
-     * A description of the team
+     * A description of the team.
      * @return the description
      */
-    public String getDescription() {
+    public final String getDescription() {
         return this.description;
     }
 
     /**
-     * Sets the description of the team
-     * @param description the new description
+     * Sets the description of the team.
+     * @param newDescription the new description
      */
-    public void setDescription(String description) {
-        this.description = description;
+    public final void setDescription(final String newDescription) {
+        this.description = newDescription;
         commit("edit team");
     }
 
     /**
-     * Gets the scrum master
+     * Gets the scrum master.
      * @return the scrum master
      */
-    public Person getScrumMaster() {
+    public final Person getScrumMaster() {
         return this.scrumMaster;
     }
 
     /**
      * Sets the scrum master.
-     * @param scrumMaster The new scrum master.
-     * @throws MultipleRolesException if the new Scrum Master is already performing another role.
+     * @param newScrumMaster The new scrum master.
+     * @throws MultipleRolesException if the new Scrum
+     * Master is already performing another role.
      */
-    public void setScrumMaster(Person scrumMaster) throws MultipleRolesException {
-        if (scrumMaster == getProductOwner() && productOwner != null && getProductOwner() != null) {
-            throw new MultipleRolesException("Scrum Master", "Product Owner", scrumMaster, this);
+    public final void setScrumMaster(final Person newScrumMaster) throws MultipleRolesException {
+        if (newScrumMaster == getProductOwner() && productOwner != null && getProductOwner() != null) {
+            throw new MultipleRolesException("Scrum Master", "Product Owner", newScrumMaster, this);
         }
-        this.scrumMaster = scrumMaster;
+        this.scrumMaster = newScrumMaster;
         commit("edit team");
     }
 
     /**
-     * Gets the PO
+     * Gets the PO.
      * @return the PO
      */
-    public Person getProductOwner() {
+    public final Person getProductOwner() {
         return this.productOwner;
     }
 
     /**
      * Sets the Product Owner.
-     * @param productOwner the new Product Owner.
-     * @throws MultipleRolesException if the new Product Owner is already performing another role.
+     * @param newProductOwner the new Product Owner.
+     * @throws MultipleRolesException if the new
+     * Product Owner is already performing another role.
      */
-    public void setProductOwner(Person productOwner) throws MultipleRolesException {
-        if (productOwner == getScrumMaster() && productOwner != null && getScrumMaster() != null) {
-            throw new MultipleRolesException("Product Owner", "Scrum Master", productOwner, this);
+    public final void setProductOwner(final Person newProductOwner) throws MultipleRolesException {
+        if (newProductOwner == getScrumMaster() && newProductOwner != null && getScrumMaster() != null) {
+            throw new MultipleRolesException("Product Owner", "Scrum Master", newProductOwner, this);
         }
-        this.productOwner = productOwner;
+        this.productOwner = newProductOwner;
         commit("edit team");
     }
 
     /**
-     * Adds a person to the project members only if that person is not already a member
+     * Adds a person to the project members only
+     * if that person is not already a member.
      * @param person to be added
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the person is already in the team
+     * @throws DuplicateObjectException
+     * if the person is already in the team
      */
-    public void addMember(Person person) throws DuplicateObjectException {
+    public final void addMember(final Person person) throws DuplicateObjectException {
         if (!members.contains(person)) {
             this.members.add(person);
             commit("edit team");
@@ -110,21 +118,22 @@ public class Team extends Model {
     }
 
     /**
-     * Adds a list of people to the team
-     * @param members People to be added to the team
-     * @throws sws.murcs.exceptions.DuplicateObjectException if a person is already in a team
+     * Adds a list of people to the team.
+     * @param membersToAdd People to be added to the team
+     * @throws DuplicateObjectException
+     * if a person is already in a team
      */
-    public void addMembers(ArrayList<Person> members) throws DuplicateObjectException {
-        for (Person member : members) {
+    public final void addMembers(final ArrayList<Person> membersToAdd) throws DuplicateObjectException {
+        for (Person member : membersToAdd) {
             this.addMember(member);
         }
     }
 
     /**
-     * Removes a person from the project members
+     * Removes a person from the project members.
      * @param person to be removed
      */
-    public void removeMember(Person person) {
+    public final void removeMember(final Person person) {
         if (this.members.contains(person)) {
             this.members.remove(person);
             commit("edit team");
@@ -132,16 +141,16 @@ public class Team extends Model {
     }
 
     /**
-     * Returns the string of the short name
+     * Returns the string of the short name.
      * @return short name string
      */
     @Override
-    public String toString() {
+    public final String toString() {
         return getShortName();
     }
 
     @Override
-    public boolean equals(Object object) {
+    public final boolean equals(final Object object) {
         if (object == null || !(object instanceof Team)) return false;
         String shortName = getShortName();
         String shortNameO = ((Team) object).getShortName();

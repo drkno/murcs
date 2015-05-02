@@ -1,8 +1,16 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +23,7 @@ import java.util.List;
 public class ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
-    private List<Project> projects= new ArrayList<>();
+    private List<Project> projects = new ArrayList<>();
     @XmlElementWrapper(name = "workAllocations")
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations = new ArrayList<>();
@@ -30,7 +38,7 @@ public class ReportModel {
      * Constructor.
      * @param relationalModel a relational model
      */
-    public ReportModel(RelationalModel relationalModel) {
+    public ReportModel(final RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
         workAllocations.addAll(relationalModel.getAllAllocations());
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());

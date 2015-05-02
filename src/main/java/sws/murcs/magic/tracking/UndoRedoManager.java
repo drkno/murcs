@@ -40,7 +40,7 @@ public class UndoRedoManager {
      * Adds an object to be tracked.
      * @param object new object to be tracked.
      */
-    public static void add(TrackableObject object) {
+    public static void add(final TrackableObject object) {
         objectsList.add(object);
     }
 
@@ -48,7 +48,7 @@ public class UndoRedoManager {
      * Removes an object from tracking.
      * @param object object to be removed from tracking.
      */
-    public static void remove(TrackableObject object) {
+    public static void remove(final TrackableObject object) {
         objectsList.remove(object);
     }
 
@@ -58,8 +58,10 @@ public class UndoRedoManager {
      * @return the unique commit number.
      * @throws Exception if an internal error occurs while committing.
      */
-    public static long commit(String message) throws Exception {
-        if (disabled) return -1;
+    public static long commit(final String message) throws Exception {
+        if (disabled) {
+            return -1;
+        }
         ArrayList<FieldValuePair> pairs = new ArrayList<>();
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
@@ -86,7 +88,9 @@ public class UndoRedoManager {
             revertStack.removeLast();
         }
 
-        if (canRemake()) remakeStack.clear();
+        if (canRemake()) {
+            remakeStack.clear();
+        }
         notifyListeners(ChangeState.Commit);
 
         return commitNumber++;
@@ -105,7 +109,7 @@ public class UndoRedoManager {
      * @param savedObjects true to forget about current objects added for
      *                     tracking, false otherwise.
      */
-    public static void forget(boolean savedObjects) {
+    public static void forget(final boolean savedObjects) {
         revertStack.clear();
         remakeStack.clear();
         head = null;
@@ -129,14 +133,16 @@ public class UndoRedoManager {
      * @param commitNumber commit number to revert to.
      * @throws Exception if an internal error occurs during the operation.
      */
-    public static void revert(long commitNumber) throws Exception {
+    public static void revert(final long commitNumber) throws Exception {
         while (!revertStack.isEmpty()) {
             remakeStack.push(head);
             Commit commit = revertStack.pop();
             commit.apply();
             objectsList = commit.getTrackableObjects();
             head = commit;
-            if (commit.getCommitNumber() == commitNumber) break;
+            if (commit.getCommitNumber() == commitNumber) {
+                break;
+            }
         }
         notifyListeners(ChangeState.Revert);
     }
@@ -171,14 +177,16 @@ public class UndoRedoManager {
      * @param commitNumber commit number to remake to.
      * @throws Exception if an internal error occurs during the operation.
      */
-    public static void remake(long commitNumber) throws Exception {
+    public static void remake(final long commitNumber) throws Exception {
         while (!remakeStack.isEmpty()) {
             revertStack.push(head);
             Commit commit = remakeStack.pop();
             commit.apply();
             objectsList = commit.getTrackableObjects();
             head = commit;
-            if (commit.getCommitNumber() == commitNumber) break;
+            if (commit.getCommitNumber() == commitNumber) {
+                break;
+            }
         }
         notifyListeners(ChangeState.Remake);
     }
@@ -231,7 +239,7 @@ public class UndoRedoManager {
      *                       This can be negative (defaults to -1) for infinite commits,
      *                       or greater or equal to zero for a set number.
      */
-    public static void setMaximumCommits(long maximumCommits) {
+    public static void setMaximumCommits(final long maximumCommits) {
         UndoRedoManager.maximumCommits = maximumCommits;
     }
 
@@ -240,8 +248,10 @@ public class UndoRedoManager {
      * that will be notified if such a change occurs.
      * @param eventListener the event listener to add.
      */
-    public static void addChangeListener(UndoRedoChangeListener eventListener) {
-        if (disabled) return;
+    public static void addChangeListener(final UndoRedoChangeListener eventListener) {
+        if (disabled) {
+            return;
+        }
         ChangeListenerHandler changeListenerHandler = new ChangeListenerHandler(eventListener);
         changeListeners.add(changeListenerHandler);
     }
@@ -250,8 +260,10 @@ public class UndoRedoManager {
      * Removes an change listener.
      * @param eventListener listener to remove.
      */
-    public static void removeChangeListener(UndoRedoChangeListener eventListener) {
-        if (disabled) return;
+    public static void removeChangeListener(final UndoRedoChangeListener eventListener) {
+        if (disabled) {
+            return;
+        }
         ChangeListenerHandler listener = new ChangeListenerHandler(eventListener);
         changeListeners.remove(listener);
     }
@@ -260,8 +272,10 @@ public class UndoRedoManager {
      * Notifies listeners that a change has occurred.
      * @param changeType the type of change that occurred.
      */
-    private static void notifyListeners(ChangeState changeType) {
-        if (changeListeners.size() == 0) return;
+    private static void notifyListeners(final ChangeState changeType) {
+        if (changeListeners.size() == 0) {
+            return;
+        }
         //ChangeListenerHandler.performGC(); Disabled as forcing a GC is very sloooowwwww
         for (int i = 0; i < changeListeners.size(); i++) {
             if (!changeListeners.get(i).eventNotification(changeType)) {
@@ -282,7 +296,7 @@ public class UndoRedoManager {
      * Sets the disabled state of the Undo/Redo manager.
      * @param isDisabled new state.
      */
-    public static void setDisabled(boolean isDisabled) {
+    public static void setDisabled(final boolean isDisabled) {
         disabled = isDisabled;
     }
 
@@ -300,15 +314,22 @@ public class UndoRedoManager {
      * @param commitNumber commit number to remove until.
      * @throws Exception If you use this method when remake is possible.
      */
-    public static void assimilate(long commitNumber) throws Exception {
-        if (head == null || head.getCommitNumber() == commitNumber) return;
-        if (canRemake()) throw new Exception("Cannot assimilate while remake is possible.");
+    public static void assimilate(final long commitNumber) throws Exception {
+        if (head == null || head.getCommitNumber() == commitNumber) {
+            return;
+        }
+        if (canRemake()) {
+            throw new Exception("Cannot assimilate while remake is possible.");
+        }
         while (!revertStack.isEmpty()) {
-            if (revertStack.peek().getCommitNumber() == commitNumber) break;
+            if (revertStack.peek().getCommitNumber() == commitNumber) {
+                break;
+            }
             revertStack.pop();
         }
-        if (canRevert())
+        if (canRevert()) {
             head = revertStack.pop();
+        }
         notifyListeners(ChangeState.Assimilate);
     }
 
@@ -319,7 +340,7 @@ public class UndoRedoManager {
      * @param model model to import.
      * @throws Exception when committing the changes fail.
      */
-    public static void importModel(RelationalModel model) throws Exception {
+    public static void importModel(final RelationalModel model) throws Exception {
         forget(true);
         UndoRedoManager.add(model);
         model.getPeople().forEach(p -> UndoRedoManager.add(p));

@@ -19,10 +19,10 @@ import java.util.Objects;
  * Provides helper methods for generating forms for editing and
  * creating new model objects.
  */
-final public class EditorHelper {
+final class EditorHelper {
 
     /**
-     * Empty private constructor as this is a utility class
+     * Empty private constructor as this is a utility class.
      */
     private EditorHelper() {
         // Empty constructor as this is a utility class

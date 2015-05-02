@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 /**
  * A basic boolean edit controller. Any FXML associated with this controller should specify
- * a 'titleText' Text object, and 'trueButton,' 'falseButton' radioButtons
+ * a 'titleText' Text object, and 'trueButton,' 'falseButton' radioButtons.
  */
 public class BasicBooleanEditController extends BasicEditController<Boolean> implements Initializable {
     @FXML private Text titleText;
@@ -20,23 +20,23 @@ public class BasicBooleanEditController extends BasicEditController<Boolean> imp
     @FXML private RadioButton trueButton, falseButton;
 
     @Override
-    public void setTitle(final String text) {
+    public final void setTitle(final String text) {
         titleText.setText(text);
     }
 
     @Override
-    public void setValue(final Boolean value) {
+    public final void setValue(final Boolean value) {
         trueButton.setSelected(value);
         falseButton.setSelected(!value);
     }
 
     @Override
-    public Class[] supportedTypes() {
+    public final Class[] supportedTypes() {
         return new Class[] {Boolean.class, boolean.class};
     }
 
     @Override
-    public void initialize(final URL location, final ResourceBundle resources) {
+    public final void initialize(final URL location, final ResourceBundle resources) {
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().add(trueButton);
         toggleGroup.getToggles().add(falseButton);
