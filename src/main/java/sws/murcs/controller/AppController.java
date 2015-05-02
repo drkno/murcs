@@ -169,10 +169,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 Platform.exit();
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                popup.close();
                 // Let the user save the project
-                saveProject();
-                Platform.exit();
+                if (saveProject()) {
+                    popup.close();
+                    Platform.exit();
+                }
             });
             popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
             popup.show();
@@ -197,8 +198,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     /**
      * Saves the current project.
      */
-    private void saveProject() {
-        saveProject(null);
+    private boolean saveProject() {
+        return saveProject(null);
     }
 
     /**
@@ -209,7 +210,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      *              namely clicking save.
      */
     @FXML
-    private void saveProject(final ActionEvent event) {
+    private boolean saveProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Project");
@@ -219,11 +220,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             if (file != null) {
                 PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 PersistenceManager.Current.saveModel(file.getName());
+                return true;
             }
         } catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
+        return false;
     }
 
     /**
