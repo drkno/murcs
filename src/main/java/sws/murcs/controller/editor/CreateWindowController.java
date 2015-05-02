@@ -115,6 +115,12 @@ public class CreateWindowController {
         this.model = newModel;
     }
 
+    public void dispose(){
+        this.cancelClicked = null;
+        this.okayClicked = null;
+        this.model = null;
+    }
+
     /**
      * Creates a new form for with the 'content' node as it's content.
      * @param content The content

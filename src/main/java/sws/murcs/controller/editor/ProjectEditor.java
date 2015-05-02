@@ -138,6 +138,11 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
     }
 
+    @Override
+    public void dispose() {
+        observableAllocations = null;
+        super.dispose();
+    }
     /**
      * Called by the "Unschedule Work" button
      * Removes a work period from both the project and team

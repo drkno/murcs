@@ -127,6 +127,14 @@ public class TeamEditor extends GenericEditor<Team> {
             edit.setDescription(viewDescription);
     }
 
+    @Override
+    public void dispose() {
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
+        smpoChangeListener = null;
+        super.dispose();
+    }
+
     /**
      * Updates the member list and people that can be assigned to the team
      */

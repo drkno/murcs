@@ -11,7 +11,7 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor{
+public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor {
 
     /**
      * The type of model the editor is being used for.
@@ -67,6 +67,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
         catch (Exception e){
             handleException(e);
         }
+    }
+
+    @Override
+    public void dispose() {
+        UndoRedoManager.removeChangeListener(this);
+        this.edit = null;
+        this.errorCallback = null;
     }
 
     /**

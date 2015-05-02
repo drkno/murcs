@@ -3,7 +3,6 @@ package sws.murcs.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -13,18 +12,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.murcs.controller.editor.EditorHelper;
+import sws.murcs.controller.editor.CreateWindow;
+import sws.murcs.controller.editor.EditorWindow;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Model;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -84,6 +78,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private GridPane contentPane;
 
+    private EditorWindow editorWindow;
+
     /**
      * Initialises the GUI, setting up the the options in the
      * choice box and populates the display list if necessary.
@@ -109,18 +105,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     && (((Skill) newValue).getShortName().equals("PO") || ((Skill) newValue).getShortName().equals("SM")));
 
             contentPane.getChildren().clear();
+
+            if (editorWindow != null) {
+                editorWindow.dispose();
+            }
+            editorWindow = null;
+
             if (newValue == null) {
                 return;
             }
 
-            Parent pane = null;
-            try {
-                pane = EditorHelper.getEditForm((Model) newValue);
-            } catch (Exception e) {
-                //This isn't really something the user should have to deal with
-                e.printStackTrace();
-            }
-            contentPane.getChildren().add(pane);
+            editorWindow = new EditorWindow((Model) newValue);
+            contentPane.getChildren().add(editorWindow.getView());
+
         });
 
         undoRedoNotification(ChangeState.Commit);
@@ -374,7 +371,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         if (clazz != null) {
-            EditorHelper.createNew(clazz, this);
+            try {
+                new CreateWindow(clazz.newInstance(), this, null);
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
     }
 

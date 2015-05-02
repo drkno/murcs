@@ -118,6 +118,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         updateAssociatedProject();
     }
 
+    @Override
+    public void dispose() {
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
+        projectChangeListener = null;
+        associatedProject = null;
+        super.dispose();
+    }
+
     /**
      * Updates the associated project
      * @throws Exception when updating fails.

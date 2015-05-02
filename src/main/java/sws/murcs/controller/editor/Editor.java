@@ -38,4 +38,9 @@ public interface Editor {
      * An Error Callback is required to be set before using this method
      */
     void clearErrors();
+
+    /**
+     * Cleans up any references in order for the editor to be garbage collected
+     */
+    void dispose();
 }
