@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -14,7 +15,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import java.util.function.Consumer;
 
 /**
- * Controller for the creation window
+ * Controller for the creation window.
  */
 public class CreatorWindowController {
 
@@ -25,7 +26,7 @@ public class CreatorWindowController {
     @FXML
     private GridPane contentPane;
     /**
-     * The buttons in the create window
+     * The buttons in the create window.
      */
     @FXML
     private Button createButton, cancelButton;
@@ -38,45 +39,46 @@ public class CreatorWindowController {
      */
     private Consumer<Model> cancelClicked;
     /**
-     * The stage of the creation window
+     * The stage of the creation window.
      */
     private Stage stage;
     /**
-     * The model to be created
+     * The model to be created.
      */
     private Model model;
     /**
-     * The Content of the grid pane
+     * The Content of the grid pane.
      */
     private EditorPane content;
 
     /**
-     * Empty Constructor for fxml creation
+     * Empty Constructor for fxml creation.
      */
-    public CreatorWindowController() {}
-
-    /**
-     * Sets the content in the contentPane
-     * @param content Content to set
-     */
-    public void setContent(Node content) {
-        contentPane.getChildren().add(content);
+    public CreatorWindowController() {
     }
 
     /**
-     * Sets the model to create
-     * @param model Model to create
+     * Sets the content in the contentPane.
+     * @param pContent Content to set
      */
-    public void setModel(Model model) {
-        this.model = model;
+    public final void setContent(final Node pContent) {
+        contentPane.getChildren().add(pContent);
     }
 
     /**
-     * Sets the stage of the creation window
-     * @param stage The Stage to set
+     * Sets the model to create.
+     * @param pModel Model to create.
      */
-    public void setStage(Stage stage) {
-        this.stage = stage;
+    public final void setModel(final Model pModel) {
+        this.model = pModel;
+    }
+
+    /**
+     * Sets the stage of the creation window.
+     * @param pStage The Stage to set
+     */
+    public final void setStage(final Stage pStage) {
+        this.stage = pStage;
     }
 
     /**
@@ -117,8 +119,11 @@ public class CreatorWindowController {
         if (createClicked != null) {
             try {
                 contentPane.requestFocus();
-                Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
-                if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty()))) {
+                Node node = JavaFXHelpers.
+                        getByID(contentPane.getParent(), "labelErrorMessage");
+                if (node != null && node instanceof Label
+                        && (!(((Label) node).getText() == null)
+                        && !(((Label) node).getText().isEmpty()))) {
                     return;
                 }
                 if (model == null) {
@@ -126,8 +131,7 @@ public class CreatorWindowController {
                 }
                 PersistenceManager.Current.getCurrentModel().add(model);
                 createClicked.selectItem(model);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -136,9 +140,9 @@ public class CreatorWindowController {
     }
 
     /**
-     * Cleans up references when closing the creation window
+     * Cleans up references when closing the creation window.
      */
-    public void dispose() {
+    public final void dispose() {
         createClicked = null;
         cancelClicked = null;
         contentPane = null;

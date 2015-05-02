@@ -7,8 +7,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.ModelTypes;
-import sws.murcs.controller.CreatorWindowController;
-import sws.murcs.controller.EditorPane;
+import sws.murcs.controller.editor.CreatorWindowController;
+import sws.murcs.controller.editor.EditorPane;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 

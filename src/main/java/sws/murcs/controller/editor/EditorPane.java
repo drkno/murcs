@@ -1,59 +1,60 @@
-package sws.murcs.controller;
+package sws.murcs.controller.editor;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import sws.murcs.controller.ModelTypes;
 import sws.murcs.model.Model;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Creates the editor Pane
+ * Creates the editor Pane.
  */
 public class EditorPane {
 
     /**
-     * The controller for the editor
+     * The controller for the editor.
      */
     private Editor<Model> controller;
     /**
-     * The Model to model
+     * The Model to model.
      */
     private Model model;
     /**
-     * The editor pane view
+     * The editor pane view.
      */
     private Parent view;
 
     /**
-     * Creates a new Editor pane, and sets the model
-     * @param model The model to set
+     * Creates a new Editor pane, and sets the model.
+     * @param pModel The model to set
      */
-    public EditorPane(Model model){
-        this.model = model;
+    public EditorPane(final Model pModel) {
+        this.model = pModel;
         create();
     }
 
     /**
-     * Gets the view of the editor pane
+     * Gets the view of the editor pane.
      * @return editor pane view
      */
-    public Parent getView(){
+    public final Parent getView() {
         return this.view;
     }
 
     /**
-     * Gets the model to model
+     * Gets the model to model.
      * @return Model to model
      */
-    public Model getModel() {
+    public final Model getModel() {
         return this.model;
     }
 
     /**
-     * Creates the editor pane
+     * Creates the editor pane.
      */
-    public void create() {
+    public final void create() {
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
@@ -61,25 +62,27 @@ public class EditorPane {
         fxmlPaths.put(ModelTypes.Skills, "SkillEditor.fxml");
         fxmlPaths.put(ModelTypes.Release, "ReleaseEditor.fxml");
 
-        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelTypes.getModelType(model));
+        String fxmlPath = "/sws/murcs/"
+                + fxmlPaths.get(ModelTypes.getModelType(model));
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader =
+                    new FXMLLoader(getClass().getResource(fxmlPath));
             view = loader.load();
             controller = loader.getController();
             controller.setModel(model);
             controller.loadObject();
-        }
-        catch (Exception e) {
-            System.err.println("Unable to create editor!(this is seriously bad)");
+        } catch (Exception e) {
+            System.err.println("Unable to create editor!"
+                    + "(this is seriously bad)");
             e.printStackTrace();
         }
     }
 
     /**
-     * Cleans up the editor pane
+     * Cleans up the editor pane.
      */
-    public void dispose() {
+    public final void dispose() {
         controller.dispose();
         view = null;
         controller = null;

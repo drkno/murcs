@@ -122,7 +122,9 @@ public class GenericPopup extends AnchorPane {
     public GenericPopup(final Exception exception) {
         popupStage = new Stage();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
+        FXMLLoader loader
+                = new FXMLLoader(
+                getClass().getResource("/sws/murcs/GenericPopup.fxml"));
         loader.setRoot(this);
         loader.setController(this);
 
@@ -137,8 +139,11 @@ public class GenericPopup extends AnchorPane {
         popupStage.setScene(popupScene);
         popupStage.setResizable(false);
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        ClassLoader classLoader
+                = Thread.currentThread().getContextClassLoader();
+        Image iconImage
+                = new Image(
+                classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
 
@@ -164,7 +169,10 @@ public class GenericPopup extends AnchorPane {
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    public final void addButton(final String buttonText, final Position position, final Action action, final Consumer func) {
+    public final void addButton(final String buttonText,
+                                final Position position,
+                                final Action action,
+                                final Consumer func) {
         Button button = new Button(buttonText);
         button.setPrefSize(70, 25);
         //And this, is where the magic happens!
@@ -249,8 +257,8 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Sets the title of the window (the bit that
-     * appears in the bar at the top)
+     * Sets the title of the window.
+     * (the bit that appears in the bar at the top)
      * @param title The window title.
      */
     public final void setWindowTitle(final String title) {
@@ -263,7 +271,9 @@ public class GenericPopup extends AnchorPane {
      * @param titleText The title of the message.
      */
     public final void setTitleText(final String titleText) {
-        if (titleText == null) return;
+        if (titleText == null) {
+            return;
+        }
         messageTitle.setText(titleText);
     }
 
@@ -278,9 +288,9 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify what
-     * is supposed to happen for the ok button and the
-     * cancel button
+     * Adds default OK Cancel Buttons.
+     * you specify what is supposed to happen for the ok button
+     * and the cancel button.
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call
      *                   on the ok button being clicked.
@@ -290,15 +300,16 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify the
-     * functions for both the ok and cancel buttons when
-     * clicked
+     * Adds default OK Cancel Buttons.
+     * you specify the functions for both the ok
+     * and cancel buttons when clicked.
      * @param okFunction The function you want to
      *                   call on ok button click
      * @param cancelFunction The function you want to
      *                       call on cancel button click
      */
-    public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
+    public final void addOkCancelButtons(final Consumer okFunction,
+                                         final Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
