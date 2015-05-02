@@ -62,7 +62,7 @@ public class Person extends Model {
     /**
      * Sets the user id.
      * @param newUserID The new user id
-     * @throws java.lang.Exception User id is invalid
+     * @throws Exception User id is invalid
      */
     public final void setUserId(final String newUserID) throws Exception {
         validateUserId(newUserID);
@@ -84,7 +84,7 @@ public class Person extends Model {
      * Adds a skill to skills only if the person does not
      * already have that skill.
      * @param skill The skill to add
-     * @throws sws.murcs.exceptions.DuplicateObjectException if
+     * @throws DuplicateObjectException if
      * the person already has that skill
      */
     public final void addSkill(final Skill skill) throws DuplicateObjectException {
@@ -100,7 +100,7 @@ public class Person extends Model {
     /**
      * Adds a list of skills to the persons skills.
      * @param skillsToAdd Skills to be added to person
-     * @throws sws.murcs.exceptions.DuplicateObjectException if the
+     * @throws DuplicateObjectException if the
      * person has any of the skills in the list
      */
     public final void addSkills(final ArrayList<Skill> skillsToAdd) throws DuplicateObjectException {

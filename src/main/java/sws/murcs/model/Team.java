@@ -104,7 +104,7 @@ public class Team extends Model {
      * Adds a person to the project members only
      * if that person is not already a member.
      * @param person to be added
-     * @throws sws.murcs.exceptions.DuplicateObjectException
+     * @throws DuplicateObjectException
      * if the person is already in the team
      */
     public final void addMember(final Person person) throws DuplicateObjectException {
@@ -120,7 +120,7 @@ public class Team extends Model {
     /**
      * Adds a list of people to the team.
      * @param membersToAdd People to be added to the team
-     * @throws sws.murcs.exceptions.DuplicateObjectException
+     * @throws DuplicateObjectException
      * if a person is already in a team
      */
     public final void addMembers(final ArrayList<Person> membersToAdd) throws DuplicateObjectException {

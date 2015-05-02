@@ -95,7 +95,7 @@ public class EditFormGenerator {
      */
     private static void insertInto(final ArrayList<Object[]> into, final Object[] insert) {
         int index = 0;
-        while (index < into.size() && (Integer) into.get(index)[0] <= (Integer) insert[0]) {
+        while (index < into.size() && (int) into.get(index)[0] <= (int) insert[0]) {
             index++;
         }
         into.add(index == into.size() ? 0 : index, insert);
@@ -180,7 +180,7 @@ public class EditFormGenerator {
             raw = field.getName();
 
         String result = "";
-        for (int i = 0; i < raw.length(); ++i) {
+        for (int i = 0; i < raw.length(); i++) {
             if (i == 0) {
                 result += Character.toUpperCase(raw.charAt(i));
                 continue;

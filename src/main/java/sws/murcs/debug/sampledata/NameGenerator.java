@@ -3,7 +3,7 @@ package sws.murcs.debug.sampledata;
 import java.util.Random;
 
 /**
- * Generates RANDOM names.
+ * Generates random names.
  */
 public final class NameGenerator {
 
@@ -140,7 +140,7 @@ public final class NameGenerator {
     };
 
     /**
-     * A list of TITLES.
+     * A list of titles.
      */
     private static final String[] TITLES = {
             "Mr",
@@ -151,54 +151,54 @@ public final class NameGenerator {
     };
 
     /**
-     * Generates a RANDOM name.
-     * @return a new RANDOM name.
+     * Generates a random name.
+     * @return a new random name.
      */
     public static String randomName() {
         return randomName(FIRST_NAMES, LAST_NAMES);
     }
 
     /**
-     * Generates a RANDOM name, given a list of names to select from.
+     * Generates a random name, given a list of names to select from.
      * @param firstNames possible first names.
      * @param lastNames possible last names.
-     * @return a new RANDOM name.
+     * @return a new random name.
      */
     private static String randomName(final String[] firstNames, final String[] lastNames) {
         return randomElement(firstNames) + " " + randomElement(lastNames);
     }
 
     /**
-     * Generates a RANDOM title prefix (eg Mr, Mrs,...).
-     * @return a RANDOM title.
+     * Generates a random title prefix (eg Mr, Mrs,...).
+     * @return a random title.
      */
     public static String randomTitle() {
         return randomElement(TITLES);
     }
 
     /**
-     * Generates a RANDOM string of lowercase letters.
+     * Generates a random string of lowercase letters.
      * @param length length of the generated string.
-     * @return a RANDOM string of lowercase letters.
+     * @return a random string of lowercase letters.
      */
     public static String randomString(final int length) {
         return randomString(length, "abcdefghijklmnopqrstuvwxyz");
     }
 
     /**
-     * Selects a RANDOM element from an array of Strings.
+     * Selects a random element from an array of Strings.
      * @param from array to select element from.
-     * @return a RANDOM element.
+     * @return a random element.
      */
     public static String randomElement(final String[] from) {
         return from[RANDOM.nextInt(from.length)];
     }
 
     /**
-     * Generates a RANDOM string.
+     * Generates a random string.
      * @param length length of the string to generate.
      * @param from alphabet to generate the RANDOM string from.
-     * @return a RANDOM string.
+     * @return a random string.
      */
     public static String randomString(final int length, final String from) {
         String result = "";
@@ -234,19 +234,19 @@ public final class NameGenerator {
     }
 
     /**
-     * Generates a RANDOM number between 0 and a maximum number.
+     * Generates a random number between 0 and a maximum number.
      * @param max maximum number.
-     * @return a RANDOM number.
+     * @return a random number.
      */
     public static int random(final int max) {
         return random(0, max);
     }
 
     /**
-     * Generates a RANDOM number between a min and a max value.
+     * Generates a random number between a min and a max value.
      * @param min minimum value.
      * @param max maximum value.
-     * @return a RANDOM number.
+     * @return a random number.
      */
     public static int random(final int min, final int max) {
         return RANDOM.nextInt(max - min) + min;

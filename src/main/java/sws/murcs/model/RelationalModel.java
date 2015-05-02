@@ -11,6 +11,7 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -125,7 +126,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param projectsToAdd A List of projects to be added to the model
      * @throws DuplicateObjectException If one of the projects already exist
      */
-    public final void addProjects(final ArrayList<Project> projectsToAdd) throws DuplicateObjectException {
+    public final void addProjects(final Collection<Project> projectsToAdd) throws DuplicateObjectException {
         boolean badProject = false;
         for (Project project : projectsToAdd) {
             if (this.projects.contains(project)
@@ -675,22 +676,19 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return Whether it exists
      */
     public final boolean exists(final Model model) {
-        if (model instanceof Project) {
-            return getProjects().contains(model);
+        switch (ModelTypes.getModelType(model)) {
+            case Project:
+                return getProjects().contains(model);
+            case People:
+                return getPeople().contains(model);
+            case Team:
+                return getTeams().contains(model);
+            case Skills:
+                return getSkills().contains(model);
+            case Release:
+                return getReleases().contains(model);
+            default:
+                throw new UnsupportedOperationException("We don't know what to do with this model (exists for " + model.getClass().getName() + ") in Relational Model. You should fix this");
         }
-        if (model instanceof Team) {
-            return getTeams().contains(model);
-        }
-        if (model instanceof Person) {
-            return getPeople().contains(model);
-        }
-        if (model instanceof Skill) {
-            return getSkills().contains(model);
-        }
-        if (model instanceof Release) {
-            return getReleases().contains(model);
-        }
-
-        throw new UnsupportedOperationException("We don't know what to do with this model (exists for " + model.getClass().getName() + ") in Relational Model. You should fix this");
     }
 }
