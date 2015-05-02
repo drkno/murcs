@@ -102,7 +102,7 @@ public class CreateWindowController {
      * Sets the content of the form.
      * @param content The form
      */
-    public final void setContent(final Node content){
+    public final void setContent(final Node content) {
         contentPane.getChildren().add(content);
     }
 
@@ -110,7 +110,7 @@ public class CreateWindowController {
      * Sets the newModel of the form.
      * @param newModel The newModel
      */
-    public final void setModel(final Model newModel){
+    public final void setModel(final Model newModel) {
         this.model = newModel;
     }
 

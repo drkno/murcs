@@ -9,7 +9,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Skill;
 
 /**
- * A controller to edit skills
+ * A controller to edit skills.
  */
 public class SkillEditor extends GenericEditor<Skill> {
 
@@ -23,9 +23,11 @@ public class SkillEditor extends GenericEditor<Skill> {
     AnchorPane editor;
 
     /**
-     * Saves the edit being edited
+     * Saves the edit being edited.
+     * @throws Exception When a parameter is set
+     * incorrectly.
      */
-    public void update()  throws Exception{
+    public final void update() throws Exception {
         String shortName = shortNameTextField.getText();
         if (shortName == null || edit.getShortName() == null || !shortName.equals(edit.getShortName())) {
             edit.setShortName(shortName);
@@ -43,9 +45,9 @@ public class SkillEditor extends GenericEditor<Skill> {
     }
 
     /**
-     * Updates the object in memory and handles any exception
+     * Updates the object in memory and handles any exception.
      */
-    public void updateAndHandle(){
+    public final void updateAndHandle() {
         try {
             labelErrorMessage.setText("");
             update();
@@ -60,15 +62,16 @@ public class SkillEditor extends GenericEditor<Skill> {
     }
 
     /**
-     * Loads the edit into the form
+     * Loads the edit into the form.
      */
-    public void load() {
+    public final void load() {
         updateFields();
 
         //if 'edit' is ScrumMaster or PO
         //  then disable the short name as this should be unique but allow the editing of the long name and description
-        if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString())))
+        if (edit.getShortName() != null && (edit.getShortName().equals(Skill.ROLES.PO.toString()) || edit.getShortName().equals(Skill.ROLES.SM.toString()))) {
             shortNameTextField.setDisable(true);
+        }
 
         updateAndHandle();
     }
@@ -77,7 +80,7 @@ public class SkillEditor extends GenericEditor<Skill> {
      * Sets the fields in the editing pane if and only if they are different to the current values.
      * Done so that Undo/Redo can update the editing pane without losing current selection.
      */
-    public void updateFields() {
+    public final void updateFields() {
         String currentShortName = shortNameTextField.getText();
         String currentLongName = longNameTextField.getText();
         String currentDescription = descriptionTextArea.getText();
@@ -94,7 +97,7 @@ public class SkillEditor extends GenericEditor<Skill> {
     }
 
     @FXML
-    public void initialize() {
+    public final void initialize() {
         shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue)
                 updateAndHandle();

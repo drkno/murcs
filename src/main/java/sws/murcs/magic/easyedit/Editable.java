@@ -8,13 +8,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An interface for the editable annotation
+ * An interface for the editable annotation.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Editable {
     /**
-     * The type of the generator to use for this field
+     * The type of the generator to use for this field.
      * @return The type of generator to use on this field
      */
     Class<?> value() default BasicPaneGenerator.class;
@@ -65,7 +65,7 @@ public @interface Editable {
     String friendlyName() default "";
 
     /**
-     * Indicates how high up the pane the field should show
+     * Indicates how high up the pane the field should show.
      * @return The position of the pane
      */
     int sort() default 0;

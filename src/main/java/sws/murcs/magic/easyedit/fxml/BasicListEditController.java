@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.ResourceBundle;
 
 /**
- * Overrides the methods for creating and using an list view
+ * Overrides the methods for creating and using an list view.
  */
 public class BasicListEditController extends BasicEditController<Collection> implements Initializable {
     @FXML private Text titleText;
@@ -32,7 +32,7 @@ public class BasicListEditController extends BasicEditController<Collection> imp
     }
 
     @Override
-    public void setValue(Collection value) {
+    public final void setValue(final Collection value) {
         observableList.clear();
         observableList.addAll(value);
 
@@ -40,22 +40,22 @@ public class BasicListEditController extends BasicEditController<Collection> imp
     }
 
     @Override
-    public Class[] supportedTypes() {
+    public final Class[] supportedTypes() {
         return new Class[]{Collection.class, ArrayList.class};
     }
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public final void initialize(final URL location, final ResourceBundle resources) {
         observableList = FXCollections.observableArrayList();
 
         listView.setItems(observableList);
         listView.setCellFactory(new Callback<ListView<Object>, ListCell<Object>>() {
             @Override
-            public ListCell call(ListView<Object> param) {
+            public ListCell call(final ListView<Object> param) {
                 ListCell<Object> cell = new ListCell<Object>() {
 
                     @Override
-                    protected void updateItem(Object t, boolean bln) {
+                    protected void updateItem(final Object t, final boolean bln) {
                         super.updateItem(t, bln);
                         if (t != null) {
                             setText(t.toString());

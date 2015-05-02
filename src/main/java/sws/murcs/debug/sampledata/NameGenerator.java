@@ -3,11 +3,27 @@ package sws.murcs.debug.sampledata;
 import java.util.Random;
 
 /**
- * Generates random names.
+ * Generates RANDOM names.
  */
-public class NameGenerator {
-    private static final Random random = new Random();
-    private static final String[] firstNames = {"Fred",
+public final class NameGenerator {
+
+    /**
+     * A black private constructor as this is a utility class.
+     */
+    private NameGenerator() {
+        // Blank constructor as this is a utility class.
+    }
+
+    /**
+     * The random generator used in this class.
+     */
+    private static final Random RANDOM = new Random();
+
+    /**
+     * A list of first names.
+     */
+    private static final String[] FIRST_NAMES = {
+            "Fred",
             "Dave",
             "Joe",
             "Emma",
@@ -62,7 +78,12 @@ public class NameGenerator {
             "Delta",
             "Dorinda"
     };
-    private static final String[] lastNames = {"Jones",
+
+    /**
+     * A list of last names.
+     */
+    private static final String[] LAST_NAMES = {
+            "Jones",
             "Davidson",
             "Egbert",
             "Fred",
@@ -117,63 +138,73 @@ public class NameGenerator {
             "Sutton",
             "Gonzalez"
     };
-    private static final String[] titles = {"Mr", "Mrs", "Miss", "Ms", "Master"};
 
     /**
-     * Generates a random name.
-     * @return a new random name.
+     * A list of TITLES.
      */
-    public static String randomName(){
-        return randomName(firstNames, lastNames);
+    private static final String[] TITLES = {
+            "Mr",
+            "Mrs",
+            "Miss",
+            "Ms",
+            "Master"
+    };
+
+    /**
+     * Generates a RANDOM name.
+     * @return a new RANDOM name.
+     */
+    public static String randomName() {
+        return randomName(FIRST_NAMES, LAST_NAMES);
     }
 
     /**
-     * Generates a random name, given a list of names to select from.
+     * Generates a RANDOM name, given a list of names to select from.
      * @param firstNames possible first names.
      * @param lastNames possible last names.
-     * @return a new random name.
+     * @return a new RANDOM name.
      */
-    private static String randomName(String[] firstNames, String[] lastNames){
+    private static String randomName(final String[] firstNames, final String[] lastNames) {
         return randomElement(firstNames) + " " + randomElement(lastNames);
     }
 
     /**
-     * Generates a random title prefix (eg Mr, Mrs,...).
-     * @return a random title.
+     * Generates a RANDOM title prefix (eg Mr, Mrs,...).
+     * @return a RANDOM title.
      */
-    public static String randomTitle(){
-        return randomElement(titles);
+    public static String randomTitle() {
+        return randomElement(TITLES);
     }
 
     /**
-     * Generates a random string of lowercase letters.
+     * Generates a RANDOM string of lowercase letters.
      * @param length length of the generated string.
-     * @return a random string of lowercase letters.
+     * @return a RANDOM string of lowercase letters.
      */
-    public static String randomString(int length){
+    public static String randomString(final int length) {
         return randomString(length, "abcdefghijklmnopqrstuvwxyz");
     }
 
     /**
-     * Selects a random element from an array of Strings.
+     * Selects a RANDOM element from an array of Strings.
      * @param from array to select element from.
-     * @return a random element.
+     * @return a RANDOM element.
      */
-    public static String randomElement(String[] from){
-        return from[random.nextInt(from.length)];
+    public static String randomElement(final String[] from) {
+        return from[RANDOM.nextInt(from.length)];
     }
 
     /**
-     * Generates a random string.
+     * Generates a RANDOM string.
      * @param length length of the string to generate.
-     * @param from alphabet to generate the random string from.
-     * @return a random string.
+     * @param from alphabet to generate the RANDOM string from.
+     * @return a RANDOM string.
      */
-    public static String randomString(int length, String from){
+    public static String randomString(final int length, final String from) {
         String result = "";
-
-        while (length-- > 0){
-            result += from.charAt(random.nextInt(from.length()));
+        int i = length;
+        while (i-- > 0) {
+            result += from.charAt(RANDOM.nextInt(from.length()));
         }
 
         return result;
@@ -183,26 +214,41 @@ public class NameGenerator {
      * Gets the Lorem Ispum placeholder string.
      * @return the placeholder string.
      */
-    public static String getLoremIpsum(){
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec facilisis ac quam in blandit. Donec ut velit erat. Vestibulum nec condimentum tellus. Morbi finibus augue vestibulum neque vehicula, nec auctor elit maximus. Etiam malesuada quis dui vitae luctus. Nulla lacinia felis vel tortor finibus, accumsan tempor risus pulvinar. Quisque sit amet nulla vitae justo imperdiet ornare. Phasellus venenatis mollis facilisis. Nullam pretium justo erat. Cras nibh velit, maximus pellentesque ex sed, faucibus congue neque. Morbi tempus odio nec sapien iaculis commodo. Quisque quis cursus elit. Sed in leo at purus malesuada vestibulum. Nunc id urna varius nibh malesuada vulputate. Nullam ultrices congue tortor, ut scelerisque augue.";
+    public static String getLoremIpsum() {
+        return "Lorem ipsum dolor sit amet, consectetur "
+                + "adipiscing elit. Donec facilisis ac quam in "
+                + "blandit. Donec ut velit erat. Vestibulum nec "
+                + "condimentum tellus. Morbi finibus augue vestibulum "
+                + "neque vehicula, nec auctor elit maximus. Etiam "
+                + "malesuada quis dui vitae luctus. Nulla lacinia "
+                + "felis vel tortor finibus, accumsan tempor risus "
+                + "pulvinar. Quisque sit amet nulla vitae justo "
+                + "imperdiet ornare. Phasellus venenatis mollis "
+                + "facilisis. Nullam pretium justo erat. Cras nibh "
+                + "velit, maximus pellentesque ex sed, faucibus "
+                + "congue neque. Morbi tempus odio nec sapien "
+                + "iaculis commodo. Quisque quis cursus elit. Sed "
+                + "in leo at purus malesuada vestibulum. Nunc id "
+                + "urna varius nibh malesuada vulputate. Nullam "
+                + "ultrices congue tortor, ut scelerisque augue.";
     }
 
     /**
-     * Generates a random number between 0 and a maximum number.
+     * Generates a RANDOM number between 0 and a maximum number.
      * @param max maximum number.
-     * @return a random number.
+     * @return a RANDOM number.
      */
-    public static int random(int max){
+    public static int random(final int max) {
         return random(0, max);
     }
 
     /**
-     * Generates a random number between a min and a max value.
+     * Generates a RANDOM number between a min and a max value.
      * @param min minimum value.
      * @param max maximum value.
-     * @return a random number.
+     * @return a RANDOM number.
      */
-    public static int random(int min, int max){
-        return random.nextInt(max - min) + min;
+    public static int random(final int min, final int max) {
+        return RANDOM.nextInt(max - min) + min;
     }
 }

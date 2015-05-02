@@ -58,7 +58,7 @@ public abstract class BasicEditController<T> implements EditController<T> {
         showValid();
 
         //Loop through the change listeners and notify them all
-        for (ChangeListener<T> listener : changeListeners){
+        for (ChangeListener<T> listener : changeListeners) {
             listener.changed(observable, oldValue, newValue);
         }
     }
