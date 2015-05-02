@@ -263,27 +263,16 @@ public class TeamEditor extends GenericEditor<Team> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
-            boolean isPO = person == this.getModel().getProductOwner();
-            boolean isSM = person == this.getModel().getScrumMaster();
-            String message = "Are you sure you want to remove "
-                    + person.getShortName()
-                    + " from "
-                    + this.getModel().getShortName();
-            String extraMessage;
-            if (isPO) {
-                extraMessage = "\n" + person.getShortName()
-                        + " is will also be removed as the PO";
-            } else if (isSM) {
-                extraMessage = "\n" + person.getShortName()
-                        + " is will also be removed as the PO";
-            } else {
-                extraMessage = "";
+            popup.setTitleText("Remove Team Member");
+            String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+            if (this.getModel().getScrumMaster() != null && this.getModel().getScrumMaster().equals(person)) {
+                message += "\nThey are currently the teams Scrum Master.";
             }
-            message += extraMessage;
+            if (this.getModel().getProductOwner() != null && this.getModel().getProductOwner().equals(person)) {
+                message += "\nThey are currently the teams Product Owner.";
+            }
             popup.setMessageText(message);
-            popup.setTitleText("Remove Person?");
-            popup.setWindowTitle("Remove Person from Team");
-            popup.addOkCancelButtons(s -> {
+            popup.addOkCancelButtons(p -> {
                 this.getModel().removeMember(person);
                 saveChanges();
                 popup.close();
