@@ -188,7 +188,16 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
-        PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
-        observableAllocations.remove(rowNumber);
+
+        GenericPopup alert = new GenericPopup();
+        alert.setTitleText("Unshedule A Team");
+        alert.setMessageText("Are you sure you wish to unshedule \"" + allocation.getTeam() +
+                "\" from \"" + allocation.getProject() + "\"?");
+        alert.addOkCancelButtons(a -> {
+            PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
+            observableAllocations.remove(rowNumber);
+            alert.close();
+        });
+        alert.show();
     }
 }
