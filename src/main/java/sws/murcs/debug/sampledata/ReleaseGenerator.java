@@ -12,14 +12,14 @@ import java.util.Random;
  */
 public class ReleaseGenerator implements Generator<Release> {
 
-    public static final int LOW_STRESS_MIN = 1;
-    public static final int LOW_STRESS_MAX = 10;
+    protected static final int LOW_STRESS_MIN = 1;
+    protected static final int LOW_STRESS_MAX = 10;
 
-    public static final int MEDIUM_STRESS_MIN = 10;
-    public static final int MEDIUM_STRESS_MAX = 20;
+    protected static final int MEDIUM_STRESS_MIN = 10;
+    protected static final int MEDIUM_STRESS_MAX = 20;
 
-    public static final int HIGH_STRESS_MIN = 20;
-    public static final int HIGH_STRESS_MAX = 40;
+    protected static final int HIGH_STRESS_MIN = 20;
+    protected static final int HIGH_STRESS_MAX = 40;
 
     private String[] defaultNames = {"Albatross",
             "Black-browed",
