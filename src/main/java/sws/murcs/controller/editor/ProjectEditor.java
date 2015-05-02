@@ -66,10 +66,6 @@ public class ProjectEditor extends GenericEditor<Project> {
      * An observable list of work allocations.
      */
     private ObservableList<WorkAllocation> observableAllocations;
-    /**
-     * The project model to edit.
-     */
-    private Project model;
 
     @FXML
     @Override
@@ -131,7 +127,6 @@ public class ProjectEditor extends GenericEditor<Project> {
                 labelErrorMessage.setText(message);
             }
         });
-        this.model = super.getModel();
     }
 
     @Override
@@ -140,19 +135,19 @@ public class ProjectEditor extends GenericEditor<Project> {
         RelationalModel relationalModel
                 = PersistenceManager.Current.getCurrentModel();
 
-        String modelShortName = this.model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = this.model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
-        String modelDescription = this.model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextField.setText(modelDescription);
@@ -161,27 +156,28 @@ public class ProjectEditor extends GenericEditor<Project> {
         choiceBoxAddTeam.getItems()
                 .setAll(relationalModel.getTeams());
         observableAllocations
-                .setAll(relationalModel.getProjectsAllocations(this.model));
+                .setAll(relationalModel
+                        .getProjectsAllocations(this.getModel()));
     }
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            model.setShortName(viewShortName);
+            this.getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            model.setLongName(viewLongName);
+            this.getModel().setLongName(viewLongName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            model.setDescription(viewDescription);
+            this.getModel().setDescription(viewDescription);
         }
 
         // todo decouple from model
@@ -202,21 +198,21 @@ public class ProjectEditor extends GenericEditor<Project> {
 
             // Save this work allocation to the model
             WorkAllocation allocation
-                    = new WorkAllocation(this.model,
+                    = new WorkAllocation(this.getModel(),
                     selectedTeam, startDate, endDate);
             relationalModel.addAllocation(allocation);
             // This way, the list remains ordered
             observableAllocations
-                    .setAll(relationalModel.getProjectsAllocations(this.model));
+                    .setAll(relationalModel
+                            .getProjectsAllocations(this.getModel()));
         }
     }
 
     @Override
     public final void dispose() {
         observableAllocations = null;
-        model = null;
         UndoRedoManager.removeChangeListener(this);
-        super.setModel(null);
+        this.setModel(null);
         this.setErrorCallback(null);
     }
     /**

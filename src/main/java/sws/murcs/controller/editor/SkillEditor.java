@@ -27,10 +27,6 @@ public class SkillEditor extends GenericEditor<Skill> {
      */
     @FXML
     private Label labelErrorMessage;
-    /**
-     * The skill to edit.
-     */
-    private Skill model;
 
     @FXML
     @Override
@@ -61,25 +57,24 @@ public class SkillEditor extends GenericEditor<Skill> {
                 labelErrorMessage.setText(message);
             }
         });
-        this.model = super.getModel();
     }
 
     @Override
     public final void loadObject() {
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
         String viewDescription = descriptionTextArea.getText();
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextArea.setText(modelDescription);
         }
@@ -97,30 +92,29 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     public final void dispose() {
-        model = null;
         UndoRedoManager.removeChangeListener(this);
-        super.setModel(null);
+        this.setModel(null);
         this.setErrorCallback(null);
     }
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName =  model.getShortName();
+        String modelShortName =  this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            model.setShortName(viewShortName);
+            this.getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            model.setLongName(viewLongName);
+            this.getModel().setLongName(viewLongName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            model.setDescription(viewDescription);
+            this.getModel().setDescription(viewDescription);
         }
     }
 }

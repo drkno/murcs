@@ -53,10 +53,6 @@ public class TeamEditor extends GenericEditor<Team> {
      * The ChangeListener for the productOwner or scrumMaster pickers.
      */
     private ChangeListener<Person> smpoChangeListener;
-    /**
-     * The team to edit.
-     */
-    private Team model;
 
     @FXML
     @Override
@@ -93,10 +89,10 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                saveChanges();
-            }
-        });
+                    if (newValue != null) {
+                        saveChanges();
+                    }
+                });
 
         productOwnerPicker.getSelectionModel()
                 .selectedItemProperty().addListener(smpoChangeListener);
@@ -108,25 +104,24 @@ public class TeamEditor extends GenericEditor<Team> {
                 labelErrorMessage.setText(message);
             }
         });
-        this.model = super.getModel();
     }
 
 
     @Override
     public final void loadObject() {
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextField.setText(modelDescription);
@@ -138,42 +133,42 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        Person modelProductOwner = model.getProductOwner();
+        Person modelProductOwner = this.getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNotEqual(modelProductOwner, viewProductOwner)) {
-            model.setProductOwner(viewProductOwner);
+            this.getModel().setProductOwner(viewProductOwner);
         }
 
-        Person modelScrumMaster = model.getScrumMaster();
+        Person modelScrumMaster = this.getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNotEqual(modelScrumMaster, viewScrumMaster)) {
-            model.setScrumMaster(viewScrumMaster);
+            this.getModel().setScrumMaster(viewScrumMaster);
         }
 
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
-            model.addMember(person);
+            this.getModel().addMember(person);
         }
 
         updateMemberList();
         updatePOSM();
 
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            model.setShortName(viewShortName);
+            this.getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            model.setLongName(viewLongName);
+            this.getModel().setLongName(viewLongName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            model.setDescription(viewDescription);
+            this.getModel().setDescription(viewDescription);
         }
     }
 
@@ -184,9 +179,8 @@ public class TeamEditor extends GenericEditor<Team> {
         scrumMasterPicker.getSelectionModel()
                 .selectedItemProperty().removeListener(smpoChangeListener);
         smpoChangeListener = null;
-        model = null;
         UndoRedoManager.removeChangeListener(this);
-        super.setModel(null);
+        this.setModel(null);
         this.setErrorCallback(null);
     }
 
@@ -199,11 +193,12 @@ public class TeamEditor extends GenericEditor<Team> {
                 .addAll(PersistenceManager.Current
                         .getCurrentModel().getUnassignedPeople()
                         .stream()
-                        .filter(person -> !model.getMembers().contains(person))
+                        .filter(person -> !this.getModel()
+                                .getMembers().contains(person))
                         .collect(Collectors.toList()));
 
         teamMembersContainer.getChildren().clear();
-        for (Person person : model.getMembers()) {
+        for (Person person : this.getModel().getMembers()) {
             Node node = generateMemberNode(person);
             teamMembersContainer.getChildren().add(node);
         }
@@ -213,11 +208,11 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the PO and SM.
      */
     private void updatePOSM() {
-        Person productOwner = model.getProductOwner();
-        Person scrumMaster = model.getScrumMaster();
+        Person productOwner = this.getModel().getProductOwner();
+        Person scrumMaster = this.getModel().getScrumMaster();
 
         // Add all the people with the PO skill to the list of POs
-        List<Person> productOwners = model.getMembers()
+        List<Person> productOwners = this.getModel().getMembers()
                 .stream()
                 .filter(p -> p.canBeRole(Skill.PO_NAME))
                 .collect(Collectors.toList());
@@ -238,7 +233,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         //Add all the people with the scrum master skill
         // to the list of scrum masters
-        List<Person> scrumMasters = model.getMembers().stream()
+        List<Person> scrumMasters = this.getModel().getMembers().stream()
                 .filter(p -> p.canBeRole(Skill.SM_NAME))
                 .collect(Collectors.toList());
 
@@ -268,10 +263,12 @@ public class TeamEditor extends GenericEditor<Team> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
-            boolean isPO = person == model.getProductOwner();
-            boolean isSM = person == model.getScrumMaster();
+            boolean isPO = person == this.getModel().getProductOwner();
+            boolean isSM = person == this.getModel().getScrumMaster();
             String message = "Are you sure you want to remove "
-                    + person.getShortName() + " from " + model.getShortName();
+                    + person.getShortName()
+                    + " from "
+                    + this.getModel().getShortName();
             String extraMessage;
             if (isPO) {
                 extraMessage = "\n" + person.getShortName()
@@ -287,7 +284,7 @@ public class TeamEditor extends GenericEditor<Team> {
             popup.setTitleText("Remove Person?");
             popup.setWindowTitle("Remove Person from Team");
             popup.addOkCancelButtons(s -> {
-                model.removeMember(person);
+                this.getModel().removeMember(person);
                 saveChanges();
                 popup.close();
             });

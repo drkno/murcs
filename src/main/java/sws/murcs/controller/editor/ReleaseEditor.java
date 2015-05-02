@@ -54,10 +54,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
      * The releases associated project.
      */
     private Project associatedProject;
-    /**
-     * The release to edit.
-     */
-    private Release model;
 
     @FXML
     @Override
@@ -101,7 +97,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
                 labelErrorMessage.setText(message);
             }
         });
-        this.model = super.getModel();
     }
 
 
@@ -111,7 +106,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
                 = PersistenceManager.Current
                 .getCurrentModel().getProjects().stream().
                 filter(project ->
-                        project.getReleases().contains(model))
+                        project.getReleases().contains(this.getModel()))
                 .findFirst();
         if (projectCheck.isPresent()) {
             associatedProject = projectCheck.get();
@@ -132,19 +127,19 @@ public class ReleaseEditor extends GenericEditor<Release> {
         projectChoiceBox.getSelectionModel()
                 .selectedItemProperty().addListener(projectChangeListener);
 
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextArea.setText(modelDescription);
         }
 
-        LocalDate modelReleaseDate = model.getReleaseDate();
+        LocalDate modelReleaseDate = this.getModel().getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
@@ -153,22 +148,22 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            model.setShortName(viewShortName);
+            this.getModel().setShortName(viewShortName);
         }
 
-        String modelDescription = model.getDescription();
+        String modelDescription = this.getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            model.setDescription(viewDescription);
+            this.getModel().setDescription(viewDescription);
         }
 
-        LocalDate modelReleaseDate = model.getReleaseDate();
+        LocalDate modelReleaseDate = this.getModel().getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqualOrIsEmpty(modelReleaseDate, viewReleaseDate)) {
-            model.setReleaseDate(viewReleaseDate);
+            this.getModel().setReleaseDate(viewReleaseDate);
         }
 
         updateAssociatedProject();
@@ -180,9 +175,8 @@ public class ReleaseEditor extends GenericEditor<Release> {
                 .selectedItemProperty().removeListener(projectChangeListener);
         projectChangeListener = null;
         associatedProject = null;
-        model = null;
         UndoRedoManager.removeChangeListener(this);
-        super.setModel(null);
+        this.setModel(null);
         this.setErrorCallback(null);
     }
 
@@ -196,14 +190,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         //We've just changed what project we are associating this with
         // so remove the release from the last one
         if (associatedProject != null) {
-            associatedProject.removeRelease(model);
+            associatedProject.removeRelease(this.getModel());
         }
 
         //Update the associated project
         associatedProject = projectChoiceBox.getValue();
 
         if (associatedProject != null) {
-            associatedProject.addRelease(model);
+            associatedProject.addRelease(this.getModel());
         } else {
             throw new InvalidParameterException(
                     "There needs to be an associated project");

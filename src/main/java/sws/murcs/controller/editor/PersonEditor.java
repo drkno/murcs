@@ -42,10 +42,6 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @FXML
     private VBox skillVBox;
-    /**
-     * The model which is currently being edited.
-     */
-    private Person model;
 
     @FXML
     @Override
@@ -87,25 +83,23 @@ public class PersonEditor extends GenericEditor<Person> {
                 labelErrorMessage.setText(message);
             }
         });
-
-        model = super.getModel();
     }
 
     @Override
     public final void loadObject() {
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
-        String modelUserId = model.getUserId();
+        String modelUserId = this.getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqual(modelUserId, viewUserId)) {
             userIdTextField.setText(modelUserId);
@@ -116,9 +110,8 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @Override
     public final void dispose() {
-        model = null;
         UndoRedoManager.removeChangeListener(this);
-        super.setModel(null);
+        this.setModel(null);
         this.setErrorCallback(null);
     }
 
@@ -128,27 +121,27 @@ public class PersonEditor extends GenericEditor<Person> {
 
         if (selectedSkill != null) {
             generateSkillNode(selectedSkill);
-            model.addSkill(selectedSkill);
+            this.getModel().addSkill(selectedSkill);
         }
 
         updateSkills();
 
-        String modelShortName = model.getShortName();
+        String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            model.setShortName(viewShortName);
+            this.getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = model.getLongName();
+        String modelLongName = this.getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            model.setLongName(viewLongName);
+            this.getModel().setLongName(viewLongName);
         }
 
-        String modelUserId = model.getUserId();
+        String modelUserId = this.getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqualOrIsEmpty(modelUserId, viewUserId)) {
-            model.setUserId(viewUserId);
+            this.getModel().setUserId(viewUserId);
         }
     }
 
@@ -163,11 +156,12 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove "
-                    + skill.getShortName() + " from " + model.getShortName());
+                    + skill.getShortName() + " from "
+                    + this.getModel().getShortName());
             popup.setTitleText("Remove Skill?");
             popup.setWindowTitle("Remove Skill from Person");
             popup.addOkCancelButtons(s -> {
-                model.removeSkill(skill);
+                this.getModel().removeSkill(skill);
                 skillChoiceBox.getItems().add(skill);
                 saveChanges();
                 popup.close();
@@ -197,7 +191,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     private void updateSkills() {
         skillVBox.getChildren().clear();
-        for (Skill skill : model.getSkills()) {
+        for (Skill skill : this.getModel().getSkills()) {
             Node node = generateSkillNode(skill);
             skillVBox.getChildren().add(node);
             skillChoiceBox.getItems().remove(skill);

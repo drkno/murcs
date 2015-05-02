@@ -31,7 +31,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener,
 
     @Override
     public final void setModel(final Object pModel) {
-        if (model != null) {
+        if (pModel != null) {
             this.model = (T) pModel;
         }
     }
