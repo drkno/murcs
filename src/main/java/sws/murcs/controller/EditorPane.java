@@ -1,8 +1,7 @@
-package sws.murcs.controller.editor;
+package sws.murcs.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import sws.murcs.controller.ModelTypes;
 import sws.murcs.model.Model;
 
 import java.util.HashMap;

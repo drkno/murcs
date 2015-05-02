@@ -1,4 +1,4 @@
-package sws.murcs.controller.editor;
+package sws.murcs.controller;
 
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.ErrorMessageListener;
