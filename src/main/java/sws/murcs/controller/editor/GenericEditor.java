@@ -6,7 +6,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
-
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
@@ -16,7 +15,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     /**
      * The type of model the editor is being used for.
      */
-    protected T edit;
+    protected T model;
     /**
      * The error callback
      */
@@ -29,12 +28,11 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
         UndoRedoManager.addChangeListener(this);
     }
 
-    /**
-     * Sets the item that the form is editing
-     * @param toEdit The thing to edit
-     */
-    final void setEdit(final T toEdit){
-        this.edit = toEdit;
+    @Override
+    public void setModel(Object model) {
+        if (model != null){
+            this.model = (T) model;
+        }
     }
 
     @Override
@@ -72,7 +70,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     @Override
     public void dispose() {
         UndoRedoManager.removeChangeListener(this);
-        this.edit = null;
+        this.model = null;
         this.errorCallback = null;
     }
 

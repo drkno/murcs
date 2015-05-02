@@ -209,6 +209,9 @@ public class GenericPopup extends AnchorPane {
             addOkButton(m -> this.close());
         }
 
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(App.stage);
+
         popupStage.show();
     }
 

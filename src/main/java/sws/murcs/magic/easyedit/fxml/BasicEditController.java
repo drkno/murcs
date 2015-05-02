@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 /**
- * A basic edit controller, providing methods of adding validators and
+ * A basic model controller, providing methods of adding validators and
  * change listeners and notifying said listeners.
  *
  * Any FXML associated with this controller can optionally specify

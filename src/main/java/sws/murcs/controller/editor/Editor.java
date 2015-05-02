@@ -5,7 +5,7 @@ import sws.murcs.listeners.ErrorMessageListener;
 /**
  * Interface for contracts of an Editor
  */
-public interface Editor {
+public interface Editor<T> {
 
     /**
      * Changes need to be saved, when the view is different to the model
@@ -43,4 +43,10 @@ public interface Editor {
      * Cleans up any references in order for the editor to be garbage collected
      */
     void dispose();
+
+    /**
+     * Sets the model to model, an editor must have a model to model
+     * @param model The Model to model
+     */
+    void setModel(T model);
 }

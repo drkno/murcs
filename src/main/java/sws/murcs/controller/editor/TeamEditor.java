@@ -73,17 +73,17 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     public void loadObject() {
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName))
             shortNameTextField.setText(modelShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName))
             longNameTextField.setText(modelLongName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqual(modelDescription, viewDescription))
             descriptionTextField.setText(modelDescription);
@@ -94,37 +94,37 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     protected void saveChangesWithException() throws Exception {
-        Person modelProductOwner = edit.getProductOwner();
+        Person modelProductOwner = model.getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNotEqual(modelProductOwner, viewProductOwner))
-            edit.setProductOwner(viewProductOwner);
+            model.setProductOwner(viewProductOwner);
 
-        Person modelScrumMaster = edit.getScrumMaster();
+        Person modelScrumMaster = model.getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNotEqual(modelScrumMaster, viewScrumMaster))
-            edit.setScrumMaster(viewScrumMaster);
+            model.setScrumMaster(viewScrumMaster);
 
         Person person = addTeamMemberPicker.getValue();
         if (person != null)
-            edit.addMember(person);
+            model.addMember(person);
 
         updateMemberList();
         updatePOSM();
 
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName))
-            edit.setShortName(viewShortName);
+            model.setShortName(viewShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName))
-            edit.setLongName(viewLongName);
+            model.setLongName(viewLongName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription))
-            edit.setDescription(viewDescription);
+            model.setDescription(viewDescription);
     }
 
     @Override
@@ -141,10 +141,10 @@ public class TeamEditor extends GenericEditor<Team> {
     private void updateMemberList() {
         addTeamMemberPicker.getItems().clear();
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople().stream().
-                filter(person -> !edit.getMembers().contains(person)).collect(Collectors.toList()));
+                filter(person -> !model.getMembers().contains(person)).collect(Collectors.toList()));
 
         teamMembersContainer.getChildren().clear();
-        for (Person person : edit.getMembers()) {
+        for (Person person : model.getMembers()) {
             Node node = generateMemberNode(person);
             teamMembersContainer.getChildren().add(node);
         }
@@ -154,11 +154,11 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the PO and SM
      */
     private void updatePOSM() {
-        Person productOwner = edit.getProductOwner();
-        Person scrumMaster = edit.getScrumMaster();
+        Person productOwner = model.getProductOwner();
+        Person scrumMaster = model.getScrumMaster();
 
         // Add all the people with the PO skill to the list of POs
-        List<Person> productOwners = edit.getMembers().stream()
+        List<Person> productOwners = model.getMembers().stream()
                 .filter(p -> p.canBeRole(Skill.PO_NAME))
                 .collect(Collectors.toList());
 
@@ -175,7 +175,7 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
 
         //Add all the people with the scrum master skill to the list of scrum masters
-        List<Person> scrumMasters = edit.getMembers().stream()
+        List<Person> scrumMasters = model.getMembers().stream()
                 .filter(p -> p.canBeRole(Skill.SM_NAME))
                 .collect(Collectors.toList());
 
@@ -203,9 +203,9 @@ public class TeamEditor extends GenericEditor<Team> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
-            boolean isPO = person == edit.getProductOwner();
-            boolean isSM = person == edit.getScrumMaster();
-            String message = "Are you sure you want to remove " + person.getShortName() + " from " + edit.getShortName();
+            boolean isPO = person == model.getProductOwner();
+            boolean isSM = person == model.getScrumMaster();
+            String message = "Are you sure you want to remove " + person.getShortName() + " from " + model.getShortName();
             String extraMessage;
             if (isPO) {
                 extraMessage = "\n" + person.getShortName() + " is will also be removed as the PO";
@@ -221,7 +221,7 @@ public class TeamEditor extends GenericEditor<Team> {
             popup.setTitleText("Remove Person?");
             popup.setWindowTitle("Remove Person from Team");
             popup.addOkCancelButtons(s -> {
-                edit.removeMember(person);
+                model.removeMember(person);
                 saveChanges();
                 popup.close();
             });

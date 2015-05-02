@@ -12,8 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.murcs.controller.editor.CreateWindow;
-import sws.murcs.controller.editor.EditorWindow;
+import sws.murcs.controller.editor.EditorPane;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -23,6 +22,7 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
+import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private GridPane contentPane;
 
-    private EditorWindow editorWindow;
+    private EditorPane editorPane;
 
     /**
      * Initialises the GUI, setting up the the options in the
@@ -106,17 +106,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
             contentPane.getChildren().clear();
 
-            if (editorWindow != null) {
-                editorWindow.dispose();
+            if (editorPane != null) {
+                editorPane.dispose();
             }
-            editorWindow = null;
+            editorPane = null;
 
             if (newValue == null) {
                 return;
             }
 
-            editorWindow = new EditorWindow((Model) newValue);
-            contentPane.getChildren().add(editorWindow.getView());
+            editorPane = new EditorPane((Model) newValue);
+            contentPane.getChildren().add(editorPane.getView());
 
         });
 
@@ -372,7 +372,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (clazz != null) {
             try {
-                new CreateWindow(clazz.newInstance(), this, null);
+                new CreatorWindowView(clazz.newInstance(), this, null);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }

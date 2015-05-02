@@ -21,7 +21,7 @@ public class EditFormGenerator {
     /**
      * Generates a pane for editing an object
      * @param from The object to generate a pane for
-     * @return The edit pane
+     * @return The model pane
      * @throws java.lang.NoSuchMethodException when it can't find a method
      */
     public static Parent generatePane(Object from) throws Exception{
@@ -205,13 +205,13 @@ public class EditFormGenerator {
 
     /**
      * Generates a node for a specific field automagically
-     * @param field The field to generate an edit node for
+     * @param field The field to generate an model node for
      * @param getter The getter for the field
      * @param setter The setter for the field
      * @param validator The validator
      * @param from The object the field is from
      * @param editable The editable annotation of the
-     * @return The node of the edit form
+     * @return The node of the model form
      * @throws java.lang.Exception when the class is unsupported
      */
     private static Node generateFor(final Field field, final Method getter, final Method setter, final Method validator, final Object from, Editable editable) throws Exception {

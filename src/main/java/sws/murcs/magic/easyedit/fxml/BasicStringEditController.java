@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * A basic String edit controller.
+ * A basic String model controller.
  * Any FXML associated with this class should specify a titleText Text object and a valueText textField
  */
 public class BasicStringEditController extends BasicEditController<String> implements Initializable {

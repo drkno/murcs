@@ -14,7 +14,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import java.time.LocalDate;
 
 /**
- * Controller for the edit creator popup window.
+ * Controller for the model creator popup window.
  * Since there should only be one instance of this PopUp
  */
 public class ProjectEditor extends GenericEditor<Project> {
@@ -80,41 +80,41 @@ public class ProjectEditor extends GenericEditor<Project> {
         // todo decouple from model
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
-        String modelShortName = edit.getShortName();
+        String modelShortName = this.model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName))
             shortNameTextField.setText(modelShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = this.model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName))
             longNameTextField.setText(modelLongName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = this.model.getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqual(modelDescription, viewDescription))
             descriptionTextField.setText(modelDescription);
 
         choiceBoxAddTeam.getItems().setAll(model.getTeams());
-        observableAllocations.setAll(model.getProjectsAllocations(edit));
+        observableAllocations.setAll(model.getProjectsAllocations(this.model));
     }
 
     @Override
     protected void saveChangesWithException() throws Exception {
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName))
-            edit.setShortName(viewShortName);
+            model.setShortName(viewShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName))
-            edit.setLongName(viewLongName);
+            model.setLongName(viewLongName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription))
-            edit.setDescription(viewDescription);
+            model.setDescription(viewDescription);
 
         // todo decouple from model
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -132,9 +132,9 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
 
             // Save this work allocation to the model
-            WorkAllocation allocation = new WorkAllocation(edit, selectedTeam, startDate, endDate);
+            WorkAllocation allocation = new WorkAllocation(this.model, selectedTeam, startDate, endDate);
             model.addAllocation(allocation);
-            observableAllocations.setAll(model.getProjectsAllocations(edit)); // This way, the list remains ordered
+            observableAllocations.setAll(model.getProjectsAllocations(this.model)); // This way, the list remains ordered
         }
     }
 

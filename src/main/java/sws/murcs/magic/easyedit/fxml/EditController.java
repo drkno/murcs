@@ -9,14 +9,14 @@ import java.util.function.Predicate;
  */
 public interface EditController<T> {
     /**
-     * Set the title of the edit controller
+     * Set the title of the model controller
      * @param title The new title
      */
     void setTitle(String title);
 
     /**
-     * Sets the value of the edit controller
-     * @param value The current value of the edit controller
+     * Sets the value of the model controller
+     * @param value The current value of the model controller
      */
     void setValue(T value);
 
@@ -35,7 +35,7 @@ public interface EditController<T> {
     void addChangeListener(ChangeListener<T> listener);
 
     /**
-     * An array of the types supported by this edit controller
+     * An array of the types supported by this model controller
      * @return The supported types.
      */
     Class[] supportedTypes();

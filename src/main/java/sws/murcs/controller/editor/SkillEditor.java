@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 import sws.murcs.model.Skill;
 
 /**
- * A controller to edit skills
+ * A controller to model skills
  */
 public class SkillEditor extends GenericEditor<Skill> {
 
@@ -44,18 +44,18 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     public void loadObject() {
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName))
             shortNameTextField.setText(modelShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if(isNotEqual(modelLongName, viewLongName))
             longNameTextField.setText(modelLongName);
 
         String viewDescription = descriptionTextArea.getText();
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         if (isNotEqual(modelDescription, viewDescription))
             descriptionTextArea.setText(modelDescription);
 
@@ -67,19 +67,19 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     protected void saveChangesWithException() throws Exception {
-        String modelShortName =  edit.getShortName();
+        String modelShortName =  model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName))
-            edit.setShortName(viewShortName);
+            model.setShortName(viewShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName))
-            edit.setLongName(viewLongName);
+            model.setLongName(viewLongName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription))
-            edit.setDescription(viewDescription);
+            model.setDescription(viewDescription);
     }
 }

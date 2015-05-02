@@ -56,7 +56,7 @@ public @interface Editable {
 
     /**
      * The friendly name of the field. This is usually
-     * used as the title of the field on the edit pane.
+     * used as the title of the field on the model pane.
      *
      * If left blank, this will be generated as follows:
      * myLongFieldName goes to My Long Field Name

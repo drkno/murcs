@@ -9,27 +9,51 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 2/05/2015
+ * Creates the editor Pane
  */
-public class EditorWindow extends Parent {
+public class EditorPane {
 
-    private GenericEditor controller;
+    /**
+     * The controller for the editor
+     */
+    private Editor<Model> controller;
+    /**
+     * The Model to model
+     */
     private Model model;
+    /**
+     * The editor pane view
+     */
     private Parent view;
 
-    public EditorWindow(Model model){
+    /**
+     * Creates a new Editor pane, and sets the model
+     * @param model The model to set
+     */
+    public EditorPane(Model model){
         this.model = model;
         create();
     }
 
+    /**
+     * Gets the view of the editor pane
+     * @return editor pane view
+     */
     public Parent getView(){
         return this.view;
     }
 
+    /**
+     * Gets the model to model
+     * @return Model to model
+     */
     public Model getModel() {
         return this.model;
     }
 
+    /**
+     * Creates the editor pane
+     */
     public void create() {
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
@@ -44,7 +68,7 @@ public class EditorWindow extends Parent {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             view = loader.load();
             controller = loader.getController();
-            controller.setEdit(model);
+            controller.setModel(model);
             controller.loadObject();
         }
         catch (Exception e) {
@@ -53,6 +77,9 @@ public class EditorWindow extends Parent {
         }
     }
 
+    /**
+     * Cleans up the editor pane
+     */
     public void dispose() {
         controller.dispose();
         view = null;

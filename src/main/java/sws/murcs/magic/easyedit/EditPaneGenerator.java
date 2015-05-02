@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * A common interface for edit pane generators
+ * A common interface for model pane generators
  */
 public interface EditPaneGenerator {
     /**
@@ -16,7 +16,7 @@ public interface EditPaneGenerator {
     Class[] supportedTypes();
 
     /**
-     * Generates a JavaFX node to edit the Specified Field
+     * Generates a JavaFX node to model the Specified Field
      * @param field The field to change
      * @param getter The getter for the field
      * @param setter The setter for the field

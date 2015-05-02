@@ -17,7 +17,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
- * Allows you to edit a edit
+ * Allows you to model a model
  */
 public class PersonEditor extends GenericEditor<Person> {
 
@@ -60,17 +60,17 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @Override
     public void loadObject() {
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName))
             shortNameTextField.setText(modelShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName))
             longNameTextField.setText(modelLongName);
 
-        String modelUserId = edit.getUserId();
+        String modelUserId = model.getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqual(modelUserId, viewUserId))
             userIdTextField.setText(modelUserId);
@@ -84,25 +84,25 @@ public class PersonEditor extends GenericEditor<Person> {
 
         if (selectedSkill != null) {
             generateSkillNode(selectedSkill);
-            edit.addSkill(selectedSkill);
+            model.addSkill(selectedSkill);
         }
 
         updateSkills();
 
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName))
-            edit.setShortName(viewShortName);
+            model.setShortName(viewShortName);
 
-        String modelLongName = edit.getLongName();
+        String modelLongName = model.getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName))
-            edit.setLongName(viewLongName);
+            model.setLongName(viewLongName);
 
-        String modelUserId = edit.getUserId();
+        String modelUserId = model.getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqualOrIsEmpty(modelUserId, viewUserId))
-            edit.setUserId(viewUserId);
+            model.setUserId(viewUserId);
     }
 
     /**
@@ -115,11 +115,11 @@ public class PersonEditor extends GenericEditor<Person> {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove " + skill.getShortName() + " from " + edit.getShortName());
+            popup.setMessageText("Are you sure you want to remove " + skill.getShortName() + " from " + model.getShortName());
             popup.setTitleText("Remove Skill?");
             popup.setWindowTitle("Remove Skill from Person");
             popup.addOkCancelButtons(s -> {
-                edit.removeSkill(skill);
+                model.removeSkill(skill);
                 skillChoiceBox.getItems().add(skill);
                 saveChanges();
                 popup.close();
@@ -149,7 +149,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     private void updateSkills() {
         skillVBox.getChildren().clear();
-        for (Skill skill : edit.getSkills()) {
+        for (Skill skill : model.getSkills()) {
             Node node = generateSkillNode(skill);
             skillVBox.getChildren().add(node);
             skillChoiceBox.getItems().remove(skill);

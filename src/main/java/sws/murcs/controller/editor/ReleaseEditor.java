@@ -67,7 +67,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @Override
     public void loadObject() {
         Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects().stream().
-                filter(project -> project.getReleases().contains(edit)).findFirst();
+                filter(project -> project.getReleases().contains(model)).findFirst();
         if (projectCheck.isPresent()) {
             associatedProject = projectCheck.get();
         }
@@ -82,17 +82,17 @@ public class ReleaseEditor extends GenericEditor<Release> {
         }
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
 
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName))
             shortNameTextField.setText(modelShortName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription))
             descriptionTextArea.setText(modelDescription);
 
-        LocalDate modelReleaseDate = edit.getReleaseDate();
+        LocalDate modelReleaseDate = model.getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqual(modelReleaseDate, viewReleaseDate))
             releaseDatePicker.setValue(modelReleaseDate);
@@ -100,20 +100,20 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     protected void saveChangesWithException() throws Exception {
-        String modelShortName = edit.getShortName();
+        String modelShortName = model.getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName))
-            edit.setShortName(viewShortName);
+            model.setShortName(viewShortName);
 
-        String modelDescription = edit.getDescription();
+        String modelDescription = model.getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription))
-            edit.setDescription(viewDescription);
+            model.setDescription(viewDescription);
 
-        LocalDate modelReleaseDate = edit.getReleaseDate();
+        LocalDate modelReleaseDate = model.getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqualOrIsEmpty(modelReleaseDate, viewReleaseDate))
-            edit.setReleaseDate(viewReleaseDate);
+            model.setReleaseDate(viewReleaseDate);
 
         updateAssociatedProject();
     }
@@ -134,14 +134,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         //fixme This code feels out of place seems like some of it should be in the model
         //We've just changed what project we are associating this with so remove the release from the last one
         if (associatedProject != null){
-            associatedProject.removeRelease(edit);
+            associatedProject.removeRelease(model);
         }
 
         //Update the associated project
         associatedProject = projectChoiceBox.getValue();
 
         if (associatedProject != null) {
-            associatedProject.addRelease(edit);
+            associatedProject.addRelease(model);
         }
         else {
             throw new InvalidParameterException("There needs to be an associated project");
