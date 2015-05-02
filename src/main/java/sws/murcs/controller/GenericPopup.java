@@ -57,29 +57,35 @@ public class GenericPopup extends AnchorPane {
     /**
      * The main message text.
      */
-    @FXML private Label messageText;
+    @FXML
+    private Label messageText;
     /**
      * The title of the message.
      */
-    @FXML private Label messageTitle;
+    @FXML
+    private Label messageTitle;
 
     /**
      * The image that goes with the message.
      */
-    @FXML private ImageView messageImage;
+    @FXML
+    private ImageView messageImage;
     /**
      *     Contains left aligned buttons.
      */
-    @FXML private HBox hBoxLeft;
+    @FXML
+    private HBox hBoxLeft;
     /**
      * Contains right align buttons.
      */
-    @FXML private HBox hBoxRight;
+    @FXML
+    private HBox hBoxRight;
 
     /**
      * The main content pane.
      */
-    @FXML private GridPane contentPane;
+    @FXML
+    private GridPane contentPane;
 
     /**
      * The stage for the popup.
