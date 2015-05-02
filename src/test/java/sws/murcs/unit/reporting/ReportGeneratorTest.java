@@ -31,6 +31,12 @@ public class ReportGeneratorTest {
         UndoRedoManager.setDisabled(true);
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
+        for (int i = 0; i < sampleReport.size(); i++) {
+            if (sampleReport.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
+                sampleReport.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
+                break;
+            }
+        }
         tempReport = Files.createTempFile("", "").toFile();
 
         relationalModel = new RelationalModel();
@@ -109,7 +115,7 @@ public class ReportGeneratorTest {
         project.setDescription("We are building a fitness tracking application for the world");
 
         // Work Allocation
-        LocalDate startDate = LocalDate.now();
+        LocalDate startDate = LocalDate.of(2015, 5, 1);
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
         WorkAllocation allocation = new WorkAllocation(project, team1, startDate, endDate);
 
