@@ -99,18 +99,21 @@ public class SkillEditor extends GenericEditor<Skill> {
     @FXML
     public final void initialize() {
         shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
 
         longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
 
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
     }
 }

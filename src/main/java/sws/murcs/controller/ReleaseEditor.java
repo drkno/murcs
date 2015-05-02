@@ -89,16 +89,20 @@ public class ReleaseEditor extends GenericEditor<Release> {
      */
     @Override
     public final void update() throws Exception {
-        if (edit.getShortName() == null || !edit.getShortName().equals(shortNameTextField.getText()))
+        if (edit.getShortName() == null || !edit.getShortName().equals(shortNameTextField.getText())) {
             edit.setShortName(shortNameTextField.getText());
-        if (edit.getDescription() == null || !edit.getDescription().equals(descriptionTextArea.getText()))
+        }
+        if (edit.getDescription() == null || !edit.getDescription().equals(descriptionTextArea.getText())) {
             edit.setDescription(descriptionTextArea.getText());
-        if (edit.getReleaseDate() == null || !edit.getReleaseDate().equals(releaseDatePicker.getValue()))
+        }
+        if (edit.getReleaseDate() == null || !edit.getReleaseDate().equals(releaseDatePicker.getValue())) {
             edit.setReleaseDate(releaseDatePicker.getValue());
+        }
         if (associatedProject == null || !associatedProject.equals(projectChoiceBox.getValue())) {
 
-            //We've just changed what project we are associating this with so remove the release from the last one
-            if (associatedProject != null){
+            //We've just changed what project we are associating
+            // this with so remove the release from the last one
+            if (associatedProject != null) {
                 associatedProject.removeRelease(edit);
             }
 
@@ -134,27 +138,36 @@ public class ReleaseEditor extends GenericEditor<Release> {
         }
     }
 
+    /**
+     * Sets up the listeners in the editor.
+     */
     @FXML
     public final void initialize() {
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
         shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
         releaseDatePicker.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
         projectChoiceBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue)
+            if (oldValue && !newValue) {
                 updateAndHandle();
+            }
         });
 
         projectChangeListener = (observable, oldValue, newValue) -> {
-            if (newValue != null) updateAndHandle();
+            if (newValue != null) {
+                updateAndHandle();
+            }
         };
 
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);

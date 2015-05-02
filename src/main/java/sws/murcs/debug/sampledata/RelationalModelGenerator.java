@@ -16,9 +16,21 @@ import java.util.ArrayList;
  */
 public class RelationalModelGenerator implements Generator<RelationalModel> {
 
-    public enum Stress{
+    /**
+     * The various stress level the generator can produce.
+     */
+    public enum Stress {
+        /**
+         * High stress level.
+         */
         High,
+        /**
+         * Medium stress level.
+         */
         Medium,
+        /**
+         * Low stress level.
+         */
         Low,
     }
 
@@ -33,10 +45,10 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
     /**
      * Instantiates a new random RelationalModel generator.
-     * @param stress the stress level to use. Stress level determines the amount of data generated.
+     * @param stressLevel the stress level to use. Stress level determines the amount of data generated.
      */
-    public RelationalModelGenerator(final Stress stress) {
-        this.stress = stress;
+    public RelationalModelGenerator(final Stress stressLevel) {
+        this.stress = stressLevel;
 
         skillGenerator = new SkillGenerator();
         personGenerator = new PersonGenerator();
@@ -53,6 +65,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         workAllocationGenerator = new WorkAllocationGenerator();
     }
 
+    /**
+     * Generates models of a particular type, given a generator
+     * and a min and max number of items to generate.
+     * @param generator The generator to tbe used.
+     * @param min The min number of items to make.
+     * @param max The max number of items to make.
+     * @return The list of new model items.
+     */
     private ArrayList<Model> generateItems(final Generator<? extends Model> generator, final int min, final int max) {
         ArrayList<Model> items = new ArrayList<>();
 
@@ -68,14 +88,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
     /**
      * Calculates a minimum given a stress level.
-     * @param stress The stress
+     * @param stressLevel The stress
      * @param lowMin The low min
      * @param mediumMin The medium min
      * @param highMin The high min
      * @return The min
      */
-    private int getMin(final Stress stress, final int lowMin, final int mediumMin, final int highMin) {
-        switch (stress){
+    private int getMin(final Stress stressLevel, final int lowMin, final int mediumMin, final int highMin) {
+        switch (stressLevel){
             case Low:
                 return lowMin;
             case Medium:
@@ -90,14 +110,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
     /**
      * Gets a max clamp for a given stress level.
-     * @param stress The stress
+     * @param stressLevel The stress
      * @param lowMax The low max
      * @param mediumMax The medium max
      * @param highMax The high max
      * @return The max
      */
-    private int getMax(final Stress stress, final int lowMax, final int mediumMax, final int highMax) {
-        switch (stress)     {
+    private int getMax(final Stress stressLevel, final int lowMax, final int mediumMax, final int highMax) {
+        switch (stressLevel)     {
             case Low:
                 return lowMax;
             case Medium:

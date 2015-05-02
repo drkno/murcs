@@ -69,7 +69,9 @@ public class DuplicateObjectException extends CustomException {
             return;
         }
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null) return; // as is called in the constructor of RelationalModel
+        if (model == null) {
+            return; // as is called in the constructor of RelationalModel
+        }
         String className = newModel.getClass().getSimpleName();
         List<? extends Model> list = null;
         switch (className) {
