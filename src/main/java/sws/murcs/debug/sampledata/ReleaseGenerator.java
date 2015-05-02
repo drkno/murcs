@@ -21,6 +21,8 @@ public class ReleaseGenerator implements Generator<Release> {
     protected static final int HIGH_STRESS_MIN = 20;
     protected static final int HIGH_STRESS_MAX = 40;
 
+    private static final Random random = new Random();
+
     private String[] defaultNames = {"Albatross",
             "Black-browed",
             "Black-footed",
@@ -704,11 +706,9 @@ public class ReleaseGenerator implements Generator<Release> {
     public Release generate() {
         Release r = new Release();
 
-        Random random = new Random(47658758756875687L);
-
         String shortName = NameGenerator.randomElement(defaultNames);
         String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(random.nextInt(10000), random.nextInt(12) + 1, random.nextInt(28) + 1);
+        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28) + 1);
 
         ArrayList<Project> projects = generateProjects(1,5);
 
