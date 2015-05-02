@@ -22,7 +22,8 @@ import java.util.function.Consumer;
 public class GenericPopup extends AnchorPane {
 
     /***
-     * Enum for specifying which side of the dialog you want the button to appear on.
+     * Enum for specifying which side of the dialog you
+     * want the button to appear on.
      */
     public enum Position {
         /**
@@ -94,7 +95,8 @@ public class GenericPopup extends AnchorPane {
     private boolean buttonsDefined;
 
     /***
-     * Constructs a new Generic Popup. In order to use you need to at least set the message and add at least 1 button
+     * Constructs a new Generic Popup. In order to use you need
+     * to at least set the message and add at least 1 button
      * some examples of how to use this include:
      *
      *      GenericPopup controller = new GenericPopup();
@@ -104,10 +106,9 @@ public class GenericPopup extends AnchorPane {
      *      controller.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -RIGHTARROW {controller.close(); return null;});
      *      controller.show();
      *
-     * There are extra features, like you can add and image and title, change the window title as well
+     * There are extra features, like you can add and image
+     * and title, change the window title as well
      *
-     * NOTE: All lambdas passed into addButton need to include a return null; at the end (don't ask me why it's black
-     * magic I tell you)
      */
     public GenericPopup() {
         this(null);
@@ -115,7 +116,8 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Constructs a dialog from an exception.
-     * @param exception The exception that you want to feed in to show the exception message.
+     * @param exception The exception that you want to
+     *                  feed in to show the exception message.
      */
     public GenericPopup(final Exception exception) {
         popupStage = new Stage();
@@ -148,10 +150,14 @@ public class GenericPopup extends AnchorPane {
 
 
     /***
-     * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
-     * (either the left hand side or the right hand side) and the function to call when it is clicked (this must be a
-     * function that implements event notifier or just a lambda function with return null; at the end of it).
-     * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left the first one added
+     * Adds a new button to the dialog. You must specify the text
+     * to go on the button, it's location on the dialog
+     * (either the left hand side or the right hand side) and
+     * the function to call when it is clicked (this must be a
+     * function that implements event notifier or just a lambda
+     * function with return null; at the end of it).
+     * NOTE: Buttons stack on the left and right sides,
+     * therefore if you add two buttons on the left the first one added
      * will be the one closest to the left hand side, so keep that in mind.
      * @param buttonText The text on the button.
      * @param position The positioning of the button.
@@ -192,8 +198,10 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Shows the dialog, this should be the last thing you call after setting up your dialog. If you have not set up a
-     * title the dialog will automatically remove it and resize.
+     * Shows the dialog, this should be the last thing you
+     * call after setting up your dialog. If you have not
+     * set up a title the dialog will automatically remove
+     * it and resize.
      */
     public final void show() {
         if (messageTitle.getText().equals("Title")) {
@@ -217,25 +225,32 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Closes the dialog.
-     * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons() with
-     * only one lambda expression then the cancel button is automatically set to call this.
+     * Note: You may want to set up one of your buttons
+     * to call this, although if you use the addOkCancelButtons() with
+     * only one lambda expression then the cancel button
+     * is automatically set to call this.
      */
     public final void close() {
         popupStage.close();
     }
 
     /***
-     * Set the message you want the the dialog to show, text will wrap but the dialog does not resize currently so don't
+     * Set the message you want the the dialog to
+     * show, text will wrap but the dialog does not
+     * resize currently so don't
      * make it too long.
      * @param message The message you want to show on the dialog.
      */
     public final void setMessageText(final String message) {
-        if (message == null) return;
+        if (message == null) {
+            return;
+        }
         messageText.setText(message);
     }
 
     /***
-     * Sets the title of the window (the bit that appears in the bar at the top)
+     * Sets the title of the window (the bit that
+     * appears in the bar at the top)
      * @param title The window title.
      */
     public final void setWindowTitle(final String title) {
@@ -243,7 +258,8 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Sets the title of the message (appears alongside the title image)
+     * Sets the title of the message (appears
+     * alongside the title image).
      * @param titleText The title of the message.
      */
     public final void setTitleText(final String titleText) {
@@ -253,7 +269,8 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Sets the image to appear beside the title.
-     * NOTE: If you don't set the title text (not the window text) then this won't appear.
+     * NOTE: If you don't set the title text (not
+     * the window text) then this won't appear.
      * @param image image to set.
      */
     public final void setTitleImage(final Image image) {
@@ -261,18 +278,25 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify what is supposed to happen for the ok button and the cancel button
+     * Adds default OK Cancel Buttons, you specify what
+     * is supposed to happen for the ok button and the
+     * cancel button
      * remains it's default (closes the dialog)
-     * @param okFunction The function you want to call on the ok button being clicked.
+     * @param okFunction The function you want to call
+     *                   on the ok button being clicked.
      */
     public final void addOkCancelButtons(final Consumer okFunction) {
         addOkCancelButtons(okFunction, m -> this.close());
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify the functions for both the ok and cancel buttons when clicked
-     * @param okFunction The function you want to call on ok button click
-     * @param cancelFunction The function you want to call on cancel button click
+     * Adds default OK Cancel Buttons, you specify the
+     * functions for both the ok and cancel buttons when
+     * clicked
+     * @param okFunction The function you want to
+     *                   call on ok button click
+     * @param cancelFunction The function you want to
+     *                       call on cancel button click
      */
     public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
@@ -280,8 +304,10 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Adds the default OK button with a specified function to call on it being clicked.
-     * @param okFunction Function to call on ok button being clicked.
+     * Adds the default OK button with a specified function
+     * to call on it being clicked.
+     * @param okFunction Function to call on ok
+     *                   button being clicked.
      */
     public final void addOkButton(final Consumer okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);

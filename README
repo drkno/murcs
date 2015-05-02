@@ -15,3 +15,5 @@ In order to run the unit tests, open the project in an IDE of your choice (we re
 Acceptance Tests
 The acceptance tests are written uses the Gherkin syntax and they are not intended to be automated. They have been provided so that someone looking can quickly get an idea of how the application is intended to function.
 While some of these tests do have 'Step Defs' written (which allow them to be run in an automated manner), these have been provided as a 'Proof of Concept', so that if we do decide to write automated tests we have a quick reference point.
+
+For a list of who tested what see the word document 'Manual Testing' located in the 'doc' folder.

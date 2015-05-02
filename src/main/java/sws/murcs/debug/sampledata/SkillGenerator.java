@@ -3,7 +3,7 @@ package sws.murcs.debug.sampledata;
 import sws.murcs.model.Skill;
 
 /**
- * Generates random skills
+ * Generates random skills.
  */
 public class SkillGenerator implements Generator<Skill> {
     public static final int LOW_STRESS_MAX = 3;
@@ -15,7 +15,11 @@ public class SkillGenerator implements Generator<Skill> {
     public static final int HIGH_STRESS_MAX = 100;
     public static final int HIGH_STRESS_MIN = 20;
 
-    private String[] skills = {"Falling over",
+    /**
+     * Names for skills.
+     */
+    private String[] skills = {
+            "Falling over",
             "Backflips",
             "C#",
             "Running away screaming",
@@ -239,25 +243,33 @@ public class SkillGenerator implements Generator<Skill> {
             "Responsibility",
             "Sense of humor",
     };
-    private String[] descriptions = {"A very useful skill", "A not very useful skill"};
+    /**
+     * Descriptions for skills.
+     */
+    private String[] descriptions = {
+            "A very useful skill",
+            "A not very useful skill"
+    };
 
     /**
      * Instantiates a new random skill generator.
      */
-    public SkillGenerator() {}
+    public SkillGenerator() {
+
+    }
 
     /**
      * Instantiates a new random skill generator.
      * @param skillsList skills to generate from.
      * @param descriptionList descriptions to generate from.
      */
-    public SkillGenerator(String[] skillsList, String[] descriptionList){
+    public SkillGenerator(final String[] skillsList, final String[] descriptionList){
         this.skills = skillsList;
         this.descriptions = descriptionList;
     }
 
     @Override
-    public Skill generate() {
+    public final Skill generate() {
         Skill skill = new Skill();
 
         String name = NameGenerator.randomElement(skills);
@@ -269,7 +281,8 @@ public class SkillGenerator implements Generator<Skill> {
         catch (Exception e) {
             e.printStackTrace();
             return null;
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            //Do nothing, don't have to deal with the
+            // exception if only generating test data.
         }
 
         skill.setLongName(name);

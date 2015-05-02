@@ -23,7 +23,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * Instantiates a new FilePersistenceLoader.
      * @param directory Directory to use persistent data in.
      */
-    public FilePersistenceLoader(String directory)
+    public FilePersistenceLoader(final String directory)
     {
         this.workingDirectory = directory;
     }
@@ -32,7 +32,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * Gets the storage directory of persistent data.
      * @return The location the persistent data that is stored on the HD.
      */
-    public String getCurrentWorkingDirectory()
+    public final String getCurrentWorkingDirectory()
     {
         // return the current working directory
         return workingDirectory;
@@ -42,7 +42,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * Sets the current working directory for future lookups.
      * @param workingDirectory the new working directory.
      */
-    public void setCurrentWorkingDirectory(String workingDirectory) {
+    public final void setCurrentWorkingDirectory(final String workingDirectory) {
         this.workingDirectory = workingDirectory;
     }
 
@@ -52,7 +52,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return The loaded model.
      */
     @Override
-    public RelationalModel loadModel(String persistenceName)
+    public final RelationalModel loadModel(final String persistenceName)
     {
         // load the persistent file using the default directory
         return loadModel(persistenceName, getCurrentWorkingDirectory());
@@ -64,7 +64,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory The directory to load the persistent file from.
      * @return The loaded model.
      */
-    public RelationalModel loadModel(String persistenceName, String directory){
+    public final RelationalModel loadModel(final String persistenceName, final String directory){
         try
         {
             // Open the model file
@@ -92,7 +92,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @throws Exception When a model fails to save.
      */
     @Override
-    public void saveModel(String name, RelationalModel persistent) throws Exception
+    public final void saveModel(final String name, final RelationalModel persistent) throws Exception
     {
         // saves the model using the default directory
         saveModel(name, persistent, getCurrentWorkingDirectory());
@@ -105,7 +105,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to save the model in.
      * @throws Exception when the persistent file could not be loaded.
      */
-    public void saveModel(String name, RelationalModel persistent, String directory) throws Exception
+    public final void saveModel(final String name, final RelationalModel persistent, final String directory) throws Exception
     {
         try
         {
@@ -131,7 +131,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return List of models.
      */
     @Override
-    public ArrayList<String> getModelList()
+    public final ArrayList<String> getModelList()
     {
         return getModelList(".project");
     }
@@ -141,7 +141,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param fileExtension file extension.
      * @return List of models.
      */
-    public ArrayList<String> getModelList(String fileExtension)
+    public final ArrayList<String> getModelList(final String fileExtension)
     {
         return getModelList(fileExtension, getCurrentWorkingDirectory());
     }
@@ -152,7 +152,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to search
      * @return list of models
      */
-    public static ArrayList<String> getModelList(String fileExtension, String directory)
+    public static ArrayList<String> getModelList(final String fileExtension, final String directory)
     {
         ArrayList<String> persistentList = new ArrayList<String>();
         File dir = new File(directory); // create handle to directory
@@ -174,7 +174,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return Whether the operation was successful
      */
     @Override
-    public boolean deleteModel(String persistenceName)
+    public final boolean deleteModel(final String persistenceName)
     {
         return deletePersistence(persistenceName, getCurrentWorkingDirectory());
     }
@@ -185,13 +185,13 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory The Directory to search
      * @return Whether the operation was successful
      */
-    public boolean deletePersistence(String persistentName, String directory)
+    public final boolean deletePersistence(final String persistentName, final String directory)
     {
         try
         {
             File persistenceFile = new File(directory + File.separator + persistentName);
 
-            if(persistenceFile.delete())
+            if (persistenceFile.delete())
             {
                 return true;
             }

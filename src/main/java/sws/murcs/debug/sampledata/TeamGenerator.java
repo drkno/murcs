@@ -6,7 +6,7 @@ import sws.murcs.model.Team;
 import java.util.ArrayList;
 
 /**
- * Generates random teams with people
+ * Generates random teams with people.
  */
 public class TeamGenerator implements Generator<Team> {
     public static final int LOW_STRESS_MAX = 5;
@@ -826,7 +826,7 @@ public class TeamGenerator implements Generator<Team> {
      * @param probOfProductOwner probability of a product owner to use.
      * @param probOfScrumMaster probability of a scrum master to use.
      */
-    public TeamGenerator(Generator<Person> personGenerator, String[] teamNames, String[] descriptions, float probOfProductOwner, float probOfScrumMaster) {
+    public TeamGenerator(final Generator<Person> personGenerator, final String[] teamNames, final String[] descriptions, final float probOfProductOwner, final float probOfScrumMaster) {
         this.personGenerator = personGenerator;
         this.teamNames = teamNames;
         this.descriptions = descriptions;
@@ -835,60 +835,64 @@ public class TeamGenerator implements Generator<Team> {
     }
 
     /**
-     * Sets the person generator
+     * Sets the person generator.
      * @param personGenerator The person generator
      */
-    public void setPersonGenerator(Generator<Person> personGenerator){
+    public final void setPersonGenerator(final Generator<Person> personGenerator){
         this.personGenerator = personGenerator;
     }
 
     /**
-     * Sets the person pool. If null, people will be randomly generated
+     * Sets the person pool. If null, people will be randomly generated.
      * @param personPool The person pool
      */
-    public void setPersonPool(ArrayList<Person> personPool) {
+    public final void setPersonPool(final ArrayList<Person> personPool) {
         this.personPool = personPool;
     }
 
     /**
-     * Generates the members of a team
+     * Generates the members of a team.
      * @param min The min members
      * @param max The max members
      * @return The members
      */
-    private ArrayList<Person> generateMembers(int min, int max){
+    private ArrayList<Person> generateMembers(final int min, final int max) {
         ArrayList<Person> generated = new ArrayList<>();
         int personCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of person, make some up
-        if (personPool == null){
-            for (int i = 0; i < personCount; i++){
+        if (personPool == null) {
+            for (int i = 0; i < personCount; i++) {
                 Person newPerson = personGenerator.generate();
                 if (!generated.stream().filter(person -> newPerson.equals(person)).findAny().isPresent()) {
                     generated.add(newPerson);
                 }
             }
         }
-        else{
+        else {
             //If there are more person than we have just assign all of them
-            if (personCount > personPool.size()) personCount = personPool.size();
+            if (personCount > personPool.size()) {
+                personCount = personPool.size();
+            }
 
-            for (int i = 0; i < personCount; i++){
-                //Remove the person so we can't pick it again. We'll put it back when we're done
+            for (int i = 0; i < personCount; i++) {
+                // Remove the person so we can't pick it again.
+                // We'll put it back when we're done
                 Person skill = personPool.remove(NameGenerator.random(personPool.size()));
                 generated.add(skill);
             }
 
             //Put all the skills we took out back
-            for (Person person : generated)
+            for (Person person : generated) {
                 personPool.add(person);
+            }
         }
 
         return generated;
     }
 
     @Override
-    public Team generate() {
+    public final Team generate() {
         Team team = new Team();
 
         String shortName = NameGenerator.randomElement(teamNames);
@@ -910,7 +914,8 @@ public class TeamGenerator implements Generator<Team> {
         catch (Exception e) {
             e.printStackTrace();
             return null;
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            // Do nothing, don't have to deal with the exception
+            // if only generating test data.
         }
 
         team.setLongName(longName);
@@ -921,7 +926,8 @@ public class TeamGenerator implements Generator<Team> {
             team.setProductOwner(productOwner);
             team.addMembers(members);
         } catch (Exception e) {
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            // Do nothing, don't have to deal with the
+            // exception if only generating test data.
             e.printStackTrace();
             return null;
         }

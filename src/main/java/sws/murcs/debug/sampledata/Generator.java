@@ -1,7 +1,8 @@
 package sws.murcs.debug.sampledata;
 
 /**
- * Interface for generating sample data
+ * Interface for generating sample data.
+ * @param <T> The model type of the generator.
  */
 public interface Generator<T> {
     /**
