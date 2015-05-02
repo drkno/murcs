@@ -1,6 +1,7 @@
 package sws.murcs.model.persistence.loaders;
 
 import sws.murcs.model.RelationalModel;
+
 import java.util.ArrayList;
 
 public interface PersistenceLoader {

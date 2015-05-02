@@ -17,19 +17,31 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
- * Allows you to edit a edit
+ * Allows you to edit a edit.
  */
 public class PersonEditor extends GenericEditor<Person> {
 
+    /**
+     * The person name, the user name and the person's full name.
+     */
     @FXML
     private TextField personNameTextField, usernameTextField, personFullNameTextField;
 
+    /**
+     * The error message label.
+     */
     @FXML
     private Label labelErrorMessage;
 
+    /**
+     * The choice box for selecting skills
+     */
     @FXML
     private ChoiceBox<Skill> skillChoiceBox;
 
+    /**
+     * The box which contains all the skills of the person
+     */
     @FXML
     private VBox skillVBox;
 
@@ -37,21 +49,29 @@ public class PersonEditor extends GenericEditor<Person> {
      * Initializes the editor for use, sets up listeners etc.
      */
     @FXML
-    public void initialize() {
+    final void initialize() {
         personNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         personFullNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         usernameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) updateAndHandle();
+            if (oldValue && !newValue) {
+                updateAndHandle();
+            }
         });
 
         skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) updateAndHandle();
+            if (newValue != null) {
+                updateAndHandle();
+            }
         });
 
         skillChoiceBox.getItems().clear();
@@ -59,9 +79,9 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Updates the object in memory and handles any exception
+     * Updates the object in memory and handles any exception.
      */
-    public void updateAndHandle(){
+    public final void updateAndHandle(){
         try {
             labelErrorMessage.setText("");
             update();
@@ -79,10 +99,10 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Loads the person into the form
+     * Loads the person into the form.
      */
     @Override
-    public void load() {
+    public final void load() {
         skillChoiceBox.getSelectionModel().clearSelection();
         updateSkills();
 
@@ -100,7 +120,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Generates a node for a skill
+     * Generates a node for a skill.
      * @param skill The skill
      * @return the node representing the skill
      */
@@ -132,7 +152,7 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Updates the list of skills the person has
+     * Updates the list of skills the person has.
      */
     private void updateSkills() {
         skillVBox.getChildren().clear();
@@ -144,9 +164,10 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     /**
-     * Saves the edit being edited
+     * Saves the edit being edited.
+     * @throws java.lang.Exception
      */
-    public void update() throws Exception {
+    public final void update() throws Exception {
         if (edit.getShortName() == null || !personNameTextField.getText().equals(edit.getShortName())) {
             edit.setShortName(personNameTextField.getText());
         }
@@ -167,7 +188,7 @@ public class PersonEditor extends GenericEditor<Person> {
     /**
      * Updates the fields in the edit form based on an Undo/Redo callback.
      */
-    public void updateFields() {
+    public final void updateFields() {
         load();
     }
 }

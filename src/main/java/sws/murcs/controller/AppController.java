@@ -13,12 +13,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.*;
+import sws.murcs.model.Model;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Team;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -26,37 +31,65 @@ import sws.murcs.view.App;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Main app class controller
+ * Main app class controller.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
-    @FXML
-    private Parent root;
+    /**
+     * The Menu items for the main window.
+     */
     @FXML
     private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    /**
+     * The side display which contains the display list.
+     */
     @FXML
     private VBox vBoxSideDisplay;
+    /**
+     * The main display of the window which contains the display
+     * list and the content pane.
+     */
     @FXML
     private HBox hBoxMainDisplay;
+    /**
+     * The root of the fxml file.
+     */
     @FXML
     private BorderPane borderPaneMain;
+    /**
+     * The choice box for selecting the model type to be
+     * displayed in the list.
+     */
     @FXML
     private ChoiceBox displayChoiceBox;
+    /**
+     * The list which contains the models of the type selected
+     * in the display list choice box.
+     */
     @FXML
     private ListView displayList;
+    /**
+     * The button used to remove models from the display list.
+     */
     @FXML
     private Button removeButton;
+    /**
+     * The content pane contains the information about the
+     * currently selected model item.
+     */
     @FXML
     private GridPane contentPane;
 
     /**
-     * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
+     * Initialises the GUI, setting up the the options in the
+     * choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
     @FXML
-    public void initialize() {
+    public final void initialize() {
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -69,11 +102,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //The remove button should be greyed out if no item is selected
-            removeButton.setDisable(newValue == null);
+            //The remove button should be greyed out
+            // if no item is selected or built in skills (PO or SM) are selected
+            removeButton.setDisable(newValue == null || newValue instanceof Skill
+                    && (((Skill) newValue).getShortName().equals("PO") || ((Skill) newValue).getShortName().equals("SM")));
 
             contentPane.getChildren().clear();
-            if (newValue == null) return;
+            if (newValue == null) {
+                return;
+            }
 
             Parent pane = null;
             try {
@@ -98,27 +135,30 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
-        if (model == null) return;
+        if (model == null) {
+            return;
+        }
 
-        ModelObservableArrayList arrayList;
+        List<? extends Model> arrayList;
         switch (type) {
             case Project: arrayList = model.getProjects(); break;
             case People: arrayList = model.getPeople(); break;
             case Team: arrayList = model.getTeams(); break;
             case Skills: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
-            default: throw new NotImplementedException();
+            default: throw new UnsupportedOperationException();
         }
-        displayList.setItems(arrayList);
+        displayList.setItems((ModelObservableArrayList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
     /**
-     * Called when the Quit button is pressed in the file menu and quit the current application.
+     * Called when the Quit button is pressed in the
+     * file menu and quit the current application.
      * @param event The even that triggers the function
      */
     @FXML
-    private void fileQuitPress(ActionEvent event) {
+    private void fileQuitPress(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Unsaved Changes");
@@ -147,7 +187,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that triggers the function
      */
     @FXML
-    private void toggleItemListView(ActionEvent event) {
+    private void toggleItemListView(final ActionEvent event) {
         if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
@@ -162,12 +202,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Save the current project. Currently you choose where to save the project every time, however it does remember the
+     * Save the current project. Currently you choose where
+     * to save the project every time, however it does remember the
      * last location saved or loaded from.
-     * @param event The event that causes this function to be called, namely clicking save.
+     * @param event The event that causes this function to be called,
+     *              namely clicking save.
      */
     @FXML
-    private void saveProject(ActionEvent event) {
+    private void saveProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Project");
@@ -189,7 +231,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that causes the function to be called, clicking open.
      */
     @FXML
-    private void openProject(ActionEvent event) {
+    private void openProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
@@ -199,22 +241,31 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             if (file != null) {
                 PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
+                if (model == null) {
+                    throw new Exception("Project was not opened.");
+                }
                 PersistenceManager.Current.setCurrentModel(model);
+                updateList();
+                UndoRedoManager.importModel(model);
             }
         } catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Old or corrupted project!");
+            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
+                    + "Please use the version it was created with to open the file.");
             popup.show();
         }
     }
 
     /**
-     * Generates a report to a specified location
+     * Generates a report to a specified location.
      * @param event The event that causes the report to be generate and saved to a chosen file location
      */
     @FXML
-    private void generateReport(ActionEvent event) {
+    private void generateReport(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
             fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
             fileChooser.setTitle("Report Save Location");
@@ -234,7 +285,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void undoMenuItemClicked(ActionEvent event) {
+    private void undoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
         }
@@ -249,7 +300,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void redoMenuItemClicked(ActionEvent event) {
+    private void redoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
         }
@@ -265,7 +316,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param change type of change that has been made
      */
     @Override
-    public void undoRedoNotification(ChangeState change) {
+    public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
@@ -285,8 +336,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
+    /**
+     * Function that is called when a new model is wanted to be created
+     * @param event The event of the add button being called
+     */
     @FXML
-    private void addClicked(ActionEvent event) {
+    private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -307,6 +362,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 case "addRelease":
                     clazz = Release.class;
                     break;
+                default:
+                    break;
             }
         }
         else {
@@ -320,25 +377,35 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
+    /**
+     * Function that is called when you want to delete a model.
+     * @param event Event that sends you to the remove clicked function
+     */
     @FXML
-    private void removeClicked(ActionEvent event) {
+    private void removeClicked(final ActionEvent event) {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
-        if (model == null) return;
+        if (model == null) {
+            return;
+        }
 
         final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
-        if (selectedIndex == -1) return;
+        if (selectedIndex == -1) {
+            return;
+        }
 
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
 
         // Ensures you can't delete Product Owner or Scrum Master
-        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills)
-            if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM"))
+        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills) {
+            if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM")) {
                 return;
+            }
+        }
 
         ArrayList<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
-        if (usages.size() != 0){
+        if (usages.size() != 0) {
             message += "\nThis " + ModelTypes.getModelType(selectedItem) + " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
@@ -357,21 +424,21 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     @Override
-    public void selectItem(Model param) {
+    public final void selectItem(final Model parameter) {
         ModelTypes type;
         ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
-        if (param == null) {
+        if (parameter == null) {
             displayList.getSelectionModel().select(0);
         }
         else {
-            type = ModelTypes.getModelType(param);
+            type = ModelTypes.getModelType(parameter);
             if (selectedType == type) {
-                displayList.getSelectionModel().select(param);
+                displayList.getSelectionModel().select(parameter);
             }
             else {
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                displayList.getSelectionModel().select(param);
+                displayList.getSelectionModel().select(parameter);
             }
         }
     }

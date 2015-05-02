@@ -47,6 +47,7 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
 
     @After("@ProjectMaintenance")
     public void tearDown() throws Exception {
+        PersistenceManager.Current.setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

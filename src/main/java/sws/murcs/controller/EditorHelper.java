@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.listeners.ViewUpdate;
@@ -16,15 +17,24 @@ import java.util.Objects;
 
 /**
  * Provides helper methods for generating forms for editing and
- * creating new model objects
+ * creating new model objects.
  */
-public class EditorHelper {
+final public class EditorHelper {
+
     /**
-     * Creates a new form for creating a new object of the specified type
-     * @param clazz The type of object to create
-     * @param update Called when the object is successully updated
+     * Empty private constructor as this is a utility class
      */
-    public static void createNew(Class<? extends Model> clazz, ViewUpdate update) {
+    private EditorHelper() {
+        // Empty constructor as this is a utility class
+    }
+
+
+    /**
+     * Creates a new form for creating a new object of the specified type.
+     * @param clazz The type of object to create
+     * @param update Called when the object is successfully updated
+     */
+    public static void createNew(final Class<? extends Model> clazz, final ViewUpdate update) {
         try {
             String type = ModelTypes.getModelType(clazz).toString();
             Model newModel = clazz.newInstance();
@@ -43,24 +53,27 @@ public class EditorHelper {
             Stage newStage = new Stage();
             newStage.setScene(scene);
             newStage.setTitle("Create " + type);
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            newStage.getIcons().add(iconImage);
 
             newStage.initModality(Modality.APPLICATION_MODAL);
             newStage.initOwner(App.stage);
 
             newStage.show();
         }
-        catch (Exception e){
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * Creates a new form for editing a team which will call the saved callback
+     * Creates a new form for editing a team which will call the saved callback.
      * every time a change is saved
      * @param model The model item to create
      * @return The form
      */
-    public static Parent getEditForm(Model model) {
+    public static Parent getEditForm(final Model model) {
         Map<ModelTypes, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelTypes.Project, "ProjectEditor.fxml");
         fxmlPaths.put(ModelTypes.Team, "TeamEditor.fxml");
@@ -80,7 +93,7 @@ public class EditorHelper {
 
             return parent;
         }
-        catch (Exception e){
+        catch (Exception e) {
             System.err.println("Unable to create editor!(this is seriously bad)");
             e.printStackTrace();
         }

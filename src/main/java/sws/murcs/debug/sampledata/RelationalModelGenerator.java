@@ -1,10 +1,8 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random RelationalModels
@@ -28,6 +26,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
     /**
      * Instantiates a new random RelationalModel generator.
+     * @param stress the stress level to use. Stress level determines the amount of data generated.
      */
     public RelationalModelGenerator(Stress stress) {
         this.stress = stress;
@@ -158,7 +157,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
             return model;
         }
-        catch (DuplicateObjectException e){
+        catch (Exception e){
             e.printStackTrace();
         }
         return null;

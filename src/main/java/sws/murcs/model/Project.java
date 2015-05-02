@@ -72,6 +72,11 @@ public class Project extends Model {
 
     @Override
     public boolean equals(Object object) {
-        return object != null && getShortName() != null && object instanceof Project && ((Project) object).getShortName().toLowerCase().equals(getShortName().toLowerCase());
+        if (!(object instanceof Project)) return false;
+        Project project = (Project) object;
+        String shortName1 = project.getShortName();
+        String shortName2 = getShortName();
+        if (shortName1 == null || shortName2 == null) return shortName1 == shortName2;
+        return shortName1.toLowerCase().equals(shortName2.toLowerCase());
     }
 }

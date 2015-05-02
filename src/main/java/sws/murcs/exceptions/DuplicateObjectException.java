@@ -1,32 +1,60 @@
 package sws.murcs.exceptions;
 
 import sws.murcs.model.Model;
-import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.List;
+
 /**
- * Duplicate Object Exception
+ * Duplicate Object Exception.
  */
 public class DuplicateObjectException extends CustomException {
 
-    public DuplicateObjectException() {}
+    /**
+     * Creates an empty duplicate object exception.
+     */
+    public DuplicateObjectException() {
+        // Empty constructor
+    }
 
-    public DuplicateObjectException(String message) {
+    /**
+     * Creates a duplicate object exception with a given message.
+     * @param message The message that goes with the exception
+     */
+    public DuplicateObjectException(final String message) {
         super(message);
     }
 
-    public DuplicateObjectException(Throwable cause) {
+    /**
+     * Creates a duplicate object exception with a given throwable.
+     * @param cause The cause of the exception
+     */
+    public DuplicateObjectException(final Throwable cause) {
         super(cause);
     }
 
-    public DuplicateObjectException(String message, Throwable cause) {
+    /**
+     * Creates a duplicate object exception with a given throwable and a message.
+     * @param message The message with the exception.
+     * @param cause The cause of the exception.
+     */
+    public DuplicateObjectException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public DuplicateObjectException(String message, Throwable cause, boolean enableSuppession, boolean writableStackTrace) {
-        super(message, cause, enableSuppession, writableStackTrace);
+    /**
+     * Creates a duplicate object exception with a given throwable, a message, a boolean for enabling suppression
+     * and a boolean for whether or not the stack trace is writable.
+     * @param message The message of the exception.
+     * @param cause The cause of the exception.
+     * @param enableSuppression Enable suppression of the exception.
+     * @param writableStackTrace Is the stack trace writable.
+     */
+    public DuplicateObjectException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
     /**
@@ -36,42 +64,54 @@ public class DuplicateObjectException extends CustomException {
      * @param param new simple name to check
      * @throws DuplicateObjectException if this object is a duplicate
      */
-    public static void CheckForDuplicates(Model newModel, String param) throws DuplicateObjectException {
-        if (PersistenceManager.Current == null) return;
+    public static void checkForDuplicates(final Model newModel, final String param) throws DuplicateObjectException {
+        if (PersistenceManager.Current == null) {
+            return;
+        }
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         if (model == null) return; // as is called in the constructor of RelationalModel
         String className = newModel.getClass().getSimpleName();
-        ModelObservableArrayList<? extends Model> list = null;
+        List<? extends Model> list = null;
         switch (className) {
             case "Skill": {
                 list = model.getSkills();
-                CheckForDuplicateNames(newModel, list, className, param);
+                checkForDuplicateNames(newModel, list, className, param);
                 break;
             }
             case "Person": {
                 list = model.getPeople();
-                CheckForDuplicateNames(newModel, list, className, param);
-                CheckForDuplicateUserIds(newModel, (ModelObservableArrayList<Person>)list, param);
+                checkForDuplicateNames(newModel, list, className, param);
+                checkForDuplicateUserIds(newModel, (ModelObservableArrayList<Person>) list, param);
                 break;
             }
             case "Project": {
                 list = model.getProjects();
-                CheckForDuplicateNames(newModel, list, className, param);
+                checkForDuplicateNames(newModel, list, className, param);
                 break;
             }
             case "Team": {
                 list = model.getTeams();
-                CheckForDuplicateNames(newModel, list, className, param);
+                checkForDuplicateNames(newModel, list, className, param);
                 break;
             }
             case "Release": {
                 list = model.getReleases();
-                CheckForDuplicateNames(newModel, list, className, param);
+                checkForDuplicateNames(newModel, list, className, param);
             }
+            default:
+                break;
         }
     }
 
-    private static void CheckForDuplicateNames(Model newModel, ModelObservableArrayList<? extends Model> modelClass, String className, String simpleName) throws DuplicateObjectException {
+    /**
+     * Checks for a duplicate names for the model given.
+     * @param newModel The new model
+     * @param modelClass The class of the model
+     * @param className The name of the class
+     * @param simpleName The simple name
+     * @throws DuplicateObjectException The exception if there is a duplicate
+     */
+    private static void checkForDuplicateNames(final Model newModel, final List<? extends Model> modelClass, final String className, final String simpleName) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getShortName().equals(simpleName) && o != newModel)
                 .findAny()
@@ -80,7 +120,14 @@ public class DuplicateObjectException extends CustomException {
         }
     }
 
-    private static void CheckForDuplicateUserIds(Model newModel, ModelObservableArrayList<Person> modelClass, String simpleId) throws DuplicateObjectException {
+    /**
+     * Checks for duplicate user ids of the given user id.
+     * @param newModel The model with the id.
+     * @param modelClass The class of the model.
+     * @param simpleId The user id.
+     * @throws DuplicateObjectException The exception thrown if there is a person with the same user id.
+     */
+    private static void checkForDuplicateUserIds(final Model newModel, final List<Person> modelClass, final String simpleId) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getUserId().equals(simpleId) && o != newModel)
                 .findAny()

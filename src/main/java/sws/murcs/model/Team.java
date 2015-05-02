@@ -4,10 +4,8 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
 
-import java.time.LocalDate;
 import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Model of a Team.
