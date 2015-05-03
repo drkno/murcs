@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Commit {
     private long commitNumber;
     private String message;
-    private FieldValuePair[] fieldValuePairs;
+    private ArrayList<FieldValuePair> fieldValuePairs;
     private ArrayList<TrackableObject> trackableObjects;
 
     /**
@@ -18,7 +18,7 @@ public class Commit {
      * @param newFieldValuePairs the set of fields and values to set.
      * @param newTrackableObjects objects that were being tracked.
      */
-    protected Commit(final long newCommitNumber, final String newMessage, final FieldValuePair[] newFieldValuePairs, final ArrayList<TrackableObject> newTrackableObjects) {
+    protected Commit(final long newCommitNumber, final String newMessage, final ArrayList<FieldValuePair> newFieldValuePairs, final ArrayList<TrackableObject> newTrackableObjects) {
         this.commitNumber = newCommitNumber;
         this.message = newMessage;
         this.fieldValuePairs = newFieldValuePairs;
@@ -65,11 +65,11 @@ public class Commit {
      * @return true if they are the same, false otherwise.
      */
     final boolean equals(final Commit other) {
-        if (fieldValuePairs.length != other.fieldValuePairs.length) {
+        if (fieldValuePairs.size() != other.fieldValuePairs.size()) {
             return false;
         }
-        for (int i = 0; i < fieldValuePairs.length; i++) {
-            if (!fieldValuePairs[i].equals(other.fieldValuePairs[i])) {
+        for (int i = 0; i < fieldValuePairs.size(); i++) {
+            if (!fieldValuePairs.get(i).equals(other.fieldValuePairs.get(i))) {
                 return false;
             }
         }
@@ -82,5 +82,13 @@ public class Commit {
      */
     public final void modifyMessage(final String newMessage) {
         message = newMessage;
+    }
+
+    /**
+     * Gets the field value pairs that make up this commit.
+     * @return field value pairs.
+     */
+    public ArrayList<FieldValuePair> getPairs() {
+        return fieldValuePairs;
     }
 }

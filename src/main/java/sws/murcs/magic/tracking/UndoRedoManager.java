@@ -62,21 +62,29 @@ public class UndoRedoManager {
         if (disabled) {
             return -1;
         }
+
+        boolean canRevert = canRevert(); // prevent repetitive calls to canRevert()
+        ArrayList<FieldValuePair> lastFieldValuePairs = canRevert ? revertStack.peek().getPairs() : null;
         ArrayList<FieldValuePair> pairs = new ArrayList<>();
         ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
             trackableObjects.add(object);
             ArrayList<Field> fields = object.getTrackedFields();
             for (Field field : fields) {
-                pairs.add(new FieldValuePair(field, object));
+                FieldValuePair pair = new FieldValuePair(field, object);
+                if (canRevert) {
+                    int index = lastFieldValuePairs.indexOf(pair);
+                    if (index >= 0) {
+                        pair = lastFieldValuePairs.get(index);
+                    }
+                }
+                pairs.add(pair);
             }
         }
-        FieldValuePair[] pairsArray = new FieldValuePair[pairs.size()];
-        pairs.toArray(pairsArray);
         if (head != null) {
             revertStack.push(head);
         }
-        head = new Commit(commitNumber, message, pairsArray, trackableObjects);
+        head = new Commit(commitNumber, message, pairs, trackableObjects);
         if (canRevert() && head.equals(revertStack.peek())) {
             Commit last = revertStack.pop();
             if (!last.getMessage().contains(head.getMessage())) {
