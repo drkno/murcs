@@ -178,7 +178,7 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.15</version>
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>CheckStyle.xml</configLocation>
                 </configuration>
                 <reportSets>
                     <reportSet>
