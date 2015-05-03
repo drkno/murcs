@@ -279,6 +279,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             File file = fileChooser.showSaveDialog(App.stage);
             if (file != null) {
                 ReportGenerator.generate(PersistenceManager.Current.getCurrentModel(), file);
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
             }
 
         } catch (Exception e) {
