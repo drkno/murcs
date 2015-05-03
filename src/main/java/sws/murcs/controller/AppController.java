@@ -32,6 +32,7 @@ import sws.murcs.view.App;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Main app class controller.
@@ -408,8 +409,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         ArrayList<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
+        String type =  ModelTypes.getModelType(selectedItem).toString();
+        if (Objects.equals(type, "People")) {
+            type = "Person";
+        }
         if (usages.size() != 0) {
-            message += "\nThis " + ModelTypes.getModelType(selectedItem) + " is used in " + usages.size() + " place(s):";
+            message += "\nThis " + type.toLowerCase() + " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
