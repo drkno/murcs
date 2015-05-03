@@ -79,13 +79,15 @@ public class RelationalModel extends TrackableObject implements Serializable {
             Skill productOwner = new Skill();
             productOwner.setShortName("PO");
             productOwner.setLongName("Product Owner");
-            productOwner.setDescription("has ability to insult design teams efforts");
+            productOwner.setDescription("The projects main stakeholder. Responsible for making sure " +
+                    "that their vision for the product is realised.");
             this.skills.add(productOwner);
 
             Skill scrumMaster = new Skill();
             scrumMaster.setShortName("SM");
             scrumMaster.setLongName("Scrum Master");
-            scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
+            scrumMaster.setDescription("Manages the efforts of a team, resolves difficulties and removes " +
+                    "obsticles to task completion.");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
             // will never ever happen. ever. an exception is only
