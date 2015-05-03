@@ -13,6 +13,7 @@ public class TrackingIntegerTest {
 
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -53,7 +54,6 @@ public class TrackingIntegerTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -66,7 +66,6 @@ public class TrackingIntegerTest {
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -82,7 +81,6 @@ public class TrackingIntegerTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
@@ -118,7 +116,6 @@ public class TrackingIntegerTest {
         UndoRedoManager.setMaximumCommits(3);
         Assert.assertEquals(3, UndoRedoManager.getMaximumCommits());
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -135,7 +132,6 @@ public class TrackingIntegerTest {
     @Test
     public void impossibleRedoAfterActionPerformed() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
@@ -153,7 +149,6 @@ public class TrackingIntegerTest {
     @Test
     public void saveIgnoredIfValueDidNotChange() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         a.setTestInteger(1);
         a.setTestInteger(2);
         a.setTestInteger(3);
