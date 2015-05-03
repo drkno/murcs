@@ -128,10 +128,18 @@ public class PersonEditor extends GenericEditor<Person> {
         Text nameText = new Text(skill.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
-            edit.removeSkill(skill);
-            skillChoiceBox.getItems().add(skill);
-            updateAndHandle();
-            load();
+            GenericPopup popup = new GenericPopup();
+            popup.setMessageText("Are you sure you want to remove "
+                    + skill.getShortName() + " from "
+                    + edit.getShortName());
+            popup.setTitleText("Remove Skill from Person");
+            popup.addOkCancelButtons(s -> {
+                this.edit.removeSkill(skill);
+                skillChoiceBox.getItems().add(skill);
+                updateAndHandle();
+                popup.close();
+            });
+            popup.show();
         });
 
         GridPane pane = new GridPane();

@@ -1,9 +1,9 @@
 Running the Application
-Note: In order to run this application you must have Java 1.8u40 or higher. If you do not use this version of Java then the program will fail to run
+Note: In order to run this application you must have Java 1.8u40 or higher. If you do not use this version of Java then the program is not guaranteed to function as intended.
 
 The entry point for this application is sws.murcs.view.App when running manually.
 
-Using  the Application
+Using the Application
 Information about using the application and/or troubleshooting can be found in the userguide (doc/user_guide/seng302t1_user_guide.pdf)
 
 Running the Tests
