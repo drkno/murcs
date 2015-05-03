@@ -350,4 +350,13 @@ public class UndoRedoManager {
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
         commit("open project");
     }
+
+    /**
+     * Checks if a TrackableObject is currently added to the UndoRedoManager.
+     * @param object TrackableObject to check.
+     * @return true if object is tracked, false otherwise.
+     */
+    public static boolean isAdded(TrackableObject object) {
+        return objectsList.contains(object);
+    }
 }
