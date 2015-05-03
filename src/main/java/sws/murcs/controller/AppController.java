@@ -17,13 +17,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Model;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -32,7 +26,6 @@ import sws.murcs.view.App;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Main app class controller.
@@ -409,12 +402,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         ArrayList<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
-        String type =  ModelTypes.getModelType(selectedItem).toString();
-        if (Objects.equals(type, "People")) {
-            type = "Person";
-        }
         if (usages.size() != 0) {
-            message += "\nThis " + type.toLowerCase() + " is used in " + usages.size() + " place(s):";
+            message += "\nThis ";
+            ModelTypes type =  ModelTypes.getModelType(selectedItem);
+            if (type == ModelTypes.People) {
+                message += "person";
+            }
+            else {
+                message += type.toString().toLowerCase();
+            }
+             message += " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
