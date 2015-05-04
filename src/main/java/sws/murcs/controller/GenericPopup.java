@@ -104,12 +104,12 @@ public class GenericPopup extends AnchorPane {
      * to at least set the message and add at least 1 button
      * some examples of how to use this include:
      *
-     *      GenericPopup controller = new GenericPopup();
-     *      controller.setMessageText("Test message");
-     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("DEFAULT", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.show();
+     * GenericPopup ctrl = new GenericPopup();
+     * ctrl.setMessageText("Test message");
+     * ctrl.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -&gt; {ctrl.close();});
+     * ctrl.addButton("DEFAULT", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -&gt; {ctrl.close();});
+     * ctrl.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -&gt; {ctrl.close();});
+     * ctrl.show();
      *
      * There are extra features, like you can add and image
      * and title, change the window title as well
