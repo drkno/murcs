@@ -2,12 +2,16 @@ package sws.murcs.magic.tracking;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An object that is trackable by the UndoRedoManager.
  */
 public abstract class TrackableObject {
-    private ArrayList<Field> trackedFields;
+    /**
+     * Fields that can be tracked within this object.
+     */
+    private List<Field> trackedFields;
 
     /**
      * Instantiates a new TrackableObject by getting annotated fields,
@@ -35,16 +39,16 @@ public abstract class TrackableObject {
 
     /**
      * Gets all of the fields in this class that can be tracked.
-     * @return an ArrayList of trackable fields.
+     * @return an List of trackable fields.
      */
-    protected ArrayList<Field> getTrackedFields() {
+    protected final List<Field> getTrackedFields() {
         return trackedFields;
     }
 
     /**
      * Stops this object being tracked by the UndoRedoManager.
      */
-    public void stopTracking() {
+    public final void stopTracking() {
         UndoRedoManager.remove(this);
     }
 
@@ -53,19 +57,29 @@ public abstract class TrackableObject {
      * @param message commit message to use.
      * @return the commit number.
      */
-    protected long commit(String message) {
+    protected final long commit(final String message) {
         try {
             if (!UndoRedoManager.isAdded(this)) { // not yet tracked == no change in commit
-                return UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+                if (UndoRedoManager.getHead() == null) {
+                    return 0;
+                }
+                else {
+                    return UndoRedoManager.getHead().getCommitNumber();
+                }
             }
             return UndoRedoManager.commit(message);
         }
         catch (Exception e) {
             // Something is very broken if we reach here
             UndoRedoManager.forget();
-            System.err.println("UndoRedoManager broke with error:\n" + e.toString() +
-                    "\nAs a precaution all history has been forgotten.");
-            return UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+            System.err.println("UndoRedoManager broke with error:\n" + e.toString()
+                    + "\nAs a precaution all history has been forgotten.");
+            if (UndoRedoManager.getHead() == null) {
+                return 0;
+            }
+            else {
+                return UndoRedoManager.getHead().getCommitNumber();
+            }
         }
     }
 }

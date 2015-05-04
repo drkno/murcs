@@ -14,10 +14,15 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
     public static void performGC() {
         try {
             System.gc();
-        } catch (Exception e) {} // not much we can do
+        } catch (Exception e) { } // not much we can do
     }
 
-    public ChangeListenerHandler(UndoRedoChangeListener referent) {
+    /**
+     * Creates a new ChangeListenerHandler which manages change listeners for the
+     * Undo and Redo manager.
+     * @param referent the listener to track.
+     */
+    public ChangeListenerHandler(final UndoRedoChangeListener referent) {
         super(referent);
     }
 
@@ -26,7 +31,7 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
      * @param status the status.
      * @return true if the notification was successful and it still exists, false otherwise.
      */
-    public boolean eventNotification(ChangeState status) {
+    public final boolean eventNotification(final ChangeState status) {
         UndoRedoChangeListener changeListener = get();
         if (changeListener != null && !isEnqueued()) {
             changeListener.undoRedoNotification(status);
@@ -36,17 +41,27 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) return false;
-        if (other == this) return true;
+    public final boolean equals(final Object other) {
+        if (other == null) {
+            return false;
+        }
+        if (other == this) {
+            return true;
+        }
 
+        Object listener = null;
         if (other instanceof ChangeListenerHandler) {
-            other = ((ChangeListenerHandler) other).get();
+            listener = ((ChangeListenerHandler) other).get();
         }
 
         if (other instanceof UndoRedoChangeListener) {
             return other.equals(get());
         }
         return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        return super.hashCode();
     }
 }

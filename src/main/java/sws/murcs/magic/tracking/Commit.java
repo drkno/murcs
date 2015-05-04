@@ -1,15 +1,27 @@
 package sws.murcs.magic.tracking;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a the state of values at a period of time.
  */
 public class Commit {
+    /**
+     * Commit number of this commit.
+     */
     private long commitNumber;
+    /**
+     * Message of this commit.
+     */
     private String message;
-    private ArrayList<FieldValuePair> fieldValuePairs;
-    private ArrayList<TrackableObject> trackableObjects;
+    /**
+     * Fields and their values associated with this commit.
+     */
+    private List<FieldValuePair> fieldValuePairs;
+    /**
+     * Trackable objects associated with this commit.
+     */
+    private List<TrackableObject> trackableObjects;
 
     /**
      * Creates a new commit.
@@ -18,7 +30,8 @@ public class Commit {
      * @param newFieldValuePairs the set of fields and values to set.
      * @param newTrackableObjects objects that were being tracked.
      */
-    protected Commit(final long newCommitNumber, final String newMessage, final ArrayList<FieldValuePair> newFieldValuePairs, final ArrayList<TrackableObject> newTrackableObjects) {
+    protected Commit(final long newCommitNumber, final String newMessage, final List<FieldValuePair> newFieldValuePairs,
+                     final List<TrackableObject> newTrackableObjects) {
         this.commitNumber = newCommitNumber;
         this.message = newMessage;
         this.fieldValuePairs = newFieldValuePairs;
@@ -29,7 +42,7 @@ public class Commit {
      * Gets the trackable objects associated with this commit.
      * @return associated objects.
      */
-    public final ArrayList<TrackableObject> getTrackableObjects() {
+    public final List<TrackableObject> getTrackableObjects() {
         return trackableObjects;
     }
 
@@ -88,7 +101,7 @@ public class Commit {
      * Gets the field value pairs that make up this commit.
      * @return field value pairs.
      */
-    public ArrayList<FieldValuePair> getPairs() {
+    public final List<FieldValuePair> getPairs() {
         return fieldValuePairs;
     }
 }

@@ -4,36 +4,49 @@ import sws.murcs.model.Model;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Tracks an objects field and its associated value.
  */
 public class FieldValuePair {
-    private Field _field;
-    private Object _value;
-    private TrackableObject _trackableObject;
+    /**
+     * Field that this FieldValuePair represents.
+     */
+    private Field field;
+    /**
+     * Value that this FieldValuePair represents.
+     */
+    private Object value;
+    /**
+     * TrackableObject that this FieldValuePair holds the value/field of.
+     */
+    private TrackableObject trackableObject;
 
     /**
      * Creates a new field value pair.
-     * @param field field to use.
+     * @param objectField field to use.
      * @param source object to get value from.
      * @throws Exception when source does not have the field specified.
      */
-    public FieldValuePair(Field field, TrackableObject source) throws Exception {
-        _field = field;
-        _trackableObject = source;
-        _value = getValueFromObject(source, field);
+    public FieldValuePair(final Field objectField, final TrackableObject source) throws Exception {
+        this.field = objectField;
+        trackableObject = source;
+        value = getValueFromObject(source, objectField);
     }
 
     /**
      * Restores the saved value to the object.
      * @throws Exception if something goes wrong.
      */
-    public void restoreValue() throws Exception {
-        if (_value instanceof Collection) {
-            Collection list1 = (Collection) _value;
-            Collection list2 = (Collection) _field.get(_trackableObject);
+    public final void restoreValue() throws Exception {
+        if (value instanceof Collection) {
+            Collection list1 = (Collection) value;
+            Collection list2 = (Collection) field.get(trackableObject);
 
             Set add = new HashSet<>(list1);
             add.removeAll(list2);
@@ -45,12 +58,12 @@ public class FieldValuePair {
             list2.addAll(add);
         }
         else {
-            _field.set(_trackableObject, _value);
+            field.set(trackableObject, value);
 
             /* fixme: todo: this is a workaround for refreshing the shortName in the side list
            if anything else is ever shown in that list this should be removed. */
-            if (_field.getName().equals("shortName")) {
-                ((Model)_trackableObject).getShortNameProperty().notifyChanged();
+            if (field.getName().equals("shortName")) {
+                ((Model) trackableObject).getShortNameProperty().notifyChanged();
             }
         }
     }
@@ -59,32 +72,32 @@ public class FieldValuePair {
      * Gets the stored field value.
      * @return the field.
      */
-    public Field getField() {
-        return _field;
+    public final Field getField() {
+        return field;
     }
 
     /**
      * Sets the stored field value.
-     * @param field new field.
+     * @param newField new field.
      */
-    protected void setField(Field field) {
-        this._field = field;
+    protected final void setField(final Field newField) {
+        this.field = newField;
     }
 
     /**
      * Gets the value of the field.
      * @return value of the field.
      */
-    public Object getValue() {
-        return _value;
+    public final Object getValue() {
+        return value;
     }
 
     /**
      * Sets the value of the field (in this representation).
-     * @param value new value to set.
+     * @param newValue new value to set.
      */
-    protected void setValue(Object value) {
-        this._value = value;
+    protected final void setValue(final Object newValue) {
+        this.value = newValue;
     }
 
     /**
@@ -92,8 +105,13 @@ public class FieldValuePair {
      * @return string representation.
      */
     @Override
-    public String toString() {
-        return _field.getName() + ": " + (_value == null ? "null" : _value.toString());
+    public final String toString() {
+        if (value == null) {
+            return field.getName() + ": " + "null";
+        }
+        else {
+            return field.getName() + ": " + value.toString();
+        }
     }
 
     /**
@@ -101,10 +119,20 @@ public class FieldValuePair {
      * @param other FieldValuePair to check.
      * @return true if this FieldValuePair uses the same field as other.
      */
-    public boolean equals(FieldValuePair other) {
-        return other._field.equals(_field)
-                && other._trackableObject.equals(_trackableObject)
-                && Objects.equals(other._value, _value);
+    public final boolean equals(final FieldValuePair other) {
+        return other.field.equals(field)
+                && other.trackableObject.equals(trackableObject)
+                && Objects.equals(other.value, value);
+    }
+
+    /**
+     * Implementation of hashCode(). Standard hashCode is sufficient for
+     * indexing this method.
+     * @return a unique hash code.
+     */
+    @Override
+    public final int hashCode() {
+        return super.hashCode();
     }
 
     /**
@@ -114,7 +142,7 @@ public class FieldValuePair {
      * @return the value.
      * @throws Exception if the field does not exist in object.
      */
-    private static Object getValueFromObject(Object object, Field field) throws Exception {
+    private static Object getValueFromObject(final Object object, final Field field) throws Exception {
         field.setAccessible(true);
         Object value = field.get(object);
         if (value instanceof Collection) {
