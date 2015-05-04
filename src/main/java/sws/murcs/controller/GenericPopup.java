@@ -137,7 +137,7 @@ public class GenericPopup extends AnchorPane {
             e.printStackTrace();
         }
         popupScene = new Scene(this);
-        popupStage.initOwner(App.stage);
+        popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
         popupStage.setResizable(false);
@@ -221,7 +221,7 @@ public class GenericPopup extends AnchorPane {
         }
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.initOwner(App.stage);
+        popupStage.initOwner(App.getStage());
 
         popupStage.show();
     }

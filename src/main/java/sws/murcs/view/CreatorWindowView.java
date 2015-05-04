@@ -79,7 +79,7 @@ public class CreatorWindowView {
 
             // Set modality of the stage on top of the App
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(App.stage);
+            stage.initOwner(App.getStage());
 
             stage.show();
         }
