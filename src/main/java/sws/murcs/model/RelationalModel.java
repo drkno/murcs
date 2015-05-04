@@ -195,7 +195,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (!this.getPeople().contains(person)
                 && !this.getPeople()
                         .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
+                        .filter(s -> s.equals(person))
                         .findAny()
                         .isPresent()) {
             this.getPeople().add(person);

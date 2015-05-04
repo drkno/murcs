@@ -85,6 +85,7 @@ public class SkillEditor extends GenericEditor<Skill> {
                 || modelShortName.equals(Skill.ROLES.SM.toString()))) {
             shortNameTextField.setDisable(true);
         }
+        saveChanges();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -52,6 +54,16 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     private ChangeListener<Person> smpoChangeListener;
 
+    /**
+     * List of people that can be added to the team.
+     */
+    private List<Person> allocatablePeople;
+
+    /**
+     * List of Node representing people in the team.
+     */
+    private List<Node> memberNodes;
+
     @FXML
     @Override
     public final void initialize() {
@@ -97,8 +109,13 @@ public class TeamEditor extends GenericEditor<Team> {
                 labelErrorMessage.setText(message);
             }
         });
-    }
 
+        allocatablePeople = FXCollections.observableArrayList();
+        addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
+
+        memberNodes = FXCollections.observableArrayList();
+        teamMembersContainer.getChildren().setAll(memberNodes);
+    }
 
     @Override
     public final void loadObject() {
@@ -120,8 +137,10 @@ public class TeamEditor extends GenericEditor<Team> {
             descriptionTextField.setText(modelDescription);
         }
 
-        updateMemberList();
+        allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+        this.getModel().getMembers().forEach(m -> memberNodes.add(generateMemberNode(m)));
         updatePOSM();
+        saveChanges();
     }
 
     @Override
@@ -141,10 +160,11 @@ public class TeamEditor extends GenericEditor<Team> {
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
             this.getModel().addMember(person);
+            allocatablePeople.remove(person);
+            teamMembersContainer.getChildren().add(generateMemberNode(person));
         }
 
-        updateMemberList();
-        updatePOSM();
+        //updatePOSM();
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -173,23 +193,6 @@ public class TeamEditor extends GenericEditor<Team> {
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
         this.setErrorCallback(null);
-    }
-
-    /**
-     * Updates the member list and people that can be assigned to the team.
-     */
-    private void updateMemberList() {
-        addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople()
-                .stream()
-                .filter(person -> !this.getModel().getMembers().contains(person))
-                .collect(Collectors.toList()));
-
-        teamMembersContainer.getChildren().clear();
-        for (Person person : this.getModel().getMembers()) {
-            Node node = generateMemberNode(person);
-            teamMembersContainer.getChildren().add(node);
-        }
     }
 
     /**
@@ -258,6 +261,8 @@ public class TeamEditor extends GenericEditor<Team> {
             }
             popup.setMessageText(message);
             popup.addOkCancelButtons(p -> {
+                allocatablePeople.add(person);
+                //memberNodes.remove(generateMemberNode(person));
                 this.getModel().removeMember(person);
                 saveChanges();
                 popup.close();

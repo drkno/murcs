@@ -101,6 +101,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         updateSkills();
+        saveChanges();
     }
 
     @Override

@@ -133,6 +133,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
         }
+        saveChanges();
     }
 
     @Override
