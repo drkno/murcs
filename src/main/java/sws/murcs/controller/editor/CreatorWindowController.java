@@ -119,8 +119,7 @@ public class CreatorWindowController {
         if (createClicked != null) {
             try {
                 contentPane.requestFocus();
-                Node node = JavaFXHelpers.
-                        getByID(contentPane.getParent(), "labelErrorMessage");
+                Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label
                         && (!(((Label) node).getText() == null)
                         && !(((Label) node).getText().isEmpty()))) {
@@ -131,7 +130,8 @@ public class CreatorWindowController {
                 }
                 PersistenceManager.Current.getCurrentModel().add(model);
                 createClicked.selectItem(model);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
         }

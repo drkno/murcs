@@ -10,8 +10,7 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener,
-        Editor {
+public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor {
 
     /**
      * The type of model the editor is being used for.
@@ -73,7 +72,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener,
         try {
             saveChangesWithException();
             clearErrors();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             handleException(e);
         }
     }
@@ -88,7 +88,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener,
     private void handleException(final Exception e) {
         if (e instanceof CustomException) {
             showErrors(e.getMessage());
-        } else {
+        }
+        else {
             e.printStackTrace();
         }
     }
@@ -100,10 +101,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener,
      * @param viewObject view Object to check against
      * @return boolean if checks are true
      */
-    protected final boolean isNotEqualOrIsEmpty(final Object modelObject,
-                                                final Object viewObject) {
-        return viewObject == null || modelObject == null
-                || !viewObject.equals(modelObject);
+    protected final boolean isNotEqualOrIsEmpty(final Object modelObject, final Object viewObject) {
+        return viewObject == null || modelObject == null || !viewObject.equals(modelObject);
     }
 
     /**
@@ -112,10 +111,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener,
      * @param viewObject view Object to check against
      * @return boolean if checks are true
      */
-    protected final boolean isNotEqual(final Object modelObject,
-                                       final Object viewObject) {
-        return viewObject == null
-                || (modelObject != null && !viewObject.equals(modelObject));
+    protected final boolean isNotEqual(final Object modelObject, final Object viewObject) {
+        return viewObject == null || (modelObject != null && !viewObject.equals(modelObject));
     }
 
     /**

@@ -58,26 +58,22 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @FXML
     @Override
     public final void initialize() {
-        descriptionTextArea.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
-        shortNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
-        releaseDatePicker.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        releaseDatePicker.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
-        projectChoiceBox.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        projectChoiceBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
@@ -89,8 +85,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
             }
         };
 
-        projectChoiceBox.getSelectionModel()
-                .selectedItemProperty().addListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -102,11 +97,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     public final void loadObject() {
-        Optional<Project> projectCheck
-                = PersistenceManager.Current
-                .getCurrentModel().getProjects().stream().
-                filter(project ->
-                        project.getReleases().contains(this.getModel()))
+        Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects()
+                .stream()
+                .filter(project -> project.getReleases().contains(this.getModel()))
                 .findFirst();
         if (projectCheck.isPresent()) {
             associatedProject = projectCheck.get();
@@ -115,17 +108,13 @@ public class ReleaseEditor extends GenericEditor<Release> {
         // While the project choice box is being populated,
         // don't fire listeners attached to it.
         // this is achieved by removing the listener temporarily
-        projectChoiceBox.getSelectionModel()
-                .selectedItemProperty().removeListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
         projectChoiceBox.getItems().clear();
-        projectChoiceBox.getItems()
-                .addAll(PersistenceManager.Current
-                        .getCurrentModel().getProjects());
+        projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
         }
-        projectChoiceBox.getSelectionModel()
-                .selectedItemProperty().addListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -171,8 +160,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     public final void dispose() {
-        projectChoiceBox.getSelectionModel()
-                .selectedItemProperty().removeListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
         projectChangeListener = null;
         associatedProject = null;
         UndoRedoManager.removeChangeListener(this);
@@ -198,9 +186,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
         if (associatedProject != null) {
             associatedProject.addRelease(this.getModel());
-        } else {
-            throw new InvalidParameterException(
-                    "There needs to be an associated project");
+        }
+        else {
+            throw new InvalidParameterException("There needs to be an associated project");
         }
 
         UndoRedoManager.commit("edit release");

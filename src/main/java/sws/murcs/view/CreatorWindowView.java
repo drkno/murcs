@@ -16,31 +16,31 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * Sets up the creation window view
+ * Sets up the creation window view.
  */
 public class CreatorWindowView {
 
-    private final Model model;
-    private final ViewUpdate<Model> createAction;
-    private final Consumer<Model> cancelAction;
-
     /**
-     * Sets up a new Creation window
+     * Sets up a new Creation window.
      * @param model Model to set
      * @param createAction create action callback to set
      * @param cancelAction cancel action callback to set
      */
-    public CreatorWindowView(Model model, ViewUpdate<Model> createAction, Consumer<Model> cancelAction) {
-        this.model = model;
-        this.createAction = createAction;
-        this.cancelAction = cancelAction;
-        create();
+    public CreatorWindowView(final Model model,
+                             final ViewUpdate<Model> createAction,
+                             final Consumer<Model> cancelAction) {
+        create(model, createAction, cancelAction);
     }
 
     /**
      * Creates a new form for creating a new object of the specified type.
+     * @param model Model to create a form for.
+     * @param createAction create action callback.
+     * @param cancelAction cancel action callback.
      */
-    public void create() {
+    public final void create(final Model model,
+                             final ViewUpdate<Model> createAction,
+                             final Consumer<Model> cancelAction) {
         try {
             String type = ModelTypes.getModelType(model).toString();
 
@@ -51,7 +51,8 @@ public class CreatorWindowView {
             }
 
             // Load the view
-            FXMLLoader loader = new FXMLLoader(CreatorWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(CreatorWindowController.class.getResource(
+                    "/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();
 
             // Set up the controller and give it the necessary parameters
@@ -64,7 +65,9 @@ public class CreatorWindowView {
             // Set up the stage
             Stage stage = new Stage();
             controller.setStage(stage);
-            if (root == null) return;
+            if (root == null) {
+                return;
+            }
             Scene scene = new Scene(root);
             stage.setScene(scene);
 

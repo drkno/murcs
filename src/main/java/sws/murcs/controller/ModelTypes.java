@@ -82,8 +82,7 @@ public enum ModelTypes {
             }
         }
 
-        throw new IllegalArgumentException("Class "
-                + clazz.getName() + " is not supported");
+        throw new IllegalArgumentException("Class " + clazz.getName() + " is not supported");
     }
 
     /**
@@ -94,8 +93,7 @@ public enum ModelTypes {
      */
     public static ModelTypes getModelType(final Object object) {
         if (!(object instanceof Model)) {
-            throw new IllegalArgumentException("object must extend model! (was "
-                    + object.getClass().getName() + ")");
+            throw new IllegalArgumentException("object must extend model! (was " + object.getClass().getName() + ")");
         }
 
         Model model = (Model) object;
@@ -107,8 +105,7 @@ public enum ModelTypes {
      * @param type the type
      * @return The class
      */
-    public static Class<? extends Model> getTypeFromModel(
-            final ModelTypes type) {
+    public static Class<? extends Model> getTypeFromModel(final ModelTypes type) {
         return type.clazz;
     }
 }

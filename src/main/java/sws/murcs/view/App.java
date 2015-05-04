@@ -26,11 +26,27 @@ public class App extends Application {
     /**
      * The main stage of the application.
      */
-    public static Stage stage;
+    private static Stage stage;
     /**
      * An list of listeners relating to the app closing.
      */
     private static ArrayList<AppClosingListener> listeners = new ArrayList<>();
+
+    /**
+     * Gets the stage of App.
+     * @return The App stage
+     */
+    public static Stage getStage() {
+        return stage;
+    }
+
+    /**
+     * Sets the stage of App.
+     * @param pStage The new App stage
+     */
+    public static void setStage(final Stage pStage) {
+        stage = pStage;
+    }
 
     /***
      * Starts up the application and sets the min window size to 600x400.
@@ -38,7 +54,7 @@ public class App extends Application {
      * @throws Exception A loading exception from loading the fxml
      */
     @Override
-    public void start(final Stage primaryStage) throws Exception {
+    public final void start(final Stage primaryStage) throws Exception {
 
         if (!PersistenceManager.CurrentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
@@ -100,7 +116,8 @@ public class App extends Application {
                 }
             }
             PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
-        } else {
+        }
+        else {
             //Give us an empty model
             PersistenceManager.Current.setCurrentModel(new RelationalModel());
         }
@@ -109,7 +126,8 @@ public class App extends Application {
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         try {
             UndoRedoManager.importModel(model);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             //There is a problem if this fails
             e.printStackTrace();
         }

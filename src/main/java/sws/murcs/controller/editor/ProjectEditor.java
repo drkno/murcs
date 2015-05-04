@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
@@ -29,8 +30,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      * The shortName, longName and DescriptionFields for a person.
      */
     @FXML
-    private TextField shortNameTextField,
-            longNameTextField, descriptionTextField;
+    private TextField shortNameTextField, longNameTextField, descriptionTextField;
     /**
      * The Work Allocation table, team view.
      */
@@ -45,8 +45,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      * The Work Allocation table, start and end date columns.
      */
     @FXML
-    private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates,
-            tableColumnEndDates;
+    private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates, tableColumnEndDates;
     /**
      * The date picker for the start and end dates of a work allocation.
      */
@@ -70,56 +69,46 @@ public class ProjectEditor extends GenericEditor<Project> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        longNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        descriptionTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        choiceBoxAddTeam.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        datePickerStartDate.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        datePickerStartDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        datePickerEndDate.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        datePickerEndDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
         observableAllocations = FXCollections.observableArrayList();
-        tableColumnTeams
-                .setCellValueFactory(new PropertyValueFactory<>("team"));
-        tableColumnStartDates
-                .setCellValueFactory(new PropertyValueFactory<>("startDate"));
-        tableColumnEndDates
-                .setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
+        tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         teamsViewer.setItems(observableAllocations);
 
         setErrorCallback(message -> {
@@ -132,8 +121,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         // todo decouple from model
-        RelationalModel relationalModel
-                = PersistenceManager.Current.getCurrentModel();
+        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -153,11 +141,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             descriptionTextField.setText(modelDescription);
         }
 
-        choiceBoxAddTeam.getItems()
-                .setAll(relationalModel.getTeams());
-        observableAllocations
-                .setAll(relationalModel
-                        .getProjectsAllocations(this.getModel()));
+        choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
+        observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
     }
 
     @Override
@@ -181,8 +166,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         // todo decouple from model
-        RelationalModel relationalModel
-                = PersistenceManager.Current.getCurrentModel();
+        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
 
         // Extract details of a work period
         LocalDate startDate = datePickerStartDate.getValue();
@@ -197,14 +181,10 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
 
             // Save this work allocation to the model
-            WorkAllocation allocation
-                    = new WorkAllocation(this.getModel(),
-                    selectedTeam, startDate, endDate);
+            WorkAllocation allocation = new WorkAllocation(this.getModel(), selectedTeam, startDate, endDate);
             relationalModel.addAllocation(allocation);
             // This way, the list remains ordered
-            observableAllocations
-                    .setAll(relationalModel
-                            .getProjectsAllocations(this.getModel()));
+            observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
         }
     }
 
@@ -227,8 +207,18 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
-        PersistenceManager.Current
-                .getCurrentModel().removeAllocation(allocation);
-        observableAllocations.remove(rowNumber);
+        GenericPopup alert = new GenericPopup();
+        alert.setTitleText("Unshedule A Team");
+        alert.setMessageText("Are you sure you wish to unshedule \""
+                + allocation.getTeam()
+                + "\" from \""
+                + allocation.getProject()
+                + "\"?");
+        alert.addOkCancelButtons(a -> {
+            PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
+            observableAllocations.remove(rowNumber);
+            alert.close();
+        });
+        alert.show();
     }
 }

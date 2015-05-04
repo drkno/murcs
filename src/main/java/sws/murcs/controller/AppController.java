@@ -37,8 +37,7 @@ import java.util.List;
 /**
  * Main app class controller.
  */
-public class AppController implements ViewUpdate<Model>,
-        UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
     /**
      * The Menu items for the main window.
@@ -105,14 +104,13 @@ public class AppController implements ViewUpdate<Model>,
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel()
+        displayChoiceBox
+                .getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observer, oldValue, newValue) -> updateList());
 
         displayChoiceBox.getSelectionModel().select(0);
-        displayList.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             //The remove button should be greyed out
             // if no item is selected or built in skills (PO or SM) are selected
             removeButton.setDisable(newValue == null
@@ -145,8 +143,7 @@ public class AppController implements ViewUpdate<Model>,
      * Updates the display list on the left hand side of the screen.
      */
     private void updateList() {
-        ModelTypes type = ModelTypes.getModelType(
-                displayChoiceBox.getSelectionModel().getSelectedIndex());
+        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -179,28 +176,21 @@ public class AppController implements ViewUpdate<Model>,
             popup.setWindowTitle("Unsaved Changes");
             popup.setTitleText("Do you wish to save changes?");
             popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard",
-                    GenericPopup.Position.LEFT,
-                    GenericPopup.Action.NONE,
-                    m -> {
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
                 Platform.exit();
             });
-            popup.addButton("Save",
-                    GenericPopup.Position.RIGHT,
-                    GenericPopup.Action.DEFAULT,
-                    m -> {
-                popup.close();
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
-                saveProject();
-                Platform.exit();
+                if (saveProject()) {
+                    popup.close();
+                    Platform.exit();
+                }
             });
-            popup.addButton("Cancel",
-                    GenericPopup.Position.RIGHT,
-                    GenericPopup.Action.CANCEL,
-                    m -> popup.close());
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
             popup.show();
-        } else {
+        }
+        else {
             Platform.exit();
         }
     }
@@ -212,74 +202,68 @@ public class AppController implements ViewUpdate<Model>,
     @FXML
     private void toggleItemListView(final ActionEvent event) {
         if (!vBoxSideDisplay.managedProperty().isBound()) {
-            vBoxSideDisplay
-                    .managedProperty()
-                    .bind(vBoxSideDisplay.visibleProperty());
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
         vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
     }
 
     /**
      * Saves the current project.
+     * @return If the project successfully saved.
      */
-    private void saveProject() {
-        saveProject(null);
+    private boolean saveProject() {
+        return saveProject(null);
     }
 
     /**
      * Save the current project. Currently you choose where
      * to save the project every time, however it does remember the
      * last location saved or loaded from.
-     * @param event The event that causes this function to be called,
-     *              namely clicking save.
+     * @param event The event that causes this function to be called,namely clicking save.
+     * @return If the project successfully saved.
      */
     @FXML
-    private void saveProject(final ActionEvent event) {
+    private boolean saveProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Project");
             fileChooser.getExtensionFilters()
-                    .add(new FileChooser
-                            .ExtensionFilter(
-                            "Project File (*.project)",
-                            "*.project"));
-            fileChooser.setInitialDirectory(new File(
-                    PersistenceManager.Current.getCurrentWorkingDirectory()));
-            File file = fileChooser.showSaveDialog(App.stage);
+                    .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            File file = fileChooser.showSaveDialog(App.getStage());
             if (file != null) {
-                PersistenceManager.Current
-                        .setCurrentWorkingDirectory(
-                                file.getParentFile().getAbsolutePath());
-                PersistenceManager.Current.saveModel(file.getName());
+                String fileName = file.getName();
+                if (!fileName.endsWith(".project")) {
+                    fileName += ".project";
+                }
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                PersistenceManager.Current.saveModel(fileName);
+                return true;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
+        return false;
     }
 
     /**
      * Opens a specified project file, from a specified location.
-     * @param event The event that causes the function to be called.
+     * @param event The event that caused the function to be called.
      */
     @FXML
     private void openProject(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
-                    .add(new FileChooser
-                            .ExtensionFilter(
-                            "Project File (*.project)",
-                            "*.project"));
-            fileChooser.setInitialDirectory(new File(
-                    PersistenceManager.Current.getCurrentWorkingDirectory()));
+                    .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
             fileChooser.setTitle("Select Project");
-            File file = fileChooser.showOpenDialog(App.stage);
+            File file = fileChooser.showOpenDialog(App.getStage());
             if (file != null) {
-                PersistenceManager.Current.setCurrentWorkingDirectory(
-                        file.getParentFile().getAbsolutePath());
-                RelationalModel model = PersistenceManager.Current
-                        .loadModel(file.getName());
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
                 if (model == null) {
                     throw new Exception("Project was not opened.");
                 }
@@ -287,44 +271,38 @@ public class AppController implements ViewUpdate<Model>,
                 updateList();
                 UndoRedoManager.importModel(model);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Old or corrupted project!");
-            popup.setMessageText("The project you attempted to open"
-                    + "is for an older version or is corrupted. "
-                    + "Please use the version it was created with"
-                    + "to open the file.");
+            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
+                    + "Please use the version it was created with to open the file.");
             popup.show();
         }
     }
 
     /**
      * Generates a report to a specified location.
-     * @param event The event that causes the report to be generated
+     * @param event The event that caused the report to be generated
      */
     @FXML
     private void generateReport(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter(
-                            "XML File (*.xml)",
-                            "*.xml"));
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter(
-                            "Report File (*.report)",
-                            "*.report"));
-            fileChooser.setInitialDirectory(
-                    new File(PersistenceManager.Current
-                            .getCurrentWorkingDirectory()));
+            fileChooser.getExtensionFilters()
+                    .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
+            fileChooser.getExtensionFilters()
+                    .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
             fileChooser.setTitle("Report Save Location");
-            File file = fileChooser.showSaveDialog(App.stage);
+            File file = fileChooser.showSaveDialog(App.getStage());
             if (file != null) {
-                ReportGenerator.generate(PersistenceManager.Current
-                        .getCurrentModel(), file);
+                ReportGenerator.generate(PersistenceManager.Current.getCurrentModel(), file);
+                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
             }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
             popup.show();
         }
@@ -338,7 +316,8 @@ public class AppController implements ViewUpdate<Model>,
     private void undoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Something went very wrong
             UndoRedoManager.forget();
         }
@@ -352,7 +331,8 @@ public class AppController implements ViewUpdate<Model>,
     private void redoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // something went terribly wrong....
             UndoRedoManager.forget();
             e.printStackTrace();
@@ -368,7 +348,8 @@ public class AppController implements ViewUpdate<Model>,
         if (!UndoRedoManager.canRevert()) {
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
-        } else {
+        }
+        else {
             undoMenuItem.setDisable(false);
             undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
         }
@@ -376,14 +357,15 @@ public class AppController implements ViewUpdate<Model>,
         if (!UndoRedoManager.canRemake()) {
             redoMenuItem.setDisable(true);
             redoMenuItem.setText("Redo...");
-        } else {
+        }
+        else {
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
     }
 
     /**
-     * Function that is called when a new model is wanted to be created.
+     * Function that is called when a new model is created from the plus button.
      * @param event The event of the add button being called
      */
     @FXML
@@ -411,17 +393,18 @@ public class AppController implements ViewUpdate<Model>,
                 default:
                     break;
             }
-        } else {
+        }
+        else {
             //If pressing the add button at the bottom of the display list
-            ModelTypes type = ModelTypes.getModelType(displayChoiceBox
-                    .getSelectionModel().getSelectedIndex());
+            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
             clazz = ModelTypes.getTypeFromModel(type);
         }
 
         if (clazz != null) {
             try {
                 new CreatorWindowView(clazz.newInstance(), this, null);
-            } catch (InstantiationException | IllegalAccessException e) {
+            }
+            catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
@@ -438,20 +421,16 @@ public class AppController implements ViewUpdate<Model>,
             return;
         }
 
-        final int selectedIndex = displayList
-                .getSelectionModel().getSelectedIndex();
+        final int selectedIndex = displayList.getSelectionModel().getSelectedIndex();
         if (selectedIndex == -1) {
             return;
         }
 
-        Model selectedItem = (Model) displayList
-                .getSelectionModel().getSelectedItem();
+        Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
 
         // Ensures you can't delete Product Owner or Scrum Master
-        if (ModelTypes.getModelType(displayChoiceBox
-                .getSelectionModel().getSelectedIndex()) == ModelTypes.Skills) {
-            if (selectedItem.getShortName().equals("PO")
-                    || selectedItem.getShortName().equals("SM")) {
+        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills) {
+            if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM")) {
                 return;
             }
         }
@@ -460,11 +439,15 @@ public class AppController implements ViewUpdate<Model>,
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
-            message += "\nThis "
-                    + ModelTypes.getModelType(selectedItem)
-                    + " is used in "
-                    + usages.size()
-                    + " place(s):";
+            message += "\nThis ";
+            ModelTypes type =  ModelTypes.getModelType(selectedItem);
+            if (type == ModelTypes.People) {
+                message += "person";
+            }
+            else {
+                message += type.toString().toLowerCase();
+            }
+             message += " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
@@ -472,37 +455,30 @@ public class AppController implements ViewUpdate<Model>,
         popup.setTitleText("Really delete?");
         popup.setMessageText(message);
 
-        popup.addButton("Yes",
-                GenericPopup.Position.RIGHT,
-                GenericPopup.Action.DEFAULT,
-                v -> {
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
-            Model item = (Model) displayList
-                    .getSelectionModel().getSelectedItem();
+            Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
         });
-        popup.addButton("No",
-                GenericPopup.Position.RIGHT,
-                GenericPopup.Action.CANCEL,
-                v -> popup.close());
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
     }
 
     @Override
     public final void selectItem(final Model parameter) {
         ModelTypes type;
-        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox
-                .getSelectionModel().getSelectedIndex());
+        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
-        } else {
+        }
+        else {
             type = ModelTypes.getModelType(parameter);
             if (selectedType == type) {
                 displayList.getSelectionModel().select(parameter);
-            } else {
-                displayChoiceBox.getSelectionModel()
-                        .select(ModelTypes.getSelectionType(type));
+            }
+            else {
+                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
                 displayList.getSelectionModel().select(parameter);
             }
         }

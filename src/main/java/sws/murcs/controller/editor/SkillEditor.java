@@ -31,22 +31,19 @@ public class SkillEditor extends GenericEditor<Skill> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                     if (oldValue && !newValue) {
                         saveChanges();
                     }
                 });
 
-        longNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                     if (oldValue && !newValue) {
                         saveChanges();
                     }
                 });
 
-        descriptionTextArea.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
                     if (oldValue && !newValue) {
                         saveChanges();
                     }

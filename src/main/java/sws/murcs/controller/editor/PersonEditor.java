@@ -46,37 +46,32 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        longNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        userIdTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        userIdTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        skillChoiceBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
         skillChoiceBox.getItems().clear();
-        skillChoiceBox.getItems().addAll(PersistenceManager.Current
-                .getCurrentModel().getSkills());
+        skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {

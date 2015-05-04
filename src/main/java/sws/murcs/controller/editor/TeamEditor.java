@@ -36,14 +36,12 @@ public class TeamEditor extends GenericEditor<Team> {
      * The shortName, longName and description fields for a Team.
      */
     @FXML
-    private TextField shortNameTextField,
-            longNameTextField, descriptionTextField;
+    private TextField shortNameTextField, longNameTextField, descriptionTextField;
     /**
      * The productOwner, scrumMaster and member pickers.
      */
     @FXML
-    private ChoiceBox<Person> productOwnerPicker,
-            scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
     /**
      * The label for showing error messages.
      */
@@ -57,22 +55,19 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        longNameTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
         });
 
-        descriptionTextField.focusedProperty()
-                .addListener((observable, oldValue, newValue) -> {
+        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue && !newValue) {
                 saveChanges();
             }
@@ -94,10 +89,8 @@ public class TeamEditor extends GenericEditor<Team> {
                     }
                 });
 
-        productOwnerPicker.getSelectionModel()
-                .selectedItemProperty().addListener(smpoChangeListener);
-        scrumMasterPicker.getSelectionModel()
-                .selectedItemProperty().addListener(smpoChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -174,10 +167,8 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     public final void dispose() {
-        productOwnerPicker.getSelectionModel()
-                .selectedItemProperty().removeListener(smpoChangeListener);
-        scrumMasterPicker.getSelectionModel()
-                .selectedItemProperty().removeListener(smpoChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
         smpoChangeListener = null;
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
@@ -189,13 +180,10 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     private void updateMemberList() {
         addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems()
-                .addAll(PersistenceManager.Current
-                        .getCurrentModel().getUnassignedPeople()
-                        .stream()
-                        .filter(person -> !this.getModel()
-                                .getMembers().contains(person))
-                        .collect(Collectors.toList()));
+        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople()
+                .stream()
+                .filter(person -> !this.getModel().getMembers().contains(person))
+                .collect(Collectors.toList()));
 
         teamMembersContainer.getChildren().clear();
         for (Person person : this.getModel().getMembers()) {
@@ -221,19 +209,18 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwners.remove(scrumMaster);
 
         // Remove listener while editing the product owner picker
-        productOwnerPicker.getSelectionModel()
-                .selectedItemProperty().removeListener(smpoChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
         productOwnerPicker.getItems().clear();
         productOwnerPicker.getItems().addAll(productOwners);
         if (productOwner != null) {
             productOwnerPicker.getSelectionModel().select(productOwner);
         }
-        productOwnerPicker.getSelectionModel()
-                .selectedItemProperty().addListener(smpoChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
 
         //Add all the people with the scrum master skill
         // to the list of scrum masters
-        List<Person> scrumMasters = this.getModel().getMembers().stream()
+        List<Person> scrumMasters = this.getModel().getMembers()
+                .stream()
                 .filter(p -> p.canBeRole(Skill.SM_NAME))
                 .collect(Collectors.toList());
 
@@ -241,16 +228,14 @@ public class TeamEditor extends GenericEditor<Team> {
         scrumMasters.remove(productOwner);
 
         // Remove listener while editing the scrum master picker
-        scrumMasterPicker.getSelectionModel()
-                .selectedItemProperty().removeListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(smpoChangeListener);
         scrumMasterPicker.getItems().clear();
         scrumMasterPicker.getItems().addAll(scrumMasters);
         scrumMasterPicker.getSelectionModel().clearSelection();
         if (scrumMaster != null) {
             scrumMasterPicker.getSelectionModel().select(scrumMaster);
         }
-        scrumMasterPicker.getSelectionModel()
-                .selectedItemProperty().addListener(smpoChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(smpoChangeListener);
     }
 
     /**
