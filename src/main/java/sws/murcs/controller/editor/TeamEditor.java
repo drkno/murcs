@@ -21,6 +21,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,9 +61,9 @@ public class TeamEditor extends GenericEditor<Team> {
     private List<Person> allocatablePeople;
 
     /**
-     * List of Node representing people in the team.
+     * A map of people to their nodes in the member list on the view.
      */
-    private List<Node> memberNodes;
+    private HashMap<Person, Node> memberNodeIndex;
 
     @FXML
     @Override
@@ -112,9 +113,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         allocatablePeople = FXCollections.observableArrayList();
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
-
-        memberNodes = FXCollections.observableArrayList();
-        teamMembersContainer.getChildren().setAll(memberNodes);
+        memberNodeIndex = new HashMap<>();
     }
 
     @Override
@@ -138,22 +137,28 @@ public class TeamEditor extends GenericEditor<Team> {
         }
 
         allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
-        this.getModel().getMembers().forEach(m -> memberNodes.add(generateMemberNode(m)));
+        this.getModel().getMembers().forEach(m -> {
+            Node member = generateMemberNode(m);
+            teamMembersContainer.getChildren().add(member);
+            memberNodeIndex.put(m, member);
+        });
         updatePOSM();
-        saveChanges();
+
+        //hack set the error text to nothing when first loading the object
+        labelErrorMessage.setText(" ");
     }
 
     @Override
     protected final void saveChangesWithException() throws Exception {
         Person modelProductOwner = this.getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
-        if (isNotEqual(modelProductOwner, viewProductOwner)) {
+        if (isNotEqualOrIsEmpty(modelProductOwner, viewProductOwner)) {
             this.getModel().setProductOwner(viewProductOwner);
         }
 
         Person modelScrumMaster = this.getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
-        if (isNotEqual(modelScrumMaster, viewScrumMaster)) {
+        if (isNotEqualOrIsEmpty(modelScrumMaster, viewScrumMaster)) {
             this.getModel().setScrumMaster(viewScrumMaster);
         }
 
@@ -161,10 +166,13 @@ public class TeamEditor extends GenericEditor<Team> {
         if (person != null) {
             this.getModel().addMember(person);
             allocatablePeople.remove(person);
-            teamMembersContainer.getChildren().add(generateMemberNode(person));
+            Node member = generateMemberNode(person);
+            teamMembersContainer.getChildren().add(member);
+            memberNodeIndex.put(person, member);
+            addTeamMemberPicker.setValue(null);
         }
 
-        //updatePOSM();
+        updatePOSM();
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -260,11 +268,12 @@ public class TeamEditor extends GenericEditor<Team> {
                 message += "\nThey are currently the teams Product Owner.";
             }
             popup.setMessageText(message);
-            popup.addOkCancelButtons(p -> {
+            popup.addOkCancelButtons(f -> {
                 allocatablePeople.add(person);
-                //memberNodes.remove(generateMemberNode(person));
+                Node member = memberNodeIndex.get(person);
+                teamMembersContainer.getChildren().remove(member);
+                memberNodeIndex.remove(person);
                 this.getModel().removeMember(person);
-                saveChanges();
                 popup.close();
             });
             popup.show();

@@ -101,7 +101,8 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         updateSkills();
-        saveChanges();
+        //hack set the error text to nothing when first loading the object
+        labelErrorMessage.setText(" ");
     }
 
     @Override

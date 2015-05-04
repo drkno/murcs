@@ -143,7 +143,9 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
         observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
-        saveChanges();
+
+        //hack set the error text to nothing when first loading the object
+        labelErrorMessage.setText(" ");
     }
 
     @Override
