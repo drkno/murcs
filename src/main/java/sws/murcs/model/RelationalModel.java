@@ -62,7 +62,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * The version number of the application.
      */
-    private static final float VERSION = 0.02f;
+    private static final float VERSION = 0.03f;
 
     /**
      * Sets up a new Relational Model.
