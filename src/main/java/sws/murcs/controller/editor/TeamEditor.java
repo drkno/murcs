@@ -1,6 +1,5 @@
 package sws.murcs.controller.editor;
 
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -51,15 +50,9 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML
     private Label labelErrorMessage;
     /**
-     * A generic change listener ChangeListener.
-     */
-    private ChangeListener genericChangeListener;
-
-    /**
      * List of people that can be added to the team.
      */
     private List<Person> allocatablePeople;
-
     /**
      * A map of people to their nodes in the member list on the view.
      */
@@ -68,30 +61,18 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML
     @Override
     public final void initialize() {
-
-
-        // Use a removable listener
-        // to work around a selected index flip-flop bug
-        genericChangeListener = (observable, oldValue, newValue) -> {
+        this.setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
-        };
+        });
 
-        shortNameTextField.focusedProperty().addListener(genericChangeListener);
-        longNameTextField.focusedProperty().addListener(genericChangeListener);
-        descriptionTextField.focusedProperty().addListener(genericChangeListener);
-
-        addTeamMemberPicker.getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    if (newValue != null) {
-                        saveChanges();
-                    }
-                });
-
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(genericChangeListener);
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(genericChangeListener);
+        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
+        longNameTextField.focusedProperty().addListener(this.getChangeListener());
+        descriptionTextField.focusedProperty().addListener(this.getChangeListener());
+        addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -183,12 +164,17 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     public final void dispose() {
-        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(genericChangeListener);
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(genericChangeListener);
-        shortNameTextField.focusedProperty().removeListener(genericChangeListener);
-        longNameTextField.focusedProperty().removeListener(genericChangeListener);
-        descriptionTextField.focusedProperty().removeListener(genericChangeListener);
-        genericChangeListener = null;
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        addTeamMemberPicker.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        descriptionTextField.focusedProperty().removeListener(this.getChangeListener());
+        memberNodeIndex.clear();
+        memberNodeIndex = null;
+        allocatablePeople.clear();
+        allocatablePeople = null;
+        this.setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
         this.setErrorCallback(null);
@@ -211,13 +197,13 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwners.remove(scrumMaster);
 
         // Remove listener while editing the product owner picker
-        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(genericChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
         productOwnerPicker.getItems().clear();
         productOwnerPicker.getItems().addAll(productOwners);
         if (productOwner != null) {
             productOwnerPicker.getSelectionModel().select(productOwner);
         }
-        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(genericChangeListener);
+        productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
         //Add all the people with the scrum master skill
         // to the list of scrum masters
@@ -230,14 +216,14 @@ public class TeamEditor extends GenericEditor<Team> {
         scrumMasters.remove(productOwner);
 
         // Remove listener while editing the scrum master picker
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(genericChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
         scrumMasterPicker.getItems().clear();
         scrumMasterPicker.getItems().addAll(scrumMasters);
         scrumMasterPicker.getSelectionModel().clearSelection();
         if (scrumMaster != null) {
             scrumMasterPicker.getSelectionModel().select(scrumMaster);
         }
-        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(genericChangeListener);
+        scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
     }
 
     /**

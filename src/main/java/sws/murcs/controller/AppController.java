@@ -103,25 +103,22 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox
-                .getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observer, oldValue, newValue) -> {
-                    if (displayList.getItems().size() > 0) {
+        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
+            if (displayList.getItems().size() > 0) {
 
-                        contentPane.getChildren().clear();
-                        if (editorPane != null) {
-                            editorPane.dispose();
-                        }
-                        editorPane = createEditorPane(newValue);
-                        if (editorPane != null) {
-                            contentPane.getChildren().add(editorPane.getView());
-                        }
-                    }
-                    editorPane = null;
-                    contentPane.getChildren().clear();
-                    updateList();
-                });
+                contentPane.getChildren().clear();
+                if (editorPane != null) {
+                    editorPane.dispose();
+                }
+                editorPane = createEditorPane(newValue);
+                if (editorPane != null) {
+                    contentPane.getChildren().add(editorPane.getView());
+                }
+            }
+            editorPane = null;
+            contentPane.getChildren().clear();
+            updateList();
+        });
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

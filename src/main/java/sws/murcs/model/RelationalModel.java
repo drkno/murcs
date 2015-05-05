@@ -10,9 +10,7 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -167,13 +165,28 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the unassigned people.
      * @return The unassigned people
      */
-    public final ArrayList<Person> getUnassignedPeople() {
-        ArrayList<Person> unassignedPeople = new ArrayList<>();
-        for (Person p : getPeople()) {
-            if (!getTeams().stream().anyMatch(t -> t.getMembers().contains(p))) {
-                unassignedPeople.add(p);
-            }
-        }
+    public final Set<Person> getUnassignedPeople() {
+//        Set<Person> assignedPeople = new TreeSet<>(new Comparator<Person>() {
+//            @Override
+//            public int compare(final Person p1, final Person p2) {
+//                return p1.getShortName().compareTo(p2.getShortName());
+//            }
+//        });
+//        getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
+//        Set<Person> unassignedPeople = new TreeSet<>(new Comparator<Person>() {
+//            @Override
+//            public int compare(final Person p1, final Person p2) {
+//               return p1.getShortName().compareTo(p2.getShortName());
+//            }
+//        });
+//        unassignedPeople.addAll(getPeople());
+//        unassignedPeople.remove(assignedPeople);
+//        return unassignedPeople;
+
+        Set<Person> assignedPeople = new HashSet<>();
+        getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
+        Set<Person> unassignedPeople = new HashSet<>(getPeople());
+        unassignedPeople.remove(assignedPeople);
         return unassignedPeople;
     }
 

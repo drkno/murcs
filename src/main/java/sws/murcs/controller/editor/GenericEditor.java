@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import javafx.beans.value.ChangeListener;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.ErrorMessageListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -20,6 +21,11 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      * The error callback.
      */
     private ErrorMessageListener errorCallback;
+
+    /**
+     * A collection of change listeners for an editor.
+     */
+    private ChangeListener changeListener;
 
     /**
      * A generic editor for editing models.
@@ -79,7 +85,23 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     @Override
-    public abstract void  dispose();
+    public abstract void dispose();
+
+    /**
+     * Sets the change listener.
+     * @param newChangeListener new listener to set.
+     */
+    protected final void setChangeListener(final ChangeListener newChangeListener) {
+        changeListener = newChangeListener;
+    }
+
+    /**
+     * Gets the change listener.
+     * @return The change listener
+     */
+    protected final ChangeListener getChangeListener() {
+        return changeListener;
+    }
 
     /**
      * Checks to see if the Exception is a custom type.
