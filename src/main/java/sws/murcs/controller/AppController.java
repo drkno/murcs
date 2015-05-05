@@ -131,7 +131,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Sets up the keyboard shortcuts for the application
+     * Sets up the keyboard shortcuts for the application.
      */
     private void setUpShortCuts() {
         //Menu item short cuts
@@ -141,9 +141,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
-        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
         addRelease.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
-        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
         addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
 
@@ -152,11 +154,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Handles keys being pressed
+     * Handles keys being pressed.
      * @param event Key event
      */
     private void handleKey(KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN).match(event)) {
             addClicked(null);
         }
         if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
