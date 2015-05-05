@@ -55,14 +55,14 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the current application VERSION.
      * @return The current application VERSION.
      */
-    public static float getVersion() {
+    public static String getVersion() {
         return VERSION;
     }
 
     /**
      * The version number of the application.
      */
-    private static final float VERSION = 0.03f;
+    private static final String VERSION = "0.0.3";
 
     /**
      * Sets up a new Relational Model.

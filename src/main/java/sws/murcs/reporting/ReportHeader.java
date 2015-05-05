@@ -16,7 +16,7 @@ import java.time.LocalDate;
  */
 public class ReportHeader {
 
-    private float projectVersion;
+    private String projectVersion;
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate dateGenerated;
     @XmlElement(name = "content")

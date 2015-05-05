@@ -33,12 +33,11 @@ public class ReportGeneratorTest {
         relationalModel = new RelationalModel();
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
         for (int i = 0; i < sampleReport.size(); i++) {
+            if (sampleReport.get(i).matches(".*<projectVersion>(\\d+\\.){2}(\\d+)</projectVersion>.*")) {
+                sampleReport.set(i, "<projectVersion>" + relationalModel.getVersion() + "</projectVersion>");
+            }
             if (sampleReport.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
                 sampleReport.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
-                break;
-            }
-            if (sampleReport.get(i).matches(".*<projectVersion>^(\\d+\\.){2}(\\d+)$</projectVersion>.*")) {
-                sampleReport.set(i, "<projectVersion>" + relationalModel.getVersion() + "</projectVersion>");
                 break;
             }
         }
