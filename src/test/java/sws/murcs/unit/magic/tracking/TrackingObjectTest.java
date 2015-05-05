@@ -23,6 +23,7 @@ public class TrackingObjectTest {
 
     private class TestContainerObject extends TrackableObject {
         public TestContainerObject() throws Exception {
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -63,7 +64,6 @@ public class TrackingObjectTest {
     @Test
     public void undoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
-        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
@@ -76,7 +76,6 @@ public class TrackingObjectTest {
     @Test
     public void redoTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
-        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         a.setTestObject(new TestObject(3));
@@ -92,7 +91,6 @@ public class TrackingObjectTest {
     @Test
     public void descriptionTest() throws Exception {
         TestContainerObject a = new TestContainerObject();
-        UndoRedoManager.add(a);
         a.setTestObject(new TestObject(1));
         a.setTestObject(new TestObject(2));
         Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
