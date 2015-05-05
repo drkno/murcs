@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -30,6 +31,7 @@ public class TrackingMultipleTest {
 
     public class TestString extends TrackableObject {
         public TestString() throws Exception {
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -70,9 +72,7 @@ public class TrackingMultipleTest {
     @Test
     public void undoTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         TestString b = new TestString();
-        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -93,9 +93,7 @@ public class TrackingMultipleTest {
     @Test
     public void redoTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         TestString b = new TestString();
-        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);
@@ -123,9 +121,7 @@ public class TrackingMultipleTest {
     @Test
     public void descriptionTest() throws Exception {
         TestInteger a = new TestInteger();
-        UndoRedoManager.add(a);
         TestString b = new TestString();
-        UndoRedoManager.add(b);
         a.setTestInteger(1);
         b.setTestString("1");
         a.setTestInteger(2);

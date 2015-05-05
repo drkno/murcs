@@ -14,6 +14,7 @@ public class TrackingArrayListTest {
         public TestArrayList() throws Exception {
             testArrayList = new ArrayList<Integer>();
             testArrayList.add(0);
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -54,7 +55,6 @@ public class TrackingArrayListTest {
     @Test
     public void undoTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
@@ -67,7 +67,6 @@ public class TrackingArrayListTest {
     @Test
     public void redoTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
@@ -83,7 +82,6 @@ public class TrackingArrayListTest {
     @Test
     public void descriptionTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());

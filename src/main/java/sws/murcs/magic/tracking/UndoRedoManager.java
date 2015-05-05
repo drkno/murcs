@@ -8,33 +8,51 @@ import sws.murcs.model.RelationalModel;
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * Manages undo and redo operations.
  */
-public class UndoRedoManager {
-    private static Commit head;
-    private static ArrayDeque<Commit> revertStack;
-    private static ArrayDeque<Commit> remakeStack;
-    private static ArrayList<TrackableObject> objectsList;
-    private static long commitNumber;
-    private static long maximumCommits;
-    private static ArrayList<ChangeListenerHandler> changeListeners;
-    private static boolean disabled;
+public final class UndoRedoManager {
+    /**
+     * Un-used constructor as this is a utility class.
+     */
+    private UndoRedoManager() {
+    }
 
     /**
-     * "Static" constructor, used so that values are always initialized
-     * within a method that can have breakpoints set for debugging.
+     * The head object, which represents the current state.
      */
-    static {
-        objectsList = new ArrayList<>();
-        revertStack = new ArrayDeque<>();
-        remakeStack = new ArrayDeque<>();
-        changeListeners = new ArrayList<>();
-        commitNumber = 0;
-        maximumCommits = -1;
-        disabled = false;
-    }
+    private static Commit head;
+    /**
+     * The revert stack, represents all states that can be reverted to.
+     */
+    private static Deque<Commit> revertStack = new ArrayDeque<>();
+    /**
+     * The remake stack, represents all states that can be remaked to.
+     */
+    private static Deque<Commit> remakeStack = new ArrayDeque<>();
+    /**
+     * List of objects that are currently tracked by the UndoRedoManager.
+     */
+    private static List<TrackableObject> objectsList = new ArrayList<>();
+    /**
+     * The last commit number that was used.
+     */
+    private static long commitNumber = 0;
+    /**
+     * Maximum number of commits that can be reverted to. -1 for infinity.
+     */
+    private static long maximumCommits = -1;
+    /**
+     * Listeners that have subscribed to the UndoRedoManager.
+     */
+    private static List<ChangeListenerHandler> changeListeners = new ArrayList<>();
+    /**
+     * If the UndoRedoManager is disabled.
+     */
+    private static boolean disabled = false;
 
     /**
      * Adds an object to be tracked.
@@ -62,21 +80,35 @@ public class UndoRedoManager {
         if (disabled) {
             return -1;
         }
-        ArrayList<FieldValuePair> pairs = new ArrayList<>();
-        ArrayList<TrackableObject> trackableObjects = new ArrayList<>();
+
+        boolean canRevert = canRevert(); // prevent repetitive calls to canRevert()
+        List<FieldValuePair> lastFieldValuePairs;
+        if (canRevert) {
+            lastFieldValuePairs = revertStack.peek().getPairs();
+        }
+        else {
+            lastFieldValuePairs = null;
+        }
+        List<FieldValuePair> pairs = new ArrayList<>();
+        List<TrackableObject> trackableObjects = new ArrayList<>();
         for (TrackableObject object : objectsList) {
             trackableObjects.add(object);
-            ArrayList<Field> fields = object.getTrackedFields();
+            List<Field> fields = object.getTrackedFields();
             for (Field field : fields) {
-                pairs.add(new FieldValuePair(field, object));
+                FieldValuePair pair = new FieldValuePair(field, object);
+                if (canRevert) {
+                    int index = lastFieldValuePairs.indexOf(pair);
+                    if (index >= 0) {
+                        pair = lastFieldValuePairs.get(index);
+                    }
+                }
+                pairs.add(pair);
             }
         }
-        FieldValuePair[] pairsArray = new FieldValuePair[pairs.size()];
-        pairs.toArray(pairsArray);
         if (head != null) {
             revertStack.push(head);
         }
-        head = new Commit(commitNumber, message, pairsArray, trackableObjects);
+        head = new Commit(commitNumber, message, pairs, trackableObjects);
         if (canRevert() && head.equals(revertStack.peek())) {
             Commit last = revertStack.pop();
             if (!last.getMessage().contains(head.getMessage())) {
@@ -130,17 +162,17 @@ public class UndoRedoManager {
     /**
      * Reverts to a specified commit or the initial commit
      * if the specified commit is not found.
-     * @param commitNumber commit number to revert to.
+     * @param revertCommitNumber commit number to revert to.
      * @throws Exception if an internal error occurs during the operation.
      */
-    public static void revert(final long commitNumber) throws Exception {
+    public static void revert(final long revertCommitNumber) throws Exception {
         while (!revertStack.isEmpty()) {
             remakeStack.push(head);
             Commit commit = revertStack.pop();
             commit.apply();
             objectsList = commit.getTrackableObjects();
             head = commit;
-            if (commit.getCommitNumber() == commitNumber) {
+            if (commit.getCommitNumber() == revertCommitNumber) {
                 break;
             }
         }
@@ -160,7 +192,12 @@ public class UndoRedoManager {
      * @return the commit message or null if cannot revert.
      */
     public static String getRevertMessage() {
-        return canRevert() ? head.getMessage() : null;
+        if (canRevert()) {
+            return head.getMessage();
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -174,17 +211,17 @@ public class UndoRedoManager {
     /**
      * Remakes (redoes) to a specified commit or the final commit
      * if the specified commit is not found.
-     * @param commitNumber commit number to remake to.
+     * @param remakeCommitNumber commit number to remake to.
      * @throws Exception if an internal error occurs during the operation.
      */
-    public static void remake(final long commitNumber) throws Exception {
+    public static void remake(final long remakeCommitNumber) throws Exception {
         while (!remakeStack.isEmpty()) {
             revertStack.push(head);
             Commit commit = remakeStack.pop();
             commit.apply();
             objectsList = commit.getTrackableObjects();
             head = commit;
-            if (commit.getCommitNumber() == commitNumber) {
+            if (commit.getCommitNumber() == remakeCommitNumber) {
                 break;
             }
         }
@@ -204,7 +241,12 @@ public class UndoRedoManager {
      * @return the commit message or null if cannot remake.
      */
     public static String getRemakeMessage() {
-        return canRemake() ? remakeStack.peek().getMessage() : null;
+        if (canRemake()) {
+            return remakeStack.peek().getMessage();
+        }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -235,12 +277,12 @@ public class UndoRedoManager {
 
     /**
      * Sets the Maximum number of commits that can be made before commits are forgotten.
-     * @param maximumCommits new maximum number of commits.
-     *                       This can be negative (defaults to -1) for infinite commits,
-     *                       or greater or equal to zero for a set number.
+     * @param newMaximumCommits new maximum number of commits.
+     * This can be negative (defaults to -1) for infinite commits,
+     * or greater or equal to zero for a set number.
      */
-    public static void setMaximumCommits(final long maximumCommits) {
-        UndoRedoManager.maximumCommits = maximumCommits;
+    public static void setMaximumCommits(final long newMaximumCommits) {
+        UndoRedoManager.maximumCommits = newMaximumCommits;
     }
 
     /**
@@ -286,7 +328,7 @@ public class UndoRedoManager {
     }
 
     /**
-     * Clears all listeners
+     * Clears all listeners.
      */
     public static void forgetListeners() {
         changeListeners.clear();
@@ -311,18 +353,18 @@ public class UndoRedoManager {
     /**
      * Removes history until a specific commit number.
      * WARNING: this is the nuclear option, you will not get history back.
-     * @param commitNumber commit number to remove until.
+     * @param assimilateCommitNumber commit number to remove until.
      * @throws Exception If you use this method when remake is possible.
      */
-    public static void assimilate(final long commitNumber) throws Exception {
-        if (head == null || head.getCommitNumber() == commitNumber) {
+    public static void assimilate(final long assimilateCommitNumber) throws Exception {
+        if (head == null || head.getCommitNumber() == assimilateCommitNumber) {
             return;
         }
         if (canRemake()) {
             throw new Exception("Cannot assimilate while remake is possible.");
         }
         while (!revertStack.isEmpty()) {
-            if (revertStack.peek().getCommitNumber() == commitNumber) {
+            if (revertStack.peek().getCommitNumber() == assimilateCommitNumber) {
                 break;
             }
             revertStack.pop();
@@ -349,5 +391,14 @@ public class UndoRedoManager {
         model.getProjects().forEach(l -> UndoRedoManager.add(l));
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
         commit("open project");
+    }
+
+    /**
+     * Checks if a TrackableObject is currently added to the UndoRedoManager.
+     * @param object TrackableObject to check.
+     * @return true if object is tracked, false otherwise.
+     */
+    public static boolean isAdded(final TrackableObject object) {
+        return objectsList.contains(object);
     }
 }
