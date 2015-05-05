@@ -31,8 +31,10 @@ public class EditorPane {
      * @param pModel The model to set
      */
     public EditorPane(final Model pModel) {
-        this.model = pModel;
-        create();
+        if (pModel != null) {
+            this.model = pModel;
+            create();
+        }
     }
 
     /**
@@ -85,5 +87,17 @@ public class EditorPane {
         view = null;
         controller = null;
         model = null;
+    }
+
+    /**
+     * Changes the model.
+     * @param pModel the new model
+     */
+    public final void setModel(final Model pModel) {
+        if (pModel != null) {
+            this.model = pModel;
+            controller.setModel(pModel);
+            controller.loadObject();
+        }
     }
 }

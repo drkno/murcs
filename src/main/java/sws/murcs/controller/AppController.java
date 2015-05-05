@@ -17,12 +17,12 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.Release;
 import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Team;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -106,7 +106,22 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayChoiceBox
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observer, oldValue, newValue) -> updateList());
+                .addListener((observer, oldValue, newValue) -> {
+                    if (displayList.getItems().size() > 0) {
+
+                        contentPane.getChildren().clear();
+                        if (editorPane != null) {
+                            editorPane.dispose();
+                        }
+                        editorPane = createEditorPane(newValue);
+                        if (editorPane != null) {
+                            contentPane.getChildren().add(editorPane.getView());
+                        }
+                    }
+                    editorPane = null;
+                    contentPane.getChildren().clear();
+                    updateList();
+                });
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -117,25 +132,46 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     && (((Skill) newValue).getShortName().equals("PO")
                     || ((Skill) newValue).getShortName().equals("SM")));
 
-            contentPane.getChildren().clear();
-
-            if (editorPane != null) {
-                editorPane.dispose();
-            }
-            editorPane = null;
-
             if (newValue == null) {
                 return;
             }
-
-            editorPane = new EditorPane((Model) newValue);
-            contentPane.getChildren().add(editorPane.getView());
-
+            if (editorPane == null) {
+                editorPane = createEditorPane(newValue);
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(editorPane.getView());
+            }
+            if (editorPane != null) {
+                editorPane.setModel((Model) newValue);
+            }
         });
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    /**
+     * Creates an editor pane
+     * @param value The thing to get the model from
+     * @return an EditorPane
+     */
+    private EditorPane createEditorPane(final Object value) {
+        Model model = null;
+        if (value.getClass() == ModelTypes.class) {
+            try {
+                model = ModelTypes.getTypeFromModel((ModelTypes) value).newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        else if (value instanceof Model) {
+            model = (Model) value;
+        }
+        else {
+            return null;
+        }
+
+        return new EditorPane(model);
     }
 
     /**
