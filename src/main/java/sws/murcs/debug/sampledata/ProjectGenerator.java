@@ -1,11 +1,9 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random projects with teams
@@ -20,7 +18,11 @@ public class ProjectGenerator implements Generator<Project> {
     public static final int HIGH_STRESS_MAX = 20;
     public static final int HIGH_STRESS_MIN = 10;
 
-    private String[] projectNames = {"A project",
+    /**
+     * A list of project names.
+     */
+    private String[] projectNames = {
+            "A project",
             "Something exciting",
             "Cold Star",
             "Unique Jazz",
@@ -31,8 +33,19 @@ public class ProjectGenerator implements Generator<Project> {
             "Deserted Tea",
             "Rare Albatross"
     };
-    private String[] descriptions = {"A very exciting description", NameGenerator.getLoremIpsum()};
+    /**
+     * The descriptions for the project.
+     */
+    private String[] descriptions = {
+            "A very exciting description",
+            NameGenerator.getLoremIpsum()};
+    /**
+     * A team generator for the project.
+     */
     private Generator<Team> teamGenerator;
+    /**
+     * A pool of teams for adding to projects.
+     */
     private ArrayList<Team> teamPool;
 
     /**
@@ -44,39 +57,39 @@ public class ProjectGenerator implements Generator<Project> {
 
     /**
      * Instantiates a new project generator.
-     * @param teamGenerator team generator to use.
-     * @param projectNames project names to generate project from.
-     * @param descriptions descriptions for projects to generate from.
+     * @param generator team generator to use.
+     * @param names project names to generate project from.
+     * @param newDescriptions descriptions for projects to generate from.
      */
-    public ProjectGenerator(Generator<Team> teamGenerator, String[] projectNames, String[] descriptions){
-        this.teamGenerator = teamGenerator;
-        this.projectNames = projectNames;
-        this.descriptions = descriptions;
+    public ProjectGenerator(final Generator<Team> generator, final String[] names, final String[] newDescriptions) {
+        this.teamGenerator = generator;
+        this.projectNames = names;
+        this.descriptions = newDescriptions;
     }
 
     /**
-     * Sets the team generator for this generator
-     * @param teamGenerator the team generator
+     * Sets the team generator for this generator.
+     * @param generator the team generator
      */
-    public void setTeamGenerator(Generator<Team> teamGenerator){
-        this.teamGenerator = teamGenerator;
+    public final void setTeamGenerator(final Generator<Team> generator) {
+        this.teamGenerator = generator;
     }
 
     /**
-     * the pool of teams to cho0se from. If null then they will be generated
-     * @param teamPool The pool of teams
+     * The pool of teams to cho0se from. If null then they will be generated.
+     * @param teams The pool of teams
      */
-    public void setTeamPool(ArrayList<Team> teamPool){
-        this.teamPool = teamPool;
+    public final void setTeamPool(final ArrayList<Team> teams) {
+        this.teamPool = teams;
     }
 
     /**
-     * Generates the teams working on this project
+     * Generates the teams working on this project.
      * @param min The minimum number of teams
      * @param max The maximum number of teams
      * @return The teams
      */
-    private ArrayList<Team> generateTeams(int min, int max){
+    private ArrayList<Team> generateTeams(final int min, final int max) {
         ArrayList<Team> generated = new ArrayList<>();
         int teamCount = NameGenerator.random(min, max);
 
@@ -91,7 +104,9 @@ public class ProjectGenerator implements Generator<Project> {
         }
         else {
             //If there are more teams than we have just assign all of them
-            if (teamCount > teamPool.size()) teamCount = teamPool.size();
+            if (teamCount > teamPool.size()) {
+                teamCount = teamPool.size();
+            }
 
             for (int i = 0; i < teamCount; i++) {
                 //Remove the team so we can't pick it again. We'll put it back when we're done
@@ -100,15 +115,16 @@ public class ProjectGenerator implements Generator<Project> {
             }
 
             //Put all the teams we took out back
-            for (Team team : generated)
+            for (Team team : generated) {
                 teamPool.add(team);
+            }
         }
 
         return generated;
     }
 
     @Override
-    public Project generate() {
+    public final Project generate() {
         Project project = new Project();
 
         String shortName = NameGenerator.randomElement(projectNames);
@@ -121,7 +137,8 @@ public class ProjectGenerator implements Generator<Project> {
             project.setShortName(shortName);
         }
         catch (Exception e) {
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            // Do nothing, don't have to deal with the
+            // exception if only generating test data.
             e.printStackTrace();
             return null;
         }

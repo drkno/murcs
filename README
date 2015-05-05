@@ -1,9 +1,9 @@
 Running the Application
-Note: In order to run this application you must have Java 1.8u40 or higher. If you do not use this version of Java then the program will fail to run
+Note: In order to run this application you must have Java 1.8u40 or higher. If you do not use this version of Java then the program is not guaranteed to function as intended.
 
 The entry point for this application is sws.murcs.view.App when running manually.
 
-Using  the Application
+Using the Application
 Information about using the application and/or troubleshooting can be found in the userguide (doc/user_guide/seng302t1_user_guide.pdf)
 
 Running the Tests
@@ -15,3 +15,5 @@ In order to run the unit tests, open the project in an IDE of your choice (we re
 Acceptance Tests
 The acceptance tests are written uses the Gherkin syntax and they are not intended to be automated. They have been provided so that someone looking can quickly get an idea of how the application is intended to function.
 While some of these tests do have 'Step Defs' written (which allow them to be run in an automated manner), these have been provided as a 'Proof of Concept', so that if we do decide to write automated tests we have a quick reference point.
+
+For a list of who tested what see the word document 'Manual Testing' located in the 'doc' folder.

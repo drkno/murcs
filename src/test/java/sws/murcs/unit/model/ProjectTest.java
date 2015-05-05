@@ -4,10 +4,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sws.murcs.debug.sampledata.Generator;
+import sws.murcs.debug.sampledata.ProjectGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
-import sws.murcs.debug.sampledata.ProjectGenerator;
-import sws.murcs.debug.sampledata.Generator;
 
 public class ProjectTest {
 

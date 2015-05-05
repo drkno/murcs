@@ -5,9 +5,7 @@ import sws.murcs.model.RelationalModel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
-import java.time.LocalDate;
 
 /**
  * Contains a static method for generating the xml status report from the relational model.

@@ -16,6 +16,7 @@ public class TrackingObservableListTest {
         public TestArrayList() throws Exception {
             testArrayList = new ModelObservableArrayList<TestClass>();
             testArrayList.add(new TestClass(0));
+            UndoRedoManager.add(this);
             commit("initial state");
         }
 
@@ -63,7 +64,6 @@ public class TrackingObservableListTest {
     @Test
     public void undoTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
@@ -76,7 +76,6 @@ public class TrackingObservableListTest {
     @Test
     public void redoTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
@@ -92,7 +91,6 @@ public class TrackingObservableListTest {
     @Test
     public void descriptionTest() throws Exception {
         TestArrayList a = new TestArrayList();
-        UndoRedoManager.add(a);
         a.addValue(1);
         a.addValue(2);
         Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());

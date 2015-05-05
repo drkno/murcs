@@ -50,7 +50,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @throws sws.murcs.exceptions.DuplicateObjectException if there is a duplicate object.
      */
     private void validateShortName(String value) throws Exception {
-        DuplicateObjectException.CheckForDuplicates(this, value);
+        DuplicateObjectException.checkForDuplicates(this, value);
         InvalidParameterException.validate("Short Name", value);
     }
 

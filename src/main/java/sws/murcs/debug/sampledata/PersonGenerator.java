@@ -5,94 +5,129 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Generates random people with skills and roles
+ * Generates random people with skills and roles.
  */
 public class PersonGenerator implements Generator<Person> {
+
+    /**
+     * Max number people generated for a low
+     * threshold.
+     */
     public static final int LOW_STRESS_MAX = 5;
+    /**
+     * Min number people generated for a low
+     * threshold.
+     */
     public static final int LOW_STRESS_MIN = 2;
 
+    /**
+     * Max number people generated for a medium
+     * threshold.
+     */
     public static final int MEDIUM_STRESS_MAX = 50;
+    /**
+     * Min number people generated for a medium
+     * threshold.
+     */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+    /**
+     * Max number people generated for a high
+     * threshold.
+     */
     public static final int HIGH_STRESS_MAX = 500;
+    /**
+     * Min number of people generated for a high
+     * threshold.
+     */
     public static final int HIGH_STRESS_MIN = 50;
 
+    /**
+     * The generator that will be used for skills
+     * that are added to the people generated.
+     */
     private Generator<Skill> skillGenerator;
+    /**
+     * A pool of skills to choose from when adding
+     * skills to people.
+     */
     private ArrayList<Skill> skillPool;
 
     /**
      * Instantiates a new person generator.
      */
-    public PersonGenerator(){
+    public PersonGenerator() {
         skillGenerator = new SkillGenerator();
     }
 
     /**
      * Instantiates a new person generator.
-     * @param skillGenerator skill generator to use.
+     * @param generator skill generator to use.
      */
-    public PersonGenerator(Generator<Skill> skillGenerator){
-        this.skillGenerator = skillGenerator;
+    public PersonGenerator(final Generator<Skill> generator) {
+        this.skillGenerator = generator;
     }
 
     /**
-     * Sets the skill generator for this generator
-     * @param skillGenerator The skill generator
+     * Sets the skill generator for this generator.
+     * @param generator The skill generator
      */
-    public void setSkillGenerator(Generator<Skill> skillGenerator){
-        this.skillGenerator = skillGenerator;
+    public final void setSkillGenerator(final Generator<Skill> generator) {
+        this.skillGenerator = generator;
     }
 
     /**
-     * Sets the pool of skills to assign from. If null, skills will be generated
-     * @param skillPool The skill pool
+     * Sets the pool of skills to assign from. If null, skills will be generated.
+     * @param skills The skill pool
      */
-    public void setSkillPool(ArrayList<Skill> skillPool){
-        this.skillPool = skillPool;
+    public final void setSkillPool(final ArrayList<Skill> skills) {
+        this.skillPool = skills;
     }
 
     /**
-     * Generates skills for a person
+     * Generates skills for a person.
      * @param min The minimum number of skills
      * @param max The max number of skills
      * @return The skills
      */
-    private ArrayList<Skill> generateSkills(int min, int max){
+    private ArrayList<Skill> generateSkills(final int min, final int max) {
         ArrayList<Skill> generated = new ArrayList<>();
         int skillCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of skills, make some up
-        if (skillPool == null){
-            for (int i = 0; i < skillCount; i++){
+        if (skillPool == null) {
+            for (int i = 0; i < skillCount; i++) {
                 Skill newSkill = skillGenerator.generate();
                 if (!generated.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
                     generated.add(newSkill);
                 }
             }
         }
-        else{
+        else {
             //If there are more skills than we have just assign all of them
-            if (skillCount > skillPool.size()) skillCount = skillPool.size();
+            if (skillCount > skillPool.size()) {
+                skillCount = skillPool.size();
+            }
 
-            for (int i = 0; i < skillCount; i++){
+            for (int i = 0; i < skillCount; i++) {
                 //Remove the skill so we can't pick it again. We'll put it back when we're done
                 Skill skill = skillPool.remove(NameGenerator.random(skillPool.size()));
                 generated.add(skill);
             }
 
             //Put all the skills we took out back
-            for (Skill skill : generated)
+            for (Skill skill : generated) {
                 skillPool.add(skill);
+            }
         }
 
         return generated;
     }
 
     @Override
-    public Person generate() {
+    public final Person generate() {
         Person p = new Person();
 
         String userId = NameGenerator.randomString(10, "0123456789");
@@ -119,7 +154,8 @@ public class PersonGenerator implements Generator<Person> {
                 skills.add(scrumMaster);
             }
         } catch (Exception e) {
-            //will never ever happen. ever. an exception is only thrown if you try to set the shortname as null/empty
+            // Will never ever happen. ever. an exception is only
+            // thrown if you try to set the shortname as null/empty
         }
 
         try {
@@ -134,7 +170,8 @@ public class PersonGenerator implements Generator<Person> {
         catch (Exception e) {
             e.printStackTrace();
             return null;
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            // Do nothing, don't have to deal with the exception
+            // if only generating test data.
         }
 
         p.setLongName(longName);
@@ -145,7 +182,8 @@ public class PersonGenerator implements Generator<Person> {
         catch (CustomException e) {
             e.printStackTrace();
             return null;
-            //Do nothing, don't have to deal with the exception if only generating test data.
+            // Do nothing, don't have to deal with the exception
+            // if only generating test data.
         }
 
         return p;

@@ -6,10 +6,7 @@ import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.reporting.ReportGenerator;
-import sws.murcs.reporting.ReportModel;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -33,10 +30,18 @@ public class ReportGeneratorTest {
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(true);
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
-        sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
-        tempReport = Files.createTempFile("", "").toFile();
-
         relationalModel = new RelationalModel();
+        sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
+        for (int i = 0; i < sampleReport.size(); i++) {
+            if (sampleReport.get(i).matches(".*<projectVersion>(\\d+\\.){2}(\\d+)</projectVersion>.*")) {
+                sampleReport.set(i, "<projectVersion>" + relationalModel.getVersion() + "</projectVersion>");
+            }
+            if (sampleReport.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
+                sampleReport.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
+                break;
+            }
+        }
+        tempReport = Files.createTempFile("", "").toFile();
 
         // Skills
         Skill skillC = new Skill();
@@ -101,6 +106,10 @@ public class ReportGeneratorTest {
         team2.setLongName("One man can conquer the world");
         team2.addMember(person3);
 
+        Team team3 = new Team();
+        team3.setShortName("Lonely");
+        team3.setLongName("Mr Lonely");
+
         // Project
         Project project = new Project();
         project.setShortName("FITR");
@@ -108,7 +117,7 @@ public class ReportGeneratorTest {
         project.setDescription("We are building a fitness tracking application for the world");
 
         // Work Allocation
-        LocalDate startDate = LocalDate.now();
+        LocalDate startDate = LocalDate.of(2015, 5, 1);
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
         WorkAllocation allocation = new WorkAllocation(project, team1, startDate, endDate);
 
@@ -120,7 +129,9 @@ public class ReportGeneratorTest {
         project.addRelease(release);
 
         relationalModel.add(project);
+        relationalModel.add(team1);
         relationalModel.add(team2);
+        relationalModel.add(team3);
         relationalModel.add(person4);
         relationalModel.addAllocation(allocation);
         relationalModel.add(release);

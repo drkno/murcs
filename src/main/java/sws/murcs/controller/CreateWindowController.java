@@ -15,36 +15,61 @@ import sws.murcs.model.persistence.PersistenceManager;
 import java.util.function.Consumer;
 
 /**
- * Creates a new Controller with an Ok and Cancel button
+ * Creates a new Controller with an Ok and Cancel button.
  */
 public class CreateWindowController {
+
+    /**
+     * The command to be issued on okay being clicked.
+     */
     private ViewUpdate okayClicked;
+    /**
+     * The command to be issued on cancel being clicked.
+     */
     private Consumer cancelClicked;
 
+    /**
+     * The newModel that the window is being created for.
+     */
     private Model model;
 
+    /**
+     * The main content pane that contains all the
+     * editable fields.
+     */
     @FXML
     private GridPane contentPane;
 
+    /**
+     * The function called on the cancel button being clicked.
+     * @param actionEvent The event that calls this function.
+     */
     @FXML
-    private void cancelButtonClicked(ActionEvent event) {
+    private void cancelButtonClicked(final ActionEvent actionEvent) {
         GridPane pane = contentPane;
         if (cancelClicked != null) {
             cancelClicked.accept(null);
         }
-        Stage stage = (Stage)contentPane.getScene().getWindow();
+        Stage stage = (Stage) contentPane.getScene().getWindow();
         stage.close();
     }
 
+    /**
+     * The function called on the okay button being clicked.
+     * @param event The event that fires this function.
+     */
     @FXML
-    private void okayButtonClicked(ActionEvent event) {
+    private void okayButtonClicked(final ActionEvent event) {
         if (okayClicked != null) {
             try {
                 contentPane.requestFocus();
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
-                if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty())))
+                if (node != null && node instanceof Label && (!(((Label) node).getText() == null) && !(((Label) node).getText().isEmpty()))) {
                     return;
-                if (model == null) return;
+                }
+                if (model == null) {
+                    return;
+                }
                 PersistenceManager.Current.getCurrentModel().add(model);
                 okayClicked.selectItem(model);
             }
@@ -53,51 +78,51 @@ public class CreateWindowController {
             }
         }
 
-        Stage stage = (Stage)contentPane.getScene().getWindow();
+        Stage stage = (Stage) contentPane.getScene().getWindow();
         stage.close();
     }
 
     /**
-     * Sets the method that is called when cancel is clicked
-     * @param cancelClicked The method to call when cancel is clicked
+     * Sets the method that is called when cancel is clicked.
+     * @param cancelCommand The method to call when cancel is clicked
      */
-    public void setCancelClicked(Consumer cancelClicked) {
-        this.cancelClicked = cancelClicked;
+    public final void setCancelClicked(final Consumer cancelCommand) {
+        this.cancelClicked = cancelCommand;
     }
 
     /**
-     * Sets the method that is called when okay is clicked
-     * @param okayClicked The Event to notify
+     * Sets the method that is called when okay is clicked.
+     * @param okayCommand The Event to notify
      */
-    public void setOkayClicked(ViewUpdate okayClicked) {
-        this.okayClicked = okayClicked;
+    public final void setOkayClicked(final ViewUpdate okayCommand) {
+        this.okayClicked = okayCommand;
     }
 
     /**
-     * Sets the content of the form
+     * Sets the content of the form.
      * @param content The form
      */
-    public void setContent(Node content){
+    public final void setContent(final Node content) {
         contentPane.getChildren().add(content);
     }
 
     /**
-     * Sets the model of the form
-     * @param model The model
+     * Sets the newModel of the form.
+     * @param newModel The newModel
      */
-    public void setModel(Model model){
-        this.model = model;
+    public final void setModel(final Model newModel) {
+        this.model = newModel;
     }
 
     /**
-     * Creates a new form for with the 'content' node as it's content
+     * Creates a new form for with the 'content' node as it's content.
      * @param content The content
-     * @param model The model
+     * @param model The newModel
      * @param okayClicked The okay callback
      * @param cancelClicked The cancel callback
      * @return The form
      */
-    public static Parent newCreateNode(Node content, Model model, ViewUpdate okayClicked, Consumer cancelClicked) {
+    public static Parent newCreateNode(final Node content, final Model model, final ViewUpdate okayClicked, final Consumer cancelClicked) {
         try {
             FXMLLoader loader = new FXMLLoader(CreateWindowController.class.getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();
@@ -109,8 +134,8 @@ public class CreateWindowController {
             controller.setModel(model);
 
             return root;
-        }catch (Exception e){
-            System.err.println("Unable to create a project editor!(this is seriously bad)");
+        } catch (Exception e) {
+            System.err.println("Unable to create a model editor! Reference the stack trace for the cause and inform the developers.");
             e.printStackTrace();
         }
         return null;

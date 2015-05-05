@@ -35,7 +35,7 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the model is deleted
+     Then the skill is deleted
      And "Skills" deletion can be undone
 
    Scenario: Deleting a Release

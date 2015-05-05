@@ -1,35 +1,48 @@
 package sws.murcs.magic.tracking;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a the state of values at a period of time.
  */
 public class Commit {
+    /**
+     * Commit number of this commit.
+     */
     private long commitNumber;
+    /**
+     * Message of this commit.
+     */
     private String message;
-    private FieldValuePair[] fieldValuePairs;
-    private ArrayList<TrackableObject> trackableObjects;
+    /**
+     * Fields and their values associated with this commit.
+     */
+    private List<FieldValuePair> fieldValuePairs;
+    /**
+     * Trackable objects associated with this commit.
+     */
+    private List<TrackableObject> trackableObjects;
 
     /**
      * Creates a new commit.
-     * @param commitNumber the unique commit number.
-     * @param message the commit message to associate.
-     * @param fieldValuePairs the set of fields and values to set.
-     * @param trackableObjects objects that were being tracked.
+     * @param newCommitNumber the unique commit number.
+     * @param newMessage the commit message to associate.
+     * @param newFieldValuePairs the set of fields and values to set.
+     * @param newTrackableObjects objects that were being tracked.
      */
-    protected Commit(long commitNumber, String message, FieldValuePair[] fieldValuePairs, ArrayList<TrackableObject> trackableObjects) {
-        this.commitNumber = commitNumber;
-        this.message = message;
-        this.fieldValuePairs = fieldValuePairs;
-        this.trackableObjects = trackableObjects;
+    protected Commit(final long newCommitNumber, final String newMessage, final List<FieldValuePair> newFieldValuePairs,
+                     final List<TrackableObject> newTrackableObjects) {
+        this.commitNumber = newCommitNumber;
+        this.message = newMessage;
+        this.fieldValuePairs = newFieldValuePairs;
+        this.trackableObjects = newTrackableObjects;
     }
 
     /**
      * Gets the trackable objects associated with this commit.
      * @return associated objects.
      */
-    public ArrayList<TrackableObject> getTrackableObjects() {
+    public final List<TrackableObject> getTrackableObjects() {
         return trackableObjects;
     }
 
@@ -37,7 +50,7 @@ public class Commit {
      * Gets the unique number associated with this commit.
      * @return the commit number.
      */
-    public long getCommitNumber() {
+    public final long getCommitNumber() {
         return commitNumber;
     }
 
@@ -45,7 +58,7 @@ public class Commit {
      * Gets the associated message with this commit.
      * @return the commit message.
      */
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
@@ -53,7 +66,7 @@ public class Commit {
      * Applies the values in this commit to the objects.
      * @throws Exception if something went very wrong.
      */
-    public void apply() throws Exception {
+    public final void apply() throws Exception {
         for (FieldValuePair pair : fieldValuePairs) {
             pair.restoreValue();
         }
@@ -64,10 +77,14 @@ public class Commit {
      * @param other other commit.
      * @return true if they are the same, false otherwise.
      */
-    public boolean equals(Commit other) {
-        if (fieldValuePairs.length != other.fieldValuePairs.length) return false;
-        for (int i = 0; i < fieldValuePairs.length; i++) {
-            if (!fieldValuePairs[i].equals(other.fieldValuePairs[i])) return false;
+    final boolean equals(final Commit other) {
+        if (fieldValuePairs.size() != other.fieldValuePairs.size()) {
+            return false;
+        }
+        for (int i = 0; i < fieldValuePairs.size(); i++) {
+            if (!fieldValuePairs.get(i).equals(other.fieldValuePairs.get(i))) {
+                return false;
+            }
         }
         return true;
     }
@@ -76,7 +93,15 @@ public class Commit {
      * Adjusts the message contained with this commit.
      * @param newMessage message to replace it with.
      */
-    public void modifyMessage(String newMessage) {
+    public final void modifyMessage(final String newMessage) {
         message = newMessage;
+    }
+
+    /**
+     * Gets the field value pairs that make up this commit.
+     * @return field value pairs.
+     */
+    public final List<FieldValuePair> getPairs() {
+        return fieldValuePairs;
     }
 }

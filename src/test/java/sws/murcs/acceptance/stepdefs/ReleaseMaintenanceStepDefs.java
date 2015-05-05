@@ -69,6 +69,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
+        PersistenceManager.Current.setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
