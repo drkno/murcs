@@ -154,10 +154,11 @@ public class TrackingListenerTest {
         UndoRedoManager.addChangeListener(listener);
         UndoRedoManager.add(testInteger);
         ArrayList<ChangeListenerHandler> handlers = (ArrayList<ChangeListenerHandler>) listenersField.get(null);
+        int numHandlers = handlers.size();
         Assert.assertTrue(handlers.get(0).equals(listener));
         Assert.assertFalse(listener.getCalled());
         UndoRedoManager.removeChangeListener(listener);
-        Assert.assertTrue(handlers.size() == 0);
+        Assert.assertEquals(numHandlers - 1, handlers.size());
         UndoRedoManager.commit("test commit");
         Assert.assertFalse(listener.getCalled());
     }

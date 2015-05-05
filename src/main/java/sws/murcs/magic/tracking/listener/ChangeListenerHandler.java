@@ -53,13 +53,16 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
             return true;
         }
 
-        Object listener = null;
-        if (other.getClass() == ChangeListenerHandler.class) {
+        UndoRedoChangeListener listener = null;
+        if (other instanceof ChangeListenerHandler) {
             listener = ((ChangeListenerHandler) other).get();
         }
+        else if (other instanceof UndoRedoChangeListener) {
+            listener = (UndoRedoChangeListener) other;
+        }
 
-        if (other.getClass() == UndoRedoChangeListener.class) {
-            return other.equals(get());
+        if (listener != null) {
+            return listener.equals(get());
         }
         return false;
     }
