@@ -14,12 +14,16 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
     public static void performGC() {
         try {
             System.gc();
-        } catch (Exception e) { } // not much we can do
+        }
+		catch (Exception e) {
+			// not much we can do
+			e.printStackTrace();
+		}
     }
 
     /**
-     * Creates a new ChangeListenerHandler which manages change listeners for the
-     * Undo and Redo manager.
+     * Creates a new ChangeListenerHandler which manages
+     * change listeners for the Undo and Redo manager.
      * @param referent the listener to track.
      */
     public ChangeListenerHandler(final UndoRedoChangeListener referent) {
@@ -50,11 +54,11 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
         }
 
         Object listener = null;
-        if (other instanceof ChangeListenerHandler) {
+        if (other.getClass() == ChangeListenerHandler.class) {
             listener = ((ChangeListenerHandler) other).get();
         }
 
-        if (other instanceof UndoRedoChangeListener) {
+        if (other.getClass() == UndoRedoChangeListener.class) {
             return other.equals(get());
         }
         return false;

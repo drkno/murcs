@@ -278,8 +278,8 @@ public final class UndoRedoManager {
     /**
      * Sets the Maximum number of commits that can be made before commits are forgotten.
      * @param newMaximumCommits new maximum number of commits.
-     *                       This can be negative (defaults to -1) for infinite commits,
-     *                       or greater or equal to zero for a set number.
+     * This can be negative (defaults to -1) for infinite commits,
+     * or greater or equal to zero for a set number.
      */
     public static void setMaximumCommits(final long newMaximumCommits) {
         UndoRedoManager.maximumCommits = newMaximumCommits;
