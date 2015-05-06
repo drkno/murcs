@@ -37,13 +37,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     @Override
     public final void setModel(final Object pModel) {
         if (pModel != null) {
-            this.model = (T) pModel;
+            model = (T) pModel;
         }
     }
 
     @Override
     public final T getModel() {
-        return this.model;
+        return model;
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
 
     @Override
     public final ErrorMessageListener getErrorCallback() {
-        return this.errorCallback;
+        return errorCallback;
     }
 
     @Override
