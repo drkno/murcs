@@ -418,7 +418,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (clazz != null) {
             try {
-                creatorWindow = new CreatorWindowView(clazz.newInstance(), this, null);
+                creatorWindow = new CreatorWindowView(clazz.newInstance(), this, func -> {
+                    creatorWindow.dispose();
+                    creatorWindow = null;
+                });
                 creatorWindow.show();
             }
             catch (InstantiationException | IllegalAccessException e) {
