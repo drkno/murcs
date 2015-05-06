@@ -105,14 +105,14 @@ public class TeamEditor extends GenericEditor<Team> {
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNotEqualOrIsEmpty(modelProductOwner, viewProductOwner)) {
             getModel().setProductOwner(viewProductOwner);
-            updatePO();
+            updatePOSM();
         }
 
         Person modelScrumMaster = getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNotEqualOrIsEmpty(modelScrumMaster, viewScrumMaster)) {
             getModel().setScrumMaster(viewScrumMaster);
-            updateSM();
+            updatePOSM();
         }
 
         Person person = addTeamMemberPicker.getValue();
@@ -120,6 +120,7 @@ public class TeamEditor extends GenericEditor<Team> {
             getModel().addMember(person);
             addTeamMemberPicker.getItems().remove(person);
             updateTeamMembers();
+            updatePOSM();
         }
 
         String modelShortName = getModel().getShortName();
