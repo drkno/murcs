@@ -1,7 +1,5 @@
 package sws.murcs.controller.editor;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -20,7 +18,6 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,14 +46,6 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     @FXML
     private Label labelErrorMessage;
-    /**
-     * List of people that can be added to the team.
-     */
-    private List<Person> allocatablePeople;
-    /**
-     * A map of people to their nodes in the member list on the view.
-     */
-    private HashMap<Person, Node> memberNodeIndex;
 
     @FXML
     @Override
@@ -74,15 +63,14 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
+        addTeamMemberPicker.getItems().clear();
+        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
                 labelErrorMessage.setText(message);
             }
         });
-
-        allocatablePeople = FXCollections.observableArrayList();
-        addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
-        memberNodeIndex = new HashMap<>();
     }
 
     @Override
@@ -104,13 +92,7 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextField.setText(modelDescription);
         }
-
-        allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
-        this.getModel().getMembers().forEach(m -> {
-            Node member = generateMemberNode(m);
-            teamMembersContainer.getChildren().add(member);
-            memberNodeIndex.put(m, member);
-        });
+        updateTeamMembers();
         updatePOSM();
 
         //hack set the error text to nothing when first loading the object
@@ -136,11 +118,8 @@ public class TeamEditor extends GenericEditor<Team> {
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
             this.getModel().addMember(person);
-            allocatablePeople.remove(person);
-            Node member = generateMemberNode(person);
-            teamMembersContainer.getChildren().add(member);
-            memberNodeIndex.put(person, member);
-            addTeamMemberPicker.setValue(null);
+            addTeamMemberPicker.getItems().remove(person);
+            updateTeamMembers();
         }
 
         String modelShortName = this.getModel().getShortName();
@@ -170,10 +149,6 @@ public class TeamEditor extends GenericEditor<Team> {
         shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
         longNameTextField.focusedProperty().removeListener(this.getChangeListener());
         descriptionTextField.focusedProperty().removeListener(this.getChangeListener());
-        memberNodeIndex.clear();
-        memberNodeIndex = null;
-        allocatablePeople.clear();
-        allocatablePeople = null;
         this.setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
@@ -262,11 +237,9 @@ public class TeamEditor extends GenericEditor<Team> {
             }
             popup.setMessageText(message);
             popup.addOkCancelButtons(f -> {
-                allocatablePeople.add(person);
-                Node member = memberNodeIndex.get(person);
-                teamMembersContainer.getChildren().remove(member);
-                memberNodeIndex.remove(person);
                 this.getModel().removeMember(person);
+                addTeamMemberPicker.getItems().add(person);
+                updateTeamMembers();
                 popup.close();
             });
             popup.show();
@@ -287,5 +260,16 @@ public class TeamEditor extends GenericEditor<Team> {
         pane.add(removeButton, 1, 0);
 
         return pane;
+    }
+
+    /**
+     * Updates the view of the members in the team.
+     */
+    private void updateTeamMembers() {
+        teamMembersContainer.getChildren().clear();
+        for (Person person : this.getModel().getMembers()) {
+            Node node = generateMemberNode(person);
+            teamMembersContainer.getChildren().add(node);
+        }
     }
 }
