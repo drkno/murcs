@@ -69,18 +69,18 @@ public class ProjectEditor extends GenericEditor<Project> {
     @FXML
     @Override
     public final void initialize() {
-        this.setChangeListener((observable, oldValue, newValue) -> {
+        setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
-        longNameTextField.focusedProperty().addListener(this.getChangeListener());
-        descriptionTextField.focusedProperty().addListener(this.getChangeListener());
-        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
-        datePickerStartDate.focusedProperty().addListener(this.getChangeListener());
-        datePickerEndDate.focusedProperty().addListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().addListener(getChangeListener());
+        longNameTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextField.focusedProperty().addListener(getChangeListener());
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        datePickerStartDate.focusedProperty().addListener(getChangeListener());
+        datePickerEndDate.focusedProperty().addListener(getChangeListener());
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
@@ -100,26 +100,26 @@ public class ProjectEditor extends GenericEditor<Project> {
         // todo decouple from model
         RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
 
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextField.setText(modelDescription);
         }
 
         choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
-        observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
+        observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
 
         //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
@@ -127,22 +127,22 @@ public class ProjectEditor extends GenericEditor<Project> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            this.getModel().setShortName(viewShortName);
+            getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            this.getModel().setLongName(viewLongName);
+            getModel().setLongName(viewLongName);
         }
 
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            this.getModel().setDescription(viewDescription);
+            getModel().setDescription(viewDescription);
         }
 
         // todo decouple from model
@@ -161,26 +161,26 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
 
             // Save this work allocation to the model
-            WorkAllocation allocation = new WorkAllocation(this.getModel(), selectedTeam, startDate, endDate);
+            WorkAllocation allocation = new WorkAllocation(getModel(), selectedTeam, startDate, endDate);
             relationalModel.addAllocation(allocation);
             // This way, the list remains ordered
-            observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
+            observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
         }
     }
 
     @Override
     public final void dispose() {
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
-        datePickerStartDate.focusedProperty().removeListener(this.getChangeListener());
-        datePickerEndDate.focusedProperty().removeListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        longNameTextField.focusedProperty().removeListener(getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        datePickerStartDate.focusedProperty().removeListener(getChangeListener());
+        datePickerEndDate.focusedProperty().removeListener(getChangeListener());
         observableAllocations = null;
-        this.setChangeListener(null);
+        setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
-        this.setModel(null);
-        this.setErrorCallback(null);
+        setModel(null);
+        setErrorCallback(null);
     }
 
     /**

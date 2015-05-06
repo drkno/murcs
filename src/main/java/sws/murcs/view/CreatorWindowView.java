@@ -46,7 +46,7 @@ public class CreatorWindowView {
      * @param newModel The new model.
      */
     public final void setModel(final Model newModel) {
-        this.model = newModel;
+        model = newModel;
     }
 
     /**
@@ -62,7 +62,7 @@ public class CreatorWindowView {
      * @param newCreateAction The new create callback.
      */
     public final void setCreateAction(final ViewUpdate<Model> newCreateAction) {
-        this.createAction = newCreateAction;
+        createAction = newCreateAction;
     }
 
     /**
@@ -78,7 +78,7 @@ public class CreatorWindowView {
      * @param newCancelAction The new cancel callback.
      */
     public final void setCancelAction(final Consumer<Model> newCancelAction) {
-        this.cancelAction = newCancelAction;
+        cancelAction = newCancelAction;
     }
 
     /**
@@ -90,9 +90,9 @@ public class CreatorWindowView {
     public CreatorWindowView(final Model pModel,
                              final ViewUpdate<Model> pCreateAction,
                              final Consumer<Model> pCancelAction) {
-        this.model = pModel;
-        this.createAction = pCreateAction;
-        this.cancelAction = pCancelAction;
+        model = pModel;
+        createAction = pCreateAction;
+        cancelAction = pCancelAction;
     }
 
     /**

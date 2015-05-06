@@ -47,16 +47,16 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     @Override
     public final void initialize() {
-        this.setChangeListener((observable, oldValue, newValue) -> {
+        setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
-        longNameTextField.focusedProperty().addListener(this.getChangeListener());
-        userIdTextField.focusedProperty().addListener(this.getChangeListener());
-        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().addListener(getChangeListener());
+        longNameTextField.focusedProperty().addListener(getChangeListener());
+        userIdTextField.focusedProperty().addListener(getChangeListener());
+        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
@@ -70,19 +70,19 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @Override
     public final void loadObject() {
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
-        String modelUserId = this.getModel().getUserId();
+        String modelUserId = getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqual(modelUserId, viewUserId)) {
             userIdTextField.setText(modelUserId);
@@ -99,39 +99,39 @@ public class PersonEditor extends GenericEditor<Person> {
         Skill selectedSkill = skillChoiceBox.getValue();
         if (selectedSkill != null) {
             generateSkillNode(selectedSkill);
-            this.getModel().addSkill(selectedSkill);
+            getModel().addSkill(selectedSkill);
             updateSkills();
         }
 
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            this.getModel().setShortName(viewShortName);
+            getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            this.getModel().setLongName(viewLongName);
+            getModel().setLongName(viewLongName);
         }
 
-        String modelUserId = this.getModel().getUserId();
+        String modelUserId = getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNotEqualOrIsEmpty(modelUserId, viewUserId)) {
-            this.getModel().setUserId(viewUserId);
+            getModel().setUserId(viewUserId);
         }
     }
 
     @Override
     public final void dispose() {
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        skillChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
-        this.setChangeListener(null);
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        longNameTextField.focusedProperty().removeListener(getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        skillChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
-        this.setModel(null);
-        this.setErrorCallback(null);
+        setModel(null);
+        setErrorCallback(null);
     }
 
     /**
@@ -146,10 +146,10 @@ public class PersonEditor extends GenericEditor<Person> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove "
                     + skill.getShortName() + " from "
-                    + this.getModel().getShortName());
+                    + getModel().getShortName());
             popup.setTitleText("Remove Skill from Person");
             popup.addOkCancelButtons(func -> {
-                this.getModel().removeSkill(skill);
+                getModel().removeSkill(skill);
                 skillChoiceBox.getItems().add(skill);
                 updateSkills();
                 popup.close();
@@ -179,7 +179,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     private void updateSkills() {
         allocatedSkillsContainer.getChildren().clear();
-        for (Skill skill : this.getModel().getSkills()) {
+        for (Skill skill : getModel().getSkills()) {
             Node node = generateSkillNode(skill);
             allocatedSkillsContainer.getChildren().add(node);
             skillChoiceBox.getItems().remove(skill);

@@ -32,7 +32,7 @@ public class EditorPane {
      */
     public EditorPane(final Model pModel) {
         if (pModel != null) {
-            this.model = pModel;
+            model = pModel;
             create();
         }
     }
@@ -42,7 +42,7 @@ public class EditorPane {
      * @return editor pane view
      */
     public final Parent getView() {
-        return this.view;
+        return view;
     }
 
     /**
@@ -50,7 +50,7 @@ public class EditorPane {
      * @return Model to model
      */
     public final Model getModel() {
-        return this.model;
+        return model;
     }
 
     /**
@@ -95,7 +95,7 @@ public class EditorPane {
      */
     public final void setModel(final Model pModel) {
         if (pModel != null) {
-            this.model = pModel;
+            model = pModel;
             controller.setModel(pModel);
             controller.loadObject();
         }

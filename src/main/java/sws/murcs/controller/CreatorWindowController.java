@@ -69,7 +69,7 @@ public class CreatorWindowController {
      * @param pModel Model to create.
      */
     public final void setModel(final Model pModel) {
-        this.model = pModel;
+        model = pModel;
     }
 
     /**
@@ -77,7 +77,7 @@ public class CreatorWindowController {
      * @param pStage The Stage to set
      */
     public final void setStage(final Stage pStage) {
-        this.stage = pStage;
+        stage = pStage;
     }
 
     /**
@@ -85,7 +85,7 @@ public class CreatorWindowController {
      * @param cancelCommand The method to call when cancel is clicked
      */
     public final void setCancelClicked(final Consumer<Model> cancelCommand) {
-        this.cancelClicked = cancelCommand;
+        cancelClicked = cancelCommand;
     }
 
     /**
@@ -93,7 +93,7 @@ public class CreatorWindowController {
      * @param okayCommand The Event to notify
      */
     public final void setCreateClicked(final ViewUpdate<Model> okayCommand) {
-        this.createClicked = okayCommand;
+        createClicked = okayCommand;
     }
 
     /**
@@ -106,7 +106,7 @@ public class CreatorWindowController {
             cancelClicked.accept(null);
         }
         stage.close();
-        this.dispose();
+        dispose();
     }
 
     /**
@@ -135,7 +135,7 @@ public class CreatorWindowController {
             }
         }
         stage.close();
-        this.dispose();
+        dispose();
     }
 
     /**

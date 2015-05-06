@@ -53,16 +53,16 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @FXML
     @Override
     public final void initialize() {
-        this.setChangeListener((observable, oldValue, newValue) -> {
+        setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        descriptionTextArea.focusedProperty().addListener(this.getChangeListener());
-        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
-        releaseDatePicker.focusedProperty().addListener(this.getChangeListener());
-        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
+        shortNameTextField.focusedProperty().addListener(getChangeListener());
+        releaseDatePicker.focusedProperty().addListener(getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -76,7 +76,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
     public final void loadObject() {
         Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects()
                 .stream()
-                .filter(project -> project.getReleases().contains(this.getModel()))
+                .filter(project -> project.getReleases().contains(getModel()))
                 .findFirst();
         if (projectCheck.isPresent()) {
             associatedProject = projectCheck.get();
@@ -85,27 +85,27 @@ public class ReleaseEditor extends GenericEditor<Release> {
         // While the project choice box is being populated,
         // don't fire listeners attached to it.
         // this is achieved by removing the listener temporarily
-        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         projectChoiceBox.getItems().clear();
         projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
         }
-        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextArea.setText(modelDescription);
         }
 
-        LocalDate modelReleaseDate = this.getModel().getReleaseDate();
+        LocalDate modelReleaseDate = getModel().getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
@@ -117,22 +117,22 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            this.getModel().setShortName(viewShortName);
+            getModel().setShortName(viewShortName);
         }
 
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            this.getModel().setDescription(viewDescription);
+            getModel().setDescription(viewDescription);
         }
 
-        LocalDate modelReleaseDate = this.getModel().getReleaseDate();
+        LocalDate modelReleaseDate = getModel().getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqualOrIsEmpty(modelReleaseDate, viewReleaseDate)) {
-            this.getModel().setReleaseDate(viewReleaseDate);
+            getModel().setReleaseDate(viewReleaseDate);
         }
 
         updateAssociatedProject();
@@ -140,15 +140,15 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     public final void dispose() {
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        releaseDatePicker.focusedProperty().removeListener(this.getChangeListener());
-        descriptionTextArea.focusedProperty().removeListener(this.getChangeListener());
-        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        releaseDatePicker.focusedProperty().removeListener(getChangeListener());
+        descriptionTextArea.focusedProperty().removeListener(getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         associatedProject = null;
-        this.setChangeListener(null);
+        setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
-        this.setModel(null);
-        this.setErrorCallback(null);
+        setModel(null);
+        setErrorCallback(null);
     }
 
     /**
@@ -161,13 +161,13 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (viewAssociatedProject != null) {
             if (associatedProject == null) {
                 associatedProject = viewAssociatedProject;
-                associatedProject.addRelease(this.getModel());
+                associatedProject.addRelease(getModel());
                 UndoRedoManager.commit("edit release");
             }
             else if (!associatedProject.equals(viewAssociatedProject)) {
-                associatedProject.removeRelease(this.getModel());
+                associatedProject.removeRelease(getModel());
                 associatedProject = viewAssociatedProject;
-                associatedProject.addRelease(this.getModel());
+                associatedProject.addRelease(getModel());
                 UndoRedoManager.commit("edit release");
             }
         }

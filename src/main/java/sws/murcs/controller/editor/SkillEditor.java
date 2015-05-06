@@ -31,15 +31,15 @@ public class SkillEditor extends GenericEditor<Skill> {
     @FXML
     @Override
     public final void initialize() {
-        this.setChangeListener((observable, oldValue, newValue) -> {
+        setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
-        longNameTextField.focusedProperty().addListener(this.getChangeListener());
-        descriptionTextArea.focusedProperty().addListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().addListener(getChangeListener());
+        longNameTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -50,20 +50,20 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     public final void loadObject() {
-        String modelShortName = this.getModel().getShortName();
+        String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqual(modelLongName, viewLongName)) {
             longNameTextField.setText(modelLongName);
         }
 
         String viewDescription = descriptionTextArea.getText();
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextArea.setText(modelDescription);
         }
@@ -84,33 +84,33 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     public final void dispose() {
-        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
-        descriptionTextArea.focusedProperty().removeListener(this.getChangeListener());
-        this.setChangeListener(null);
+        shortNameTextField.focusedProperty().removeListener(getChangeListener());
+        longNameTextField.focusedProperty().removeListener(getChangeListener());
+        descriptionTextArea.focusedProperty().removeListener(getChangeListener());
+        setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
-        this.setModel(null);
-        this.setErrorCallback(null);
+        setModel(null);
+        setErrorCallback(null);
     }
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        String modelShortName =  this.getModel().getShortName();
+        String modelShortName =  getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
-            this.getModel().setShortName(viewShortName);
+            getModel().setShortName(viewShortName);
         }
 
-        String modelLongName = this.getModel().getLongName();
+        String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
-            this.getModel().setLongName(viewLongName);
+            getModel().setLongName(viewLongName);
         }
 
-        String modelDescription = this.getModel().getDescription();
+        String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
-            this.getModel().setDescription(viewDescription);
+            getModel().setDescription(viewDescription);
         }
     }
 }

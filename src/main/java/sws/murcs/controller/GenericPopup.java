@@ -161,7 +161,7 @@ public class GenericPopup extends AnchorPane {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(m -> this.close());
+            addOkButton(m -> close());
         }
     }
 
@@ -227,7 +227,7 @@ public class GenericPopup extends AnchorPane {
         }
 
         if (!buttonsDefined) {
-            addOkButton(m -> this.close());
+            addOkButton(m -> close());
         }
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -292,7 +292,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on the ok button being clicked.
      */
     public final void addOkCancelButtons(final Consumer okFunction) {
-        addOkCancelButtons(okFunction, m -> this.close());
+        addOkCancelButtons(okFunction, m -> close());
     }
 
     /***
