@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @XmlRootElement
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Person extends Model{
+public class Person extends Model {
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
@@ -132,7 +132,7 @@ public class Person extends Model{
      */
     @Override
     public final boolean equals(final Object object) {
-        if (!(object instanceof Person)) {
+        if (object == null || !(Person.class == object.getClass())) {
             return false;
         }
         Person person = (Person) object;

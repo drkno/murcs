@@ -80,7 +80,7 @@ public abstract class Model extends TrackableObject implements Serializable {
             try {
                 shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
             } catch (Exception e) {
-                System.err.println("Couldn't create property for shortName. Failed with error:");
+                System.err.println("Couldn't show property for shortName. Failed with error:");
                 e.printStackTrace();
             }
         }

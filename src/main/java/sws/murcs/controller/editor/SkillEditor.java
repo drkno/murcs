@@ -78,7 +78,7 @@ public class SkillEditor extends GenericEditor<Skill> {
             shortNameTextField.setDisable(true);
         }
 
-        //hack set the error text to nothing when first loading the object
+        //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
 

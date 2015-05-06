@@ -21,26 +21,84 @@ import java.util.function.Consumer;
 public class CreatorWindowView {
 
     /**
-     * Sets up a new Creation window.
-     * @param model Model to set
-     * @param createAction create action callback to set
-     * @param cancelAction cancel action callback to set
+     * The model object to create.
      */
-    public CreatorWindowView(final Model model,
-                             final ViewUpdate<Model> createAction,
-                             final Consumer<Model> cancelAction) {
-        create(model, createAction, cancelAction);
+    private Model model;
+    /**
+     * The create callback.
+     */
+    private ViewUpdate<Model> createAction;
+    /**
+     * The cancel callback.
+     */
+    private Consumer<Model> cancelAction;
+
+    /**
+     * Gets the model.
+     * @return The model.
+     */
+    public final Model getModel() {
+        return model;
+    }
+
+    /**
+     * Sets the model.
+     * @param newModel The new model.
+     */
+    public final void setModel(final Model newModel) {
+        this.model = newModel;
+    }
+
+    /**
+     * Get the create callback.
+     * @return The create callback.
+     */
+    public final ViewUpdate<Model> getCreateAction() {
+        return createAction;
+    }
+
+    /**
+     * Sets the create callback.
+     * @param newCreateAction The new create callback.
+     */
+    public final void setCreateAction(final ViewUpdate<Model> newCreateAction) {
+        this.createAction = newCreateAction;
+    }
+
+    /**
+     * Gets the cancel callback.
+     * @return The cancel callback.
+     */
+    public final Consumer<Model> getCancelAction() {
+        return cancelAction;
+    }
+
+    /**
+     * Sets the cancel callback.
+     * @param newCancelAction The new cancel callback.
+     */
+    public final void setCancelAction(final Consumer<Model> newCancelAction) {
+        this.cancelAction = newCancelAction;
+    }
+
+    /**
+     * Sets up a new Creation window.
+     * @param pModel Model to set
+     * @param pCreateAction create action callback to set
+     * @param pCancelAction cancel action callback to set
+     */
+    public CreatorWindowView(final Model pModel,
+                             final ViewUpdate<Model> pCreateAction,
+                             final Consumer<Model> pCancelAction) {
+        this.model = pModel;
+        this.createAction = pCreateAction;
+        this.cancelAction = pCancelAction;
     }
 
     /**
      * Creates a new form for creating a new object of the specified type.
-     * @param model Model to create a form for.
-     * @param createAction create action callback.
-     * @param cancelAction cancel action callback.
      */
-    public final void create(final Model model,
-                             final ViewUpdate<Model> createAction,
-                             final Consumer<Model> cancelAction) {
+    public final void show() {
         try {
             String type = ModelTypes.getModelType(model).toString();
 
@@ -51,8 +109,9 @@ public class CreatorWindowView {
             }
 
             // Load the view
-            FXMLLoader loader = new FXMLLoader(CreatorWindowController.class.getResource(
-                    "/sws/murcs/CreatorWindow.fxml"));
+            FXMLLoader loader = new FXMLLoader(CreatorWindowController
+                    .class
+                    .getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();
 
             // Set up the controller and give it the necessary parameters
@@ -87,5 +146,14 @@ public class CreatorWindowView {
             System.err.println("Something went wrong loading the creation window");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Disposes of the creator view
+     */
+    public final void dispose() {
+        model = null;
+        cancelAction = null;
+        createAction = null;
     }
 }

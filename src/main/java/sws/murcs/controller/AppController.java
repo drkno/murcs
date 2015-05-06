@@ -87,6 +87,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * The content pane to show the view for a model.
      */
     private EditorPane editorPane;
+    /**
+     * A creation window.
+     */
+    private CreatorWindowView creatorWindow;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -125,7 +129,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 return;
             }
             if (editorPane == null) {
-                editorPane = createEditorPane(newValue);
+                editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
                 contentPane.getChildren().add(editorPane.getView());
             }
@@ -136,10 +140,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 else {
                     editorPane.dispose();
                     contentPane.getChildren().clear();
-                    editorPane = createEditorPane(newValue);
-                    if (editorPane != null) {
-                        contentPane.getChildren().add(editorPane.getView());
-                    }
+                    editorPane = new EditorPane((Model) newValue);
+                    contentPane.getChildren().add(editorPane.getView());
                 }
             }
         });
@@ -150,33 +152,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Creates an editor pane.
-     * @param value The thing to get the model from
-     * @return an EditorPane
-     */
-    private EditorPane createEditorPane(final Object value) {
-        Model model = null;
-        if (value.getClass() == ModelTypes.class) {
-            try {
-                model = ModelTypes.getTypeFromModel((ModelTypes) value).newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        else if (value instanceof Model) {
-            model = (Model) value;
-        }
-        else {
-            return null;
-        }
-
-        return new EditorPane(model);
-    }
-
-    /**
      * Updates the display list on the left hand side of the screen.
      */
     private void updateList() {
+        if (creatorWindow != null) {
+            creatorWindow.dispose();
+            creatorWindow = null;
+        }
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -436,7 +418,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (clazz != null) {
             try {
-                new CreatorWindowView(clazz.newInstance(), this, null);
+                creatorWindow = new CreatorWindowView(clazz.newInstance(), this, null);
+                creatorWindow.show();
             }
             catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();

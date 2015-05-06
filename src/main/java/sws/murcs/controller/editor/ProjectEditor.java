@@ -121,7 +121,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
         observableAllocations.setAll(relationalModel.getProjectsAllocations(this.getModel()));
 
-        //hack set the error text to nothing when first loading the object
+        //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
 
@@ -182,6 +182,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         this.setModel(null);
         this.setErrorCallback(null);
     }
+
     /**
      * Called by the "Unschedule Work" button.
      * Removes a work period from both the project and team

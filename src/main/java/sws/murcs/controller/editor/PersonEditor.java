@@ -38,6 +38,7 @@ public class PersonEditor extends GenericEditor<Person> {
     @FXML
     private ChoiceBox<Skill> skillChoiceBox;
     /**
+    /**
      * The VBox which contains the list of skills the person has.
      */
     @FXML
@@ -89,7 +90,7 @@ public class PersonEditor extends GenericEditor<Person> {
 
         updateSkills();
 
-        //hack set the error text to nothing when first loading the object
+        //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
 
@@ -147,7 +148,7 @@ public class PersonEditor extends GenericEditor<Person> {
                     + skill.getShortName() + " from "
                     + this.getModel().getShortName());
             popup.setTitleText("Remove Skill from Person");
-            popup.addOkCancelButtons(s -> {
+            popup.addOkCancelButtons(func -> {
                 this.getModel().removeSkill(skill);
                 skillChoiceBox.getItems().add(skill);
                 updateSkills();

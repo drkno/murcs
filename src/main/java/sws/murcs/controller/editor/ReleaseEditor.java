@@ -111,7 +111,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
             releaseDatePicker.setValue(modelReleaseDate);
         }
 
-        //hack set the error text to nothing when first loading the object
+        //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
 

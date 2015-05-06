@@ -49,9 +49,9 @@ public interface Editor<T> {
 
     /**
      * Sets the model to model, an editor must have a model to model.
-     * @param model The Model to model
+     * @param pModel The new model
      */
-    void setModel(T model);
+    void setModel(T pModel);
 
     /**
      * Gets the model.
