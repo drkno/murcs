@@ -41,34 +41,21 @@ public class PersonEditor extends GenericEditor<Person> {
      * The VBox which contains the list of skills the person has.
      */
     @FXML
-    private VBox skillVBox;
+    private VBox allocatedSkillsContainer;
 
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        userIdTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        this.setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
+
+        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
+        longNameTextField.focusedProperty().addListener(this.getChangeListener());
+        userIdTextField.focusedProperty().addListener(this.getChangeListener());
+        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
         skillChoiceBox.getItems().clear();
         skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
@@ -101,27 +88,19 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         updateSkills();
+
         //hack set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
 
     @Override
-    public final void dispose() {
-        UndoRedoManager.removeChangeListener(this);
-        this.setModel(null);
-        this.setErrorCallback(null);
-    }
-
-    @Override
     protected final void saveChangesWithException() throws Exception {
         Skill selectedSkill = skillChoiceBox.getValue();
-
         if (selectedSkill != null) {
             generateSkillNode(selectedSkill);
             this.getModel().addSkill(selectedSkill);
+            updateSkills();
         }
-
-        updateSkills();
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -142,6 +121,18 @@ public class PersonEditor extends GenericEditor<Person> {
         }
     }
 
+    @Override
+    public final void dispose() {
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        skillChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        this.setChangeListener(null);
+        UndoRedoManager.removeChangeListener(this);
+        this.setModel(null);
+        this.setErrorCallback(null);
+    }
+
     /**
      * Generates a node for a skill.
      * @param skill The skill
@@ -159,7 +150,7 @@ public class PersonEditor extends GenericEditor<Person> {
             popup.addOkCancelButtons(s -> {
                 this.getModel().removeSkill(skill);
                 skillChoiceBox.getItems().add(skill);
-                saveChanges();
+                updateSkills();
                 popup.close();
             });
             popup.show();
@@ -186,10 +177,10 @@ public class PersonEditor extends GenericEditor<Person> {
      * Updates the list of skills the person has.
      */
     private void updateSkills() {
-        skillVBox.getChildren().clear();
+        allocatedSkillsContainer.getChildren().clear();
         for (Skill skill : this.getModel().getSkills()) {
             Node node = generateSkillNode(skill);
-            skillVBox.getChildren().add(node);
+            allocatedSkillsContainer.getChildren().add(node);
             skillChoiceBox.getItems().remove(skill);
         }
     }

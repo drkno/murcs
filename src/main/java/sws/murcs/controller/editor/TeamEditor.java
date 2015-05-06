@@ -123,14 +123,14 @@ public class TeamEditor extends GenericEditor<Team> {
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNotEqualOrIsEmpty(modelProductOwner, viewProductOwner)) {
             this.getModel().setProductOwner(viewProductOwner);
-            updatePOSM();
+            updatePO();
         }
 
         Person modelScrumMaster = this.getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNotEqualOrIsEmpty(modelScrumMaster, viewScrumMaster)) {
             this.getModel().setScrumMaster(viewScrumMaster);
-            updatePOSM();
+            updateSM();
         }
 
         Person person = addTeamMemberPicker.getValue();
@@ -184,6 +184,14 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the PO and SM.
      */
     private void updatePOSM() {
+        updatePO();
+        updateSM();
+    }
+
+    /**
+     * Updates the PO.
+     */
+    private void updatePO() {
         Person productOwner = this.getModel().getProductOwner();
         Person scrumMaster = this.getModel().getScrumMaster();
 
@@ -204,6 +212,14 @@ public class TeamEditor extends GenericEditor<Team> {
             productOwnerPicker.getSelectionModel().select(productOwner);
         }
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+    }
+
+    /**
+     * Updates the SM.
+     */
+    private void updateSM() {
+        Person productOwner = this.getModel().getProductOwner();
+        Person scrumMaster = this.getModel().getScrumMaster();
 
         //Add all the people with the scrum master skill
         // to the list of scrum masters

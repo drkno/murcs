@@ -1,12 +1,11 @@
 package sws.murcs.controller.editor;
 
-import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Label;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
@@ -47,10 +46,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @FXML
     private ChoiceBox<Project> projectChoiceBox;
     /**
-     * The change listener for an associated project.
-     */
-    private ChangeListener<Project> projectChangeListener;
-    /**
      * The releases associated project.
      */
     private Project associatedProject;
@@ -58,34 +53,16 @@ public class ReleaseEditor extends GenericEditor<Release> {
     @FXML
     @Override
     public final void initialize() {
-        descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-        releaseDatePicker.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-        projectChoiceBox.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        projectChangeListener = (observable, oldValue, newValue) -> {
+        this.setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
-        };
+        });
 
-        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
+        descriptionTextArea.focusedProperty().addListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
+        releaseDatePicker.focusedProperty().addListener(this.getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -108,13 +85,13 @@ public class ReleaseEditor extends GenericEditor<Release> {
         // While the project choice box is being populated,
         // don't fire listeners attached to it.
         // this is achieved by removing the listener temporarily
-        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
         projectChoiceBox.getItems().clear();
         projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
         }
-        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(projectChangeListener);
+        projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
 
         String modelShortName = this.getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -163,9 +140,12 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     public final void dispose() {
-        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(projectChangeListener);
-        projectChangeListener = null;
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        releaseDatePicker.focusedProperty().removeListener(this.getChangeListener());
+        descriptionTextArea.focusedProperty().removeListener(this.getChangeListener());
+        projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
         associatedProject = null;
+        this.setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
         this.setErrorCallback(null);
@@ -176,24 +156,23 @@ public class ReleaseEditor extends GenericEditor<Release> {
      * @throws Exception when updating fails.
      */
     private void updateAssociatedProject() throws Exception {
-        //fixme This code feels out of place,
-        // fixme seems like some of it should be in the model
-        //We've just changed what project we are associating this with
-        // so remove the release from the last one
-        if (associatedProject != null) {
-            associatedProject.removeRelease(this.getModel());
-        }
+        Project viewAssociatedProject = projectChoiceBox.getValue();
 
-        //Update the associated project
-        associatedProject = projectChoiceBox.getValue();
-
-        if (associatedProject != null) {
-            associatedProject.addRelease(this.getModel());
+        if (viewAssociatedProject != null) {
+            if (associatedProject == null) {
+                associatedProject = viewAssociatedProject;
+                associatedProject.addRelease(this.getModel());
+                UndoRedoManager.commit("edit release");
+            }
+            else if (!associatedProject.equals(viewAssociatedProject)) {
+                associatedProject.removeRelease(this.getModel());
+                associatedProject = viewAssociatedProject;
+                associatedProject.addRelease(this.getModel());
+                UndoRedoManager.commit("edit release");
+            }
         }
         else {
             throw new InvalidParameterException("There needs to be an associated project");
         }
-
-        UndoRedoManager.commit("edit release");
     }
 }

@@ -98,6 +98,18 @@ public class GenericPopup extends AnchorPane {
      * Whether or not there are any buttons defined in the popup.
      */
     private boolean buttonsDefined;
+    /**
+     * Default button width.
+     */
+    private final int defaultButtonWidth = 70;
+    /**
+     * Default button height.
+     */
+    private final int defaultButtonHeight = 25;
+    /**
+     * Default popUp height.
+     */
+    private final int defaultPopUpHeight = 150;
 
     /***
      * Constructs a new Generic Popup. In order to use you need
@@ -171,7 +183,7 @@ public class GenericPopup extends AnchorPane {
                                 final Action action,
                                 final Consumer func) {
         Button button = new Button(buttonText);
-        button.setPrefSize(70, 25);
+        button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.accept(null));
 
@@ -213,7 +225,7 @@ public class GenericPopup extends AnchorPane {
 
             messageImage.setVisible(false);
             messageTitle.setVisible(false);
-            popupStage.setHeight(150);
+            popupStage.setHeight(defaultPopUpHeight);
         }
 
         if (!buttonsDefined) {

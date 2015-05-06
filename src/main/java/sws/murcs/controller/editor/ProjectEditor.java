@@ -69,41 +69,18 @@ public class ProjectEditor extends GenericEditor<Project> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        descriptionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        this.setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
-        datePickerStartDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
-
-        datePickerEndDate.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue && !newValue) {
-                saveChanges();
-            }
-        });
+        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
+        longNameTextField.focusedProperty().addListener(this.getChangeListener());
+        descriptionTextField.focusedProperty().addListener(this.getChangeListener());
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener(this.getChangeListener());
+        datePickerStartDate.focusedProperty().addListener(this.getChangeListener());
+        datePickerEndDate.focusedProperty().addListener(this.getChangeListener());
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
@@ -193,7 +170,14 @@ public class ProjectEditor extends GenericEditor<Project> {
 
     @Override
     public final void dispose() {
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().removeListener(this.getChangeListener());
+        datePickerStartDate.focusedProperty().removeListener(this.getChangeListener());
+        datePickerEndDate.focusedProperty().removeListener(this.getChangeListener());
         observableAllocations = null;
+        this.setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
         this.setErrorCallback(null);

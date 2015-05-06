@@ -18,7 +18,7 @@ import java.util.ArrayList;
 @XmlRootElement
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Person extends Model {
+public class Person extends Model{
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;

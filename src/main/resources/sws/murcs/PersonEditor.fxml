@@ -42,7 +42,7 @@
                         <Label text="Skills" GridPane.rowIndex="1" />
                         <ScrollPane fitToWidth="true" maxHeight="100.0">
                            <content>
-                              <VBox fx:id="skillVBox" />
+                              <VBox fx:id="allocatedSkillsContainer" />
                            </content>
                         </ScrollPane>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a skill">

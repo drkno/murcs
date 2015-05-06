@@ -31,23 +31,15 @@ public class SkillEditor extends GenericEditor<Skill> {
     @FXML
     @Override
     public final void initialize() {
-        shortNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (oldValue && !newValue) {
-                        saveChanges();
-                    }
-                });
+        this.setChangeListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                saveChanges();
+            }
+        });
 
-        longNameTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (oldValue && !newValue) {
-                        saveChanges();
-                    }
-                });
-
-        descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                    if (oldValue && !newValue) {
-                        saveChanges();
-                    }
-                });
+        shortNameTextField.focusedProperty().addListener(this.getChangeListener());
+        longNameTextField.focusedProperty().addListener(this.getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(this.getChangeListener());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -92,6 +84,10 @@ public class SkillEditor extends GenericEditor<Skill> {
 
     @Override
     public final void dispose() {
+        shortNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        longNameTextField.focusedProperty().removeListener(this.getChangeListener());
+        descriptionTextArea.focusedProperty().removeListener(this.getChangeListener());
+        this.setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         this.setModel(null);
         this.setErrorCallback(null);

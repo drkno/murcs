@@ -89,8 +89,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private EditorPane editorPane;
 
     /**
-     * Initialises the GUI, setting up the the options in the
-     * choice box and populates the display list if necessary.
+     * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
     @FXML
@@ -103,22 +102,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         for (ModelTypes type : ModelTypes.values()) {
             displayChoiceBox.getItems().add(type);
         }
-        displayChoiceBox.getSelectionModel().selectedItemProperty().addListener((observer, oldValue, newValue) -> {
-            if (displayList.getItems().size() > 0) {
-
-                contentPane.getChildren().clear();
-                if (editorPane != null) {
-                    editorPane.dispose();
-                }
-                editorPane = createEditorPane(newValue);
-                if (editorPane != null) {
-                    contentPane.getChildren().add(editorPane.getView());
-                }
-            }
-            editorPane = null;
-            contentPane.getChildren().clear();
-            updateList();
-        });
+        displayChoiceBox
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observer, oldValue, newValue) -> updateList());
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -130,6 +117,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     || ((Skill) newValue).getShortName().equals("SM")));
 
             if (newValue == null) {
+                if (editorPane != null) {
+                    editorPane.dispose();
+                    editorPane = null;
+                    contentPane.getChildren().clear();
+                }
                 return;
             }
             if (editorPane == null) {
@@ -137,8 +129,18 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 contentPane.getChildren().clear();
                 contentPane.getChildren().add(editorPane.getView());
             }
-            if (editorPane != null) {
-                editorPane.setModel((Model) newValue);
+            else {
+                if (editorPane.getModel().getClass() == newValue.getClass()) {
+                    editorPane.setModel((Model) newValue);
+                }
+                else {
+                    editorPane.dispose();
+                    contentPane.getChildren().clear();
+                    editorPane = createEditorPane(newValue);
+                    if (editorPane != null) {
+                        contentPane.getChildren().add(editorPane.getView());
+                    }
+                }
             }
         });
 
@@ -148,7 +150,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Creates an editor pane
+     * Creates an editor pane.
      * @param value The thing to get the model from
      * @return an EditorPane
      */

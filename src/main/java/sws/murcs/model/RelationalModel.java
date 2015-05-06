@@ -166,27 +166,15 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The unassigned people
      */
     public final Set<Person> getUnassignedPeople() {
-//        Set<Person> assignedPeople = new TreeSet<>(new Comparator<Person>() {
-//            @Override
-//            public int compare(final Person p1, final Person p2) {
-//                return p1.getShortName().compareTo(p2.getShortName());
-//            }
-//        });
-//        getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
-//        Set<Person> unassignedPeople = new TreeSet<>(new Comparator<Person>() {
-//            @Override
-//            public int compare(final Person p1, final Person p2) {
-//               return p1.getShortName().compareTo(p2.getShortName());
-//            }
-//        });
-//        unassignedPeople.addAll(getPeople());
-//        unassignedPeople.remove(assignedPeople);
-//        return unassignedPeople;
-
-        Set<Person> assignedPeople = new HashSet<>();
+        Set<Person> assignedPeople = new TreeSet<>((p1, p2) -> {
+            return p1.getShortName().compareTo(p2.getShortName());
+        });
         getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
-        Set<Person> unassignedPeople = new HashSet<>(getPeople());
-        unassignedPeople.remove(assignedPeople);
+        Set<Person> unassignedPeople = new TreeSet<>((p1, p2) -> {
+            return p1.getShortName().compareTo(p2.getShortName());
+        });
+        unassignedPeople.addAll(getPeople());
+        unassignedPeople.removeAll(assignedPeople);
         return unassignedPeople;
     }
 

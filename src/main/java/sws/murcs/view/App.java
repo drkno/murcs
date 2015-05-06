@@ -31,6 +31,18 @@ public class App extends Application {
      * An list of listeners relating to the app closing.
      */
     private static ArrayList<AppClosingListener> listeners = new ArrayList<>();
+    /**
+     * The minimum height of the application.
+     */
+    private final int minimumApplicationHeight = 600;
+    /**
+     * The minimum width of the application.
+     */
+    private final int minimumApplicationWidth = 600;
+    /**
+     * The subString length to search over, when parsing debugging mode.
+     */
+    private static final int SUBSTRINGLENGTH = 3;
 
     /**
      * Gets the stage of App.
@@ -70,9 +82,9 @@ public class App extends Application {
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         primaryStage.getIcons().add(iconImage);
 
-        // Set up max and min dimensions of main window.
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(600);
+        // Set up max and min dimensions of main window
+        primaryStage.setMinWidth(minimumApplicationWidth);
+        primaryStage.setMinHeight(minimumApplicationHeight);
 
         primaryStage.show();
         stage = primaryStage;
@@ -108,7 +120,7 @@ public class App extends Application {
         if (debug >= 0) {
             RelationalModelGenerator.Stress stressLevel = RelationalModelGenerator.Stress.Low;
             if (debug + 1 < args.length) {
-                switch (args[debug + 1].substring(0, 3).toLowerCase()) {
+                switch (args[debug + 1].substring(0, SUBSTRINGLENGTH).toLowerCase()) {
                     case "low": stressLevel = RelationalModelGenerator.Stress.Low; break;
                     case "med": stressLevel = RelationalModelGenerator.Stress.Medium; break;
                     case "hig": stressLevel = RelationalModelGenerator.Stress.High; break;
