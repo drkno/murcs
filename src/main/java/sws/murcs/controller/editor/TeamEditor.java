@@ -118,7 +118,6 @@ public class TeamEditor extends GenericEditor<Team> {
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
             getModel().addMember(person);
-            addTeamMemberPicker.getItems().remove(person);
             updateTeamMembers();
             updatePOSM();
         }
@@ -267,6 +266,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the view of the members in the team.
      */
     private void updateTeamMembers() {
+        addTeamMemberPicker.getItems().clear();
+        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
         teamMembersContainer.getChildren().clear();
         for (Person person : getModel().getMembers()) {
             Node node = generateMemberNode(person);
