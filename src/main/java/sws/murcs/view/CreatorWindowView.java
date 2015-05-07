@@ -149,7 +149,7 @@ public class CreatorWindowView {
     }
 
     /**
-     * Disposes of the creator view
+     * Disposes of the creator view.
      */
     public final void dispose() {
         model = null;
