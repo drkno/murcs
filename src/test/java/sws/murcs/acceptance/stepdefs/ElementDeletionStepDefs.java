@@ -132,13 +132,11 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @And("^\"([^\"]*)\" deletion can be undone$")
     public void the_deletion_of_a_type_can_be_undone(String type) throws Throwable {
         fx.clickOn("#editMenu");
-        fx.moveBy(-10, 0);
+        fx.moveBy(0, 20);
         fx.clickOn("#undoMenuItem");
         fx.clickOn("#displayChoiceBox").clickOn(type);
         fx.clickOn("#editMenu");
         int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
-        fx.clickOn("#editMenu");
-        fx.moveBy(-10, 0);
         assertTrue(displayListSize == (type.equals("Skills") ? 3: 1));
 
     }
