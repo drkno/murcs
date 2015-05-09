@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.ModelTypes;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
+import sws.murcs.controller.editor.Editor;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 
@@ -119,7 +120,9 @@ public class CreatorWindowView {
             controller.setModel(model);
             controller.setCreateClicked(createAction);
             controller.setCancelClicked(cancelAction);
-            controller.setContent(new EditorPane(model).getView());
+            EditorPane editorPane = new EditorPane(model);
+            controller.setContentPane(editorPane.getView());
+            controller.setEditorPane(editorPane);
 
             // Set up the stage
             Stage stage = new Stage();

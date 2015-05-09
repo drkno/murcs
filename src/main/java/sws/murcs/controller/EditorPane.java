@@ -100,4 +100,12 @@ public class EditorPane {
             controller.loadObject();
         }
     }
+
+    /**
+     * Gets the controller of the editor pane.
+     * @return The editor pane controller.
+     */
+    public final Editor<Model> getController() {
+        return controller;
+    }
 }
