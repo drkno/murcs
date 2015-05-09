@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -79,15 +81,15 @@ public class RelationalModel extends TrackableObject implements Serializable {
             Skill productOwner = new Skill();
             productOwner.setShortName("PO");
             productOwner.setLongName("Product Owner");
-            productOwner.setDescription("The projects main stakeholder. Responsible for making sure " +
-                    "that their vision for the product is realised.");
+            productOwner.setDescription("The projects main stakeholder. Responsible for making sure "
+                    + "that their vision for the product is realised.");
             this.skills.add(productOwner);
 
             Skill scrumMaster = new Skill();
             scrumMaster.setShortName("SM");
             scrumMaster.setLongName("Scrum Master");
-            scrumMaster.setDescription("Manages the efforts of a team, resolves difficulties and removes " +
-                    "obsticles to task completion.");
+            scrumMaster.setDescription("Manages the efforts of a team, resolves difficulties and removes "
+                    + "obsticles to task completion.");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
             // will never ever happen. ever. an exception is only
@@ -167,13 +169,16 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the unassigned people.
      * @return The unassigned people
      */
-    public final ArrayList<Person> getUnassignedPeople() {
-        ArrayList<Person> unassignedPeople = new ArrayList<>();
-        for (Person p : getPeople()) {
-            if (!getTeams().stream().anyMatch(t -> t.getMembers().contains(p))) {
-                unassignedPeople.add(p);
-            }
-        }
+    public final Set<Person> getUnassignedPeople() {
+        Set<Person> assignedPeople = new TreeSet<>((p1, p2) -> {
+            return p1.getShortName().compareTo(p2.getShortName());
+        });
+        getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
+        Set<Person> unassignedPeople = new TreeSet<>((p1, p2) -> {
+            return p1.getShortName().compareTo(p2.getShortName());
+        });
+        unassignedPeople.addAll(getPeople());
+        unassignedPeople.removeAll(assignedPeople);
         return unassignedPeople;
     }
 
@@ -195,7 +200,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         if (!this.getPeople().contains(person)
                 && !this.getPeople()
                         .stream()
-                        .filter(s -> s.getShortName().toLowerCase().equals(person.getShortName().toLowerCase()))
+                        .filter(s -> s.equals(person))
                         .findAny()
                         .isPresent()) {
             this.getPeople().add(person);
@@ -207,12 +212,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a list of people to the model.
-     * @param people People to be added
+     * @param newPeople People to be added
      * @throws DuplicateObjectException if the
      * relational model already has a person from the people to be added
      */
-    public final void addPeople(final ArrayList<Person> people) throws DuplicateObjectException {
-        for (Person person : people) {
+    public final void addPeople(final ArrayList<Person> newPeople) throws DuplicateObjectException {
+        for (Person person : newPeople) {
             this.addPerson(person);
         }
     }
@@ -361,7 +366,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws Exception when adding the allocations failed.
      */
     public final void addAllocations(final List<WorkAllocation> allocationsToAdd) throws Exception {
-        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+        long commitNumber;
+        if (UndoRedoManager.getHead() == null) {
+            commitNumber = 0;
+        }
+        else {
+            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        }
         for (WorkAllocation allocation : allocationsToAdd) {
             addAllocation(allocation);
         }
@@ -439,7 +450,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.skills.remove(skill);
 
             //Remove the skill from any people who might have it
-            getPeople().stream().filter(person -> person.getSkills().contains(skill)).forEach(person -> person.removeSkill(skill));
+            getPeople()
+                    .stream()
+                    .filter(person -> person.getSkills().contains(skill))
+                    .forEach(person -> person.removeSkill(skill));
         }
     }
 
@@ -450,9 +464,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public final void add(final Model model) throws DuplicateObjectException {
         ModelTypes type = ModelTypes.getModelType(model);
-
-        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
-
+        long commitNumber;
+        if (UndoRedoManager.getHead() == null) {
+            commitNumber = 0;
+        }
+        else {
+            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        }
         switch (type) {
             case Project:
                 addProject((Project) model);
@@ -489,7 +507,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public final void remove(final Model model) {
         ModelTypes type = ModelTypes.getModelType(model);
-        long commitNumber = UndoRedoManager.getHead() == null ? 0 : UndoRedoManager.getHead().getCommitNumber();
+        long commitNumber;
+        if (UndoRedoManager.getHead() == null) {
+            commitNumber = 0;
+        }
+        else {
+            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        }
 
         switch (type) {
             case Project:
@@ -508,7 +532,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 removeRelease((Release) model);
                 break;
             default:
-                throw new UnsupportedOperationException("We don't know what to do with this model (remove for " + model.getClass().getName() + ") in Relational Model. You should fix this");
+                throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
+                        + model.getClass().getName()
+                        + ") in Relational Model. You should fix this");
         }
 
         try {
@@ -598,7 +624,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Release:
                 return findUsages((Release) model);
             default:
-                throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for " + model.getClass().getName() + ") in Relational Model. You should fix this");
+                throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
+                        + model.getClass().getName()
+                        + ") in Relational Model. You should fix this");
         }
     }
 
@@ -690,7 +718,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Release:
                 return getReleases().contains(model);
             default:
-                throw new UnsupportedOperationException("We don't know what to do with this model (exists for " + model.getClass().getName() + ") in Relational Model. You should fix this");
+                throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
+                        + model.getClass().getName()
+                        + ") in Relational Model. You should fix this");
         }
     }
 }

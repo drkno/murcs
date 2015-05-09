@@ -33,7 +33,8 @@ public final class JavaFXHelpers {
      * @param parent The parent to get the descendants from
      * @param nodes The ArrayList of Nodes to add the descendants to
      */
-    public static void addAllDescendants(final Parent parent, final ArrayList<Node> nodes) {
+    public static void addAllDescendants(final Parent parent,
+                                         final ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
             if (node instanceof Parent) {
@@ -43,7 +44,8 @@ public final class JavaFXHelpers {
     }
 
     /**
-     * Gets a node based on its ID in the descendants of the given parent. Returns null if there is no such node.
+     * Gets a node based on its ID in the descendants of the given parent.
+     * Returns null if there is no such node.
      * @param parent The parent who's descendants you search
      * @param id The id to find
      * @return The node with the given ID in the descendants of the parent.

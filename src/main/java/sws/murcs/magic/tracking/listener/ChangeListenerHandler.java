@@ -15,10 +15,10 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
         try {
             System.gc();
         }
-		catch (Exception e) {
-			// not much we can do
-			e.printStackTrace();
-		}
+        catch (Exception e) {
+            // not much we can do
+            e.printStackTrace();
+        }
     }
 
     /**

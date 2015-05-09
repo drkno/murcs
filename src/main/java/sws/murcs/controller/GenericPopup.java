@@ -22,8 +22,7 @@ import java.util.function.Consumer;
 public class GenericPopup extends AnchorPane {
 
     /***
-     * Enum for specifying which side of the dialog you
-     * want the button to appear on.
+     * Enum for specifying which side of the dialog you want the button to appear on.
      */
     public enum Position {
         /**
@@ -57,29 +56,35 @@ public class GenericPopup extends AnchorPane {
     /**
      * The main message text.
      */
-    @FXML private Label messageText;
+    @FXML
+    private Label messageText;
     /**
      * The title of the message.
      */
-    @FXML private Label messageTitle;
+    @FXML
+    private Label messageTitle;
 
     /**
      * The image that goes with the message.
      */
-    @FXML private ImageView messageImage;
+    @FXML
+    private ImageView messageImage;
     /**
-     *     Contains left aligned buttons.
+     * Contains left aligned buttons.
      */
-    @FXML private HBox hBoxLeft;
+    @FXML
+    private HBox hBoxLeft;
     /**
      * Contains right align buttons.
      */
-    @FXML private HBox hBoxRight;
+    @FXML
+    private HBox hBoxRight;
 
     /**
      * The main content pane.
      */
-    @FXML private GridPane contentPane;
+    @FXML
+    private GridPane contentPane;
 
     /**
      * The stage for the popup.
@@ -93,18 +98,30 @@ public class GenericPopup extends AnchorPane {
      * Whether or not there are any buttons defined in the popup.
      */
     private boolean buttonsDefined;
+    /**
+     * Default button width.
+     */
+    private final int defaultButtonWidth = 70;
+    /**
+     * Default button height.
+     */
+    private final int defaultButtonHeight = 25;
+    /**
+     * Default popUp height.
+     */
+    private final int defaultPopUpHeight = 150;
 
     /***
      * Constructs a new Generic Popup. In order to use you need
      * to at least set the message and add at least 1 button
      * some examples of how to use this include:
      *
-     *      GenericPopup controller = new GenericPopup();
-     *      controller.setMessageText("Test message");
-     *      controller.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("DEFAULT", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -RIGHTARROW {controller.close(); return null;});
-     *      controller.show();
+     * GenericPopup ctrl = new GenericPopup();
+     * ctrl.setMessageText("Test message");
+     * ctrl.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -&gt; {ctrl.close();});
+     * ctrl.addButton("DEFAULT", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -&gt; {ctrl.close();});
+     * ctrl.addButton("Thingy", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -&gt; {ctrl.close();});
+     * ctrl.show();
      *
      * There are extra features, like you can add and image
      * and title, change the window title as well
@@ -116,8 +133,7 @@ public class GenericPopup extends AnchorPane {
 
     /***
      * Constructs a dialog from an exception.
-     * @param exception The exception that you want to
-     *                  feed in to show the exception message.
+     * @param exception The exception that you want to feed in to show the exception message.
      */
     public GenericPopup(final Exception exception) {
         popupStage = new Stage();
@@ -128,11 +144,12 @@ public class GenericPopup extends AnchorPane {
 
         try {
             loader.load();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         popupScene = new Scene(this);
-        popupStage.initOwner(App.stage);
+        popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
         popupStage.setResizable(false);
@@ -144,29 +161,27 @@ public class GenericPopup extends AnchorPane {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(m -> this.close());
+            addOkButton(m -> close());
         }
     }
 
 
     /***
-     * Adds a new button to the dialog. You must specify the text
-     * to go on the button, it's location on the dialog
-     * (either the left hand side or the right hand side) and
-     * the function to call when it is clicked (this must be a
-     * function that implements event notifier or just a lambda
-     * function with return null; at the end of it).
-     * NOTE: Buttons stack on the left and right sides,
-     * therefore if you add two buttons on the left the first one added
-     * will be the one closest to the left hand side, so keep that in mind.
+     * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
+     * (either the left hand side or the right hand side) and the function to call when it is clicked
+     * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left
+     * the first one added will be the one closest to the left hand side, so keep that in mind.
      * @param buttonText The text on the button.
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
      */
-    final void addButton(final String buttonText, final Position position, final Action action, final Consumer func) {
+    public final void addButton(final String buttonText,
+                                final Position position,
+                                final Action action,
+                                final Consumer func) {
         Button button = new Button(buttonText);
-        button.setPrefSize(70, 25);
+        button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.accept(null));
 
@@ -198,47 +213,43 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Shows the dialog, this should be the last thing you
-     * call after setting up your dialog. If you have not
-     * set up a title the dialog will automatically remove
-     * it and resize.
+     * Shows the dialog, this should be the last thing you call after setting up your dialog.
+     * If you have not set up a title the dialog will automatically remove it and resize.
      */
-    final void show() {
+    public final void show() {
         if (messageTitle.getText().equals("Title")) {
             contentPane.getRowConstraints().get(0).setMinHeight(0);
             contentPane.getRowConstraints().get(0).setMaxHeight(0);
 
             messageImage.setVisible(false);
             messageTitle.setVisible(false);
-            popupStage.setHeight(150);
+            popupStage.setHeight(defaultPopUpHeight);
         }
 
         if (!buttonsDefined) {
-            addOkButton(m -> this.close());
+            addOkButton(m -> close());
         }
+
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(App.getStage());
 
         popupStage.show();
     }
 
     /***
      * Closes the dialog.
-     * Note: You may want to set up one of your buttons
-     * to call this, although if you use the addOkCancelButtons() with
-     * only one lambda expression then the cancel button
-     * is automatically set to call this.
+     * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
+     * with only one lambda expression then the cancel button is automatically set to call this.
      */
-    final void close() {
+    public final void close() {
         popupStage.close();
     }
 
     /***
-     * Set the message you want the the dialog to
-     * show, text will wrap but the dialog does not
-     * resize currently so don't
-     * make it too long.
+     * Set the message you want the the dialog to show.
      * @param message The message you want to show on the dialog.
      */
-    final void setMessageText(final String message) {
+    public final void setMessageText(final String message) {
         if (message == null) {
             return;
         }
@@ -246,67 +257,60 @@ public class GenericPopup extends AnchorPane {
     }
 
     /***
-     * Sets the title of the window (the bit that
-     * appears in the bar at the top)
+     * Sets the title of the window.
+     * (the bit that appears in the bar at the top)
      * @param title The window title.
      */
-    final void setWindowTitle(final String title) {
+    public final void setWindowTitle(final String title) {
         popupStage.setTitle(title);
     }
 
     /***
-     * Sets the title of the message (appears
-     * alongside the title image).
+     * Sets the title of the message
+     * (appears alongside the title image).
      * @param titleText The title of the message.
      */
-    final void setTitleText(final String titleText) {
-        if (titleText == null) return;
+    public final void setTitleText(final String titleText) {
+        if (titleText == null) {
+            return;
+        }
         messageTitle.setText(titleText);
     }
 
     /***
      * Sets the image to appear beside the title.
-     * NOTE: If you don't set the title text (not
-     * the window text) then this won't appear.
+     * NOTE: If you don't set the title text (not the window text) then this won't appear.
      * @param image image to set.
      */
-    final void setTitleImage(final Image image) {
+    public final void setTitleImage(final Image image) {
         messageImage.setImage(image);
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify what
-     * is supposed to happen for the ok button and the
-     * cancel button
+     * Adds default OK Cancel Buttons. you specify what is supposed to happen for the ok button and the cancel button.
      * remains it's default (closes the dialog)
-     * @param okFunction The function you want to call
-     *                   on the ok button being clicked.
+     * @param okFunction The function you want to call on the ok button being clicked.
      */
-    final void addOkCancelButtons(final Consumer okFunction) {
-        addOkCancelButtons(okFunction, m -> this.close());
+    public final void addOkCancelButtons(final Consumer okFunction) {
+        addOkCancelButtons(okFunction, m -> close());
     }
 
     /***
-     * Adds default OK Cancel Buttons, you specify the
-     * functions for both the ok and cancel buttons when
-     * clicked
-     * @param okFunction The function you want to
-     *                   call on ok button click
-     * @param cancelFunction The function you want to
-     *                       call on cancel button click
+     * Adds default OK Cancel Buttons.
+     * you specify the functions for both the ok and cancel buttons when clicked.
+     * @param okFunction The function you want to call on ok button click
+     * @param cancelFunction The function you want to call on cancel button click
      */
-    final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
+    public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
     /***
-     * Adds the default OK button with a specified function
-     * to call on it being clicked.
-     * @param okFunction Function to call on ok
-     *                   button being clicked.
+     * Adds the default OK button with a specified function to call on it being clicked.
+     * @param okFunction Function to call on ok button being clicked.
      */
-    final void addOkButton(final Consumer okFunction) {
+    public final void addOkButton(final Consumer okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }
