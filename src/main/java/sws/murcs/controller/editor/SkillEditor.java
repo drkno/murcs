@@ -97,19 +97,19 @@ public class SkillEditor extends GenericEditor<Skill> {
     protected final void saveChangesWithException() throws Exception {
         String modelShortName =  getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
-        if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
+        if (isNullOrNotEqual(modelShortName, viewShortName)) {
             getModel().setShortName(viewShortName);
         }
 
         String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
-        if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
+        if (isNullOrNotEqual(modelLongName, viewLongName)) {
             getModel().setLongName(viewLongName);
         }
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
-        if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
+        if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
     }

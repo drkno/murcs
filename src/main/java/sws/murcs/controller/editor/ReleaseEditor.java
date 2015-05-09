@@ -119,19 +119,19 @@ public class ReleaseEditor extends GenericEditor<Release> {
     protected final void saveChangesWithException() throws Exception {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
-        if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
+        if (isNullOrNotEqual(modelShortName, viewShortName)) {
             getModel().setShortName(viewShortName);
         }
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
-        if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
+        if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
 
         LocalDate modelReleaseDate = getModel().getReleaseDate();
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
-        if (isNotEqualOrIsEmpty(modelReleaseDate, viewReleaseDate)) {
+        if (isNullOrNotEqual(modelReleaseDate, viewReleaseDate)) {
             getModel().setReleaseDate(viewReleaseDate);
         }
 

@@ -103,14 +103,14 @@ public class TeamEditor extends GenericEditor<Team> {
     protected final void saveChangesWithException() throws Exception {
         Person modelProductOwner = getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
-        if (isNotEqualOrIsEmpty(modelProductOwner, viewProductOwner)) {
+        if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
             getModel().setProductOwner(viewProductOwner);
             updatePOSM();
         }
 
         Person modelScrumMaster = getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
-        if (isNotEqualOrIsEmpty(modelScrumMaster, viewScrumMaster)) {
+        if (isNullOrNotEqual(modelScrumMaster, viewScrumMaster)) {
             getModel().setScrumMaster(viewScrumMaster);
             updatePOSM();
         }
@@ -124,19 +124,19 @@ public class TeamEditor extends GenericEditor<Team> {
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
-        if (isNotEqualOrIsEmpty(modelShortName, viewShortName)) {
+        if (isNullOrNotEqual(modelShortName, viewShortName)) {
             getModel().setShortName(viewShortName);
         }
 
         String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
-        if (isNotEqualOrIsEmpty(modelLongName, viewLongName)) {
+        if (isNullOrNotEqual(modelLongName, viewLongName)) {
             getModel().setLongName(viewLongName);
         }
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextField.getText();
-        if (isNotEqualOrIsEmpty(modelDescription, viewDescription)) {
+        if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
     }
