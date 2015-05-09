@@ -80,7 +80,28 @@ public class Release extends Model {
     }
 
     @Override
+    public final int hashCode() {
+        int c = 1;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        else {
+            c = 0;
+        }
+        return getHashCodePrime() + c;
+    }
+
+    @Override
     public final String toString() {
         return getShortName();
+    }
+
+    /**
+     * Adds the current release instance to a project.
+     * @param project The project to add the release to.
+     */
+    public final void changeRelease(final Project project) {
+        project.addRelease(this);
+        commit("edit release");
     }
 }

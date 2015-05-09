@@ -44,8 +44,8 @@ public enum ModelTypes {
      * @param classType class of the ModelType.
      */
     ModelTypes(final int modelIndex, final Class classType) {
-        this.index = modelIndex;
-        this.clazz = classType;
+        index = modelIndex;
+        clazz = classType;
     }
 
     /**

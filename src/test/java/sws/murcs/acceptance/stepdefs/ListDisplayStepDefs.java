@@ -116,7 +116,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @Then("^details of the select item are shown$")
     public void details_of_the_select_item_are_shown() throws Throwable {
         GridPane contentPane = (GridPane) primaryStage.getScene().lookup("#contentPane");
-        TextField shortName = (TextField) contentPane.lookup("#personNameTextField");
+        TextField shortName = (TextField) contentPane.lookup("#shortNameTextField");
         assertNotNull(shortName);
     }
 
@@ -128,8 +128,8 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @When("^I edit the items short name$")
     public void I_edit_the_items_short_name() throws Throwable {
-        fx.clickOn("#personNameTextField").type(KeyCode.A);
-        fx.clickOn("#personFullNameTextField");
+        fx.clickOn("#shortNameTextField").type(KeyCode.A);
+        fx.clickOn("#longNameTextField");
     }
 
     @Then("^the short name is updated in the list display$")

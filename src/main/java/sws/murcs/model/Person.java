@@ -132,14 +132,15 @@ public class Person extends Model {
      */
     @Override
     public final boolean equals(final Object object) {
-        if (!(object instanceof Person)) return false;
+        if (object == null || !(Person.class == object.getClass())) {
+            return false;
+        }
         Person person = (Person) object;
         String shortName1 = person.getShortName();
         String shortName2 = getShortName();
         if (shortName1 == null || shortName2 == null) {
             return shortName1 == shortName2;
         }
-        return shortName1.toLowerCase().equals(shortName2.toLowerCase())
-                || person.getUserId().equals(getUserId());
+        return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
     }
 }
