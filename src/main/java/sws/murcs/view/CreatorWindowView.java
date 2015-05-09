@@ -27,7 +27,7 @@ public class CreatorWindowView {
     /**
      * The create callback.
      */
-    private ViewUpdate<Model> createAction;
+    private Consumer<Model> createAction;
     /**
      * The cancel callback.
      */
@@ -53,7 +53,7 @@ public class CreatorWindowView {
      * Get the create callback.
      * @return The create callback.
      */
-    public final ViewUpdate<Model> getCreateAction() {
+    public final Consumer<Model> getCreateAction() {
         return createAction;
     }
 
@@ -61,7 +61,7 @@ public class CreatorWindowView {
      * Sets the create callback.
      * @param newCreateAction The new create callback.
      */
-    public final void setCreateAction(final ViewUpdate<Model> newCreateAction) {
+    public final void setCreateAction(final Consumer<Model> newCreateAction) {
         createAction = newCreateAction;
     }
 
@@ -88,7 +88,7 @@ public class CreatorWindowView {
      * @param pCancelAction cancel action callback to set
      */
     public CreatorWindowView(final Model pModel,
-                             final ViewUpdate<Model> pCreateAction,
+                             final Consumer<Model> pCreateAction,
                              final Consumer<Model> pCancelAction) {
         model = pModel;
         createAction = pCreateAction;

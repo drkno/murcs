@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -32,7 +31,7 @@ public class CreatorWindowController {
     /**
      * The command to be issued on okay being clicked.
      */
-    private ViewUpdate<Model> createClicked;
+    private Consumer<Model> createClicked;
     /**
      * The command to be issued on cancel being clicked.
      */
@@ -93,7 +92,7 @@ public class CreatorWindowController {
      * Sets the method that is called when okay is clicked.
      * @param okayCommand The Event to notify
      */
-    public final void setCreateClicked(final ViewUpdate<Model> okayCommand) {
+    public final void setCreateClicked(final Consumer<Model> okayCommand) {
         createClicked = okayCommand;
     }
 
@@ -131,7 +130,7 @@ public class CreatorWindowController {
                     return;
                 }
                 PersistenceManager.Current.getCurrentModel().add(model);
-                createClicked.selectItem(model);
+                createClicked.accept(model);
             }
             catch (Exception e) {
                 e.printStackTrace();
