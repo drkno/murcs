@@ -119,7 +119,8 @@ public class CreatorWindowView {
             controller.setModel(model);
             controller.setCreateClicked(createAction);
             controller.setCancelClicked(cancelAction);
-            controller.setContent(new EditorPane(model).getView());
+            EditorPane editorPane = new EditorPane(model);
+            controller.setEditorPane(editorPane);
 
             // Set up the stage
             Stage stage = new Stage();

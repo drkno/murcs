@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class CreatorWindowController {
 
     /**
-     * The main content pane that contains all the
+     * The main editorPane pane that contains all the
      * editable fields.
      */
     @FXML
@@ -46,9 +46,9 @@ public class CreatorWindowController {
      */
     private Model model;
     /**
-     * The Content of the grid pane.
+     * The editor of the grid pane.
      */
-    private EditorPane content;
+    private EditorPane editorPane;
 
     /**
      * Empty Constructor for fxml creation.
@@ -57,11 +57,12 @@ public class CreatorWindowController {
     }
 
     /**
-     * Sets the content in the contentPane.
-     * @param pContent Content to set
+     * Sets the editor pane for the creation window controller.
+     * @param editor The editor pane being used in the controller window.
      */
-    public final void setContent(final Node pContent) {
-        contentPane.getChildren().add(pContent);
+    public final void setEditorPane(final EditorPane editor) {
+        editorPane = editor;
+        contentPane.getChildren().add(editorPane.getView());
     }
 
     /**
@@ -118,6 +119,8 @@ public class CreatorWindowController {
         if (createClicked != null) {
             try {
                 contentPane.requestFocus();
+                //Save changes to the editor pane before proceeding
+                editorPane.getController().saveChanges();
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
                 if (node != null && node instanceof Label
                         && (!(((Label) node).getText() == null)
@@ -145,10 +148,10 @@ public class CreatorWindowController {
         createClicked = null;
         cancelClicked = null;
         contentPane = null;
-        if (content != null) {
-            content.dispose();
+        if (editorPane != null) {
+            editorPane.dispose();
         }
-        content = null;
+        editorPane = null;
         model = null;
         stage = null;
     }

@@ -41,7 +41,7 @@ public class EditorPane {
      * Gets the view of the editor pane.
      * @return editor pane view
      */
-    public final Parent getView() {
+    protected final Parent getView() {
         return view;
     }
 
@@ -49,8 +49,16 @@ public class EditorPane {
      * Gets the model to model.
      * @return Model to model
      */
-    public final Model getModel() {
+    protected final Model getModel() {
         return model;
+    }
+
+    /**
+     * Gets the controller of the editor pane.
+     * @return The editor pane controller.
+     */
+    protected final Editor<Model> getController() {
+        return controller;
     }
 
     /**
