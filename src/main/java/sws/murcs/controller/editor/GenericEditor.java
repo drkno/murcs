@@ -123,7 +123,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      * @param viewObject view Object to check against
      * @return boolean true if objects are not equal or null, false otherwise
      */
-    protected final boolean isNotEqualOrIsEmpty(final Object modelObject, final Object viewObject) {
+    protected final boolean isNullOrNotEqual(final Object modelObject, final Object viewObject) {
         return viewObject == null || modelObject == null || !viewObject.equals(modelObject);
     }
 
@@ -134,7 +134,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      * @return boolean true if objects are not equal, false otherwise
      */
     protected final boolean isNotEqual(final Object modelObject, final Object viewObject) {
-        return viewObject == null || (modelObject != null && !viewObject.equals(modelObject));
+        return viewObject == null || !(modelObject == null || viewObject.equals(modelObject));
     }
 
     /**
