@@ -161,14 +161,12 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (viewAssociatedProject != null) {
             if (associatedProject == null) {
                 associatedProject = viewAssociatedProject;
-                associatedProject.addRelease(getModel());
-                UndoRedoManager.commit("edit release");
+                getModel().changeRelease(viewAssociatedProject);
             }
             else if (!associatedProject.equals(viewAssociatedProject)) {
                 associatedProject.removeRelease(getModel());
                 associatedProject = viewAssociatedProject;
-                associatedProject.addRelease(getModel());
-                UndoRedoManager.commit("edit release");
+                getModel().changeRelease(viewAssociatedProject);
             }
         }
         else {
