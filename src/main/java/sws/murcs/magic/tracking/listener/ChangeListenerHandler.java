@@ -16,9 +16,9 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
             System.gc();
         }
         catch (Exception e) {
-			// not much we can do
-			e.printStackTrace();
-		}
+            // not much we can do
+            e.printStackTrace();
+        }
     }
 
     /**
