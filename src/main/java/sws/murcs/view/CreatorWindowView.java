@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import sws.murcs.controller.ModelTypes;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
-import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.model.Model;
 
 import java.util.Objects;
