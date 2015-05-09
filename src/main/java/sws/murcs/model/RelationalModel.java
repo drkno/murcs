@@ -498,7 +498,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             e.printStackTrace();
         }
         UndoRedoManager.add(model);
-        commit("show " + type.toString().toLowerCase());
+        commit("create " + type.toString().toLowerCase());
     }
 
     /**
