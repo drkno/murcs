@@ -10,8 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * A dumb information carrier used to represent a work
- * schedule by a Team on a Project.
+ * Represents a work period done by a team on a project over a period of time
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -78,6 +77,4 @@ public class WorkAllocation implements Serializable {
     public final LocalDate getEndDate() {
         return this.endDate;
     }
-
-
 }

@@ -3,14 +3,10 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
@@ -78,14 +74,12 @@ public class ProjectEditor extends GenericEditor<Project> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextField.focusedProperty().addListener(getChangeListener());
-        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        datePickerStartDate.focusedProperty().addListener(getChangeListener());
-        datePickerEndDate.focusedProperty().addListener(getChangeListener());
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        tableColumnEndDates.setCellFactory(param -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
 
         setErrorCallback(message -> {
@@ -144,28 +138,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
-
-        // todo decouple from model
-        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
-
-        // Extract details of a work period
-        LocalDate startDate = datePickerStartDate.getValue();
-        LocalDate endDate = datePickerEndDate.getValue();
-        Team selectedTeam = choiceBoxAddTeam.getValue();
-
-        if (selectedTeam != null && startDate != null && endDate != null) {
-
-            // Clear user inputs for work period
-            choiceBoxAddTeam.getSelectionModel().clearSelection();
-            datePickerStartDate.setValue(null);
-            datePickerEndDate.setValue(null);
-
-            // Save this work allocation to the model
-            WorkAllocation allocation = new WorkAllocation(getModel(), selectedTeam, startDate, endDate);
-            relationalModel.addAllocation(allocation);
-            // This way, the list remains ordered
-            observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
-        }
     }
 
     @Override
@@ -173,14 +145,41 @@ public class ProjectEditor extends GenericEditor<Project> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
-        choiceBoxAddTeam.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
-        datePickerStartDate.focusedProperty().removeListener(getChangeListener());
-        datePickerEndDate.focusedProperty().removeListener(getChangeListener());
         observableAllocations = null;
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         setErrorCallback(null);
+    }
+
+    /**
+     * Called by the "Add Team" button.
+     * Adds a work allocation to the list for the selected project
+     */
+    @FXML
+    private void buttonScheduleTeamClick() {
+        Team team = choiceBoxAddTeam.getValue();
+        LocalDate startDate = datePickerStartDate.getValue();
+        LocalDate endDate = datePickerEndDate.getValue();
+
+        // Must meet minimum requirements for an allocation
+        if (team == null || startDate == null) return;
+
+        try {
+            // Attempt to save the allocation
+            RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+            WorkAllocation allocation = new WorkAllocation(getModel(), team, startDate, endDate);
+            relationalModel.addAllocation(allocation);
+            observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
+
+            // Clear user inputs for work period
+            choiceBoxAddTeam.getSelectionModel().clearSelection();
+            datePickerStartDate.setValue(null);
+            datePickerEndDate.setValue(null);
+        }
+        catch (CustomException e) {
+            labelErrorMessage.setText(e.getMessage());
+        }
     }
 
     /**
@@ -208,5 +207,21 @@ public class ProjectEditor extends GenericEditor<Project> {
             alert.close();
         });
         alert.show();
+    }
+
+    /**
+     * Used to represent the end date cell as it could receive a null pointer if no end is specified
+     */
+    class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
+        @Override
+        protected void updateItem(LocalDate item, boolean empty) {
+            super.updateItem(item, empty);
+            if (item != null) {
+                setText(item.toString());
+            }
+            else {
+                setText("");
+            }
+        }
     }
 }

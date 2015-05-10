@@ -159,6 +159,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.projects.remove(project);
         }
 
+        //Remove all work allocations associated with the project
+        for (WorkAllocation allocation : getProjectsAllocations(project)) {
+            allocations.remove(allocation);
+        }
+
         //Remove all the releases associated with the project
         for (Release release : project.getReleases()) {
             removeRelease(release);
@@ -333,30 +338,49 @@ public class RelationalModel extends TrackableObject implements Serializable {
         LocalDate startDate = workAllocation.getStartDate();
         LocalDate endDate = workAllocation.getEndDate();
 
-        if (startDate.isAfter(endDate)) {
+        if (endDate != null && startDate.isAfter(endDate)) {
             throw new CustomException("End Date is before Start Date");
         }
 
         int index = 0;
-        for (WorkAllocation allocation : this.allocations) {
-            if (allocation.getTeam() == team) {
-                // Check that this team isn't overlapping with itself
-                if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
-                    throw new DuplicateObjectException("Work Dates Overlap");
+        if (endDate != null) {
+            for (WorkAllocation allocation : allocations) {
+                if (allocation.getTeam() == team) {
+                    // Check that this team isn't overlapping with itself
+                    if (allocation.getEndDate() != null) {
+                        if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
+                            throw new CustomException("Work Dates Overlap");
+                        }
+                    }
+                    else if (allocation.getStartDate().isBefore(endDate)) {
+                        throw new CustomException("Work Dates Overlap");
+                    }
+                }
+                if (allocation.getStartDate().isBefore(startDate)) {
+                    // Increment the index where the allocation will be placed
+                    // if it does get placed
+                    index++;
+                }
+                else if (allocation.getStartDate().isAfter(endDate)) {
+                    // At this point we've checked all overlapping allocations
+                    // and haven't found any errors
+                    break;
                 }
             }
-            if (allocation.getStartDate().isBefore(startDate)) {
-                // Increment the index where the allocation will be placed
-                // if it does get placed
-                index++;
-            }
-            else if (allocation.getStartDate().isAfter(endDate)) {
-                // At this point we've checked all overlapping allocations
-                // and haven't found any errors
-                break;
+        }
+        else {
+            for (WorkAllocation allocation : allocations) {
+                if (allocation.getTeam() == team) {
+                    if (allocation.getEndDate() == null || allocation.getEndDate().isAfter(startDate)) {
+                        throw new CustomException("Work Dates Overlap");
+                    }
+                }
+                else if (allocation.getStartDate().isBefore(startDate)) {
+                    index++;
+                }
             }
         }
-        this.allocations.add(index, workAllocation);
+        allocations.add(index, workAllocation);
         commit("edit project");
     }
 
