@@ -8,18 +8,25 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * Observable ArrayList type with custom callback property for object toStrings().
  * Used to ensure changes to objects are instantly reflected in listeners.
  * @param <T> type of the list, expected to extend Model.
  */
-public class ModelObservableArrayList<T extends Model> extends ObservableArrayList<T> implements Serializable {
+public class ModelObservableArrayList<T extends Model>
+        extends ObservableArrayList<T> implements Serializable, Comparator<T> {
     /**
      * Serializable backing field.
      * Required because JavaFX observable lists are not serializable.
      */
     private ArrayList<T> backingField;
+
+    /**
+     * Custom comparator so that sorting the list uses a different ordering.
+     */
+    private transient Comparator<T> comparator;
 
     /**
      * Default constructor.
@@ -69,5 +76,25 @@ public class ModelObservableArrayList<T extends Model> extends ObservableArrayLi
         catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public final int compare(final T model1, final T model2) {
+        if (comparator != null) {
+            return comparator.compare(model1, model2);
+        }
+        String shortName1 = model1.getShortName();
+        String shortName2 = model2.getShortName();
+        return shortName1.compareToIgnoreCase(shortName2);
+    }
+
+    /**
+     * Sets a custom comparator so that the list will be sorted by
+     * default in a custom ordering.
+     * @param newComparator comparator to use, set to null to revert
+     *                      to the default comparator.
+     */
+    public final void setComparator(final Comparator<T> newComparator) {
+        comparator = newComparator;
     }
 }

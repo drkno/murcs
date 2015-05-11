@@ -29,6 +29,7 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
@@ -36,6 +37,7 @@ import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -224,11 +226,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             default: throw new UnsupportedOperationException();
         }
 
-        arrayList = new SortedList<>((ObservableList<? extends Model>) arrayList, (o1, o2) -> {
-            String shortName1 = o1.getShortName();
-            String shortName2 = o2.getShortName();
-            return shortName1.compareToIgnoreCase(shortName2);
-        });
+        if (arrayList.getClass() == ModelObservableArrayList.class) {
+            ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
+            arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            System.err.println("This list type does not yet have an ordering specified, "
+                    + "please correct this so that the display list is shown correctly.");
+        }
 
         displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
