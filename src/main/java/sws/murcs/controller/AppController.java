@@ -2,7 +2,6 @@ package sws.murcs.controller;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -36,8 +35,6 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
-import java.security.Key;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -188,7 +185,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Handles keys being pressed.
      * @param event Key event
      */
-    private void handleKey(KeyEvent event) {
+    private void handleKey(final KeyEvent event) {
         if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN).match(event)) {
             addClicked(null);

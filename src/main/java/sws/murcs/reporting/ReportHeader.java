@@ -42,8 +42,10 @@ public class ReportHeader {
         dateGenerated = LocalDate.now();
     }
 
+    /**
+     * A constructor for the report header (used by the XML serialiser).
+     */
     @SuppressWarnings("unused")
     private ReportHeader() {
-        
     }
 }
