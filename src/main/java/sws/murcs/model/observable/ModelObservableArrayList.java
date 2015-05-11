@@ -15,6 +15,10 @@ import java.util.Collection;
  * @param <T> type of the list, expected to extend Model.
  */
 public class ModelObservableArrayList<T extends Model> extends ObservableArrayList<T> implements Serializable {
+    /**
+     * Serializable backing field.
+     * Required because JavaFX observable lists are not serializable.
+     */
     private ArrayList<T> backingField;
 
     /**
@@ -28,7 +32,8 @@ public class ModelObservableArrayList<T extends Model> extends ObservableArrayLi
      * Clones from existing collection.
      * @param c original collection.
      */
-    public ModelObservableArrayList(Collection c) {
+    @SuppressWarnings("unused")
+    public ModelObservableArrayList(final Collection<T> c) {
         super(c);
     }
 
@@ -38,7 +43,7 @@ public class ModelObservableArrayList<T extends Model> extends ObservableArrayLi
      * @param out the object stream to write to.
      * @throws IOException if serialization fails.
      */
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    private void writeObject(final ObjectOutputStream out) throws IOException {
         try {
             backingField = new ArrayList<>(this);
             out.defaultWriteObject();
@@ -48,14 +53,14 @@ public class ModelObservableArrayList<T extends Model> extends ObservableArrayLi
             throw new IOException(e);
         }
     }
-    
+
     /**
      * Work around for Observable array lists not being serializable.
      * This method reads the array from an object stream.
      * @param in object stream to read list from.
      * @throws IOException if deserialization failed.
      */
-    private void readObject(ObjectInputStream in) throws IOException {
+    private void readObject(final ObjectInputStream in) throws IOException {
         try {
             in.defaultReadObject();
             addAll(backingField);
