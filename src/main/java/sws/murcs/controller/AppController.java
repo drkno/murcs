@@ -1,8 +1,9 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -28,14 +29,12 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
-import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +103,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
+    @SuppressWarnings("unused")
     public final void initialize() {
         App.addListener(e -> {
             e.consume();
@@ -187,7 +187,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Handles keys being pressed.
      * @param event Key event
      */
-    private void handleKey(KeyEvent event) {
+    private void handleKey(final KeyEvent event) {
         if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN).match(event)) {
             addClicked(null);
@@ -200,6 +200,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     /**
      * Updates the display list on the left hand side of the screen.
      */
+    @SuppressWarnings("unchecked")
     private void updateList() {
         if (creatorWindow != null) {
             creatorWindow.dispose();
@@ -222,7 +223,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Release: arrayList = model.getReleases(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList) arrayList);
+
+        arrayList = new SortedList<>((ObservableList<? extends Model>) arrayList, (o1, o2) -> {
+            String shortName1 = o1.getShortName();
+            String shortName2 = o2.getShortName();
+            return shortName1.compareToIgnoreCase(shortName2);
+        });
+
+        displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 

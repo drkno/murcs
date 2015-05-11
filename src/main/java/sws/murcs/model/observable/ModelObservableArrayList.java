@@ -70,20 +70,4 @@ public class ModelObservableArrayList<T extends Model> extends ObservableArrayLi
             throw new IOException(e);
         }
     }
-
-    //Todo activate for Display list order I,
-    // Todo also the current implementation does not resort on editing the shortname of an object
-//    @Override
-//    public boolean add(T object) {
-//        boolean result = super.add(object);
-//        sort(new Comparator<T>() {
-//            @Override
-//            public int compare(T o1, T o2) {
-//                String shortname1 = o1.getShortName().toLowerCase();
-//                String shortname2 = o2.getShortName().toLowerCase();
-//                return shortname1.compareTo(shortname2);
-//            }
-//        });
-//        return result;
-//    }
 }
