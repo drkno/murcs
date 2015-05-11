@@ -9,16 +9,37 @@ import java.util.ArrayList;
  * Generates random teams with people.
  */
 public class TeamGenerator implements Generator<Team> {
+    /**
+     * The max number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MAX = 5;
+    /**
+     * The min number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MAX = 10;
+    /**
+     * The min number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+    /**
+     * The max number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MAX = 20;
+    /**
+     * The min number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MIN = 10;
 
-    private static final String[] predefinedTeamNames = {"-... .- - -- .- -.",
+    /**
+     * An array of team names.
+     */
+    private static final String[] PREDEFINED_TEAM_NAMES = {"-... .- - -- .- -.",
             "Team 10",
             "1",
             "120/-",
@@ -803,12 +824,30 @@ public class TeamGenerator implements Generator<Team> {
             "Zupplers",
             "ZURB"
     };
-    private String[] teamNames = predefinedTeamNames;
+    /**
+     * Another list of team names.
+     */
+    private String[] teamNames = PREDEFINED_TEAM_NAMES;
+    /**
+     * A list of descriptions.
+     */
     private String[] descriptions = {NameGenerator.getLoremIpsum()};
+    /**
+     * The probably of a person being a scrum master.
+     */
     private float probOfScrumMaster = 0.5f;
+    /**
+     * The probability of a person being a product owner.
+     */
     private float probOfProductOwner = 0.5f;
 
+    /**
+     * The person generator for this team generator.
+     */
     private Generator<Person> personGenerator;
+    /**
+     * A pool of persons to use in this team.
+     */
     private ArrayList<Person> personPool;
 
     /**
@@ -820,34 +859,35 @@ public class TeamGenerator implements Generator<Team> {
 
     /**
      * Instantiates a new Team generator.
-     * @param personGenerator person generator to use.
-     * @param teamNames team names to generate from.
-     * @param descriptions descriptions to generate from.
-     * @param probOfProductOwner probability of a product owner to use.
-     * @param probOfScrumMaster probability of a scrum master to use.
+     * @param generator person generator to use.
+     * @param names team names to generate from.
+     * @param newDescriptions descriptions to generate from.
+     * @param productOwnerProbability probability of a product owner to use.
+     * @param scrumMasterProbability probability of a scrum master to use.
      */
-    public TeamGenerator(final Generator<Person> personGenerator, final String[] teamNames, final String[] descriptions, final float probOfProductOwner, final float probOfScrumMaster) {
-        this.personGenerator = personGenerator;
-        this.teamNames = teamNames;
-        this.descriptions = descriptions;
-        this.probOfProductOwner = probOfProductOwner;
-        this.probOfScrumMaster = probOfScrumMaster;
+    public TeamGenerator(final Generator<Person> generator, final String[] names, final String[] newDescriptions,
+                         final float productOwnerProbability, final float scrumMasterProbability) {
+        this.personGenerator = generator;
+        this.teamNames = names;
+        this.descriptions = newDescriptions;
+        this.probOfProductOwner = productOwnerProbability;
+        this.probOfScrumMaster = scrumMasterProbability;
     }
 
     /**
      * Sets the person generator.
-     * @param personGenerator The person generator
+     * @param generator The person generator
      */
-    public final void setPersonGenerator(final Generator<Person> personGenerator){
-        this.personGenerator = personGenerator;
+    public final void setPersonGenerator(final Generator<Person> generator) {
+        this.personGenerator = generator;
     }
 
     /**
      * Sets the person pool. If null, people will be randomly generated.
-     * @param personPool The person pool
+     * @param persons The person pool
      */
-    public final void setPersonPool(final ArrayList<Person> personPool) {
-        this.personPool = personPool;
+    public final void setPersonPool(final ArrayList<Person> persons) {
+        this.personPool = persons;
     }
 
     /**

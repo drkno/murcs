@@ -169,41 +169,41 @@ public class StoryGenerator implements Generator<Story> {
     private List<Person> personsPool;
 
     /**
-     * A person generator, for use in the event that we don't have a pool
+     * A person generator, for use in the event that we don't have a pool.
      */
     private PersonGenerator personGenerator;
 
     /**
-     * Creates a new story generator
+     * Creates a new story generator.
      */
     public StoryGenerator() {
         this(new PersonGenerator());
     }
 
     /**
-     * Creates a new story generator with the specified person generator
-     * @param personGenerator The person generator
+     * Creates a new story generator with the specified person generator.
+     * @param generator The person generator
      */
-    public StoryGenerator(PersonGenerator personGenerator) {
-        this.personGenerator = personGenerator;
+    public StoryGenerator(final PersonGenerator generator) {
+        this.personGenerator = generator;
     }
 
     /**
      * Sets the person pool.
      * @param newPersonsPool The pool of persons.
      */
-    public void setPersonsPool(final List<Person> newPersonsPool) {
+    public final void setPersonsPool(final List<Person> newPersonsPool) {
         personsPool = newPersonsPool;
     }
 
     @Override
-    public Story generate() {
+    public final Story generate() {
         String name = storyNames[NameGenerator.random(storyNames.length)];
         String description = descriptions[NameGenerator.random(descriptions.length)];
 
-        Person creator = personsPool == null ?
-                personGenerator.generate() :
-                personsPool.get(NameGenerator.random(personsPool.size()));
+        Person creator = personsPool == null
+                ? personGenerator.generate()
+                : personsPool.get(NameGenerator.random(personsPool.size()));
 
         Story story = new Story();
         try {
