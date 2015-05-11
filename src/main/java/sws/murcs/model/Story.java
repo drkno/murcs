@@ -36,7 +36,7 @@ public class Story extends Model {
     }
 
     /**
-     * Gets the creator of this story
+     * Gets the creator of this story.
      * @return The creator
      */
     public Person getCreator() {
