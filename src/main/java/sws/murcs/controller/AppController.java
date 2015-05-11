@@ -204,10 +204,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @SuppressWarnings("unchecked")
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
