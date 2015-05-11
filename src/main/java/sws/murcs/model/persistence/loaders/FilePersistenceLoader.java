@@ -22,7 +22,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     /**
      * Instantiates a new FilePersistenceLoader, defaulting to the current working directory.
      */
-    public FilePersistenceLoader(){
+    public FilePersistenceLoader() {
         this(System.getProperty("user.dir"));
     }
 
@@ -106,7 +106,8 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to save the model in.
      * @throws Exception when the persistent file could not be loaded.
      */
-    public final void saveModel(final String name, final RelationalModel persistent, final String directory) throws Exception {
+    public final void saveModel(final String name, final RelationalModel persistent, final String directory)
+            throws Exception {
         try {
             // Open the persistent file
             String persistenceFileLocation = directory + File.separator + name;
@@ -129,8 +130,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return List of models.
      */
     @Override
-    public final ArrayList<String> getModelList()
-    {
+    public final ArrayList<String> getModelList() {
         return getModelList(".project");
     }
 
@@ -175,7 +175,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     }
 
     /**
-     * Deletes the specified persistent file from the directory
+     * Deletes the specified persistent file from the directory.
      * @param persistentName The name of the persistent file
      * @param directory The Directory to search
      * @return Whether the operation was successful

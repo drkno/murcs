@@ -36,6 +36,9 @@ public class WorkAllocation implements Serializable {
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate endDate;
 
+    /**
+     * Creates a new empty work allocation.
+     */
     @SuppressWarnings("unused")
     public WorkAllocation() {
         project = null;

@@ -106,7 +106,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
 
         int count = NameGenerator.random(min, max);
 
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             Model g = generator.generate();
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);

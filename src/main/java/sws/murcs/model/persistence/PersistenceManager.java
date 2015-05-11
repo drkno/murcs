@@ -127,7 +127,7 @@ public final class PersistenceManager {
      * Sets the current model.
      * @param model The new model
      */
-    public void setCurrentModel(final RelationalModel model){
+    public void setCurrentModel(final RelationalModel model) {
         currentModel = model;
     }
 

@@ -744,7 +744,8 @@ public class ReleaseGenerator implements Generator<Release> {
 
         String shortName = NameGenerator.randomElement(defaultNames);
         String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28) + 1);
+        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28)
+                + 1);
 
         ArrayList<Project> projects = generateProjects(1, 5);
 

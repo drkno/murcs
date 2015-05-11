@@ -28,7 +28,7 @@ public enum ModelType {
     Release(4, sws.murcs.model.Release.class),
 
     /**
-     * Indicates a model type, story
+     * Indicates a model type, story.
      */
     Story(5, sws.murcs.model.Story.class);
 

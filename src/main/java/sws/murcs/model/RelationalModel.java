@@ -9,7 +9,11 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +53,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private List<Release> releases;
 
     /**
-     * The list of stories
+     * The list of stories.
      */
     @TrackableValue
     private List<Story> stories;
@@ -526,7 +530,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a story to the model
+     * Adds a story to the model.
      * @param story The story to add to the model
      * @throws sws.murcs.exceptions.DuplicateObjectException If the model already contains the story you are trying
      * to add
