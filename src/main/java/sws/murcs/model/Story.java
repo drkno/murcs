@@ -48,7 +48,30 @@ public class Story extends Model {
      * This should not be changed after initially being set.
      * @param creator
      */
-    public void setCreator(Person creator) {
+    public void setCreator(final Person creator) {
         this.creator = creator;
+    }
+
+    @Override
+    public String toString() {
+        return getShortName();
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        return getHashCodePrime() + c;
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || !(object instanceof Story)) return false;
+        String shortNameO = ((Story) object).getShortName();
+        String shortName = getShortName();
+        if (shortName == null || shortNameO == null) return shortName == shortNameO;
+        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
     }
 }
