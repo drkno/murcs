@@ -16,16 +16,18 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.Model;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
+import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 public class ListDisplayStepDefs extends ApplicationTest {
 
     private FxRobot fx;
@@ -71,8 +73,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
                 model.add(person2);
                 model.add(person3);
                 model.add(project);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -126,9 +127,13 @@ public class ListDisplayStepDefs extends ApplicationTest {
         fx.clickOn("Dave");
     }
 
-    @When("^I edit the items short name$")
-    public void I_edit_the_items_short_name() throws Throwable {
-        fx.clickOn("#shortNameTextField").type(KeyCode.A);
+    @When("^I \"([^\"]*)\" the items short name$")
+    public void I_edit_the_items_short_name(String changeType) throws Throwable {
+        FxRobot robot = fx.clickOn("#shortNameTextField");
+        if (changeType.equals("prefix")) {
+            robot.type(KeyCode.HOME);
+        }
+        robot.type(KeyCode.Z);
         fx.clickOn("#longNameTextField");
     }
 
@@ -136,6 +141,24 @@ public class ListDisplayStepDefs extends ApplicationTest {
     public void the_short_name_is_updated_in_the_list_display() throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
         String name = displayList.getSelectionModel().getSelectedItem().toString();
-        assertTrue(Objects.equals("Davea", name));
+        assertTrue(Objects.equals("Davez", name) || Objects.equals("zDave", name));
+    }
+
+    @Given("^there are multiple items in the list display$")
+    public void there_are_multiple_items_in_the_list_display() throws Throwable {
+        I_change_the_list_display_type();
+    }
+
+    @Then("^the list is sorted alphabetically$")
+    @SuppressWarnings("unchecked")
+    public void the_list_is_sorted_alphabetically() throws Throwable {
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        List<Model> observableList = displayList.getItems();
+        Model previous = null;
+        for (final Model current : observableList) {
+            if (previous != null && current.getShortName().compareToIgnoreCase(previous.getShortName()) <= 0)
+                fail("the display list was not sorted alphabetically");
+            previous = current;
+        }
     }
 }
