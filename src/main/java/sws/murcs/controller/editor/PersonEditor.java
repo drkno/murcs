@@ -184,5 +184,6 @@ public class PersonEditor extends GenericEditor<Person> {
             allocatedSkillsContainer.getChildren().add(node);
             skillChoiceBox.getItems().remove(skill);
         }
+        skillChoiceBox.getSelectionModel().select(null);
     }
 }
