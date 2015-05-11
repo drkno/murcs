@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.*;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
@@ -299,12 +300,22 @@ public class RelationalModelTest {
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 
-    @Test (expected = DuplicateObjectException.class)
-    public void testOverlappedWork() throws Exception {
+    @Test (expected = CustomException.class)
+    public void overlappedWorkTest1() throws Exception {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
         WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
         WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        relationalModel.addAllocation(allocation1);
+        relationalModel.addAllocation(allocation2);
+    }
+
+    @Test (expected = CustomException.class)
+    public void overlappedWorkTest2() throws Exception {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, null);
         relationalModel.addAllocation(allocation1);
         relationalModel.addAllocation(allocation2);
     }
