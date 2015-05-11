@@ -10,11 +10,7 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -169,17 +165,22 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the unassigned people.
      * @return The unassigned people
      */
-    public final Set<Person> getUnassignedPeople() {
+    public final Collection getUnassignedPeople() {
         Set<Person> assignedPeople = new TreeSet<>((p1, p2) -> {
+            if (p1.equals(p2)) return 0;
+
             return p1.getShortName().compareTo(p2.getShortName());
+
         });
         getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
         Set<Person> unassignedPeople = new TreeSet<>((p1, p2) -> {
+            if (p1.equals(p2)) return 0;
+
             return p1.getShortName().compareTo(p2.getShortName());
         });
         unassignedPeople.addAll(getPeople());
         unassignedPeople.removeAll(assignedPeople);
-        return unassignedPeople;
+        return Collections.unmodifiableCollection(unassignedPeople);
     }
 
     /**

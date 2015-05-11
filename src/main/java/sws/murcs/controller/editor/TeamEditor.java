@@ -2,10 +2,7 @@ package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -40,7 +37,9 @@ public class TeamEditor extends GenericEditor<Team> {
      * The productOwner, scrumMaster and member pickers.
      */
     @FXML
-    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker;
+    @FXML
+    private ComboBox<Person> addTeamMemberPicker;
     /**
      * The label for showing error messages.
      */
@@ -63,7 +62,7 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
-        addTeamMemberPicker.getItems().clear();
+        addTeamMemberPicker.getSelectionModel().select(null);
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
         setErrorCallback(message -> {
@@ -240,6 +239,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 getModel().removeMember(person);
                 addTeamMemberPicker.getItems().add(person);
                 updateTeamMembers();
+                updatePOSM();
                 popup.close();
             });
             popup.show();
@@ -257,6 +257,7 @@ public class TeamEditor extends GenericEditor<Team> {
         pane.getColumnConstraints().add(column2);
 
         pane.add(nameText, 0, 0);
+
         pane.add(removeButton, 1, 0);
 
         return pane;
@@ -266,7 +267,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the view of the members in the team.
      */
     private void updateTeamMembers() {
-        addTeamMemberPicker.getItems().clear();
+        //addTeamMemberPicker.getSelectionModel().select(null);
+        addTeamMemberPicker.getItems().removeAll();
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
         teamMembersContainer.getChildren().clear();
         for (Person person : getModel().getMembers()) {
