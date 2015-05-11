@@ -67,7 +67,7 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
         setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
+            if (message != null && message.getClass() == String.class) {
                 labelErrorMessage.setText(message);
             }
         });
