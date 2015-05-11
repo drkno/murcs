@@ -21,39 +21,39 @@ public class Story extends Model {
 
     /**
      * Gets a description for the current story.
-     * @return
+     * @return The description.
      */
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
     /**
      * Sets the description of the story.
-     * @param description The new description.
+     * @param newDescription The new description.
      */
-    public void setDescription(String description) {
-        this.description = description;
+    public final void setDescription(final String newDescription) {
+        this.description = newDescription;
     }
 
     /**
      * Gets the creator of this story.
      * @return The creator
      */
-    public Person getCreator() {
+    public final Person getCreator() {
         return creator;
     }
 
     /**
      * Sets the creator of the story.
      * This should not be changed after initially being set.
-     * @param creator
+     * @param person The creator
      */
-    public void setCreator(final Person creator) {
-        this.creator = creator;
+    public final void setCreator(final Person person) {
+        this.creator = person;
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getShortName();
     }
 
@@ -67,11 +67,15 @@ public class Story extends Model {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        if (object == null || !(object instanceof Story)) return false;
+    public final boolean equals(final Object object) {
+        if (object == null || !(object instanceof Story)) {
+            return false;
+        }
         String shortNameO = ((Story) object).getShortName();
         String shortName = getShortName();
-        if (shortName == null || shortNameO == null) return shortName == shortNameO;
+        if (shortName == null || shortNameO == null) {
+            return shortName == shortNameO;
+        }
         return shortName.toLowerCase().equals(shortNameO.toLowerCase());
     }
 }

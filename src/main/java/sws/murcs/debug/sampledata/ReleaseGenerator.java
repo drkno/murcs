@@ -705,7 +705,7 @@ public class ReleaseGenerator implements Generator<Release> {
     }
 
     /**
-     * Generates a list of projects if there isn't already a pool of projects to choose from
+     * Generates a list of projects if there isn't already a pool of projects to choose from.
      * @param min The min number of projects
      * @param max The max number of projects
      * @return The array list of generated projects
@@ -722,15 +722,18 @@ public class ReleaseGenerator implements Generator<Release> {
                 }
             }
         } else {
-            if (projectCount > projectPool.size()) projectCount = projectPool.size();
+            if (projectCount > projectPool.size()) {
+                projectCount = projectPool.size();
+            }
 
             for (int i = 0; i < projectCount; i++) {
                 Project project = projectPool.remove(NameGenerator.random(projectPool.size()));
                 generated.add(project);
             }
 
-            for (Project project : generated)
+            for (Project project : generated) {
                 projectPool.add(project);
+            }
         }
         return generated;
     }
@@ -743,7 +746,7 @@ public class ReleaseGenerator implements Generator<Release> {
         String description = NameGenerator.randomElement(descriptions);
         LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28) + 1);
 
-        ArrayList<Project> projects = generateProjects(1,5);
+        ArrayList<Project> projects = generateProjects(1, 5);
 
         try {
             r.setShortName(shortName);

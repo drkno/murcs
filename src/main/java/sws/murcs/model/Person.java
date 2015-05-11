@@ -14,9 +14,15 @@ import java.util.ArrayList;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+    /**
+     * The user id of a person.
+     */
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+    /**
+     * The list of skills the person has.
+     */
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
@@ -145,7 +151,7 @@ public class Person extends Model {
         if (getShortName() != null) {
             c += getShortName().hashCode();
         }
-        if (getUserId() != null){
+        if (getUserId() != null) {
             c += getUserId().hashCode();
         }
 

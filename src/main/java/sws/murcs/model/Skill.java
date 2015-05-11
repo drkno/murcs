@@ -64,11 +64,24 @@ public class Skill extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Skill)) return false;
+        if (object == null || !(object instanceof Skill)) {
+            return false;
+        }
         String shortNameO = ((Skill) object).getShortName();
         String shortName = getShortName();
-        if (shortName == null || shortNameO == null) return shortName == shortNameO;
+        if (shortName == null || shortNameO == null) {
+            return shortName == shortNameO;
+        }
         return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        return getHashCodePrime() + c;
     }
 
     /**

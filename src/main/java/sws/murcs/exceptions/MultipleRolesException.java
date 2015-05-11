@@ -7,7 +7,13 @@ import sws.murcs.model.Team;
  * Exception for when a person is set to multiple roles.
  */
 public class MultipleRolesException extends CustomException {
+    /**
+     * The team affected.
+     */
     private Team affectedTeam;
+    /**
+     * the person affected.
+     */
     private Person affectedPerson;
 
     /**
@@ -17,9 +23,10 @@ public class MultipleRolesException extends CustomException {
      * @param person The person.
      * @param team The team.
      */
-    public MultipleRolesException(String newRole, String existingRole, Person person, Team team) {
-        super(person.toString() + " cannot be assigned to both the \"" + newRole +
-                "\" and \"" + existingRole + "\" roles within a team.");
+    public MultipleRolesException(final String newRole, final String existingRole, final Person person,
+                                  final Team team) {
+        super(person.toString() + " cannot be assigned to both the \"" + newRole
+                + "\" and \"" + existingRole + "\" roles within a team.");
         affectedTeam = team;
         affectedPerson = person;
     }
@@ -28,7 +35,7 @@ public class MultipleRolesException extends CustomException {
      * Gets the person affected by this conflict.
      * @return the affected person.
      */
-    public Person getAffectedPerson() {
+    public final Person getAffectedPerson() {
         return affectedPerson;
     }
 
@@ -36,7 +43,7 @@ public class MultipleRolesException extends CustomException {
      * Gets the team affected by this conflict.
      * @return the affected team.
      */
-    public Team getAffectedTeam() {
+    public final Team getAffectedTeam() {
         return affectedTeam;
     }
 }

@@ -226,11 +226,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a list of stories to the model. Careful, this won't be undoable.
-     * @param stories The stories to add
+     * @param storiesToAdd The stories to add
      * @throws DuplicateObjectException if the story has already been back
      */
-    public final void addStories(final ArrayList<Story> stories) throws DuplicateObjectException {
-        for (Story story : stories){
+    public final void addStories(final ArrayList<Story> storiesToAdd) throws DuplicateObjectException {
+        for (Story story : storiesToAdd) {
             this.addStory(story);
         }
     }
@@ -286,7 +286,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all the stories currently in the model
+     * Gets a list of all the stories currently in the model.
      * @return The stories in the model
      */
     public final List<Story> getStories() {
@@ -509,7 +509,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 addRelease((Release) model);
                 break;
             case Story:
-                addStory((Story)model);
+                addStory((Story) model);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -531,7 +531,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws sws.murcs.exceptions.DuplicateObjectException If the model already contains the story you are trying
      * to add
      */
-    private void addStory(Story story) throws DuplicateObjectException{
+    private void addStory(final Story story) throws DuplicateObjectException {
         if (!stories.contains(story)) {
             stories.add(story);
         }
@@ -619,11 +619,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes the story from the relational model
+     * Removes the story from the relational model.
      * @param story The story to remove
      */
-    private void removeStory(Story story) {
-        if (stories.contains(story)){
+    private void removeStory(final Story story) {
+        if (stories.contains(story)) {
             stories.remove(story);
         }
 
@@ -757,7 +757,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all the places that a story has been used
+     * Gets a list of all the places that a story has been used.
      * @param story The story to find the usages for
      * @return The usages of the story
      */

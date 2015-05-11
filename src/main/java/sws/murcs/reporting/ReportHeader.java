@@ -9,25 +9,41 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 
+/**'
+ * A class that gets the information needed for the header of the report, such as the product version and
+ * date generated.
+ */
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
-/**'
- * A class that gets the information needed for the header of the report, such as the product version and date generated
- */
 public class ReportHeader {
 
+    /**
+     * The version of the project.
+     */
     private String projectVersion;
+    /**
+     * The date the report was generated.
+     */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate dateGenerated;
+    /**
+     * The report model (model of all the project).
+     */
     @XmlElement(name = "content")
     private ReportModel reportModel;
 
-    public ReportHeader(RelationalModel relationalModel) {
+    /**
+     * Creates a new Report Header from a given relational model.
+     * @param relationalModel the relational model given.
+     */
+    public ReportHeader(final RelationalModel relationalModel) {
         reportModel = new ReportModel(relationalModel);
         projectVersion = RelationalModel.getVersion();
         dateGenerated = LocalDate.now();
     }
 
     @SuppressWarnings("unused")
-    private ReportHeader() {}
+    private ReportHeader() {
+        
+    }
 }

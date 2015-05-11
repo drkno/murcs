@@ -43,7 +43,7 @@ public class StoryEditor extends GenericEditor<Story> {
     private boolean isCreationMode;
 
     @Override
-    public void loadObject() {
+    public final void loadObject() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         isCreationMode = modelShortName == null;
@@ -74,7 +74,7 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     @Override
-    public void initialize() {
+    public final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue) {
                 saveChanges();
@@ -93,7 +93,7 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     @Override
-    public void dispose() {
+    public final void dispose() {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
@@ -104,7 +104,7 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     @Override
-    protected void saveChangesWithException() throws Exception {
+    protected final void saveChangesWithException() throws Exception {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {

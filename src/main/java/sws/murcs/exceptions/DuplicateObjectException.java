@@ -53,7 +53,8 @@ public class DuplicateObjectException extends CustomException {
      * @param enableSuppression Enable suppression of the exception.
      * @param writableStackTrace Is the stack trace writable.
      */
-    public DuplicateObjectException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public DuplicateObjectException(final String message, final Throwable cause, final boolean enableSuppression,
+                                    final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

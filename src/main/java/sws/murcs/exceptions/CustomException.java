@@ -44,7 +44,8 @@ public class CustomException extends Exception {
      * @param enableSuppression ignore when thrown inside a finally block.
      * @param writableStackTrace whether or not a stack trace should be writable.
      */
-    public CustomException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public CustomException(final String message, final Throwable cause, final boolean enableSuppression,
+                           final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }
