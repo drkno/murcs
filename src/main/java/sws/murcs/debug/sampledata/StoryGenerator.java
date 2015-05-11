@@ -9,13 +9,31 @@ import java.util.List;
  * A generator for stories.
  */
 public class StoryGenerator implements Generator<Story> {
+    /**
+     * The max number of stories to generate at low stress.
+     */
     public static final int LOW_STRESS_MAX = 3;
+    /**
+     * The min number of stories to generate at low stress.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of stories to generate at medium stress.
+     */
     public static final int MEDIUM_STRESS_MAX = 10;
+    /**
+     * The min number of stories to generate at medium stress.
+     */
     public static final int MEDIUM_STRESS_MIN = 3;
 
+    /**
+     * The max number of stories to generate at high stress.
+     */
     public static final int HIGH_STRESS_MAX = 20;
+    /**
+     * The min number of stories to generate at high stress.
+     */
     public static final int HIGH_STRESS_MIN = 10;
 
     /**
@@ -158,7 +176,7 @@ public class StoryGenerator implements Generator<Story> {
     /**
      * Creates a new story generator
      */
-    public StoryGenerator(){
+    public StoryGenerator() {
         this(new PersonGenerator());
     }
 
@@ -166,7 +184,7 @@ public class StoryGenerator implements Generator<Story> {
      * Creates a new story generator with the specified person generator
      * @param personGenerator The person generator
      */
-    public StoryGenerator(PersonGenerator personGenerator){
+    public StoryGenerator(PersonGenerator personGenerator) {
         this.personGenerator = personGenerator;
     }
 
@@ -190,7 +208,7 @@ public class StoryGenerator implements Generator<Story> {
         Story story = new Story();
         try {
             story.setShortName(name);
-        }catch (Exception e){
+        } catch (Exception e) {
             //Do nothing this doesn't matter. Ever.
         }
         story.setDescription(description);
