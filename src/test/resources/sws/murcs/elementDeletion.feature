@@ -26,7 +26,7 @@ Feature: Element Deletion
      And all the places that the object is used are displayed
      And I confirm I want to delete
      Then the model is deleted
-     And "People" deletion can be undone
+     And "Person" deletion can be undone
 
    Scenario: Deleting a Skill
      Given I have a skill selected
@@ -35,7 +35,7 @@ Feature: Element Deletion
      And all the places that the object is used are displayed
      And I confirm I want to delete
      Then the skill is deleted
-     And "Skills" deletion can be undone
+     And "Skill" deletion can be undone
 
    Scenario: Deleting a Release
      Given I have a release selected

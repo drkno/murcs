@@ -135,10 +135,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         fx.moveBy(0, 20);
         fx.clickOn("#undoMenuItem");
         fx.clickOn("#displayChoiceBox").clickOn(type);
-        fx.clickOn("#editMenu");
         int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
-        fx.clickOn("#editMenu");
-        fx.moveBy(-10, 0);
         assertTrue(displayListSize == (type.equals("Skill") ? 3: 1));
     }
 
