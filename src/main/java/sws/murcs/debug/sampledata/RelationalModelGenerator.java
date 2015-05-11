@@ -1,13 +1,6 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.Model;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
-import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 
@@ -40,6 +33,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     private final SkillGenerator skillGenerator;
     private final ReleaseGenerator releaseGenerator;
     private final WorkAllocationGenerator workAllocationGenerator;
+    private final StoryGenerator storyGenerator;
 
     private Stress stress;
 
@@ -61,6 +55,8 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         projectGenerator.setTeamGenerator(teamGenerator);
 
         releaseGenerator = new ReleaseGenerator();
+
+        storyGenerator = new StoryGenerator();
 
         workAllocationGenerator = new WorkAllocationGenerator();
     }
@@ -178,6 +174,13 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             workAllocationGenerator.setTeamPool(teams);
             ArrayList<WorkAllocation> allocations = workAllocationGenerator.generate();
 
+            storyGenerator.setPersonsPool(people);
+            min = getMin(stress, StoryGenerator.LOW_STRESS_MIN, StoryGenerator.MEDIUM_STRESS_MIN, StoryGenerator.HIGH_STRESS_MIN);
+            max = getMin(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX, StoryGenerator.HIGH_STRESS_MAX);
+            ArrayList<Story> stories = new ArrayList<>();
+            for (Model m : generateItems(storyGenerator, min, max)){
+                stories.add((Story)m);
+            }
 
             model.addSkills(skills);
             model.addPeople(people);
@@ -185,6 +188,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             model.addProjects(projects);
             model.addReleases(releases);
             model.addAllocations(allocations);
+            model.addStories(stories);
 
             return model;
         }

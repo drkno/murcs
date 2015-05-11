@@ -225,6 +225,17 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
+     * Adds a list of stories to the model. Careful, this won't be undoable.
+     * @param stories The stories to add
+     * @throws DuplicateObjectException if the story has already been back
+     */
+    public final void addStories(final ArrayList<Story> stories) throws DuplicateObjectException {
+        for (Story story : stories){
+            this.addStory(story);
+        }
+    }
+
+    /**
      * Removes a person from unassigned people.
      * @param person The unassigned person to remove
      */
