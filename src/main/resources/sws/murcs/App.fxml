@@ -16,6 +16,7 @@
                         <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
                         <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
                         <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addClicked" text="Release" />
+                           <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story" />
                        </items>
                     </Menu>
                     <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
