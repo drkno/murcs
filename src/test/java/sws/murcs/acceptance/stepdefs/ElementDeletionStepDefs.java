@@ -97,7 +97,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Given("^I have a project selected$")
     public void I_have_a_project_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         fx.clickOn("#displayChoiceBox").clickOn("Project");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
@@ -139,7 +139,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
         fx.clickOn("#editMenu");
         fx.moveBy(-10, 0);
-        assertTrue(displayListSize == (type.equals("Skills") ? 3: 1));
+        assertTrue(displayListSize == (type.equals("Skill") ? 3: 1));
 
     }
 
@@ -151,13 +151,13 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Given("^I have a person selected$")
     public void I_have_a_person_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
     @Given("^I have a skill selected$")
     public void I_have_a_skill_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Skills");
+        fx.clickOn("#displayChoiceBox").clickOn("Skill");
         interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(2));
     }
 

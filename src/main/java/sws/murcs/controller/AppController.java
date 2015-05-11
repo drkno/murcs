@@ -16,13 +16,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Model;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -30,7 +24,6 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,7 +57,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * displayed in the list.
      */
     @FXML
-    private ChoiceBox<ModelTypes> displayChoiceBox;
+    private ChoiceBox<ModelType> displayChoiceBox;
     /**
      * The list which contains the models of the type selected
      * in the display list choice box.
@@ -103,7 +96,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             fileQuitPress(null);
         });
 
-        for (ModelTypes type : ModelTypes.values()) {
+        for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
         }
         displayChoiceBox
@@ -159,7 +152,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             creatorWindow.dispose();
             creatorWindow = null;
         }
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -170,10 +163,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         List<? extends Model> arrayList;
         switch (type) {
             case Project: arrayList = model.getProjects(); break;
-            case People: arrayList = model.getPeople(); break;
+            case Person: arrayList = model.getPeople(); break;
             case Team: arrayList = model.getTeams(); break;
-            case Skills: arrayList = model.getSkills(); break;
+            case Skill: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
+            case Story: arrayList = model.getStories(); break;
             default: throw new UnsupportedOperationException();
         }
         displayList.setItems((ModelObservableArrayList) arrayList);
@@ -412,8 +406,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         else {
             //If pressing the add button at the bottom of the display list
-            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-            clazz = ModelTypes.getTypeFromModel(type);
+            ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+            clazz = ModelType.getTypeFromModel(type);
         }
 
         if (clazz != null) {
@@ -455,19 +449,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
 
         // Ensures you can't delete Product Owner or Scrum Master
-        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills) {
+        if (ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelType.Skill) {
             if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM")) {
                 return;
             }
         }
 
-        ArrayList<Model> usages = model.findUsages(selectedItem);
+        List<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
-            ModelTypes type =  ModelTypes.getModelType(selectedItem);
-            if (type == ModelTypes.People) {
+            ModelType type =  ModelType.getModelType(selectedItem);
+            if (type == ModelType.Person) {
                 message += "person";
             }
             else {
@@ -492,19 +486,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
     @Override
     public final void selectItem(final Model parameter) {
-        ModelTypes type;
-        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        ModelType type;
+        ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
         }
         else {
-            type = ModelTypes.getModelType(parameter);
+            type = ModelType.getModelType(parameter);
             if (selectedType == type) {
                 displayList.getSelectionModel().select(parameter);
             }
             else {
-                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
+                displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
                 displayList.getSelectionModel().select(parameter);
             }
         }

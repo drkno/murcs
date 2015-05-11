@@ -91,7 +91,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @When("^I change the list display type$")
     public void I_change_the_list_display_type() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Project");
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
     }
 
     @Then("^the list items repopulate with that type$")
@@ -109,7 +109,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @When("^I select an item from the list display$")
     public void I_select_an_item_from_the_list_display() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         fx.clickOn("Dave");
     }
 
@@ -122,7 +122,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @Given("^I have selected an item from the list display$")
     public void I_have_selected_an_item_from_the_list_display() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         fx.clickOn("Dave");
     }
 

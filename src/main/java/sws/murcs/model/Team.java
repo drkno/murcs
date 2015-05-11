@@ -4,11 +4,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 
 /**
@@ -119,7 +115,7 @@ public class Team extends Model {
 
     /**
      * Adds a list of people to the team.
-     * @param membersToAdd People to be added to the team
+     * @param membersToAdd Person to be added to the team
      * @throws DuplicateObjectException
      * if a person is already in a team
      */

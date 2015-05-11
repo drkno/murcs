@@ -43,7 +43,7 @@ public class ReportGeneratorTest {
         }
         tempReport = Files.createTempFile("", "").toFile();
 
-        // Skills
+        // Skill
         Skill skillC = new Skill();
         skillC.setShortName("C");
         skillC.setLongName("C99");
@@ -64,7 +64,7 @@ public class ReportGeneratorTest {
         skillSM.setLongName("Scrum Master");
         skillSM.setDescription("Is able to manage the efforts of a team and resolve difficulties");
 
-        // People
+        // Person
         Person person1 = new Person();
         person1.setShortName("Daniel");
         person1.setLongName("Daniel van Wichen");

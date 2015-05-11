@@ -4,12 +4,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 
 /**
@@ -99,7 +94,7 @@ public class Person extends Model {
 
     /**
      * Adds a list of skills to the persons skills.
-     * @param skillsToAdd Skills to be added to person
+     * @param skillsToAdd Skill to be added to person
      * @throws DuplicateObjectException if the
      * person has any of the skills in the list
      */
@@ -142,5 +137,18 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c += getShortName().hashCode();
+        }
+        if (getUserId() != null){
+            c += getUserId().hashCode();
+        }
+
+        return getHashCodePrime() + c;
     }
 }

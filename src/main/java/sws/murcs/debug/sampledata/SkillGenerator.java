@@ -128,7 +128,7 @@ public class SkillGenerator implements Generator<Skill> {
             "Organizing files",
             "Organizing tasks",
             "Patience",
-            "People management skills",
+            "Person management skills",
             "Performing clerical work ",
             "Performing numerical analysis",
             "Persuading others",
