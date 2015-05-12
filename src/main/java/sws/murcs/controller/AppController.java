@@ -155,10 +155,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Updates the display list on the left hand side of the screen.
      */
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -421,12 +417,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 creatorWindow = new CreatorWindowView(clazz.newInstance(),
                         model -> {
                             selectItem(model);
-                            creatorWindow.dispose();
-                            creatorWindow = null;
+                            if (creatorWindow != null) {
+                                creatorWindow.dispose();
+                                creatorWindow = null;
+                            }
                         },
                         func -> {
-                            creatorWindow.dispose();
-                            creatorWindow = null;
+                            if (creatorWindow != null) {
+                                creatorWindow.dispose();
+                                creatorWindow = null;
+                            }
                         });
                 creatorWindow.show();
             }

@@ -1,9 +1,12 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -15,7 +18,10 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
-import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Allows you to model a model.
@@ -36,13 +42,20 @@ public class PersonEditor extends GenericEditor<Person> {
      * The ChoiceBox for selecting skills.
      */
     @FXML
-    private ChoiceBox<Skill> skillChoiceBox;
-    /**
+    private ComboBox<Skill> skillComboBox;
     /**
      * The VBox which contains the list of skills the person has.
      */
     @FXML
     private VBox allocatedSkillsContainer;
+    /**
+     * List of skill that can be added to the person.
+     */
+    private List<Skill> allocatableSkills;
+    /**
+     * A map of skills to their nodes in the skill list on the view.
+     */
+    private Map<Skill, Node> skillNodeIndex;
 
     @FXML
     @Override
@@ -56,10 +69,11 @@ public class PersonEditor extends GenericEditor<Person> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         userIdTextField.focusedProperty().addListener(getChangeListener());
-        skillChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        skillComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
-        skillChoiceBox.getItems().clear();
-        skillChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getSkills());
+        allocatableSkills = FXCollections.observableArrayList();
+        skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
+        skillNodeIndex = new HashMap<>();
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -88,16 +102,29 @@ public class PersonEditor extends GenericEditor<Person> {
             userIdTextField.setText(modelUserId);
         }
 
-        updateSkills();
+        allocatableSkills.clear();
+        allocatableSkills.addAll(getModel().getAvailableSkills());
+
+        allocatedSkillsContainer.getChildren().clear();
+        getModel().getSkills().forEach(skill -> {
+            Node skillNode = generateSkillNode(skill);
+            allocatedSkillsContainer.getChildren().add(skillNode);
+            skillNodeIndex.put(skill, skillNode);
+        });
     }
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        Skill selectedSkill = skillChoiceBox.getValue();
+        Skill selectedSkill = skillComboBox.getValue();
         if (selectedSkill != null) {
-            generateSkillNode(selectedSkill);
             getModel().addSkill(selectedSkill);
-            updateSkills();
+            Node skillNode = generateSkillNode(selectedSkill);
+            allocatedSkillsContainer.getChildren().add(skillNode);
+            skillNodeIndex.put(selectedSkill, skillNode);
+            Platform.runLater(() -> {
+                skillComboBox.getSelectionModel().clearSelection();
+                allocatableSkills.remove(selectedSkill);
+            });
         }
 
         String modelShortName = getModel().getShortName();
@@ -124,7 +151,9 @@ public class PersonEditor extends GenericEditor<Person> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
-        skillChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        skillComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        allocatableSkills = null;
+        skillNodeIndex = null;
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -146,9 +175,11 @@ public class PersonEditor extends GenericEditor<Person> {
                     + getModel().getShortName());
             popup.setTitleText("Remove Skill from Person");
             popup.addOkCancelButtons(func -> {
+                allocatableSkills.add(skill);
+                Node skillNode = skillNodeIndex.get(skill);
+                allocatedSkillsContainer.getChildren().remove(skillNode);
+                skillNodeIndex.remove(skill);
                 getModel().removeSkill(skill);
-                skillChoiceBox.getItems().add(skill);
-                updateSkills();
                 popup.close();
             });
             popup.show();
@@ -169,17 +200,5 @@ public class PersonEditor extends GenericEditor<Person> {
         pane.add(removeButton, 1, 0);
 
         return pane;
-    }
-
-    /**
-     * Updates the list of skills the person has.
-     */
-    private void updateSkills() {
-        allocatedSkillsContainer.getChildren().clear();
-        for (Skill skill : getModel().getSkills()) {
-            Node node = generateSkillNode(skill);
-            allocatedSkillsContainer.getChildren().add(node);
-            skillChoiceBox.getItems().remove(skill);
-        }
     }
 }

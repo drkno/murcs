@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,7 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Model of a person.
@@ -25,7 +26,7 @@ public class Person extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
-    private ArrayList<Skill> skills = new ArrayList<>();
+    private List<Skill> skills = new ArrayList<>();
 
     /**
      * Gets a list of the skills the person has. Following the
@@ -33,8 +34,8 @@ public class Person extends Model {
      * list is the preferred way to add items to the list.
      * @return The person's skills.
      */
-    public final ArrayList<Skill> getSkills() {
-        return skills;
+    public final List<Skill> getSkills() {
+        return Collections.unmodifiableList(skills);
     }
 
     /**
@@ -142,5 +143,38 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
+    }
+
+    /**
+     * Gets the skills that have not been already assigned to the person.
+     * @return collection of skills.
+     */
+    public final Collection<Skill> getAvailableSkills() {
+        Set<Skill> assignedSkills = new TreeSet<>((p1, p2) -> {
+            if (p1.equals(p2)) {
+                return 0;
+            }
+
+            return p1.getShortName().compareTo(p2.getShortName());
+
+        });
+        assignedSkills.addAll(getSkills());
+        Set<Skill> allSkills = new TreeSet<>((p1, p2) -> {
+            if (p1.equals(p2)) {
+                return 0;
+            }
+
+            return p1.getShortName().compareTo(p2.getShortName());
+        });
+        allSkills.addAll(PersistenceManager.Current.getCurrentModel().getSkills());
+        allSkills.removeAll(assignedSkills);
+        return Collections.unmodifiableCollection(allSkills);
+    }
+
+    /**
+     * Clears the skill that a person has.
+     */
+    public final void clearSkills() {
+        skills.clear();
     }
 }
