@@ -137,6 +137,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 return;
             }
+            else if (oldValue == null) {
+                displayList.scrollTo(newValue);
+            }
+
             if (editorPane == null) {
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
