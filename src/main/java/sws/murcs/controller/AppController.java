@@ -462,7 +462,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     clazz = Release.class;
                     break;
                 default:
-                    break;
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
             }
         }
         else {
@@ -552,16 +552,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
+            displayList.scrollTo(0);
         }
         else {
             type = ModelTypes.getModelType(parameter);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(parameter);
-            }
-            else {
+            if (selectedType != type) {
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                displayList.getSelectionModel().select(parameter);
             }
+            displayList.getSelectionModel().select(parameter);
+            displayList.scrollTo(parameter);
         }
     }
 }
