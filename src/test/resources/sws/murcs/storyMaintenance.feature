@@ -33,3 +33,9 @@ Feature: Story Maintenance
     And I try and create a story without a creator
     Then an error message will be displayed
     And the story will not be created
+
+  Scenario: Create a story with an empty short name
+    Given I have a story creation window open
+    And I do not specify a short name
+    Then an error message will be displayed
+    And the story will not be created
