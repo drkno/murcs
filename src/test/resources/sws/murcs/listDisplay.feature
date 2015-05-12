@@ -12,7 +12,7 @@ Feature: ListDisplay
 
     Scenario: Edit item
       Given I have selected an item from the list display
-      When I "edit" the items short name
+      When I edit the items short name
       Then the short name is updated in the list display
 
     Scenario: Sorted list
@@ -22,5 +22,5 @@ Feature: ListDisplay
     Scenario: Edit item in sorted list
       Given there are multiple items in the list display
       And I have selected an item from the list display
-      When I "prefix" the items short name
+      When I prefix the items short name
       Then the list is sorted alphabetically

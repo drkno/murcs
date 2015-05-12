@@ -127,7 +127,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
         fx.clickOn("Dave");
     }
 
-    @When("^I \"([^\"]*)\" the items short name$")
+    @When("^I (\\w+) the items short name$")
     public void I_edit_the_items_short_name(String changeType) throws Throwable {
         FxRobot robot = fx.clickOn("#shortNameTextField");
         if (changeType.equals("prefix")) {
