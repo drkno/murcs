@@ -33,6 +33,7 @@ public class Story extends Model {
      */
     public final void setDescription(final String newDescription) {
         this.description = newDescription;
+        commit("edit story");
     }
 
     /**
@@ -50,6 +51,7 @@ public class Story extends Model {
      */
     public final void setCreator(final Person person) {
         this.creator = person;
+        commit("edit story");
     }
 
     @Override
