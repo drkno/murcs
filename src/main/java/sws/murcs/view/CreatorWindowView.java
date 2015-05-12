@@ -6,9 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sws.murcs.controller.ModelTypes;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
+import sws.murcs.controller.ModelTypes;
 import sws.murcs.model.Model;
 
 import java.util.Objects;
@@ -123,6 +123,7 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
+            stage.setResizable(false);
             controller.setStage(stage);
             if (root == null) {
                 return;

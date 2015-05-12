@@ -89,7 +89,7 @@ public class TeamEditor extends GenericEditor<Team> {
         allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
 
         setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
+            if (message != null && message.getClass() == String.class) {
                 labelErrorMessage.setText(message);
             }
         });
