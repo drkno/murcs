@@ -53,7 +53,8 @@ public class DuplicateObjectException extends CustomException {
      * @param enableSuppression Enable suppression of the exception.
      * @param writableStackTrace Is the stack trace writable.
      */
-    public DuplicateObjectException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public DuplicateObjectException(final String message, final Throwable cause, final boolean enableSuppression,
+                                    final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
@@ -113,7 +114,9 @@ public class DuplicateObjectException extends CustomException {
      * @param simpleName The simple name
      * @throws DuplicateObjectException The exception if there is a duplicate
      */
-    private static void checkForDuplicateNames(final Model newModel, final List<? extends Model> modelClass, final String className, final String simpleName) throws DuplicateObjectException {
+    private static void checkForDuplicateNames(final Model newModel, final List<? extends Model> modelClass,
+                                               final String className, final String simpleName)
+            throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getShortName().equals(simpleName) && o != newModel)
                 .findAny()
@@ -129,7 +132,8 @@ public class DuplicateObjectException extends CustomException {
      * @param simpleId The user id.
      * @throws DuplicateObjectException The exception thrown if there is a person with the same user id.
      */
-    private static void checkForDuplicateUserIds(final Model newModel, final List<Person> modelClass, final String simpleId) throws DuplicateObjectException {
+    private static void checkForDuplicateUserIds(final Model newModel, final List<Person> modelClass,
+                                                 final String simpleId) throws DuplicateObjectException {
         if (modelClass != null && modelClass.stream()
                 .filter(o -> o.getUserId().equals(simpleId) && o != newModel)
                 .findAny()

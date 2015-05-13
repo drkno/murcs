@@ -6,13 +6,31 @@ import sws.murcs.model.Skill;
  * Generates random skills.
  */
 public class SkillGenerator implements Generator<Skill> {
+    /**
+     * The max number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MAX = 3;
+    /**
+     * The min number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MAX = 20;
+    /**
+     * The min number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MIN = 3;
 
+    /**
+     * The max number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MAX = 100;
+    /**
+     * The min number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MIN = 20;
 
     /**
@@ -128,7 +146,7 @@ public class SkillGenerator implements Generator<Skill> {
             "Organizing files",
             "Organizing tasks",
             "Patience",
-            "People management skills",
+            "Person management skills",
             "Performing clerical work ",
             "Performing numerical analysis",
             "Persuading others",
@@ -263,7 +281,7 @@ public class SkillGenerator implements Generator<Skill> {
      * @param skillsList skills to generate from.
      * @param descriptionList descriptions to generate from.
      */
-    public SkillGenerator(final String[] skillsList, final String[] descriptionList){
+    public SkillGenerator(final String[] skillsList, final String[] descriptionList) {
         this.skills = skillsList;
         this.descriptions = descriptionList;
     }

@@ -7,6 +7,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -17,6 +21,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
@@ -30,7 +35,6 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +46,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * The Menu items for the main window.
      */
     @FXML
-    private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    private MenuItem fileQuit, undoMenuItem, redoMenuItem, openProject, saveProject, generateReport, addProject,
+            addTeam, addPerson, addSkill, addRelease, addStory, showHide;
     /**
      * The side display which contains the display list.
      */
@@ -64,7 +69,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * displayed in the list.
      */
     @FXML
-    private ChoiceBox<ModelTypes> displayChoiceBox;
+    private ChoiceBox<ModelType> displayChoiceBox;
     /**
      * The list which contains the models of the type selected
      * in the display list choice box.
@@ -103,7 +108,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             fileQuitPress(null);
         });
 
-        for (ModelTypes type : ModelTypes.values()) {
+        for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
         }
         displayChoiceBox
@@ -146,9 +151,50 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         });
 
+        setUpShortCuts();
+
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    /**
+     * Sets up the keyboard shortcuts for the application.
+     */
+    private void setUpShortCuts() {
+        //Menu item short cuts
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+        saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        addStory.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN,
+                KeyCombination.CONTROL_DOWN));
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+
+        //Key combinations for things other than menu items
+        borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
+    }
+
+    /**
+     * Handles keys being pressed.
+     * @param event Key event
+     */
+    private void handleKey(final KeyEvent event) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN).match(event)) {
+            addClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+            removeClicked(null);
+        }
     }
 
     /**
@@ -159,7 +205,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             creatorWindow.dispose();
             creatorWindow = null;
         }
-        ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
@@ -170,10 +216,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         List<? extends Model> arrayList;
         switch (type) {
             case Project: arrayList = model.getProjects(); break;
-            case People: arrayList = model.getPeople(); break;
+            case Person: arrayList = model.getPeople(); break;
             case Team: arrayList = model.getTeams(); break;
-            case Skills: arrayList = model.getSkills(); break;
+            case Skill: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
+            case Story: arrayList = model.getStories(); break;
             default: throw new UnsupportedOperationException();
         }
         displayList.setItems((ModelObservableArrayList) arrayList);
@@ -387,7 +434,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
-        if (event.getSource() instanceof MenuItem) {
+        if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
@@ -412,8 +459,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         else {
             //If pressing the add button at the bottom of the display list
-            ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-            clazz = ModelTypes.getTypeFromModel(type);
+            ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+            clazz = ModelType.getTypeFromModel(type);
         }
 
         if (clazz != null) {
@@ -421,8 +468,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 creatorWindow = new CreatorWindowView(clazz.newInstance(),
                         model -> {
                             selectItem(model);
-                            creatorWindow.dispose();
-                            creatorWindow = null;
+                            if (creatorWindow != null) {
+                                creatorWindow.dispose();
+                                creatorWindow = null;
+                            }
                         },
                         func -> {
                             creatorWindow.dispose();
@@ -455,19 +504,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
 
         // Ensures you can't delete Product Owner or Scrum Master
-        if (ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelTypes.Skills) {
+        if (ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex()) == ModelType.Skill) {
             if (selectedItem.getShortName().equals("PO") || selectedItem.getShortName().equals("SM")) {
                 return;
             }
         }
 
-        ArrayList<Model> usages = model.findUsages(selectedItem);
+        List<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
-            ModelTypes type =  ModelTypes.getModelType(selectedItem);
-            if (type == ModelTypes.People) {
+            ModelType type =  ModelType.getModelType(selectedItem);
+            if (type == ModelType.Person) {
                 message += "person";
             }
             else {
@@ -492,19 +541,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
     @Override
     public final void selectItem(final Model parameter) {
-        ModelTypes type;
-        ModelTypes selectedType = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+        ModelType type;
+        ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
         }
         else {
-            type = ModelTypes.getModelType(parameter);
+            type = ModelType.getModelType(parameter);
             if (selectedType == type) {
                 displayList.getSelectionModel().select(parameter);
             }
             else {
-                displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
+                displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
                 displayList.getSelectionModel().select(parameter);
             }
         }

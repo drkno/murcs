@@ -16,11 +16,12 @@
                         <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
                         <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
                         <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addClicked" text="Release" />
+                           <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story" />
                        </items>
                     </Menu>
-                    <MenuItem mnemonicParsing="false" onAction="#openProject" text="Open Project" />
-                    <MenuItem mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
-                    <MenuItem mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
+                    <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />
+                    <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                    <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
                     <SeparatorMenuItem mnemonicParsing="false" />
                     <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
                 </items>
@@ -33,7 +34,7 @@
             </Menu>
              <Menu id="viewMenu" mnemonicParsing="false" text="View">
                 <items>
-                    <MenuItem id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                    <MenuItem fx:id="showHide" id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
                 </items>
              </Menu>
          </menus>

@@ -6,10 +6,10 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sws.murcs.controller.ModelTypes;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -99,11 +99,11 @@ public class CreatorWindowView {
      */
     public final void show() {
         try {
-            String type = ModelTypes.getModelType(model).toString();
+            String type = ModelType.getModelType(model).toString();
 
             // Work around, As you can't add multiple people at a time, only a single person
             // This is just the title of the popup dialog.
-            if (Objects.equals(type, "People")) {
+            if (Objects.equals(type, "Person")) {
                 type = "Person";
             }
 
@@ -123,6 +123,7 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
+            stage.setResizable(false);
             controller.setStage(stage);
             if (root == null) {
                 return;

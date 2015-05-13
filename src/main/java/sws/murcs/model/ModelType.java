@@ -1,33 +1,36 @@
-package sws.murcs.controller;
-
-import sws.murcs.model.Model;
+package sws.murcs.model;
 
 /**
  * A enum of the different types of model that
  * are in the application.
  */
-public enum ModelTypes {
+public enum ModelType {
 
     /**
      * Represents the class Project.
      */
     Project(0, sws.murcs.model.Project.class),
     /**
-     * Represents the class People.
+     * Represents the class Person.
      */
-    People(1, sws.murcs.model.Person.class),
+    Person(1, sws.murcs.model.Person.class),
     /**
      * Represents the class Team.
      */
     Team(2, sws.murcs.model.Team.class),
     /**
-     * Represents the class Skills.
+     * Represents the class Skill.
      */
-    Skills(3, sws.murcs.model.Skill.class),
+    Skill(3, sws.murcs.model.Skill.class),
     /**
      * Represents the class Release.
      */
-    Release(4, sws.murcs.model.Release.class);
+    Release(4, sws.murcs.model.Release.class),
+
+    /**
+     * Indicates a model type, story.
+     */
+    Story(5, sws.murcs.model.Story.class);
 
     /**
      * The index of the model type in the enum.
@@ -43,7 +46,7 @@ public enum ModelTypes {
      * @param modelIndex index of the ModelType.
      * @param classType class of the ModelType.
      */
-    ModelTypes(final int modelIndex, final Class classType) {
+    ModelType(final int modelIndex, final Class classType) {
         index = modelIndex;
         clazz = classType;
     }
@@ -53,20 +56,20 @@ public enum ModelTypes {
      * @param index The index
      * @return The model type
      */
-    public static ModelTypes getModelType(final int index) {
+    public static ModelType getModelType(final int index) {
         return values()[index];
     }
 
     /**
      * Gets the index from a model type
      * 0: Project
-     * 1: People
+     * 1: Person
      * 2: Team
-     * 3: Skills.
+     * 3: Skill.
      * @param type The type of model object.
      * @return The index for selection
      */
-    public static int getSelectionType(final ModelTypes type) {
+    public static int getSelectionType(final ModelType type) {
         return type.index;
     }
 
@@ -75,8 +78,8 @@ public enum ModelTypes {
      * @param clazz The type of the model object
      * @return The model type
      */
-    public static ModelTypes getModelType(final Class<? extends Model> clazz) {
-        for (ModelTypes type : values()) {
+    public static ModelType getModelType(final Class<? extends Model> clazz) {
+        for (ModelType type : values()) {
             if (type.clazz == clazz) {
                 return type;
             }
@@ -91,7 +94,7 @@ public enum ModelTypes {
      * @param object The object to get the model type for
      * @return The model type
      */
-    public static ModelTypes getModelType(final Object object) {
+    public static ModelType getModelType(final Object object) {
         if (!(object instanceof Model)) {
             throw new IllegalArgumentException("object must extend model! (was " + object.getClass().getName() + ")");
         }
@@ -105,7 +108,7 @@ public enum ModelTypes {
      * @param type the type
      * @return The class
      */
-    public static Class<? extends Model> getTypeFromModel(final ModelTypes type) {
+    public static Class<? extends Model> getTypeFromModel(final ModelType type) {
         return type.clazz;
     }
 }

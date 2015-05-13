@@ -19,9 +19,15 @@ import java.util.ArrayList;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+    /**
+     * The user id of a person.
+     */
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+    /**
+     * The list of skills the person has.
+     */
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
@@ -99,7 +105,7 @@ public class Person extends Model {
 
     /**
      * Adds a list of skills to the persons skills.
-     * @param skillsToAdd Skills to be added to person
+     * @param skillsToAdd Skill to be added to person
      * @throws DuplicateObjectException if the
      * person has any of the skills in the list
      */
@@ -142,5 +148,18 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c += getShortName().hashCode();
+        }
+        if (getUserId() != null) {
+            c += getUserId().hashCode();
+        }
+
+        return getHashCodePrime() + c;
     }
 }
