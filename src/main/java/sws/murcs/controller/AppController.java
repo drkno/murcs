@@ -1,8 +1,9 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -35,8 +36,8 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
-import java.security.Key;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -104,6 +105,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
+    @SuppressWarnings("unused")
     public final void initialize() {
         App.addListener(e -> {
             e.consume();
@@ -135,6 +137,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 return;
             }
+            else if (oldValue == null) {
+                displayList.scrollTo(newValue);
+            }
+
             if (editorPane == null) {
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
@@ -187,7 +193,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Handles keys being pressed.
      * @param event Key event
      */
-    private void handleKey(KeyEvent event) {
+    private void handleKey(final KeyEvent event) {
         if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN).match(event)) {
             addClicked(null);
@@ -200,11 +206,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     /**
      * Updates the display list on the left hand side of the screen.
      */
+    @SuppressWarnings("unchecked")
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -222,7 +225,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Release: arrayList = model.getReleases(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList) arrayList);
+
+        if (arrayList.getClass() == ModelObservableArrayList.class) {
+            ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
+            arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            System.err.println("This list type does not yet have an ordering specified, "
+                    + "please correct this so that the display list is shown correctly.");
+        }
+
+        displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
@@ -453,7 +466,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     clazz = Release.class;
                     break;
                 default:
-                    break;
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
             }
         }
         else {
@@ -543,16 +556,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
+            displayList.scrollTo(0);
         }
         else {
             type = ModelTypes.getModelType(parameter);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(parameter);
-            }
-            else {
+            if (selectedType != type) {
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                displayList.getSelectionModel().select(parameter);
             }
+            displayList.getSelectionModel().select(parameter);
+            displayList.scrollTo(parameter);
         }
     }
 }

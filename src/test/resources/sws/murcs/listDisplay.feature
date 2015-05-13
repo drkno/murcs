@@ -14,3 +14,13 @@ Feature: ListDisplay
       Given I have selected an item from the list display
       When I edit the items short name
       Then the short name is updated in the list display
+
+    Scenario: Sorted list
+      Given there are multiple items in the list display
+      Then the list is sorted alphabetically
+
+    Scenario: Edit item in sorted list
+      Given there are multiple items in the list display
+      And I have selected an item from the list display
+      When I prefix the items short name
+      Then the list is sorted alphabetically
