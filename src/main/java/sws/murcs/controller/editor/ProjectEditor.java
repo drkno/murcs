@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -13,6 +14,7 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.time.LocalDate;
 
@@ -77,6 +79,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
+        tableColumnTeams.setCellFactory(param -> new HyperlinkTeamCell());
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(param -> new NullableLocalDateCell());
@@ -210,14 +213,31 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
+     * A TableView cell that contains a link to the team it represents
+     */
+    class HyperlinkTeamCell extends TableCell<WorkAllocation, Team> {
+        @Override
+        protected void updateItem(Team team, boolean empty) {
+            super.updateItem(team, empty);
+            if (team == null)
+                setText("");
+            else {
+                Text text = new Text(team.toString());
+                text.setOnMouseClicked(param -> App.navigateTo(team));
+                setGraphic(text);
+            }
+        }
+    }
+
+    /**
      * Used to represent the end date cell as it could receive a null pointer if no end is specified
      */
     class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
         @Override
-        protected void updateItem(LocalDate item, boolean empty) {
-            super.updateItem(item, empty);
-            if (item != null) {
-                setText(item.toString());
+        protected void updateItem(LocalDate date, boolean empty) {
+            super.updateItem(date, empty);
+            if (date != null) {
+                setText(date.toString());
             }
             else {
                 setText("");

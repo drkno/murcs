@@ -1,22 +1,27 @@
 package sws.murcs.controller.editor;
 
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.controller.AppController;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -224,6 +229,7 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     private Node generateMemberNode(final Person person) {
         Text nameText = new Text(person.toString());
+        nameText.setOnMouseClicked(param -> App.navigateTo(person));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();

@@ -16,6 +16,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 /**
  * Allows you to model a model.
@@ -141,6 +142,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     private Node generateSkillNode(final Skill skill) {
         Text nameText = new Text(skill.toString());
+        nameText.setOnMouseClicked(param -> App.navigateTo(skill));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
