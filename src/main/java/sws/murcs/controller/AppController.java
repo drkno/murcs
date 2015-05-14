@@ -1,12 +1,18 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -31,6 +37,7 @@ import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,7 +49,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * The Menu items for the main window.
      */
     @FXML
-    private MenuItem fileQuit, newProjectMenuItem, undoMenuItem, redoMenuItem;
+    private MenuItem fileQuit, undoMenuItem, redoMenuItem, openProject, saveProject, generateReport, addProject,
+            addTeam, addPerson, addSkill, addRelease, showHide;
     /**
      * The side display which contains the display list.
      */
@@ -97,6 +105,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
+    @SuppressWarnings("unused")
     public final void initialize() {
         App.addListener(e -> {
             e.consume();
@@ -128,6 +137,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 return;
             }
+            else if (oldValue == null) {
+                displayList.scrollTo(newValue);
+            }
+
             if (editorPane == null) {
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
@@ -144,19 +157,55 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         });
 
+        setUpShortCuts();
+
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
     }
 
     /**
+     * Sets up the keyboard shortcuts for the application.
+     */
+    private void setUpShortCuts() {
+        //Menu item short cuts
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+        saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+
+        //Key combinations for things other than menu items
+        borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
+    }
+
+    /**
+     * Handles keys being pressed.
+     * @param event Key event
+     */
+    private void handleKey(final KeyEvent event) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
+                KeyCombination.CONTROL_DOWN).match(event)) {
+            addClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+            removeClicked(null);
+        }
+    }
+
+    /**
      * Updates the display list on the left hand side of the screen.
      */
+    @SuppressWarnings("unchecked")
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelTypes type = ModelTypes.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -174,7 +223,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Release: arrayList = model.getReleases(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList) arrayList);
+
+        if (arrayList.getClass() == ModelObservableArrayList.class) {
+            ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
+            arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            System.err.println("This list type does not yet have an ordering specified, "
+                    + "please correct this so that the display list is shown correctly.");
+        }
+
+        displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
@@ -385,7 +444,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
-        if (event.getSource() instanceof MenuItem) {
+        if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
             String id = ((MenuItem) event.getSource()).getId();
             switch (id) {
@@ -405,7 +464,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     clazz = Release.class;
                     break;
                 default:
-                    break;
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
             }
         }
         else {
@@ -495,16 +554,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
+            displayList.scrollTo(0);
         }
         else {
             type = ModelTypes.getModelType(parameter);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(parameter);
-            }
-            else {
+            if (selectedType != type) {
                 displayChoiceBox.getSelectionModel().select(ModelTypes.getSelectionType(type));
-                displayList.getSelectionModel().select(parameter);
             }
+            displayList.getSelectionModel().select(parameter);
+            displayList.scrollTo(parameter);
         }
     }
 }
