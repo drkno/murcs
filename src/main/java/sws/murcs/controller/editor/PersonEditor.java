@@ -2,10 +2,7 @@ package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -141,8 +138,8 @@ public class PersonEditor extends GenericEditor<Person> {
      * @return the node representing the skill
      */
     private Node generateSkillNode(final Skill skill) {
-        Text nameText = new Text(skill.toString());
-        nameText.setOnMouseClicked(param -> App.navigateTo(skill));
+        Hyperlink nameText = new Hyperlink(skill.toString());
+        nameText.setOnAction(param -> App.navigateTo(skill));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();

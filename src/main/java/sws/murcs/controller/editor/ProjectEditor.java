@@ -222,8 +222,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             if (team == null)
                 setText("");
             else {
-                Text text = new Text(team.toString());
-                text.setOnMouseClicked(param -> App.navigateTo(team));
+                Hyperlink text = new Hyperlink(team.toString());
+                text.setOnAction(param -> App.navigateTo(team));
                 setGraphic(text);
             }
         }

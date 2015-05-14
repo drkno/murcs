@@ -4,10 +4,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -228,8 +225,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Text nameText = new Text(person.toString());
-        nameText.setOnMouseClicked(param -> App.navigateTo(person));
+        Hyperlink nameText = new Hyperlink(person.toString());
+        nameText.setOnAction(param -> App.navigateTo(person));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
