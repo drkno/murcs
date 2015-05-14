@@ -17,13 +17,28 @@ import java.time.LocalDate;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkAllocation implements Serializable {
 
+    /**
+     * The project that belongs to this work allocation.
+     */
     private final Project project;
+    /**
+     * The team that relates to this work allocation.
+     */
     private final Team team;
+    /**
+     * The start date of the work allocation.
+     */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate startDate;
+    /**
+     * The end date of the work allocation.
+     */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate endDate;
 
+    /**
+     * Creates a new empty work allocation.
+     */
     @SuppressWarnings("unused")
     public WorkAllocation() {
         project = null;

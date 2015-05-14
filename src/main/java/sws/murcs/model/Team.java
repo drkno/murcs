@@ -18,14 +18,26 @@ import java.util.ArrayList;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Team extends Model {
 
+    /**
+     * The description of the team.
+     */
     @TrackableValue
     private String description;
+    /**
+     * A list of members in the team.
+     */
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
     private ArrayList<Person> members = new ArrayList<>();
+    /**
+     * The scrum master of the team.
+     */
     @TrackableValue
     private Person scrumMaster;
+    /**
+     * The product owner of the team.
+     */
     @TrackableValue
     private Person productOwner;
 
@@ -119,7 +131,7 @@ public class Team extends Model {
 
     /**
      * Adds a list of people to the team.
-     * @param membersToAdd People to be added to the team
+     * @param membersToAdd Person to be added to the team
      * @throws DuplicateObjectException
      * if a person is already in a team
      */
@@ -151,10 +163,23 @@ public class Team extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Team)) return false;
+        if (object == null || !(object instanceof Team)) {
+            return false;
+        }
         String shortName = getShortName();
         String shortNameO = ((Team) object).getShortName();
-        if (shortName == null || shortNameO == null) return shortName == shortNameO;
+        if (shortName == null || shortNameO == null) {
+            return shortName == shortNameO;
+        }
         return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        return getHashCodePrime() + c;
     }
 }

@@ -81,12 +81,9 @@ public class Release extends Model {
 
     @Override
     public final int hashCode() {
-        int c = 1;
+        int c = 0;
         if (getShortName() != null) {
             c = getShortName().hashCode();
-        }
-        else {
-            c = 0;
         }
         return getHashCodePrime() + c;
     }

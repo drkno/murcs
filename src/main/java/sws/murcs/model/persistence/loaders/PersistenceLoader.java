@@ -3,7 +3,11 @@ package sws.murcs.model.persistence.loaders;
 import sws.murcs.model.RelationalModel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+/**
+ * An interface for persistence loaders.
+ */
 public interface PersistenceLoader {
 
     /**
@@ -25,10 +29,10 @@ public interface PersistenceLoader {
      * Gets a list of models that exist.
      * @return List of models.
      */
-    ArrayList<String> getModelList();
+    Collection<String> getModelList();
 
     /**
-     * Deletes the specified model
+     * Deletes the specified model.
      * @param persistenceName The name of the persistent file
      * @return Whether the operation was successful
      */

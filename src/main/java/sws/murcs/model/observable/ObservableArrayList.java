@@ -26,7 +26,7 @@ public class ObservableArrayList<T extends Model> extends ObservableListWrapper<
      * Note: used in Undo/Redo, it is important it has this method signature.
      * @param c collection to clone.
      */
-    public ObservableArrayList(final Collection<T> c) {
-        super(new ArrayList<>(c), param -> new Observable[]{param.getShortNameProperty()});
+    public ObservableArrayList(final Collection c) {
+        super(new ArrayList<>(c), param -> new Observable[] {param.getShortNameProperty()});
     }
 }

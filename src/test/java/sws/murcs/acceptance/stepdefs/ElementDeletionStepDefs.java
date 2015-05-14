@@ -123,8 +123,8 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         assertEquals("The " + type + " was not deleted.", type.equals("skill") ? 2 : 0, displayList.getItems().size());
     }
 
-    @And("^deletion can be undone$")
-    public void the_deletion_of_a_type_can_be_undone() throws Throwable {
+    @And("^(\\w+) deletion can be undone$")
+    public void the_deletion_of_a_type_can_be_undone(String type) throws Throwable {
         ObservableList items = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems();
         int displayListSizeBefore = items.size();
         fx.clickOn("#editMenu");
@@ -137,11 +137,10 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     public void I_have_selected(String type) throws Throwable {
         int selectIndex = 0;
         switch (type) {
-            case "project": fx.clickOn("#displayChoiceBox").clickOn("People"); break;
+            case "project": fx.clickOn("#displayChoiceBox").clickOn("Person"); break;
             case "person": type = "person"; break;
-            case "skill": type = "skills"; selectIndex = 1; break;
+            case "skill": type = "skill"; selectIndex = 1; break;
         }
-        if (type.equals("person")) type = "people";
         type = type.substring(0,1).toUpperCase() + type.substring(1);
 
         fx.clickOn("#displayChoiceBox").clickOn(type);

@@ -39,8 +39,7 @@ public class ModelObservableArrayList<T extends Model>
      * Clones from existing collection.
      * @param c original collection.
      */
-    @SuppressWarnings("unused")
-    public ModelObservableArrayList(final Collection<T> c) {
+    public ModelObservableArrayList(final Collection c) {
         super(c);
     }
 
