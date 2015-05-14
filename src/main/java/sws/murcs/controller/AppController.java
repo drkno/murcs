@@ -1,6 +1,8 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -36,6 +38,8 @@ import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -103,6 +107,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
+    @SuppressWarnings("unused")
     public final void initialize() {
         App.addListener(e -> {
             e.consume();
@@ -134,6 +139,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 return;
             }
+            else if (oldValue == null) {
+                displayList.scrollTo(newValue);
+            }
+
             if (editorPane == null) {
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
@@ -201,11 +210,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     /**
      * Updates the display list on the left hand side of the screen.
      */
+    @SuppressWarnings("unchecked")
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
@@ -224,7 +230,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Story: arrayList = model.getStories(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList) arrayList);
+
+        if (arrayList.getClass() == ModelObservableArrayList.class) {
+            ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
+            arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            System.err.println("This list type does not yet have an ordering specified, "
+                    + "please correct this so that the display list is shown correctly.");
+        }
+
+        displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
@@ -455,7 +471,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     clazz = Release.class;
                     break;
                 default:
-                    break;
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
             }
         }
         else {
@@ -475,8 +491,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                             }
                         },
                         func -> {
-                            creatorWindow.dispose();
-                            creatorWindow = null;
+                            if (creatorWindow != null) {
+                                creatorWindow.dispose();
+                                creatorWindow = null;
+                            }
                         });
                 creatorWindow.show();
             }
@@ -541,6 +559,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
+            displayList.scrollTo(0);
         }
         else {
             type = ModelType.getModelType(parameter);
@@ -551,6 +570,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
                 displayList.getSelectionModel().select(parameter);
             }
+            displayList.getSelectionModel().select(parameter);
+            displayList.scrollTo(parameter);
         }
     }
 }

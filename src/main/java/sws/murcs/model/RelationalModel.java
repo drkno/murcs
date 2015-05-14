@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -175,13 +176,22 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the unassigned people.
      * @return The unassigned people
      */
-    public final Set<Person> getUnassignedPeople() {
+    public final Collection getUnassignedPeople() {
         Set<Person> assignedPeople = new TreeSet<>((p1, p2) -> {
-            return p1.getShortName().compareTo(p2.getShortName());
+            if (p1.equals(p2)) {
+                return 0;
+            }
+
+            return p1.getShortName().toLowerCase().compareTo(p2.getShortName().toLowerCase());
+
         });
         getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
         Set<Person> unassignedPeople = new TreeSet<>((p1, p2) -> {
-            return p1.getShortName().compareTo(p2.getShortName());
+            if (p1.equals(p2)) {
+                return 0;
+            }
+
+            return p1.getShortName().toLowerCase().compareTo(p2.getShortName().toLowerCase());
         });
         unassignedPeople.addAll(getPeople());
         unassignedPeople.removeAll(assignedPeople);
@@ -480,6 +490,32 @@ public class RelationalModel extends TrackableObject implements Serializable {
                     .filter(person -> person.getSkills().contains(skill))
                     .forEach(person -> person.removeSkill(skill));
         }
+    }
+
+    /**
+     * Gets the skills that have not been already assigned to a person.
+     * @return collection of skills.
+     */
+    public final Collection<Skill> getAvailableSkills(final Person person) {
+        Set<Skill> assignedSkills = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().compareTo(s2.getShortName());
+
+        });
+        assignedSkills.addAll(person.getSkills());
+        Set<Skill> allSkills = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().compareTo(s2.getShortName());
+        });
+        allSkills.addAll(skills);
+        allSkills.removeAll(assignedSkills);
+        return Collections.unmodifiableCollection(allSkills);
     }
 
     /**

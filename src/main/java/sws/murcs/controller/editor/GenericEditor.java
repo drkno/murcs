@@ -70,7 +70,9 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
 
     @Override
     public final void clearErrors() {
-        errorCallback.notify("");
+        if (errorCallback != null) {
+            errorCallback.notify("");
+        }
     }
 
     @Override
