@@ -5,6 +5,8 @@ import sws.murcs.model.Release;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -665,7 +667,7 @@ public class ReleaseGenerator implements Generator<Release> {
     /**
      * The pool of projects to be linked to the releases.
      */
-    private ArrayList<Project> projectPool;
+    private List<Project> projectPool;
     /**
      * The project generator to be used with this releases generator.
      */
@@ -710,7 +712,7 @@ public class ReleaseGenerator implements Generator<Release> {
      * @param max The max number of projects
      * @return The array list of generated projects
      */
-    private ArrayList<Project> generateProjects(final int min, final int max) {
+    private List<Project> generateProjects(final int min, final int max) {
         ArrayList<Project> generated = new ArrayList<>();
         int projectCount = NameGenerator.random(min, max);
 
@@ -747,7 +749,7 @@ public class ReleaseGenerator implements Generator<Release> {
         LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28)
                 + 1);
 
-        ArrayList<Project> projects = generateProjects(1, 5);
+        List<Project> projects = generateProjects(1, 5);
 
         try {
             r.setShortName(shortName);

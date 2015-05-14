@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Manages loading persistent data from the local HD using binary serialization.
@@ -130,7 +131,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return List of models.
      */
     @Override
-    public final ArrayList<String> getModelList() {
+    public final Collection<String> getModelList() {
         return getModelList(".project");
     }
 
@@ -139,7 +140,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param fileExtension file extension.
      * @return List of models.
      */
-    public final ArrayList<String> getModelList(final String fileExtension) {
+    public final Collection<String> getModelList(final String fileExtension) {
         return getModelList(fileExtension, getCurrentWorkingDirectory());
     }
 

@@ -517,13 +517,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (usages.size() != 0) {
             message += "\nThis ";
             ModelType type = ModelType.getModelType(selectedItem);
-            if (type == ModelType.Person) {
-                message += "person";
-            }
-            else {
-                message += type.toString().toLowerCase();
-            }
-             message += " is used in " + usages.size() + " place(s):";
+            message += type.toString().toLowerCase() + " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }

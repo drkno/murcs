@@ -4,6 +4,7 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Provides methods for managing models.
@@ -94,7 +95,7 @@ public final class PersistenceManager {
      * @return Whether the persistence exists
      */
     public boolean modelExists(final String persistenceName) {
-        ArrayList<String> persistences = getModels();
+        Collection<String> persistences = getModels();
         return persistences.contains(persistenceName);
     }
 
@@ -102,7 +103,7 @@ public final class PersistenceManager {
      * Returns a list of models that exist in the default location.
      * @return gets a list of models that exist in the default location.
      */
-    public ArrayList<String> getModels() {
+    public Collection<String> getModels() {
         return persistenceLoader.getModelList();
     }
 
