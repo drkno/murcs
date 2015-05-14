@@ -35,6 +35,7 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -510,12 +511,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
 
-        List<Model> usages = model.findUsages(selectedItem);
+        Collection<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
-            ModelType type =  ModelType.getModelType(selectedItem);
+            ModelType type = ModelType.getModelType(selectedItem);
             if (type == ModelType.Person) {
                 message += "person";
             }

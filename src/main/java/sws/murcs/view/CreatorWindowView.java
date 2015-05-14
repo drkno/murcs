@@ -101,12 +101,6 @@ public class CreatorWindowView {
         try {
             String type = ModelType.getModelType(model).toString();
 
-            // Work around, As you can't add multiple people at a time, only a single person
-            // This is just the title of the popup dialog.
-            if (Objects.equals(type, "Person")) {
-                type = "Person";
-            }
-
             // Load the view
             FXMLLoader loader = new FXMLLoader(CreatorWindowController
                     .class
