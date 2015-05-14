@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Model of a person.
@@ -25,7 +27,7 @@ public class Person extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
-    private ArrayList<Skill> skills = new ArrayList<>();
+    private List<Skill> skills = new ArrayList<>();
 
     /**
      * Gets a list of the skills the person has. Following the
@@ -33,8 +35,8 @@ public class Person extends Model {
      * list is the preferred way to add items to the list.
      * @return The person's skills.
      */
-    public final ArrayList<Skill> getSkills() {
-        return skills;
+    public final List<Skill> getSkills() {
+        return Collections.unmodifiableList(skills);
     }
 
     /**
@@ -142,5 +144,12 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
+    }
+
+    /**
+     * Clears the skill that a person has.
+     */
+    public final void clearSkills() {
+        skills.clear();
     }
 }
