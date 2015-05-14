@@ -3,7 +3,6 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.model.persistence.PersistenceManager;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -11,7 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Model of a person.
@@ -143,32 +144,6 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
-    }
-
-    /**
-     * Gets the skills that have not been already assigned to the person.
-     * @return collection of skills.
-     */
-    public final Collection<Skill> getAvailableSkills() {
-        Set<Skill> assignedSkills = new TreeSet<>((p1, p2) -> {
-            if (p1.equals(p2)) {
-                return 0;
-            }
-
-            return p1.getShortName().compareTo(p2.getShortName());
-
-        });
-        assignedSkills.addAll(getSkills());
-        Set<Skill> allSkills = new TreeSet<>((p1, p2) -> {
-            if (p1.equals(p2)) {
-                return 0;
-            }
-
-            return p1.getShortName().compareTo(p2.getShortName());
-        });
-        allSkills.addAll(PersistenceManager.Current.getCurrentModel().getSkills());
-        allSkills.removeAll(assignedSkills);
-        return Collections.unmodifiableCollection(allSkills);
     }
 
     /**

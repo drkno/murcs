@@ -18,6 +18,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +104,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         allocatableSkills.clear();
-        allocatableSkills.addAll(getModel().getAvailableSkills());
+        allocatableSkills.addAll(PersistenceManager.Current.getCurrentModel().getAvailableSkills(getModel()));
 
         allocatedSkillsContainer.getChildren().clear();
         getModel().getSkills().forEach(skill -> {

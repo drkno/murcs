@@ -176,7 +176,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 return 0;
             }
 
-            return p1.getShortName().compareTo(p2.getShortName());
+            return p1.getShortName().toLowerCase().compareTo(p2.getShortName().toLowerCase());
 
         });
         getTeams().forEach(t -> assignedPeople.addAll(t.getMembers()));
@@ -185,11 +185,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 return 0;
             }
 
-            return p1.getShortName().compareTo(p2.getShortName());
+            return p1.getShortName().toLowerCase().compareTo(p2.getShortName().toLowerCase());
         });
         unassignedPeople.addAll(getPeople());
         unassignedPeople.removeAll(assignedPeople);
-        return Collections.unmodifiableCollection(unassignedPeople);
+        return unassignedPeople;
     }
 
     /**
@@ -465,6 +465,32 @@ public class RelationalModel extends TrackableObject implements Serializable {
                     .filter(person -> person.getSkills().contains(skill))
                     .forEach(person -> person.removeSkill(skill));
         }
+    }
+
+    /**
+     * Gets the skills that have not been already assigned to a person.
+     * @return collection of skills.
+     */
+    public final Collection<Skill> getAvailableSkills(final Person person) {
+        Set<Skill> assignedSkills = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().compareTo(s2.getShortName());
+
+        });
+        assignedSkills.addAll(person.getSkills());
+        Set<Skill> allSkills = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().compareTo(s2.getShortName());
+        });
+        allSkills.addAll(skills);
+        allSkills.removeAll(assignedSkills);
+        return Collections.unmodifiableCollection(allSkills);
     }
 
     /**
