@@ -572,7 +572,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             UndoRedoManager.assimilate(commitNumber);
         }
         catch (Exception e) {
-            // This should never happen
+            // This will never happen
             e.printStackTrace();
         }
         UndoRedoManager.add(model);

@@ -172,11 +172,13 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         // Must meet minimum requirements for an allocation
         String message = "";
-        if (team == null){
+        if (team == null) {
             message += "Team may not be null";
         }
-        message += message.length() == 0 ? " and " : "";
         if (startDate == null) {
+            if (message.length() != 0) {
+                message += " and ";
+            }
             message += "Start Date may not be null";
         }
         if (message.equals("")) {
