@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <BorderPane fx:id="borderPaneMain" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
@@ -34,7 +37,7 @@
             </Menu>
              <Menu id="viewMenu" mnemonicParsing="false" text="View">
                 <items>
-                    <MenuItem fx:id="showHide" id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                    <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
                 </items>
              </Menu>
          </menus>
@@ -53,11 +56,20 @@
                     <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                   <HBox alignment="TOP_RIGHT" spacing="5.0" VBox.vgrow="SOMETIMES">
                      <children>
+                        <Button fx:id="backButton" disable="true" mnemonicParsing="false" onAction="#backClicked" text="&lt;" />
+                        <Button fx:id="forwardButton" disable="true" mnemonicParsing="false" onAction="#forwardClicked" text="&gt;">
+                           <HBox.margin>
+                              <Insets right="50.0" />
+                           </HBox.margin>
+                        </Button>
                         <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" text="+" />
-                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X" />
+                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin></Button>
                      </children>
                      <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" />
+                        <Insets bottom="5.0" left="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
                 </children>

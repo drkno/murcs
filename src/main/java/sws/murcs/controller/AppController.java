@@ -565,13 +565,20 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             if (type != selectedType) {
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
             }
-
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
 
                 displayList.getSelectionModel().select(parameter);
             }
-
             displayList.scrollTo(parameter);
         }
+    }
+
+    @FXML
+    private void backClicked(final ActionEvent e) {
+
+    }
+
+    @FXML void forwardClicked(final ActionEvent e) {
+
     }
 }

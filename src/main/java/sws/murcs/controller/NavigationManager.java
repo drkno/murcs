@@ -1,15 +1,19 @@
 package sws.murcs.controller;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import sws.murcs.model.Model;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * A class for helping with navigation.
  */
 public class NavigationManager {
 
+    /**
+     * Limit on the size of the stacks.
+     */
+    private static final int STACK_LIMIT = 5;
     /**
      * The app controller.
      */
@@ -25,11 +29,11 @@ public class NavigationManager {
     /**
      * The forward stack used in hyperlinking.
      */
-    private static Stack<Model> forwardStack = new Stack<>();
+    private static Deque<Model> forwardStack = new ArrayDeque<>();
     /**
      * The back stack used in hyperlinking.
      */
-    private static Stack<Model> backStack = new Stack<>();
+    private static Deque<Model> backStack = new ArrayDeque<>();
 
     private static Model head;
 
@@ -46,6 +50,9 @@ public class NavigationManager {
         navigateTo(model, false);
         backStack.push(head);
         head = model;
+        if (backStack.size() > STACK_LIMIT) {
+            backStack.removeLast();
+        }
     }
 
     public static void goBackward() {
@@ -53,6 +60,9 @@ public class NavigationManager {
         navigateTo(model, false);
         forwardStack.push(head);
         head = model;
+        if (forwardStack.size() > STACK_LIMIT) {
+            forwardStack.removeLast();
+        }
     }
 
     public static void navigateTo(final Model model) {
@@ -64,6 +74,9 @@ public class NavigationManager {
             forwardStack.clear();
             backStack.add(head);
             head = model;
+            if (backStack.size() > STACK_LIMIT) {
+                backStack.removeLast();
+            }
         }
         if (appController != null) {
             appController.selectItem(model);
