@@ -14,14 +14,14 @@
       Given I have reverted
       And A dialog is shown
       When I cancel
-      Then the program state is unchanged
+      Then the model state is unchanged
 
     Scenario: SaveAs Revert
       Given I have reverted
       And A dialog is shown
       When I SaveAs
       And I save as a new save
-      Then the program state is reverted to the last saved state
+      Then the model state is reverted to the last saved state
 
     Scenario: SaveAs cancel Revert
       Given I have reverted

@@ -138,13 +138,12 @@ public final class UndoRedoManager {
 
     /**
      * Forgets about the current commits.
-     * @param savedObjects true to forget about current objects added for
-     *                     tracking, false otherwise.
+     * @param deleteSavedObjects true to forget about current objects added for tracking, false otherwise.
      */
-    public static void forget(final boolean savedObjects) {
+    public static void forget(final boolean deleteSavedObjects) {
         revertStack.clear();
         remakeStack.clear();
-        if (savedObjects) {
+        if (deleteSavedObjects) {
             objectsList.clear();
             head = null;
         }

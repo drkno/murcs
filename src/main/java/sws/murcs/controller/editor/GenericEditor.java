@@ -26,7 +26,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      */
     private ChangeListener changeListener;
     /**
-     * Details whether or not the window is a creator for a new model or an editor
+     * Details whether or not the window is a creator for a new model or an editor.
      */
     private boolean isCreationWindow;
 

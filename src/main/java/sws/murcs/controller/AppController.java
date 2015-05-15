@@ -106,7 +106,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
-    public final void initialize() {
+    @SuppressWarnings("unused")
+    private void initialize() {
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -350,7 +351,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            failedSaveDialog();
+            showSaveFailedDialog();
         }
         return false;
     }
@@ -384,7 +385,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         try {
                             createNewModel();
                         } catch (Exception e) {
-                            failedSaveDialog();
+                            showSaveFailedDialog();
                         }
                     }
                 });
@@ -396,14 +397,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            failedSaveDialog();
+            showSaveFailedDialog();
         }
     }
 
     /**
      * Shows a failed save dialog.
      */
-    private void failedSaveDialog() {
+    private void showSaveFailedDialog() {
         GenericPopup errorPopup = new GenericPopup();
         String message = "Something went wrong saving";
         errorPopup.setTitleText("Something went wrong");
