@@ -136,7 +136,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     contentPane.getChildren().clear();
                 }
                 return;
-            } else if (oldValue == null) {
+            }
+            else if (oldValue == null) {
                 displayList.scrollTo(newValue);
             }
 
@@ -144,10 +145,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
                 contentPane.getChildren().add(editorPane.getView());
-            } else {
+            }
+            else {
                 if (editorPane.getModel().getClass() == newValue.getClass()) {
                     editorPane.setModel((Model) newValue);
-                } else {
+                }
+                else {
                     editorPane.dispose();
                     contentPane.getChildren().clear();
                     editorPane = new EditorPane((Model) newValue);
@@ -387,7 +390,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 });
                 popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
                 popup.show();
-            } else {
+            }
+            else {
                 createNewModel();
             }
         }
