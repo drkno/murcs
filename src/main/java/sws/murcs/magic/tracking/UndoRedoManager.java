@@ -144,9 +144,9 @@ public final class UndoRedoManager {
     public static void forget(final boolean savedObjects) {
         revertStack.clear();
         remakeStack.clear();
-        head = null;
         if (savedObjects) {
             objectsList.clear();
+            head = null;
         }
         notifyListeners(ChangeState.Forget);
     }

@@ -22,7 +22,14 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.*;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Team;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -44,7 +51,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, showHide;
+            addTeam, addPerson, addSkill, addRelease, addStory, showHide, revert;
     /**
      * The side display which contains the display list.
      */
@@ -148,7 +155,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
             }
         });
-
         setUpShortCuts();
 
         undoRedoNotification(ChangeState.Commit);
@@ -163,6 +169,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         //Menu item short cuts
         undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
+        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN
+                , KeyCombination.SHIFT_DOWN));
         newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
         save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
         saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN,
@@ -300,7 +308,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 PersistenceManager.Current.save();
                 UndoRedoManager.forget();
                 return true;
-            } else {
+            }
+            else {
                 return saveAs(null);
             }
         }
@@ -338,8 +347,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
-            popup.show();
+            failedSaveDialog();
         }
         return false;
     }
@@ -362,7 +370,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     try {
                         createNewModel();
                     } catch (Exception e) {
-                        failedSaveDialog();
+                        GenericPopup errorPopup = new GenericPopup(e);
+                        errorPopup.show();
                     }
                 });
                 popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
@@ -407,7 +416,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         PersistenceManager.Current.setCurrentModel(null);
         RelationalModel model = new RelationalModel();
         PersistenceManager.Current.setCurrentModel(model);
-        UndoRedoManager.forget(true);
         UndoRedoManager.importModel(model);
         initialize();
     }
@@ -434,6 +442,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 PersistenceManager.Current.setCurrentModel(model);
                 updateList();
+                UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
             }
         }
@@ -507,16 +516,51 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
+     * Reverts the the model to its original save state.
+     * @param event event arguments.
+     */
+    @FXML
+    @SuppressWarnings("unused")
+    private void revert(final ActionEvent event) {
+        if (UndoRedoManager.canRevert()) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Revert Changes");
+            popup.setTitleText("Do you wish to revert changes?");
+            popup.setMessageText("You have unsaved changes.");
+            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+                popup.close();
+                try {
+                    UndoRedoManager.revert(0);
+                } catch (Exception e) {
+                    GenericPopup errorPopup = new GenericPopup(e);
+                    errorPopup.show();
+                }
+            });
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                // Let the user save the project
+                if (save()) {
+                    popup.close();
+                    save();
+                }
+            });
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            popup.show();
+        }
+    }
+
+    /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
      * @param change type of change that has been made
      */
     @Override
     public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
+            revert.setDisable(true);
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
         }
         else {
+            revert.setDisable(false);
             undoMenuItem.setDisable(false);
             undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
         }
