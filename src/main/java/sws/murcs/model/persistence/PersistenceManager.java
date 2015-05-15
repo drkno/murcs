@@ -3,7 +3,6 @@ package sws.murcs.model.persistence;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -25,6 +24,11 @@ public final class PersistenceManager {
     }
 
     /**
+     * The last saved file.
+     */
+    private String lastFile;
+
+    /**
      * Currently in use user persistence.
      */
     private RelationalModel currentModel;
@@ -40,6 +44,13 @@ public final class PersistenceManager {
      */
     public PersistenceManager(final PersistenceLoader loader) {
         setPersistenceLoader(loader);
+    }
+
+    /**
+     * Gets the lastFile saved.
+     */
+    public String getLastFile() {
+        return lastFile;
     }
 
     /**
@@ -70,11 +81,20 @@ public final class PersistenceManager {
 
     /**
      * Saves the current model.
+     * @throws Exception when the model fails to save.
+     */
+    public void save() throws Exception {
+        saveModel(lastFile, getCurrentModel());
+    }
+
+    /**
+     * Saves the current model.
      * @param name name to save as
      * @throws Exception when the model fails to save.
      */
     public void saveModel(final String name) throws Exception {
         saveModel(name, getCurrentModel());
+        lastFile = name;
     }
 
     /**
