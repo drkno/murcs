@@ -1,6 +1,7 @@
 package sws.murcs.model.persistence.loaders;
 
 import sws.murcs.model.RelationalModel;
+import sws.murcs.view.App;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,6 +80,8 @@ public class FilePersistenceLoader implements PersistenceLoader {
             RelationalModel input = (RelationalModel) in.readObject();
             // Close input stream
             in.close();
+            // Update the window title
+            App.setWindowTitle(persistenceName);
             return input;
         }
         catch (Exception e) {
@@ -116,8 +119,10 @@ public class FilePersistenceLoader implements PersistenceLoader {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file
             out.writeObject(persistent);
-            // close the stream
+            // Close the stream
             out.close();
+            // Update the window title
+            App.setWindowTitle(name);
         }
         catch (Exception e) {
             // What the hell happened?

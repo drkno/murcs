@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.commons.lang.StringUtils;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -60,6 +61,14 @@ public class App extends Application {
         stage = pStage;
     }
 
+    /**
+     * Changes the title of the main window
+     * @param name The new window name
+     */
+    public static void setWindowTitle(final String name) {
+        stage.setTitle(StringUtils.substringBefore(name, "."));
+    }
+
     /***
      * Starts up the application and sets the min window size to 600x400.
      * @param primaryStage The main Stage
@@ -76,7 +85,7 @@ public class App extends Application {
         Parent parent = FXMLLoader.load(getClass().getResource("/sws/murcs/App.fxml"));
         primaryStage.setScene(new Scene(parent));
 
-        primaryStage.setTitle("Murcs");
+        primaryStage.setTitle("- untitled -");
         primaryStage.setOnCloseRequest(e -> notifyListeners(e));
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
