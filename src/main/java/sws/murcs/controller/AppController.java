@@ -533,9 +533,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
+            NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            NavigationManager.clearHistory();
             updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());

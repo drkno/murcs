@@ -95,5 +95,6 @@ public class NavigationManager {
     public static void clearHistory() {
         backStack.clear();
         forwardStack.clear();
+        head = null;
     }
 }
