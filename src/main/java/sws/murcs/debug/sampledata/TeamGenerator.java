@@ -921,11 +921,6 @@ public class TeamGenerator implements Generator<Team> {
                 Person skill = personPool.remove(NameGenerator.random(personPool.size()));
                 generated.add(skill);
             }
-
-            //Put all the skills we took out back
-            for (Person person : generated) {
-                personPool.add(person);
-            }
         }
 
         return generated;
@@ -940,13 +935,13 @@ public class TeamGenerator implements Generator<Team> {
 
         String description = NameGenerator.randomElement(descriptions);
 
-        Person productOwner;
-        Person scrumMaster;
+        Person productOwner = null;
+        Person scrumMaster = null;
 
         ArrayList<Person> members = generateMembers(3, 15);
 
-        productOwner = members.get(0);
-        scrumMaster = members.get(1);
+        if (members.size() > 0) productOwner = members.get(0);
+        if (members.size() > 1) scrumMaster = members.get(1);
 
         try {
             team.setShortName(shortName);
@@ -962,8 +957,8 @@ public class TeamGenerator implements Generator<Team> {
         team.setDescription(description);
 
         try {
-            team.setScrumMaster(scrumMaster);
-            team.setProductOwner(productOwner);
+            if (scrumMaster != null) team.setScrumMaster(scrumMaster);
+            if (productOwner != null) team.setProductOwner(productOwner);
             team.addMembers(members);
         } catch (Exception e) {
             // Do nothing, don't have to deal with the
