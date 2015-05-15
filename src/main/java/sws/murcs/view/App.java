@@ -145,6 +145,18 @@ public class App extends Application {
             PersistenceManager.Current.setCurrentModel(new RelationalModel());
         }
 
+        int sample = argsList.indexOf("sample");
+        if (sample >= 0) {
+            String fileLocation = "sample.project";
+            try {
+                PersistenceManager.Current.saveModel(fileLocation);
+                return;
+            }
+            catch (Exception e) {
+                System.err.println("Could not save sample project.");
+            }
+        }
+
         UndoRedoManager.setDisabled(false);
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
         try {

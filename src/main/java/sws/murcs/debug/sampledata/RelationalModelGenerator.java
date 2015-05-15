@@ -183,10 +183,12 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                 people.add((Person) m);
             }
 
-            teamGenerator.setPersonPool(people);
+		  	// deal with pass by reference issues
+		  	ArrayList<Person> teamPeople = new ArrayList<>(people);
+            teamGenerator.setPersonPool(teamPeople);
             ArrayList<Team> teams = new ArrayList<>();
             min = getMin(stress, TeamGenerator.LOW_STRESS_MIN, TeamGenerator.MEDIUM_STRESS_MIN,
-                    TeamGenerator.HIGH_STRESS_MIN);
+					TeamGenerator.HIGH_STRESS_MIN);
             max = getMax(stress, TeamGenerator.LOW_STRESS_MAX, TeamGenerator.MEDIUM_STRESS_MAX,
                     TeamGenerator.HIGH_STRESS_MAX);
             for (Model m : generateItems(teamGenerator, min, max)) {
