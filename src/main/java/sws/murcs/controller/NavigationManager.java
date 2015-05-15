@@ -47,9 +47,10 @@ public class NavigationManager {
 
     public static void goForward() {
         Model model = forwardStack.pop();
-        navigateTo(model, false);
         backStack.push(head);
+
         head = model;
+        navigateTo(model, false);
         if (backStack.size() > STACK_LIMIT) {
             backStack.removeLast();
         }
@@ -57,9 +58,11 @@ public class NavigationManager {
 
     public static void goBackward() {
         Model model = backStack.pop();
-        navigateTo(model, false);
         forwardStack.push(head);
+
         head = model;
+        navigateTo(model, false);
+
         if (forwardStack.size() > STACK_LIMIT) {
             forwardStack.removeLast();
         }
@@ -70,16 +73,27 @@ public class NavigationManager {
     }
 
     private static void navigateTo(final Model model, final boolean addToStack) {
-        if (addToStack) {
-            forwardStack.clear();
-            backStack.add(head);
+
+        if (head == null) {
             head = model;
+        }
+        else if (addToStack && head != model) {
+            forwardStack.clear();
+            backStack.push(head);
+            head = model;
+
             if (backStack.size() > STACK_LIMIT) {
                 backStack.removeLast();
             }
         }
+
         if (appController != null) {
             appController.selectItem(model);
         }
+    }
+
+    public static void clearHistory() {
+        backStack.clear();
+        forwardStack.clear();
     }
 }
