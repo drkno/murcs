@@ -189,12 +189,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Key event
      */
     private void handleKey(final KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
-                KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
             addClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN).match(event)) {
+            backClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN).match(event)) {
+            forwardClicked(null);
         }
     }
 
@@ -203,7 +208,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        displayList.getSelectionModel().clearSelection();
+        //displayList.getSelectionModel().clearSelection();
         RelationalModel model = PersistenceManager.Current.getCurrentModel();
 
         if (model == null) {
@@ -231,7 +236,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         displayList.setItems((ObservableList) arrayList);
-        //displayList.getSelectionModel().select(0);
+
+        NavigationManager.setIgnore(true);
+        displayList.getSelectionModel().select(0);
+        NavigationManager.setIgnore(false);
     }
 
     /**
@@ -726,17 +734,23 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
-    private void updateBackForwardButtons(){
+    private void updateBackForwardButtons() {
         backButton.setDisable(!NavigationManager.canGoBack());
         forwardButton.setDisable(!NavigationManager.canGoForward());
     }
 
     @FXML
     private void backClicked(final ActionEvent e) {
+        if (!NavigationManager.canGoBack()) {
+            return;
+        }
         NavigationManager.goBackward();
     }
 
     @FXML void forwardClicked(final ActionEvent e) {
+        if (!NavigationManager.canGoForward()) {
+            return;
+        }
         NavigationManager.goForward();
     }
 }

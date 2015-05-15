@@ -18,6 +18,7 @@ public class NavigationManager {
      * The app controller.
      */
     private static AppController appController;
+    private static boolean toIgnore;
 
     /**
      * Sets the app controller.
@@ -46,6 +47,9 @@ public class NavigationManager {
     }
 
     public static void goForward() {
+        if (toIgnore) {
+            return;
+        }
         Model model = forwardStack.pop();
         backStack.push(head);
 
@@ -57,6 +61,9 @@ public class NavigationManager {
     }
 
     public static void goBackward() {
+        if (toIgnore) {
+            return;
+        }
         Model model = backStack.pop();
         forwardStack.push(head);
 
@@ -77,7 +84,7 @@ public class NavigationManager {
         if (head == null) {
             head = model;
         }
-        else if (addToStack && head != model) {
+        else if (addToStack && head != model && !toIgnore) {
             forwardStack.clear();
             backStack.push(head);
             head = model;
@@ -96,5 +103,9 @@ public class NavigationManager {
         backStack.clear();
         forwardStack.clear();
         head = null;
+    }
+
+    public static void setIgnore(boolean ignore) {
+        toIgnore = ignore;
     }
 }
