@@ -201,7 +201,7 @@ public class StoryGenerator implements Generator<Story> {
         String name = storyNames[NameGenerator.random(storyNames.length)];
         String description = descriptions[NameGenerator.random(descriptions.length)];
 
-        Person creator = personsPool == null
+        Person creator = personsPool == null || personsPool.isEmpty()
                 ? personGenerator.generate()
                 : personsPool.get(NameGenerator.random(personsPool.size()));
 
