@@ -356,7 +356,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Creates a new Model.
+     * Handles the creation of a new Model.
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
