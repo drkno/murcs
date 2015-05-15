@@ -27,4 +27,10 @@
       Then nothing will happen
 
     Scenario: I create a new model then try navigating
-      Given I have created
+      Given I have created a new model
+      Then if I try to navigate forwards it doesn't work
+      And if I try to navigate backwards it goes back to what I had selected before creation
+
+    Scenario: I delete a model and then try to navigate
+      Given I have just deleted a model
+      Then I cannot navigate forward or backwards
