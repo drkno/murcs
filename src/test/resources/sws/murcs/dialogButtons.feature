@@ -1,6 +1,7 @@
 @Manual
 #Basil Fawlty: [about Sybil's laugh] Sounds like somebody machine-gunning a seal.
 Feature: Button Placement on Dialogs
+
   Scenario: Default buttons on Delete dialog
     When I am shown a confirm dialog
     Then there is a default option selected
