@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,6 +20,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +114,8 @@ public class PersonEditor extends GenericEditor<Person> {
             allocatedSkillsContainer.getChildren().add(skillNode);
             skillNodeIndex.put(skill, skillNode);
         });
+        
+        setIsCreationWindow(modelShortName == null);
     }
 
     @Override
@@ -167,7 +171,6 @@ public class PersonEditor extends GenericEditor<Person> {
      * @return the node representing the skill
      */
     private Node generateSkillNode(final Skill skill) {
-        Text nameText = new Text(skill.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
@@ -197,7 +200,15 @@ public class PersonEditor extends GenericEditor<Person> {
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
 
-        pane.add(nameText, 0, 0);
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(skill.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(skill.toString());
+            nameLink.setOnAction(a -> App.navigateTo(skill));
+            pane.add(nameLink, 0, 0);
+        }
         pane.add(removeButton, 1, 0);
 
         return pane;

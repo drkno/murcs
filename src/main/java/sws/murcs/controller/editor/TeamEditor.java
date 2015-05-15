@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -21,6 +22,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -122,6 +124,8 @@ public class TeamEditor extends GenericEditor<Team> {
         });
 
         updatePOSM();
+
+        setIsCreationWindow(modelShortName == null);
     }
 
     @Override
@@ -256,7 +260,6 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Text nameText = new Text(person.toString());
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
@@ -292,7 +295,15 @@ public class TeamEditor extends GenericEditor<Team> {
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
 
-        pane.add(nameText, 0, 0);
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(person.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(person.toString());
+            nameLink.setOnAction(a -> App.navigateTo(person));
+            pane.add(nameLink, 0, 0);
+        }
         pane.add(removeButton, 1, 0);
 
         return pane;
