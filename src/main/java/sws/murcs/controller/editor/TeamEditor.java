@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -10,17 +11,22 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.controller.AppController;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -256,7 +262,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Text nameText = new Text(person.toString());
+        Hyperlink nameText = new Hyperlink(person.toString());
+        nameText.setOnAction(param -> App.navigateTo(person));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();

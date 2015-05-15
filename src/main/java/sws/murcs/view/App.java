@@ -7,9 +7,11 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.controller.AppController;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.Model;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
@@ -43,6 +45,10 @@ public class App extends Application {
      * The subString length to search over, when parsing debugging mode.
      */
     private static final int SUBSTRINGLENGTH = 3;
+    /**
+     * The instance of AppController that is the current controller for App.fxml
+     */
+    private static AppController appController;
 
     /**
      * Gets the stage of App.
@@ -60,6 +66,15 @@ public class App extends Application {
         stage = pStage;
     }
 
+    /**
+     * Updates the view to displaying a given model object
+     * @param model The model object that needs to be navigated to
+     */
+    public static void navigateTo(Model model) {
+        if (appController != null)
+            appController.selectItem(model);
+    }
+
     /***
      * Starts up the application and sets the min window size to 600x400.
      * @param primaryStage The main Stage
@@ -73,7 +88,12 @@ public class App extends Application {
             PersistenceManager.Current = new PersistenceManager(loader);
         }
 
-        Parent parent = FXMLLoader.load(getClass().getResource("/sws/murcs/App.fxml"));
+        // Loads the primary fxml and sets appController as its controller
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/sws/murcs/App.fxml"));
+        Parent parent = loader.load();
+        appController = loader.getController();
+
         primaryStage.setScene(new Scene(parent));
 
         primaryStage.setTitle("Murcs");
