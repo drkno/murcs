@@ -86,6 +86,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private Button removeButton;
     /**
+     * The back and forward buttons.
+     */
+    @FXML
+    private Button backButton, forwardButton;
+    /**
      * The content pane contains the information about the
      * currently selected model item.
      */
@@ -106,8 +111,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
-    @SuppressWarnings("unused")
-    private void initialize() {
+    public final void initialize() {
+
+        NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -123,39 +129,21 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //The remove button should be greyed out
-            // if no item is selected or built in skills (PO or SM) are selected
-            removeButton.setDisable(newValue == null
-                    || newValue instanceof Skill
-                    && (((Skill) newValue).getShortName().equals("PO")
-                    || ((Skill) newValue).getShortName().equals("SM")));
-
-            if (newValue == null) {
-                if (editorPane != null) {
-                    editorPane.dispose();
-                    editorPane = null;
-                    contentPane.getChildren().clear();
+            if (oldValue != newValue) {
+                if (newValue == null) {
+                    if (editorPane != null) {
+                        editorPane.dispose();
+                        editorPane = null;
+                        contentPane.getChildren().clear();
+                    }
+                    return;
                 }
-                return;
-            }
-            else if (oldValue == null) {
-                displayList.scrollTo(newValue);
-            }
 
-            if (editorPane == null) {
-                editorPane = new EditorPane((Model) newValue);
-                contentPane.getChildren().clear();
-                contentPane.getChildren().add(editorPane.getView());
-            }
-            else {
-                if (editorPane.getModel().getClass() == newValue.getClass()) {
-                    editorPane.setModel((Model) newValue);
-                }
-                else {
-                    editorPane.dispose();
-                    contentPane.getChildren().clear();
-                    editorPane = new EditorPane((Model) newValue);
-                    contentPane.getChildren().add(editorPane.getView());
+                NavigationManager.navigateTo((Model) newValue);
+                updateBackForwardButtons();
+
+                if (oldValue == null) {
+                    displayList.scrollTo(newValue);
                 }
             }
         });
@@ -243,7 +231,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         displayList.setItems((ObservableList) arrayList);
-        displayList.getSelectionModel().select(0);
+        //displayList.getSelectionModel().select(0);
     }
 
     /**
@@ -683,8 +671,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
+            NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
+            updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
@@ -701,15 +691,52 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         else {
             type = ModelType.getModelType(parameter);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(parameter);
-            }
-            else {
+            if (type != selectedType) {
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
+            }
+            if (parameter != displayList.getSelectionModel().getSelectedItem()) {
+
                 displayList.getSelectionModel().select(parameter);
             }
-            displayList.getSelectionModel().select(parameter);
             displayList.scrollTo(parameter);
         }
+
+        // The remove button should be greyed out
+        // if no item is selected or built in skills (PO or SM) are selected
+        removeButton.setDisable(parameter == null
+                || parameter instanceof Skill
+                && (((Skill) parameter).getShortName().equals("PO")
+                || ((Skill) parameter).getShortName().equals("SM")));
+
+        if (editorPane == null) {
+            editorPane = new EditorPane(parameter);
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(editorPane.getView());
+        }
+        else {
+            if (editorPane.getModel().getClass() == parameter.getClass()) {
+                editorPane.setModel(parameter);
+            }
+            else {
+                editorPane.dispose();
+                contentPane.getChildren().clear();
+                editorPane = new EditorPane(parameter);
+                contentPane.getChildren().add(editorPane.getView());
+            }
+        }
+    }
+
+    private void updateBackForwardButtons(){
+        backButton.setDisable(!NavigationManager.canGoBack());
+        forwardButton.setDisable(!NavigationManager.canGoForward());
+    }
+
+    @FXML
+    private void backClicked(final ActionEvent e) {
+        NavigationManager.goBackward();
+    }
+
+    @FXML void forwardClicked(final ActionEvent e) {
+        NavigationManager.goForward();
     }
 }

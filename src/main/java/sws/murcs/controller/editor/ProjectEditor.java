@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
@@ -244,9 +245,9 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(team.toString());
             }
             else {
-                Hyperlink link = new Hyperlink(team.toString());
-                link.setOnAction(a -> App.navigateTo(team));
-                setGraphic(link);
+                Hyperlink text = new Hyperlink(team.toString());
+                text.setOnAction(param -> NavigationManager.navigateTo(team));
+                setGraphic(text);
             }
         }
     }
