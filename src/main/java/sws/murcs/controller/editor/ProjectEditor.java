@@ -12,7 +12,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -126,9 +125,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
 
         setIsCreationWindow(modelShortName == null);
-
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
     }
 
     @Override

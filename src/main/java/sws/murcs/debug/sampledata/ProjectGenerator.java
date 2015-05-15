@@ -6,16 +6,34 @@ import sws.murcs.model.Team;
 import java.util.ArrayList;
 
 /**
- * Generates random projects with teams
+ * Generates random projects with teams.
  */
 public class ProjectGenerator implements Generator<Project> {
+    /**
+     * The max number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MAX = 5;
+    /**
+     * The min number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MAX = 10;
+    /**
+     * The min number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+    /**
+     * The max number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MAX = 20;
+    /**
+     * The min number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MIN = 10;
 
     /**
@@ -51,7 +69,7 @@ public class ProjectGenerator implements Generator<Project> {
     /**
      * Instantiates a new project generator.
      */
-    public ProjectGenerator(){
+    public ProjectGenerator() {
         teamGenerator = new TeamGenerator();
     }
 

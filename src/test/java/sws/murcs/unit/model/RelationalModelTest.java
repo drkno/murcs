@@ -278,7 +278,7 @@ public class RelationalModelTest {
         relationalModel.getSkills().clear();
 
         Person newPerson = new PersonGenerator().generate();
-        newPerson.getSkills().clear();
+        newPerson.clearSkills();
         relationalModel.add(newPerson);
 
         Skill newSkill = new SkillGenerator().generate();
@@ -385,7 +385,7 @@ public class RelationalModelTest {
             Person person = personGenerator.generate();
             person.setUserId(person.getUserId() + i);
             person.setShortName(person.getShortName() + i);
-            person.getSkills().clear();
+            person.clearSkills();
             relationalModel.add(person);
         }
 

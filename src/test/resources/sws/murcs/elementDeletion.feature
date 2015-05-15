@@ -8,7 +8,7 @@ Feature: Element Deletion
     And all the places that the object is used are displayed
     And I confirm I want to delete
     Then the team is deleted
-    And deletion can be undone
+    And team deletion can be undone
 
    Scenario: Deleting a Project
      Given I have a project selected
@@ -17,7 +17,7 @@ Feature: Element Deletion
      And all the places that the object is used are displayed
      And I confirm I want to delete
      Then the project is deleted
-     And deletion can be undone
+     And project deletion can be undone
 
    Scenario: Deleting a Person
      Given I have a person selected
@@ -25,8 +25,8 @@ Feature: Element Deletion
      Then a confirm dialog is displayed
      And all the places that the object is used are displayed
      And I confirm I want to delete
-     Then the person is deleted
-     And deletion can be undone
+     Then the model is deleted
+     And person deletion can be undone
 
    Scenario: Deleting a Skill
      Given I have a skill selected
@@ -35,7 +35,7 @@ Feature: Element Deletion
      And all the places that the object is used are displayed
      And I confirm I want to delete
      Then the skill is deleted
-     And deletion can be undone
+     And skill deletion can be undone
 
    Scenario: Deleting a Release
      Given I have a release selected
@@ -44,4 +44,4 @@ Feature: Element Deletion
      And all the places that the object is used are displayed
      And I confirm I want to delete
      Then the release is deleted
-     And deletion can be undone
+     And release deletion can be undone

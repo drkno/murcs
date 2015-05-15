@@ -35,7 +35,6 @@ public class ModelObjectProperty<T> extends SimpleObjectProperty<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public final T get() {
         try {
             return (T) field.get(object);

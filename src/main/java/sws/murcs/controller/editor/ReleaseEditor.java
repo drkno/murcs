@@ -110,9 +110,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
         }
-
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
     }
 
     @Override
