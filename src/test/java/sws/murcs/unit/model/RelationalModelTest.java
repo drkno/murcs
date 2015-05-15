@@ -9,9 +9,11 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -298,6 +300,18 @@ public class RelationalModelTest {
         assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
 
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
+    }
+
+    @Test
+    public void addWorkAllocationTest() throws Exception {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, endDate.plus(1, ChronoUnit.DAYS), null);
+        relationalModel.addAllocation(allocation1);
+        relationalModel.addAllocation(allocation2);
+        assertTrue(relationalModel.getAllAllocations().contains(allocation1));
+        assertTrue(relationalModel.getAllAllocations().contains(allocation2));
     }
 
     @Test (expected = CustomException.class)

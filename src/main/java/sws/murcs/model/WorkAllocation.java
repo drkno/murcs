@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,11 +11,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * Represents a work period done by a team on a project over a period of time
+ * Represents a work period done by a team on a project over a period of time.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkAllocation implements Serializable {
+public class WorkAllocation implements Serializable, Comparable<WorkAllocation> {
 
     private final Project project;
     private final Team team;
@@ -76,5 +77,16 @@ public class WorkAllocation implements Serializable {
      */
     public final LocalDate getEndDate() {
         return this.endDate;
+    }
+
+    @Override
+    public final int compareTo(final WorkAllocation allocation) {
+        if (startDate.isBefore(allocation.startDate)) {
+            return -1;
+        }
+        if (startDate.isAfter(allocation.startDate)) {
+            return 1;
+        }
+        return 0;
     }
 }

@@ -1,17 +1,17 @@
 package sws.murcs.controller.editor;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import sws.murcs.controller.AppController;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
@@ -96,6 +96,8 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         updateTeamMembers();
         updatePOSM();
+
+        setIsCreationWindow(modelShortName == null);
 
         //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
@@ -225,8 +227,6 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Hyperlink nameText = new Hyperlink(person.toString());
-        nameText.setOnAction(param -> App.navigateTo(person));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
@@ -259,7 +259,15 @@ public class TeamEditor extends GenericEditor<Team> {
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
 
-        pane.add(nameText, 0, 0);
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(person.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(person.toString());
+            nameLink.setOnAction(a -> App.navigateTo(person));
+            pane.add(nameLink, 0, 0);
+        }
         pane.add(removeButton, 1, 0);
 
         return pane;

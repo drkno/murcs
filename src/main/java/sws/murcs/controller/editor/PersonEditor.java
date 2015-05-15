@@ -2,7 +2,11 @@ package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -88,6 +92,8 @@ public class PersonEditor extends GenericEditor<Person> {
 
         updateSkills();
 
+        setIsCreationWindow(modelShortName == null);
+
         //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
     }
@@ -138,8 +144,6 @@ public class PersonEditor extends GenericEditor<Person> {
      * @return the node representing the skill
      */
     private Node generateSkillNode(final Skill skill) {
-        Hyperlink nameText = new Hyperlink(skill.toString());
-        nameText.setOnAction(param -> App.navigateTo(skill));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
@@ -167,7 +171,15 @@ public class PersonEditor extends GenericEditor<Person> {
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
 
-        pane.add(nameText, 0, 0);
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(skill.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(skill.toString());
+            nameLink.setOnAction(a -> App.navigateTo(skill));
+            pane.add(nameLink, 0, 0);
+        }
         pane.add(removeButton, 1, 0);
 
         return pane;

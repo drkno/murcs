@@ -145,10 +145,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 editorPane = new EditorPane((Model) newValue);
                 contentPane.getChildren().clear();
                 contentPane.getChildren().add(editorPane.getView());
-            } else {
+            }
+            else {
                 if (editorPane.getModel().getClass() == newValue.getClass()) {
                     editorPane.setModel((Model) newValue);
-                } else {
+                }
+                else {
                     editorPane.dispose();
                     contentPane.getChildren().clear();
                     editorPane = new EditorPane((Model) newValue);

@@ -46,7 +46,7 @@ public class App extends Application {
      */
     private static final int SUBSTRINGLENGTH = 3;
     /**
-     * The instance of AppController that is the current controller for App.fxml
+     * The current app controller
      */
     private static AppController appController;
 
