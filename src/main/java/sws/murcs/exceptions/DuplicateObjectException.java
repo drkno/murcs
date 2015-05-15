@@ -66,10 +66,10 @@ public class DuplicateObjectException extends CustomException {
      * @throws DuplicateObjectException if this object is a duplicate
      */
     public static void checkForDuplicates(final Model newModel, final String param) throws DuplicateObjectException {
-        if (PersistenceManager.Current == null) {
+        if (PersistenceManager.getCurrent() == null) {
             return;
         }
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return; // as is called in the constructor of RelationalModel
         }

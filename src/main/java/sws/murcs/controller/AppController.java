@@ -204,7 +204,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
             return;
@@ -231,7 +231,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         displayList.setItems((ObservableList) arrayList);
-        //displayList.getSelectionModel().select(0);
+        displayList.getSelectionModel().select(0);
     }
 
     /**
@@ -296,8 +296,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @SuppressWarnings("unused")
     private boolean save(final ActionEvent event) {
         try {
-            if (PersistenceManager.Current.getLastFile() != null) {
-                PersistenceManager.Current.save();
+            if (PersistenceManager.getCurrent().getLastFile() != null) {
+                PersistenceManager.getCurrent().save();
                 UndoRedoManager.forget();
                 return true;
             }
@@ -325,15 +325,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             fileChooser.setTitle("Save As");
             fileChooser.getExtensionFilters()
                     .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             File file = fileChooser.showSaveDialog(App.getStage());
             if (file != null) {
                 String fileName = file.getName();
                 if (!fileName.endsWith(".project")) {
                     fileName += ".project";
                 }
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                PersistenceManager.Current.saveModel(fileName);
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                PersistenceManager.getCurrent().saveModel(fileName);
                 UndoRedoManager.forget();
                 return true;
             }
@@ -406,9 +406,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @exception Exception thrown if the undo redo manager fails to import the new model.
      */
     private void createNewModel() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         RelationalModel model = new RelationalModel();
-        PersistenceManager.Current.setCurrentModel(model);
+        PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
         initialize();
     }
@@ -424,16 +424,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
                     .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             fileChooser.setTitle("Select Project");
             File file = fileChooser.showOpenDialog(App.getStage());
             if (file != null) {
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                RelationalModel model = PersistenceManager.getCurrent().loadModel(file.getName());
                 if (model == null) {
                     throw new Exception("Project was not opened.");
                 }
-                PersistenceManager.Current.setCurrentModel(model);
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 updateList();
                 UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
@@ -461,12 +461,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
             fileChooser.getExtensionFilters()
                     .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             fileChooser.setTitle("Report Save Location");
             File file = fileChooser.showSaveDialog(App.getStage());
             if (file != null) {
-                ReportGenerator.generate(PersistenceManager.Current.getCurrentModel(), file);
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                ReportGenerator.generate(PersistenceManager.getCurrent().getCurrentModel(), file);
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
             }
         }
         catch (Exception e) {
@@ -519,8 +519,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Revert Changes");
             popup.setTitleText("Do you wish to revert changes?");
-            popup.setMessageText("You have unsaved changes.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+            popup.setMessageText("You have unsaved changes.\n " +
+                    "If you wish to save your current changes as a new file click \'Save As\'.");
+            popup.addButton("Yes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
                 try {
                     UndoRedoManager.revert(0);
@@ -529,14 +530,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     errorPopup.show();
                 }
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+            popup.addButton("Save As", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
-                if (save()) {
+                if (saveAs(null)) {
                     popup.close();
                     save();
                 }
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
             popup.show();
         }
     }
@@ -636,7 +637,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     @SuppressWarnings("unused")
     private void removeClicked(final ActionEvent event) {
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
         }
@@ -726,17 +727,29 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
-    private void updateBackForwardButtons(){
+    /**
+     * Toggles the state of the back and forward buttons if they disabled or enabled.
+     */
+    private void updateBackForwardButtons() {
         backButton.setDisable(!NavigationManager.canGoBack());
         forwardButton.setDisable(!NavigationManager.canGoForward());
     }
 
+    /**
+     * Navigates back.
+     * @param event The event that caused the function to be called.
+     */
     @FXML
-    private void backClicked(final ActionEvent e) {
+    private void backClicked(final ActionEvent event) {
         NavigationManager.goBackward();
     }
 
-    @FXML void forwardClicked(final ActionEvent e) {
+    /**
+     * Navigates forward.
+     * @param event The event that caused the function to be called.
+     */
+    @FXML
+    private void forwardClicked(final ActionEvent event) {
         NavigationManager.goForward();
     }
 }

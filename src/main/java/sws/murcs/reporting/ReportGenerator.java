@@ -18,7 +18,7 @@ public abstract class ReportGenerator {
      * @param file the file to output the report
      * @throws JAXBException Exceptions fro JAXB
      */
-    public static void generate(RelationalModel relationalModel, File file) throws JAXBException {
+    public static void generate(final RelationalModel relationalModel, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeader(relationalModel);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);

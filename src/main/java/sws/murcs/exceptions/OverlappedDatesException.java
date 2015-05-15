@@ -45,7 +45,10 @@ public class OverlappedDatesException extends CustomException {
      * @param enableSuppression Enable suppression of the exception.
      * @param writableStackTrace Is the stack trace writable.
      */
-    public OverlappedDatesException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public OverlappedDatesException(final String message,
+                                    final Throwable cause,
+                                    final boolean enableSuppression,
+                                    final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

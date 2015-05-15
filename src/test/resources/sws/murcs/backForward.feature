@@ -1,9 +1,4 @@
-@Manuel
-#Basil Fawlty: Where's Sybil?
-#Manuel: ¿Que?
-#Basil Fawlty: Where's Sy-bil?
-#Manuel: Where's... the bill?
-#Basil Fawlty: No, no, not a bill! I own the place!
+@Manual
   Feature: Back and Forward Buttons
 
     Scenario: I press the back button with back history

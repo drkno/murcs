@@ -74,7 +74,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     public final void loadObject() {
-        Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects()
+        Optional<Project> projectCheck = PersistenceManager.getCurrent().getCurrentModel().getProjects()
                 .stream()
                 .filter(project -> project.getReleases().contains(getModel()))
                 .findFirst();
@@ -87,7 +87,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         // this is achieved by removing the listener temporarily
         projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         projectChoiceBox.getItems().clear();
-        projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
+        projectChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
         }

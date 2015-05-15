@@ -21,7 +21,6 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.time.LocalDate;
 
@@ -102,7 +101,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         // todo decouple from model
-        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -189,7 +188,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         try {
             // Attempt to save the allocation
-            RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+            RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
             WorkAllocation allocation = new WorkAllocation(getModel(), team, startDate, endDate);
             relationalModel.addAllocation(allocation);
             observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
@@ -224,7 +223,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + allocation.getProject()
                 + "\"?");
         alert.addOkCancelButtons(a -> {
-            PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
+            PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
         });

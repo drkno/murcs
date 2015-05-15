@@ -11,7 +11,6 @@ import sws.murcs.controller.EditorPane;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**

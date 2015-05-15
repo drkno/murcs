@@ -3,23 +3,14 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.Parent;
-import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -32,7 +23,6 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -98,7 +88,7 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
         memberNodeIndex = new HashMap<>();
 
-        allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
 
         setErrorCallback(message -> {
             if (message != null && message.getClass() == String.class) {

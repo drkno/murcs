@@ -5,12 +5,11 @@ import sws.murcs.model.Release;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 /**
- * Generates random releases.
+ * Generates RANDOM releases.
  */
 public class ReleaseGenerator implements Generator<Release> {
 
@@ -42,9 +41,9 @@ public class ReleaseGenerator implements Generator<Release> {
     protected static final int HIGH_STRESS_MAX = 40;
 
     /**
-     * The random used for random numbers within this class.
+     * The RANDOM used for RANDOM numbers within this class.
      */
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     /**
      * A list of default names for releases. They're all birds names.
@@ -746,7 +745,7 @@ public class ReleaseGenerator implements Generator<Release> {
 
         String shortName = NameGenerator.randomElement(defaultNames);
         String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28)
+        LocalDate releaseDate = LocalDate.of(RANDOM.nextInt(130) + 1970, RANDOM.nextInt(12) + 1, RANDOM.nextInt(28)
                 + 1);
 
         List<Project> projects = generateProjects(1, 5);

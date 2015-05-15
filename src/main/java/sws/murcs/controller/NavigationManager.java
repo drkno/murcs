@@ -8,7 +8,7 @@ import java.util.Deque;
 /**
  * A class for helping with navigation.
  */
-public class NavigationManager {
+public final class NavigationManager {
 
     /**
      * Limit on the size of the stacks.
@@ -18,6 +18,13 @@ public class NavigationManager {
      * The app controller.
      */
     private static AppController appController;
+
+    /**
+     * Empty constructor for utility class.
+     */
+    private NavigationManager() {
+        // Not called as this is a utility class.
+    }
 
     /**
      * Sets the app controller.
@@ -35,16 +42,30 @@ public class NavigationManager {
      */
     private static Deque<Model> backStack = new ArrayDeque<>();
 
+    /**
+     * The head, the current model selected.
+     */
     private static Model head;
 
+    /**
+     * Indicates if the forward stack is not empty.
+     * @return if the stack is not empty.
+     */
     public static boolean canGoForward() {
         return !forwardStack.isEmpty();
     }
 
+    /**
+     * Indicates if the back stack is not empty.
+     * @return if the stack is not empty.
+     */
     public static boolean canGoBack() {
         return !backStack.isEmpty();
     }
 
+    /**
+     * Moves forward.
+     */
     public static void goForward() {
         Model model = forwardStack.pop();
         backStack.push(head);
@@ -56,6 +77,9 @@ public class NavigationManager {
         }
     }
 
+    /**
+     * Moves backwards.
+     */
     public static void goBackward() {
         Model model = backStack.pop();
         forwardStack.push(head);
@@ -68,10 +92,19 @@ public class NavigationManager {
         }
     }
 
+    /**
+     * Navigates to a specific model.
+     * @param model the model to navigate to.
+     */
     public static void navigateTo(final Model model) {
         navigateTo(model, true);
     }
 
+    /**
+     * Navigates to a specific model.
+     * @param model the model to navigate to.
+     * @param addToStack indicates if the navigation model should be added to the stack.
+     */
     private static void navigateTo(final Model model, final boolean addToStack) {
 
         if (head == null) {
@@ -92,6 +125,9 @@ public class NavigationManager {
         }
     }
 
+    /**
+     * Clears both the back and forward stack and resets the head.
+     */
     public static void clearHistory() {
         backStack.clear();
         forwardStack.clear();

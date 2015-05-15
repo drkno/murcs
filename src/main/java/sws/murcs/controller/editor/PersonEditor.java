@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -22,7 +21,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +106,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         allocatableSkills.clear();
-        allocatableSkills.addAll(PersistenceManager.Current.getCurrentModel().getAvailableSkills(getModel()));
+        allocatableSkills.addAll(PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel()));
 
         allocatedSkillsContainer.getChildren().clear();
         getModel().getSkills().forEach(skill -> {
@@ -116,7 +114,6 @@ public class PersonEditor extends GenericEditor<Person> {
             allocatedSkillsContainer.getChildren().add(skillNode);
             skillNodeIndex.put(skill, skillNode);
         });
-        
         setIsCreationWindow(modelShortName == null);
     }
 
