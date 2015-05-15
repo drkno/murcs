@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
@@ -220,7 +221,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText("");
             else {
                 Hyperlink text = new Hyperlink(team.toString());
-                text.setOnAction(param -> App.navigateTo(team));
+                text.setOnAction(param -> NavigationManager.navigateTo(team));
                 setGraphic(text);
             }
         }

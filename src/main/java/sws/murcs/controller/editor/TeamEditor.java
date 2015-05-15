@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.AppController;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -263,7 +264,7 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     private Node generateMemberNode(final Person person) {
         Hyperlink nameText = new Hyperlink(person.toString());
-        nameText.setOnAction(param -> App.navigateTo(person));
+        nameText.setOnAction(param -> NavigationManager.navigateTo(person));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();

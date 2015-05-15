@@ -107,8 +107,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Put all initialisation of GUI in this function.
      */
     @FXML
-    @SuppressWarnings("unused")
     public final void initialize() {
+
+        NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -124,7 +125,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //The remove button should be greyed out
+            // The remove button should be greyed out
             // if no item is selected or built in skills (PO or SM) are selected
             removeButton.setDisable(newValue == null
                     || newValue instanceof Skill
@@ -561,14 +562,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         else {
             type = ModelType.getModelType(parameter);
-            if (selectedType == type) {
-                displayList.getSelectionModel().select(parameter);
-            }
-            else {
+            if (type != selectedType) {
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
+            }
+
+            if (parameter != displayList.getSelectionModel().getSelectedItem()) {
+
                 displayList.getSelectionModel().select(parameter);
             }
-            displayList.getSelectionModel().select(parameter);
+
             displayList.scrollTo(parameter);
         }
     }

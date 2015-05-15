@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -169,7 +170,7 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     private Node generateSkillNode(final Skill skill) {
         Hyperlink nameText = new Hyperlink(skill.toString());
-        nameText.setOnAction(param -> App.navigateTo(skill));
+        nameText.setOnAction(param -> NavigationManager.navigateTo(skill));
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();

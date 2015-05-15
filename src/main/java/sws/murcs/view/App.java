@@ -1,5 +1,7 @@
 package sws.murcs.view;
 
+import com.sun.javafx.sg.prism.NGShape;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,9 +18,7 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * The main app class.
@@ -46,7 +46,7 @@ public class App extends Application {
      */
     private static final int SUBSTRINGLENGTH = 3;
     /**
-     * The instance of AppController that is the current controller for App.fxml
+     * The instance of AppController that is the current controller for App.fxml.
      */
     private static AppController appController;
 
@@ -64,15 +64,6 @@ public class App extends Application {
      */
     public static void setStage(final Stage pStage) {
         stage = pStage;
-    }
-
-    /**
-     * Updates the view to displaying a given model object
-     * @param model The model object that needs to be navigated to
-     */
-    public static void navigateTo(Model model) {
-        if (appController != null)
-            appController.selectItem(model);
     }
 
     /***
