@@ -1,4 +1,5 @@
-@Manuel //I knowa nothing
+ #I knowa nothing
+@Manuel
 Feature: Responsive Forms
   Scenario: Resizing Main Window
     Given I am editing a a model object

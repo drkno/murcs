@@ -3,9 +3,15 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -80,10 +86,10 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
-        tableColumnTeams.setCellFactory(param -> new HyperlinkTeamCell());
+        tableColumnTeams.setCellFactory(a -> new HyperlinkTeamCell());
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
-        tableColumnEndDates.setCellFactory(param -> new NullableLocalDateCell());
+        tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
 
         setErrorCallback(message -> {
@@ -118,6 +124,8 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
         observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
+
+        setIsCreationWindow(modelShortName == null);
     }
 
     @Override
@@ -164,7 +172,20 @@ public class ProjectEditor extends GenericEditor<Project> {
         LocalDate endDate = datePickerEndDate.getValue();
 
         // Must meet minimum requirements for an allocation
-        if (team == null || startDate == null) return;
+        String message = "";
+        if (team == null) {
+            message += "Team may not be null";
+        }
+        if (startDate == null) {
+            if (message.length() != 0) {
+                message += " and ";
+            }
+            message += "Start Date may not be null";
+        }
+        if (message.equals("")) {
+            labelErrorMessage.setText(message);
+            return;
+        }
 
         try {
             // Attempt to save the allocation
@@ -211,14 +232,18 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * A TableView cell that contains a link to the team it represents
+     * A TableView cell that contains a link to the team it represents.
      */
-    class HyperlinkTeamCell extends TableCell<WorkAllocation, Team> {
+    private class HyperlinkTeamCell extends TableCell<WorkAllocation, Team> {
         @Override
-        protected void updateItem(Team team, boolean empty) {
+        protected void updateItem(final Team team, final boolean empty) {
             super.updateItem(team, empty);
-            if (team == null)
+            if (team == null) {
                 setText("");
+            }
+            else if (getIsCreationWindow()) {
+                setText(team.toString());
+            }
             else {
                 Hyperlink text = new Hyperlink(team.toString());
                 text.setOnAction(param -> NavigationManager.navigateTo(team));
@@ -228,11 +253,11 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Used to represent the end date cell as it could receive a null pointer if no end is specified
+     * Used to represent the end date cell as it could receive a null pointer if no end is specified.
      */
-    class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
+    private class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
         @Override
-        protected void updateItem(LocalDate date, boolean empty) {
+        protected void updateItem(final LocalDate date, final boolean empty) {
             super.updateItem(date, empty);
             if (date != null) {
                 setText(date.toString());

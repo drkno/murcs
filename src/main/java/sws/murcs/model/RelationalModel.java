@@ -2,6 +2,8 @@ package sws.murcs.model;
 
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.OverlappedDatesException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -167,14 +169,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
 
         //Remove all work allocations associated with the project
-        for (WorkAllocation allocation : getProjectsAllocations(project)) {
-            allocations.remove(allocation);
-        }
+        getProjectsAllocations(project).forEach(allocations::remove);
 
         //Remove all the releases associated with the project
-        for (Release release : project.getReleases()) {
-            removeRelease(release);
-        }
+        project.getReleases().forEach(this::removeRelease);
     }
 
     /**
@@ -374,27 +372,21 @@ public class RelationalModel extends TrackableObject implements Serializable {
         LocalDate endDate = workAllocation.getEndDate();
 
         if (endDate != null && startDate.isAfter(endDate)) {
-            throw new CustomException("End Date is before Start Date");
+            throw new InvalidParameterException("End Date is before Start Date");
         }
 
-        int index = 0;
         if (endDate != null) {
             for (WorkAllocation allocation : allocations) {
                 if (allocation.getTeam() == team) {
                     // Check that this team isn't overlapping with itself
                     if (allocation.getEndDate() != null) {
                         if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
-                            throw new CustomException("Work Dates Overlap");
+                            throw new OverlappedDatesException("Work Dates Overlap");
                         }
                     }
                     else if (allocation.getStartDate().isBefore(endDate)) {
-                        throw new CustomException("Work Dates Overlap");
+                        throw new OverlappedDatesException("Work Dates Overlap");
                     }
-                }
-                if (allocation.getStartDate().isBefore(startDate)) {
-                    // Increment the index where the allocation will be placed
-                    // if it does get placed
-                    index++;
                 }
                 else if (allocation.getStartDate().isAfter(endDate)) {
                     // At this point we've checked all overlapping allocations
@@ -407,15 +399,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
             for (WorkAllocation allocation : allocations) {
                 if (allocation.getTeam() == team) {
                     if (allocation.getEndDate() == null || allocation.getEndDate().isAfter(startDate)) {
-                        throw new CustomException("Work Dates Overlap");
+                        throw new OverlappedDatesException("Work Dates Overlap");
                     }
-                }
-                else if (allocation.getStartDate().isBefore(startDate)) {
-                    index++;
                 }
             }
         }
-        allocations.add(index, workAllocation);
+        allocations.add(workAllocation);
         commit("edit project");
     }
 
@@ -581,8 +570,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         try {
             UndoRedoManager.assimilate(commitNumber);
-        } catch (Exception e) {
-            // This should never happen
+        }
+        catch (Exception e) {
+            // This will never happen
             e.printStackTrace();
         }
         UndoRedoManager.add(model);

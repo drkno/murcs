@@ -36,7 +36,7 @@
             <VBox spacing="10.0">
                <children>
                   <Label text="Teams" GridPane.rowIndex="1" />
-                  <TableView fx:id="teamsViewer" prefHeight="200.0" prefWidth="200.0">
+                  <TableView fx:id="teamsViewer" focusTraversable="false" prefHeight="200.0" prefWidth="200.0">
                     <columns>
                       <TableColumn fx:id="tableColumnTeams" text="Team" />
                       <TableColumn fx:id="tableColumnStartDates" minWidth="0.0" text="Start Date" />
@@ -60,7 +60,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                            <children>
-                              <HBox alignment="CENTER" fillHeight="false" spacing="20.0" HBox.hgrow="ALWAYS">
+                              <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="10.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#buttonScheduleTeamClick" text="Schedule Team" />
                                     <DatePicker fx:id="datePickerStartDate" promptText="Start Date" />
