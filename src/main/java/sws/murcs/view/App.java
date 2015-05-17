@@ -47,6 +47,10 @@ public class App extends Application {
      */
     private static final int SUBSTRINGLENGTH = 3;
     /**
+     * The string that should appear in the window title
+     */
+    private static String windowTitle;
+    /**
      * The current app controller.
      */
     private static AppController appController;
@@ -72,7 +76,28 @@ public class App extends Application {
      * @param name The new window name
      */
     public static void setWindowTitle(final String name) {
-        stage.setTitle(StringUtils.substringBefore(name, "."));
+        windowTitle = StringUtils.substringBefore(name, ".");
+        stage.setTitle(windowTitle);
+    }
+
+    /**
+     * Adds a star to the end of the file name if there is not one already
+     */
+    public static void addTitleStar() {
+        if (windowTitle.charAt(0) != '*') {
+            windowTitle = '*' + windowTitle;
+            stage.setTitle(windowTitle);
+        }
+    }
+
+    /**
+     * Removes the star in the window title if there is one
+     */
+    public static void removeTitleStar() {
+        if (windowTitle.charAt(0) == '*') {
+            windowTitle = windowTitle.substring(1);
+            stage.setTitle(windowTitle);
+        }
     }
 
     /**
@@ -92,6 +117,7 @@ public class App extends Application {
      */
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        windowTitle = "- untitled -";
 
         if (!PersistenceManager.CurrentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
@@ -105,8 +131,7 @@ public class App extends Application {
         appController = loader.getController();
 
         primaryStage.setScene(new Scene(parent));
-
-        primaryStage.setTitle("- untitled -");
+        primaryStage.setTitle(windowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
