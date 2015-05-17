@@ -47,7 +47,7 @@ public class App extends Application {
      */
     private static final int SUBSTRINGLENGTH = 3;
     /**
-     * The current app controller
+     * The current app controller.
      */
     private static AppController appController;
 
@@ -68,7 +68,7 @@ public class App extends Application {
     }
 
     /**
-     * Changes the title of the main window
+     * Changes the title of the main window.
      * @param name The new window name
      */
     public static void setWindowTitle(final String name) {
@@ -76,12 +76,13 @@ public class App extends Application {
     }
 
     /**
-     * Updates the view to displaying a given model object
+     * Updates the view to displaying a given model object.
      * @param model The model object that needs to be navigated to
      */
-    public static void navigateTo(Model model) {
-        if (appController != null)
+    public static void navigateTo(final Model model) {
+        if (appController != null) {
             appController.selectItem(model);
+        }
     }
 
     /***
@@ -106,7 +107,7 @@ public class App extends Application {
         primaryStage.setScene(new Scene(parent));
 
         primaryStage.setTitle("- untitled -");
-        primaryStage.setOnCloseRequest(e -> notifyListeners(e));
+        primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         primaryStage.getIcons().add(iconImage);

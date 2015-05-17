@@ -181,7 +181,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             }
             message += "Start Date may not be null";
         }
-        if (message.equals("")) {
+        if (!message.equals("")) {
             labelErrorMessage.setText(message);
             return;
         }
