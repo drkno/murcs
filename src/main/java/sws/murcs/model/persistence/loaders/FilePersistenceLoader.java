@@ -80,8 +80,6 @@ public class FilePersistenceLoader implements PersistenceLoader {
             RelationalModel input = (RelationalModel) in.readObject();
             // Close input stream
             in.close();
-            // Update the window title
-            App.setWindowTitle(persistenceName);
             return input;
         }
         catch (Exception e) {
@@ -121,8 +119,6 @@ public class FilePersistenceLoader implements PersistenceLoader {
             out.writeObject(persistent);
             // Close the stream
             out.close();
-            // Update the window title
-            App.setWindowTitle(name);
         }
         catch (Exception e) {
             // What the hell happened?

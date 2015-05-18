@@ -2,6 +2,7 @@ package sws.murcs.model.persistence;
 
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
+import sws.murcs.view.App;
 
 import java.util.Collection;
 
@@ -93,6 +94,8 @@ public final class PersistenceManager {
      */
     public RelationalModel loadModel(final String persistenceName) {
         // load the persistence using the default directory
+        lastFile = persistenceName;
+        App.setWindowTitle(persistenceName);
         return persistenceLoader.loadModel(persistenceName);
     }
 
@@ -112,6 +115,7 @@ public final class PersistenceManager {
     public void saveModel(final String name) throws Exception {
         saveModel(name, getCurrentModel());
         lastFile = name;
+        App.setWindowTitle(name);
     }
 
     /**
