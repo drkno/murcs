@@ -1,7 +1,5 @@
 package sws.murcs.view;
 
-import com.sun.javafx.sg.prism.NGShape;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,12 +11,13 @@ import sws.murcs.controller.AppController;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Model;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The main app class.
@@ -32,7 +31,7 @@ public class App extends Application {
     /**
      * An list of listeners relating to the app closing.
      */
-    private static ArrayList<AppClosingListener> listeners = new ArrayList<>();
+    private static List<AppClosingListener> listeners = new ArrayList<>();
     /**
      * The minimum height of the application.
      */
@@ -74,9 +73,9 @@ public class App extends Application {
     @Override
     public final void start(final Stage primaryStage) throws Exception {
 
-        if (!PersistenceManager.CurrentPersistenceManagerExists()) {
+        if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
-            PersistenceManager.Current = new PersistenceManager(loader);
+            PersistenceManager.setCurrent(new PersistenceManager(loader));
         }
 
         // Loads the primary fxml and sets appController as its controller
@@ -122,7 +121,7 @@ public class App extends Application {
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
-        PersistenceManager.Current = new PersistenceManager(new FilePersistenceLoader());
+        PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.setDisabled(true);
 
         List<String> argsList = Arrays.asList(args);
@@ -138,18 +137,18 @@ public class App extends Application {
                     default: break;
                 }
             }
-            PersistenceManager.Current.setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
+            PersistenceManager.getCurrent().setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
         }
         else {
             //Give us an empty model
-            PersistenceManager.Current.setCurrentModel(new RelationalModel());
+            PersistenceManager.getCurrent().setCurrentModel(new RelationalModel());
         }
 
         int sample = argsList.indexOf("sample");
         if (sample >= 0) {
             String fileLocation = "sample.project";
             try {
-                PersistenceManager.Current.saveModel(fileLocation);
+                PersistenceManager.getCurrent().saveModel(fileLocation);
                 return;
             }
             catch (Exception e) {
@@ -158,7 +157,7 @@ public class App extends Application {
         }
 
         UndoRedoManager.setDisabled(false);
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
         try {
             UndoRedoManager.importModel(model);
         }

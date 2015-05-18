@@ -380,7 +380,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 if (allocation.getTeam() == team) {
                     // Check that this team isn't overlapping with itself
                     if (allocation.getEndDate() != null) {
-                        if ((allocation.getStartDate().isBefore(endDate) && allocation.getEndDate().isAfter(startDate))) {
+                        if ((allocation.getStartDate().isBefore(endDate)
+                                && allocation.getEndDate().isAfter(startDate))) {
                             throw new OverlappedDatesException("Work Dates Overlap");
                         }
                     }
@@ -507,6 +508,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Gets the skills that have not been already assigned to a person.
+     * @param person the person to check skills against.
      * @return collection of skills.
      */
     public final Collection<Skill> getAvailableSkills(final Person person) {

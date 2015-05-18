@@ -69,10 +69,10 @@ public class PersistenceManagerTest {
 
     @Test
     public void testCurrentPersistenceManagerExists() throws Exception {
-        PersistenceManager.Current = null;
-        Assert.assertFalse(PersistenceManager.CurrentPersistenceManagerExists());
-        PersistenceManager.Current = manager;
-        Assert.assertTrue(PersistenceManager.CurrentPersistenceManagerExists());
+        PersistenceManager.setCurrent(null);
+        Assert.assertFalse(PersistenceManager.currentPersistenceManagerExists());
+        PersistenceManager.setCurrent(manager);
+        Assert.assertTrue(PersistenceManager.currentPersistenceManagerExists());
     }
 
     @Test
