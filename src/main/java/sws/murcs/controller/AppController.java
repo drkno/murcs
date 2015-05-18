@@ -557,11 +557,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             revert.setDisable(true);
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
+            App.removeTitleStar();
         }
         else {
             revert.setDisable(false);
             undoMenuItem.setDisable(false);
             undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
+            App.addTitleStar();
         }
 
         if (!UndoRedoManager.canRemake()) {

@@ -1,6 +1,7 @@
 package sws.murcs.model.persistence.loaders;
 
 import sws.murcs.model.RelationalModel;
+import sws.murcs.view.App;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,7 +117,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file
             out.writeObject(persistent);
-            // close the stream
+            // Close the stream
             out.close();
         }
         catch (Exception e) {

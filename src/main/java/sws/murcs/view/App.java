@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.commons.lang.StringUtils;
 import sws.murcs.controller.AppController;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.listeners.AppClosingListener;
@@ -45,7 +46,11 @@ public class App extends Application {
      */
     private static final int SUBSTRINGLENGTH = 3;
     /**
-     * The instance of AppController that is the current controller for App.fxml.
+     * The string that should appear in the window title
+     */
+    private static String windowTitle;
+    /**
+     * The current app controller.
      */
     private static AppController appController;
 
@@ -65,6 +70,35 @@ public class App extends Application {
         stage = pStage;
     }
 
+    /**
+     * Changes the title of the main window.
+     * @param name The new window name
+     */
+    public static void setWindowTitle(final String name) {
+        windowTitle = StringUtils.substringBefore(name, ".");
+        stage.setTitle(windowTitle);
+    }
+
+    /**
+     * Adds a star to the end of the file name if there is not one already
+     */
+    public static void addTitleStar() {
+        if (windowTitle.charAt(0) != '*') {
+            windowTitle = '*' + windowTitle;
+            stage.setTitle(windowTitle);
+        }
+    }
+
+    /**
+     * Removes the star in the window title if there is one
+     */
+    public static void removeTitleStar() {
+        if (windowTitle.charAt(0) == '*') {
+            windowTitle = windowTitle.substring(1);
+            stage.setTitle(windowTitle);
+        }
+    }
+
     /***
      * Starts up the application and sets the min window size to 600x400.
      * @param primaryStage The main Stage
@@ -72,6 +106,7 @@ public class App extends Application {
      */
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        windowTitle = "- untitled -";
 
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
@@ -85,9 +120,8 @@ public class App extends Application {
         appController = loader.getController();
 
         primaryStage.setScene(new Scene(parent));
-
-        primaryStage.setTitle("Murcs");
-        primaryStage.setOnCloseRequest(e -> notifyListeners(e));
+        primaryStage.setTitle(windowTitle);
+        primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         primaryStage.getIcons().add(iconImage);
