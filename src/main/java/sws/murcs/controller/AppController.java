@@ -237,9 +237,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayList.setItems((ObservableList) arrayList);
 
-        NavigationManager.setIgnore(true);
+        //NavigationManager.setIgnore(true);
         displayList.getSelectionModel().select(0);
-        NavigationManager.setIgnore(false);
+        //NavigationManager.setIgnore(false);
     }
 
     /**
@@ -700,7 +700,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         else {
             type = ModelType.getModelType(parameter);
             if (type != selectedType) {
+                NavigationManager.setIgnore(true);
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
+                NavigationManager.setIgnore(false);
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
 
