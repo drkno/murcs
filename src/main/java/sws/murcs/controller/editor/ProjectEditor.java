@@ -3,14 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -181,9 +174,12 @@ public class ProjectEditor extends GenericEditor<Project> {
             }
             message += "Start Date may not be null";
         }
-        if (message.equals("")) {
+        if (!message.equals("")) {
             labelErrorMessage.setText(message);
             return;
+        }
+        else {
+            labelErrorMessage.setText("");
         }
 
         try {
