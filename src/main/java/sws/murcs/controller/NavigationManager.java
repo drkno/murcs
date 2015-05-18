@@ -11,6 +11,12 @@ import java.util.Deque;
 public final class NavigationManager {
 
     /**
+     * Default empty constructor as this is a helper class and should never be created.
+     */
+    private NavigationManager() {
+    }
+
+    /**
      * Limit on the size of the stacks.
      */
     private static final int STACK_LIMIT = 5;
@@ -18,13 +24,10 @@ public final class NavigationManager {
      * The app controller.
      */
     private static AppController appController;
-
     /**
-     * Empty constructor for utility class.
+     * Whether the navigation manager should ignore changes.
      */
-    private NavigationManager() {
-        // Not called as this is a utility class.
-    }
+    private static boolean toIgnore;
 
     /**
      * Sets the app controller.
@@ -43,30 +46,33 @@ public final class NavigationManager {
     private static Deque<Model> backStack = new ArrayDeque<>();
 
     /**
-     * The head, the current model selected.
+     * The current head of the back and forwards stacks.
      */
     private static Model head;
 
     /**
-     * Indicates if the forward stack is not empty.
-     * @return if the stack is not empty.
+     * Determines whether or not it is possible to go forward.
+     * @return If it is possible to go forward.
      */
     public static boolean canGoForward() {
         return !forwardStack.isEmpty();
     }
 
     /**
-     * Indicates if the back stack is not empty.
-     * @return if the stack is not empty.
+     * Determines whether or not it is possible to go back.
+     * @return If it is possible to go back.
      */
     public static boolean canGoBack() {
         return !backStack.isEmpty();
     }
 
     /**
-     * Moves forward.
+     * Traverses forward in the back forward history.
      */
     public static void goForward() {
+        if (toIgnore) {
+            return;
+        }
         Model model = forwardStack.pop();
         backStack.push(head);
 
@@ -78,9 +84,12 @@ public final class NavigationManager {
     }
 
     /**
-     * Moves backwards.
+     * Traverses backward in the back forward history.
      */
     public static void goBackward() {
+        if (toIgnore) {
+            return;
+        }
         Model model = backStack.pop();
         forwardStack.push(head);
 
@@ -93,24 +102,24 @@ public final class NavigationManager {
     }
 
     /**
-     * Navigates to a specific model.
-     * @param model the model to navigate to.
+     * The public method for navigating to a model. (This always tracks the history).
+     * @param model The model navigating to.
      */
     public static void navigateTo(final Model model) {
         navigateTo(model, true);
     }
 
     /**
-     * Navigates to a specific model.
-     * @param model the model to navigate to.
-     * @param addToStack indicates if the navigation model should be added to the stack.
+     * The private method for navigation to a model. This has the ability to not track the history.
+     * @param model The model navigating to
+     * @param addToStack Whether or not to add the model to the history stack
      */
     private static void navigateTo(final Model model, final boolean addToStack) {
 
         if (head == null) {
             head = model;
         }
-        else if (addToStack && head != model) {
+        else if (addToStack && head != model && !toIgnore) {
             forwardStack.clear();
             backStack.push(head);
             head = model;
@@ -126,11 +135,19 @@ public final class NavigationManager {
     }
 
     /**
-     * Clears both the back and forward stack and resets the head.
+     * Clears all the history (the back, the forward and head).
      */
     public static void clearHistory() {
         backStack.clear();
         forwardStack.clear();
         head = null;
+    }
+
+    /**
+     * Sets whether to ignore history.
+     * @param ignore Whether to ignore history.
+     */
+    public static void setIgnore(final boolean ignore) {
+        toIgnore = ignore;
     }
 }

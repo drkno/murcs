@@ -189,12 +189,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Key event
      */
     private void handleKey(final KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
-                KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
             addClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN).match(event)) {
+            backClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN).match(event)) {
+            forwardClicked(null);
         }
     }
 
@@ -410,6 +415,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         RelationalModel model = new RelationalModel();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
+        NavigationManager.clearHistory();
         initialize();
     }
 
@@ -574,6 +580,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
+
+        switch (change){
+            case Forget:
+            case Remake:
+            case Revert:
+                NavigationManager.clearHistory();
+                updateBackForwardButtons();
+                break;
+        }
     }
 
     /**
@@ -700,7 +715,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         else {
             type = ModelType.getModelType(parameter);
             if (type != selectedType) {
+                NavigationManager.setIgnore(true);
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
+                NavigationManager.setIgnore(false);
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
 
@@ -748,6 +765,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void backClicked(final ActionEvent event) {
+        if (!NavigationManager.canGoBack()) {
+            return;
+        }
         NavigationManager.goBackward();
     }
 
@@ -757,6 +777,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void forwardClicked(final ActionEvent event) {
+        if (!NavigationManager.canGoForward()) {
+            return;
+        }
         NavigationManager.goForward();
     }
 }
