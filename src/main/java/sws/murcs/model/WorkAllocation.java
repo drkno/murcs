@@ -1,6 +1,5 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;

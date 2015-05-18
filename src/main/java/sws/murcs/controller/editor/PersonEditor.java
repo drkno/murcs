@@ -16,11 +16,11 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +106,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         allocatableSkills.clear();
-        allocatableSkills.addAll(PersistenceManager.Current.getCurrentModel().getAvailableSkills(getModel()));
+        allocatableSkills.addAll(PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel()));
 
         allocatedSkillsContainer.getChildren().clear();
         getModel().getSkills().forEach(skill -> {
@@ -114,7 +114,6 @@ public class PersonEditor extends GenericEditor<Person> {
             allocatedSkillsContainer.getChildren().add(skillNode);
             skillNodeIndex.put(skill, skillNode);
         });
-        
         setIsCreationWindow(modelShortName == null);
     }
 
@@ -206,7 +205,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(skill.toString());
-            nameLink.setOnAction(a -> App.navigateTo(skill));
+            nameLink.setOnAction(a -> NavigationManager.navigateTo(skill));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

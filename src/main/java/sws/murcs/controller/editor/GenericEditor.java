@@ -26,7 +26,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      */
     private ChangeListener changeListener;
     /**
-     * Details whether or not the window is a creator for a new model or an editor
+     * Details whether or not the window is a creator for a new model or an editor.
      */
     private boolean isCreationWindow;
 
@@ -109,7 +109,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     /**
-     * Gets whether or not this editor is a creation window
+     * Gets whether or not this editor is a creation window.
      * @return Whether or not this editor is a creation window
      */
     public final boolean getIsCreationWindow() {
@@ -117,7 +117,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     /**
-     * Sets whether or not this editor is a creation window
+     * Sets whether or not this editor is a creation window.
      * @param newIsCreationWindow The new value for whether or not this is a creation window
      */
     public final void setIsCreationWindow(final boolean newIsCreationWindow) {

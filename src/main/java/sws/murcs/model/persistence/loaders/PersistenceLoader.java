@@ -2,7 +2,6 @@ package sws.murcs.model.persistence.loaders;
 
 import sws.murcs.model.RelationalModel;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**

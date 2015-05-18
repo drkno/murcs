@@ -13,14 +13,14 @@ public final class PersistenceManager {
     /**
      * Static persistence manager, used to keep a persistent manager where ever it is used from.
      */
-    public static PersistenceManager Current;
+    private static PersistenceManager current;
 
     /**
      * Indicates whether or not there is a current persistence manage.
      * @return The persistence manager
      */
-    public static boolean CurrentPersistenceManagerExists() {
-        return Current != null;
+    public static boolean currentPersistenceManagerExists() {
+        return current != null;
     }
 
     /**
@@ -47,7 +47,24 @@ public final class PersistenceManager {
     }
 
     /**
+     * Sets the new Persistence Manager.
+     * @param newCurrent new Persistence manager.
+     */
+    public static void setCurrent(final PersistenceManager newCurrent) {
+        PersistenceManager.current = newCurrent;
+    }
+
+    /**
+     * Returns the current persistence manager.
+     * @return the current persistence manager
+     */
+    public static PersistenceManager getCurrent() {
+        return PersistenceManager.current;
+    }
+
+    /**
      * Gets the lastFile saved.
+     * @return returns the last file saved.
      */
     public String getLastFile() {
         return lastFile;

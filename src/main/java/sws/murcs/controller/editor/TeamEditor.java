@@ -7,8 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -17,12 +17,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +88,7 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
         memberNodeIndex = new HashMap<>();
 
-        allocatablePeople.addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
+        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
 
         setErrorCallback(message -> {
             if (message != null && message.getClass() == String.class) {
@@ -301,7 +301,7 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(person.toString());
-            nameLink.setOnAction(a -> App.navigateTo(person));
+            nameLink.setOnAction(a -> NavigationManager.navigateTo(person));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

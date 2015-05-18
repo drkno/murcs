@@ -50,7 +50,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         interact(() -> {
             try {
                 model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -89,7 +89,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @After("@ElementDeletion")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

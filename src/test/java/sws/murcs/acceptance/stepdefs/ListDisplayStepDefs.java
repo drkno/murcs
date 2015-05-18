@@ -53,7 +53,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
         interact(() -> {
             try {
                 model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -82,7 +82,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @After("@ListDisplay")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

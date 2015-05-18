@@ -3,16 +3,10 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
@@ -20,7 +14,6 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.time.LocalDate;
 
@@ -101,7 +94,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         // todo decouple from model
-        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -185,10 +178,13 @@ public class ProjectEditor extends GenericEditor<Project> {
             labelErrorMessage.setText(message);
             return;
         }
+        else {
+            labelErrorMessage.setText("");
+        }
 
         try {
             // Attempt to save the allocation
-            RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+            RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
             WorkAllocation allocation = new WorkAllocation(getModel(), team, startDate, endDate);
             relationalModel.addAllocation(allocation);
             observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
@@ -223,7 +219,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + allocation.getProject()
                 + "\"?");
         alert.addOkCancelButtons(a -> {
-            PersistenceManager.Current.getCurrentModel().removeAllocation(allocation);
+            PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
         });
@@ -244,9 +240,9 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(team.toString());
             }
             else {
-                Hyperlink link = new Hyperlink(team.toString());
-                link.setOnAction(a -> App.navigateTo(team));
-                setGraphic(link);
+                Hyperlink text = new Hyperlink(team.toString());
+                text.setOnAction(param -> NavigationManager.navigateTo(team));
+                setGraphic(text);
             }
         }
     }
