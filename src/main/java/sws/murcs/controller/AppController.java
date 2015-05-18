@@ -415,6 +415,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         RelationalModel model = new RelationalModel();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
+        NavigationManager.clearHistory();
         initialize();
     }
 
@@ -576,6 +577,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         else {
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
+        }
+
+        switch (change){
+            case Forget:
+            case Remake:
+            case Revert:
+                NavigationManager.clearHistory();
+                updateBackForwardButtons();
+                break;
         }
     }
 
