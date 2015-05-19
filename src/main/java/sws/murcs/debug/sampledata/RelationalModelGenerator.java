@@ -182,7 +182,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                     .stream().map(m -> (Person) m).collect(Collectors.toList()));
 
             // deal with pass by reference issues
-		  	List<Person> teamPeople = new ArrayList<>(people);
+            List<Person> teamPeople = new ArrayList<>(people);
             teamGenerator.setPersonPool(teamPeople);
             List<Team> teams = new ArrayList<>();
             min = getMin(stress, TeamGenerator.LOW_STRESS_MIN, TeamGenerator.MEDIUM_STRESS_MIN,

@@ -156,14 +156,18 @@ public class PersonGenerator implements Generator<Person> {
             if (!skills.stream().filter(scrumMaster::equals).findAny().isPresent()) {
                 skills.add(scrumMaster);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
             // Will never ever happen. ever. an exception is only
             // thrown if you try to set the short name as null/empty
         }
 
         try {
             p.setUserId(userId);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return null;
         }
