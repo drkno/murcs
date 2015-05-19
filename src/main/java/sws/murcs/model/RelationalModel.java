@@ -744,7 +744,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Gets a list of all the places a release is used.
-     * @apiNote Releases are not currently in use anywhere, so this will return an empty list.
+     * Releases are not currently in use anywhere, so this will return an empty list.
      * @param release The release.
      * @return The places the release is used.
      */
