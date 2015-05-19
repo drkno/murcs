@@ -1,10 +1,13 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.observable.ModelObservableArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Project.
@@ -22,7 +25,15 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
-    private ArrayList<Release> releases = new ArrayList<>();
+    private List<Release> releases = new ModelObservableArrayList<>();
+
+    /**
+     * The backlogs for a project
+     */
+    @TrackableValue
+    @XmlElementWrapper(name = "backlogs")
+    @XmlElement(name = "backlog")
+    private List<Backlog> backlogs = new ModelObservableArrayList<>();
 
     /**
      * Gets a description of the project.
@@ -34,10 +45,10 @@ public class Project extends Model {
 
     /**
      * Sets the description of the current project.
-     * @param newDesctiption The description of the project
+     * @param newDescription The description of the project
      */
-    public final void setDescription(final String newDesctiption) {
-        this.description = newDesctiption;
+    public final void setDescription(final String newDescription) {
+        this.description = newDescription;
         commit("edit project");
     }
 
@@ -45,7 +56,7 @@ public class Project extends Model {
      * Gets a list of releases associated with the project.
      * @return The releases for this project
      */
-    public final ArrayList<Release> getReleases() {
+    public final List<Release> getReleases() {
         return releases;
     }
 
@@ -99,5 +110,33 @@ public class Project extends Model {
             c = getShortName().hashCode();
         }
         return getHashCodePrime() + c;
+    }
+
+    /**
+     * Get the backlogs for a project.
+     * @return The list of backlogs
+     */
+    public final List<Backlog> getBacklogs() {
+        return backlogs;
+    }
+
+    /**
+     * Add a backlog to the project.
+     * @param backlog The backlog to add
+     */
+    public final void addBacklog(final Backlog backlog) {
+        if (!backlogs.contains(backlog)) {
+            backlogs.add(backlog);
+        }
+    }
+
+    /**
+     * Remove a backlog from the project.
+     * @param backlog The backlog to remove
+     */
+    public final void removeBacklog(final Backlog backlog) {
+        if (!backlogs.contains(backlog)) {
+            backlogs.remove(backlog);
+        }
     }
 }

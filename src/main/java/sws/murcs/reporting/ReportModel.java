@@ -52,7 +52,7 @@ public class ReportModel {
      */
     public ReportModel(final RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
-        workAllocations.addAll(relationalModel.getAllAllocations());
+        workAllocations.addAll(relationalModel.getAllocations());
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName()

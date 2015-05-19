@@ -145,7 +145,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             getModel().setDescription(viewDescription);
         }
 
-        // todo decouple from model
+        // TODO decouple from model
         RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
 
         // Extract details of a work period

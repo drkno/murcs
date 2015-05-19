@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -25,38 +26,49 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * The list of projects currently loaded in the application.
      */
     @TrackableValue
-    private List<Project> projects;
-    /**
-     * The list of work allocations.
-     */
-    @TrackableValue
-    private List<WorkAllocation> allocations;
-    /**
-     * The list of people.
-     */
-    @TrackableValue
-    private List<Person> people;
-    /**
-     * The list of teams.
-     */
-    @TrackableValue
-    private List<Team> teams;
-    /**
-     * The list of skills.
-     */
-    @TrackableValue
-    private List<Skill> skills;
+    private final List<Project> projects;
+
     /**
      * The list of releases.
      */
     @TrackableValue
-    private List<Release> releases;
+    private final List<Release> releases;
+
+    /**
+     * The list of work allocations.
+     */
+    @TrackableValue
+    private final List<WorkAllocation> allocations;
+
+    /**
+     * The list of teams.
+     */
+    @TrackableValue
+    private final List<Team> teams;
+
+    /**
+     * The list of people.
+     */
+    @TrackableValue
+    private final List<Person> people;
+
+    /**
+     * The list of skills.
+     */
+    @TrackableValue
+    private final List<Skill> skills;
+
+    /**
+     * The list of backlogs.
+     */
+    @TrackableValue
+    private final List<Backlog> backlogs;
 
     /**
      * The list of stories.
      */
     @TrackableValue
-    private List<Story> stories;
+    private final List<Story> stories;
 
     /**
      * Gets the current application VERSION.
@@ -75,13 +87,14 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Sets up a new Relational Model.
      */
     public RelationalModel() {
+        this.projects = new ModelObservableArrayList<>();
+        this.releases = new ModelObservableArrayList<>();
         this.allocations = new ArrayList<>();
-        this.people = new ModelObservableArrayList<Person>();
-        this.teams = new ModelObservableArrayList<Team>();
-        this.skills = new ModelObservableArrayList<Skill>();
-        this.releases = new ModelObservableArrayList<Release>();
-        this.projects = new ModelObservableArrayList<Project>();
-        this.stories = new ModelObservableArrayList<Story>();
+        this.teams = new ModelObservableArrayList<>();
+        this.people = new ModelObservableArrayList<>();
+        this.skills = new ModelObservableArrayList<>();
+        this.backlogs = new ModelObservableArrayList<>();
+        this.stories = new ModelObservableArrayList<>();
 
         try {
             Skill productOwner = new Skill();
@@ -98,8 +111,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
                     + "obsticles to task completion.");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
-            // will never ever happen. ever. an exception is only
-            // thrown if you try to set the shortname as null/empty
+            // Will never ever happen! Like, ever! An exception is only thrown
+            // if you try to set the shortName as null or empty.
             e.printStackTrace();
         }
     }
@@ -110,6 +123,62 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public final List<Project> getProjects() {
         return projects;
+    }
+
+    /**
+     * Gets the releases.
+     * @return The releases
+     */
+    public final List<Release> getReleases() {
+        return releases;
+    }
+
+    /**
+     * Gets a list of all allocations.
+     * @return A list of allocations
+     */
+    public final List<WorkAllocation> getAllocations() {
+        return allocations;
+    }
+
+    /**
+     * Gets a list of all teams.
+     * @return The teams
+     */
+    public final List<Team> getTeams() {
+        return teams;
+    }
+
+    /**
+     * Gets a list of all people.
+     * @return The people
+     */
+    public final List<Person> getPeople() {
+        return people;
+    }
+
+    /**
+     * Gets the skills.
+     * @return The skills
+     */
+    public final List<Skill> getSkills() {
+        return skills;
+    }
+
+    /**
+     * Gets the backlogs.
+     * @return The backlogs
+     */
+    public final List<Backlog> getBacklogs() {
+        return backlogs;
+    }
+
+    /**
+     * Gets a stories.
+     * @return The stories
+     */
+    public final List<Story> getStories() {
+        return stories;
     }
 
     /**
@@ -166,9 +235,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
 
         //Remove all the releases associated with the project
-        for (Release release : project.getReleases()) {
-            removeRelease(release);
-        }
+        project.getReleases().forEach(this::removeRelease);
     }
 
     /**
@@ -186,14 +253,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
         unassignedPeople.addAll(getPeople());
         unassignedPeople.removeAll(assignedPeople);
         return unassignedPeople;
-    }
-
-    /**
-     * Gets a list of all people.
-     * @return The people
-     */
-    public final List<Person> getPeople() {
-        return people;
     }
 
     /**
@@ -229,17 +288,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of stories to the model. Careful, this won't be undoable.
-     * @param storiesToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
-     */
-    public final void addStories(final ArrayList<Story> storiesToAdd) throws DuplicateObjectException {
-        for (Story story : storiesToAdd) {
-            this.addStory(story);
-        }
-    }
-
-    /**
      * Removes a person from unassigned people.
      * @param person The unassigned person to remove
      */
@@ -267,14 +315,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all teams.
-     * @return The teams
-     */
-    public final List<Team> getTeams() {
-        return teams;
-    }
-
-    /**
      * Gets a list of all the teams that aren't assigned to
      * any project currently.
      * @return the unassigned teams
@@ -287,14 +327,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
             }
         }
         return unassignedTeams;
-    }
-
-    /**
-     * Gets a list of all the stories currently in the model.
-     * @return The stories in the model
-     */
-    public final List<Story> getStories() {
-        return stories;
     }
 
     /**
@@ -339,13 +371,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        for (int i = 0; i < allocations.size(); i++) {
-            WorkAllocation allocation = allocations.get(i);
-            if (allocation.getTeam() == team) {
-                removeAllocation(allocation);
-                i--;
+        allocations.forEach(workAllocation -> {
+            if (workAllocation.getTeam() == team) {
+                removeAllocation(workAllocation);
             }
-        }
+        });
     }
 
     /**
@@ -411,7 +441,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public final void removeAllocation(final WorkAllocation allocation) {
         if (this.allocations.contains(allocation)) {
-            this.allocations.remove(allocation);
+            allocations.remove(allocation);
         }
         commit("edit project");
     }
@@ -426,29 +456,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all allocations.
-     * @return A list of allocations
-     */
-    public final List<WorkAllocation> getAllAllocations() {
-        return allocations;
-    }
-
-    /**
-     * Gets the skills.
-     * @return The skills
-     */
-    public final List<Skill> getSkills() {
-        return skills;
-    }
-
-    /**
      * Adds a skill to skills only if the skill does not already exist.
      * @param skill The skill to add
      * @throws DuplicateObjectException if the skill already exists in the relational model
      */
     private void addSkill(final Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
-            this.skills.add(skill);
+            skills.add(skill);
         }
         else {
             throw new DuplicateObjectException("Skill already exists");
@@ -472,7 +486,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     private void removeSkill(final Skill skill) {
         if (skills.contains(skill)) {
-            this.skills.remove(skill);
+            skills.remove(skill);
 
             //Remove the skill from any people who might have it
             getPeople()
@@ -480,6 +494,56 @@ public class RelationalModel extends TrackableObject implements Serializable {
                     .filter(person -> person.getSkills().contains(skill))
                     .forEach(person -> person.removeSkill(skill));
         }
+    }
+
+    /**
+     * Adds a list of stories to the model. Careful, this won't be undoable.
+     * @param storiesToAdd The stories to add
+     * @throws DuplicateObjectException if the story has already been back
+     */
+    public final void addStories(final ArrayList<Story> storiesToAdd) throws DuplicateObjectException {
+        for (Story story : storiesToAdd) {
+            this.addStory(story);
+        }
+    }
+
+    /**
+     * Adds a backlog to backlogs only if the backlog does not already exist.
+     * @param backlog The backlog to add
+     * @throws DuplicateObjectException if the backlog already exists in the relational model
+     */
+    private void addBacklog(final Backlog backlog) throws DuplicateObjectException {
+        if (!backlogs.contains(backlog)) {
+            backlogs.add(backlog);
+        }
+        else {
+            throw new DuplicateObjectException("Backlog already exists");
+        }
+    }
+
+    /**
+     * Adds a list of backlogs to the model. Careful, this won't be undoable.
+     * @param backlogToAdd The stories to add
+     * @throws DuplicateObjectException if the story has already been back
+     */
+    public final void addBacklogs(final ArrayList<Backlog> backlogToAdd) throws DuplicateObjectException {
+        for (Backlog backlog : backlogToAdd) {
+            addBacklog(backlog);
+        }
+    }
+
+    /**
+     * Remove a backlog from backlogs.
+     * @param backlog The backlog to remove
+     */
+    private void removeBacklog(final Backlog backlog) {
+        if (backlogs.contains(backlog)) {
+            backlogs.remove(backlog);
+        }
+
+        //Remove the backlog from any project that might contain it.
+        getProjects().stream()
+                .forEach(project -> project.removeBacklog(backlog));
     }
 
     /**
@@ -514,6 +578,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 break;
             case Story:
                 addStory((Story) model);
+                break;
+            case Backlog:
+                addBacklog((Backlog) model);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -577,6 +644,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
             case Story:
                 removeStory((Story) model);
                 break;
+            case Backlog:
+                removeBacklog((Backlog) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
                         + model.getClass().getName()
@@ -600,7 +669,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     private void addRelease(final Release release) throws DuplicateObjectException {
         if (!releases.contains(release)) {
-            this.releases.add(release);
+            releases.add(release);
         }
         else {
             throw new DuplicateObjectException("This release already exists");
@@ -631,15 +700,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
             stories.remove(story);
         }
 
-        //TODO Here we should remove the story from any backlogs it belongs to
-    }
-
-    /**
-     * Gets the releases.
-     * @return The releases
-     */
-    public final List<Release> getReleases() {
-        return releases;
+        backlogs.forEach(backlog -> {
+            backlog.removeStory(story);
+        });
     }
 
     /**
@@ -683,11 +746,25 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 return findUsages((Release) model);
             case Story:
                 return findUsages((Story) model);
+            case Backlog:
+                return findUsages((Backlog) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
                         + ") in Relational Model. You should fix this");
         }
+    }
+
+    /**
+     * Gets a list of places that a project is used.
+     * @param project The project to find the usages of
+     * @return The usages of the project
+     */
+    private List<Model> findUsages(final Project project) {
+        List<Model> usages = project.getReleases()
+                .stream()
+                .collect(Collectors.toList());
+        return usages;
     }
 
     /**
@@ -697,19 +774,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     private List<Model> findUsages(final Release release) {
         return new ArrayList<>();
-    }
-
-    /**
-     * Gets a list of places that a project is used.
-     * @param project The project to find the usages of
-     * @return The usages of the project
-     */
-    private List<Model> findUsages(final Project project) {
-        ArrayList<Model> usages = new ArrayList<>();
-        for (Release release : project.getReleases()) {
-            usages.add(release);
-        }
-        return usages;
     }
 
     /**
@@ -736,13 +800,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the person
      */
     private List<Model> findUsages(final Person person) {
-        List<Model> usages = new ArrayList<>();
-        for (Team team : getTeams()) {
-            if (team.getMembers().contains(person)) {
-                usages.add(team);
-            }
-        }
-        return usages;
+        return teams.stream()
+                .filter(team -> team.getMembers().contains(person))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -751,13 +811,20 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the skill
      */
     private List<Model> findUsages(final Skill skill) {
-        List<Model> usages = new ArrayList<>();
-        for (Person person : getPeople()) {
-            if (person.getSkills().contains(skill)) {
-                usages.add(person);
-            }
-        }
-        return usages;
+        return people.stream()
+                .filter(person -> person.getSkills().contains(skill))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets a list of all the places that a story has been used.
+     * @param story The story to find the usages for
+     * @return The usages of the story
+     */
+    private List<Model> findUsages(final Backlog backlog) {
+        return projects.stream()
+                .filter(project -> project.getBacklogs().contains(backlog))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -766,11 +833,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the story
      */
     private List<Model> findUsages(final Story story) {
-        List<Model> usages = new ArrayList<>();
-
-        //TODO find all the backlogs the story is used within
-
-        return usages;
+        return backlogs.stream()
+                .filter(backlog -> backlog.getStories().contains(story))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -782,14 +847,18 @@ public class RelationalModel extends TrackableObject implements Serializable {
         switch (ModelType.getModelType(model)) {
             case Project:
                 return getProjects().contains(model);
-            case Person:
-                return getPeople().contains(model);
-            case Team:
-                return getTeams().contains(model);
-            case Skill:
-                return getSkills().contains(model);
             case Release:
                 return getReleases().contains(model);
+            case Team:
+                return getTeams().contains(model);
+            case Person:
+                return getPeople().contains(model);
+            case Skill:
+                return getSkills().contains(model);
+            case Backlog:
+                return getBacklogs().contains(model);
+            case Story:
+                return getStories().contains(model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
                         + model.getClass().getName()

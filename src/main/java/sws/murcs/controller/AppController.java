@@ -20,6 +20,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
@@ -221,6 +222,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Skill: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
             case Story: arrayList = model.getStories(); break;
+            case Backlog: arrayList = model.getBacklogs(); break;
             default: throw new UnsupportedOperationException();
         }
         displayList.setItems((ModelObservableArrayList) arrayList);
@@ -452,6 +454,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     break;
                 case "addRelease":
                     clazz = Release.class;
+                    break;
+                case "addBacklog":
+                    clazz = Backlog.class;
                     break;
                 default:
                     break;

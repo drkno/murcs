@@ -73,6 +73,7 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Skill, "SkillEditor.fxml");
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
+        fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
 
         String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelType.getModelType(model));
 
