@@ -75,7 +75,7 @@ public class App extends Application {
      */
     public static void setWindowTitle(final String newTitle) {
         if (stage == null) return;
-        int index = newTitle.indexOf('.');
+        int index = newTitle.lastIndexOf('.');
         String title = newTitle;
         if (index >= 0) {
             title = newTitle.substring(0, index);
