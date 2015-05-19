@@ -181,7 +181,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             people.addAll(generateItems(personGenerator, min, max)
                     .stream().map(m -> (Person) m).collect(Collectors.toList()));
 
-		  	// deal with pass by reference issues
+            // deal with pass by reference issues
 		  	List<Person> teamPeople = new ArrayList<>(people);
             teamGenerator.setPersonPool(teamPeople);
             List<Team> teams = new ArrayList<>();
@@ -219,7 +219,8 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
                     StoryGenerator.HIGH_STRESS_MIN);
             max = getMin(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX,
                     StoryGenerator.HIGH_STRESS_MAX);
-            List<Story> stories = generateItems(storyGenerator, min, max).stream().map(m -> (Story) m).collect(Collectors.toList());
+            List<Story> stories = generateItems(storyGenerator, min, max)
+                    .stream().map(m -> (Story) m).collect(Collectors.toList());
 
             model.addSkills(skills);
             model.addPeople(people);

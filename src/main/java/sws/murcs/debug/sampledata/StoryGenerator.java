@@ -214,6 +214,7 @@ public class StoryGenerator implements Generator<Story> {
             story.setShortName(name);
         } catch (Exception e) {
             //Do nothing this doesn't matter. Ever.
+            e.printStackTrace();
         }
         story.setDescription(description);
         story.setCreator(creator);

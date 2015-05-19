@@ -74,7 +74,9 @@ public class App extends Application {
      * If the newTitle has a file extension, the file extension will be removed.
      */
     public static void setWindowTitle(final String newTitle) {
-        if (stage == null) return;
+        if (stage == null) {
+            return;
+        }
         int index = newTitle.lastIndexOf('.');
         String title = newTitle;
         if (index >= 0) {
@@ -88,7 +90,9 @@ public class App extends Application {
      * If there is already a star, the window title will remain unchanged.
      */
     public static void addTitleStar() {
-        if (stage == null) return;
+        if (stage == null) {
+            return;
+        }
         String title = stage.getTitle();
         if (title.charAt(0) != '*') {
             title = '*' + title;
@@ -101,7 +105,9 @@ public class App extends Application {
      * If no star exists, the window title will remain unchanged.
      */
     public static void removeTitleStar() {
-        if (stage == null) return;
+        if (stage == null) {
+            return;
+        }
         String title = stage.getTitle();
         if (title.charAt(0) == '*') {
             title = title.substring(1);
