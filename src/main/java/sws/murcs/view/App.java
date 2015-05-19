@@ -191,7 +191,7 @@ public class App extends Application {
             String fileLocation = "sample.project";
             try {
                 PersistenceManager.getCurrent().saveModel(fileLocation);
-                return;
+                System.exit(0);
             }
             catch (Exception e) {
                 System.err.println("Could not save sample project.");
