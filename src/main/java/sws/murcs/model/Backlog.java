@@ -111,4 +111,13 @@ public class Backlog extends Model {
 
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
     }
+
+    /**
+     * Returns the short name of the backlog.
+     * @return Short name of the backlog
+     */
+    @Override
+    public final String toString() {
+        return getShortName();
+    }
 }

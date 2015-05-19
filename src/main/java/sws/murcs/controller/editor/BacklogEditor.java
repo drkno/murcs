@@ -48,6 +48,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @FXML
     @Override
     public final void initialize() {
+        setChangeListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                saveChanges();
+            }
+        });
+
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());

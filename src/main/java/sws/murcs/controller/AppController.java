@@ -48,7 +48,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, openProject, saveProject, generateReport, addProject,
-            addTeam, addPerson, addSkill, addRelease, addStory, showHide;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide;
     /**
      * The side display which contains the display list.
      */
@@ -176,6 +176,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
         addStory.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
