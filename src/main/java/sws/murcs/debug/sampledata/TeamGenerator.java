@@ -4,6 +4,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random teams with people.
@@ -835,11 +836,11 @@ public class TeamGenerator implements Generator<Team> {
     /**
      * The probably of a person being a scrum master.
      */
-    private float probOfScrumMaster = 0.5f;
+    private float probOfScrumMaster;
     /**
      * The probability of a person being a product owner.
      */
-    private float probOfProductOwner = 0.5f;
+    private float probOfProductOwner;
 
     /**
      * The person generator for this team generator.
@@ -848,13 +849,17 @@ public class TeamGenerator implements Generator<Team> {
     /**
      * A pool of persons to use in this team.
      */
-    private ArrayList<Person> personPool;
+    private List<Person> personPool;
 
     /**
      * Instantiates a new Team generator.
      */
     public TeamGenerator() {
         personGenerator = new PersonGenerator();
+
+        final float defaultProbability = 0.5f;
+        probOfProductOwner = defaultProbability;
+        probOfScrumMaster = defaultProbability;
     }
 
     /**
@@ -886,7 +891,7 @@ public class TeamGenerator implements Generator<Team> {
      * Sets the person pool. If null, people will be randomly generated.
      * @param persons The person pool
      */
-    public final void setPersonPool(final ArrayList<Person> persons) {
+    public final void setPersonPool(final List<Person> persons) {
         this.personPool = persons;
     }
 
@@ -896,15 +901,15 @@ public class TeamGenerator implements Generator<Team> {
      * @param max The max members
      * @return The members
      */
-    private ArrayList<Person> generateMembers(final int min, final int max) {
-        ArrayList<Person> generated = new ArrayList<>();
+    private List<Person> generateMembers(final int min, final int max) {
+        List<Person> generated = new ArrayList<>();
         int personCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of person, make some up
         if (personPool == null) {
             for (int i = 0; i < personCount; i++) {
                 Person newPerson = personGenerator.generate();
-                if (!generated.stream().filter(person -> newPerson.equals(person)).findAny().isPresent()) {
+                if (!generated.stream().filter(newPerson::equals).findAny().isPresent()) {
                     generated.add(newPerson);
                 }
             }
@@ -928,17 +933,21 @@ public class TeamGenerator implements Generator<Team> {
 
     @Override
     public final Team generate() {
+        final int longNameMax = 10;
+        final int minMembers = 3;
+        final int maxMembers = 15;
+
         Team team = new Team();
 
         String shortName = NameGenerator.randomElement(teamNames);
-        String longName = shortName + NameGenerator.random(10);
+        String longName = shortName + NameGenerator.random(longNameMax);
 
         String description = NameGenerator.randomElement(descriptions);
 
         Person productOwner = null;
         Person scrumMaster = null;
 
-        ArrayList<Person> members = generateMembers(3, 15);
+        List<Person> members = generateMembers(minMembers, maxMembers);
 
         if (members.size() > 0) {
                 productOwner = members.get(0);

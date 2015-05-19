@@ -4,6 +4,7 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random projects with teams.
@@ -64,7 +65,7 @@ public class ProjectGenerator implements Generator<Project> {
     /**
      * A pool of teams for adding to projects.
      */
-    private ArrayList<Team> teamPool;
+    private List<Team> teamPool;
 
     /**
      * Instantiates a new project generator.
@@ -97,7 +98,7 @@ public class ProjectGenerator implements Generator<Project> {
      * The pool of teams to cho0se from. If null then they will be generated.
      * @param teams The pool of teams
      */
-    public final void setTeamPool(final ArrayList<Team> teams) {
+    public final void setTeamPool(final List<Team> teams) {
         this.teamPool = teams;
     }
 
@@ -107,8 +108,8 @@ public class ProjectGenerator implements Generator<Project> {
      * @param max The maximum number of teams
      * @return The teams
      */
-    private ArrayList<Team> generateTeams(final int min, final int max) {
-        ArrayList<Team> generated = new ArrayList<>();
+    private List<Team> generateTeams(final int min, final int max) {
+        List<Team> generated = new ArrayList<>();
         int teamCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of teams, make some up
@@ -143,10 +144,12 @@ public class ProjectGenerator implements Generator<Project> {
 
     @Override
     public final Project generate() {
+        final int longNameLength = 1000;
+
         Project project = new Project();
 
         String shortName = NameGenerator.randomElement(projectNames);
-        String longName = NameGenerator.randomString(1000);
+        String longName = NameGenerator.randomString(longNameLength);
         String description = NameGenerator.randomElement(descriptions);
 
         //List<Team> teams = generateTeams(10, 50);

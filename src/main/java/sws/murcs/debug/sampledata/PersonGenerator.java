@@ -5,6 +5,8 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Generates random people with skills and roles.
@@ -53,7 +55,7 @@ public class PersonGenerator implements Generator<Person> {
      * A pool of skills to choose from when adding
      * skills to people.
      */
-    private ArrayList<Skill> skillPool;
+    private List<Skill> skillPool;
 
     /**
      * Instantiates a new person generator.
@@ -82,7 +84,7 @@ public class PersonGenerator implements Generator<Person> {
      * Sets the pool of skills to assign from. If null, skills will be generated.
      * @param skills The skill pool
      */
-    public final void setSkillPool(final ArrayList<Skill> skills) {
+    public final void setSkillPool(final List<Skill> skills) {
         this.skillPool = skills;
     }
 
@@ -92,15 +94,15 @@ public class PersonGenerator implements Generator<Person> {
      * @param max The max number of skills
      * @return The skills
      */
-    private ArrayList<Skill> generateSkills(final int min, final int max) {
-        ArrayList<Skill> generated = new ArrayList<>();
+    private List<Skill> generateSkills(final int min, final int max) {
+        List<Skill> generated = new ArrayList<>();
         int skillCount = NameGenerator.random(min, max);
 
         //If we haven't been given a pool of skills, make some up
         if (skillPool == null) {
             for (int i = 0; i < skillCount; i++) {
                 Skill newSkill = skillGenerator.generate();
-                if (!generated.stream().filter(skill -> newSkill.equals(skill)).findAny().isPresent()) {
+                if (!generated.stream().filter(newSkill::equals).findAny().isPresent()) {
                     generated.add(newSkill);
                 }
             }
@@ -118,9 +120,7 @@ public class PersonGenerator implements Generator<Person> {
             }
 
             //Put all the skills we took out back
-            for (Skill skill : generated) {
-                skillPool.add(skill);
-            }
+            skillPool.addAll(generated.stream().collect(Collectors.toList()));
         }
 
         return generated;
@@ -128,21 +128,24 @@ public class PersonGenerator implements Generator<Person> {
 
     @Override
     public final Person generate() {
+        final int userIdLength = 10;
+        final int maxSkills = 100;
+
         Person p = new Person();
 
-        String userId = NameGenerator.randomString(10, "0123456789");
+        String userId = NameGenerator.randomString(userIdLength, "0123456789");
 
         String shortName = NameGenerator.randomName();
         String longName = NameGenerator.randomTitle() + " " + shortName;
 
-        ArrayList<Skill> skills = generateSkills(0, 100);
+        List<Skill> skills = generateSkills(0, maxSkills);
 
         try {
             Skill productOwner = new Skill();
             productOwner.setShortName("PO");
             productOwner.setLongName("Product Owner");
             productOwner.setDescription("has ability to insult design teams efforts");
-            if (!skills.stream().filter(skill -> productOwner.equals(skill)).findAny().isPresent()) {
+            if (!skills.stream().filter(productOwner::equals).findAny().isPresent()) {
                 skills.add(productOwner);
             }
 
@@ -150,12 +153,12 @@ public class PersonGenerator implements Generator<Person> {
             scrumMaster.setShortName("SM");
             scrumMaster.setLongName("Scrum Master");
             scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
-            if (!skills.stream().filter(skill -> scrumMaster.equals(skill)).findAny().isPresent()) {
+            if (!skills.stream().filter(scrumMaster::equals).findAny().isPresent()) {
                 skills.add(scrumMaster);
             }
         } catch (Exception e) {
             // Will never ever happen. ever. an exception is only
-            // thrown if you try to set the shortname as null/empty
+            // thrown if you try to set the short name as null/empty
         }
 
         try {

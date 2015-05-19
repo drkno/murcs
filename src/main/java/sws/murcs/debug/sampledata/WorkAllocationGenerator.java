@@ -7,6 +7,7 @@ import sws.murcs.model.WorkAllocation;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -18,18 +19,18 @@ public class WorkAllocationGenerator {
      * A pool of projects to choose from when
      * generating work allocations.
      */
-    private ArrayList<Project> projectPool;
+    private List<Project> projectPool;
     /**
      * A pool of teams to choose from when
      * generating work allocations.
      */
-    private ArrayList<Team> teamPool;
+    private List<Team> teamPool;
 
     /**
      * Sets the project pool.
      * @param projects The project pool
      */
-    public final void setProjectPool(final ArrayList<Project> projects) {
+    public final void setProjectPool(final List<Project> projects) {
         this.projectPool = projects;
     }
 
@@ -37,7 +38,7 @@ public class WorkAllocationGenerator {
      * Sets the team pool.
      * @param teams The team pool
      */
-    public final void setTeamPool(final ArrayList<Team> teams) {
+    public final void setTeamPool(final List<Team> teams) {
         this.teamPool = teams;
     }
 
@@ -46,16 +47,20 @@ public class WorkAllocationGenerator {
      * @param team The team to create work for
      * @return List of work allocations
      */
-    private ArrayList<WorkAllocation> createWork(final Team team) {
+    private List<WorkAllocation> createWork(final Team team) {
+        final int subtractMonths = 6;
+        final int daysInWeek = 7;
+        final int maxAllocationLength = 21;
+
         Random random = new Random();
         int numProjects = projectPool.size();
-        ArrayList<WorkAllocation> allocations = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now().minus(6, ChronoUnit.MONTHS);
+        List<WorkAllocation> allocations = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now().minus(subtractMonths, ChronoUnit.MONTHS);
         LocalDate startDate;
         LocalDate endDate = currentDate;
-        while (endDate.isBefore(LocalDate.now().plus(6, ChronoUnit.MONTHS))) {
-            startDate = endDate.plus(random.nextInt(7) + 1, ChronoUnit.DAYS);
-            endDate = startDate.plus(random.nextInt(21) + 1, ChronoUnit.DAYS);
+        while (endDate.isBefore(LocalDate.now().plus(subtractMonths, ChronoUnit.MONTHS))) {
+            startDate = endDate.plus(random.nextInt(daysInWeek) + 1, ChronoUnit.DAYS);
+            endDate = startDate.plus(random.nextInt(maxAllocationLength) + 1, ChronoUnit.DAYS);
             Project project = projectPool.get(random.nextInt(numProjects));
             allocations.add(new WorkAllocation(project, team, startDate, endDate));
         }
@@ -66,12 +71,12 @@ public class WorkAllocationGenerator {
      * Creates a list of work allocations for all the given teams on any of the given projects.
      * @return The list of work allocations
      */
-    public final ArrayList<WorkAllocation> generate() {
+    public final List<WorkAllocation> generate() {
         if (projectPool == null || teamPool == null || projectPool.isEmpty() || teamPool.isEmpty()) {
             return null;
         }
 
-        ArrayList<WorkAllocation> allocations = new ArrayList<>();
+        List<WorkAllocation> allocations = new ArrayList<>();
         for (Team team : teamPool) {
             allocations.addAll(createWork(team));
         }

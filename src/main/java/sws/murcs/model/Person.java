@@ -111,7 +111,7 @@ public class Person extends Model {
      * @throws DuplicateObjectException if the
      * person has any of the skills in the list
      */
-    public final void addSkills(final ArrayList<Skill> skillsToAdd) throws DuplicateObjectException {
+    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
         for (Skill skill : skillsToAdd) {
             this.addSkill(skill);
         }

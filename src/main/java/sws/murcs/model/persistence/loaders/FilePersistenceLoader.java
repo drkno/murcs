@@ -1,7 +1,6 @@
 package sws.murcs.model.persistence.loaders;
 
 import sws.murcs.model.RelationalModel;
-import sws.murcs.view.App;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Manages loading persistent data from the local HD using binary serialization.
@@ -151,9 +151,9 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to search
      * @return list of models
      */
-    public static ArrayList<String> getModelList(final String fileExtension, final String directory)
+    public static List<String> getModelList(final String fileExtension, final String directory)
     {
-        ArrayList<String> persistentList = new ArrayList<String>();
+        List<String> persistentList = new ArrayList<>();
         File dir = new File(directory); // create handle to directory
         for (File f : dir.listFiles()) {
             String name = f.getName();

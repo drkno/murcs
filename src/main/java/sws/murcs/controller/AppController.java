@@ -581,13 +581,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
-        switch (change){
+        switch (change) {
             case Forget:
             case Remake:
             case Revert:
                 NavigationManager.clearHistory();
                 updateBackForwardButtons();
                 break;
+            default: break;
         }
     }
 
@@ -720,10 +721,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 NavigationManager.setIgnore(false);
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
-
                 displayList.getSelectionModel().select(parameter);
             }
-            displayList.scrollTo(parameter);
+
+            if (displayList.getSelectionModel().getSelectedIndex() < 0) {
+                displayList.scrollTo(parameter);
+            }
         }
 
         // The remove button should be greyed out
@@ -768,6 +771,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (!NavigationManager.canGoBack()) {
             return;
         }
+        displayList.getSelectionModel().clearSelection();
         NavigationManager.goBackward();
     }
 
@@ -780,6 +784,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (!NavigationManager.canGoForward()) {
             return;
         }
+        displayList.getSelectionModel().clearSelection();
         NavigationManager.goForward();
     }
 }

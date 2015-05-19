@@ -89,14 +89,17 @@ public final class PersistenceManager {
 
     /**
      * Loads a model from the disk.
-     * @param persistenceName The name of the model to load
-     * @return The loaded persistence. Will be null if the persistence does not exist
+     * @param persistenceName The name of the model to load.
+     * @return The loaded persistence. Will be null if the model does not exist, is corrupt or could not be loaded.
      */
     public RelationalModel loadModel(final String persistenceName) {
         // load the persistence using the default directory
         lastFile = persistenceName;
-        App.setWindowTitle(persistenceName);
-        return persistenceLoader.loadModel(persistenceName);
+        RelationalModel model = persistenceLoader.loadModel(persistenceName);
+        if (model != null) {
+            App.setWindowTitle(persistenceName);
+        }
+        return model;
     }
 
     /**

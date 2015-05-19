@@ -693,7 +693,7 @@ public class ReleaseGenerator implements Generator<Release> {
      * Sets the Project pool for the generator.
      * @param newProjectPool The project pool
      */
-    public final void setProjectPool(final ArrayList<Project> newProjectPool) {
+    public final void setProjectPool(final List<Project> newProjectPool) {
         this.projectPool = newProjectPool;
     }
 
@@ -712,13 +712,13 @@ public class ReleaseGenerator implements Generator<Release> {
      * @return The array list of generated projects
      */
     private List<Project> generateProjects(final int min, final int max) {
-        ArrayList<Project> generated = new ArrayList<>();
+        List<Project> generated = new ArrayList<>();
         int projectCount = NameGenerator.random(min, max);
 
         if (projectPool == null) {
             for (int i = 0; i < projectCount; i++) {
                 Project newProject = projectGenerator.generate();
-                if (!generated.stream().filter(project -> newProject.equals(project)).findAny().isPresent()) {
+                if (!generated.stream().filter(newProject::equals).findAny().isPresent()) {
                     generated.add(newProject);
                 }
             }
@@ -741,14 +741,22 @@ public class ReleaseGenerator implements Generator<Release> {
 
     @Override
     public final Release generate() {
+        final int yearVariance = 130;
+        final int epoch = 1970;
+        final int months = 12;
+        final int daysInMonth = 28;
+        final int maxProjects = 5;
+
         Release r = new Release();
 
         String shortName = NameGenerator.randomElement(defaultNames);
         String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(RANDOM.nextInt(130) + 1970, RANDOM.nextInt(12) + 1, RANDOM.nextInt(28)
-                + 1);
+        LocalDate releaseDate = LocalDate.of(
+                RANDOM.nextInt(yearVariance) + epoch,
+                RANDOM.nextInt(months) + 1,
+                RANDOM.nextInt(daysInMonth) + 1);
 
-        List<Project> projects = generateProjects(1, 5);
+        List<Project> projects = generateProjects(1, maxProjects);
 
         try {
             r.setShortName(shortName);
