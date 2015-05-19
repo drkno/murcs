@@ -3,7 +3,6 @@ package sws.murcs.exceptions;
 import sws.murcs.model.Model;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
-import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -76,34 +75,17 @@ public class DuplicateObjectException extends CustomException {
         String className = newModel.getClass().getSimpleName();
         List<? extends Model> list = null;
         switch (className) {
-            case "Skill": {
-                list = model.getSkills();
-                checkForDuplicateNames(newModel, list, className, param);
-                break;
-            }
-            case "Person": {
+            case "Skill": list = model.getSkills(); break;
+            case "Person":
                 list = model.getPeople();
-                checkForDuplicateNames(newModel, list, className, param);
-                checkForDuplicateUserIds(newModel, (ModelObservableArrayList<Person>) list, param);
+                checkForDuplicateUserIds(newModel, (List<Person>) list, param);
                 break;
-            }
-            case "Project": {
-                list = model.getProjects();
-                checkForDuplicateNames(newModel, list, className, param);
-                break;
-            }
-            case "Team": {
-                list = model.getTeams();
-                checkForDuplicateNames(newModel, list, className, param);
-                break;
-            }
-            case "Release": {
-                list = model.getReleases();
-                checkForDuplicateNames(newModel, list, className, param);
-            }
-            default:
-                break;
+            case "Project": list = model.getProjects(); break;
+            case "Team": list = model.getTeams(); break;
+            case "Release": list = model.getReleases(); break;
+            default: return;
         }
+        checkForDuplicateNames(newModel, list, className, param);
     }
 
     /**

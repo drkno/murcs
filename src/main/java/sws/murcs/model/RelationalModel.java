@@ -79,12 +79,12 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public RelationalModel() {
         this.allocations = new ArrayList<>();
-        this.people = new ModelObservableArrayList<Person>();
-        this.teams = new ModelObservableArrayList<Team>();
-        this.skills = new ModelObservableArrayList<Skill>();
-        this.releases = new ModelObservableArrayList<Release>();
-        this.projects = new ModelObservableArrayList<Project>();
-        this.stories = new ModelObservableArrayList<Story>();
+        this.people = new ModelObservableArrayList<>();
+        this.teams = new ModelObservableArrayList<>();
+        this.skills = new ModelObservableArrayList<>();
+        this.releases = new ModelObservableArrayList<>();
+        this.projects = new ModelObservableArrayList<>();
+        this.stories = new ModelObservableArrayList<>();
 
         try {
             Skill productOwner = new Skill();
@@ -231,11 +231,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a list of people to the model.
-     * @param newPeople Person to be added
-     * @throws DuplicateObjectException if the
-     * relational model already has a person from the people to be added
+     * @param newPeople Person to be added.
+     * @throws DuplicateObjectException if the relational model
+     * already has a person from the people to be added.
      */
-    public final void addPeople(final ArrayList<Person> newPeople) throws DuplicateObjectException {
+    public final void addPeople(final List<Person> newPeople) throws DuplicateObjectException {
         for (Person person : newPeople) {
             this.addPerson(person);
         }
@@ -243,10 +243,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a list of stories to the model. Careful, this won't be undoable.
-     * @param storiesToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
+     * @param storiesToAdd The stories to add.
+     * @throws DuplicateObjectException if a story has already been added.
      */
-    public final void addStories(final ArrayList<Story> storiesToAdd) throws DuplicateObjectException {
+    public final void addStories(final List<Story> storiesToAdd) throws DuplicateObjectException {
         for (Story story : storiesToAdd) {
             this.addStory(story);
         }
@@ -290,10 +290,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Gets a list of all the teams that aren't assigned to
      * any project currently.
-     * @return the unassigned teams
+     * @return the unassigned teams.
      */
     public final List<Team> getUnassignedTeams() {
-        List<Team> unassignedTeams = new ArrayList<Team>();
+        List<Team> unassignedTeams = new ArrayList<>();
         for (Team team : teams) {
             if (!allocations.stream().filter(a -> a.getTeam().equals(team)).findAny().isPresent()) {
                 unassignedTeams.add(team);
@@ -337,7 +337,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws DuplicateObjectException if the murcs already has
      * a team from teams to be added
      */
-    public final void addTeams(final ArrayList<Team> teamsToAdd) throws DuplicateObjectException {
+    public final void addTeams(final List<Team> teamsToAdd) throws DuplicateObjectException {
         for (Team team : teamsToAdd) {
             this.addTeam(team);
         }
@@ -484,7 +484,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param skillsToAdd Skill to be added existing skills
      * @throws DuplicateObjectException if a skill is already in the relational model
      */
-    public final void addSkills(final ArrayList<Skill> skillsToAdd) throws DuplicateObjectException {
+    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
         for (Skill skill : skillsToAdd) {
             this.addSkill(skill);
         }
@@ -669,9 +669,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
 
         //Now remove it from the project
-        projects.stream().filter(project -> project.getReleases().contains(release)).forEach(project -> {
-            project.removeRelease(release);
-        });
+        projects.stream().filter(project -> project.getReleases().contains(release)).forEach(project ->
+            project.removeRelease(release)
+        );
     }
 
     /**
@@ -695,11 +695,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds an arraylist of releases to the project.
-     * @param releasesToAdd The releases to be added
+     * Adds a list of releases to the project.
+     * @param releasesToAdd The releases to be added.
      * @throws DuplicateObjectException when attempting to add a duplicate release.
      */
-    public final void addReleases(final ArrayList<Release> releasesToAdd) throws DuplicateObjectException {
+    public final void addReleases(final List<Release> releasesToAdd) throws DuplicateObjectException {
         for (Release release : releasesToAdd) {
             addRelease(release);
         }
@@ -744,8 +744,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Gets a list of all the places a release is used.
-     * @param release The release
-     * @return The places the release is used
+     * @apiNote Releases are not currently in use anywhere, so this will return an empty list.
+     * @param release The release.
+     * @return The places the release is used.
      */
     private List<Model> findUsages(final Release release) {
         return new ArrayList<>();
@@ -757,10 +758,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @return The usages of the project
      */
     private List<Model> findUsages(final Project project) {
-        ArrayList<Model> usages = new ArrayList<>();
-        for (Release release : project.getReleases()) {
-            usages.add(release);
-        }
+        List<Model> usages = project.getReleases().stream().collect(Collectors.toList());
         return usages;
     }
 

@@ -5,6 +5,7 @@ import sws.murcs.magic.tracking.TrackableValue;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Project.
@@ -22,7 +23,7 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
-    private ArrayList<Release> releases = new ArrayList<>();
+    private List<Release> releases = new ArrayList<>();
 
     /**
      * Gets a description of the project.
@@ -34,10 +35,10 @@ public class Project extends Model {
 
     /**
      * Sets the description of the current project.
-     * @param newDesctiption The description of the project
+     * @param newDescription The description of the project
      */
-    public final void setDescription(final String newDesctiption) {
-        this.description = newDesctiption;
+    public final void setDescription(final String newDescription) {
+        this.description = newDescription;
         commit("edit project");
     }
 
@@ -45,7 +46,7 @@ public class Project extends Model {
      * Gets a list of releases associated with the project.
      * @return The releases for this project
      */
-    public final ArrayList<Release> getReleases() {
+    public final List<Release> getReleases() {
         return releases;
     }
 

@@ -581,13 +581,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
 
-        switch (change){
+        switch (change) {
             case Forget:
             case Remake:
             case Revert:
                 NavigationManager.clearHistory();
                 updateBackForwardButtons();
                 break;
+            default: break;
         }
     }
 

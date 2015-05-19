@@ -1,7 +1,6 @@
 package sws.murcs.model.observable;
 
 import sws.murcs.model.Model;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +8,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Observable ArrayList type with custom callback property for object toStrings().
@@ -21,7 +21,7 @@ public class ModelObservableArrayList<T extends Model>
      * Serializable backing field.
      * Required because JavaFX observable lists are not serializable.
      */
-    private ArrayList<T> backingField;
+    private List<T> backingField;
 
     /**
      * Custom comparator so that sorting the list uses a different ordering.
