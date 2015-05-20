@@ -443,6 +443,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 updateList();
                 UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
+
+                //This is a workaround for making sure you can go back when you open a new project
+                //This happens because forget clears the navigation history
+                displayList.getSelectionModel().clearSelection();
+                displayList.getSelectionModel().select(0);
             }
         }
         catch (Exception e) {
