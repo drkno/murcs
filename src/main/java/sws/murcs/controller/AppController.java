@@ -22,14 +22,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -443,6 +436,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 updateList();
                 UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
+
+                //This is a workaround for making sure you can go back when you open a new project
+                //This happens because forget clears the navigation history
+                displayList.getSelectionModel().clearSelection();
+                displayList.getSelectionModel().select(0);
             }
         }
         catch (Exception e) {
