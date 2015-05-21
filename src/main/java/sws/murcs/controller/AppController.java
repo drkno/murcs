@@ -1,5 +1,9 @@
 package sws.murcs.controller;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -22,24 +26,12 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Main app class controller.
@@ -195,10 +187,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
             backClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
             forwardClicked(null);
         }
     }
