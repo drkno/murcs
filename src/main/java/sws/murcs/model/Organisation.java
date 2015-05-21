@@ -19,9 +19,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * The top level relational model.
+ * The top level organisation.
  */
-public class RelationalModel extends TrackableObject implements Serializable {
+public class Organisation extends TrackableObject implements Serializable {
 
     /**
      * The list of projects currently loaded in the application.
@@ -84,9 +84,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private static final String VERSION = "0.0.3";
 
     /**
-     * Sets up a new Relational Model.
+     * Sets up a new organisation.
      */
-    public RelationalModel() {
+    public Organisation() {
         this.projects = new ModelObservableArrayList<>();
         this.releases = new ModelObservableArrayList<>();
         this.allocations = new ArrayList<>();
@@ -296,8 +296,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a person to the model if it doesn't exits.
      * @param person to be added
-     * @throws DuplicateObjectException if the relational
-     * model already has the person
+     * @throws DuplicateObjectException if the organisation
+     * already has the person
      */
     private void addPerson(final Person person) throws DuplicateObjectException {
         if (!this.getPeople().contains(person)
@@ -316,7 +316,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of people to the model.
      * @param newPeople Person to be added.
-     * @throws DuplicateObjectException if the relational model
+     * @throws DuplicateObjectException if the organisation
      * already has a person from the people to be added.
      */
     public final void addPeople(final List<Person> newPeople) throws DuplicateObjectException {
@@ -379,10 +379,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a team to the unassigned teams if the
-     * relational model does not already have that team.
+     * organisation does not already have that team.
      * @param team The unassigned team to add
-     * @throws DuplicateObjectException if the relational
-     * model already has the team.
+     * @throws DuplicateObjectException if the organisation
+     * already has the team.
      */
     private void addTeam(final Team team) throws DuplicateObjectException {
         if (!this.teams.contains(team)
@@ -399,8 +399,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of teams to add to the relational model.
-     * @param teamsToAdd Teams to be added to the relational model
+     * Adds a list of teams to add to the organisation.
+     * @param teamsToAdd Teams to be added to the organisation
      * @throws DuplicateObjectException if the murcs already has
      * a team from teams to be added
      */
@@ -523,7 +523,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a skill to skills only if the skill does not already exist.
      * @param skill The skill to add
-     * @throws DuplicateObjectException if the skill already exists in the relational model
+     * @throws DuplicateObjectException if the skill already exists in the organisation
      */
     private void addSkill(final Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
@@ -537,7 +537,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a list of skills to the existing list of skills.
      * @param skillsToAdd Skill to be added existing skills
-     * @throws DuplicateObjectException if a skill is already in the relational model
+     * @throws DuplicateObjectException if a skill is already in the organisation
      */
     public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
         for (Skill skill : skillsToAdd) {
@@ -591,7 +591,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a backlog to backlogs only if the backlog does not already exist.
      * @param backlog The backlog to add
-     * @throws DuplicateObjectException if the backlog already exists in the relational model
+     * @throws DuplicateObjectException if the backlog already exists in the organisation
      */
     private void addBacklog(final Backlog backlog) throws DuplicateObjectException {
         if (!backlogs.contains(backlog)) {
@@ -722,7 +722,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
                         + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
+                        + ") in organisation. You should fix this");
         }
 
         try {
@@ -781,7 +781,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes the story from the relational model.
+     * Removes the story from the organisation.
      * @param story The story to remove
      */
     private void removeStory(final Story story) {

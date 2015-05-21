@@ -3,9 +3,9 @@ package sws.murcs.unit.model.persistence;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
 
@@ -17,16 +17,16 @@ public class PersistenceManagerTest {
 
     private class TestLoader implements PersistenceLoader {
 
-        private HashMap<String, RelationalModel> modelMap = new HashMap<String, RelationalModel>();
+        private HashMap<String, Organisation> modelMap = new HashMap<String, Organisation>();
         private String workingDirectory;
 
         @Override
-        public RelationalModel loadModel(String persistenceName) {
+        public Organisation loadModel(String persistenceName) {
             return modelMap.get(persistenceName);
         }
 
         @Override
-        public void saveModel(String saveName, RelationalModel persistent) throws Exception {
+        public void saveModel(String saveName, Organisation persistent) throws Exception {
             modelMap.put(saveName, persistent);
         }
 
@@ -38,7 +38,7 @@ public class PersistenceManagerTest {
         @Override
         public boolean deleteModel(String persistenceName) {
             try {
-                RelationalModel model = modelMap.remove(persistenceName);
+                Organisation model = modelMap.remove(persistenceName);
                 return model != null;
             }
             catch (Exception e) {
@@ -58,12 +58,12 @@ public class PersistenceManagerTest {
     }
 
     private PersistenceManager manager;
-    private RelationalModelGenerator generator;
+    private OrganisationGenerator generator;
 
     @Before
     public void setUp() throws Exception {
         manager = new PersistenceManager(new TestLoader());
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Low);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Low);
         UndoRedoManager.setDisabled(true);
     }
 
@@ -90,7 +90,7 @@ public class PersistenceManagerTest {
         manager.saveModel("test", generator.generate());
         Assert.assertNotNull(manager.loadModel("test"));
         Assert.assertNull(manager.loadModel("test1"));
-        RelationalModel curr = generator.generate();
+        Organisation curr = generator.generate();
         manager.setCurrentModel(curr);
         manager.saveModel("current");
         Assert.assertEquals(curr, manager.loadModel("current"));
@@ -133,7 +133,7 @@ public class PersistenceManagerTest {
     @Test
     public void testGetSetCurrentModel() throws Exception {
         Assert.assertNull(manager.getCurrentModel());
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
         manager.setCurrentModel(model);
         Assert.assertNotNull(manager.getCurrentModel());
         Assert.assertEquals(model, manager.getCurrentModel());

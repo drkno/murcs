@@ -2,9 +2,10 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
@@ -16,9 +17,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generates random RelationalModels.
+ * Generates random Organisations.
  */
-public class RelationalModelGenerator implements Generator<RelationalModel> {
+public class OrganisationGenerator implements Generator<Organisation> {
 
     /**
      * The various stress level the generator can produce.
@@ -77,10 +78,10 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     private Stress stress;
 
     /**
-     * Instantiates a new random RelationalModel generator.
+     * Instantiates a new random Organisation generator.
      * @param stressLevel the stress level to use. Stress level determines the amount of data generated.
      */
-    public RelationalModelGenerator(final Stress stressLevel) {
+    public OrganisationGenerator(final Stress stressLevel) {
         this.stress = stressLevel;
 
         skillGenerator = new SkillGenerator();
@@ -170,9 +171,9 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     }
 
     @Override
-    public final RelationalModel generate() {
+    public final Organisation generate() {
         try {
-            RelationalModel model = new RelationalModel();
+            Organisation model = new Organisation();
 
             int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN,
                     SkillGenerator.HIGH_STRESS_MIN);

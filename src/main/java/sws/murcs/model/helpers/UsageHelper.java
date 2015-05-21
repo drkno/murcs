@@ -5,7 +5,7 @@ import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Helps to find usages of a model within the current relational model.
+ * Helps to find usages of a model within the current organisation.
  */
 public final class UsageHelper {
 
@@ -27,6 +27,11 @@ public final class UsageHelper {
      */
     private UsageHelper() {
     }
+
+    /**
+     * The current organisation.
+     */
+    private static Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
 
     /**
      * Determines whether or not a Model object is in use.
@@ -62,7 +67,7 @@ public final class UsageHelper {
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
+                        + ") in organisation. You should fix this");
         }
     }
 
@@ -93,7 +98,6 @@ public final class UsageHelper {
      * @return The usages of the team
      */
     private static List<Model> findUsages(final Team team) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         List<Model> usages = new ArrayList<>();
         for (Project project : currentModel.getProjects()) {
             for (WorkAllocation allocation : currentModel.getProjectsAllocations(project)) {
@@ -112,7 +116,6 @@ public final class UsageHelper {
      * @return The usages of the person
      */
     private static List<Model> findUsages(final Person person) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getTeams().stream()
                 .filter(team -> team.getMembers().contains(person))
                 .collect(Collectors.toList());
@@ -124,7 +127,6 @@ public final class UsageHelper {
      * @return The usages of the skill
      */
     private static List<Model> findUsages(final Skill skill) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getPeople().stream()
                 .filter(person -> person.getSkills().contains(skill))
                 .collect(Collectors.toList());
@@ -136,7 +138,6 @@ public final class UsageHelper {
      * @return The usages of the backlog
      */
     private static List<Model> findUsages(final Backlog backlog) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getProjects().stream()
                 .filter(project -> project.getBacklogs().contains(backlog))
                 .collect(Collectors.toList());
@@ -148,7 +149,6 @@ public final class UsageHelper {
      * @return The usages of the story
      */
     private static List<Model> findUsages(final Story story) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getBacklogs().stream()
                 .filter(backlog -> backlog.getStories().contains(story))
                 .collect(Collectors.toList());
@@ -160,7 +160,6 @@ public final class UsageHelper {
      * @return Whether it exists
      */
     public static boolean exists(final Model model) {
-        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         switch (ModelType.getModelType(model)) {
             case Project:
                 return currentModel.getProjects().contains(model);
@@ -179,7 +178,7 @@ public final class UsageHelper {
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
                         + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
+                        + ") in organisation. You should fix this");
         }
     }
 }

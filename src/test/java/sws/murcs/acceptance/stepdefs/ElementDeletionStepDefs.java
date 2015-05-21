@@ -32,7 +32,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     private Person person;
     private Skill skill;
     private Team team;
-    private RelationalModel model;
+    private Organisation model;
     private Application app;
 
 
@@ -49,7 +49,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
         interact(() -> {
             try {
-                model = new RelationalModel();
+                model = new Organisation();
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);

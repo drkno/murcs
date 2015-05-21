@@ -3,7 +3,7 @@ package sws.murcs.magic.tracking;
 import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
@@ -375,13 +375,13 @@ public final class UndoRedoManager {
     }
 
     /**
-     * Imports a relational model, so that it can be tracked by the undo/redo manager.
+     * Imports a organisation, so that it can be tracked by the undo/redo manager.
      * WARNING: will forget about anything relating to previous models or objects that
      * are currently being tracked.
      * @param model model to import.
      * @throws Exception when committing the changes fail.
      */
-    public static void importModel(final RelationalModel model) throws Exception {
+    public static void importModel(final Organisation model) throws Exception {
         forget(true);
         UndoRedoManager.add(model);
         model.getPeople().forEach(p -> UndoRedoManager.add(p));

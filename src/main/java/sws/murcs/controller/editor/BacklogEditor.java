@@ -1,9 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,15 +16,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
-import java.util.Observable;
 import java.util.stream.Collectors;
 
 /**
@@ -236,12 +230,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Update the assigned PO.
      */
     private void updateAssignedPO() {
-        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
         Person productOwner = getModel().getAssignedPO();
 
         // Add all the people with the PO skill to the list of POs
-        List<Person> productOwners = relationalModel.getPeople()
+        List<Person> productOwners = organisation.getPeople()
                 .stream()
                 .filter(p -> p.canBeRole(Skill.PO_NAME))
                 .collect(Collectors.toList());
@@ -260,8 +254,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      *
      */
     private void updateAvailableStories() {
-        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
-        List<Story> stories = relationalModel.getStories()
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        List<Story> stories = organisation.getStories()
                 .stream()
                 .filter(story -> !getModel().getAllStories().contains(story))
                 .collect(Collectors.toList());

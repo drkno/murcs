@@ -1,17 +1,17 @@
-package sws.murcs.unit.model.relationalmodel;
+package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -20,13 +20,13 @@ import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RelationalModelStoryTest {
-    private static RelationalModelGenerator generator;
-    private RelationalModel model;
+public class OrganisationStoryTest {
+    private static OrganisationGenerator generator;
+    private Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
@@ -39,26 +39,26 @@ public class RelationalModelStoryTest {
     }
 
     /**
-     * Generates a relational model, and sets it to the currently in use
+     * Generates a organisation, and sets it to the currently in use
      * model in the current persistence manager instance.
      * @throws NullPointerException if no persistence manager exists.
-     * @return a new relational model.
+     * @return a new organisation.
      */
-    private static RelationalModel getNewRelationalModel() {
+    private static Organisation getNeworganisation() {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
         PersistenceManager.getCurrent().setCurrentModel(model);
         return model;
     }
 
     @Before
     public void setup() throws Exception {
-        model = getNewRelationalModel();
+        model = getNeworganisation();
     }
 
     @Test
     public void testGetStoriesNotNullOrEmpty() throws Exception {
-        RelationalModel model = getNewRelationalModel();
+        Organisation model = getNeworganisation();
         List<Story> stories = model.getStories();
 
         Assert.assertNotNull("getStories() should return stories but is null.", stories);
