@@ -16,6 +16,7 @@ import sws.murcs.model.Model;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -129,21 +130,21 @@ public class RelationalModelSkillTest {
     @Test
     public void testSkillExists() throws Exception {
         List<Skill> skills = model.getSkills();
-        Assert.assertTrue("Skill exists but was not found.", model.exists(skills.get(0)));
+        Assert.assertTrue("Skill exists but was not found.", UsageHelper.exists(skills.get(0)));
     }
 
     @Test
     public void testSkillDoesNotExist() throws Exception {
         Skill skill = new Skill();
         skill.setShortName("testing1234");
-        Assert.assertFalse("Skill exists when it should not.", model.exists(skill));
+        Assert.assertFalse("Skill exists when it should not.", UsageHelper.exists(skill));
     }
 
     @Test
     public void testSkillFindUsagesDoesNotExist() throws Exception {
         Skill skill = new Skill();
         skill.setShortName("testing1234");
-        List<Model> usages = model.findUsages(skill);
+        List<Model> usages = UsageHelper.findUsages(skill);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for skill not in model.", 0, usages.size());
@@ -159,11 +160,11 @@ public class RelationalModelSkillTest {
         catch (DuplicateObjectException e) {
             // ignore, we just want to ensure skill is attached to a person
         }
-        List<Model> usages = model.findUsages(skills.get(0));
+        List<Model> usages = UsageHelper.findUsages(skills.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for skill.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(skills.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(skills.get(0)));
     }
 
     @Test

@@ -16,6 +16,7 @@ import sws.murcs.model.Model;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -130,21 +131,21 @@ public class RelationalModelPersonTest {
     @Test
     public void testPersonExists() throws Exception {
         List<Person> people = model.getPeople();
-        Assert.assertTrue("Person exists but was not found.", model.exists(people.get(0)));
+        Assert.assertTrue("Person exists but was not found.", UsageHelper.exists(people.get(0)));
     }
 
     @Test
     public void testPersonDoesNotExist() throws Exception {
         Person person = new Person();
         person.setShortName("testing1234");
-        Assert.assertFalse("Person exists when it should not.", model.exists(person));
+        Assert.assertFalse("Person exists when it should not.", UsageHelper.exists(person));
     }
 
     @Test
     public void testPersonFindUsagesDoesNotExist() throws Exception {
         Person person = new Person();
         person.setShortName("testing1234");
-        List<Model> usages = model.findUsages(person);
+        List<Model> usages = UsageHelper.findUsages(person);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for person not in model.", 0, usages.size());
@@ -160,11 +161,11 @@ public class RelationalModelPersonTest {
         catch (DuplicateObjectException e) {
             // ignore, we just want to ensure person is in a team
         }
-        List<Model> usages = model.findUsages(people.get(0));
+        List<Model> usages = UsageHelper.findUsages(people.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for person.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(people.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(people.get(0)));
     }
 
     @Test
@@ -174,7 +175,7 @@ public class RelationalModelPersonTest {
         testPerson.setUserId("testing12345");
         model.add(testPerson);
         Collection<Person> people = model.getUnassignedPeople();
-        Assert.assertFalse("Item should not be in use.", model.inUse(people.iterator().next()));
+        Assert.assertFalse("Item should not be in use.", UsageHelper.inUse(people.iterator().next()));
     }
 
     @Test

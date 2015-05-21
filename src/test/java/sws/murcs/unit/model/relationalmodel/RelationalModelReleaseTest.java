@@ -13,6 +13,7 @@ import sws.murcs.model.Model;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -124,21 +125,21 @@ public class RelationalModelReleaseTest {
     @Test
     public void testReleaseExists() throws Exception {
         List<Release> releases = model.getReleases();
-        Assert.assertTrue("Release exists but was not found.", model.exists(releases.get(0)));
+        Assert.assertTrue("Release exists but was not found.", UsageHelper.exists(releases.get(0)));
     }
 
     @Test
     public void testReleaseDoesNotExist() throws Exception {
         Release release = new Release();
         release.setShortName("testing1234");
-        Assert.assertFalse("Release exists when it should not.", model.exists(release));
+        Assert.assertFalse("Release exists when it should not.", UsageHelper.exists(release));
     }
 
     @Test
     public void testReleaseFindUsagesDoesNotExist() throws Exception {
         Release release = new Release();
         release.setShortName("testing1234");
-        List<Model> usages = model.findUsages(release);
+        List<Model> usages = UsageHelper.findUsages(release);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for release not in model.", 0, usages.size());
@@ -155,11 +156,11 @@ public class RelationalModelReleaseTest {
         catch (DuplicateObjectException e) {
             // ignore, we just want to ensure release is attached to a project
         }
-        List<Model> usages = model.findUsages(releases.get(0));
+        List<Model> usages = UsageHelper.findUsages(releases.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         // TODO: Releases are not in use anywhere.
         Assert.assertEquals("Usages were found for a release.", 0, usages.size());
-        Assert.assertFalse("Item should not be in use.", model.inUse(releases.get(0)));
+        Assert.assertFalse("Item should not be in use.", UsageHelper.inUse(releases.get(0)));
     }
 }

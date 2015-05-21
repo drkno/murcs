@@ -13,6 +13,7 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -124,21 +125,21 @@ public class RelationalModelStoryTest {
     @Test
     public void testStoryExists() throws Exception {
         List<Story> stories = model.getStories();
-        Assert.assertTrue("Story exists but was not found.", model.exists(stories.get(0)));
+        Assert.assertTrue("Story exists but was not found.", UsageHelper.exists(stories.get(0)));
     }
 
     @Test
     public void testStoryDoesNotExist() throws Exception {
         Story story = new Story();
         story.setShortName("testing1234");
-        Assert.assertFalse("Story exists when it should not.", model.exists(story));
+        Assert.assertFalse("Story exists when it should not.", UsageHelper.exists(story));
     }
 
     @Test
     public void testStoryFindUsagesDoesNotExist() throws Exception {
         Story story = new Story();
         story.setShortName("testing1234");
-        List<Model> usages = model.findUsages(story);
+        List<Model> usages = UsageHelper.findUsages(story);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for story not in model.", 0, usages.size());
@@ -154,10 +155,10 @@ public class RelationalModelStoryTest {
         catch (Exception e) {
             // ignore, we just want to ensure story is attached to a backlog
         }
-        List<Model> usages = model.findUsages(stories.get(0));
+        List<Model> usages = UsageHelper.findUsages(stories.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for story.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(stories.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(stories.get(0)));
     }
 }

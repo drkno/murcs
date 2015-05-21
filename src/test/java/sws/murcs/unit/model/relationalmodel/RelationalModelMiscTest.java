@@ -8,6 +8,7 @@ import org.junit.Test;
 import sws.murcs.debug.sampledata.RelationalModelGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.RelationalModel;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -69,11 +70,11 @@ public class RelationalModelMiscTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullExists() throws Exception {
-        model.exists(null);
+        UsageHelper.exists(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullInUse() throws Exception {
-        model.inUse(null);
+        UsageHelper.inUse(null);
     }
 }

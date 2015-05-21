@@ -13,6 +13,7 @@ import sws.murcs.model.Model;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -125,21 +126,21 @@ public class RelationalModelProjectTest {
     @Test
     public void testProjectExists() throws Exception {
         List<Project> projects = model.getProjects();
-        Assert.assertTrue("Project exists but was not found.", model.exists(projects.get(0)));
+        Assert.assertTrue("Project exists but was not found.", UsageHelper.exists(projects.get(0)));
     }
 
     @Test
     public void testProjectDoesNotExist() throws Exception {
         Project project = new Project();
         project.setShortName("testing1234");
-        Assert.assertFalse("Project exists when it should not.", model.exists(project));
+        Assert.assertFalse("Project exists when it should not.", UsageHelper.exists(project));
     }
 
     @Test
     public void testProjectFindUsagesDoesNotExist() throws Exception {
         Project project = new Project();
         project.setShortName("testing1234");
-        List<Model> usages = model.findUsages(project);
+        List<Model> usages = UsageHelper.findUsages(project);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for project not in model.", 0, usages.size());
@@ -160,10 +161,10 @@ public class RelationalModelProjectTest {
             // ignore, we just want to ensure a project is attached to a release
         }
 
-        List<Model> usages = model.findUsages(projects.get(0));
+        List<Model> usages = UsageHelper.findUsages(projects.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for project.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(projects.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(projects.get(0)));
     }
 }
