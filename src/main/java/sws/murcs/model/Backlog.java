@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -220,8 +221,10 @@ public class Backlog extends Model {
     /**
      * Assign a product owner to the backlog.
      * @param po The product owner to be assigned
+     * @exception CustomException thrown if the po is null.
      */
-    public final void setAssignedPO(final Person po) {
+    public final void setAssignedPO(final Person po) throws CustomException {
+        InvalidParameterException.validate("Assigned PO", po);
         assignedPO = po;
     }
 

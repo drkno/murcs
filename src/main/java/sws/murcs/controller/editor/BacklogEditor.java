@@ -230,9 +230,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         updateAssignedPO();
         updateAvailableStories();
-
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
     }
 
     /**
@@ -297,7 +294,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        storyPicker.setItems(null);
+        //storyPicker.setItems(null);
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -306,13 +303,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
-        Person modelProductOwner = getModel().getAssignedPO();
-        Person viewProductOwner = poChoiceBox.getValue();
-        if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
-            getModel().setAssignedPO(viewProductOwner);
-            updateAssignedPO();
-        }
-
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
@@ -329,6 +319,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
+        }
+
+        Person modelProductOwner = getModel().getAssignedPO();
+        Person viewProductOwner = poChoiceBox.getValue();
+        if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
+            getModel().setAssignedPO(viewProductOwner);
+            updateAssignedPO();
         }
     }
 
