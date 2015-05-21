@@ -435,7 +435,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * @throws OverlappedDatesException when dates for the work allocation are invalid.
      */
     public final void addAllocation(final WorkAllocation workAllocation)
-            throws InvalidParameterException, OverlappedDatesException{
+            throws InvalidParameterException, OverlappedDatesException {
         if (workAllocation == null) {
             throw new InvalidParameterException("Cannot add a null WorkAllocation.");
         }
@@ -450,7 +450,7 @@ public class Organisation extends TrackableObject implements Serializable {
 
         if (endDate != null) {
             for (WorkAllocation allocation : allocations) {
-                if (allocation.getTeam() == team) {
+                if (allocation.getTeam().equals(team)) {
                     // Check that this team isn't overlapping with itself
                     if (allocation.getEndDate() != null) {
                         if ((allocation.getStartDate().isBefore(endDate)
@@ -461,11 +461,6 @@ public class Organisation extends TrackableObject implements Serializable {
                     else if (allocation.getStartDate().isBefore(endDate)) {
                         throw new OverlappedDatesException("Work Dates Overlap");
                     }
-                }
-                else if (allocation.getStartDate().isAfter(endDate)) {
-                    // At this point we've checked all overlapping allocations
-                    // and haven't found any errors
-                    break;
                 }
             }
         }
