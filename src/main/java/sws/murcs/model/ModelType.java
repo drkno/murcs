@@ -102,7 +102,14 @@ public enum ModelType {
      */
     public static ModelType getModelType(final Object object) {
         if (!(object instanceof Model)) {
-            throw new IllegalArgumentException("object must extend model! (was " + object.getClass().getName() + ")");
+            String className;
+            if (object != null) {
+                className = object.getClass().getName();
+            }
+            else {
+                className = "null";
+            }
+            throw new IllegalArgumentException("object must extend model! (was " + className + ")");
         }
 
         Model model = (Model) object;
