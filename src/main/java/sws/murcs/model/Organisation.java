@@ -419,11 +419,13 @@ public class Organisation extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        allocations.forEach(workAllocation -> {
-            if (workAllocation.getTeam() == team) {
-                removeAllocation(workAllocation);
+        // Do not convert to .forEach() or .stream(). It will cause a ConcurrentModificationException.
+        for (int i = 0; i < allocations.size(); i++) {
+            if (allocations.get(i).getTeam() == team) {
+                removeAllocation(allocations.get(i));
+                i--;
             }
-        });
+        }
     }
 
     /**
