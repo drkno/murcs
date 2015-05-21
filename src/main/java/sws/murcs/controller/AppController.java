@@ -416,7 +416,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
         NavigationManager.clearHistory();
-        initialize();
+        updateList();
+        editorPane = null;
     }
 
     /**
