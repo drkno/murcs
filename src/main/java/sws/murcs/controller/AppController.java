@@ -30,6 +30,7 @@ import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -685,7 +686,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
 
-        Collection<Model> usages = model.findUsages(selectedItem);
+        Collection<Model> usages = UsageHelper.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {

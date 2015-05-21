@@ -9,7 +9,9 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -226,8 +228,8 @@ public class RelationalModelTest {
     public void testFindUsagesProject() throws Exception {
         Project newProject = projectGenerated;
 
-        assertEquals("If the project is not attached to the model it should not be in use", 0, relationalModel.findUsages(newProject).size());
-        assertEquals("Projects should not ever have any usages", 0, relationalModel.findUsages(newProject).size());
+        assertEquals("If the project is not attached to the model it should not be in use", 0, UsageHelper.findUsages(newProject).size());
+        assertEquals("Projects should not ever have any usages", 0, UsageHelper.findUsages(newProject).size());
     }
 
     @Test
@@ -237,17 +239,17 @@ public class RelationalModelTest {
 
         Team newTeam = (new TeamGenerator()).generate();
 
-        assertEquals("Teams not attached to the model should not have any usages", 0, relationalModel.findUsages(newTeam).size());
+        assertEquals("Teams not attached to the model should not have any usages", 0, UsageHelper.findUsages(newTeam).size());
 
         relationalModel.add(newTeam);
-        assertEquals("A team should have no usages when it is not used", 0, relationalModel.findUsages(newTeam).size());
+        assertEquals("A team should have no usages when it is not used", 0, UsageHelper.findUsages(newTeam).size());
 
         Project p = relationalModel.getProjects().get(0);
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plus(3, ChronoUnit.DAYS);
         relationalModel.addAllocation(new WorkAllocation(p, newTeam, startDate, endDate));
-        assertEquals("The team should be used in one place", 1, relationalModel.findUsages(newTeam).size());
-        assertEquals("The team should be used by the project", relationalModel.getProjects().get(0), relationalModel.findUsages(newTeam).get(0));
+        assertEquals("The team should be used in one place", 1, UsageHelper.findUsages(newTeam).size());
+        assertEquals("The team should be used by the project", relationalModel.getProjects().get(0), UsageHelper.findUsages(newTeam).get(0));
 
     }
 
@@ -262,14 +264,14 @@ public class RelationalModelTest {
 
         Person newPerson = new PersonGenerator().generate();
 
-        assertEquals("A person should have no usages before being added to the model", 0, relationalModel.findUsages(newPerson).size());
+        assertEquals("A person should have no usages before being added to the model", 0, UsageHelper.findUsages(newPerson).size());
 
         relationalModel.add(newPerson);
-        assertEquals("A person should have no usages before being added to team", 0, relationalModel.findUsages(newPerson).size());
+        assertEquals("A person should have no usages before being added to team", 0, UsageHelper.findUsages(newPerson).size());
 
         newTeam.addMember(newPerson);
-        assertEquals("A person should have one usage upon being added to a team", 1, relationalModel.findUsages(newPerson).size());
-        assertEquals("After a person has been added to a team that team should be in their usages", newTeam, relationalModel.findUsages(newPerson).get(0));
+        assertEquals("A person should have one usage upon being added to a team", 1, UsageHelper.findUsages(newPerson).size());
+        assertEquals("After a person has been added to a team that team should be in their usages", newTeam, UsageHelper.findUsages(newPerson).get(0));
     }
 
     @Test
@@ -283,23 +285,23 @@ public class RelationalModelTest {
 
         Skill newSkill = new SkillGenerator().generate();
 
-        assertEquals("A skill should have no usages before being added to the model", 0, relationalModel.findUsages(newSkill).size());
+        assertEquals("A skill should have no usages before being added to the model", 0, UsageHelper.findUsages(newSkill).size());
 
         relationalModel.add(newSkill);
-        assertEquals("A skill should have no usages before being added to person", 0, relationalModel.findUsages(newSkill).size());
+        assertEquals("A skill should have no usages before being added to person", 0, UsageHelper.findUsages(newSkill).size());
 
         newPerson.addSkill(newSkill);
-        assertEquals("A skill should have one usage upon being added to a person", 1, relationalModel.findUsages(newSkill).size());
-        assertEquals("After a skill has been added to a person that person should be in their usages", newPerson, relationalModel.findUsages(newSkill).get(0));
+        assertEquals("A skill should have one usage upon being added to a person", 1, UsageHelper.findUsages(newSkill).size());
+        assertEquals("After a skill has been added to a person that person should be in their usages", newPerson, UsageHelper.findUsages(newSkill).get(0));
     }
 
     @Test
     public void testInUseProject() throws Exception {
         Project newProject = projectGenerated;
 
-        assertFalse("If the project is not attached to the model it should not be in use", relationalModel.inUse(newProject));
+        assertFalse("If the project is not attached to the model it should not be in use", UsageHelper.inUse(newProject));
 
-        assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
+        assertFalse("Projects should not be marked as in use even when they are attached to the model", UsageHelper.inUse(newProject));
     }
 
     @Test
