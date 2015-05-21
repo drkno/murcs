@@ -166,9 +166,10 @@ public class Backlog extends Model {
                     }
                 }
                 else {
-                    if (!stories.contains(story)) {
-                        stories.add(priority, story);
+                    if (stories.contains(story)) {
+                        stories.remove(story);
                     }
+                    stories.add(priority, story);
                     if (unPrioritisedStories.contains(story)) {
                         unPrioritisedStories.remove(story);
                     }
@@ -181,15 +182,13 @@ public class Backlog extends Model {
     /**
      * Get the priority of a story in the backlog.
      * @param story The story involved
-     * @return The current priority of that story. Null if story is unassigned or not in the backlog.
+     * @return The current priority of that story. -1 if story is unassigned or not in the backlog.
      */
-    public final Integer getStoryPriority(final Story story) {
-        if (!stories.contains(story)) {
+    public final int getStoryPriority(final Story story) {
+        if (stories.contains(story)) {
             return stories.indexOf(story);
         }
-        else {
-            return null;
-        }
+        return -1;
     }
 
     /**
@@ -197,7 +196,12 @@ public class Backlog extends Model {
      * @param story The story to be removed
      */
     public final void removeStory(final Story story) {
-        stories.remove(story);
+        if (stories.contains(story)) {
+            stories.remove(story);
+        }
+        if (unPrioritisedStories.contains(story)) {
+            unPrioritisedStories.remove(story);
+        }
     }
 
     /**
