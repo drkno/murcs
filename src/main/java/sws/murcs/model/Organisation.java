@@ -721,6 +721,7 @@ public class Organisation extends TrackableObject implements Serializable {
                 break;
             case Backlog:
                 removeBacklog((Backlog) model);
+                break;
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
                         + model.getClass().getName()
