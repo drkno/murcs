@@ -41,7 +41,7 @@ public class Backlog extends Model {
      * Track this value.
      */
     @TrackableValue
-    private List<Story> unprioritisedStories = new ArrayList<>();
+    private List<Story> unPrioritisedStories = new ArrayList<>();
 
     /**
      * Gets a description of the project.
@@ -67,7 +67,7 @@ public class Backlog extends Model {
     public final List<Story> getAllStories() {
         final List<Story> allStories = new ArrayList<>();
         allStories.addAll(stories);
-        allStories.addAll(unprioritisedStories);
+        allStories.addAll(unPrioritisedStories);
         return allStories;
     }
 
@@ -81,10 +81,10 @@ public class Backlog extends Model {
 
     /**
      * Get only those stories with no priority.
-     * @return the unprioritised stories
+     * @return the unPrioritised stories
      */
-    public final List<Story> getUnprioritisedStories() {
-        return unprioritisedStories;
+    public final List<Story> getUnPrioritisedStories() {
+        return unPrioritisedStories;
     }
 
     /**
@@ -108,8 +108,8 @@ public class Backlog extends Model {
     public final void addStory(final Story story, final Integer priority) {
         if (!getAllStories().contains(story)) {
             if (priority == null) {
-                if (!unprioritisedStories.contains(story)) {
-                    unprioritisedStories.add(story);
+                if (!unPrioritisedStories.contains(story)) {
+                    unPrioritisedStories.add(story);
                     if (stories.contains(story)) {
                         stories.remove(story);
                     }
@@ -118,16 +118,16 @@ public class Backlog extends Model {
             else if (priority < 0) {
                 throw new IndexOutOfBoundsException("priority less than zero");
             }
-            else if (priority > stories.size()) {
+            else if (priority >= stories.size()) {
                 stories.add(story);
-                if (unprioritisedStories.contains(story)) {
-                    unprioritisedStories.remove(story);
+                if (unPrioritisedStories.contains(story)) {
+                    unPrioritisedStories.remove(story);
                 }
             }
             else {
                 stories.add(priority, story);
-                if (unprioritisedStories.contains(story)) {
-                    unprioritisedStories.remove(story);
+                if (unPrioritisedStories.contains(story)) {
+                    unPrioritisedStories.remove(story);
                 }
             }
             commit("edit backlog");
@@ -146,28 +146,31 @@ public class Backlog extends Model {
                 if (stories.contains(story)) {
                     stories.remove(story);
                 }
-                if (!unprioritisedStories.contains(story)) {
-                    unprioritisedStories.add(story);
+                if (!unPrioritisedStories.contains(story)) {
+                    unPrioritisedStories.add(story);
                 }
             }
             else if (!Objects.equals(currentStoryPriority, priority)) {
                 if (priority < 0) {
                     throw new IndexOutOfBoundsException("priority less than zero");
                 }
-                else if (priority > stories.size()) {
+                else if (priority >= stories.size()) {
+                    // check to see if the story is already in the prioritised stories
+                    // if it is then remove it so it can be added to the end of the list.
                     if (stories.contains(story)) {
-                        stories.add(story);
+                        stories.remove(story);
                     }
-                    if (unprioritisedStories.contains(story)) {
-                        unprioritisedStories.remove(story);
+                    stories.add(story);
+                    if (unPrioritisedStories.contains(story)) {
+                        unPrioritisedStories.remove(story);
                     }
                 }
                 else {
-                    if (stories.contains(story)) {
-                        stories.add(story);
+                    if (!stories.contains(story)) {
+                        stories.add(priority, story);
                     }
-                    if (unprioritisedStories.contains(story)) {
-                        unprioritisedStories.remove(story);
+                    if (unPrioritisedStories.contains(story)) {
+                        unPrioritisedStories.remove(story);
                     }
                 }
             }
