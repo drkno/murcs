@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Model of a Backlog.
@@ -37,6 +38,12 @@ public class Backlog extends Model {
     private List<Story> stories = new ArrayList<>();
 
     /**
+     * Track this value.
+     */
+    @TrackableValue
+    private List<Story> unprioritisedStories = new ArrayList<>();
+
+    /**
      * Gets a description of the project.
      * @return a description of the project
      */
@@ -49,7 +56,7 @@ public class Backlog extends Model {
      * @param newDescription The description of the project
      */
     public final void setDescription(final String newDescription) {
-        this.description = newDescription;
+        description = newDescription;
         commit("edit backlog");
     }
 
@@ -57,17 +64,128 @@ public class Backlog extends Model {
      * Gets the stories attached to a backlog.
      * @return a list of all the stories attached to a backlog
      */
+    public final List<Story> getAllStories() {
+        final List<Story> allStories = new ArrayList<>();
+        allStories.addAll(stories);
+        allStories.addAll(unprioritisedStories);
+        return allStories;
+    }
+
+    /**
+     * Get only the prioritised stories in a backlog.
+     * @return the prioritised stories
+     */
     public final List<Story> getStories() {
         return stories;
     }
 
     /**
-     * Add a story to the backlog.
-     * @param story The story to be added
+     * Get only those stories with no priority.
+     * @return the unprioritised stories
      */
-    public final void addStory(final Story story) {
+    public final List<Story> getUnprioritisedStories() {
+        return unprioritisedStories;
+    }
+
+    /**
+     * Add a story to the backlog. If story is already in backlog then its priority will just be updated.
+     * @param story The story to be modified
+     * @param priority The priority of the story i.e. where in the list it should be
+     */
+    public final void modifyStory(final Story story, final Integer priority) {
+        if (getAllStories().contains(story)) {
+            modifyStoryPriority(story, priority);
+        } else {
+            addStory(story, priority);
+        }
+    }
+
+    /**
+     * Add a story to the backlog. If story is already in the stories then it is ignored along with its priority.
+     * @param story The story to be added
+     * @param priority The priority of the story i.e. where in the list it should be.
+     */
+    public final void addStory(final Story story, final Integer priority) {
+        if (!getAllStories().contains(story)) {
+            if (priority == null) {
+                if (!unprioritisedStories.contains(story)) {
+                    unprioritisedStories.add(story);
+                    if (stories.contains(story)) {
+                        stories.remove(story);
+                    }
+                }
+            }
+            else if (priority < 0) {
+                throw new IndexOutOfBoundsException("priority less than zero");
+            }
+            else if (priority > stories.size()) {
+                stories.add(story);
+                if (unprioritisedStories.contains(story)) {
+                    unprioritisedStories.remove(story);
+                }
+            }
+            else {
+                stories.add(priority, story);
+                if (unprioritisedStories.contains(story)) {
+                    unprioritisedStories.remove(story);
+                }
+            }
+            commit("edit backlog");
+        }
+    }
+
+    /**
+     * Change the priority of a story in the backlog, must be in the backlog for anything to happen.
+     * @param story The story involved.
+     * @param priority The new priority of that story
+     */
+    public final void modifyStoryPriority(final Story story, final Integer priority) {
+        if (getAllStories().contains(story)) {
+            final Integer currentStoryPriority = getStoryPriority(story);
+            if (priority == null) {
+                if (stories.contains(story)) {
+                    stories.remove(story);
+                }
+                if (!unprioritisedStories.contains(story)) {
+                    unprioritisedStories.add(story);
+                }
+            }
+            else if (!Objects.equals(currentStoryPriority, priority)) {
+                if (priority < 0) {
+                    throw new IndexOutOfBoundsException("priority less than zero");
+                }
+                else if (priority > stories.size()) {
+                    if (stories.contains(story)) {
+                        stories.add(story);
+                    }
+                    if (unprioritisedStories.contains(story)) {
+                        unprioritisedStories.remove(story);
+                    }
+                }
+                else {
+                    if (stories.contains(story)) {
+                        stories.add(story);
+                    }
+                    if (unprioritisedStories.contains(story)) {
+                        unprioritisedStories.remove(story);
+                    }
+                }
+            }
+            commit("edit backlog");
+        }
+    }
+
+    /**
+     * Get the priority of a story in the backlog.
+     * @param story The story involved
+     * @return The current priority of that story. Null if story is unassigned or not in the backlog.
+     */
+    public final Integer getStoryPriority(final Story story) {
         if (!stories.contains(story)) {
-            stories.add(story);
+            return stories.indexOf(story);
+        }
+        else {
+            return null;
         }
     }
 

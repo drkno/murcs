@@ -147,7 +147,7 @@ public class ReportGeneratorTest {
         backlog.setLongName("back log be what");
         backlog.setDescription("high five");
         backlog.setAssignedPO(person1);
-        backlog.addStory(story1);
+        backlog.addStory(story1, 1);
 
         relationalModel.add(project);
         relationalModel.add(team1);

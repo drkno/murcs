@@ -28,7 +28,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * The list of projects currently loaded in the application.
      */
     @TrackableValue
-    private List<Project> projects;
+    private final List<Project> projects;
     /**
      * The list of releases.
      */
@@ -784,8 +784,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds an arraylist of releases to the project.
-     * @param releasesToAdd The releases to be added
+     * Adds a list of releases to the project.
+     * @param releasesToAdd The releases to be added.
      * @throws DuplicateObjectException when attempting to add a duplicate release.
      */
     public final void addReleases(final List<Release> releasesToAdd) throws DuplicateObjectException {
@@ -810,7 +810,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
      */
     public final List<Model> findUsages(final Model model) {
         ModelType type = ModelType.getModelType(model);
-
         switch (type) {
             case Project:
                 return findUsages((Project) model);
@@ -834,21 +833,24 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
+     * Gets a list of all the places a release is used.
+     * Releases are not currently in use anywhere, so this will return an empty list.
+     * @param release The release.
+     * @return The places the release is used.
+     */
+    private List<Model> findUsages(final Release release) {
+        return new ArrayList<>();
+    }
+
+    /**
      * Gets a list of places that a project is used.
      * @param project The project to find the usages of
      * @return The usages of the project
      */
     private List<Model> findUsages(final Project project) {
-        return project.getReleases().stream().collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a list of all the places a release is used.
-     * @param release The release
-     * @return The places the release is used
-     */
-    private List<Model> findUsages(final Release release) {
-        return new ArrayList<>();
+        return project.getReleases()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     /**
@@ -892,9 +894,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all the places that a story has been used.
-     * @param backlog The story to find the usages for
-     * @return The usages of the story
+     * Gets a list of all the places that a backlog has been used.
+     * @param backlog The backlog to find the usages for
+     * @return The usages of the backlog
      */
     private List<Model> findUsages(final Backlog backlog) {
         return projects.stream()
