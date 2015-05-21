@@ -281,7 +281,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws DuplicateObjectException if the
      * relational model already has a person from the people to be added
      */
-    public final void addPeople(final ArrayList<Person> newPeople) throws DuplicateObjectException {
+    public final void addPeople(final List<Person> newPeople) throws DuplicateObjectException {
         for (Person person : newPeople) {
             this.addPerson(person);
         }
@@ -356,7 +356,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws DuplicateObjectException if the murcs already has
      * a team from teams to be added
      */
-    public final void addTeams(final ArrayList<Team> teamsToAdd) throws DuplicateObjectException {
+    public final void addTeams(final List<Team> teamsToAdd) throws DuplicateObjectException {
         for (Team team : teamsToAdd) {
             this.addTeam(team);
         }
@@ -474,7 +474,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param skillsToAdd Skill to be added existing skills
      * @throws DuplicateObjectException if a skill is already in the relational model
      */
-    public final void addSkills(final ArrayList<Skill> skillsToAdd) throws DuplicateObjectException {
+    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
         for (Skill skill : skillsToAdd) {
             this.addSkill(skill);
         }
@@ -501,7 +501,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param storiesToAdd The stories to add
      * @throws DuplicateObjectException if the story has already been back
      */
-    public final void addStories(final ArrayList<Story> storiesToAdd) throws DuplicateObjectException {
+    public final void addStories(final List<Story> storiesToAdd) throws DuplicateObjectException {
         for (Story story : storiesToAdd) {
             this.addStory(story);
         }
@@ -710,7 +710,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param releasesToAdd The releases to be added
      * @throws DuplicateObjectException when attempting to add a duplicate release.
      */
-    public final void addReleases(final ArrayList<Release> releasesToAdd) throws DuplicateObjectException {
+    public final void addReleases(final List<Release> releasesToAdd) throws DuplicateObjectException {
         for (Release release : releasesToAdd) {
             addRelease(release);
         }
