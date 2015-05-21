@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 public class FilePersistenceLoaderTest {
@@ -95,10 +96,10 @@ public class FilePersistenceLoaderTest {
 
     @Test
     public void testGetModelList() throws Exception {
-        ArrayList<String> models1 = loader.getModelList(testExtension);
+        Collection<String> models1 = loader.getModelList(testExtension);
         String testFile = getNewTestFile();
         loader.saveModel(testFile, generator.generate());
-        ArrayList<String> models2 = loader.getModelList(testExtension);
+        Collection<String> models2 = loader.getModelList(testExtension);
         Assert.assertNotNull(models2);
         Assert.assertTrue(models1.size() < models2.size());
     }

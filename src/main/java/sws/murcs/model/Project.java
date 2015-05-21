@@ -1,8 +1,6 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.model.observable.ModelObservableArrayList;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -25,15 +23,15 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
-    private List<Release> releases = new ModelObservableArrayList<>();
+    private List<Release> releases = new ArrayList<>();
 
     /**
-     * The backlogs for a project
+     * The backlogs for a project.
      */
     @TrackableValue
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")
-    private List<Backlog> backlogs = new ModelObservableArrayList<>();
+    private List<Backlog> backlogs = new ArrayList<>();
 
     /**
      * Gets a description of the project.
@@ -48,7 +46,7 @@ public class Project extends Model {
      * @param newDescription The description of the project
      */
     public final void setDescription(final String newDescription) {
-        this.description = newDescription;
+        description = newDescription;
         commit("edit project");
     }
 

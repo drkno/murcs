@@ -48,7 +48,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         interact(() -> {
             try {
                 model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -69,7 +69,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
@@ -133,7 +133,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.Current.getCurrentModel().add(release);
+        PersistenceManager.getCurrent().getCurrentModel().add(release);
     }
 
     @When("^I edit the values of the release$")

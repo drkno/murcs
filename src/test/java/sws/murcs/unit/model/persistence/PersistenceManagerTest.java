@@ -10,6 +10,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class PersistenceManagerTest {
@@ -68,10 +69,10 @@ public class PersistenceManagerTest {
 
     @Test
     public void testCurrentPersistenceManagerExists() throws Exception {
-        PersistenceManager.Current = null;
-        Assert.assertFalse(PersistenceManager.CurrentPersistenceManagerExists());
-        PersistenceManager.Current = manager;
-        Assert.assertTrue(PersistenceManager.CurrentPersistenceManagerExists());
+        PersistenceManager.setCurrent(null);
+        Assert.assertFalse(PersistenceManager.currentPersistenceManagerExists());
+        PersistenceManager.setCurrent(manager);
+        Assert.assertTrue(PersistenceManager.currentPersistenceManagerExists());
     }
 
     @Test
@@ -106,7 +107,7 @@ public class PersistenceManagerTest {
 
     @Test
     public void testGetModels() throws Exception {
-        ArrayList<String> models = manager.getModels();
+        Collection<String> models = manager.getModels();
         Assert.assertTrue(models.size() == 0);
         manager.saveModel("1", generator.generate());
         manager.saveModel("2", generator.generate());

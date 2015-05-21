@@ -129,7 +129,7 @@ public class CreatorWindowController {
                 if (model == null) {
                     return;
                 }
-                PersistenceManager.Current.getCurrentModel().add(model);
+                PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
             }
             catch (Exception e) {

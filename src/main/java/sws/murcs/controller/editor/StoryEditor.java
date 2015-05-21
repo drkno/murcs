@@ -60,7 +60,7 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
-            creatorChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getPeople());
+            creatorChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getPeople());
             if (modelCreator != null) {
                 creatorChoiceBox.getSelectionModel().select(modelCreator);
             }

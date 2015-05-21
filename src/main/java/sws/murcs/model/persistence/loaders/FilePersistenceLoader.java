@@ -8,6 +8,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Manages loading persistent data from the local HD using binary serialization.
@@ -115,7 +117,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(persistenceFileLocation));
             // Write the object out to the file
             out.writeObject(persistent);
-            // close the stream
+            // Close the stream
             out.close();
         }
         catch (Exception e) {
@@ -130,7 +132,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return List of models.
      */
     @Override
-    public final ArrayList<String> getModelList() {
+    public final Collection<String> getModelList() {
         return getModelList(".project");
     }
 
@@ -139,7 +141,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param fileExtension file extension.
      * @return List of models.
      */
-    public final ArrayList<String> getModelList(final String fileExtension) {
+    public final Collection<String> getModelList(final String fileExtension) {
         return getModelList(fileExtension, getCurrentWorkingDirectory());
     }
 
@@ -149,9 +151,9 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to search
      * @return list of models
      */
-    public static ArrayList<String> getModelList(final String fileExtension, final String directory)
+    public static List<String> getModelList(final String fileExtension, final String directory)
     {
-        ArrayList<String> persistentList = new ArrayList<String>();
+        List<String> persistentList = new ArrayList<>();
         File dir = new File(directory); // create handle to directory
         for (File f : dir.listFiles()) {
             String name = f.getName();

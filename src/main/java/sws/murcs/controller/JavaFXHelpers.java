@@ -33,8 +33,7 @@ public final class JavaFXHelpers {
      * @param parent The parent to get the descendants from
      * @param nodes The ArrayList of Nodes to add the descendants to
      */
-    public static void addAllDescendants(final Parent parent,
-                                         final ArrayList<Node> nodes) {
+    public static void addAllDescendants(final Parent parent, final ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
             if (node instanceof Parent) {

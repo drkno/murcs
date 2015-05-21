@@ -11,6 +11,7 @@
                 <items>
                     <Menu id="newMenu" mnemonicParsing="false" text="New">
                        <items>
+                        <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel" text="Organistation" />
                         <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addClicked" text="Project" />
                         <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addClicked" text="Team" />
                         <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
@@ -20,8 +21,9 @@
                         <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story" />
                        </items>
                     </Menu>
-                    <MenuItem fx:id="openProject" mnemonicParsing="false" onAction="#openProject" text="Open Project" />
-                    <MenuItem fx:id="saveProject" mnemonicParsing="false" onAction="#saveProject" text="Save Project" />
+                    <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />
+                    <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save" />
+                  <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
                     <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
                     <SeparatorMenuItem mnemonicParsing="false" />
                     <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
@@ -29,6 +31,7 @@
              </Menu>
             <Menu id="editMenu" mnemonicParsing="false" text="Edit">
               <items>
+                  <MenuItem fx:id="revert" mnemonicParsing="false" onAction="#revert" text="Revert" />
                 <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemClicked" text="Undo" />
                   <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemClicked" text="Redo" />
               </items>
@@ -54,11 +57,20 @@
                     <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                   <HBox alignment="TOP_RIGHT" spacing="5.0" VBox.vgrow="SOMETIMES">
                      <children>
+                        <Button fx:id="backButton" disable="true" mnemonicParsing="false" onAction="#backClicked" text="&lt;" />
+                        <Button fx:id="forwardButton" disable="true" mnemonicParsing="false" onAction="#forwardClicked" text="&gt;">
+                           <HBox.margin>
+                              <Insets right="50.0" />
+                           </HBox.margin>
+                        </Button>
                         <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" text="+" />
-                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X" />
+                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X">
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin></Button>
                      </children>
                      <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" />
+                        <Insets bottom="5.0" left="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
                 </children>
