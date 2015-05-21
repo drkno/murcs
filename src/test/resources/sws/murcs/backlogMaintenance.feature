@@ -44,3 +44,22 @@ Feature: Backlog Maintenance
     Given The Create Project Popup is shown
     When I click Cancel
     Then the popup goes away
+
+  Scenario: Add a story to a Backlog
+    Given I have a backlog selected
+    Then I can add an orphaned story to it
+    And I cannot add the same story to any other backlog
+
+  Scenario: Remove a story from a backlog
+    Given I have a backlog selected
+    And it has a story in it
+    Then I can remove the story
+
+  Scenario: Add a prioritised story to a Backlog
+    Given I have a backlog selected
+    Then I can add an orphaned story to it with a priority
+
+  Scenario: Change priority of a story
+    Given I have a backlog selected
+    And it has a story in it
+    Then I can change the priority of the story
