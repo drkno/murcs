@@ -602,7 +602,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @param backlogToAdd The stories to add
      * @throws DuplicateObjectException if the story has already been back
      */
-    public final void addBacklogs(final ArrayList<Backlog> backlogToAdd) throws DuplicateObjectException {
+    public final void addBacklogs(final List<Backlog> backlogToAdd) throws DuplicateObjectException {
         for (Backlog backlog : backlogToAdd) {
             addBacklog(backlog);
         }
@@ -778,9 +778,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             stories.remove(story);
         }
 
-        backlogs.forEach(backlog -> {
-            backlog.removeStory(story);
-        });
+        backlogs.forEach(backlog -> backlog.removeStory(story));
     }
 
     /**

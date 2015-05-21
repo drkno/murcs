@@ -41,7 +41,7 @@ public class StoryGenerator implements Generator<Story> {
      */
     private String[] storyNames = {
             "A story",
-            "Haydons life",
+            "Haydon's life",
             "Stranger Of Next Year",
             "Angel Of The West",
             "Priests Without Sin",
