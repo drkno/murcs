@@ -1,6 +1,12 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

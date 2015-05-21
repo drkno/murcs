@@ -11,7 +11,12 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -746,7 +751,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         projects.stream()
                 .filter(project -> project.getReleases().contains(release))
                 .forEach(project -> project.removeRelease(release)
-        );
+                );
     }
 
     /**
