@@ -59,6 +59,9 @@ public class OrganisationStoryTest {
     @Test
     public void testGetStoriesNotNullOrEmpty() throws Exception {
         Organisation model = getNeworganisation();
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
 
         Assert.assertNotNull("getStories() should return stories but is null.", stories);
@@ -67,9 +70,11 @@ public class OrganisationStoryTest {
 
     @Test
     public void testGetStoriesStoryRemoved() throws Exception {
+        Story removedStory = new Story();
+        removedStory.setShortName("testing1234");
+        model.add(removedStory);
         List<Story> stories = model.getStories();
         int size = stories.size();
-        Story removedStory = stories.get(0);
         model.remove(removedStory);
         stories = model.getStories();
 
@@ -79,6 +84,9 @@ public class OrganisationStoryTest {
 
     @Test
     public void testGetStoriesAdded() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
         Story storyToAdd = stories.get(0);
         model.remove(storyToAdd);
@@ -108,8 +116,10 @@ public class OrganisationStoryTest {
 
     @Test(expected = DuplicateObjectException.class)
     public void testStoriesDuplicateAdded() throws Exception {
-        List<Story> stories = model.getStories();
-        model.add(stories.get(0));
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
+        model.add(story);
     }
 
     @Test
@@ -124,6 +134,9 @@ public class OrganisationStoryTest {
 
     @Test
     public void testStoryExists() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
         Assert.assertTrue("Story exists but was not found.", UsageHelper.exists(stories.get(0)));
     }
@@ -147,6 +160,9 @@ public class OrganisationStoryTest {
 
     @Test
     public void testStoryFindUsages() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
         List<Backlog> backlogs = model.getBacklogs();
         try {
