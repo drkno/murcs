@@ -16,8 +16,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -183,7 +186,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @FXML
     private void addStory(final ActionEvent event) {
         try {
-            Story selectedStory = storyPicker.getSelectionModel().getSelectedItem();
+            Story currentlySelectedStory = storyPicker.getSelectionModel().getSelectedItem();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (priorityString.matches("\\d+")) {
@@ -191,8 +194,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             } else if (!priorityString.isEmpty()) {
                 throw new CustomException("Priority is not a number");
             }
-            if (selectedStory != null) {
-                getModel().addStory(selectedStory, priority);
+            if (currentlySelectedStory != null) {
+                getModel().addStory(currentlySelectedStory, priority);
             }
             updateAvailableStories();
             updateStoryTable();

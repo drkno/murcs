@@ -1,6 +1,15 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 
 import java.util.ArrayList;
 import java.util.List;
