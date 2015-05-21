@@ -1,14 +1,20 @@
 package sws.murcs.model;
 
-import org.apache.commons.lang.UnhandledException;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Model of a Backlog.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Backlog extends Model {
     /**
      * Track this value.
@@ -26,6 +32,8 @@ public class Backlog extends Model {
      * Track this value.
      */
     @TrackableValue
+    @XmlElementWrapper(name = "stories")
+    @XmlElement(name = "story")
     private List<Story> stories = new ArrayList<>();
 
     /**
@@ -38,10 +46,10 @@ public class Backlog extends Model {
 
     /**
      * Sets the description of the current project.
-     * @param description The description of the project
+     * @param newDescription The description of the project
      */
-    public final void setDescription(String description) {
-        this.description = description;
+    public final void setDescription(final String newDescription) {
+        this.description = newDescription;
         commit("edit backlog");
     }
 

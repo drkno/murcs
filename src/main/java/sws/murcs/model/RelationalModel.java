@@ -241,7 +241,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * Gets the unassigned people.
      * @return The unassigned people
      */
-    public final Collection getUnassignedPeople() {
+    public final Collection<Person> getUnassignedPeople() {
         Set<Person> assignedPeople = new TreeSet<>((p1, p2) -> {
             if (p1.equals(p2)) {
                 return 0;
@@ -261,6 +261,32 @@ public class RelationalModel extends TrackableObject implements Serializable {
         unassignedPeople.addAll(getPeople());
         unassignedPeople.removeAll(assignedPeople);
         return unassignedPeople;
+    }
+
+    /**
+     * Gets a list of all the stories that aren't assigned to any backlog currently.
+     * @return the unassigned stories.
+     */
+    public final Collection<Story> getUnassignedStories() {
+        Set<Story> assignedStories = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().toLowerCase().compareTo(s2.getShortName().toLowerCase());
+
+        });
+        getBacklogs().forEach(t -> assignedStories.addAll(t.getStories()));
+        Set<Story> unassignedStories = new TreeSet<>((s1, s2) -> {
+            if (s1.equals(s2)) {
+                return 0;
+            }
+
+            return s1.getShortName().toLowerCase().compareTo(s2.getShortName().toLowerCase());
+        });
+        unassignedStories.addAll(getStories());
+        unassignedStories.removeAll(assignedStories);
+        return unassignedStories;
     }
 
     /**
@@ -325,7 +351,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                         team.setScrumMaster(null);
                     }
                 } catch (Exception e) {
-                    //If this happens we're in deep doodoo
+                    //If this happens we're in deep doo doo
                     e.printStackTrace();
                 }
                 team.removeMember(person);
@@ -334,18 +360,17 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a list of all the teams that aren't assigned to
-     * any project currently.
+     * Gets a list of all the teams that aren't assigned to any project currently.
      * @return the unassigned teams.
      */
     public final List<Team> getUnassignedTeams() {
-        List<Team> unassignedTeams = new ArrayList<>();
-        for (Team team : teams) {
-            if (!allocations.stream().filter(a -> a.getTeam().equals(team)).findAny().isPresent()) {
-                unassignedTeams.add(team);
-            }
-        }
-        return unassignedTeams;
+        return teams
+                .stream()
+                .filter(team -> !allocations
+                        .stream()
+                        .filter(a -> a.getTeam().equals(team)).findAny()
+                        .isPresent())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -644,21 +669,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a story to the model.
-     * @param story The story to add to the model
-     * @throws sws.murcs.exceptions.DuplicateObjectException If the model already contains the story you are trying
-     * to add
-     */
-    private void addStory(final Story story) throws DuplicateObjectException {
-        if (!stories.contains(story)) {
-            stories.add(story);
-        }
-        else {
-            throw new DuplicateObjectException("We already have that story!!!");
-        }
-    }
-
-    /**
      * Tries to remove an object from the model.
      * @param model the object to remove from the model
      */
@@ -733,9 +743,25 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
 
         //Now remove it from the project
-        projects.stream().filter(project -> project.getReleases().contains(release)).forEach(project ->
-            project.removeRelease(release)
+        projects.stream()
+                .filter(project -> project.getReleases().contains(release))
+                .forEach(project -> project.removeRelease(release)
         );
+    }
+
+    /**
+     * Adds a story to the model.
+     * @param story The story to add to the model
+     * @throws sws.murcs.exceptions.DuplicateObjectException If the model already contains the story you are trying
+     * to add
+     */
+    private void addStory(final Story story) throws DuplicateObjectException {
+        if (!stories.contains(story)) {
+            stories.add(story);
+        }
+        else {
+            throw new DuplicateObjectException("We already have that story!!!");
+        }
     }
 
     /**

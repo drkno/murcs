@@ -1,10 +1,6 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Team;
-import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.*;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,11 +24,23 @@ public class ReportModel {
     @XmlElement(name = "project")
     private List<Project> projects = new ArrayList<>();
     /**
+     * The backlogs in the report.
+     */
+    @XmlElementWrapper(name = "backlogs")
+    @XmlElement(name = "backlog")
+    private List<Backlog> backlogs = new ArrayList<>();
+    /**
      * The work allocations in the report.
      */
     @XmlElementWrapper(name = "workAllocations")
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations = new ArrayList<>();
+    /**
+     * The unassigned people in the report.
+     */
+    @XmlElementWrapper(name = "unassignedStories")
+    @XmlElement(name = "story")
+    private List<Story> listUnassignedStories = new ArrayList<>();
     /**
      * The unassigned teams in the report.
      */
@@ -53,11 +61,16 @@ public class ReportModel {
     public ReportModel(final RelationalModel relationalModel) {
         projects.addAll(relationalModel.getProjects());
         workAllocations.addAll(relationalModel.getAllocations());
+        backlogs.addAll(relationalModel.getBacklogs());
+        listUnassignedStories.addAll(relationalModel.getUnassignedStories());
         listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
         listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
+        Collections.sort(listUnassignedStories, (Story s1, Story s2) -> s1.getShortName()
+                .toLowerCase().compareTo(s2.getShortName().toLowerCase()));
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName()
-                .compareTo(p2.getShortName()));
-        Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName().compareTo(t2.getShortName()));
+                .toLowerCase().compareTo(p2.getShortName().toLowerCase()));
+        Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName()
+                .toLowerCase().compareTo(t2.getShortName().toLowerCase()));
     }
 
     /**

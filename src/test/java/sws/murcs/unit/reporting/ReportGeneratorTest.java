@@ -128,13 +128,42 @@ public class ReportGeneratorTest {
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
         project.addRelease(release);
 
+        //Stories
+        Story story1 = new Story();
+        story1.setShortName("1");
+        story1.setLongName("Revert");
+        story1.setDescription("Revert to last saved state");
+        story1.setCreator(person3);
+
+        Story story2 = new Story();
+        story2.setShortName("2");
+        story2.setLongName("Story Maintenance");
+        story2.setDescription("add stories to project");
+        story2.setCreator(person4);
+
+        //Backlog
+        Backlog backlog = new Backlog();
+        backlog.setShortName("This is the backlog");
+        backlog.setLongName("back log be what");
+        backlog.setDescription("high five");
+        backlog.setAssignedPO(person1);
+        backlog.addStory(story1);
+
         relationalModel.add(project);
         relationalModel.add(team1);
         relationalModel.add(team2);
         relationalModel.add(team3);
+        relationalModel.add(story1);
+        relationalModel.add(story2);
+        relationalModel.add(person1);
+        relationalModel.add(person2);
+        relationalModel.add(person3);
         relationalModel.add(person4);
+        relationalModel.add(skillC);
+        relationalModel.add(skillPython);
         relationalModel.addAllocation(allocation);
         relationalModel.add(release);
+        relationalModel.add(backlog);
     }
 
     @After
