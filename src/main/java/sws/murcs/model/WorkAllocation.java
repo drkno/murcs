@@ -10,12 +10,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * A dumb information carrier used to represent a work
- * schedule by a Team on a Project.
+ * Represents a work period done by a team on a project over a period of time.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkAllocation implements Serializable {
+public class WorkAllocation implements Serializable, Comparable<WorkAllocation> {
 
     /**
      * The project that belongs to this work allocation.
@@ -94,5 +93,14 @@ public class WorkAllocation implements Serializable {
         return this.endDate;
     }
 
-
+    @Override
+    public final int compareTo(final WorkAllocation allocation) {
+        if (startDate.isBefore(allocation.startDate)) {
+            return -1;
+        }
+        if (startDate.isAfter(allocation.startDate)) {
+            return 1;
+        }
+        return 0;
+    }
 }

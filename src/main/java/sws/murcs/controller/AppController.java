@@ -1,6 +1,8 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -36,6 +38,8 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -47,8 +51,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * The Menu items for the main window.
      */
     @FXML
-    private MenuItem fileQuit, undoMenuItem, redoMenuItem, openProject, saveProject, generateReport, addProject,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide;
+    private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert;
     /**
      * The side display which contains the display list.
      */
@@ -83,6 +87,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private Button removeButton;
     /**
+     * The back and forward buttons.
+     */
+    @FXML
+    private Button backButton, forwardButton;
+    /**
      * The content pane contains the information about the
      * currently selected model item.
      */
@@ -104,6 +113,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     public final void initialize() {
+
+        NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
             fileQuitPress(null);
@@ -119,39 +130,24 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //The remove button should be greyed out
-            // if no item is selected or built in skills (PO or SM) are selected
-            removeButton.setDisable(newValue == null
-                    || newValue instanceof Skill
-                    && (((Skill) newValue).getShortName().equals("PO")
-                    || ((Skill) newValue).getShortName().equals("SM")));
+            if (oldValue != newValue) {
+                if (newValue == null) {
+                    if (editorPane != null) {
+                        editorPane.dispose();
+                        editorPane = null;
+                        contentPane.getChildren().clear();
+                    }
+                    return;
+                }
 
-            if (newValue == null) {
-                if (editorPane != null) {
-                    editorPane.dispose();
-                    editorPane = null;
-                    contentPane.getChildren().clear();
-                }
-                return;
-            }
-            if (editorPane == null) {
-                editorPane = new EditorPane((Model) newValue);
-                contentPane.getChildren().clear();
-                contentPane.getChildren().add(editorPane.getView());
-            }
-            else {
-                if (editorPane.getModel().getClass() == newValue.getClass()) {
-                    editorPane.setModel((Model) newValue);
-                }
-                else {
-                    editorPane.dispose();
-                    contentPane.getChildren().clear();
-                    editorPane = new EditorPane((Model) newValue);
-                    contentPane.getChildren().add(editorPane.getView());
+                NavigationManager.navigateTo((Model) newValue);
+                updateBackForwardButtons();
+
+                if (oldValue == null) {
+                    displayList.scrollTo(newValue);
                 }
             }
         });
-
         setUpShortCuts();
 
         undoRedoNotification(ChangeState.Commit);
@@ -166,8 +162,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         //Menu item short cuts
         undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
         redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
-        saveProject.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        openProject.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
+        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN
+                , KeyCombination.SHIFT_DOWN));
+        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
+        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
+        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN,
+                KeyCombination.SHIFT_DOWN));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
         generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
         addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
         addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN,
@@ -190,12 +191,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Key event
      */
     private void handleKey(final KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN,
-                KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
             addClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.DELETE, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN).match(event)) {
+            backClicked(null);
+        }
+        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN).match(event)) {
+            forwardClicked(null);
         }
     }
 
@@ -203,13 +209,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Updates the display list on the left hand side of the screen.
      */
     private void updateList() {
-        if (creatorWindow != null) {
-            creatorWindow.dispose();
-            creatorWindow = null;
-        }
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
             return;
@@ -226,7 +228,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Backlog: arrayList = model.getBacklogs(); break;
             default: throw new UnsupportedOperationException();
         }
-        displayList.setItems((ModelObservableArrayList) arrayList);
+
+        if (arrayList.getClass() == ModelObservableArrayList.class) {
+            ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
+            arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            System.err.println("This list type does not yet have an ordering specified, "
+                    + "please correct this so that the display list is shown correctly.");
+        }
+
+        displayList.setItems((ObservableList) arrayList);
         displayList.getSelectionModel().select(0);
     }
 
@@ -236,6 +248,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The even that triggers the function
      */
     @FXML
+    @SuppressWarnings("unused")
     private void fileQuitPress(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
@@ -248,7 +261,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             });
             popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
-                if (saveProject()) {
+                if (save()) {
                     popup.close();
                     Platform.exit();
                 }
@@ -266,6 +279,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that triggers the function
      */
     @FXML
+    @SuppressWarnings("unused")
     private void toggleItemListView(final ActionEvent event) {
         if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
@@ -277,34 +291,26 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Saves the current project.
      * @return If the project successfully saved.
      */
-    private boolean saveProject() {
-        return saveProject(null);
+    private boolean save() {
+        return save(null);
     }
 
     /**
-     * Save the current project. Currently you choose where
-     * to save the project every time, however it does remember the
-     * last location saved or loaded from.
-     * @param event The event that causes this function to be called,namely clicking save.
+     * Save the current model.
+     * @param event The event that causes this function to be called, namely clicking save.
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean saveProject(final ActionEvent event) {
+    @SuppressWarnings("unused")
+    private boolean save(final ActionEvent event) {
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Project");
-            fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
-            File file = fileChooser.showSaveDialog(App.getStage());
-            if (file != null) {
-                String fileName = file.getName();
-                if (!fileName.endsWith(".project")) {
-                    fileName += ".project";
-                }
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                PersistenceManager.Current.saveModel(fileName);
+            if (PersistenceManager.getCurrent().getLastFile() != null) {
+                PersistenceManager.getCurrent().save();
+                UndoRedoManager.forget();
                 return true;
+            }
+            else {
+                return saveAs(null);
             }
         }
         catch (Exception e) {
@@ -315,27 +321,137 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
+     * Saves the model as a new file.
+     * @param event The event that causes this function to be called, namely clicking save.
+     * @return If the project successfully saved.
+     */
+    @FXML
+    @SuppressWarnings("unused")
+    private boolean saveAs(final ActionEvent event) {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save As");
+            fileChooser.getExtensionFilters()
+                    .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
+            File file = fileChooser.showSaveDialog(App.getStage());
+            if (file != null) {
+                String fileName = file.getName();
+                if (!fileName.endsWith(".project")) {
+                    fileName += ".project";
+                }
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                PersistenceManager.getCurrent().saveModel(fileName);
+                UndoRedoManager.forget();
+                return true;
+            }
+        }
+        catch (Exception e) {
+            showSaveFailedDialog();
+        }
+        return false;
+    }
+
+    /**
+     * Handles the creation of a new Model.
+     * @param event The event that causes this function to be called, namely clicking save.
+     */
+    @FXML
+    @SuppressWarnings("unused")
+    private void newModel(final ActionEvent event) {
+        try {
+            if (UndoRedoManager.canRevert()) {
+                GenericPopup popup = new GenericPopup();
+                popup.setWindowTitle("Unsaved Changes");
+                popup.setTitleText("Do you wish to save changes?");
+                popup.setMessageText("You have unsaved changes.");
+                popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+                    popup.close();
+                    try {
+                        createNewModel();
+                    } catch (Exception e) {
+                        GenericPopup errorPopup = new GenericPopup(e);
+                        errorPopup.show();
+                    }
+                });
+                popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                    // Let the user save the project
+                    if (save()) {
+                        popup.close();
+                        try {
+                            createNewModel();
+                        } catch (Exception e) {
+                            showSaveFailedDialog();
+                        }
+                    }
+                });
+                popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+                popup.show();
+            }
+            else {
+                createNewModel();
+            }
+        }
+        catch (Exception e) {
+            showSaveFailedDialog();
+        }
+    }
+
+    /**
+     * Shows a failed save dialog.
+     */
+    private void showSaveFailedDialog() {
+        GenericPopup errorPopup = new GenericPopup();
+        String message = "Something went wrong saving";
+        errorPopup.setTitleText("Something went wrong");
+        errorPopup.setMessageText(message);
+        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> errorPopup.close());
+        errorPopup.show();
+    }
+
+    /**
+     * Creates a new model and adds it to the program.
+     * @exception Exception thrown if the undo redo manager fails to import the new model.
+     */
+    private void createNewModel() throws Exception {
+        PersistenceManager.getCurrent().setCurrentModel(null);
+        RelationalModel model = new RelationalModel();
+        PersistenceManager.getCurrent().setCurrentModel(model);
+        UndoRedoManager.importModel(model);
+        NavigationManager.clearHistory();
+        updateList();
+        editorPane = null;
+    }
+
+    /**
      * Opens a specified project file, from a specified location.
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void openProject(final ActionEvent event) {
+    @SuppressWarnings("unused")
+    private void open(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
                     .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             fileChooser.setTitle("Select Project");
             File file = fileChooser.showOpenDialog(App.getStage());
             if (file != null) {
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                RelationalModel model = PersistenceManager.Current.loadModel(file.getName());
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                RelationalModel model = PersistenceManager.getCurrent().loadModel(file.getName());
                 if (model == null) {
                     throw new Exception("Project was not opened.");
                 }
-                PersistenceManager.Current.setCurrentModel(model);
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 updateList();
+                UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
+
+                //This is a workaround for making sure you can go back when you open a new project
+                //This happens because forget clears the navigation history
+                displayList.getSelectionModel().clearSelection();
+                displayList.getSelectionModel().select(0);
             }
         }
         catch (Exception e) {
@@ -352,6 +468,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the report to be generated
      */
     @FXML
+    @SuppressWarnings("unused")
     private void generateReport(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
@@ -359,14 +476,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
             fileChooser.getExtensionFilters()
                     .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.Current.getCurrentWorkingDirectory()));
+            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             fileChooser.setTitle("Report Save Location");
             File file = fileChooser.showSaveDialog(App.getStage());
             if (file != null) {
-                ReportGenerator.generate(PersistenceManager.Current.getCurrentModel(), file);
-                PersistenceManager.Current.setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                ReportGenerator.generate(PersistenceManager.getCurrent().getCurrentModel(), file);
+                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
             }
-
         }
         catch (Exception e) {
             GenericPopup popup = new GenericPopup(e);
@@ -379,6 +495,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
+    @SuppressWarnings("unused")
     private void undoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
@@ -394,6 +511,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
+    @SuppressWarnings("unused")
     private void redoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
@@ -406,18 +524,61 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
+     * Reverts the the model to its original save state.
+     * @param event event arguments.
+     */
+    @FXML
+    @SuppressWarnings("unused")
+    private void revert(final ActionEvent event) {
+        if (UndoRedoManager.canRevert()) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Revert Changes");
+            popup.setTitleText("Do you wish to revert changes?");
+            popup.setMessageText("You have unsaved changes.\n "
+                    + "If you wish to save your current changes as a new file click \'Save As\'.");
+            popup.addButton("Yes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+                popup.close();
+                try {
+                    UndoRedoManager.revert(0);
+                } catch (Exception e) {
+                    GenericPopup errorPopup = new GenericPopup(e);
+                    errorPopup.show();
+                }
+            });
+            popup.addButton("Save As", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                // Let the user save the project
+                if (saveAs(null)) {
+                    popup.close();
+                    try {
+                        UndoRedoManager.revert(0);
+                    } catch (Exception e) {
+                        GenericPopup errorPopup = new GenericPopup(e);
+                        errorPopup.show();
+                    }
+                }
+            });
+            popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            popup.show();
+        }
+    }
+
+    /**
      * Updates the undo/redo menu to reflect the current undo/redo state.
      * @param change type of change that has been made
      */
     @Override
     public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
+            revert.setDisable(true);
             undoMenuItem.setDisable(true);
             undoMenuItem.setText("Undo...");
+            App.removeTitleStar();
         }
         else {
+            revert.setDisable(false);
             undoMenuItem.setDisable(false);
             undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
+            App.addTitleStar();
         }
 
         if (!UndoRedoManager.canRemake()) {
@@ -428,6 +589,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             redoMenuItem.setDisable(false);
             redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
         }
+
+        switch (change) {
+            case Forget:
+            case Remake:
+            case Revert:
+                NavigationManager.clearHistory();
+                updateBackForwardButtons();
+                break;
+            default: break;
+        }
     }
 
     /**
@@ -435,6 +606,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event of the add button being called
      */
     @FXML
+    @SuppressWarnings("unused")
     private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
@@ -460,7 +632,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     clazz = Backlog.class;
                     break;
                 default:
-                    break;
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
             }
         }
         else {
@@ -480,8 +652,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                             }
                         },
                         func -> {
-                            creatorWindow.dispose();
-                            creatorWindow = null;
+                            if (creatorWindow != null) {
+                                creatorWindow.dispose();
+                                creatorWindow = null;
+                            }
                         });
                 creatorWindow.show();
             }
@@ -496,8 +670,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
+    @SuppressWarnings("unused")
     private void removeClicked(final ActionEvent event) {
-        RelationalModel model = PersistenceManager.Current.getCurrentModel();
+        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
         }
@@ -516,19 +691,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
 
-        List<Model> usages = model.findUsages(selectedItem);
+        Collection<Model> usages = model.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
-            ModelType type =  ModelType.getModelType(selectedItem);
-            if (type == ModelType.Person) {
-                message += "person";
-            }
-            else {
-                message += type.toString().toLowerCase();
-            }
-             message += " is used in " + usages.size() + " place(s):";
+            ModelType type = ModelType.getModelType(selectedItem);
+            message += type.toString().toLowerCase() + " is used in " + usages.size() + " place(s):";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
@@ -538,8 +707,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
             popup.close();
+            NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
+            updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
@@ -552,16 +723,80 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
+            displayList.scrollTo(0);
         }
         else {
             type = ModelType.getModelType(parameter);
-            if (selectedType == type) {
+            if (type != selectedType) {
+                NavigationManager.setIgnore(true);
+                displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
+                NavigationManager.setIgnore(false);
+            }
+            if (parameter != displayList.getSelectionModel().getSelectedItem()) {
                 displayList.getSelectionModel().select(parameter);
             }
-            else {
-                displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
-                displayList.getSelectionModel().select(parameter);
+
+            if (displayList.getSelectionModel().getSelectedIndex() < 0) {
+                displayList.scrollTo(parameter);
             }
         }
+
+        // The remove button should be greyed out
+        // if no item is selected or built in skills (PO or SM) are selected
+        removeButton.setDisable(parameter == null
+                || parameter instanceof Skill
+                && (((Skill) parameter).getShortName().equals("PO")
+                || ((Skill) parameter).getShortName().equals("SM")));
+
+        if (editorPane == null) {
+            editorPane = new EditorPane(parameter);
+            contentPane.getChildren().clear();
+            contentPane.getChildren().add(editorPane.getView());
+        }
+        else {
+            if (editorPane.getModel().getClass() == parameter.getClass()) {
+                editorPane.setModel(parameter);
+            }
+            else {
+                editorPane.dispose();
+                contentPane.getChildren().clear();
+                editorPane = new EditorPane(parameter);
+                contentPane.getChildren().add(editorPane.getView());
+            }
+        }
+    }
+
+    /**
+     * Toggles the state of the back and forward buttons if they disabled or enabled.
+     */
+    private void updateBackForwardButtons() {
+        backButton.setDisable(!NavigationManager.canGoBack());
+        forwardButton.setDisable(!NavigationManager.canGoForward());
+    }
+
+    /**
+     * Navigates back.
+     * @param event The event that caused the function to be called.
+     */
+    @FXML
+    private void backClicked(final ActionEvent event) {
+        if (!NavigationManager.canGoBack()) {
+            return;
+        }
+        displayList.getSelectionModel().clearSelection();
+        NavigationManager.goBackward();
+    }
+
+    /**
+     * Navigates forward.
+     * @param event The event that caused the function to be called.
+     */
+    @FXML
+    private void forwardClicked(final ActionEvent event) {
+        if (!NavigationManager.canGoForward()) {
+            return;
+        }
+        displayList.getSelectionModel().clearSelection();
+        NavigationManager.goForward();
     }
 }

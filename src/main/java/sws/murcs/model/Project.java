@@ -25,7 +25,7 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
-    private List<Release> releases = new ModelObservableArrayList<>();
+    private List<Release> releases = new ArrayList<>();
 
     /**
      * The backlogs for a project

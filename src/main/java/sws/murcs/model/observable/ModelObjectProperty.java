@@ -9,35 +9,37 @@ import java.lang.reflect.Field;
  * @param <T> type of the field.
  */
 public class ModelObjectProperty<T> extends SimpleObjectProperty<T> {
-
     /**
-     * The field being watched.
+     * Field that the property is tracking.
      */
     private Field field;
+
     /**
-     * The object the field exists in.
+     * Object that the property is tracking.
      */
     private Object object;
 
     /**
      * Instantiates a new ModelObjectProperty, used for notifying about a change in value of a field.
-     * @param newObject Object that field exists in (can be a null pointer as long as refers to a valid memory location)
+     * @param propertyObject Object that field exists in (can be a null pointer as long as refers to
+     * a valid memory location).
      * @param clazz Class type of object that the field exists in.
      * @param fieldName Name of the field to watch.
      * @throws NoSuchFieldException If/when the field does not exist.
      */
-    public ModelObjectProperty(final Object newObject, final Class clazz, final String fieldName)
+    public ModelObjectProperty(final Object propertyObject, final Class clazz, final String fieldName)
             throws NoSuchFieldException {
         field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);
-        this.object = newObject;
+        this.object = propertyObject;
     }
 
     @Override
     public final T get() {
         try {
             return (T) field.get(object);
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e) {
             e.printStackTrace();
             return null;
         }

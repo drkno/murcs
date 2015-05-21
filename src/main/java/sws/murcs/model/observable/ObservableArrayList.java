@@ -18,7 +18,7 @@ public class ObservableArrayList<T extends Model> extends ObservableListWrapper<
      * Creates a new empty ModelObservableArrayList with the default callback.
      */
     public ObservableArrayList() {
-        super(new ArrayList(), param -> new Observable[] {param.getShortNameProperty()});
+        super(new ArrayList<>(), param -> new Observable[] {param.getShortNameProperty()});
     }
 
     /**

@@ -11,7 +11,6 @@ import sws.murcs.controller.EditorPane;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -100,12 +99,6 @@ public class CreatorWindowView {
     public final void show() {
         try {
             String type = ModelType.getModelType(model).toString();
-
-            // Work around, As you can't add multiple people at a time, only a single person
-            // This is just the title of the popup dialog.
-            if (Objects.equals(type, "Person")) {
-                type = "Person";
-            }
 
             // Load the view
             FXMLLoader loader = new FXMLLoader(CreatorWindowController

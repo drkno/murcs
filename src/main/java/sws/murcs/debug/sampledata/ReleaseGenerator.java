@@ -5,10 +5,11 @@ import sws.murcs.model.Release;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
- * Generates random releases.
+ * Generates RANDOM releases.
  */
 public class ReleaseGenerator implements Generator<Release> {
 
@@ -40,9 +41,9 @@ public class ReleaseGenerator implements Generator<Release> {
     protected static final int HIGH_STRESS_MAX = 40;
 
     /**
-     * The random used for random numbers within this class.
+     * The RANDOM used for RANDOM numbers within this class.
      */
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     /**
      * A list of default names for releases. They're all birds names.
@@ -665,7 +666,7 @@ public class ReleaseGenerator implements Generator<Release> {
     /**
      * The pool of projects to be linked to the releases.
      */
-    private ArrayList<Project> projectPool;
+    private List<Project> projectPool;
     /**
      * The project generator to be used with this releases generator.
      */
@@ -692,7 +693,7 @@ public class ReleaseGenerator implements Generator<Release> {
      * Sets the Project pool for the generator.
      * @param newProjectPool The project pool
      */
-    public final void setProjectPool(final ArrayList<Project> newProjectPool) {
+    public final void setProjectPool(final List<Project> newProjectPool) {
         this.projectPool = newProjectPool;
     }
 
@@ -710,14 +711,14 @@ public class ReleaseGenerator implements Generator<Release> {
      * @param max The max number of projects
      * @return The array list of generated projects
      */
-    private ArrayList<Project> generateProjects(final int min, final int max) {
-        ArrayList<Project> generated = new ArrayList<>();
+    private List<Project> generateProjects(final int min, final int max) {
+        List<Project> generated = new ArrayList<>();
         int projectCount = NameGenerator.random(min, max);
 
         if (projectPool == null) {
             for (int i = 0; i < projectCount; i++) {
                 Project newProject = projectGenerator.generate();
-                if (!generated.stream().filter(project -> newProject.equals(project)).findAny().isPresent()) {
+                if (!generated.stream().filter(newProject::equals).findAny().isPresent()) {
                     generated.add(newProject);
                 }
             }
@@ -740,14 +741,22 @@ public class ReleaseGenerator implements Generator<Release> {
 
     @Override
     public final Release generate() {
+        final int yearVariance = 130;
+        final int epoch = 1970;
+        final int months = 12;
+        final int daysInMonth = 28;
+        final int maxProjects = 5;
+
         Release r = new Release();
 
         String shortName = NameGenerator.randomElement(defaultNames);
         String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28)
-                + 1);
+        LocalDate releaseDate = LocalDate.of(
+                RANDOM.nextInt(yearVariance) + epoch,
+                RANDOM.nextInt(months) + 1,
+                RANDOM.nextInt(daysInMonth) + 1);
 
-        ArrayList<Project> projects = generateProjects(1, 5);
+        List<Project> projects = generateProjects(1, maxProjects);
 
         try {
             r.setShortName(shortName);

@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Team.
@@ -29,7 +30,7 @@ public class Team extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
-    private ArrayList<Person> members = new ArrayList<>();
+    private List<Person> members = new ArrayList<>();
     /**
      * The scrum master of the team.
      */
@@ -47,7 +48,7 @@ public class Team extends Model {
      * of adding is to use getMembers().add(person);
      * @return A list of the team members
      */
-    public final ArrayList<Person> getMembers() {
+    public final List<Person> getMembers() {
         return this.members;
     }
 
@@ -105,7 +106,7 @@ public class Team extends Model {
      * Product Owner is already performing another role.
      */
     public final void setProductOwner(final Person newProductOwner) throws MultipleRolesException {
-        if (newProductOwner == getScrumMaster() && newProductOwner != null && getScrumMaster() != null) {
+        if (newProductOwner == getScrumMaster() && newProductOwner != null) {
             throw new MultipleRolesException("Product Owner", "Scrum Master", newProductOwner, this);
         }
         this.productOwner = newProductOwner;
@@ -135,7 +136,7 @@ public class Team extends Model {
      * @throws DuplicateObjectException
      * if a person is already in a team
      */
-    public final void addMembers(final ArrayList<Person> membersToAdd) throws DuplicateObjectException {
+    public final void addMembers(final List<Person> membersToAdd) throws DuplicateObjectException {
         for (Person member : membersToAdd) {
             this.addMember(member);
         }

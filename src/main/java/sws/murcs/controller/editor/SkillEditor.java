@@ -72,14 +72,12 @@ public class SkillEditor extends GenericEditor<Skill> {
         // then disable the short name
         // as this should be unique
         // but allow the editing of the long name and description
+        shortNameTextField.setDisable(false);
         if (modelShortName != null
                 && (modelShortName.equals(Skill.ROLES.PO.toString())
                 || modelShortName.equals(Skill.ROLES.SM.toString()))) {
             shortNameTextField.setDisable(true);
         }
-
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
     }
 
     @Override

@@ -5,12 +5,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.*;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -275,7 +278,7 @@ public class RelationalModelTest {
         relationalModel.getSkills().clear();
 
         Person newPerson = new PersonGenerator().generate();
-        newPerson.getSkills().clear();
+        newPerson.clearSkills();
         relationalModel.add(newPerson);
 
         Skill newSkill = new SkillGenerator().generate();
@@ -299,12 +302,34 @@ public class RelationalModelTest {
         assertFalse("Projects should not be marked as in use even when they are attached to the model", relationalModel.inUse(newProject));
     }
 
-    @Test (expected = DuplicateObjectException.class)
-    public void testOverlappedWork() throws Exception {
+    @Test
+    public void addWorkAllocationTest() throws Exception {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, endDate.plus(1, ChronoUnit.DAYS), null);
+        relationalModel.addAllocation(allocation1);
+        relationalModel.addAllocation(allocation2);
+        assertTrue(relationalModel.getAllAllocations().contains(allocation1));
+        assertTrue(relationalModel.getAllAllocations().contains(allocation2));
+    }
+
+    @Test (expected = CustomException.class)
+    public void overlappedWorkTest1() throws Exception {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
         WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
         WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        relationalModel.addAllocation(allocation1);
+        relationalModel.addAllocation(allocation2);
+    }
+
+    @Test (expected = CustomException.class)
+    public void overlappedWorkTest2() throws Exception {
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
+        WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, null);
         relationalModel.addAllocation(allocation1);
         relationalModel.addAllocation(allocation2);
     }
@@ -360,7 +385,7 @@ public class RelationalModelTest {
             Person person = personGenerator.generate();
             person.setUserId(person.getUserId() + i);
             person.setShortName(person.getShortName() + i);
-            person.getSkills().clear();
+            person.clearSkills();
             relationalModel.add(person);
         }
 

@@ -2,8 +2,9 @@ package sws.murcs.model.persistence;
 
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
+import sws.murcs.view.App;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Provides methods for managing models.
@@ -13,15 +14,20 @@ public final class PersistenceManager {
     /**
      * Static persistence manager, used to keep a persistent manager where ever it is used from.
      */
-    public static PersistenceManager Current;
+    private static PersistenceManager current;
 
     /**
      * Indicates whether or not there is a current persistence manage.
      * @return The persistence manager
      */
-    public static boolean CurrentPersistenceManagerExists() {
-        return Current != null;
+    public static boolean currentPersistenceManagerExists() {
+        return current != null;
     }
+
+    /**
+     * The last saved file.
+     */
+    private String lastFile;
 
     /**
      * Currently in use user persistence.
@@ -42,6 +48,30 @@ public final class PersistenceManager {
     }
 
     /**
+     * Sets the new Persistence Manager.
+     * @param newCurrent new Persistence manager.
+     */
+    public static void setCurrent(final PersistenceManager newCurrent) {
+        PersistenceManager.current = newCurrent;
+    }
+
+    /**
+     * Returns the current persistence manager.
+     * @return the current persistence manager
+     */
+    public static PersistenceManager getCurrent() {
+        return PersistenceManager.current;
+    }
+
+    /**
+     * Gets the lastFile saved.
+     * @return returns the last file saved.
+     */
+    public String getLastFile() {
+        return lastFile;
+    }
+
+    /**
      * Gets the current in use persistence loader.
      * @return current persistence loader
      */
@@ -59,12 +89,25 @@ public final class PersistenceManager {
 
     /**
      * Loads a model from the disk.
-     * @param persistenceName The name of the model to load
-     * @return The loaded persistence. Will be null if the persistence does not exist
+     * @param persistenceName The name of the model to load.
+     * @return The loaded persistence. Will be null if the model does not exist, is corrupt or could not be loaded.
      */
     public RelationalModel loadModel(final String persistenceName) {
         // load the persistence using the default directory
-        return persistenceLoader.loadModel(persistenceName);
+        lastFile = persistenceName;
+        RelationalModel model = persistenceLoader.loadModel(persistenceName);
+        if (model != null) {
+            App.setWindowTitle(persistenceName);
+        }
+        return model;
+    }
+
+    /**
+     * Saves the current model.
+     * @throws Exception when the model fails to save.
+     */
+    public void save() throws Exception {
+        saveModel(lastFile, getCurrentModel());
     }
 
     /**
@@ -74,6 +117,8 @@ public final class PersistenceManager {
      */
     public void saveModel(final String name) throws Exception {
         saveModel(name, getCurrentModel());
+        lastFile = name;
+        App.setWindowTitle(name);
     }
 
     /**
@@ -94,7 +139,7 @@ public final class PersistenceManager {
      * @return Whether the persistence exists
      */
     public boolean modelExists(final String persistenceName) {
-        ArrayList<String> persistences = getModels();
+        Collection<String> persistences = getModels();
         return persistences.contains(persistenceName);
     }
 
@@ -102,7 +147,7 @@ public final class PersistenceManager {
      * Returns a list of models that exist in the default location.
      * @return gets a list of models that exist in the default location.
      */
-    public ArrayList<String> getModels() {
+    public Collection<String> getModels() {
         return persistenceLoader.getModelList();
     }
 

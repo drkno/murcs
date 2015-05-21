@@ -201,15 +201,20 @@ public class StoryGenerator implements Generator<Story> {
         String name = storyNames[NameGenerator.random(storyNames.length)];
         String description = descriptions[NameGenerator.random(descriptions.length)];
 
-        Person creator = personsPool == null
-                ? personGenerator.generate()
-                : personsPool.get(NameGenerator.random(personsPool.size()));
+        Person creator;
+        if (personsPool == null || personsPool.isEmpty()) {
+            creator = personGenerator.generate();
+        }
+        else {
+            creator = personsPool.get(NameGenerator.random(personsPool.size()));
+        }
 
         Story story = new Story();
         try {
             story.setShortName(name);
         } catch (Exception e) {
             //Do nothing this doesn't matter. Ever.
+            e.printStackTrace();
         }
         story.setDescription(description);
         story.setCreator(creator);
