@@ -310,8 +310,8 @@ public class RelationalModelTest {
         WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, endDate.plus(1, ChronoUnit.DAYS), null);
         relationalModel.addAllocation(allocation1);
         relationalModel.addAllocation(allocation2);
-        assertTrue(relationalModel.getAllAllocations().contains(allocation1));
-        assertTrue(relationalModel.getAllAllocations().contains(allocation2));
+        assertTrue(relationalModel.getAllocations().contains(allocation1));
+        assertTrue(relationalModel.getAllocations().contains(allocation2));
     }
 
     @Test (expected = CustomException.class)
