@@ -101,6 +101,7 @@ public class Backlog extends Model {
     }
 
     /**
+     /**
      * Add a story to the backlog. If story is already in the stories then it is ignored along with its priority.
      * @param story The story to be added
      * @param priority The priority of the story i.e. where in the list it should be.
@@ -235,7 +236,7 @@ public class Backlog extends Model {
         final String shortNameOther = ((Backlog) object).getShortName();
 
         if (shortName == null || shortNameOther == null) {
-            return shortName == shortNameOther;
+            return Objects.equals(shortName, shortNameOther);
         }
 
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
