@@ -166,6 +166,7 @@ public class OrganisationWorkAllocationTest {
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
         WorkAllocation allocation1 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
         WorkAllocation allocation2 = new WorkAllocation(projectGenerated, teamGenerated, startDate, endDate);
+        //model.getAllocations().clear();
         model.addAllocation(allocation1);
         model.addAllocation(allocation2);
     }
