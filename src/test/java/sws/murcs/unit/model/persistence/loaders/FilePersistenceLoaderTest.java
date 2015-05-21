@@ -7,6 +7,7 @@ import org.junit.Test;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.io.File;
@@ -60,14 +61,12 @@ public class FilePersistenceLoaderTest {
 
     @Test
     public void testLoadModel() throws Exception {
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
         String testFile = getNewTestFile();
         Organisation model = generator.generate();
-        for (int i = 0; i < 10; i++) {
-            model = generator.generate();
-            if (!generator.lastGenerationHadError()) {
-                break;  // work around for the duplicate skills issue
-            }
-        }
+        model = generator.generate();
         int numProjects = model.getProjects().size();
         loader.saveModel(testFile, model);
         Organisation loadModel = loader.loadModel(testFile);

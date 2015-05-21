@@ -125,14 +125,13 @@ public class PersistenceManagerTest {
 
     @Test
     public void testDeleteModel() throws Exception {
+        // Clear the Persistence Manager as it may still contain stuff from previous tests
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
         Assert.assertFalse(manager.deleteModel("none"));
         Organisation model = null;
-        for (int i = 0; i < 10; i++) {
-            model = generator.generate();
-            if (!generator.lastGenerationHadError()) {
-                break;  // work around for the duplicate skills issue
-            }
-        }
+        model = generator.generate();
         manager.saveModel("temp", model);
         Assert.assertTrue(manager.modelExists("temp"));
         Assert.assertTrue(manager.deleteModel("temp"));
