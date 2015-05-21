@@ -243,14 +243,14 @@ public class OrganisationGenerator implements Generator<Organisation> {
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
 
-            model.addSkills(skills);
-            model.addPeople(people);
-            model.addTeams(teams);
-            model.addProjects(projects);
-            model.addReleases(releases);
+            model.addCollection(skills);
+            model.addCollection(people);
+            model.addCollection(teams);
+            model.addCollection(projects);
+            model.addCollection(releases);
+            model.addCollection(stories);
+            model.addCollection(backlogs);
             model.addAllocations(allocations);
-            model.addStories(stories);
-            model.addBacklogs(backlogs);
 
             lastWasError = false;
             return model;

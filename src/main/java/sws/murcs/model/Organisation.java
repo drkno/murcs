@@ -201,31 +201,6 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds all given projects that are not already contained within the model.
-     * @param projectsToAdd A List of projects to be added to the model
-     * @throws DuplicateObjectException If one of the projects already exist
-     */
-    public final void addProjects(final Collection<Project> projectsToAdd) throws DuplicateObjectException {
-        boolean badProject = false;
-        for (Project project : projectsToAdd) {
-            if (this.projects.contains(project)
-                    || this.getProjects()
-                            .stream()
-                            .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
-                            .findAny()
-                            .isPresent()) {
-                badProject = true;
-            }
-            else {
-                this.projects.add(project);
-            }
-        }
-        if (badProject) {
-            throw new DuplicateObjectException();
-        }
-    }
-
-    /**
      * Removes the given project if it exists.
      * @param project The project to remove
      */
@@ -314,29 +289,6 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of people to the model.
-     * @param newPeople Person to be added.
-     * @throws DuplicateObjectException if the organisation
-     * already has a person from the people to be added.
-     */
-    public final void addPeople(final List<Person> newPeople) throws DuplicateObjectException {
-        for (Person person : newPeople) {
-            this.addPerson(person);
-        }
-    }
-
-    /**
-     * Adds a list of stories to the model. Careful, this won't be undoable.
-     * @param storiesToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
-     */
-    public final void addStories(final List<Story> storiesToAdd) throws DuplicateObjectException {
-        for (Story story : storiesToAdd) {
-            this.addStory(story);
-        }
-    }
-
-    /**
      * Removes a person from unassigned people.
      * @param person The unassigned person to remove
      */
@@ -395,18 +347,6 @@ public class Organisation extends TrackableObject implements Serializable {
         }
         else {
             throw new DuplicateObjectException();
-        }
-    }
-
-    /**
-     * Adds a list of teams to add to the organisation.
-     * @param teamsToAdd Teams to be added to the organisation
-     * @throws DuplicateObjectException if the murcs already has
-     * a team from teams to be added
-     */
-    public final void addTeams(final List<Team> teamsToAdd) throws DuplicateObjectException {
-        for (Team team : teamsToAdd) {
-            this.addTeam(team);
         }
     }
 
@@ -532,17 +472,6 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of skills to the existing list of skills.
-     * @param skillsToAdd Skill to be added existing skills
-     * @throws DuplicateObjectException if a skill is already in the organisation
-     */
-    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
-        for (Skill skill : skillsToAdd) {
-            this.addSkill(skill);
-        }
-    }
-
-    /**
      * Removes a skill from skills.
      * @param skill The skill to remove
      */
@@ -596,17 +525,6 @@ public class Organisation extends TrackableObject implements Serializable {
         }
         else {
             throw new DuplicateObjectException("Backlog already exists");
-        }
-    }
-
-    /**
-     * Adds a list of backlogs to the model. Careful, this won't be undoable.
-     * @param backlogToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
-     */
-    public final void addBacklogs(final List<Backlog> backlogToAdd) throws DuplicateObjectException {
-        for (Backlog backlog : backlogToAdd) {
-            addBacklog(backlog);
         }
     }
 
@@ -791,13 +709,16 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of releases to the project.
-     * @param releasesToAdd The releases to be added.
-     * @throws DuplicateObjectException when attempting to add a duplicate release.
+     * Adds all model items from a collection to the Organisation.
+     * For use with generators that mass produce model items.
+     * @param items model objects to add to Organisation.
+     * @throws DuplicateObjectException when a duplicate object already exists in the organisation.
+     * @throws InvalidParameterException when an item being added is invalid (eg null).
      */
-    public final void addReleases(final List<Release> releasesToAdd) throws DuplicateObjectException {
-        for (Release release : releasesToAdd) {
-            addRelease(release);
+    public final void addCollection(final Collection<? extends Model> items)
+            throws DuplicateObjectException, InvalidParameterException {
+        for (Model item : items) {
+            add(item);
         }
     }
 }
