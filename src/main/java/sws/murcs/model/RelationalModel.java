@@ -1,6 +1,5 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.OverlappedDatesException;
@@ -185,8 +184,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a new project.
-     * @param project The new project
-     * @throws DuplicateObjectException if the project already exists
+     * @param project The new project.
+     * @throws DuplicateObjectException if the project already exists.
      */
     private void addProject(final Project project) throws DuplicateObjectException {
         if (!this.getProjects().contains(project)
@@ -405,10 +404,16 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a work allocation to the model.
-     * @param workAllocation The work period to be added
-     * @throws CustomException when attempting to add a duplicate object.
+     * @param workAllocation The work period to be added.
+     * @throws InvalidParameterException when attempting to add a duplicate object or if the object is null.
+     * @throws OverlappedDatesException when dates for the work allocation are invalid.
      */
-    public final void addAllocation(final WorkAllocation workAllocation) throws CustomException {
+    public final void addAllocation(final WorkAllocation workAllocation)
+            throws InvalidParameterException, OverlappedDatesException{
+        if (workAllocation == null) {
+            throw new InvalidParameterException("Cannot add a null WorkAllocation.");
+        }
+
         Team team = workAllocation.getTeam();
         LocalDate startDate = workAllocation.getStartDate();
         LocalDate endDate = workAllocation.getEndDate();
@@ -473,7 +478,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Removes a given allocation.
-     * @param allocation The work allocation to remove
+     * @param allocation The work allocation to remove.
      */
     public final void removeAllocation(final WorkAllocation allocation) {
         if (this.allocations.contains(allocation)) {
@@ -600,11 +605,17 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Tries to add the object to the model.
-     * @param model the object to add to the model
-     * @throws DuplicateObjectException because you tried to add an object that already exists
+     * @param model the object to add to the model.
+     * @throws DuplicateObjectException because you tried to add an object that already exists.
+     * @throws InvalidParameterException if the object that is being added is invalid.
      */
-    public final void add(final Model model) throws DuplicateObjectException {
+    public final void add(final Model model) throws DuplicateObjectException, InvalidParameterException {
         ModelType type = ModelType.getModelType(model);
+
+        if (model.getShortName() == null || model.getShortName().equals("")) {
+            throw new InvalidParameterException("Model objects must have a name before being added.");
+        }
+
         long commitNumber;
         if (UndoRedoManager.getHead() == null) {
             commitNumber = 0;
@@ -635,7 +646,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 addBacklog((Backlog) model);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Adding of this model type has not yet been implemented.");
         }
 
         try {
