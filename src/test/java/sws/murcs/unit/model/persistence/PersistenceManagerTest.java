@@ -62,7 +62,9 @@ public class PersistenceManagerTest {
 
     @Before
     public void setUp() throws Exception {
+        PersistenceManager.setCurrent(null);
         manager = new PersistenceManager(new TestLoader());
+        PersistenceManager.setCurrent(manager);
         generator = new OrganisationGenerator(OrganisationGenerator.Stress.Low);
         UndoRedoManager.setDisabled(true);
     }
@@ -124,7 +126,14 @@ public class PersistenceManagerTest {
     @Test
     public void testDeleteModel() throws Exception {
         Assert.assertFalse(manager.deleteModel("none"));
-        manager.saveModel("temp", generator.generate());
+        Organisation model = null;
+        for (int i = 0; i < 10; i++) {
+            model = generator.generate();
+            if (!generator.lastGenerationHadError()) {
+                break;  // work around for the duplicate skills issue
+            }
+        }
+        manager.saveModel("temp", model);
         Assert.assertTrue(manager.modelExists("temp"));
         Assert.assertTrue(manager.deleteModel("temp"));
         Assert.assertFalse(manager.modelExists("temp"));

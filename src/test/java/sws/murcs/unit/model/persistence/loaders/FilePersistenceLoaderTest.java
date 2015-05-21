@@ -62,6 +62,12 @@ public class FilePersistenceLoaderTest {
     public void testLoadModel() throws Exception {
         String testFile = getNewTestFile();
         Organisation model = generator.generate();
+        for (int i = 0; i < 10; i++) {
+            model = generator.generate();
+            if (!generator.lastGenerationHadError()) {
+                break;  // work around for the duplicate skills issue
+            }
+        }
         int numProjects = model.getProjects().size();
         loader.saveModel(testFile, model);
         Organisation loadModel = loader.loadModel(testFile);

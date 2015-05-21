@@ -1,16 +1,6 @@
 package sws.murcs.debug.sampledata;
 
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Model;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
-import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +66,19 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * The stress level.
      */
     private Stress stress;
+
+    /**
+     * Set if the last generation had an error.
+     */
+    private boolean lastWasError;
+
+    /**
+     * The last generation of an Organisation incurred an error.
+     * @return true if an error occurred, false otherwise.
+     */
+    public final boolean lastGenerationHadError() {
+        return lastWasError;
+    }
 
     /**
      * Instantiates a new random Organisation generator.
@@ -249,10 +252,12 @@ public class OrganisationGenerator implements Generator<Organisation> {
             model.addStories(stories);
             model.addBacklogs(backlogs);
 
+            lastWasError = false;
             return model;
         }
         catch (Exception e) {
             e.printStackTrace();
+            lastWasError = true;
         }
         return null;
     }
