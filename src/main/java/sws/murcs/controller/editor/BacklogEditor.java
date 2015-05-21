@@ -96,7 +96,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Update the assigned PO.
      */
     private void updateAssignedPO() {
-        RelationalModel relationalModel = PersistenceManager.Current.getCurrentModel();
+        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
 
         Person productOwner = getModel().getAssignedPO();
 

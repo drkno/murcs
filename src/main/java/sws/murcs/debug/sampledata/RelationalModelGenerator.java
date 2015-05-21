@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
@@ -9,6 +10,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,6 +66,10 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
      * The story generator.
      */
     private final StoryGenerator storyGenerator;
+    /**
+     * The backlog generator.
+     */
+    private final BacklogGenerator backlogGenerator;
 
     /**
      * The stress level.
@@ -90,6 +96,9 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
         releaseGenerator = new ReleaseGenerator();
 
         storyGenerator = new StoryGenerator();
+
+        backlogGenerator = new BacklogGenerator();
+        backlogGenerator.setStoryGenerator(storyGenerator);
 
         workAllocationGenerator = new WorkAllocationGenerator();
     }
@@ -222,6 +231,14 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
 
+            backlogGenerator.setStoryPool(stories);
+            min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
+                    BacklogGenerator.HIGH_STRESS_MIN);
+            max = getMin(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
+                    BacklogGenerator.HIGH_STRESS_MAX);
+            List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
+                    .stream().map(m -> (Backlog) m).collect(Collectors.toList());
+
             model.addSkills(skills);
             model.addPeople(people);
             model.addTeams(teams);
@@ -229,6 +246,7 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             model.addReleases(releases);
             model.addAllocations(allocations);
             model.addStories(stories);
+            model.addBacklogs(backlogs);
 
             return model;
         }

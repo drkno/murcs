@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.2</projectVersion>
-    <dateGenerated>2015-05-02</dateGenerated>
+    <projectVersion>0.0.3</projectVersion>
+    <dateGenerated>2015-05-21</dateGenerated>
     <content>
         <projects>
             <project shortName="FITR">
@@ -13,8 +13,49 @@
                         <releaseDate>2015-04-22</releaseDate>
                     </release>
                 </releases>
+                <backlogs/>
             </project>
         </projects>
+        <backlogs>
+            <backlog shortName="This is the backlog">
+                <longName>back log be what</longName>
+                <description>high five</description>
+                <assignedPO shortName="Daniel">
+                    <longName>Daniel van Wichen</longName>
+                    <id>dpv11</id>
+                    <skills>
+                        <skill shortName="Python">
+                            <longName>Python 2.7</longName>
+                            <description>A simple object-oriented language perfect for beginners</description>
+                        </skill>
+                        <skill shortName="PO">
+                            <longName>Product Owner</longName>
+                            <description>Has ability to insult design teams efforts</description>
+                        </skill>
+                    </skills>
+                </assignedPO>
+                <stories>
+                    <story shortName="1">
+                        <longName>Revert</longName>
+                        <description>Revert to last saved state</description>
+                        <creator shortName="Haydon">
+                            <longName>Haydon Baddock</longName>
+                            <id>hbk67</id>
+                            <skills>
+                                <skill shortName="Python">
+                                    <longName>Python 2.7</longName>
+                                    <description>A simple object-oriented language perfect for beginners</description>
+                                </skill>
+                                <skill shortName="C">
+                                    <longName>C99</longName>
+                                    <description>C99 is older than the current C standard, namely, C11</description>
+                                </skill>
+                            </skills>
+                        </creator>
+                    </story>
+                </stories>
+            </backlog>
+        </backlogs>
         <workAllocations>
             <workAllocation>
                 <project shortName="FITR">
@@ -26,6 +67,7 @@
                             <releaseDate>2015-04-22</releaseDate>
                         </release>
                     </releases>
+                    <backlogs/>
                 </project>
                 <team shortName="Sengineers">
                     <longName>Software Engineers</longName>
@@ -101,6 +143,16 @@
                 <endDate>2015-05-08</endDate>
             </workAllocation>
         </workAllocations>
+        <unassignedStories>
+            <story shortName="2">
+                <longName>Story Maintenance</longName>
+                <description>add stories to project</description>
+                <creator shortName="Unallocated">
+                    <id>null123</id>
+                    <skills/>
+                </creator>
+            </story>
+        </unassignedStories>
         <unassignedTeams>
             <team shortName="Lonely">
                 <longName>Mr Lonely</longName>
