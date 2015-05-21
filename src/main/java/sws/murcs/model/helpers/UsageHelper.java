@@ -29,11 +29,6 @@ public final class UsageHelper {
     }
 
     /**
-     * The current relational model.
-     */
-    private static RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
-
-    /**
      * Determines whether or not a Model object is in use.
      * @param model The model to check
      * @return Whether the model object is in use
@@ -98,6 +93,7 @@ public final class UsageHelper {
      * @return The usages of the team
      */
     private static List<Model> findUsages(final Team team) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         List<Model> usages = new ArrayList<>();
         for (Project project : currentModel.getProjects()) {
             for (WorkAllocation allocation : currentModel.getProjectsAllocations(project)) {
@@ -116,6 +112,7 @@ public final class UsageHelper {
      * @return The usages of the person
      */
     private static List<Model> findUsages(final Person person) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getTeams().stream()
                 .filter(team -> team.getMembers().contains(person))
                 .collect(Collectors.toList());
@@ -127,6 +124,7 @@ public final class UsageHelper {
      * @return The usages of the skill
      */
     private static List<Model> findUsages(final Skill skill) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getPeople().stream()
                 .filter(person -> person.getSkills().contains(skill))
                 .collect(Collectors.toList());
@@ -138,6 +136,7 @@ public final class UsageHelper {
      * @return The usages of the backlog
      */
     private static List<Model> findUsages(final Backlog backlog) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getProjects().stream()
                 .filter(project -> project.getBacklogs().contains(backlog))
                 .collect(Collectors.toList());
@@ -149,6 +148,7 @@ public final class UsageHelper {
      * @return The usages of the story
      */
     private static List<Model> findUsages(final Story story) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getBacklogs().stream()
                 .filter(backlog -> backlog.getStories().contains(story))
                 .collect(Collectors.toList());
@@ -159,7 +159,8 @@ public final class UsageHelper {
      * @param model The model
      * @return Whether it exists
      */
-    public static final boolean exists(final Model model) {
+    public static boolean exists(final Model model) {
+        RelationalModel currentModel = PersistenceManager.getCurrent().getCurrentModel();
         switch (ModelType.getModelType(model)) {
             case Project:
                 return currentModel.getProjects().contains(model);
