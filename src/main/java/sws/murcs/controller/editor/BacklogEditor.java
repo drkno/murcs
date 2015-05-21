@@ -1,18 +1,32 @@
 package sws.murcs.controller.editor;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
+import java.util.Observable;
 import java.util.stream.Collectors;
 
 /**
@@ -25,7 +39,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      *
      */
     @FXML
-    private TextField shortNameTextField, longNameTextField;
+    private TextField shortNameTextField, longNameTextField, priorityTextField;
 
     /**
      *
@@ -43,7 +57,41 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      *
      */
     @FXML
+    private ChoiceBox<Story> storyPicker;
+
+    /**
+     *
+     */
+    @FXML
+    private TableView<Story> storyTable;
+
+    /**
+     *
+     */
+    @FXML
+    private TableColumn<Story, String> storyColumn;
+
+    /**
+     *
+     */
+    @FXML
+    private TableColumn<Story, Object> deleteColumn;
+
+    /**
+     *
+     */
+    @FXML
     private Label labelErrorMessage;
+
+    /**
+     * An observable list of backlog stories.
+     */
+    private ObservableList<Story> observableStories;
+
+    /**
+     *
+     */
+    private ObservableObjectValue<Story> selectedStory;
 
     @FXML
     @Override
@@ -58,6 +106,23 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+
+        observableStories = FXCollections.observableArrayList();
+        storyTable.setItems(observableStories);
+        selectedStory = storyTable.getSelectionModel().selectedItemProperty();
+        deleteColumn.setCellFactory(param -> new RemoveButtonCell());
+        storyColumn.setCellValueFactory(param -> {
+            Story story = param.getValue();
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority != null) {
+                return new SimpleStringProperty(String.valueOf(storyPriority + 1)
+                        + ". "
+                        + story.getShortName());
+            } else {
+                return new SimpleStringProperty(story.getShortName());
+            }
+        });
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -65,6 +130,83 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
         });
     }
+
+    /**
+     *
+     * @param event the button clicked event
+     */
+    @FXML
+    private void prioritiseUp(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority == null) {
+                storyPriority = getModel().getMaxStoryPriority() + 1;
+            }
+            if (storyPriority == 0) {
+                return;
+            }
+            try {
+                getModel().modifyStoryPriority(story, storyPriority - 1);
+            } catch (CustomException e) {
+                labelErrorMessage.setText(e.getMessage());
+            }
+            updateStoryTable();
+        }
+    }
+
+    /**
+     *
+     * @param event the button clicked event
+     */
+    @FXML
+    private void prioritiseDown(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority == null) {
+                return;
+            }
+            else if (storyPriority + 1 >= getModel().getMaxStoryPriority()) {
+                storyPriority = null;
+            }
+            else {
+                storyPriority++;
+            }
+            try {
+                getModel().modifyStoryPriority(story, storyPriority);
+            } catch (CustomException e) {
+                labelErrorMessage.setText(e.getMessage());
+            }
+            updateStoryTable();
+        }
+    }
+
+    /**
+     *
+     * @param event the button clicked event
+     */
+    @FXML
+    private void addStory(final ActionEvent event) {
+        try {
+            Story selectedStory = storyPicker.getSelectionModel().getSelectedItem();
+            Integer priority = null;
+            String priorityString = priorityTextField.getText().trim();
+            if (priorityString.matches("\\d+")) {
+                priority = Integer.parseInt(priorityString) - 1;
+            } else if (!priorityString.isEmpty()) {
+                throw new CustomException("Priority is not a number");
+            }
+            if (selectedStory != null) {
+                getModel().addStory(selectedStory, priority);
+            }
+            updateAvailableStories();
+            updateStoryTable();
+        } catch (CustomException e) {
+            labelErrorMessage.setText(e.getMessage());
+        }
+    }
+
 
     @Override
     public final void loadObject() {
@@ -87,6 +229,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         updateAssignedPO();
+        updateAvailableStories();
 
         //fixme set the error text to nothing when first loading the object
         labelErrorMessage.setText(" ");
@@ -116,12 +259,45 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         poChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
+    /**
+     *
+     */
+    private void updateAvailableStories() {
+        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
+        List<Story> stories = relationalModel.getStories()
+                .stream()
+                .filter(story -> !getModel().getAllStories().contains(story))
+                .collect(Collectors.toList());
+        // Remove listener while editing the story picker
+        storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        storyPicker.getItems().clear();
+        storyPicker.getItems().addAll(stories);
+        if (storyPicker != null) {
+            storyPicker.getSelectionModel().selectFirst();
+        }
+        storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+    }
+
+    /**
+     *
+     */
+    private void updateStoryTable() {
+        observableStories.setAll(getModel().getAllStories());
+        if (selectedStory.get() != null) {
+            storyTable.getSelectionModel().select(selectedStory.get());
+        }
+        else {
+            storyTable.getSelectionModel().selectFirst();
+        }
+    }
+
     @Override
     public final void dispose() {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
+        storyPicker.setItems(null);
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -153,6 +329,29 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
+        }
+    }
+
+    /**
+     * A TableView cell that contains a link to the team it represents.
+     */
+    private class RemoveButtonCell extends TableCell<Story, Object> {
+        @Override
+        protected void updateItem(final Object unused, final boolean empty) {
+            super.updateItem(unused, empty);
+            Story story = (Story) getTableRow().getItem();
+            if (story == null) {
+                setGraphic(null);
+            }
+            else {
+                Button button = new Button("X");
+                button.setOnAction(event -> {
+                    getModel().removeStory(story);
+                    updateStoryTable();
+                    updateAvailableStories();
+                });
+                setGraphic(button);
+            }
         }
     }
 }

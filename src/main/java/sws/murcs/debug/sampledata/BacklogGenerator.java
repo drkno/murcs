@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Story;
 
@@ -161,11 +162,15 @@ public class BacklogGenerator implements Generator<Backlog> {
         int size = stories.size();
         int prioritised = size / 2;
 
-        for (int i = 0; i < prioritised; i++) {
-            backlog.addStory(stories.get(i), i);
-        }
-        for (Story story : stories.subList(prioritised, size)) {
-            backlog.addStory(story, null);
+        try {
+            for (int i = 0; i < prioritised; i++) {
+                backlog.addStory(stories.get(i), i);
+            }
+            for (Story story : stories.subList(prioritised, size)) {
+                backlog.addStory(story, null);
+            }
+        } catch (CustomException e) {
+            // Will never happen!! We hope.
         }
 
         return backlog;

@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -91,8 +92,9 @@ public class Backlog extends Model {
      * Add a story to the backlog. If story is already in backlog then its priority will just be updated.
      * @param story The story to be modified
      * @param priority The priority of the story i.e. where in the list it should be
+     * @throws CustomException if priority if less than zero
      */
-    public final void modifyStory(final Story story, final Integer priority) {
+    public final void modifyStory(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
             modifyStoryPriority(story, priority);
         } else {
@@ -106,7 +108,7 @@ public class Backlog extends Model {
      * @param story The story to be added
      * @param priority The priority of the story i.e. where in the list it should be.
      */
-    public final void addStory(final Story story, final Integer priority) {
+    public final void addStory(final Story story, final Integer priority) throws CustomException {
         if (!getAllStories().contains(story)) {
             if (priority == null) {
                 if (!unPrioritisedStories.contains(story)) {
@@ -117,7 +119,7 @@ public class Backlog extends Model {
                 }
             }
             else if (priority < 0) {
-                throw new IndexOutOfBoundsException("priority less than zero");
+                throw new CustomException("Priority less than zero");
             }
             else if (priority >= stories.size()) {
                 stories.add(story);
@@ -140,7 +142,7 @@ public class Backlog extends Model {
      * @param story The story involved.
      * @param priority The new priority of that story
      */
-    public final void modifyStoryPriority(final Story story, final Integer priority) {
+    public final void modifyStoryPriority(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
             final Integer currentStoryPriority = getStoryPriority(story);
             if (priority == null) {
@@ -148,14 +150,12 @@ public class Backlog extends Model {
                     stories.remove(story);
                 }
                 if (!unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.add(story);
+                    unPrioritisedStories.add(0, story);
                 }
-            }
-            else if (!Objects.equals(currentStoryPriority, priority)) {
+            } else if (!Objects.equals(currentStoryPriority, priority)) {
                 if (priority < 0) {
-                    throw new IndexOutOfBoundsException("priority less than zero");
-                }
-                else if (priority >= stories.size()) {
+                    throw new CustomException("Priority less than zero");
+                } else if (priority >= stories.size()) {
                     // check to see if the story is already in the prioritised stories
                     // if it is then remove it so it can be added to the end of the list.
                     if (stories.contains(story)) {
@@ -165,18 +165,22 @@ public class Backlog extends Model {
                     if (unPrioritisedStories.contains(story)) {
                         unPrioritisedStories.remove(story);
                     }
-                }
-                else {
+                } else {
                     if (stories.contains(story)) {
-                        stories.remove(story);
-                    }
-                    stories.add(priority, story);
-                    if (unPrioritisedStories.contains(story)) {
-                        unPrioritisedStories.remove(story);
+                        Story swap = stories.get(priority);
+                        if (swap != null) {
+                            stories.set(priority, story);
+                            stories.set(currentStoryPriority, swap);
+                        }
+                    } else if (!stories.contains(story)) {
+                        stories.add(priority, story);
+                        if (unPrioritisedStories.contains(story)) {
+                            unPrioritisedStories.remove(story);
+                        }
                     }
                 }
+                commit("edit backlog");
             }
-            commit("edit backlog");
         }
     }
 
@@ -185,11 +189,19 @@ public class Backlog extends Model {
      * @param story The story involved
      * @return The current priority of that story. -1 if story is unassigned or not in the backlog.
      */
-    public final int getStoryPriority(final Story story) {
+    public final Integer getStoryPriority(final Story story) {
         if (stories.contains(story)) {
             return stories.indexOf(story);
         }
-        return -1;
+        return null;
+    }
+
+    /**
+     * Return the lowest priority story (highest number)
+     * @return
+     */
+    public final Integer getMaxStoryPriority() {
+        return stories.size();
     }
 
     /**
