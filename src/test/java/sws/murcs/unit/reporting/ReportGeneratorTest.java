@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 
 import java.io.File;
@@ -29,6 +30,9 @@ public class ReportGeneratorTest {
     @Before
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(true);
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
         organisation = new Organisation();
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
