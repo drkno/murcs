@@ -15,6 +15,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.OverlappedDatesException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;

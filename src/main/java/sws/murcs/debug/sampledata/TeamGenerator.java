@@ -923,11 +923,10 @@ public class TeamGenerator implements Generator<Team> {
             for (int i = 0; i < personCount; i++) {
                 // Remove the person so we can't pick it again.
                 // We'll put it back when we're done
-                Person skill = personPool.remove(NameGenerator.random(personPool.size()));
-                generated.add(skill);
+                Person person = personPool.remove(NameGenerator.random(personPool.size()));
+                generated.add(person);
             }
         }
-
         return generated;
     }
 

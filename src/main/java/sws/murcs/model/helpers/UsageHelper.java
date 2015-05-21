@@ -1,14 +1,15 @@
 package sws.murcs.model.helpers;
 
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
+import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.RelationalModel;
-import sws.murcs.model.Team;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Person;
 import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -48,7 +49,6 @@ public final class UsageHelper {
      */
     public static List<Model> findUsages(final Model model) {
         ModelType type = ModelType.getModelType(model);
-
         switch (type) {
             case Project:
                 return findUsages((Project) model);
@@ -62,6 +62,8 @@ public final class UsageHelper {
                 return findUsages((Release) model);
             case Story:
                 return findUsages((Story) model);
+            case Backlog:
+                return findUsages((Backlog) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
@@ -85,8 +87,9 @@ public final class UsageHelper {
      * @return The usages of the project
      */
     private static List<Model> findUsages(final Project project) {
-        List<Model> usages = project.getReleases().stream().collect(Collectors.toList());
-        return usages;
+        return project.getReleases()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     /**
@@ -94,7 +97,7 @@ public final class UsageHelper {
      * @param team The team to find the usages of
      * @return The usages of the team
      */
-    private  static List<Model> findUsages(final Team team) {
+    private static List<Model> findUsages(final Team team) {
         List<Model> usages = new ArrayList<>();
         for (Project project : currentModel.getProjects()) {
             for (WorkAllocation allocation : currentModel.getProjectsAllocations(project)) {
@@ -113,13 +116,9 @@ public final class UsageHelper {
      * @return The usages of the person
      */
     private static List<Model> findUsages(final Person person) {
-        List<Model> usages = new ArrayList<>();
-        for (Team team : currentModel.getTeams()) {
-            if (team.getMembers().contains(person)) {
-                usages.add(team);
-            }
-        }
-        return usages;
+        return currentModel.getTeams().stream()
+                .filter(team -> team.getMembers().contains(person))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -128,13 +127,20 @@ public final class UsageHelper {
      * @return The usages of the skill
      */
     private static List<Model> findUsages(final Skill skill) {
-        List<Model> usages = new ArrayList<>();
-        for (Person person : currentModel.getPeople()) {
-            if (person.getSkills().contains(skill)) {
-                usages.add(person);
-            }
-        }
-        return usages;
+        return currentModel.getPeople().stream()
+                .filter(person -> person.getSkills().contains(skill))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets a list of all the places that a backlog has been used.
+     * @param backlog The backlog to find the usages for
+     * @return The usages of the backlog
+     */
+    private static List<Model> findUsages(final Backlog backlog) {
+        return currentModel.getProjects().stream()
+                .filter(project -> project.getBacklogs().contains(backlog))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -143,11 +149,9 @@ public final class UsageHelper {
      * @return The usages of the story
      */
     private static List<Model> findUsages(final Story story) {
-        List<Model> usages = new ArrayList<>();
-
-        //TODO find all the backlogs the story is used within
-
-        return usages;
+        return currentModel.getBacklogs().stream()
+                .filter(backlog -> backlog.getStories().contains(story))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -155,18 +159,22 @@ public final class UsageHelper {
      * @param model The model
      * @return Whether it exists
      */
-    public static boolean exists(final Model model) {
+    public static final boolean exists(final Model model) {
         switch (ModelType.getModelType(model)) {
             case Project:
                 return currentModel.getProjects().contains(model);
-            case Person:
-                return currentModel.getPeople().contains(model);
-            case Team:
-                return currentModel.getTeams().contains(model);
-            case Skill:
-                return currentModel.getSkills().contains(model);
             case Release:
                 return currentModel.getReleases().contains(model);
+            case Team:
+                return currentModel.getTeams().contains(model);
+            case Person:
+                return currentModel.getPeople().contains(model);
+            case Skill:
+                return currentModel.getSkills().contains(model);
+            case Backlog:
+                return currentModel.getBacklogs().contains(model);
+            case Story:
+                return currentModel.getStories().contains(model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
                         + model.getClass().getName()

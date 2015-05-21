@@ -22,6 +22,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
@@ -52,7 +53,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, showHide, revert;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert;
     /**
      * The side display which contains the display list.
      */
@@ -177,6 +178,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
         addStory.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
@@ -224,6 +226,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Skill: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
             case Story: arrayList = model.getStories(); break;
+            case Backlog: arrayList = model.getBacklogs(); break;
             default: throw new UnsupportedOperationException();
         }
 
@@ -625,6 +628,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     break;
                 case "addRelease":
                     clazz = Release.class;
+                    break;
+                case "addBacklog":
+                    clazz = Backlog.class;
                     break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");

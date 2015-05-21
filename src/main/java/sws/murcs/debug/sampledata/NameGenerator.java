@@ -206,7 +206,6 @@ public final class NameGenerator {
         while (i-- > 0) {
             result += from.charAt(RANDOM.nextInt(from.length()));
         }
-
         return result;
     }
 
