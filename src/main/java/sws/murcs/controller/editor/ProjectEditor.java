@@ -225,7 +225,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\" from \""
                 + allocation.getProject()
                 + "\"?");
-        alert.addOkCancelButtons(a -> {
+        alert.addYesNoButtons(a -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();

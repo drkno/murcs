@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 public class GenericPopup extends AnchorPane {
 
-    /***
+    /**
      * Enum for specifying which side of the dialog you want the button to appear on.
      */
     public enum Position {
@@ -58,6 +58,7 @@ public class GenericPopup extends AnchorPane {
      */
     @FXML
     private Label messageText;
+
     /**
      * The title of the message.
      */
@@ -69,11 +70,13 @@ public class GenericPopup extends AnchorPane {
      */
     @FXML
     private ImageView messageImage;
+
     /**
      * Contains left aligned buttons.
      */
     @FXML
     private HBox hBoxLeft;
+
     /**
      * Contains right align buttons.
      */
@@ -90,28 +93,33 @@ public class GenericPopup extends AnchorPane {
      * The stage for the popup.
      */
     private Stage popupStage;
+
     /**
      * The scene for the popup.
      */
     private Scene popupScene;
+
     /**
      * Whether or not there are any buttons defined in the popup.
      */
     private boolean buttonsDefined;
+
     /**
      * Default button width.
      */
     private final int defaultButtonWidth = 70;
+
     /**
      * Default button height.
      */
     private final int defaultButtonHeight = 25;
+
     /**
      * Default popUp height.
      */
     private final int defaultPopUpHeight = 150;
 
-    /***
+    /**
      * Constructs a new Generic Popup. In order to use you need
      * to at least set the message and add at least 1 button
      * some examples of how to use this include:
@@ -131,7 +139,7 @@ public class GenericPopup extends AnchorPane {
         this(null);
     }
 
-    /***
+    /**
      * Constructs a dialog from an exception.
      * @param exception The exception that you want to feed in to show the exception message.
      */
@@ -166,7 +174,7 @@ public class GenericPopup extends AnchorPane {
     }
 
 
-    /***
+    /**
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
      * (either the left hand side or the right hand side) and the function to call when it is clicked
      * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left
@@ -212,7 +220,7 @@ public class GenericPopup extends AnchorPane {
         buttonsDefined = true;
     }
 
-    /***
+    /**
      * Shows the dialog, this should be the last thing you call after setting up your dialog.
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
@@ -236,7 +244,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.show();
     }
 
-    /***
+    /**
      * Closes the dialog.
      * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
      * with only one lambda expression then the cancel button is automatically set to call this.
@@ -245,7 +253,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.close();
     }
 
-    /***
+    /**
      * Set the message you want the the dialog to show.
      * @param message The message you want to show on the dialog.
      */
@@ -256,7 +264,7 @@ public class GenericPopup extends AnchorPane {
         messageText.setText(message);
     }
 
-    /***
+    /**
      * Sets the title of the window.
      * (the bit that appears in the bar at the top)
      * @param title The window title.
@@ -265,7 +273,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.setTitle(title);
     }
 
-    /***
+    /**
      * Sets the title of the message
      * (appears alongside the title image).
      * @param titleText The title of the message.
@@ -277,7 +285,7 @@ public class GenericPopup extends AnchorPane {
         messageTitle.setText(titleText);
     }
 
-    /***
+    /**
      * Sets the image to appear beside the title.
      * NOTE: If you don't set the title text (not the window text) then this won't appear.
      * @param image image to set.
@@ -286,8 +294,8 @@ public class GenericPopup extends AnchorPane {
         messageImage.setImage(image);
     }
 
-    /***
-     * Adds default OK Cancel Buttons. you specify what is supposed to happen for the ok button and the cancel button.
+    /**
+     * Adds default OK Cancel Buttons. you specify what is supposed to happen for the ok button and the cancel button
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
@@ -295,7 +303,16 @@ public class GenericPopup extends AnchorPane {
         addOkCancelButtons(okFunction, m -> close());
     }
 
-    /***
+    /**
+     * Adds default Yes No Buttons. You specify what is supposed to happen for the Yes button and the No button
+     * remains it's default (closes the dialog).
+     * @param yesFunction The function you want to call on the yes button being clicked.
+     */
+    public final void addYesNoButtons(final Consumer yesFunction) {
+        addYesNoButtons(yesFunction, m -> close());
+    }
+
+    /**
      * Adds default OK Cancel Buttons.
      * you specify the functions for both the ok and cancel buttons when clicked.
      * @param okFunction The function you want to call on ok button click
@@ -306,7 +323,18 @@ public class GenericPopup extends AnchorPane {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
-    /***
+    /**
+     * Adds default Yes No Buttons.
+     * You specify the functions for both the yes and no buttons when clicked.
+     * @param yesFunction The function you want to call on yes button click.
+     * @param noFunction The function you want to call on no button click.
+     */
+    public final void addYesNoButtons(final Consumer yesFunction, final Consumer noFunction) {
+        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction);
+        addButton("No", Position.RIGHT, Action.CANCEL, noFunction);
+    }
+
+    /**
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */

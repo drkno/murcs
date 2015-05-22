@@ -12,7 +12,7 @@ public class StoryGenerator implements Generator<Story> {
     /**
      * The max number of stories to generate at low stress.
      */
-    public static final int LOW_STRESS_MAX = 3;
+    public static final int LOW_STRESS_MAX = 5;
     /**
      * The min number of stories to generate at low stress.
      */
@@ -21,20 +21,20 @@ public class StoryGenerator implements Generator<Story> {
     /**
      * The max number of stories to generate at medium stress.
      */
-    public static final int MEDIUM_STRESS_MAX = 10;
+    public static final int MEDIUM_STRESS_MAX = 20;
     /**
      * The min number of stories to generate at medium stress.
      */
-    public static final int MEDIUM_STRESS_MIN = 3;
+    public static final int MEDIUM_STRESS_MIN = 10;
 
     /**
      * The max number of stories to generate at high stress.
      */
-    public static final int HIGH_STRESS_MAX = 20;
+    public static final int HIGH_STRESS_MAX = 100;
     /**
      * The min number of stories to generate at high stress.
      */
-    public static final int HIGH_STRESS_MIN = 10;
+    public static final int HIGH_STRESS_MIN = 50;
 
     /**
      * A list of story names for use in generation.

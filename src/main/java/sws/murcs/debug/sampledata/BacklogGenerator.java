@@ -1,13 +1,12 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random Backlogs with stories.
@@ -153,7 +152,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     public final Backlog generate() {
         final int longNameMax = 10;
         final int minStories = 3;
-        final int maxStories = 15;
+        final int maxStories = 6;
 
         Backlog backlog = new Backlog();
 

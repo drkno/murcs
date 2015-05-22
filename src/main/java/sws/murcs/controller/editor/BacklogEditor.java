@@ -16,6 +16,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -346,9 +347,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             else {
                 Button button = new Button("X");
                 button.setOnAction(event -> {
-                    getModel().removeStory(story);
-                    updateStoryTable();
-                    updateAvailableStories();
+                    GenericPopup popup = new GenericPopup();
+                    popup.setTitleText("Are you sure?");
+                    popup.setMessageText("Are you sure you wish to remove the story \"" + story.getShortName() + "\" from this backlog?");
+                    popup.addYesNoButtons(p -> {
+                        getModel().removeStory(story);
+                        updateStoryTable();
+                        updateAvailableStories();
+                        popup.close();
+                    });
+                    popup.show();
                 });
                 setGraphic(button);
             }
