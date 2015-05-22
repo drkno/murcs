@@ -195,16 +195,20 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Story currentStory = storyPicker.getSelectionModel().getSelectedItem();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
-            if (priorityString.matches("\\d+")) {
-                priority = Integer.parseInt(priorityString) - 1;
-            } else if (!priorityString.isEmpty()) {
-                throw new CustomException("Priority is not a number");
-            }
             if (currentStory != null) {
+                if (priorityString.matches("\\d+") && !priorityString.isEmpty()) {
+                    priority = Integer.parseInt(priorityString) - 1;
+                }
+                else {
+                    throw new CustomException("Position is not a number");
+                }
                 getModel().addStory(currentStory, priority);
+                updateAvailableStories();
+                updateStoryTable();
             }
-            updateAvailableStories();
-            updateStoryTable();
+            else {
+                throw new CustomException("No story selected");
+            }
         }
         catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
@@ -267,14 +271,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private void updateAvailableStories() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-        List<Story> stories = organisation.getStories()
-                .stream()
-                .filter(story -> !getModel().getAllStories().contains(story))
-                .collect(Collectors.toList());
         // Remove listener while editing the story picker
         storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         storyPicker.getItems().clear();
-        storyPicker.getItems().addAll(stories);
+        storyPicker.getItems().addAll(organisation.getUnassignedStories());
         if (storyPicker != null) {
             storyPicker.getSelectionModel().selectFirst();
         }
@@ -334,6 +334,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             getModel().setAssignedPO(viewProductOwner);
             updateAssignedPO();
         }
+
+        updateAvailableStories();
     }
 
     /**
