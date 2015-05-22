@@ -186,7 +186,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @FXML
     private void addStory(final ActionEvent event) {
         try {
-            Story currentlySelectedStory = storyPicker.getSelectionModel().getSelectedItem();
+            Story currentStory = storyPicker.getSelectionModel().getSelectedItem();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (priorityString.matches("\\d+")) {
@@ -194,8 +194,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             } else if (!priorityString.isEmpty()) {
                 throw new CustomException("Priority is not a number");
             }
-            if (currentlySelectedStory != null) {
-                getModel().addStory(currentlySelectedStory, priority);
+            if (currentStory != null) {
+                getModel().addStory(currentStory, priority);
             }
             updateAvailableStories();
             updateStoryTable();
