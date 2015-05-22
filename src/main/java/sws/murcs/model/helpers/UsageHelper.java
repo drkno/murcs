@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 /**
  * Helps to find usages of a model within the current organisation.
+ * There are three public functions to use. inUse, findUsages or exists. All of these take a Model parameter and search
+ * the current organisation model to give you the appropriate results.
  */
 public final class UsageHelper {
 
