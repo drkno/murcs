@@ -109,7 +109,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -189,8 +188,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (currentStory != null) {
-                if (priorityString.matches("\\d+")) {
+                if (priorityString.matches("-?\\d+")) {
                     priority = Integer.parseInt(priorityString) - 1;
+                    if (priority < 0) {
+                        throw new CustomException("Invalid number [1-]");
+                    }
                 }
                 else if (!priorityString.isEmpty()) {
                     throw new CustomException("Position is not a number");
@@ -329,8 +331,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             getModel().setAssignedPO(viewProductOwner);
             updateAssignedPO();
         }
-
-        updateAvailableStories();
     }
 
     /**
