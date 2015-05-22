@@ -38,11 +38,11 @@ public class App extends Application {
     /**
      * The minimum height of the application.
      */
-    private final int minimumApplicationHeight = 600;
+    private final int minimumApplicationHeight = 650;
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 600;
+    private final int minimumApplicationWidth = 650;
     /**
      * The subString length to search over, when parsing debugging mode.
      */

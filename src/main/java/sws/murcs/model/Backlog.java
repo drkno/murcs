@@ -233,6 +233,7 @@ public class Backlog extends Model {
     public final void setAssignedPO(final Person po) throws CustomException {
         InvalidParameterException.validate("Assigned PO", po);
         assignedPO = po;
+        commit("edit backlog");
     }
 
     /**

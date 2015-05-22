@@ -152,7 +152,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     public final Backlog generate() {
         final int longNameMax = 10;
         final int minStories = 3;
-        final int maxStories = 15;
+        final int maxStories = 6;
 
         Backlog backlog = new Backlog();
 

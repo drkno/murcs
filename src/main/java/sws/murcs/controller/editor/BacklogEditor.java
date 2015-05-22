@@ -6,23 +6,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -107,7 +96,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -187,8 +175,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (currentStory != null) {
-                if (priorityString.matches("\\d+")) {
+                if (priorityString.matches("-?\\d+")) {
                     priority = Integer.parseInt(priorityString) - 1;
+                    if (priority < 0) {
+                        throw new CustomException("Invalid number");
+                    }
                 }
                 else if (!priorityString.isEmpty()) {
                     throw new CustomException("Position is not a number");
@@ -200,6 +191,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             else {
                 throw new CustomException("No story selected");
             }
+            labelErrorMessage.setText("");
         }
         catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
@@ -327,8 +319,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             getModel().setAssignedPO(viewProductOwner);
             updateAssignedPO();
         }
-
-        updateAvailableStories();
     }
 
     /**
@@ -345,9 +335,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             else {
                 Button button = new Button("X");
                 button.setOnAction(event -> {
-                    getModel().removeStory(story);
-                    updateStoryTable();
-                    updateAvailableStories();
+                    GenericPopup popup = new GenericPopup();
+                    popup.setTitleText("Are you sure?");
+                    popup.setMessageText("Are you sure you wish to remove the story \"" + story.getShortName() + "\" from this backlog?");
+                    popup.addYesNoButtons(p -> {
+                        getModel().removeStory(story);
+                        updateStoryTable();
+                        updateAvailableStories();
+                        popup.close();
+                    });
+                    popup.show();
                 });
                 setGraphic(button);
             }
