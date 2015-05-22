@@ -104,11 +104,12 @@ public class Backlog extends Model {
     }
 
     /**
-     /**
-     * Add a story to the backlog. If story is already in the stories then it is ignored along with its priority.
-     * @param story The story to be added
+     * Attempts to add a story to the backlog.
+     * If story is already in the Backlog, it will be ignored.
+     * @param story The story to be added.
      * @param priority The priority of the story i.e. where in the list it should be.
-     * @throws CustomException throws if there are any exceptions add the story.
+     * This should be an integer greater than or equal to 0.
+     * @throws CustomException if there any errors adding a story, a CustomException will be thrown.
      */
     public final void addStory(final Story story, final Integer priority) throws CustomException {
         if (!getAllStories().contains(story)) {
