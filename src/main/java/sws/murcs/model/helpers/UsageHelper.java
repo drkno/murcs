@@ -1,20 +1,11 @@
 package sws.murcs.model.helpers;
 
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
-import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -155,6 +146,37 @@ public final class UsageHelper {
         return currentModel.getBacklogs().stream()
                 .filter(backlog -> backlog.getStories().contains(story))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Finds a model object in the organisation from a predicate.
+     * If there is no Organisation to search, null will be returned.
+     * @param type type that should be search.
+     * @param predicate the predicate to match.
+     * @param <T> the model type to return and search.
+     * @return the first instance that meets the criteria, or null if not found.
+     */
+    public static <T extends Model> T findBy(final ModelType type, final Predicate<T> predicate) {
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        if (currentModel == null) {
+            return null;
+        }
+
+        List<T> list = null;
+        switch (type) {
+            case Skill: list = (List<T>) currentModel.getSkills(); break;
+            case Person: list = (List<T>) currentModel.getPeople(); break;
+            case Project: list = (List<T>) currentModel.getProjects(); break;
+            case Team: list = (List<T>) currentModel.getTeams(); break;
+            case Release: list = (List<T>) currentModel.getReleases(); break;
+            case Story: list = (List<T>) currentModel.getStories(); break;
+            case Backlog: list = (List<T>) currentModel.getBacklogs(); break;
+            default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
+        }
+        T foundModel = list.stream()
+                .filter(predicate)
+                .findAny().orElseGet(() -> null);
+        return foundModel;
     }
 
     /**
