@@ -42,30 +42,37 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * The project generator.
      */
     private final ProjectGenerator projectGenerator;
+
     /**
      * The team generator.
      */
     private final TeamGenerator teamGenerator;
+
     /**
      * The person generator.
      */
     private final PersonGenerator personGenerator;
+
     /**
      * The skills generator.
      */
     private final SkillGenerator skillGenerator;
+
     /**
      * The release generator.
      */
     private final ReleaseGenerator releaseGenerator;
+
     /**
      * The work allocator generator.
      */
     private final WorkAllocationGenerator workAllocationGenerator;
+
     /**
      * The story generator.
      */
     private final StoryGenerator storyGenerator;
+    
     /**
      * The backlog generator.
      */
