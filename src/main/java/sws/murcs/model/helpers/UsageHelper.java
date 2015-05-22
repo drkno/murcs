@@ -144,7 +144,7 @@ public final class UsageHelper {
     private static List<Model> findUsages(final Story story) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
         return currentModel.getBacklogs().stream()
-                .filter(backlog -> backlog.getStories().contains(story))
+                .filter(backlog -> backlog.getAllStories().contains(story))
                 .collect(Collectors.toList());
     }
 
@@ -157,6 +157,8 @@ public final class UsageHelper {
      * @return the first instance that meets the criteria, or null if not found.
      */
     public static <T extends Model> T findBy(final ModelType type, final Predicate<T> predicate) {
+        if (PersistenceManager.getCurrent() == null) return null;
+
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
         if (currentModel == null) {
             return null;
