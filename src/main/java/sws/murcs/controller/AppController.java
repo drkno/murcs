@@ -739,6 +739,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
                 displayList.getSelectionModel().select(parameter);
+                displayList.scrollTo(parameter);
             }
 
             if (displayList.getSelectionModel().getSelectedIndex() < 0) {
