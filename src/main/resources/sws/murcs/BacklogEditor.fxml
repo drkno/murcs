@@ -45,7 +45,7 @@
                         <VBox>
                             <children>
                                 <Label text="Product Owner" GridPane.rowIndex="1" />
-                                <ChoiceBox fx:id="poChoiceBox" prefWidth="150.0" />
+                                <ComboBox fx:id="poComboBox" prefWidth="150.0" />
                             </children>
                             <padding>
                                 <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -100,7 +100,7 @@
                                                 </AnchorPane>
                                                 <AnchorPane GridPane.rowIndex="1">
                                                     <children>
-                                                        <ChoiceBox fx:id="storyPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" />
+                                                        <ComboBox fx:id="storyPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" />
                                                     </children>
                                                     <padding>
                                                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />

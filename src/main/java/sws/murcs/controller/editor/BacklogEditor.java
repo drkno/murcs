@@ -1,7 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
@@ -9,7 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -24,6 +22,9 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the model creator popup window.
@@ -47,13 +48,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A choice box for chooses the PO for a backlog.
      */
     @FXML
-    private ChoiceBox<Person> poChoiceBox;
+    private ComboBox<Person> poComboBox;
 
     /**
      * A choicebox for adding a story to the backlog.
      */
     @FXML
-    private ChoiceBox<Story> storyPicker;
+    private ComboBox<Story> storyPicker;
 
     /**
      * A table containing all the stories in a backlog.
@@ -92,18 +93,21 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @FXML
     @Override
     public final void initialize() {
+        // set up change listener
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
+        // assign change listeners to fields
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-        poChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
+        // setup the observable stories
         observableStories = FXCollections.observableArrayList();
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
@@ -115,7 +119,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 return new SimpleStringProperty(String.valueOf(storyPriority + 1)
                         + ". "
                         + story.getShortName());
-            } else {
+            }
+            else {
                 return new SimpleStringProperty(story.getShortName());
             }
         });
@@ -144,7 +149,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             try {
                 getModel().modifyStoryPriority(story, storyPriority - 1);
-            } catch (CustomException e) {
+            }
+            catch (CustomException e) {
                 labelErrorMessage.setText(e.getMessage());
             }
             updateStoryTable();
@@ -171,7 +177,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             try {
                 getModel().modifyStoryPriority(story, storyPriority);
-            } catch (CustomException e) {
+            }
+            catch (CustomException e) {
                 labelErrorMessage.setText(e.getMessage());
             }
             updateStoryTable();
@@ -188,17 +195,22 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Story currentStory = storyPicker.getSelectionModel().getSelectedItem();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
-            if (priorityString.matches("\\d+")) {
-                priority = Integer.parseInt(priorityString) - 1;
-            } else if (!priorityString.isEmpty()) {
-                throw new CustomException("Priority is not a number");
-            }
             if (currentStory != null) {
+                if (priorityString.matches("\\d+") && !priorityString.isEmpty()) {
+                    priority = Integer.parseInt(priorityString) - 1;
+                }
+                else {
+                    throw new CustomException("Position is not a number");
+                }
                 getModel().addStory(currentStory, priority);
+                updateAvailableStories();
+                updateStoryTable();
             }
-            updateAvailableStories();
-            updateStoryTable();
-        } catch (CustomException e) {
+            else {
+                throw new CustomException("No story selected");
+            }
+        }
+        catch (CustomException e) {
             labelErrorMessage.setText(e.getMessage());
         }
     }
@@ -226,6 +238,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         updateAssignedPO();
         updateAvailableStories();
+        updateStoryTable();
     }
 
     /**
@@ -243,13 +256,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 .collect(Collectors.toList());
 
         // Remove listener while editing the product owner picker
-        poChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
-        poChoiceBox.getItems().clear();
-        poChoiceBox.getItems().addAll(productOwners);
-        if (poChoiceBox != null) {
-            poChoiceBox.getSelectionModel().select(productOwner);
+        poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        poComboBox.getItems().clear();
+        poComboBox.getItems().addAll(productOwners);
+        if (poComboBox != null) {
+            poComboBox.getSelectionModel().select(productOwner);
         }
-        poChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**
@@ -258,14 +271,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private void updateAvailableStories() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-        List<Story> stories = organisation.getStories()
-                .stream()
-                .filter(story -> !getModel().getAllStories().contains(story))
-                .collect(Collectors.toList());
         // Remove listener while editing the story picker
         storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         storyPicker.getItems().clear();
-        storyPicker.getItems().addAll(stories);
+        storyPicker.getItems().addAll(organisation.getUnassignedStories());
         if (storyPicker != null) {
             storyPicker.getSelectionModel().selectFirst();
         }
@@ -289,9 +298,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     public final void dispose() {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
-        poChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        //storyPicker.setItems(null);
+        observableStories = null;
+        selectedStory = null;
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -319,11 +329,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         Person modelProductOwner = getModel().getAssignedPO();
-        Person viewProductOwner = poChoiceBox.getValue();
+        Person viewProductOwner = poComboBox.getValue();
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
             getModel().setAssignedPO(viewProductOwner);
             updateAssignedPO();
         }
+
+        updateAvailableStories();
     }
 
     /**

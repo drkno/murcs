@@ -257,7 +257,7 @@ public class Organisation extends TrackableObject implements Serializable {
             return s1.getShortName().toLowerCase().compareTo(s2.getShortName().toLowerCase());
 
         });
-        getBacklogs().forEach(t -> assignedStories.addAll(t.getStories()));
+        getBacklogs().forEach(t -> assignedStories.addAll(t.getAllStories()));
         Set<Story> unassignedStories = new TreeSet<>((s1, s2) -> {
             if (s1.equals(s2)) {
                 return 0;

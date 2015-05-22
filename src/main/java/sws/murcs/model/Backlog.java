@@ -156,10 +156,12 @@ public class Backlog extends Model {
                 if (!unPrioritisedStories.contains(story)) {
                     unPrioritisedStories.add(0, story);
                 }
-            } else if (!Objects.equals(currentStoryPriority, priority)) {
+            }
+            else if (!Objects.equals(currentStoryPriority, priority)) {
                 if (priority < 0) {
                     throw new CustomException("Priority less than zero");
-                } else if (priority >= stories.size()) {
+                }
+                else if (priority >= stories.size()) {
                     // check to see if the story is already in the prioritised stories
                     // if it is then remove it so it can be added to the end of the list.
                     if (stories.contains(story)) {
@@ -169,14 +171,16 @@ public class Backlog extends Model {
                     if (unPrioritisedStories.contains(story)) {
                         unPrioritisedStories.remove(story);
                     }
-                } else {
+                }
+                else {
                     if (stories.contains(story)) {
                         Story swap = stories.get(priority);
                         if (swap != null) {
                             stories.set(priority, story);
                             stories.set(currentStoryPriority, swap);
                         }
-                    } else if (!stories.contains(story)) {
+                    }
+                    else if (!stories.contains(story)) {
                         stories.add(priority, story);
                         if (unPrioritisedStories.contains(story)) {
                             unPrioritisedStories.remove(story);
