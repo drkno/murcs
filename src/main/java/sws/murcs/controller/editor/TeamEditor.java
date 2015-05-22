@@ -88,8 +88,6 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
         memberNodeIndex = new HashMap<>();
 
-        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
-
         setErrorCallback(message -> {
             if (message != null && message.getClass() == String.class) {
                 labelErrorMessage.setText(message);
@@ -123,6 +121,7 @@ public class TeamEditor extends GenericEditor<Team> {
             memberNodeIndex.put(member, memberNode);
         });
 
+        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
         updatePOSM();
 
         setIsCreationWindow(modelShortName == null);
