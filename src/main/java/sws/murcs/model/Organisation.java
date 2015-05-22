@@ -28,6 +28,7 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     @TrackableValue
     private final List<Project> projects;
+
     /**
      * The list of releases.
      */
@@ -108,7 +109,7 @@ public class Organisation extends TrackableObject implements Serializable {
             scrumMaster.setShortName("SM");
             scrumMaster.setLongName("Scrum Master");
             scrumMaster.setDescription("Manages the efforts of a team, resolves difficulties and removes "
-                    + "obsticles to task completion.");
+                    + "obstacles to task completion.");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
             // Will never ever happen! Like, ever! An exception is only thrown
