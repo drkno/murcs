@@ -19,7 +19,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * The top level organisation.
+ * The top level organisation. Manages the Model types within the application. This involves the adding, removing,
+ * and examining of the different types of model.
  */
 public class Organisation extends TrackableObject implements Serializable {
 
@@ -678,8 +679,7 @@ public class Organisation extends TrackableObject implements Serializable {
         //Now remove it from the project
         projects.stream()
                 .filter(project -> project.getReleases().contains(release))
-                .forEach(project -> project.removeRelease(release)
-                );
+                .forEach(project -> project.removeRelease(release));
     }
 
     /**
