@@ -1,6 +1,5 @@
 package sws.murcs.controller.editor;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,12 +7,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
@@ -66,7 +68,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A column containing stories.
      */
     @FXML
-    private TableColumn<Story, String> storyColumn;
+    private TableColumn<Story, Object> storyColumn;
 
     /**
      * A column containing delete buttons.
@@ -112,18 +114,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
         deleteColumn.setCellFactory(param -> new RemoveButtonCell());
-        storyColumn.setCellValueFactory(param -> {
-            Story story = param.getValue();
-            Integer storyPriority = getModel().getStoryPriority(story);
-            if (storyPriority != null) {
-                return new SimpleStringProperty(String.valueOf(storyPriority + 1)
-                        + ". "
-                        + story.getShortName());
-            }
-            else {
-                return new SimpleStringProperty(story.getShortName());
-            }
-        });
+        storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -357,6 +348,49 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     updateAvailableStories();
                 });
                 setGraphic(button);
+            }
+        }
+    }
+
+    /**
+     * A TableView cell that contains a link to the team it represents.
+     */
+    private class HyperlinkButtonCell extends TableCell<Story, Object> {
+        @Override
+        protected void updateItem(final Object unused, final boolean empty) {
+            super.updateItem(unused, empty);
+            Story story = (Story) getTableRow().getItem();
+            if (story != null) {
+                Integer storyPriority = getModel().getStoryPriority(story);
+                if (storyPriority != null) {
+                    if (getIsCreationWindow()) {
+                        Text node = new Text();
+                        node.setText(String.valueOf(storyPriority + 1)
+                                + ". "
+                                + story.getShortName());
+                        setGraphic(node);
+                    } else {
+                        Hyperlink nameLink = new Hyperlink(String.valueOf(storyPriority + 1)
+                                + ". "
+                                + story.getShortName());
+                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                        setGraphic(nameLink);
+                    }
+                }
+                else {
+                    if (getIsCreationWindow()) {
+                        Text node = new Text();
+                        node.setText(story.getShortName());
+                        setGraphic(node);
+                    } else {
+                        Hyperlink nameLink = new Hyperlink(story.getShortName());
+                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                        setGraphic(nameLink);
+                    }
+                }
+            }
+            else {
+                setGraphic(null);
             }
         }
     }
