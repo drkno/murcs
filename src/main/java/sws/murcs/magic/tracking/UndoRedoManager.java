@@ -389,6 +389,8 @@ public final class UndoRedoManager {
         model.getSkills().forEach(k -> UndoRedoManager.add(k));
         model.getProjects().forEach(l -> UndoRedoManager.add(l));
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
+        model.getStories().forEach(s -> UndoRedoManager.add(s));
+        model.getBacklogs().forEach(b -> UndoRedoManager.add(b));
         commit("open project");
     }
 
