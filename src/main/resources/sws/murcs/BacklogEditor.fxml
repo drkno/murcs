@@ -58,7 +58,7 @@
                             <children>
                                 <AnchorPane>
                                     <children>
-                                        <TableView fx:id="storyTable" prefHeight="150.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+                                        <TableView fx:id="storyTable" focusTraversable="false" prefHeight="150.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
                                             <columns>
                                                 <TableColumn fx:id="storyColumn" editable="false" prefWidth="75.0" sortable="false" text="Story" />
                                                 <TableColumn fx:id="deleteColumn" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" />

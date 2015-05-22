@@ -1,13 +1,12 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random Backlogs with stories.

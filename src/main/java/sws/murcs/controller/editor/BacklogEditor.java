@@ -15,7 +15,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -367,12 +366,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 Integer storyPriority = getModel().getStoryPriority(story);
                 if (storyPriority != null) {
                     if (getIsCreationWindow()) {
-                        Text node = new Text();
-                        node.setText(String.valueOf(storyPriority + 1)
+                        setText(String.valueOf(storyPriority + 1)
                                 + ". "
                                 + story.getShortName());
-                        setGraphic(node);
-                    } else {
+                    }
+                    else {
                         Hyperlink nameLink = new Hyperlink(String.valueOf(storyPriority + 1)
                                 + ". "
                                 + story.getShortName());
@@ -382,10 +380,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
                 else {
                     if (getIsCreationWindow()) {
-                        Text node = new Text();
-                        node.setText(story.getShortName());
-                        setGraphic(node);
-                    } else {
+                        setText(story.getShortName());
+                    }
+                    else {
                         Hyperlink nameLink = new Hyperlink(story.getShortName());
                         nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
                         setGraphic(nameLink);
@@ -393,7 +390,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
             }
             else {
-                setGraphic(null);
+                setText(null);
             }
         }
     }
