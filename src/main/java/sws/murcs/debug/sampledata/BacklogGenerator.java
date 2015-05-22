@@ -1,11 +1,10 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.ArrayList;
+import java.util.List;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Story;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random Backlogs with stories.
@@ -124,7 +123,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             }
 
             for (int i = 0; i < storyCount; i++) {
-                // Remove the person so we can't pick it again.
+                // Remove the story so we can't pick it again.
                 // We'll put it back when we're done
                 Story story = storyPool.remove(NameGenerator.random(storyPool.size()));
                 generated.add(story);
