@@ -1,5 +1,7 @@
 package sws.murcs.controller.editor;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
@@ -23,9 +25,6 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Controller for the model creator popup window.
  * Since there should only be one instance of this PopUp
@@ -33,49 +32,49 @@ import java.util.stream.Collectors;
 public class BacklogEditor extends GenericEditor<Backlog> {
 
     /**
-     *
+     * Text fields for displaying short name, long name and priority.
      */
     @FXML
     private TextField shortNameTextField, longNameTextField, priorityTextField;
 
     /**
-     *
+     * A text area for the description of a back log.
      */
     @FXML
     private TextArea descriptionTextArea;
 
     /**
-     *
+     * A choice box for chooses the PO for a backlog.
      */
     @FXML
     private ChoiceBox<Person> poChoiceBox;
 
     /**
-     *
+     * A choicebox for adding a story to the backlog.
      */
     @FXML
     private ChoiceBox<Story> storyPicker;
 
     /**
-     *
+     * A table containing all the stories in a backlog.
      */
     @FXML
     private TableView<Story> storyTable;
 
     /**
-     *
+     * A column containing stories.
      */
     @FXML
     private TableColumn<Story, String> storyColumn;
 
     /**
-     *
+     * A column containing delete buttons.
      */
     @FXML
     private TableColumn<Story, Object> deleteColumn;
 
     /**
-     *
+     * A label that will display an error message.
      */
     @FXML
     private Label labelErrorMessage;
@@ -86,7 +85,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ObservableList<Story> observableStories;
 
     /**
-     *
+     * An observable object representing the currently selected story.
      */
     private ObservableObjectValue<Story> selectedStory;
 
@@ -129,7 +128,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * Increases the priority of a story.
      * @param event the button clicked event
      */
     @FXML
@@ -153,7 +152,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * Called when the user tries to decrease the priority of a story.
      * @param event the button clicked event
      */
     @FXML
@@ -180,7 +179,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * Adds a story to the backlog.
      * @param event the button clicked event
      */
     @FXML
@@ -230,7 +229,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Update the assigned PO.
+     * Updates the assigned PO.
      */
     private void updateAssignedPO() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
@@ -254,7 +253,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * Updates the list of available stories based on what is available
+     * in the backlog.
      */
     private void updateAvailableStories() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
@@ -273,7 +273,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * Updates the table containing the list of stories.
      */
     private void updateStoryTable() {
         observableStories.setAll(getModel().getAllStories());

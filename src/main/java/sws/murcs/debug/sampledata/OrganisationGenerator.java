@@ -72,7 +72,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * The story generator.
      */
     private final StoryGenerator storyGenerator;
-    
+
     /**
      * The backlog generator.
      */
