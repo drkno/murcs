@@ -2,8 +2,11 @@ package sws.murcs.debug.sampledata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
+import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
 /**
@@ -61,10 +64,16 @@ public class BacklogGenerator implements Generator<Backlog> {
      * The story generator for this backlog generator.
      */
     private Generator<Story> storyGenerator;
+
     /**
-     * A story of stories to use in this team.
+     * A list of stories to use in this team.
      */
     private List<Story> storyPool;
+
+    /**
+     * A list of people to use in this team.
+     */
+    private List<Person> personsPool;
 
     /**
      * Instantiates a new story generator.
@@ -94,7 +103,15 @@ public class BacklogGenerator implements Generator<Backlog> {
      * @param stories The story pool
      */
     public final void setStoryPool(final List<Story> stories) {
-        this.storyPool = stories;
+        storyPool = stories;
+    }
+
+    /**
+     * Sets the person pool.
+     * @param newPersonsPool The pool of persons.
+     */
+    public final void setPersonsPool(final List<Person> newPersonsPool) {
+        personsPool = newPersonsPool;
     }
 
     /**
@@ -150,6 +167,8 @@ public class BacklogGenerator implements Generator<Backlog> {
             backlog.setShortName(shortName);
             backlog.setLongName(longName);
             backlog.setDescription(description);
+            Person po = personsPool.stream().filter(person -> person.canBeRole("PO")).findAny().get();
+            backlog.setAssignedPO(po);
         }
         catch (Exception e) {
             e.printStackTrace();

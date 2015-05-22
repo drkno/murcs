@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -190,7 +191,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priorityString.matches("\\d+") && !priorityString.isEmpty()) {
                     priority = Integer.parseInt(priorityString) - 1;
                 }
-                else {
+                else if (!priorityString.isEmpty()) {
                     throw new CustomException("Position is not a number");
                 }
                 getModel().addStory(currentStory, priority);
@@ -262,14 +263,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private void updateAvailableStories() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-        // Remove listener while editing the story picker
-        storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
-        storyPicker.getItems().clear();
-        storyPicker.getItems().addAll(organisation.getUnassignedStories());
-        if (storyPicker != null) {
-            storyPicker.getSelectionModel().selectFirst();
-        }
-        storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        //if (!storyPicker.getItems().isEmpty()) {
+            Platform.runLater(() -> {
+                // Remove listener while editing the story picker
+                storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+                storyPicker.getItems().setAll(organisation.getUnassignedStories());
+                storyPicker.getSelectionModel().selectFirst();
+                storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+            });
+        //}
     }
 
     /**
@@ -278,10 +280,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private void updateStoryTable() {
         observableStories.setAll(getModel().getAllStories());
         if (selectedStory.get() != null) {
-            storyTable.getSelectionModel().select(selectedStory.get());
+            Platform.runLater(() -> storyTable.getSelectionModel().select(selectedStory.get()));
         }
         else {
-            storyTable.getSelectionModel().selectFirst();
+            Platform.runLater(() -> storyTable.getSelectionModel().selectFirst());
         }
     }
 
