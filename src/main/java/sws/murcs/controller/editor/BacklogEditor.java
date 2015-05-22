@@ -193,11 +193,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @FXML
     private void addStory(final ActionEvent event) {
         try {
-            Story currentStory = storyPicker.getSelectionModel().getSelectedItem();
+            Story currentStory = storyPicker.getValue();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (currentStory != null) {
-                if (priorityString.matches("\\d+") && !priorityString.isEmpty()) {
+                if (priorityString.matches("\\d+")) {
                     priority = Integer.parseInt(priorityString) - 1;
                 }
                 else if (!priorityString.isEmpty()) {
@@ -272,15 +272,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private void updateAvailableStories() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-        //if (!storyPicker.getItems().isEmpty()) {
-            Platform.runLater(() -> {
-                // Remove listener while editing the story picker
-                storyPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
-                storyPicker.getItems().setAll(organisation.getUnassignedStories());
-                storyPicker.getSelectionModel().selectFirst();
-                storyPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-            });
-        //}
+
+        Platform.runLater(() -> {
+            int selectedIndex = storyPicker.getSelectionModel().getSelectedIndex();
+
+            storyPicker.getItems().clear();
+            storyPicker.getItems().addAll(organisation.getUnassignedStories());
+
+            storyPicker.getSelectionModel().select(selectedIndex);
+
+        });
     }
 
     /**
@@ -289,10 +290,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private void updateStoryTable() {
         observableStories.setAll(getModel().getAllStories());
         if (selectedStory.get() != null) {
-            Platform.runLater(() -> storyTable.getSelectionModel().select(selectedStory.get()));
+            storyTable.getSelectionModel().select(selectedStory.get());
         }
         else {
-            Platform.runLater(() -> storyTable.getSelectionModel().selectFirst());
+            storyTable.getSelectionModel().selectFirst();
         }
     }
 
