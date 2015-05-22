@@ -241,14 +241,13 @@ public class OrganisationGenerator implements Generator<Organisation> {
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
 
-            backlogGenerator.setStoryPool(stories);
+            backlogGenerator.setStoryPool(new ArrayList<>(stories));
             min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
                     BacklogGenerator.HIGH_STRESS_MIN);
             max = getMin(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
                     BacklogGenerator.HIGH_STRESS_MAX);
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
-            backlogs.forEach(b -> stories.addAll(b.getAllStories()));
 
             model.addCollection(skills);
             model.addCollection(people);
