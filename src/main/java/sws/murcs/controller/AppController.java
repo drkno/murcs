@@ -632,6 +632,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 case "addBacklog":
                     clazz = Backlog.class;
                     break;
+                case "addStory":
+                    clazz = Story.class;
+                    break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");
             }
