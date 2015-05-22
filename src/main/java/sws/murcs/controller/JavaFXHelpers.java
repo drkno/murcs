@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import java.util.ArrayList;
 
 /**
- * helpers for Javafx.
+ * Helpers for Javafx.
  */
 public final class JavaFXHelpers {
 
