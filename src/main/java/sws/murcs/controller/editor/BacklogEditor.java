@@ -8,10 +8,21 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
@@ -21,49 +32,49 @@ import sws.murcs.model.persistence.PersistenceManager;
 public class BacklogEditor extends GenericEditor<Backlog> {
 
     /**
-     * Text fields for displaying short name, long name and priority
+     * Text fields for displaying short name, long name and priority.
      */
     @FXML
     private TextField shortNameTextField, longNameTextField, priorityTextField;
 
     /**
-     * A text area for the description of a back log
+     * A text area for the description of a back log.
      */
     @FXML
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for chooses the PO for a backlog
+     * A choice box for chooses the PO for a backlog.
      */
     @FXML
     private ChoiceBox<Person> poChoiceBox;
 
     /**
-     * A choicebox for adding a story to the backlog
+     * A choicebox for adding a story to the backlog.
      */
     @FXML
     private ChoiceBox<Story> storyPicker;
 
     /**
-     * A table containing all the stories in a backlog
+     * A table containing all the stories in a backlog.
      */
     @FXML
     private TableView<Story> storyTable;
 
     /**
-     * A column containing stories
+     * A column containing stories.
      */
     @FXML
     private TableColumn<Story, String> storyColumn;
 
     /**
-     * A column containing delete buttons
+     * A column containing delete buttons.
      */
     @FXML
     private TableColumn<Story, Object> deleteColumn;
 
     /**
-     * A label that will display an error messag
+     * A label that will display an error message.
      */
     @FXML
     private Label labelErrorMessage;
@@ -74,7 +85,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ObservableList<Story> observableStories;
 
     /**
-     * An observable object representing the currently selected story
+     * An observable object representing the currently selected story.
      */
     private ObservableObjectValue<Story> selectedStory;
 
@@ -117,7 +128,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Increases the priority of a story
+     * Increases the priority of a story.
      * @param event the button clicked event
      */
     @FXML
@@ -141,7 +152,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Called when the user tries to decrease the priority of a story
+     * Called when the user tries to decrease the priority of a story.
      * @param event the button clicked event
      */
     @FXML
@@ -168,13 +179,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Adds a story to the backlog
+     * Adds a story to the backlog.
      * @param event the button clicked event
      */
     @FXML
     private void addStory(final ActionEvent event) {
         try {
-            Story selectedStory = storyPicker.getSelectionModel().getSelectedItem();
+            Story currentStory = storyPicker.getSelectionModel().getSelectedItem();
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (priorityString.matches("\\d+")) {
@@ -182,8 +193,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             } else if (!priorityString.isEmpty()) {
                 throw new CustomException("Priority is not a number");
             }
-            if (selectedStory != null) {
-                getModel().addStory(selectedStory, priority);
+            if (currentStory != null) {
+                getModel().addStory(currentStory, priority);
             }
             updateAvailableStories();
             updateStoryTable();
@@ -221,12 +232,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Updates the assigned PO.
      */
     private void updateAssignedPO() {
-        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
         Person productOwner = getModel().getAssignedPO();
 
         // Add all the people with the PO skill to the list of POs
-        List<Person> productOwners = relationalModel.getPeople()
+        List<Person> productOwners = organisation.getPeople()
                 .stream()
                 .filter(p -> p.canBeRole(Skill.PO_NAME))
                 .collect(Collectors.toList());
@@ -243,11 +254,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
     /**
      * Updates the list of available stories based on what is available
-     * in the backlog
+     * in the backlog.
      */
     private void updateAvailableStories() {
-        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
-        List<Story> stories = relationalModel.getStories()
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        List<Story> stories = organisation.getStories()
                 .stream()
                 .filter(story -> !getModel().getAllStories().contains(story))
                 .collect(Collectors.toList());
@@ -262,7 +273,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Updates the table containing the list of stories
+     * Updates the table containing the list of stories.
      */
     private void updateStoryTable() {
         observableStories.setAll(getModel().getAllStories());

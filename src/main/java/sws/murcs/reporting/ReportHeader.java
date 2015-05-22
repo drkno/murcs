@@ -1,6 +1,6 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,12 +33,12 @@ public class ReportHeader {
     private ReportModel reportModel;
 
     /**
-     * Creates a new Report Header from a given relational model.
-     * @param relationalModel the relational model given.
+     * Creates a new Report Header from a given organisation.
+     * @param organisation the organisation given.
      */
-    public ReportHeader(final RelationalModel relationalModel) {
-        reportModel = new ReportModel(relationalModel);
-        projectVersion = RelationalModel.getVersion();
+    public ReportHeader(final Organisation organisation) {
+        reportModel = new ReportModel(organisation);
+        projectVersion = Organisation.getVersion();
         dateGenerated = LocalDate.now();
     }
 

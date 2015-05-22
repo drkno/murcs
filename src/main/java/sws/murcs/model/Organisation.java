@@ -19,15 +19,17 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
- * The top level relational model.
+ * The top level organisation. Manages the Model types within the application. This involves the adding, removing,
+ * and examining of the different types of model.
  */
-public class RelationalModel extends TrackableObject implements Serializable {
+public class Organisation extends TrackableObject implements Serializable {
 
     /**
      * The list of projects currently loaded in the application.
      */
     @TrackableValue
     private final List<Project> projects;
+
     /**
      * The list of releases.
      */
@@ -84,9 +86,9 @@ public class RelationalModel extends TrackableObject implements Serializable {
     private static final String VERSION = "0.0.3";
 
     /**
-     * Sets up a new Relational Model.
+     * Sets up a new organisation.
      */
-    public RelationalModel() {
+    public Organisation() {
         this.projects = new ModelObservableArrayList<>();
         this.releases = new ModelObservableArrayList<>();
         this.allocations = new ArrayList<>();
@@ -108,7 +110,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
             scrumMaster.setShortName("SM");
             scrumMaster.setLongName("Scrum Master");
             scrumMaster.setDescription("Manages the efforts of a team, resolves difficulties and removes "
-                    + "obsticles to task completion.");
+                    + "obstacles to task completion.");
             this.skills.add(scrumMaster);
         } catch (Exception e) {
             // Will never ever happen! Like, ever! An exception is only thrown
@@ -201,31 +203,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds all given projects that are not already contained within the model.
-     * @param projectsToAdd A List of projects to be added to the model
-     * @throws DuplicateObjectException If one of the projects already exist
-     */
-    public final void addProjects(final Collection<Project> projectsToAdd) throws DuplicateObjectException {
-        boolean badProject = false;
-        for (Project project : projectsToAdd) {
-            if (this.projects.contains(project)
-                    || this.getProjects()
-                            .stream()
-                            .filter(s -> s.getShortName().toLowerCase().equals(project.getShortName().toLowerCase()))
-                            .findAny()
-                            .isPresent()) {
-                badProject = true;
-            }
-            else {
-                this.projects.add(project);
-            }
-        }
-        if (badProject) {
-            throw new DuplicateObjectException();
-        }
-    }
-
-    /**
      * Removes the given project if it exists.
      * @param project The project to remove
      */
@@ -296,8 +273,8 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a person to the model if it doesn't exits.
      * @param person to be added
-     * @throws DuplicateObjectException if the relational
-     * model already has the person
+     * @throws DuplicateObjectException if the organisation
+     * already has the person
      */
     private void addPerson(final Person person) throws DuplicateObjectException {
         if (!this.getPeople().contains(person)
@@ -310,29 +287,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
         else {
             throw new DuplicateObjectException();
-        }
-    }
-
-    /**
-     * Adds a list of people to the model.
-     * @param newPeople Person to be added.
-     * @throws DuplicateObjectException if the relational model
-     * already has a person from the people to be added.
-     */
-    public final void addPeople(final List<Person> newPeople) throws DuplicateObjectException {
-        for (Person person : newPeople) {
-            this.addPerson(person);
-        }
-    }
-
-    /**
-     * Adds a list of stories to the model. Careful, this won't be undoable.
-     * @param storiesToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
-     */
-    public final void addStories(final List<Story> storiesToAdd) throws DuplicateObjectException {
-        for (Story story : storiesToAdd) {
-            this.addStory(story);
         }
     }
 
@@ -379,10 +333,10 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
     /**
      * Adds a team to the unassigned teams if the
-     * relational model does not already have that team.
+     * organisation does not already have that team.
      * @param team The unassigned team to add
-     * @throws DuplicateObjectException if the relational
-     * model already has the team.
+     * @throws DuplicateObjectException if the organisation
+     * already has the team.
      */
     private void addTeam(final Team team) throws DuplicateObjectException {
         if (!this.teams.contains(team)
@@ -399,18 +353,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of teams to add to the relational model.
-     * @param teamsToAdd Teams to be added to the relational model
-     * @throws DuplicateObjectException if the murcs already has
-     * a team from teams to be added
-     */
-    public final void addTeams(final List<Team> teamsToAdd) throws DuplicateObjectException {
-        for (Team team : teamsToAdd) {
-            this.addTeam(team);
-        }
-    }
-
-    /**
      * Removes a team from the list of teams and from any projects.
      * @param team The team to remove
      */
@@ -419,11 +361,13 @@ public class RelationalModel extends TrackableObject implements Serializable {
             this.teams.remove(team);
         }
 
-        allocations.forEach(workAllocation -> {
-            if (workAllocation.getTeam() == team) {
-                removeAllocation(workAllocation);
+        // Do not convert to .forEach() or .stream(). It will cause a ConcurrentModificationException.
+        for (int i = 0; i < allocations.size(); i++) {
+            if (allocations.get(i).getTeam() == team) {
+                removeAllocation(allocations.get(i));
+                i--;
             }
-        });
+        }
     }
 
     /**
@@ -433,7 +377,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
      * @throws OverlappedDatesException when dates for the work allocation are invalid.
      */
     public final void addAllocation(final WorkAllocation workAllocation)
-            throws InvalidParameterException, OverlappedDatesException{
+            throws InvalidParameterException, OverlappedDatesException {
         if (workAllocation == null) {
             throw new InvalidParameterException("Cannot add a null WorkAllocation.");
         }
@@ -448,7 +392,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
 
         if (endDate != null) {
             for (WorkAllocation allocation : allocations) {
-                if (allocation.getTeam() == team) {
+                if (allocation.getTeam().equals(team)) {
                     // Check that this team isn't overlapping with itself
                     if (allocation.getEndDate() != null) {
                         if ((allocation.getStartDate().isBefore(endDate)
@@ -459,11 +403,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
                     else if (allocation.getStartDate().isBefore(endDate)) {
                         throw new OverlappedDatesException("Work Dates Overlap");
                     }
-                }
-                else if (allocation.getStartDate().isAfter(endDate)) {
-                    // At this point we've checked all overlapping allocations
-                    // and haven't found any errors
-                    break;
                 }
             }
         }
@@ -523,7 +462,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a skill to skills only if the skill does not already exist.
      * @param skill The skill to add
-     * @throws DuplicateObjectException if the skill already exists in the relational model
+     * @throws DuplicateObjectException if the skill already exists in the organisation
      */
     private void addSkill(final Skill skill) throws DuplicateObjectException {
         if (!skills.contains(skill)) {
@@ -531,17 +470,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
         else {
             throw new DuplicateObjectException("Skill already exists");
-        }
-    }
-
-    /**
-     * Adds a list of skills to the existing list of skills.
-     * @param skillsToAdd Skill to be added existing skills
-     * @throws DuplicateObjectException if a skill is already in the relational model
-     */
-    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
-        for (Skill skill : skillsToAdd) {
-            this.addSkill(skill);
         }
     }
 
@@ -591,7 +519,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     /**
      * Adds a backlog to backlogs only if the backlog does not already exist.
      * @param backlog The backlog to add
-     * @throws DuplicateObjectException if the backlog already exists in the relational model
+     * @throws DuplicateObjectException if the backlog already exists in the organisation
      */
     private void addBacklog(final Backlog backlog) throws DuplicateObjectException {
         if (!backlogs.contains(backlog)) {
@@ -599,17 +527,6 @@ public class RelationalModel extends TrackableObject implements Serializable {
         }
         else {
             throw new DuplicateObjectException("Backlog already exists");
-        }
-    }
-
-    /**
-     * Adds a list of backlogs to the model. Careful, this won't be undoable.
-     * @param backlogToAdd The stories to add
-     * @throws DuplicateObjectException if the story has already been back
-     */
-    public final void addBacklogs(final List<Backlog> backlogToAdd) throws DuplicateObjectException {
-        for (Backlog backlog : backlogToAdd) {
-            addBacklog(backlog);
         }
     }
 
@@ -719,10 +636,11 @@ public class RelationalModel extends TrackableObject implements Serializable {
                 break;
             case Backlog:
                 removeBacklog((Backlog) model);
+                break;
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
                         + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
+                        + ") in organisation. You should fix this");
         }
 
         try {
@@ -761,8 +679,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
         //Now remove it from the project
         projects.stream()
                 .filter(project -> project.getReleases().contains(release))
-                .forEach(project -> project.removeRelease(release)
-                );
+                .forEach(project -> project.removeRelease(release));
     }
 
     /**
@@ -781,7 +698,7 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes the story from the relational model.
+     * Removes the story from the organisation.
      * @param story The story to remove
      */
     private void removeStory(final Story story) {
@@ -793,162 +710,16 @@ public class RelationalModel extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds a list of releases to the project.
-     * @param releasesToAdd The releases to be added.
-     * @throws DuplicateObjectException when attempting to add a duplicate release.
+     * Adds all model items from a collection to the Organisation.
+     * For use with generators that mass produce model items.
+     * @param items model objects to add to Organisation.
+     * @throws DuplicateObjectException when a duplicate object already exists in the organisation.
+     * @throws InvalidParameterException when an item being added is invalid (eg null).
      */
-    public final void addReleases(final List<Release> releasesToAdd) throws DuplicateObjectException {
-        for (Release release : releasesToAdd) {
-            addRelease(release);
-        }
-    }
-
-    /**
-     * Determines whether or not a Model object is in use.
-     * @param model The model to check
-     * @return Whether the model object is in use
-     */
-    public final boolean inUse(final Model model) {
-        return findUsages(model).size() != 0;
-    }
-
-    /**
-     * Returns a list of the model objects that make use of this one.
-     * @param model The model to find the usages of
-     * @return The different usages
-     */
-    public final List<Model> findUsages(final Model model) {
-        ModelType type = ModelType.getModelType(model);
-        switch (type) {
-            case Project:
-                return findUsages((Project) model);
-            case Team:
-                return findUsages((Team) model);
-            case Person:
-                return findUsages((Person) model);
-            case Skill:
-                return findUsages((Skill) model);
-            case Release:
-                return findUsages((Release) model);
-            case Story:
-                return findUsages((Story) model);
-            case Backlog:
-                return findUsages((Backlog) model);
-            default:
-                throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
-                        + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
-        }
-    }
-
-    /**
-     * Gets a list of all the places a release is used.
-     * Releases are not currently in use anywhere, so this will return an empty list.
-     * @param release The release.
-     * @return The places the release is used.
-     */
-    private List<Model> findUsages(final Release release) {
-        return new ArrayList<>();
-    }
-
-    /**
-     * Gets a list of places that a project is used.
-     * @param project The project to find the usages of
-     * @return The usages of the project
-     */
-    private List<Model> findUsages(final Project project) {
-        return project.getReleases()
-                .stream()
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a list of the places that a team is used.
-     * @param team The team to find the usages of
-     * @return The usages of the team
-     */
-    private List<Model> findUsages(final Team team) {
-        List<Model> usages = new ArrayList<>();
-        for (Project project : getProjects()) {
-            for (WorkAllocation allocation : getProjectsAllocations(project)) {
-                if (allocation.getTeam() == team) {
-                    usages.add(project);
-                    break; // Move to checking the next project for this team
-                }
-            }
-        }
-        return usages;
-    }
-
-    /**
-     * Gets a list of all the places a person has been used.
-     * @param person The person to find usages for
-     * @return The usages of the person
-     */
-    private List<Model> findUsages(final Person person) {
-        return teams.stream()
-                .filter(team -> team.getMembers().contains(person))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a list of all the places a skill has been used.
-     * @param skill The skill to find usages for
-     * @return The usages of the skill
-     */
-    private List<Model> findUsages(final Skill skill) {
-        return people.stream()
-                .filter(person -> person.getSkills().contains(skill))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a list of all the places that a backlog has been used.
-     * @param backlog The backlog to find the usages for
-     * @return The usages of the backlog
-     */
-    private List<Model> findUsages(final Backlog backlog) {
-        return projects.stream()
-                .filter(project -> project.getBacklogs().contains(backlog))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Gets a list of all the places that a story has been used.
-     * @param story The story to find the usages for
-     * @return The usages of the story
-     */
-    private List<Model> findUsages(final Story story) {
-        return backlogs.stream()
-                .filter(backlog -> backlog.getStories().contains(story))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Checks to see if an object exists in the model.
-     * @param model The model
-     * @return Whether it exists
-     */
-    public final boolean exists(final Model model) {
-        switch (ModelType.getModelType(model)) {
-            case Project:
-                return getProjects().contains(model);
-            case Release:
-                return getReleases().contains(model);
-            case Team:
-                return getTeams().contains(model);
-            case Person:
-                return getPeople().contains(model);
-            case Skill:
-                return getSkills().contains(model);
-            case Backlog:
-                return getBacklogs().contains(model);
-            case Story:
-                return getStories().contains(model);
-            default:
-                throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
-                        + model.getClass().getName()
-                        + ") in Relational Model. You should fix this");
+    public final void addCollection(final Collection<? extends Model> items)
+            throws DuplicateObjectException, InvalidParameterException {
+        for (Model item : items) {
+            add(item);
         }
     }
 }

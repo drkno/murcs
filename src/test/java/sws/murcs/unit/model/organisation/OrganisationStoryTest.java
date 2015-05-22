@@ -1,31 +1,32 @@
-package sws.murcs.unit.model.relationalmodel;
+package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RelationalModelStoryTest {
-    private static RelationalModelGenerator generator;
-    private RelationalModel model;
+public class OrganisationStoryTest {
+    private static OrganisationGenerator generator;
+    private Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
@@ -38,26 +39,29 @@ public class RelationalModelStoryTest {
     }
 
     /**
-     * Generates a relational model, and sets it to the currently in use
+     * Generates a organisation, and sets it to the currently in use
      * model in the current persistence manager instance.
      * @throws NullPointerException if no persistence manager exists.
-     * @return a new relational model.
+     * @return a new organisation.
      */
-    private static RelationalModel getNewRelationalModel() {
+    private static Organisation getNeworganisation() {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
         PersistenceManager.getCurrent().setCurrentModel(model);
         return model;
     }
 
     @Before
     public void setup() throws Exception {
-        model = getNewRelationalModel();
+        model = getNeworganisation();
     }
 
     @Test
     public void testGetStoriesNotNullOrEmpty() throws Exception {
-        RelationalModel model = getNewRelationalModel();
+        Organisation model = getNeworganisation();
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
 
         Assert.assertNotNull("getStories() should return stories but is null.", stories);
@@ -66,9 +70,11 @@ public class RelationalModelStoryTest {
 
     @Test
     public void testGetStoriesStoryRemoved() throws Exception {
+        Story removedStory = new Story();
+        removedStory.setShortName("testing1234");
+        model.add(removedStory);
         List<Story> stories = model.getStories();
         int size = stories.size();
-        Story removedStory = stories.get(0);
         model.remove(removedStory);
         stories = model.getStories();
 
@@ -78,6 +84,9 @@ public class RelationalModelStoryTest {
 
     @Test
     public void testGetStoriesAdded() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
         Story storyToAdd = stories.get(0);
         model.remove(storyToAdd);
@@ -107,8 +116,10 @@ public class RelationalModelStoryTest {
 
     @Test(expected = DuplicateObjectException.class)
     public void testStoriesDuplicateAdded() throws Exception {
-        List<Story> stories = model.getStories();
-        model.add(stories.get(0));
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
+        model.add(story);
     }
 
     @Test
@@ -123,22 +134,25 @@ public class RelationalModelStoryTest {
 
     @Test
     public void testStoryExists() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
-        Assert.assertTrue("Story exists but was not found.", model.exists(stories.get(0)));
+        Assert.assertTrue("Story exists but was not found.", UsageHelper.exists(stories.get(0)));
     }
 
     @Test
     public void testStoryDoesNotExist() throws Exception {
         Story story = new Story();
         story.setShortName("testing1234");
-        Assert.assertFalse("Story exists when it should not.", model.exists(story));
+        Assert.assertFalse("Story exists when it should not.", UsageHelper.exists(story));
     }
 
     @Test
     public void testStoryFindUsagesDoesNotExist() throws Exception {
         Story story = new Story();
         story.setShortName("testing1234");
-        List<Model> usages = model.findUsages(story);
+        List<Model> usages = UsageHelper.findUsages(story);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for story not in model.", 0, usages.size());
@@ -146,6 +160,9 @@ public class RelationalModelStoryTest {
 
     @Test
     public void testStoryFindUsages() throws Exception {
+        Story story = new Story();
+        story.setShortName("testing1234");
+        model.add(story);
         List<Story> stories = model.getStories();
         List<Backlog> backlogs = model.getBacklogs();
         try {
@@ -154,10 +171,10 @@ public class RelationalModelStoryTest {
         catch (Exception e) {
             // ignore, we just want to ensure story is attached to a backlog
         }
-        List<Model> usages = model.findUsages(stories.get(0));
+        List<Model> usages = UsageHelper.findUsages(stories.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for story.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(stories.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(stories.get(0)));
     }
 }

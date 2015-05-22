@@ -2,9 +2,9 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Generates random RelationalModels.
+ * Generates random Organisations.
  */
-public class RelationalModelGenerator implements Generator<RelationalModel> {
+public class OrganisationGenerator implements Generator<Organisation> {
 
     /**
      * The various stress level the generator can produce.
@@ -42,30 +42,37 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
      * The project generator.
      */
     private final ProjectGenerator projectGenerator;
+
     /**
      * The team generator.
      */
     private final TeamGenerator teamGenerator;
+
     /**
      * The person generator.
      */
     private final PersonGenerator personGenerator;
+
     /**
      * The skills generator.
      */
     private final SkillGenerator skillGenerator;
+
     /**
      * The release generator.
      */
     private final ReleaseGenerator releaseGenerator;
+
     /**
      * The work allocator generator.
      */
     private final WorkAllocationGenerator workAllocationGenerator;
+
     /**
      * The story generator.
      */
     private final StoryGenerator storyGenerator;
+
     /**
      * The backlog generator.
      */
@@ -77,10 +84,23 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     private Stress stress;
 
     /**
-     * Instantiates a new random RelationalModel generator.
+     * Set if the last generation had an error.
+     */
+    private boolean lastWasError;
+
+    /**
+     * The last generation of an Organisation incurred an error.
+     * @return true if an error occurred, false otherwise.
+     */
+    public final boolean lastGenerationHadError() {
+        return lastWasError;
+    }
+
+    /**
+     * Instantiates a new random Organisation generator.
      * @param stressLevel the stress level to use. Stress level determines the amount of data generated.
      */
-    public RelationalModelGenerator(final Stress stressLevel) {
+    public OrganisationGenerator(final Stress stressLevel) {
         this.stress = stressLevel;
 
         skillGenerator = new SkillGenerator();
@@ -170,9 +190,9 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
     }
 
     @Override
-    public final RelationalModel generate() {
+    public final Organisation generate() {
         try {
-            RelationalModel model = new RelationalModel();
+            Organisation model = new Organisation();
 
             int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN,
                     SkillGenerator.HIGH_STRESS_MIN);
@@ -239,19 +259,21 @@ public class RelationalModelGenerator implements Generator<RelationalModel> {
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
 
-            model.addSkills(skills);
-            model.addPeople(people);
-            model.addTeams(teams);
-            model.addProjects(projects);
-            model.addReleases(releases);
+            model.addCollection(skills);
+            model.addCollection(people);
+            model.addCollection(teams);
+            model.addCollection(projects);
+            model.addCollection(releases);
+            model.addCollection(stories);
+            model.addCollection(backlogs);
             model.addAllocations(allocations);
-            model.addStories(stories);
-            model.addBacklogs(backlogs);
 
+            lastWasError = false;
             return model;
         }
         catch (Exception e) {
             e.printStackTrace();
+            lastWasError = true;
         }
         return null;
     }

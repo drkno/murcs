@@ -27,10 +27,11 @@ import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
@@ -211,7 +212,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
             return;
@@ -415,7 +416,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void createNewModel() throws Exception {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = new RelationalModel();
+        Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
         NavigationManager.clearHistory();
@@ -439,7 +440,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             File file = fileChooser.showOpenDialog(App.getStage());
             if (file != null) {
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                RelationalModel model = PersistenceManager.getCurrent().loadModel(file.getName());
+                Organisation model = PersistenceManager.getCurrent().loadModel(file.getName());
                 if (model == null) {
                     throw new Exception("Project was not opened.");
                 }
@@ -672,7 +673,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     @SuppressWarnings("unused")
     private void removeClicked(final ActionEvent event) {
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
         }
@@ -691,7 +692,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
 
-        Collection<Model> usages = model.findUsages(selectedItem);
+        Collection<Model> usages = UsageHelper.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {

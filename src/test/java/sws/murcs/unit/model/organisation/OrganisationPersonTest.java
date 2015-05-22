@@ -1,4 +1,4 @@
-package sws.murcs.unit.model.relationalmodel;
+package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -7,15 +7,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.NameGenerator;
 import sws.murcs.debug.sampledata.PersonGenerator;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -25,13 +26,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class RelationalModelPersonTest {
-    private static RelationalModelGenerator generator;
-    private RelationalModel model;
+public class OrganisationPersonTest {
+    private static OrganisationGenerator generator;
+    private Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
@@ -44,26 +45,26 @@ public class RelationalModelPersonTest {
     }
 
     /**
-     * Generates a relational model, and sets it to the currently in use
+     * Generates a organisation, and sets it to the currently in use
      * model in the current persistence manager instance.
      * @throws NullPointerException if no persistence manager exists.
-     * @return a new relational model.
+     * @return a new organisation.
      */
-    private static RelationalModel getNewRelationalModel() {
+    private static Organisation getNeworganisation() {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
         PersistenceManager.getCurrent().setCurrentModel(model);
         return model;
     }
 
     @Before
     public void setup() throws Exception {
-        model = getNewRelationalModel();
+        model = getNeworganisation();
     }
 
     @Test
     public void testGetPeopleNotNullOrEmpty() throws Exception {
-        RelationalModel model = getNewRelationalModel();
+        Organisation model = getNeworganisation();
         List<Person> people = model.getPeople();
 
         Assert.assertNotNull("getPeople() should return people but is null.", people);
@@ -130,21 +131,21 @@ public class RelationalModelPersonTest {
     @Test
     public void testPersonExists() throws Exception {
         List<Person> people = model.getPeople();
-        Assert.assertTrue("Person exists but was not found.", model.exists(people.get(0)));
+        Assert.assertTrue("Person exists but was not found.", UsageHelper.exists(people.get(0)));
     }
 
     @Test
     public void testPersonDoesNotExist() throws Exception {
         Person person = new Person();
         person.setShortName("testing1234");
-        Assert.assertFalse("Person exists when it should not.", model.exists(person));
+        Assert.assertFalse("Person exists when it should not.", UsageHelper.exists(person));
     }
 
     @Test
     public void testPersonFindUsagesDoesNotExist() throws Exception {
         Person person = new Person();
         person.setShortName("testing1234");
-        List<Model> usages = model.findUsages(person);
+        List<Model> usages = UsageHelper.findUsages(person);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for person not in model.", 0, usages.size());
@@ -160,11 +161,11 @@ public class RelationalModelPersonTest {
         catch (DuplicateObjectException e) {
             // ignore, we just want to ensure person is in a team
         }
-        List<Model> usages = model.findUsages(people.get(0));
+        List<Model> usages = UsageHelper.findUsages(people.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for person.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(people.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(people.get(0)));
     }
 
     @Test
@@ -174,7 +175,7 @@ public class RelationalModelPersonTest {
         testPerson.setUserId("testing12345");
         model.add(testPerson);
         Collection<Person> people = model.getUnassignedPeople();
-        Assert.assertFalse("Item should not be in use.", model.inUse(people.iterator().next()));
+        Assert.assertFalse("Item should not be in use.", UsageHelper.inUse(people.iterator().next()));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package sws.murcs.model.persistence;
 
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.loaders.PersistenceLoader;
 import sws.murcs.view.App;
 
@@ -32,7 +32,7 @@ public final class PersistenceManager {
     /**
      * Currently in use user persistence.
      */
-    private RelationalModel currentModel;
+    private Organisation currentModel;
 
     /**
      * Currently in use persistence loader.
@@ -92,10 +92,10 @@ public final class PersistenceManager {
      * @param persistenceName The name of the model to load.
      * @return The loaded persistence. Will be null if the model does not exist, is corrupt or could not be loaded.
      */
-    public RelationalModel loadModel(final String persistenceName) {
+    public Organisation loadModel(final String persistenceName) {
         // load the persistence using the default directory
         lastFile = persistenceName;
-        RelationalModel model = persistenceLoader.loadModel(persistenceName);
+        Organisation model = persistenceLoader.loadModel(persistenceName);
         if (model != null) {
             App.setWindowTitle(persistenceName);
         }
@@ -127,7 +127,7 @@ public final class PersistenceManager {
      * @param persistence Persistence to save.
      * @throws Exception When a model fails to save.
      */
-    public void saveModel(final String name, final RelationalModel persistence) throws Exception
+    public void saveModel(final String name, final Organisation persistence) throws Exception
     {
         // saves the model using the default directory
         persistenceLoader.saveModel(name, persistence);
@@ -164,7 +164,7 @@ public final class PersistenceManager {
      * Gets the current model.
      * @return The current model. Null if it has not been set.
      */
-    public RelationalModel getCurrentModel() {
+    public Organisation getCurrentModel() {
         return currentModel;
     }
 
@@ -172,7 +172,7 @@ public final class PersistenceManager {
      * Sets the current model.
      * @param model The new model
      */
-    public void setCurrentModel(final RelationalModel model) {
+    public void setCurrentModel(final Organisation model) {
         currentModel = model;
     }
 

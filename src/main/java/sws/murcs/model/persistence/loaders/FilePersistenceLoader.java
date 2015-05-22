@@ -1,6 +1,6 @@
 package sws.murcs.model.persistence.loaders;
 
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,7 +59,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @return The loaded model.
      */
     @Override
-    public final RelationalModel loadModel(final String persistenceName) {
+    public final Organisation loadModel(final String persistenceName) {
         // load the persistent file using the default directory
         return loadModel(persistenceName, getCurrentWorkingDirectory());
     }
@@ -70,14 +70,14 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory The directory to load the persistent file from.
      * @return The loaded model.
      */
-    public final RelationalModel loadModel(final String persistenceName, final String directory) {
+    public final Organisation loadModel(final String persistenceName, final String directory) {
         try {
             // Open the model file
             String persistentFileLocation = directory + File.separator + persistenceName;
             // Create an object reading stream
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(persistentFileLocation));
             // Input and case to correct type
-            RelationalModel input = (RelationalModel) in.readObject();
+            Organisation input = (Organisation) in.readObject();
             // Close input stream
             in.close();
             return input;
@@ -92,11 +92,11 @@ public class FilePersistenceLoader implements PersistenceLoader {
     /**
      * Saves a model out to a file in the default directory.
      * @param name name to save as.
-     * @param persistent Model to save.
-     * @throws Exception When a model fails to save.
+     * @param persistent Organisation to save.
+     * @throws Exception When a organisation fails to save.
      */
     @Override
-    public final void saveModel(final String name, final RelationalModel persistent) throws Exception {
+    public final void saveModel(final String name, final Organisation persistent) throws Exception {
         // saves the model using the default directory
         saveModel(name, persistent, getCurrentWorkingDirectory());
     }
@@ -104,11 +104,11 @@ public class FilePersistenceLoader implements PersistenceLoader {
     /**
      * Saves a model out to a file.
      * @param name name to save as.
-     * @param persistent Model to save.
-     * @param directory Directory to save the model in.
+     * @param persistent Organisation to save.
+     * @param directory Directory to save the organisation in.
      * @throws Exception when the persistent file could not be loaded.
      */
-    public final void saveModel(final String name, final RelationalModel persistent, final String directory)
+    public final void saveModel(final String name, final Organisation persistent, final String directory)
             throws Exception {
         try {
             // Open the persistent file
@@ -128,7 +128,7 @@ public class FilePersistenceLoader implements PersistenceLoader {
     }
 
     /**
-     * Gets a list of models that exist, are in the current working directory and have the default extension.
+     * Gets a list of organisations that exist, are in the current working directory and have the default extension.
      * @return List of models.
      */
     @Override

@@ -3,7 +3,7 @@ package sws.murcs.reporting;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
@@ -62,15 +62,15 @@ public class ReportModel {
 
     /**
      * Constructor.
-     * @param relationalModel a relational model
+     * @param organisation a organisation
      */
-    public ReportModel(final RelationalModel relationalModel) {
-        projects.addAll(relationalModel.getProjects());
-        workAllocations.addAll(relationalModel.getAllocations());
-        backlogs.addAll(relationalModel.getBacklogs());
-        listUnassignedStories.addAll(relationalModel.getUnassignedStories());
-        listUnassignedTeams.addAll(relationalModel.getUnassignedTeams());
-        listUnassignedPeople.addAll(relationalModel.getUnassignedPeople());
+    public ReportModel(final Organisation organisation) {
+        projects.addAll(organisation.getProjects());
+        workAllocations.addAll(organisation.getAllocations());
+        backlogs.addAll(organisation.getBacklogs());
+        listUnassignedStories.addAll(organisation.getUnassignedStories());
+        listUnassignedTeams.addAll(organisation.getUnassignedTeams());
+        listUnassignedPeople.addAll(organisation.getUnassignedPeople());
         Collections.sort(listUnassignedStories, (Story s1, Story s2) -> s1.getShortName()
                 .toLowerCase().compareTo(s2.getShortName().toLowerCase()));
         Collections.sort(listUnassignedPeople, (Person p1, Person p2) -> p1.getShortName()

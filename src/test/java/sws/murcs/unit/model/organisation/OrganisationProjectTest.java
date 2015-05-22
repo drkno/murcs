@@ -1,18 +1,19 @@
-package sws.murcs.unit.model.relationalmodel;
+package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
@@ -20,13 +21,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RelationalModelProjectTest {
-    private static RelationalModelGenerator generator;
-    private RelationalModel model;
+public class OrganisationProjectTest {
+    private static OrganisationGenerator generator;
+    private Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
@@ -39,26 +40,26 @@ public class RelationalModelProjectTest {
     }
 
     /**
-     * Generates a relational model, and sets it to the currently in use
+     * Generates a organisation, and sets it to the currently in use
      * model in the current persistence manager instance.
      * @throws NullPointerException if no persistence manager exists.
-     * @return a new relational model.
+     * @return a new organisation.
      */
-    private static RelationalModel getNewRelationalModel() {
+    private static Organisation getNeworganisation() {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
         PersistenceManager.getCurrent().setCurrentModel(model);
         return model;
     }
 
     @Before
     public void setup() throws Exception {
-        model = getNewRelationalModel();
+        model = getNeworganisation();
     }
 
     @Test
     public void testGetProjectsNotNullOrEmpty() throws Exception {
-        RelationalModel model = getNewRelationalModel();
+        Organisation model = getNeworganisation();
         List<Project> projects = model.getProjects();
 
         Assert.assertNotNull("getProjects() should return projects but is null.", projects);
@@ -125,21 +126,21 @@ public class RelationalModelProjectTest {
     @Test
     public void testProjectExists() throws Exception {
         List<Project> projects = model.getProjects();
-        Assert.assertTrue("Project exists but was not found.", model.exists(projects.get(0)));
+        Assert.assertTrue("Project exists but was not found.", UsageHelper.exists(projects.get(0)));
     }
 
     @Test
     public void testProjectDoesNotExist() throws Exception {
         Project project = new Project();
         project.setShortName("testing1234");
-        Assert.assertFalse("Project exists when it should not.", model.exists(project));
+        Assert.assertFalse("Project exists when it should not.", UsageHelper.exists(project));
     }
 
     @Test
     public void testProjectFindUsagesDoesNotExist() throws Exception {
         Project project = new Project();
         project.setShortName("testing1234");
-        List<Model> usages = model.findUsages(project);
+        List<Model> usages = UsageHelper.findUsages(project);
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertEquals("Usages were found for project not in model.", 0, usages.size());
@@ -160,10 +161,10 @@ public class RelationalModelProjectTest {
             // ignore, we just want to ensure a project is attached to a release
         }
 
-        List<Model> usages = model.findUsages(projects.get(0));
+        List<Model> usages = UsageHelper.findUsages(projects.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
         Assert.assertNotEquals("Usages were not found for project.", 0, usages.size());
-        Assert.assertTrue("Item should be in use.", model.inUse(projects.get(0)));
+        Assert.assertTrue("Item should be in use.", UsageHelper.inUse(projects.get(0)));
     }
 }

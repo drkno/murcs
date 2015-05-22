@@ -104,10 +104,12 @@ public class Backlog extends Model {
     }
 
     /**
-     /**
-     * Add a story to the backlog. If story is already in the stories then it is ignored along with its priority.
-     * @param story The story to be added
+     * Attempts to add a story to the backlog.
+     * If story is already in the Backlog, it will be ignored.
+     * @param story The story to be added.
      * @param priority The priority of the story i.e. where in the list it should be.
+     * This should be an integer greater than or equal to 0.
+     * @throws CustomException if there any errors adding a story, a CustomException will be thrown.
      */
     public final void addStory(final Story story, final Integer priority) throws CustomException {
         if (!getAllStories().contains(story)) {
@@ -142,6 +144,7 @@ public class Backlog extends Model {
      * Change the priority of a story in the backlog, must be in the backlog for anything to happen.
      * @param story The story involved.
      * @param priority The new priority of that story
+     * @throws CustomException throws if there any exceptions modifying the stories priorities.
      */
     public final void modifyStoryPriority(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
@@ -198,8 +201,8 @@ public class Backlog extends Model {
     }
 
     /**
-     * Return the lowest priority story (highest number)
-     * @return
+     * Return the lowest priority story (highest number).
+     * @return The lowest priority story.
      */
     public final Integer getMaxStoryPriority() {
         return stories.size();

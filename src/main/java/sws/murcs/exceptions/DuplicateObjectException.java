@@ -2,7 +2,7 @@ package sws.murcs.exceptions;
 
 import sws.murcs.model.Model;
 import sws.murcs.model.Person;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -68,9 +68,9 @@ public class DuplicateObjectException extends CustomException {
         if (PersistenceManager.getCurrent() == null) {
             return;
         }
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
-            return; // as is called in the constructor of RelationalModel
+            return; // as is called in the constructor of Organisation
         }
         String className = newModel.getClass().getSimpleName();
         List<? extends Model> list = null;
