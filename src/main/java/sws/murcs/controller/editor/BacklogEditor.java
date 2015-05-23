@@ -18,6 +18,8 @@ import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidInputException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Organisation;
@@ -201,18 +203,18 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priorityString.matches("-?\\d+")) {
                     priority = Integer.parseInt(priorityString) - 1;
                     if (priority < 0) {
-                        throw new CustomException("Invalid number");
+                        throw new InvalidInputException("Invalid number");
                     }
                 }
                 else if (!priorityString.isEmpty()) {
-                    throw new CustomException("Position is not a number");
+                    throw new InvalidInputException("Position is not a number");
                 }
                 getModel().addStory(currentStory, priority);
                 updateAvailableStories();
                 updateStoryTable();
             }
             else {
-                throw new CustomException("No story selected");
+                throw new InvalidInputException("No story selected");
             }
             labelErrorMessage.setText("");
         }

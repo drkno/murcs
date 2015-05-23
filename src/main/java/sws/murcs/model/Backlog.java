@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 
@@ -109,7 +110,7 @@ public class Backlog extends Model {
         if (getAllStories().contains(story)) {
             changeStoryPriority(story, priority);
         } else {
-            throw new CustomException("Story not contained within the backlog");
+            throw new InvalidParameterException("Story not contained within the backlog");
         }
     }
 
@@ -123,7 +124,7 @@ public class Backlog extends Model {
      */
     public final void addStory(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
-            throw new CustomException("Story is already within the backlog");
+            throw new DuplicateObjectException("Story is already within the backlog");
         }
         if (priority == null) {
             if (!unprioritisedStories.contains(story)) {
@@ -134,7 +135,7 @@ public class Backlog extends Model {
             }
         }
         else if (priority < 0) {
-            throw new CustomException("Priority less than zero");
+            throw new InvalidParameterException("Priority less than zero");
         }
         else if (priority >= stories.size()) {
             stories.add(story);
@@ -169,7 +170,7 @@ public class Backlog extends Model {
         }
         else if (!Objects.equals(currentStoryPriority, priority)) {
             if (priority < 0) {
-                throw new CustomException("Priority less than zero");
+                throw new InvalidParameterException("Priority less than zero");
             }
             else if (priority >= stories.size()) {
                 // check to see if the story is already in the prioritised stories
