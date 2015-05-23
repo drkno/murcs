@@ -107,8 +107,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             if (newValue != null) {
                 saveChanges();
                 int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
-                increasePriorityButton.setDisable(selectedIndex == 0);
-                decreasePriorityButton.setDisable(getModel().getStoryPriority(selectedStory.get()) == null);
+                Integer priority = getModel().getStoryPriority(selectedStory.get());
+                increasePriorityButton.setDisable(selectedIndex == 0 && priority != null);
+                decreasePriorityButton.setDisable(priority == null);
             }
         });
 
@@ -138,7 +139,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * @param event the button clicked event
      */
     @FXML
-    private void prioritiseUp(final ActionEvent event) {
+    private void increasePriority(final ActionEvent event) {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
@@ -163,7 +164,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * @param event the button clicked event
      */
     @FXML
-    private void prioritiseDown(final ActionEvent event) {
+    private void decreasePriority(final ActionEvent event) {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
