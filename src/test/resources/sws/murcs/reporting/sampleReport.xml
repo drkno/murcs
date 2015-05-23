@@ -34,7 +34,7 @@
                         </skill>
                     </skills>
                 </assignedPO>
-                <stories>
+                <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
                         <description>Revert to last saved state</description>
@@ -53,7 +53,7 @@
                             </skills>
                         </creator>
                     </story>
-                </stories>
+                </prioritisedStories>
             </backlog>
         </backlogs>
         <workAllocations>
