@@ -255,7 +255,6 @@ public class Organisation extends TrackableObject implements Serializable {
             }
 
             return s1.getShortName().toLowerCase().compareTo(s2.getShortName().toLowerCase());
-
         });
         getBacklogs().forEach(t -> assignedStories.addAll(t.getAllStories()));
         Set<Story> unassignedStories = new TreeSet<>((s1, s2) -> {
@@ -594,7 +593,7 @@ public class Organisation extends TrackableObject implements Serializable {
             UndoRedoManager.assimilate(commitNumber);
         }
         catch (Exception e) {
-            // This will never happen
+            // This will never happen  because we have called commit before calling assimilate
             e.printStackTrace();
         }
         UndoRedoManager.add(model);
@@ -646,7 +645,7 @@ public class Organisation extends TrackableObject implements Serializable {
         try {
             UndoRedoManager.assimilate(commitNumber);
         } catch (Exception e) {
-            // This should never happen
+            // This should never happen  because we have called commit before calling assimilate
             e.printStackTrace();
         }
         UndoRedoManager.remove(model);

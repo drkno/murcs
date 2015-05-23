@@ -4,7 +4,6 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -35,12 +34,12 @@ public class Backlog extends Model {
     private Person assignedPO;
 
     /**
-     * The list of stories that are in this backlog.
+     * The list of prioritised stories that are in this backlog.
      */
     @TrackableValue
-    @XmlElementWrapper(name = "stories")
+    @XmlElementWrapper(name = "prioritisedStories")
     @XmlElement(name = "story")
-    private List<Story> stories;
+    private List<Story> prioritisedStories;
 
     /**
      * The list of unprioritised stories within this backlog.
@@ -52,7 +51,7 @@ public class Backlog extends Model {
      * The constructor for the backlog. Initialises the lists within the backlog.
      */
     public Backlog() {
-        stories = new ArrayList<>();
+        prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
     }
 
@@ -79,7 +78,7 @@ public class Backlog extends Model {
      */
     public final List<Story> getAllStories() {
         final List<Story> allStories = new ArrayList<>();
-        allStories.addAll(stories);
+        allStories.addAll(prioritisedStories);
         allStories.addAll(unprioritisedStories);
         return allStories;
     }
@@ -88,13 +87,13 @@ public class Backlog extends Model {
      * Get only the prioritised stories within this backlog.
      * @return the prioritised stories
      */
-    public final List<Story> getStories() {
-        return stories;
+    public final List<Story> getPrioritisedStories() {
+        return prioritisedStories;
     }
 
     /**
      * Get only those stories with no priority.
-     * @return the unPrioritised stories
+     * @return the unprioritised stories
      */
     public final List<Story> getUnprioritisedStories() {
         return unprioritisedStories;
@@ -129,22 +128,22 @@ public class Backlog extends Model {
         if (priority == null) {
             if (!unprioritisedStories.contains(story)) {
                 unprioritisedStories.add(story);
-                if (stories.contains(story)) {
-                    stories.remove(story);
+                if (prioritisedStories.contains(story)) {
+                    prioritisedStories.remove(story);
                 }
             }
         }
         else if (priority < 0) {
             throw new InvalidParameterException("Priority less than zero");
         }
-        else if (priority >= stories.size()) {
-            stories.add(story);
+        else if (priority >= prioritisedStories.size()) {
+            prioritisedStories.add(story);
             if (unprioritisedStories.contains(story)) {
                 unprioritisedStories.remove(story);
             }
         }
         else {
-            stories.add(priority, story);
+            prioritisedStories.add(priority, story);
             if (unprioritisedStories.contains(story)) {
                 unprioritisedStories.remove(story);
             }
@@ -156,13 +155,13 @@ public class Backlog extends Model {
      * Change the priority of a story in the backlog. Assumes the story is already within the backlog.
      * @param story The story involved.
      * @param priority The new priority of that story
-     * @throws CustomException throws if there any exceptions modifying the stories priorities.
+     * @throws CustomException throws if there are problems changing the story's priority (i.e. give a priority of -1)
      */
     private void changeStoryPriority(final Story story, final Integer priority) throws CustomException {
         final Integer currentStoryPriority = getStoryPriority(story);
         if (priority == null) {
-            if (stories.contains(story)) {
-                stories.remove(story);
+            if (prioritisedStories.contains(story)) {
+                prioritisedStories.remove(story);
             }
             if (!unprioritisedStories.contains(story)) {
                 unprioritisedStories.add(0, story);
@@ -172,27 +171,27 @@ public class Backlog extends Model {
             if (priority < 0) {
                 throw new InvalidParameterException("Priority less than zero");
             }
-            else if (priority >= stories.size()) {
+            else if (priority >= prioritisedStories.size()) {
                 // check to see if the story is already in the prioritised stories
                 // if it is then remove it so it can be added to the end of the list.
-                if (stories.contains(story)) {
-                    stories.remove(story);
+                if (prioritisedStories.contains(story)) {
+                    prioritisedStories.remove(story);
                 }
-                stories.add(story);
+                prioritisedStories.add(story);
                 if (unprioritisedStories.contains(story)) {
                     unprioritisedStories.remove(story);
                 }
             }
             else {
-                if (stories.contains(story)) {
-                    Story swap = stories.get(priority);
+                if (prioritisedStories.contains(story)) {
+                    Story swap = prioritisedStories.get(priority);
                     if (swap != null) {
-                        stories.set(priority, story);
-                        stories.set(currentStoryPriority, swap);
+                        prioritisedStories.set(priority, story);
+                        prioritisedStories.set(currentStoryPriority, swap);
                     }
                 }
-                else if (!stories.contains(story)) {
-                    stories.add(priority, story);
+                else if (!prioritisedStories.contains(story)) {
+                    prioritisedStories.add(priority, story);
                     if (unprioritisedStories.contains(story)) {
                         unprioritisedStories.remove(story);
                     }
@@ -205,11 +204,11 @@ public class Backlog extends Model {
     /**
      * Get the priority of a story in the backlog.
      * @param story The story involved.
-     * @return The current priority of that story. -1 if story is unassigned or not in the backlog.
+     * @return The current priority of that story. Null if story is unassigned or not in the backlog.
      */
     public final Integer getStoryPriority(final Story story) {
-        if (stories.contains(story)) {
-            return stories.indexOf(story);
+        if (prioritisedStories.contains(story)) {
+            return prioritisedStories.indexOf(story);
         }
         return null;
     }
@@ -219,16 +218,16 @@ public class Backlog extends Model {
      * @return The lowest priority story.
      */
     public final Integer getLowestPriorityStory() {
-        return stories.size();
+        return prioritisedStories.size();
     }
 
     /**
-     * Remove a story from the backlog.
+     * Remove a story from the backlog. If the story isn't contained within the Backlog it is ignored.
      * @param story The story to be removed
      */
     public final void removeStory(final Story story) {
-        if (stories.contains(story)) {
-            stories.remove(story);
+        if (prioritisedStories.contains(story)) {
+            prioritisedStories.remove(story);
         }
         else if (unprioritisedStories.contains(story)) {
             unprioritisedStories.remove(story);
@@ -239,7 +238,8 @@ public class Backlog extends Model {
     /**
      * Assign a product owner to the backlog.
      * @param po The product owner to be assigned
-     * @exception CustomException thrown if the po is null.
+     * @exception InvalidParameterException thrown if the po is null or the Person attempting to be assigned does not
+     * have the PO skill.
      */
     public final void setAssignedPO(final Person po) throws CustomException {
         InvalidParameterException.validate("Assigned PO", po);

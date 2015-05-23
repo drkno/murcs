@@ -64,8 +64,8 @@ public class OrganisationStoryTest {
         model.add(story);
         List<Story> stories = model.getStories();
 
-        Assert.assertNotNull("getStories() should return stories but is null.", stories);
-        Assert.assertNotEquals("getStories() should return stories but is empty.", 0, stories.size());
+        Assert.assertNotNull("getPrioritisedStories() should return stories but is null.", stories);
+        Assert.assertNotEquals("getPrioritisedStories() should return stories but is empty.", 0, stories.size());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class OrganisationStoryTest {
 
         List<Story> storyDuplicates = new ArrayList<>();
         stories.stream().filter(story -> !storyDuplicates.add(story)).forEach(story -> {
-            Assert.fail("There cannot be duplicate stories returned by getStories().");
+            Assert.fail("There cannot be duplicate stories returned by getPrioritisedStories().");
         });
     }
 
