@@ -71,8 +71,8 @@
                                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                             </columnResizePolicy>
                                         </TableView>
-                                        <Button fx:id="increasePriorityButton" layoutX="206.0" layoutY="14.0" mnemonicParsing="false" onAction="#prioritiseUp" prefHeight="30.0" prefWidth="30.0" text="^" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                        <Button fx:id="decreasePriorityButton" layoutX="216.0" layoutY="24.0" mnemonicParsing="false" onAction="#prioritiseDown" prefHeight="30.0" prefWidth="30.0" text="v" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0" />
+                                        <Button fx:id="increasePriorityButton" layoutX="206.0" layoutY="14.0" mnemonicParsing="false" onAction="#increasePriority" prefHeight="30.0" prefWidth="30.0" text="^" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                        <Button fx:id="decreasePriorityButton" layoutX="216.0" layoutY="24.0" mnemonicParsing="false" onAction="#decreasePriority" prefHeight="30.0" prefWidth="30.0" text="v" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0" />
                                         <GridPane layoutY="150.0" prefHeight="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                             <columnConstraints>
                                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
