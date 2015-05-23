@@ -241,7 +241,7 @@ public class Backlog extends Model {
      * @exception InvalidParameterException thrown if the po is null or the Person attempting to be assigned does not
      * have the PO skill.
      */
-    public final void setAssignedPO(final Person po) throws CustomException {
+    public final void setAssignedPO(final Person po) throws InvalidParameterException {
         InvalidParameterException.validate("Assigned PO", po);
         assignedPO = po;
         commit("edit backlog");
