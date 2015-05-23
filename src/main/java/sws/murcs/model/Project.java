@@ -26,6 +26,14 @@ public class Project extends Model {
     private List<Release> releases = new ArrayList<>();
 
     /**
+     * The backlogs for a project.
+     */
+    @TrackableValue
+    @XmlElementWrapper(name = "backlogs")
+    @XmlElement(name = "backlog")
+    private List<Backlog> backlogs = new ArrayList<>();
+
+    /**
      * Gets a description of the project.
      * @return a description of the project
      */
@@ -38,7 +46,7 @@ public class Project extends Model {
      * @param newDescription The description of the project
      */
     public final void setDescription(final String newDescription) {
-        this.description = newDescription;
+        description = newDescription;
         commit("edit project");
     }
 
@@ -70,15 +78,6 @@ public class Project extends Model {
         }
     }
 
-    /**
-     * Returns the short name of the project.
-     * @return Short name of the project
-     */
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
     @Override
     public final boolean equals(final Object object) {
         if (!(object instanceof Project)) {
@@ -100,5 +99,33 @@ public class Project extends Model {
             c = getShortName().hashCode();
         }
         return getHashCodePrime() + c;
+    }
+
+    /**
+     * Get the backlogs for a project.
+     * @return The list of backlogs
+     */
+    public final List<Backlog> getBacklogs() {
+        return backlogs;
+    }
+
+    /**
+     * Add a backlog to the project.
+     * @param backlog The backlog to add
+     */
+    public final void addBacklog(final Backlog backlog) {
+        if (!backlogs.contains(backlog)) {
+            backlogs.add(backlog);
+        }
+    }
+
+    /**
+     * Remove a backlog from the project.
+     * @param backlog The backlog to remove
+     */
+    public final void removeBacklog(final Backlog backlog) {
+        if (!backlogs.contains(backlog)) {
+            backlogs.remove(backlog);
+        }
     }
 }

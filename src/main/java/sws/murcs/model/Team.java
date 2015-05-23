@@ -153,15 +153,6 @@ public class Team extends Model {
         }
     }
 
-    /**
-     * Returns the string of the short name.
-     * @return short name string
-     */
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
     @Override
     public final boolean equals(final Object object) {
         if (object == null || !(object instanceof Team)) {

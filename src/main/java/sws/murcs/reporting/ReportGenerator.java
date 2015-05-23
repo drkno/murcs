@@ -1,6 +1,6 @@
 package sws.murcs.reporting;
 
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -8,18 +8,18 @@ import javax.xml.bind.Marshaller;
 import java.io.File;
 
 /**
- * Contains a static method for generating the xml status report from the relational model.
+ * Contains a static method for generating the xml status report from the organisation.
  */
 public abstract class ReportGenerator {
 
     /**
-     * Generates an xml report to file from a relational model.
-     * @param relationalModel the model from which to create the report
+     * Generates an xml report to file from a organisation.
+     * @param organisation the model from which to create the report
      * @param file the file to output the report
      * @throws JAXBException Exceptions fro JAXB
      */
-    public static void generate(final RelationalModel relationalModel, final File file) throws JAXBException {
-        ReportHeader reportModel = new ReportHeader(relationalModel);
+    public static void generate(final Organisation organisation, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeader(organisation);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

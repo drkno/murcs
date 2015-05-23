@@ -8,10 +8,10 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import java.util.ArrayList;
@@ -38,11 +38,11 @@ public class App extends Application {
     /**
      * The minimum height of the application.
      */
-    private final int minimumApplicationHeight = 600;
+    private final int minimumApplicationHeight = 650;
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 600;
+    private final int minimumApplicationWidth = 650;
     /**
      * The subString length to search over, when parsing debugging mode.
      */
@@ -176,20 +176,20 @@ public class App extends Application {
         int debug = argsList.indexOf("debug");
 
         if (debug >= 0) {
-            RelationalModelGenerator.Stress stressLevel = RelationalModelGenerator.Stress.Low;
+            OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
             if (debug + 1 < args.length) {
                 switch (args[debug + 1].substring(0, SUBSTRINGLENGTH).toLowerCase()) {
-                    case "low": stressLevel = RelationalModelGenerator.Stress.Low; break;
-                    case "med": stressLevel = RelationalModelGenerator.Stress.Medium; break;
-                    case "hig": stressLevel = RelationalModelGenerator.Stress.High; break;
+                    case "low": stressLevel = OrganisationGenerator.Stress.Low; break;
+                    case "med": stressLevel = OrganisationGenerator.Stress.Medium; break;
+                    case "hig": stressLevel = OrganisationGenerator.Stress.High; break;
                     default: break;
                 }
             }
-            PersistenceManager.getCurrent().setCurrentModel(new RelationalModelGenerator(stressLevel).generate());
+            PersistenceManager.getCurrent().setCurrentModel(new OrganisationGenerator(stressLevel).generate());
         }
         else {
             //Give us an empty model
-            PersistenceManager.getCurrent().setCurrentModel(new RelationalModel());
+            PersistenceManager.getCurrent().setCurrentModel(new Organisation());
         }
 
         int sample = argsList.indexOf("sample");
@@ -205,7 +205,7 @@ public class App extends Application {
         }
 
         UndoRedoManager.setDisabled(false);
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         try {
             UndoRedoManager.importModel(model);
         }

@@ -17,14 +17,17 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      * The type of model the editor is being used for.
      */
     private T model;
+
     /**
      * The error callback.
      */
     private ErrorMessageListener errorCallback;
+
     /**
      * A collection of change listeners for an editor.
      */
     private ChangeListener changeListener;
+
     /**
      * Details whether or not the window is a creator for a new model or an editor.
      */

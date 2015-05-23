@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -84,7 +85,10 @@ public class Person extends Model {
      * @throws Exception if there is a duplicate object.
      */
     private void validateUserId(final String value) throws Exception {
-        DuplicateObjectException.checkForDuplicates(this, value);
+        Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));
+        if (model != null) {
+            throw new DuplicateObjectException("A person with this ID already exists.");
+        }
         InvalidParameterException.validate("User Id", value);
     }
 
@@ -126,11 +130,6 @@ public class Person extends Model {
             this.skills.remove(skill);
             commit("edit person");
         }
-    }
-
-    @Override
-    public final String toString() {
-        return getShortName();
     }
 
     /**

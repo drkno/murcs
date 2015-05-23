@@ -17,9 +17,9 @@ import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
@@ -36,7 +36,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     private Person person2;
     private Person person3;
     private Project project;
-    private RelationalModel model;
+    private Organisation model;
     private Application app;
 
     @Override
@@ -52,7 +52,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
         interact(() -> {
             try {
-                model = new RelationalModel();
+                model = new Organisation();
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);

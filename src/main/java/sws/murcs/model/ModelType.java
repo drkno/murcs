@@ -10,32 +10,42 @@ public enum ModelType {
      * Represents the class Project.
      */
     Project(0, sws.murcs.model.Project.class),
+
     /**
      * Represents the class Person.
      */
     Person(1, sws.murcs.model.Person.class),
+
     /**
      * Represents the class Team.
      */
     Team(2, sws.murcs.model.Team.class),
+
     /**
      * Represents the class Skill.
      */
     Skill(3, sws.murcs.model.Skill.class),
+
     /**
      * Represents the class Release.
      */
     Release(4, sws.murcs.model.Release.class),
 
     /**
-     * Indicates a model type, story.
+     * Represents the class Story.
      */
-    Story(5, sws.murcs.model.Story.class);
+    Story(5, sws.murcs.model.Story.class),
+
+    /**
+     * Represents the class Backlog.
+     */
+    Backlog(6, sws.murcs.model.Backlog.class);
 
     /**
      * The index of the model type in the enum.
      */
     private int index;
+
     /**
      * The class type of the linked class to the model type.
      */
@@ -61,11 +71,14 @@ public enum ModelType {
     }
 
     /**
-     * Gets the index from a model type
+     * Gets the index from a model type.
      * 0: Project
      * 1: Person
      * 2: Team
-     * 3: Skill.
+     * 3: Skill
+     * 4: Release
+     * 5: Story
+     * 6: Backlog
      * @param type The type of model object.
      * @return The index for selection
      */
@@ -96,7 +109,14 @@ public enum ModelType {
      */
     public static ModelType getModelType(final Object object) {
         if (!(object instanceof Model)) {
-            throw new IllegalArgumentException("object must extend model! (was " + object.getClass().getName() + ")");
+            String className;
+            if (object != null) {
+                className = object.getClass().getName();
+            }
+            else {
+                className = "null";
+            }
+            throw new IllegalArgumentException("object must extend model! (was " + className + ")");
         }
 
         Model model = (Model) object;
