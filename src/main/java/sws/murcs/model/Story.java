@@ -61,11 +61,6 @@ public class Story extends Model {
     }
 
     @Override
-    public final String toString() {
-        return getShortName();
-    }
-
-    @Override
     public final int hashCode() {
         int c = 0;
         if (getShortName() != null) {

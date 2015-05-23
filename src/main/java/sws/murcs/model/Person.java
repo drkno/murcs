@@ -132,11 +132,6 @@ public class Person extends Model {
         }
     }
 
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
     /**
      * Checks to see if to people are equal.
      * @param object Person to compare

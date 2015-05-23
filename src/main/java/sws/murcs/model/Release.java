@@ -88,11 +88,6 @@ public class Release extends Model {
         return getHashCodePrime() + c;
     }
 
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
     /**
      * Adds the current release instance to a project.
      * @param project The project to add the release to.

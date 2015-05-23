@@ -117,4 +117,9 @@ public abstract class Model extends TrackableObject implements Serializable {
     public final int getHashCodePrime() {
         return hashCodePrime;
     }
+
+    @Override
+    public final String toString() {
+        return getShortName();
+    }
 }

@@ -14,48 +14,58 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Model of a Backlog.
+ * Model of a Backlog. A backlog is basically a group of stories created by a Person. This group of stories can be
+ * prioritised and rearranged depending on which of the stories are more important and therefore need to be addressed
+ * first.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Backlog extends Model {
     /**
-     * Track this value.
+     * the description of the Backlog.
      */
     @TrackableValue
     private String description;
 
     /**
-     * Track this value.
+     * The PO who is assigned to the backlog.
      */
     @TrackableValue
-    private Person assignedPO = null;
+    private Person assignedPO;
 
     /**
-     * Track this value.
+     * The list of stories that are in this backlog.
      */
     @TrackableValue
     @XmlElementWrapper(name = "stories")
     @XmlElement(name = "story")
-    private List<Story> stories = new ArrayList<>();
+    private List<Story> stories;
 
     /**
-     * Track this value.
+     * The list of unprioritised stories within this backlog.
      */
     @TrackableValue
-    private List<Story> unPrioritisedStories = new ArrayList<>();
+    private List<Story> unprioritisedStories;
 
     /**
-     * Gets a description of the project.
-     * @return a description of the project
+     * The constructor for the backlog. Initialises the lists within the backlog.
      */
-    public final String getDescription() {
-        return this.description;
+    public Backlog() {
+        stories = new ArrayList<>();
+        unprioritisedStories = new ArrayList<>();
     }
 
     /**
-     * Sets the description of the current project.
-     * @param newDescription The description of the project
+     * Gets the description of the backlog.
+     * @return a description of the backlog.
+     */
+    public final String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the description of the backlog.
+     * @param newDescription The description of the backlog.
      */
     public final void setDescription(final String newDescription) {
         description = newDescription;
@@ -63,18 +73,18 @@ public class Backlog extends Model {
     }
 
     /**
-     * Gets the stories attached to a backlog.
-     * @return a list of all the stories attached to a backlog
+     * Gets all of the stories associated with this backlog.
+     * @return a list of all the stories attached to this backlog.
      */
     public final List<Story> getAllStories() {
         final List<Story> allStories = new ArrayList<>();
         allStories.addAll(stories);
-        allStories.addAll(unPrioritisedStories);
+        allStories.addAll(unprioritisedStories);
         return allStories;
     }
 
     /**
-     * Get only the prioritised stories in a backlog.
+     * Get only the prioritised stories within this backlog.
      * @return the prioritised stories
      */
     public final List<Story> getStories() {
@@ -85,21 +95,21 @@ public class Backlog extends Model {
      * Get only those stories with no priority.
      * @return the unPrioritised stories
      */
-    public final List<Story> getUnPrioritisedStories() {
-        return unPrioritisedStories;
+    public final List<Story> getUnprioritisedStories() {
+        return unprioritisedStories;
     }
 
     /**
-     * Add a story to the backlog. If story is already in backlog then its priority will just be updated.
-     * @param story The story to be modified
-     * @param priority The priority of the story i.e. where in the list it should be
-     * @throws CustomException if priority if less than zero
+     * Modify a story in the backlog by updating it's priority.
+     * @param story The story to be modified or added.
+     * @param priority The priority of the story i.e. where in the list it should be.
+     * @throws CustomException thrown if there are errors modifying the story, for instance if it didn't exist.
      */
     public final void modifyStory(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
-            modifyStoryPriority(story, priority);
+            changeStoryPriority(story, priority);
         } else {
-            addStory(story, priority);
+            throw new CustomException("Story not contained within the backlog");
         }
     }
 
@@ -109,15 +119,15 @@ public class Backlog extends Model {
      * @param story The story to be added.
      * @param priority The priority of the story i.e. where in the list it should be.
      * This should be an integer greater than or equal to 0.
-     * @throws CustomException if there any errors adding a story, a CustomException will be thrown.
+     * @throws CustomException thrown if there are any errors adding a story (i.e. if it's already in the backlog).
      */
     public final void addStory(final Story story, final Integer priority) throws CustomException {
         if (getAllStories().contains(story)) {
-            return;
+            throw new CustomException("Story is already within the backlog");
         }
         if (priority == null) {
-            if (!unPrioritisedStories.contains(story)) {
-                unPrioritisedStories.add(story);
+            if (!unprioritisedStories.contains(story)) {
+                unprioritisedStories.add(story);
                 if (stories.contains(story)) {
                     stories.remove(story);
                 }
@@ -128,37 +138,33 @@ public class Backlog extends Model {
         }
         else if (priority >= stories.size()) {
             stories.add(story);
-            if (unPrioritisedStories.contains(story)) {
-                unPrioritisedStories.remove(story);
+            if (unprioritisedStories.contains(story)) {
+                unprioritisedStories.remove(story);
             }
         }
         else {
             stories.add(priority, story);
-            if (unPrioritisedStories.contains(story)) {
-                unPrioritisedStories.remove(story);
+            if (unprioritisedStories.contains(story)) {
+                unprioritisedStories.remove(story);
             }
         }
         commit("edit backlog");
     }
 
     /**
-     * Change the priority of a story in the backlog, must be in the backlog for anything to happen.
+     * Change the priority of a story in the backlog. Assumes the story is already within the backlog.
      * @param story The story involved.
      * @param priority The new priority of that story
      * @throws CustomException throws if there any exceptions modifying the stories priorities.
      */
-    public final void modifyStoryPriority(final Story story, final Integer priority) throws CustomException {
-        if (!getAllStories().contains(story)) {
-            return;
-        }
-
+    private void changeStoryPriority(final Story story, final Integer priority) throws CustomException {
         final Integer currentStoryPriority = getStoryPriority(story);
         if (priority == null) {
             if (stories.contains(story)) {
                 stories.remove(story);
             }
-            if (!unPrioritisedStories.contains(story)) {
-                unPrioritisedStories.add(0, story);
+            if (!unprioritisedStories.contains(story)) {
+                unprioritisedStories.add(0, story);
             }
         }
         else if (!Objects.equals(currentStoryPriority, priority)) {
@@ -172,8 +178,8 @@ public class Backlog extends Model {
                     stories.remove(story);
                 }
                 stories.add(story);
-                if (unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.remove(story);
+                if (unprioritisedStories.contains(story)) {
+                    unprioritisedStories.remove(story);
                 }
             }
             else {
@@ -186,8 +192,8 @@ public class Backlog extends Model {
                 }
                 else if (!stories.contains(story)) {
                     stories.add(priority, story);
-                    if (unPrioritisedStories.contains(story)) {
-                        unPrioritisedStories.remove(story);
+                    if (unprioritisedStories.contains(story)) {
+                        unprioritisedStories.remove(story);
                     }
                 }
             }
@@ -197,7 +203,7 @@ public class Backlog extends Model {
 
     /**
      * Get the priority of a story in the backlog.
-     * @param story The story involved
+     * @param story The story involved.
      * @return The current priority of that story. -1 if story is unassigned or not in the backlog.
      */
     public final Integer getStoryPriority(final Story story) {
@@ -211,7 +217,7 @@ public class Backlog extends Model {
      * Return the lowest priority story (highest number).
      * @return The lowest priority story.
      */
-    public final Integer getMaxStoryPriority() {
+    public final Integer getLowestPriorityStory() {
         return stories.size();
     }
 
@@ -223,8 +229,8 @@ public class Backlog extends Model {
         if (stories.contains(story)) {
             stories.remove(story);
         }
-        else if (unPrioritisedStories.contains(story)) {
-            unPrioritisedStories.remove(story);
+        else if (unprioritisedStories.contains(story)) {
+            unprioritisedStories.remove(story);
         }
         commit("edit backlog");
     }
@@ -263,7 +269,7 @@ public class Backlog extends Model {
             return false;
         }
 
-        final String shortName = this.getShortName();
+        final String shortName = getShortName();
         final String shortNameOther = ((Backlog) object).getShortName();
 
         if (shortName == null || shortNameOther == null) {
@@ -271,14 +277,5 @@ public class Backlog extends Model {
         }
 
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
-    }
-
-    /**
-     * Returns the short name of the backlog.
-     * @return Short name of the backlog
-     */
-    @Override
-    public final String toString() {
-        return getShortName();
     }
 }

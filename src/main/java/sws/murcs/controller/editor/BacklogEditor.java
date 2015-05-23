@@ -144,13 +144,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
             if (storyPriority == null) {
-                storyPriority = getModel().getMaxStoryPriority() + 1;
+                storyPriority = getModel().getLowestPriorityStory() + 1;
             }
             if (storyPriority == 0) {
                 return;
             }
             try {
-                getModel().modifyStoryPriority(story, storyPriority - 1);
+                getModel().modifyStory(story, storyPriority - 1);
             }
             catch (CustomException e) {
                 labelErrorMessage.setText(e.getMessage());
@@ -171,14 +171,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             if (storyPriority == null) {
                 return;
             }
-            else if (storyPriority + 1 >= getModel().getMaxStoryPriority()) {
+            else if (storyPriority + 1 >= getModel().getLowestPriorityStory()) {
                 storyPriority = null;
             }
             else {
                 storyPriority++;
             }
             try {
-                getModel().modifyStoryPriority(story, storyPriority);
+                getModel().modifyStory(story, storyPriority);
             }
             catch (CustomException e) {
                 labelErrorMessage.setText(e.getMessage());

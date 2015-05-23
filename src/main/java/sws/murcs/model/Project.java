@@ -78,15 +78,6 @@ public class Project extends Model {
         }
     }
 
-    /**
-     * Returns the short name of the project.
-     * @return Short name of the project
-     */
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
     @Override
     public final boolean equals(final Object object) {
         if (!(object instanceof Project)) {
