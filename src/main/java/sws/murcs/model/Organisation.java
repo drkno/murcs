@@ -31,43 +31,43 @@ public class Organisation extends TrackableObject implements Serializable {
     private final List<Project> projects;
 
     /**
-     * The list of releases.
+     * The list of all the releases in the current application.
      */
     @TrackableValue
     private final List<Release> releases;
 
     /**
-     * The list of work allocations.
+     * The list of all the work allocations in the application.
      */
     @TrackableValue
     private final List<WorkAllocation> allocations;
 
     /**
-     * The list of teams.
+     * The list of teams within the current organisation.
      */
     @TrackableValue
     private final List<Team> teams;
 
     /**
-     * The list of people.
+     * The list of people within the current organisation.
      */
     @TrackableValue
     private final List<Person> people;
 
     /**
-     * The list of skills.
+     * The list of skills that people can have within the current organisation.
      */
     @TrackableValue
     private final List<Skill> skills;
 
     /**
-     * The list of backlogs.
+     * The list of backlogs within the current organisation.
      */
     @TrackableValue
     private final List<Backlog> backlogs;
 
     /**
-     * The list of stories.
+     * The list of stories contained within the current organisation.
      */
     @TrackableValue
     private final List<Story> stories;
@@ -498,9 +498,7 @@ public class Organisation extends TrackableObject implements Serializable {
             if (s1.equals(s2)) {
                 return 0;
             }
-
             return s1.getShortName().compareTo(s2.getShortName());
-
         });
         assignedSkills.addAll(person.getSkills());
         Set<Skill> allSkills = new TreeSet<>((s1, s2) -> {

@@ -35,7 +35,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
         /**
          * Low stress level.
          */
-        Low,
+        Low
     }
 
     /**
@@ -173,10 +173,10 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * @param lowMax The low max
      * @param mediumMax The medium max
      * @param highMax The high max
-     * @return The max
+     * @return The maximum clamp for the given stress level.
      */
     private int getMax(final Stress stressLevel, final int lowMax, final int mediumMax, final int highMax) {
-        switch (stressLevel)     {
+        switch (stressLevel) {
             case Low:
                 return lowMax;
             case Medium:

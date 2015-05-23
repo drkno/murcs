@@ -250,7 +250,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * Updates the assigned PO.
+     * Updates the PO assigned to the currently selected backlog.
      */
     private void updateAssignedPO() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
@@ -285,9 +285,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
             storyPicker.getItems().clear();
             storyPicker.getItems().addAll(organisation.getUnassignedStories());
-
             storyPicker.getSelectionModel().select(selectedIndex);
-
         });
     }
 

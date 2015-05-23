@@ -10,26 +10,32 @@ public enum ModelType {
      * Represents the class Project.
      */
     Project(0, sws.murcs.model.Project.class),
+
     /**
      * Represents the class Person.
      */
     Person(1, sws.murcs.model.Person.class),
+
     /**
      * Represents the class Team.
      */
     Team(2, sws.murcs.model.Team.class),
+
     /**
      * Represents the class Skill.
      */
     Skill(3, sws.murcs.model.Skill.class),
+
     /**
      * Represents the class Release.
      */
     Release(4, sws.murcs.model.Release.class),
+
     /**
      * Represents the class Story.
      */
     Story(5, sws.murcs.model.Story.class),
+
     /**
      * Represents the class Backlog.
      */
@@ -39,6 +45,7 @@ public enum ModelType {
      * The index of the model type in the enum.
      */
     private int index;
+
     /**
      * The class type of the linked class to the model type.
      */
