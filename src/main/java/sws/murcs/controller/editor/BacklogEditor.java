@@ -54,7 +54,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ComboBox<Person> poComboBox;
 
     /**
-     * A choicebox for adding a story to the backlog.
+     * A ChoiceBox for adding a story to the backlog.
      */
     @FXML
     private ComboBox<Story> storyPicker;
@@ -341,7 +341,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
             Story story = (Story) getTableRow().getItem();
-            if (story == null) {
+            if (story == null || empty) {
+                setText(null);
                 setGraphic(null);
             }
             else {
@@ -349,7 +350,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.setOnAction(event -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \"" + story.getShortName() + "\" from this backlog?");
+                    popup.setMessageText("Are you sure you wish to remove the story \""
+                            + story.getShortName() + "\" from this backlog?");
                     popup.addYesNoButtons(p -> {
                         getModel().removeStory(story);
                         updateStoryTable();
@@ -371,7 +373,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
             Story story = (Story) getTableRow().getItem();
-            if (story != null) {
+            if (story == null || empty) {
+                setText(null);
+                setGraphic(null);
+            }
+            else {
                 Integer storyPriority = getModel().getStoryPriority(story);
                 if (storyPriority != null) {
                     if (getIsCreationWindow()) {
@@ -397,9 +403,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         setGraphic(nameLink);
                     }
                 }
-            }
-            else {
-                setText(null);
             }
         }
     }
