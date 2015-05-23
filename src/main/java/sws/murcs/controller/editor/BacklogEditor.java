@@ -200,14 +200,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Integer priority = null;
             String priorityString = priorityTextField.getText().trim();
             if (currentStory != null) {
-                if (priorityString.matches("-?\\d+")) {
+                try {
                     priority = Integer.parseInt(priorityString) - 1;
-                    if (priority < 0) {
-                        throw new InvalidInputException("Invalid number");
-                    }
                 }
-                else if (!priorityString.isEmpty()) {
+                catch (Exception e) {
                     throw new InvalidInputException("Position is not a number");
+                }
+                if (priority < 0) {
+                    throw new InvalidInputException("Invalid number");
                 }
                 getModel().addStory(currentStory, priority);
                 updateAvailableStories();
