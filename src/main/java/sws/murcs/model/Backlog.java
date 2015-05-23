@@ -112,32 +112,33 @@ public class Backlog extends Model {
      * @throws CustomException if there any errors adding a story, a CustomException will be thrown.
      */
     public final void addStory(final Story story, final Integer priority) throws CustomException {
-        if (!getAllStories().contains(story)) {
-            if (priority == null) {
-                if (!unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.add(story);
-                    if (stories.contains(story)) {
-                        stories.remove(story);
-                    }
-                }
-            }
-            else if (priority < 0) {
-                throw new CustomException("Priority less than zero");
-            }
-            else if (priority >= stories.size()) {
-                stories.add(story);
-                if (unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.remove(story);
-                }
-            }
-            else {
-                stories.add(priority, story);
-                if (unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.remove(story);
-                }
-            }
-            commit("edit backlog");
+        if (getAllStories().contains(story)) {
+            return;
         }
+        if (priority == null) {
+            if (!unPrioritisedStories.contains(story)) {
+                unPrioritisedStories.add(story);
+                if (stories.contains(story)) {
+                    stories.remove(story);
+                }
+            }
+        }
+        else if (priority < 0) {
+            throw new CustomException("Priority less than zero");
+        }
+        else if (priority >= stories.size()) {
+            stories.add(story);
+            if (unPrioritisedStories.contains(story)) {
+                unPrioritisedStories.remove(story);
+            }
+        }
+        else {
+            stories.add(priority, story);
+            if (unPrioritisedStories.contains(story)) {
+                unPrioritisedStories.remove(story);
+            }
+        }
+        commit("edit backlog");
     }
 
     /**
@@ -147,49 +148,51 @@ public class Backlog extends Model {
      * @throws CustomException throws if there any exceptions modifying the stories priorities.
      */
     public final void modifyStoryPriority(final Story story, final Integer priority) throws CustomException {
-        if (getAllStories().contains(story)) {
-            final Integer currentStoryPriority = getStoryPriority(story);
-            if (priority == null) {
+        if (!getAllStories().contains(story)) {
+            return;
+        }
+
+        final Integer currentStoryPriority = getStoryPriority(story);
+        if (priority == null) {
+            if (stories.contains(story)) {
+                stories.remove(story);
+            }
+            if (!unPrioritisedStories.contains(story)) {
+                unPrioritisedStories.add(0, story);
+            }
+        }
+        else if (!Objects.equals(currentStoryPriority, priority)) {
+            if (priority < 0) {
+                throw new CustomException("Priority less than zero");
+            }
+            else if (priority >= stories.size()) {
+                // check to see if the story is already in the prioritised stories
+                // if it is then remove it so it can be added to the end of the list.
                 if (stories.contains(story)) {
                     stories.remove(story);
                 }
-                if (!unPrioritisedStories.contains(story)) {
-                    unPrioritisedStories.add(0, story);
+                stories.add(story);
+                if (unPrioritisedStories.contains(story)) {
+                    unPrioritisedStories.remove(story);
                 }
             }
-            else if (!Objects.equals(currentStoryPriority, priority)) {
-                if (priority < 0) {
-                    throw new CustomException("Priority less than zero");
-                }
-                else if (priority >= stories.size()) {
-                    // check to see if the story is already in the prioritised stories
-                    // if it is then remove it so it can be added to the end of the list.
-                    if (stories.contains(story)) {
-                        stories.remove(story);
+            else {
+                if (stories.contains(story)) {
+                    Story swap = stories.get(priority);
+                    if (swap != null) {
+                        stories.set(priority, story);
+                        stories.set(currentStoryPriority, swap);
                     }
-                    stories.add(story);
+                }
+                else if (!stories.contains(story)) {
+                    stories.add(priority, story);
                     if (unPrioritisedStories.contains(story)) {
                         unPrioritisedStories.remove(story);
                     }
                 }
-                else {
-                    if (stories.contains(story)) {
-                        Story swap = stories.get(priority);
-                        if (swap != null) {
-                            stories.set(priority, story);
-                            stories.set(currentStoryPriority, swap);
-                        }
-                    }
-                    else if (!stories.contains(story)) {
-                        stories.add(priority, story);
-                        if (unPrioritisedStories.contains(story)) {
-                            unPrioritisedStories.remove(story);
-                        }
-                    }
-                }
-                commit("edit backlog");
             }
         }
+        commit("edit backlog");
     }
 
     /**
@@ -220,9 +223,10 @@ public class Backlog extends Model {
         if (stories.contains(story)) {
             stories.remove(story);
         }
-        if (unPrioritisedStories.contains(story)) {
+        else if (unPrioritisedStories.contains(story)) {
             unPrioritisedStories.remove(story);
         }
+        commit("edit backlog");
     }
 
     /**

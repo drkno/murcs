@@ -1,5 +1,6 @@
 package sws.murcs.magic.tracking;
 
+import javafx.beans.Observable;
 import sws.murcs.model.Model;
 
 import java.lang.reflect.Constructor;
@@ -44,7 +45,7 @@ public class FieldValuePair {
      * @throws Exception if something goes wrong.
      */
     public final void restoreValue() throws Exception {
-        if (value instanceof Collection) {
+        if (value instanceof Collection && value instanceof Observable) {
             Collection list1 = (Collection) value;
             Collection list2 = (Collection) field.get(trackableObject);
 
