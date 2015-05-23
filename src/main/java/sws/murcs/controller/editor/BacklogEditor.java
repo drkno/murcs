@@ -84,6 +84,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private Label labelErrorMessage;
 
     /**
+     * Increase and decrease priority buttons.
+     */
+    @FXML
+    private Button increasePriorityButton, decreasePriorityButton;
+
+    /**
      * An observable list of backlog stories.
      */
     private ObservableList<Story> observableStories;
@@ -100,6 +106,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
+                int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
+                increasePriorityButton.setDisable(selectedIndex == 0);
+                decreasePriorityButton.setDisable(getModel().getStoryPriority(selectedStory.get()) == null);
             }
         });
 
@@ -108,6 +117,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
