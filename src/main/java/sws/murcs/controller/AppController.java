@@ -339,7 +339,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param forgetHistory If true all history about the project is forgotten
      * @return If the project successfully saved.
      */
-    @SuppressWarnings("unused")
     private boolean saveAs(final ActionEvent event, final boolean forgetHistory) {
         try {
             FileChooser fileChooser = new FileChooser();
