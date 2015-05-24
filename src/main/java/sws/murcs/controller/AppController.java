@@ -330,6 +330,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     @SuppressWarnings("unused")
     private boolean saveAs(final ActionEvent event) {
+        return saveAs(event, true);
+    }
+
+    /**
+     * Saves the model as a new file.
+     * @param event The event that causes this function to be called, namely clicking save.
+     * @param forgetHistory If true all history about the project is forgotten
+     * @return If the project successfully saved.
+     */
+    @SuppressWarnings("unused")
+    private boolean saveAs(final ActionEvent event, final boolean forgetHistory) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save As");
@@ -344,7 +355,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 PersistenceManager.getCurrent().saveModel(fileName);
-                UndoRedoManager.forget();
+                if (forgetHistory) {
+                    UndoRedoManager.forget();
+                }
                 return true;
             }
         }
@@ -385,6 +398,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         } catch (Exception e) {
                             showSaveFailedDialog();
                         }
+                    }
+                    else {
+                        showSaveFailedDialog();
                     }
                 });
                 popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
@@ -546,10 +562,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     GenericPopup errorPopup = new GenericPopup(e);
                     errorPopup.show();
                 }
+                selectItem(null);
             });
             popup.addButton("Save As", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
-                if (saveAs(null)) {
+                if (saveAs(null, false)) {
                     popup.close();
                     try {
                         UndoRedoManager.revert(0);
@@ -557,6 +574,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         GenericPopup errorPopup = new GenericPopup(e);
                         errorPopup.show();
                     }
+                }
+                else {
+                    showSaveFailedDialog();
                 }
             });
             popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
