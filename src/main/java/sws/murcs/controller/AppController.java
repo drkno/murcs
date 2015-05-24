@@ -199,10 +199,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
             backClicked(null);
         }
-        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.CONTROL_DOWN).match(event)) {
+        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
             forwardClicked(null);
         }
     }
