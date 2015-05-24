@@ -45,7 +45,6 @@ public class ReportHeader {
     /**
      * A constructor for the report header (used by the XML serialiser).
      */
-    @SuppressWarnings("unused")
     private ReportHeader() {
     }
 }

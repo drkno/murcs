@@ -150,7 +150,6 @@ public class ListDisplayStepDefs extends ApplicationTest {
     }
 
     @Then("^the list is sorted alphabetically$")
-    @SuppressWarnings("unchecked")
     public void the_list_is_sorted_alphabetically() throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
         List<Model> observableList = displayList.getItems();

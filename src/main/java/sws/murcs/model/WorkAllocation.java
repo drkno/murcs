@@ -38,7 +38,6 @@ public class WorkAllocation implements Serializable, Comparable<WorkAllocation> 
     /**
      * Creates a new empty work allocation.
      */
-    @SuppressWarnings("unused")
     public WorkAllocation() {
         project = null;
         team = null;

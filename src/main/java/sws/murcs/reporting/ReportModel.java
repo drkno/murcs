@@ -82,7 +82,6 @@ public class ReportModel {
     /**
      * An unused constructor that is needed by Jaxb for some reason.
      */
-    @SuppressWarnings("unused")
     private ReportModel() {
     }
 }

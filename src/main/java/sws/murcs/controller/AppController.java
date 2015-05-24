@@ -250,7 +250,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The even that triggers the function
      */
     @FXML
-    @SuppressWarnings("unused")
     private void fileQuitPress(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
@@ -281,7 +280,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that triggers the function
      */
     @FXML
-    @SuppressWarnings("unused")
     private void toggleItemListView(final ActionEvent event) {
         if (!vBoxSideDisplay.managedProperty().isBound()) {
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
@@ -303,7 +301,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    @SuppressWarnings("unused")
     private boolean save(final ActionEvent event) {
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
@@ -328,7 +325,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    @SuppressWarnings("unused")
     private boolean saveAs(final ActionEvent event) {
         return saveAs(event, true);
     }
@@ -371,7 +367,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that causes this function to be called, namely clicking save.
      */
     @FXML
-    @SuppressWarnings("unused")
     private void newModel(final ActionEvent event) {
         try {
             if (UndoRedoManager.canRevert()) {
@@ -445,7 +440,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    @SuppressWarnings("unused")
     private void open(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
@@ -485,7 +479,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the report to be generated
      */
     @FXML
-    @SuppressWarnings("unused")
     private void generateReport(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
@@ -512,7 +505,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    @SuppressWarnings("unused")
     private void undoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
@@ -528,7 +520,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    @SuppressWarnings("unused")
     private void redoMenuItemClicked(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
@@ -545,7 +536,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    @SuppressWarnings("unused")
     private void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
@@ -627,7 +617,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event of the add button being called
      */
     @FXML
-    @SuppressWarnings("unused")
     private void addClicked(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
@@ -694,7 +683,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    @SuppressWarnings("unused")
     private void removeClicked(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
