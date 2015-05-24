@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 
 import java.io.File;
@@ -22,19 +23,22 @@ import static org.junit.Assert.assertEquals;
  */
 public class ReportGeneratorTest {
 
-    private RelationalModel relationalModel;
+    private Organisation organisation;
     private File tempReport;
     private List<String> sampleReport;
 
     @Before
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(true);
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
         String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
-        relationalModel = new RelationalModel();
+        organisation = new Organisation();
         sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
         for (int i = 0; i < sampleReport.size(); i++) {
             if (sampleReport.get(i).matches(".*<projectVersion>(\\d+\\.){2}(\\d+)</projectVersion>.*")) {
-                sampleReport.set(i, "<projectVersion>" + relationalModel.getVersion() + "</projectVersion>");
+                sampleReport.set(i, "<projectVersion>" + organisation.getVersion() + "</projectVersion>");
             }
             if (sampleReport.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
                 sampleReport.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
@@ -128,13 +132,42 @@ public class ReportGeneratorTest {
         release.setReleaseDate(LocalDate.of(2015, 4, 22));
         project.addRelease(release);
 
-        relationalModel.add(project);
-        relationalModel.add(team1);
-        relationalModel.add(team2);
-        relationalModel.add(team3);
-        relationalModel.add(person4);
-        relationalModel.addAllocation(allocation);
-        relationalModel.add(release);
+        //Stories
+        Story story1 = new Story();
+        story1.setShortName("1");
+        story1.setLongName("Revert");
+        story1.setDescription("Revert to last saved state");
+        story1.setCreator(person3);
+
+        Story story2 = new Story();
+        story2.setShortName("2");
+        story2.setLongName("Story Maintenance");
+        story2.setDescription("add stories to project");
+        story2.setCreator(person4);
+
+        //Backlog
+        Backlog backlog = new Backlog();
+        backlog.setShortName("This is the backlog");
+        backlog.setLongName("back log be what");
+        backlog.setDescription("high five");
+        backlog.setAssignedPO(person1);
+        backlog.addStory(story1, 1);
+
+        organisation.add(project);
+        organisation.add(team1);
+        organisation.add(team2);
+        organisation.add(team3);
+        organisation.add(story1);
+        organisation.add(story2);
+        organisation.add(person1);
+        organisation.add(person2);
+        organisation.add(person3);
+        organisation.add(person4);
+        organisation.add(skillC);
+        organisation.add(skillPython);
+        organisation.addAllocation(allocation);
+        organisation.add(release);
+        organisation.add(backlog);
     }
 
     @After
@@ -144,7 +177,7 @@ public class ReportGeneratorTest {
 
     @Test
     public void testGenerate() throws Exception {
-        ReportGenerator.generate(relationalModel, tempReport);
+        ReportGenerator.generate(organisation, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < sampleReport.size(); i++) {

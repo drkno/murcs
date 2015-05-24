@@ -85,15 +85,6 @@ public class Skill extends Model {
     }
 
     /**
-     * Returns the short name of the skill.
-     * @return Short name of the skill
-     */
-    @Override
-    public final String toString() {
-        return getShortName();
-    }
-
-    /**
      * Enum for roles.
      */
     public enum ROLES {

@@ -11,6 +11,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
 
@@ -30,6 +31,7 @@ public class TeamTest {
         teamGenerator = new TeamGenerator();
         personGenerator = new PersonGenerator();
         UndoRedoManager.setDisabled(true);
+        PersistenceManager.setCurrent(null);
     }
 
     @Before

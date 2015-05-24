@@ -4,9 +4,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.RelationalModelGenerator;
+import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.io.File;
@@ -22,7 +23,7 @@ public class FilePersistenceLoaderTest {
     private Random random;
     private ArrayList<String> files;
     private FilePersistenceLoader loader;
-    private RelationalModelGenerator generator;
+    private OrganisationGenerator generator;
     private final String testExtension = ".testProject";
     private PrintStream systemErr;
 
@@ -37,7 +38,7 @@ public class FilePersistenceLoaderTest {
         loader = new FilePersistenceLoader();
         File file = new File(System.getProperty("user.dir"));
         loader.setCurrentWorkingDirectory(file.getAbsolutePath());
-        generator = new RelationalModelGenerator(RelationalModelGenerator.Stress.Low);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Low);
         files = new ArrayList<>();
         random = new Random();
         UndoRedoManager.setDisabled(true);
@@ -60,11 +61,15 @@ public class FilePersistenceLoaderTest {
 
     @Test
     public void testLoadModel() throws Exception {
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
         String testFile = getNewTestFile();
-        RelationalModel model = generator.generate();
+        Organisation model = generator.generate();
+        model = generator.generate();
         int numProjects = model.getProjects().size();
         loader.saveModel(testFile, model);
-        RelationalModel loadModel = loader.loadModel(testFile);
+        Organisation loadModel = loader.loadModel(testFile);
         Assert.assertNotNull(loadModel);
         Assert.assertEquals(numProjects, loadModel.getProjects().size());
         Assert.assertEquals(loadModel.getProjects().get(0).getShortName(), model.getProjects().get(0).getShortName());
@@ -72,7 +77,7 @@ public class FilePersistenceLoaderTest {
 
     @Test
     public void testLoadModelFail() throws Exception {
-        RelationalModel model = loader.loadModel(getNewTestFile());
+        Organisation model = loader.loadModel(getNewTestFile());
         Assert.assertNull(model);
         model = loader.loadModel(null);
         Assert.assertNull(model);

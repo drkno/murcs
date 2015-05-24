@@ -16,8 +16,8 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -101,7 +101,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         // todo decouple from model
-        RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -121,8 +121,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             descriptionTextField.setText(modelDescription);
         }
 
-        choiceBoxAddTeam.getItems().setAll(relationalModel.getTeams());
-        observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
+        choiceBoxAddTeam.getItems().setAll(organisation.getTeams());
+        observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
 
         setIsCreationWindow(modelShortName == null);
     }
@@ -191,10 +191,10 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         try {
             // Attempt to save the allocation
-            RelationalModel relationalModel = PersistenceManager.getCurrent().getCurrentModel();
+            Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
             WorkAllocation allocation = new WorkAllocation(getModel(), team, startDate, endDate);
-            relationalModel.addAllocation(allocation);
-            observableAllocations.setAll(relationalModel.getProjectsAllocations(getModel()));
+            organisation.addAllocation(allocation);
+            observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
 
             // Clear user inputs for work period
             choiceBoxAddTeam.getSelectionModel().clearSelection();
@@ -225,7 +225,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\" from \""
                 + allocation.getProject()
                 + "\"?");
-        alert.addOkCancelButtons(a -> {
+        alert.addYesNoButtons(a -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();

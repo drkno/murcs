@@ -1,9 +1,5 @@
 package sws.murcs.controller;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -26,12 +22,27 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Main app class controller.
@@ -43,7 +54,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, showHide, revert;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert;
     /**
      * The side display which contains the display list.
      */
@@ -168,6 +179,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
         addStory.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN,
                 KeyCombination.CONTROL_DOWN));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
@@ -201,7 +213,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
         displayList.getSelectionModel().clearSelection();
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
             return;
@@ -215,6 +227,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Skill: arrayList = model.getSkills(); break;
             case Release: arrayList = model.getReleases(); break;
             case Story: arrayList = model.getStories(); break;
+            case Backlog: arrayList = model.getBacklogs(); break;
             default: throw new UnsupportedOperationException();
         }
 
@@ -404,7 +417,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void createNewModel() throws Exception {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        RelationalModel model = new RelationalModel();
+        Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
         NavigationManager.clearHistory();
@@ -428,7 +441,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             File file = fileChooser.showOpenDialog(App.getStage());
             if (file != null) {
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                RelationalModel model = PersistenceManager.getCurrent().loadModel(file.getName());
+                Organisation model = PersistenceManager.getCurrent().loadModel(file.getName());
                 if (model == null) {
                     throw new Exception("Project was not opened.");
                 }
@@ -617,6 +630,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 case "addRelease":
                     clazz = Release.class;
                     break;
+                case "addBacklog":
+                    clazz = Backlog.class;
+                    break;
+                case "addStory":
+                    clazz = Story.class;
+                    break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");
             }
@@ -658,7 +677,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     @SuppressWarnings("unused")
     private void removeClicked(final ActionEvent event) {
-        RelationalModel model = PersistenceManager.getCurrent().getCurrentModel();
+        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
         }
@@ -677,7 +696,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
 
-        Collection<Model> usages = model.findUsages(selectedItem);
+        Collection<Model> usages = UsageHelper.findUsages(selectedItem);
         GenericPopup popup = new GenericPopup();
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
@@ -720,6 +739,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
                 displayList.getSelectionModel().select(parameter);
+                displayList.scrollTo(parameter);
             }
 
             if (displayList.getSelectionModel().getSelectedIndex() < 0) {

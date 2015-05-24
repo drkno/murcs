@@ -175,9 +175,9 @@ public class PersonEditor extends GenericEditor<Person> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove "
                     + skill.getShortName() + " from "
-                    + getModel().getShortName());
+                    + getModel().getShortName() + "?");
             popup.setTitleText("Remove Skill from Person");
-            popup.addOkCancelButtons(func -> {
+            popup.addYesNoButtons(func -> {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);

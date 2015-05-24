@@ -1,6 +1,6 @@
 package sws.murcs.model.persistence.loaders;
 
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ public interface PersistenceLoader {
      * @param persistenceName The name of the persistent file to load
      * @return The loaded model.
      */
-    RelationalModel loadModel(String persistenceName);
+    Organisation loadModel(String persistenceName);
 
     /**
      * Saves a model out to a file in the default directory.
@@ -22,7 +22,7 @@ public interface PersistenceLoader {
      * @param persistent Model to save.
      * @throws Exception When a model fails to save.
      */
-    void saveModel(String saveName, RelationalModel persistent) throws Exception;
+    void saveModel(String saveName, Organisation persistent) throws Exception;
 
     /**
      * Gets a list of models that exist.

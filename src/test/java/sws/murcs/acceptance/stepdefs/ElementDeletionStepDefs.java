@@ -32,7 +32,9 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     private Person person;
     private Skill skill;
     private Team team;
-    private RelationalModel model;
+    private Story story;
+    private Backlog backlog;
+    private Organisation model;
     private Application app;
 
 
@@ -49,7 +51,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
         interact(() -> {
             try {
-                model = new RelationalModel();
+                model = new Organisation();
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
@@ -76,11 +78,22 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 project.addRelease(release);
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
+                story = new Story();
+                story.setShortName("TestStory");
+                story.setCreator(person);
+
+                backlog = new Backlog();
+                backlog.setShortName("TestBacklog");
+                backlog.setAssignedPO(person);
+                backlog.addStory(story, 1);
+
                 model.add(project);
                 model.add(person);
                 model.add(release);
                 model.add(team);
                 model.add(skill);
+                model.add(story);
+                model.add(backlog);
             } catch (Exception e) {
                 e.printStackTrace();
             }

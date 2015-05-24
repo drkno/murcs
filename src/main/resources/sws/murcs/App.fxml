@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <BorderPane fx:id="borderPaneMain" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
    <top>
       <MenuBar BorderPane.alignment="CENTER">
@@ -20,6 +17,7 @@
                         <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
                         <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
                         <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addClicked" text="Release" />
+                        <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addClicked" text="Backlog" />
                         <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story" />
                        </items>
                     </Menu>
@@ -40,7 +38,7 @@
             </Menu>
              <Menu id="viewMenu" mnemonicParsing="false" text="View">
                 <items>
-                    <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                    <MenuItem fx:id="showHide" id="viewShowHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
                 </items>
              </Menu>
          </menus>

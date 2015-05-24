@@ -4,7 +4,7 @@ package sws.murcs.exceptions;
  * All custom exceptions inherit from this exception. This is done so
  * that all custom exceptions can be caught whilst ignoring built in exceptions.
  */
-public class CustomException extends Exception {
+public abstract class CustomException extends Exception {
     /**
      * Instantiates a new CustomException.
      */

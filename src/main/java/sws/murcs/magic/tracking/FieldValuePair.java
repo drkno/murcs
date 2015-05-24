@@ -1,5 +1,6 @@
 package sws.murcs.magic.tracking;
 
+import javafx.beans.Observable;
 import sws.murcs.model.Model;
 
 import java.lang.reflect.Constructor;
@@ -11,7 +12,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Tracks an objects field and its associated value.
+ * Manages the tracking of an object and its associated value.
+ * This includes operations to get the objects current value
+ * and to restore a previous saved value.
  */
 public class FieldValuePair {
     /**
@@ -45,17 +48,27 @@ public class FieldValuePair {
      */
     public final void restoreValue() throws Exception {
         if (value instanceof Collection) {
-            Collection list1 = (Collection) value;
-            Collection list2 = (Collection) field.get(trackableObject);
-
-            Set add = new HashSet<>(list1);
-            add.removeAll(list2);
-
-            Set remove = new HashSet<>(list2);
-            remove.removeAll(list1);
-
-            list2.removeAll(remove);
-            list2.addAll(add);
+            Collection collection = (Collection) value;
+            if (value instanceof Observable) {
+                // If Observable, changes need to be done through the add/remove
+                // methods so any listeners get correctly fired
+                Collection currentCollection = (Collection) field.get(trackableObject);
+                Set add = new HashSet<>(collection);
+                add.removeAll(currentCollection);
+                Set remove = new HashSet<>(currentCollection);
+                remove.removeAll(collection);
+                currentCollection.removeAll(remove);
+                currentCollection.addAll(add);
+            }
+            else {
+                // Otherwise we need to shallow-copy the Collection. Using the existing
+                // Collection in the FieldValuePair would result in pass-by-reference issues
+                Object[] constructorArgs = {collection};
+                Class clazz = value.getClass();
+                Constructor constructor = clazz.getConstructor(Collection.class);
+                Collection newCollection = (Collection) constructor.newInstance(constructorArgs);
+                field.set(trackableObject, newCollection);
+            }
         }
         else {
             field.set(trackableObject, value);

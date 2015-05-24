@@ -2,9 +2,15 @@ package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A class representing a story in the backlog for a project.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
     /**
      * A description of the story.
@@ -52,11 +58,6 @@ public class Story extends Model {
     public final void setCreator(final Person person) {
         this.creator = person;
         commit("edit story");
-    }
-
-    @Override
-    public final String toString() {
-        return getShortName();
     }
 
     @Override

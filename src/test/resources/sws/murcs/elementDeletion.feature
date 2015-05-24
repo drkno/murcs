@@ -45,3 +45,21 @@ Feature: Element Deletion
      And I confirm I want to delete
      Then the release is deleted
      And release deletion can be undone
+
+   Scenario: Deleting a Story
+     Given I have a story selected
+     And I press the delete button
+     Then a confirm dialog is displayed
+     And all the places that the object is used are displayed
+     And I confirm I want to delete
+     Then the story is deleted
+     And story deletion can be undone
+
+  Scenario: Deleting a Backlog
+    Given I have a backlog selected
+    And I press the delete button
+    Then a confirm dialog is displayed
+    And all the places that the object is used are displayed
+    And I confirm I want to delete
+    Then the backlog is deleted
+    And backlog deletion can be undone

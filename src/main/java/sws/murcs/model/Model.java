@@ -5,6 +5,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObjectProperty;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -68,7 +69,11 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @throws CustomException if the short name is invalid.
      */
     private void validateShortName(final String value) throws CustomException {
-        DuplicateObjectException.checkForDuplicates(this, value);
+        ModelType type = ModelType.getModelType(getClass());
+        Model model = UsageHelper.findBy(type, m -> m.getShortName().equalsIgnoreCase(value));
+        if (model != null) {
+            throw new DuplicateObjectException("A " + type + " with this name already exists.");
+        }
         InvalidParameterException.validate("Short Name", value);
     }
 
@@ -111,5 +116,10 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public final int getHashCodePrime() {
         return hashCodePrime;
+    }
+
+    @Override
+    public final String toString() {
+        return getShortName();
     }
 }
