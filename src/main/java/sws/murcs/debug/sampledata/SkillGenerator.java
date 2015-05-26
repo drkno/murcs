@@ -261,13 +261,6 @@ public class SkillGenerator implements Generator<Skill> {
             "Responsibility",
             "Sense of humor",
     };
-    /**
-     * Descriptions for skills.
-     */
-    private String[] descriptions = {
-            "A very useful skill",
-            "A not very useful skill"
-    };
 
     /**
      * Instantiates a new random skill generator.
@@ -279,11 +272,9 @@ public class SkillGenerator implements Generator<Skill> {
     /**
      * Instantiates a new random skill generator.
      * @param skillsList skills to generate from.
-     * @param descriptionList descriptions to generate from.
      */
-    public SkillGenerator(final String[] skillsList, final String[] descriptionList) {
+    public SkillGenerator(final String[] skillsList) {
         this.skills = skillsList;
-        this.descriptions = descriptionList;
     }
 
     @Override
@@ -291,7 +282,7 @@ public class SkillGenerator implements Generator<Skill> {
         Skill skill = new Skill();
 
         String name = NameGenerator.randomElement(skills);
-        String description = NameGenerator.randomElement(descriptions);
+        String description = NameGenerator.randomDescription();
 
         try {
             skill.setShortName(name);
