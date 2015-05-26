@@ -20,7 +20,7 @@ public final class NameGenerator {
     private static final Random RANDOM = new Random();
 
     /**
-     * A list of random sentences to be used in descriptions
+     * A list of random sentences to be used in descriptions.
      */
     private static final String[] DESCRIPTIONS = {
             "The meat litigates the omniscient steel.",
@@ -1098,10 +1098,12 @@ public final class NameGenerator {
     }
 
     /**
-     * Gets a random description
+     * Gets a random description.
      * @return The random description
      */
-    public static String randomDescription() {return randomElement(DESCRIPTIONS);}
+    public static String randomDescription() {
+        return randomElement(DESCRIPTIONS);
+    }
 
     /**
      * Generates a random string of lowercase letters.
@@ -1140,7 +1142,7 @@ public final class NameGenerator {
      * Gets the Lorem Ispum placeholder string.
      * @return the placeholder string.
      */
-    public static String getLoremIpsum() {
+    static String getLoremIpsum() {
         return "Lorem ipsum dolor sit amet, consectetur "
                 + "adipiscing elit. Donec facilisis ac quam in "
                 + "blandit. Donec ut velit erat. Vestibulum nec "
