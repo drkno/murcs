@@ -761,8 +761,6 @@ public class TeamGenerator implements Generator<Team> {
             "Undead Person's Front",
             "Underdog Nillionaires",
             "Underground Rodeo",
-            "Unibangers",
-            "Unibangers (wheelless)",
             "Universal Solvent",
             "Unlicensed Nuclear Accelerator",
             "Unseen",
@@ -830,10 +828,6 @@ public class TeamGenerator implements Generator<Team> {
      */
     private String[] teamNames = PREDEFINED_TEAM_NAMES;
     /**
-     * A list of descriptions.
-     */
-    private String[] descriptions = {NameGenerator.getLoremIpsum()};
-    /**
      * The probably of a person being a scrum master.
      */
     private float probOfScrumMaster;
@@ -866,15 +860,13 @@ public class TeamGenerator implements Generator<Team> {
      * Instantiates a new Team generator.
      * @param generator person generator to use.
      * @param names team names to generate from.
-     * @param newDescriptions descriptions to generate from.
      * @param productOwnerProbability probability of a product owner to use.
      * @param scrumMasterProbability probability of a scrum master to use.
      */
-    public TeamGenerator(final Generator<Person> generator, final String[] names, final String[] newDescriptions,
+    public TeamGenerator(final Generator<Person> generator, final String[] names,
                          final float productOwnerProbability, final float scrumMasterProbability) {
         this.personGenerator = generator;
         this.teamNames = names;
-        this.descriptions = newDescriptions;
         this.probOfProductOwner = productOwnerProbability;
         this.probOfScrumMaster = scrumMasterProbability;
     }
@@ -941,7 +933,7 @@ public class TeamGenerator implements Generator<Team> {
         String shortName = NameGenerator.randomElement(teamNames);
         String longName = shortName + NameGenerator.random(longNameMax);
 
-        String description = NameGenerator.randomElement(descriptions);
+        String description = NameGenerator.randomDescription();
 
         Person productOwner = null;
         Person scrumMaster = null;

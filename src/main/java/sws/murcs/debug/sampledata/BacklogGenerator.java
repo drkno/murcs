@@ -56,11 +56,6 @@ public class BacklogGenerator implements Generator<Backlog> {
     };
 
     /**
-     * A list of descriptions.
-     */
-    private String[] descriptions = {NameGenerator.getLoremIpsum()};
-
-    /**
      * The story generator for this backlog generator.
      */
     private Generator<Story> storyGenerator;
@@ -159,7 +154,7 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         String shortName = NameGenerator.randomElement(backlogNames);
         String longName = NameGenerator.randomString(longNameMax);
-        String description = NameGenerator.randomElement(descriptions);
+        String description = NameGenerator.randomDescription();
 
         List<Story> stories = generateStories(minStories, maxStories);
 
