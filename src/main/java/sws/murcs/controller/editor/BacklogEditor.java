@@ -345,7 +345,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * A TableView cell that contains a link to the team it represents.
+     * A RemoveButtonCell that contains the button used to remove a story from the backlog.
      */
     private class RemoveButtonCell extends TableCell<Story, Object> {
         @Override
@@ -377,7 +377,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * A TableView cell that contains a link to the team it represents.
+     * A TableView cell that contains a link to the story it represents.
      */
     private class HyperlinkButtonCell extends TableCell<Story, Object> {
         @Override
