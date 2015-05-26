@@ -52,12 +52,7 @@ public class ProjectGenerator implements Generator<Project> {
             "Deserted Tea",
             "Rare Albatross"
     };
-    /**
-     * The descriptions for the project.
-     */
-    private String[] descriptions = {
-            "A very exciting description",
-            NameGenerator.getLoremIpsum()};
+
     /**
      * A team generator for the project.
      */
@@ -78,12 +73,10 @@ public class ProjectGenerator implements Generator<Project> {
      * Instantiates a new project generator.
      * @param generator team generator to use.
      * @param names project names to generate project from.
-     * @param newDescriptions descriptions for projects to generate from.
      */
-    public ProjectGenerator(final Generator<Team> generator, final String[] names, final String[] newDescriptions) {
+    public ProjectGenerator(final Generator<Team> generator, final String[] names) {
         this.teamGenerator = generator;
         this.projectNames = names;
-        this.descriptions = newDescriptions;
     }
 
     /**
@@ -150,7 +143,7 @@ public class ProjectGenerator implements Generator<Project> {
 
         String shortName = NameGenerator.randomElement(projectNames);
         String longName = NameGenerator.randomString(longNameLength);
-        String description = NameGenerator.randomElement(descriptions);
+        String description = NameGenerator.randomDescription();
 
         //List<Team> teams = generateTeams(10, 50);
 
