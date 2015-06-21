@@ -14,7 +14,7 @@ public class AcceptanceCondition {
      * Gets a string describing this condition
      * @return The condition
      */
-    public String getCondition() {
+    public final String getCondition() {
         return condition;
     }
 
@@ -23,7 +23,7 @@ public class AcceptanceCondition {
      * describes
      * @param condition The new condition
      */
-    public void setCondition(final String condition) {
+    public final void setCondition(final String condition) {
         this.condition = condition;
     }
 }
