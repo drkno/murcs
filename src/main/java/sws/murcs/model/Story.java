@@ -70,6 +70,18 @@ public class Story extends Model {
     }
 
     /**
+     * Moves an Acceptance Condition to a new position in the list
+     * @param condition The condition to move
+     * @param newPosition The new position
+     */
+    public final void repositionCondition(final AcceptanceCondition condition, final int newPosition){
+        this.acceptanceCriteria.remove(condition);
+        this.acceptanceCriteria.add(newPosition, condition);
+
+        commit("edit acceptance criteria");
+    }
+
+    /**
      * Removes a condition from the list of acceptance criteria
      * @param condition The condition to remove.
      */

@@ -53,6 +53,12 @@ public class StoryEditor extends GenericEditor<Story> {
     private TableColumn conditionColumn, removeColumn;
 
     /**
+     * Buttons for increasing and decreasing the priority of an AC
+     */
+    @FXML
+    private Button increasePriorityButton, decreasePriorityButton;
+
+    /**
      * The TextField containing the text for the new condition
      */
     @FXML
@@ -104,6 +110,44 @@ public class StoryEditor extends GenericEditor<Story> {
         //Load the acceptance conditions
         acceptanceCriteriaTable.getItems().clear();
         acceptanceCriteriaTable.getItems().addAll(getModel().getAcceptanceCriteria());
+        refreshPriorityButtons();
+    }
+
+    /**
+     * Refreshes the priority buttons so they have the correct enable state
+     */
+    private void refreshPriorityButtons(){
+        //Enable both buttons, we'll turn them off if we have to
+        boolean increaseEnabled = true;
+        boolean decreaseEnabled = true;
+
+        AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
+
+        //If nothing is selected then both buttons should be disabled
+        if (selected == null){
+            increaseEnabled = false;
+            decreaseEnabled = false;
+        }else {
+            //If something is selected we don't have to worry about having no items in the list
+
+            //If this is the first item, we can't go up
+            if (selected == getModel().getAcceptanceCriteria().get(0)) {
+                increaseEnabled = false;
+            }
+
+            //If this is the last item, we can't go down
+            if (selected == getModel().getAcceptanceCriteria().get(getModel().getAcceptanceCriteria().size() - 1)) {
+                decreaseEnabled = false;
+            }
+
+            if (increaseEnabled == increasePriorityButton.isDisabled()) {
+                increasePriorityButton.setDisable(!increaseEnabled);
+            }
+
+            if (decreaseEnabled == decreasePriorityButton.isDisabled()) {
+                decreasePriorityButton.setDisable(!decreaseEnabled);
+            }
+        }
     }
 
     @Override
@@ -118,6 +162,7 @@ public class StoryEditor extends GenericEditor<Story> {
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
 
+        acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         removeColumn.setCellFactory(param -> new RemoveButtonCell());
 
@@ -185,6 +230,57 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Make sure that the table gets updated
         updateAcceptanceCriteria();
+    }
+
+    /**
+     * Decreases the priority of a selected row in the table
+     * @param event the event information
+     */
+    @FXML
+    protected final void increasePriorityClicked(final ActionEvent event){
+        AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
+        moveCondition(condition, -1);
+        updateAcceptanceCriteria();
+
+        acceptanceCriteriaTable.getSelectionModel().select(condition);
+    }
+
+    /**
+     * Increases the priority of a selected row in the table
+     * @param event the event information
+     */
+    @FXML
+    protected final void decreasePriorityClicked(final ActionEvent event){
+        AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
+        moveCondition(condition, 1);
+        updateAcceptanceCriteria();
+
+        acceptanceCriteriaTable.getSelectionModel().select(condition);
+    }
+
+    /**
+     * Moves a condition down the list of Acceptance Criteria by a specified number of places (the number of
+     * places wraps)
+     * @param condition The condition to move
+     * @param places The number of places to move it.
+     */
+    public final void moveCondition(final AcceptanceCondition condition, final int places){
+        int index = getModel().getAcceptanceCriteria().indexOf(condition);
+
+        //If the item is not in the list, throw an exception
+        if (index == -1) return;
+
+        index += places;
+
+        //Wrap the index.
+        while (index < 0) {
+            index += getModel().getAcceptanceCriteria().size();
+        }
+        while (index >= getModel().getAcceptanceCriteria().size()) {
+            index -= getModel().getAcceptanceCriteria().size();
+        }
+
+        getModel().repositionCondition(condition, index);
     }
 
     /**

@@ -58,14 +58,14 @@
                            <children>
                               <TableView fx:id="acceptanceCriteriaTable" prefHeight="200.0" prefWidth="200.0">
                                 <columns>
-                                  <TableColumn fx:id="conditionColumn" minWidth="150.0" prefWidth="-1.0" sortable="false" text="Condition" />
+                                  <TableColumn fx:id="conditionColumn" minWidth="300.0" prefWidth="-1.0" sortable="false" text="Condition" />
                                     <TableColumn fx:id="removeColumn" prefWidth="75.0" sortable="false" />
                                 </columns>
                               </TableView>
                               <VBox prefHeight="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER">
                                  <children>
-                                    <Button fx:id="increasePriorityButton" disable="true" mnemonicParsing="false" onAction="#increasePriority" prefWidth="30.0" text="^" />
-                                    <Button fx:id="decreasePriorityButton" disable="true" mnemonicParsing="false" onAction="#decreasePriority" prefWidth="30.0" text="v">
+                                    <Button fx:id="increasePriorityButton" disable="true" mnemonicParsing="false" onAction="#increasePriorityClicked" prefWidth="30.0" text="^" />
+                                    <Button fx:id="decreasePriorityButton" disable="true" mnemonicParsing="false" onAction="#decreasePriorityClicked" prefWidth="30.0" text="v">
                                        <VBox.margin>
                                           <Insets />
                                        </VBox.margin>
