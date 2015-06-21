@@ -4,18 +4,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Story;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class StoryTest {
 
     private Story story;
     private Story story2;
     private Story story3;
-
 
     @Before
     public void setUp() throws Exception {
@@ -48,6 +46,38 @@ public class StoryTest {
     @Test(expected = Exception.class)
     public void setShortNameTest3() throws Exception{
         story.setShortName("   \n\r\t");
+    }
+
+    @Test
+    public void testManipulateAcceptanceCriteria(){
+        assertTrue("A new story should have no conditions", story.getAcceptanceCriteria().size() == 0);
+
+        AcceptanceCondition first = new AcceptanceCondition();
+        first.setCondition("I should be completed!");
+        story.addAcceptanceCondition(first);
+        assertEquals("The first condition on the story should be 'I should be completed'",
+                story.getAcceptanceCriteria().get(0),
+                first);
+
+        AcceptanceCondition second = new AcceptanceCondition();
+        second.setCondition("I'm the second");
+        story.addAcceptanceCondition(second);
+        assertEquals("The second condition on the story should be 'I'm the second'",
+                story.getAcceptanceCriteria().get(1),
+                second);
+
+        story.removeAcceptanceCriteria(first);
+        assertEquals("The first condition should be \"I'm the second\"",
+                story.getAcceptanceCriteria().get(0),
+                second);
+
+        story.removeAcceptanceCriteria(second);
+        assertTrue("There should be no acceptance criteria", story.getAcceptanceCriteria().size() == 0);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testAcceptanceCriteriaUnmodifiable(){
+        story.getAcceptanceCriteria().add(new AcceptanceCondition());
     }
 
     @Test

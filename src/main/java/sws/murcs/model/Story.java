@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,6 +34,13 @@ public class Story extends Model {
      */
     @TrackableValue
     private Person creator;
+
+    /**
+     * Creates and initializes a new story
+     */
+    public Story(){
+        acceptanceCriteria = new ArrayList<>();
+    }
 
     /**
      * Gets an unmodifiable List containing all the Acceptance
