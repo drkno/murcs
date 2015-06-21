@@ -1,9 +1,8 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.List;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
-
-import java.util.List;
 
 /**
  * A generator for stories.
@@ -152,7 +151,7 @@ public class StoryGenerator implements Generator<Story> {
             "A story that accomplishes nothing",
             "The meaning of life is 42",
             "Monkeys like stories",
-            "Implement the hyperdrive and go to the moon",
+            "Implement the hyperdrive and go to the moon(that's no moon)",
             "There's just too much to describe here, I'll do it later",
             "I'm tired of describing this",
             "No Luke, I am your father",
