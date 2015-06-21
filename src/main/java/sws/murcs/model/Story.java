@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 /**
  * A class representing a story in the backlog for a project.
@@ -53,12 +54,19 @@ public class Story extends Model {
     }
 
     /**
-     * Adds a condition to the acceptance criteria for the story
+     * Adds a condition to the acceptance criteria for the story if it is not already one of the ACs. This is
+     * not intended to stop ACs with the same text being added but to prevent the same object being added multiple
+     * times.
      * @param condition The condition to add
      */
     public final void addAcceptanceCondition(final AcceptanceCondition condition) {
-        this.acceptanceCriteria.add(condition);
-        commit("Added acceptance criteria");
+        if (!acceptanceCriteria.contains(condition)) {
+            this.acceptanceCriteria.add(condition);
+            //I'm not sure about this Matthew but if I don't have it
+            //then the object is not tracked
+            UndoRedoManager.add(condition);
+        }
+        commit("edit acceptance criteria");
     }
 
     /**
@@ -67,7 +75,7 @@ public class Story extends Model {
      */
     public final void removeAcceptanceCriteria(final AcceptanceCondition condition){
         this.acceptanceCriteria.remove(condition);
-        commit("Removed acceptance criteria");
+        commit("edit acceptance criteria");
     }
 
     /**

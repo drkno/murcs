@@ -195,7 +195,9 @@ public class StoryEditor extends GenericEditor<Story> {
         protected void updateItem(final Object unused, final boolean empty){
             super.updateItem(unused, empty);
 
-            AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
+            //Store the acceptance condition for this row
+            final AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
+
             if (condition == null || empty){
                 setText(null);
                 setGraphic(null);
@@ -203,6 +205,14 @@ public class StoryEditor extends GenericEditor<Story> {
             }
 
             TextField conditionTextField = new TextField();
+            //Add a change listener
+            conditionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                //If nothing has changed or we received focus we don't have to do anything
+                if (oldValue == newValue || newValue) return;
+
+                //Update the text of the condition
+                condition.setCondition(conditionTextField.getText());
+            });
             conditionTextField.setText(condition.getCondition());
             setGraphic(conditionTextField);
         }

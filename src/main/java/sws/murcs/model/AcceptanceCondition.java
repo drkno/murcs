@@ -34,6 +34,6 @@ public class AcceptanceCondition extends TrackableObject {
      */
     public final void setCondition(final String newCondition) {
         this.condition = newCondition;
-        commit("edit Acceptance Condition");
+        commit("edit condition");
     }
 }
