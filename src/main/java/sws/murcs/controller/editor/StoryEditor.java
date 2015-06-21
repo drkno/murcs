@@ -229,6 +229,9 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Make sure that the table gets updated
         updateAcceptanceCriteria();
+
+        //Select the item we just created
+        acceptanceCriteriaTable.getSelectionModel().select(newCondition);
     }
 
     /**
@@ -237,9 +240,9 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     protected final void increasePriorityClicked(final ActionEvent event){
+        //Get the selected item and move it up one place
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, -1);
-        updateAcceptanceCriteria();
     }
 
     /**
@@ -248,9 +251,9 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     protected final void decreasePriorityClicked(final ActionEvent event){
+        //Get the selected item and move it down one place
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, 1);
-        updateAcceptanceCriteria();
     }
 
     /**
@@ -260,6 +263,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * @param places The number of places to move it.
      */
     public final void moveCondition(final AcceptanceCondition condition, final int places){
+        //Get the current index of the AC
         int index = getModel().getAcceptanceCriteria().indexOf(condition);
 
         //If the item is not in the list, throw an exception
@@ -275,8 +279,11 @@ public class StoryEditor extends GenericEditor<Story> {
             index -= getModel().getAcceptanceCriteria().size();
         }
 
+        //Reposition the item to our calculated index in the model
         getModel().repositionCondition(condition, index);
-        acceptanceCriteriaTable.getSelectionModel().select(condition);
+
+        //Update the ACs in the table
+        updateAcceptanceCriteria();
     }
 
     /**
