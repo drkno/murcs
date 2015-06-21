@@ -1,9 +1,15 @@
 package sws.murcs.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A class representing a single
  * acceptance condition on a story.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AcceptanceCondition {
     /**
      * The text representing the condition
@@ -21,9 +27,9 @@ public class AcceptanceCondition {
     /**
      * Sets the condition that this acceptance condition
      * describes
-     * @param condition The new condition
+     * @param newCondition The new condition
      */
-    public final void setCondition(final String condition) {
-        this.condition = condition;
+    public final void setCondition(final String newCondition) {
+        this.condition = newCondition;
     }
 }
