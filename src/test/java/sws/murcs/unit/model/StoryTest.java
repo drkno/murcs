@@ -75,6 +75,24 @@ public class StoryTest {
         assertTrue("There should be no acceptance criteria", story.getAcceptanceCriteria().size() == 0);
     }
 
+    @Test
+    public void testReorderAcceptanceConditions(){
+        for (int i = 0; i < 10; i++){
+            AcceptanceCondition condition = new AcceptanceCondition();
+            condition.setCondition("Condition " + i);
+            story.addAcceptanceCondition(condition);
+        }
+
+        AcceptanceCondition condition = story.getAcceptanceCriteria().get(0);
+
+        for (int i = 0; i < 10; i++){
+            story.repositionCondition(condition, i);
+            int actualIndex = story.getAcceptanceCriteria().indexOf(condition);
+
+            assertEquals("The story should be at position " + i, i, actualIndex);
+        }
+    }
+
     @Test(expected = UnsupportedOperationException.class)
     public void testAcceptanceCriteriaUnmodifiable(){
         story.getAcceptanceCriteria().add(new AcceptanceCondition());
