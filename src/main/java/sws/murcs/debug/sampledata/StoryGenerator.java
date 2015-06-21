@@ -1,6 +1,8 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.ArrayList;
 import java.util.List;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
@@ -8,6 +10,14 @@ import sws.murcs.model.Story;
  * A generator for stories.
  */
 public class StoryGenerator implements Generator<Story> {
+    /**
+     * The minimum number of Acceptance Conditions a story can have
+     */
+    public static final int MIN_ACS = 2;
+    /**
+     * The maximum number of Acceptance Conditions a story can have
+     */
+    public static final int MAX_ACS = 10;
     /**
      * The max number of stories to generate at low stress.
      */
@@ -218,6 +228,29 @@ public class StoryGenerator implements Generator<Story> {
         story.setDescription(description);
         story.setCreator(creator);
 
+        //Generate and add the acceptance criteria
+        List<AcceptanceCondition> acceptanceConditions = generateAcceptanceCriteria();
+        for (AcceptanceCondition condition : acceptanceConditions){
+            story.addAcceptanceCondition(condition);
+        }
+
         return story;
+    }
+
+    /**
+     * Generates Acceptance Criteria for a story
+     * @return The acceptance criteria
+     */
+    private List<AcceptanceCondition> generateAcceptanceCriteria(){
+        ArrayList<AcceptanceCondition> conditions = new ArrayList<>();
+
+        int count = NameGenerator.random(MIN_ACS, MAX_ACS);
+        for (int i = 0; i < count; i++){
+            AcceptanceCondition condition = new AcceptanceCondition();
+            condition.setCondition(NameGenerator.randomDescription());
+            conditions.add(condition);
+        }
+
+        return conditions;
     }
 }
