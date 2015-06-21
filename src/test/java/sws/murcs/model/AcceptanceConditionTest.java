@@ -1,0 +1,19 @@
+package sws.murcs.model;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+public class AcceptanceConditionTest {
+
+    @Test
+    public void testModifyCondition(){
+        AcceptanceCondition condition = new AcceptanceCondition();
+
+        condition.setCondition("foo");
+        assertEquals("Condition should be foo!", "foo", condition.getCondition());
+
+        condition.setCondition("bar");
+        assertEquals("Condition should be bar!", "bar", condition.getCondition());
+    }
+}
