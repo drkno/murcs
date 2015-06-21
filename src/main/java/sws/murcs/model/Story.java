@@ -1,10 +1,11 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.tracking.TrackableValue;
-
+import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import sws.murcs.magic.tracking.TrackableValue;
 
 /**
  * A class representing a story in the backlog for a project.
@@ -12,6 +13,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
+    /**
+     * A list of the conditions that have to be met before this
+     * story can be marked as done. This has been made a list
+     * (as opposed to a Collection) as order is important.
+     */
+    @TrackableValue
+    private List<AcceptanceCondition> acceptanceCriteria;
+
     /**
      * A description of the story.
      */
@@ -24,6 +33,34 @@ public class Story extends Model {
      */
     @TrackableValue
     private Person creator;
+
+    /**
+     * Gets an unmodifiable List containing all the Acceptance
+     * Criteria for this story. To modify, use the dedicated
+     * add and remove methods.
+     * @return The acceptance criteria for this story
+     */
+    public final List<AcceptanceCondition> getAcceptanceCriteria(){
+        return Collections.unmodifiableList(acceptanceCriteria);
+    }
+
+    /**
+     * Adds a condition to the acceptance criteria for the story
+     * @param condition The condition to add
+     */
+    public final void addAcceptanceCondition(final AcceptanceCondition condition) {
+        this.acceptanceCriteria.add(condition);
+        commit("Added acceptance criteria");
+    }
+
+    /**
+     * Removes a condition from the list of acceptance criteria
+     * @param condition The condition to remove.
+     */
+    public final void removeAcceptanceCriteria(final AcceptanceCondition condition){
+        this.acceptanceCriteria.remove(condition);
+        commit("Removed acceptance criteria");
+    }
 
     /**
      * Gets a description for the current story.
