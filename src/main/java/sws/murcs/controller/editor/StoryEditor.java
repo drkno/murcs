@@ -1,12 +1,12 @@
 package sws.murcs.controller.editor;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -41,6 +41,24 @@ public class StoryEditor extends GenericEditor<Story> {
     private Label labelErrorMessage;
 
     /**
+     * A table for displaying and updating acceptance conditions
+     */
+    @FXML
+    private TableView<AcceptanceCondition> acceptanceCriteriaTable;
+
+    /**
+     * The columns on the AC table
+     */
+    @FXML
+    private TableColumn conditionColumn, removeColumn;
+
+    /**
+     * The TextField containing the text for the new condition
+     */
+    @FXML
+    private TextField addConditionTextField;
+
+    /**
      * Indicates whether or not the form is in creation mode.
      */
     private boolean isCreationMode;
@@ -60,6 +78,7 @@ public class StoryEditor extends GenericEditor<Story> {
             descriptionTextArea.setText(modelDescription);
         }
 
+        //Enable or disable whether you can change the creator
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
@@ -74,6 +93,17 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
             creatorChoiceBox.setDisable(true);
         }
+
+        updateAcceptanceCriteria();
+    }
+
+    /**
+     * Updates the list of acceptance criteria in the Table
+     */
+    private void updateAcceptanceCriteria(){
+        //Load the acceptance conditions
+        acceptanceCriteriaTable.getItems().clear();
+        acceptanceCriteriaTable.getItems().addAll(getModel().getAcceptanceCriteria());
     }
 
     @Override
@@ -87,6 +117,9 @@ public class StoryEditor extends GenericEditor<Story> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
+
+        conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
+        removeColumn.setCellFactory(param -> new RemoveButtonCell());
 
         setErrorCallback(message -> {
             if (message.getClass() == String.class) {
@@ -128,6 +161,81 @@ public class StoryEditor extends GenericEditor<Story> {
             } else {
                 throw new InvalidParameterException("Creator cannot be empty");
             }
+        }
+    }
+
+    /**
+     * Called when the "Add Condition" button is clicked
+     * @param event The event information
+     */
+    @FXML
+    protected final void addConditionButtonClicked(final ActionEvent event){
+        String conditionText = addConditionTextField.getText();
+        //TODO perform some checks and do error handling on the condition text
+
+        //Create a new condition
+        AcceptanceCondition newCondition = new AcceptanceCondition();
+        newCondition.setCondition(conditionText);
+
+        //Add the new condition to the model
+        getModel().addAcceptanceCondition(newCondition);
+
+        //Clear the acceptance condition box
+        addConditionTextField.setText("");
+
+        //Make sure that the table gets updated
+        updateAcceptanceCriteria();
+    }
+
+    /**
+     * A cell representing an acceptance condition in the table of conditions
+     */
+    private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, Object>{
+        @Override
+        protected void updateItem(final Object unused, final boolean empty){
+            super.updateItem(unused, empty);
+
+            AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
+            if (condition == null || empty){
+                setText(null);
+                setGraphic(null);
+                return;
+            }
+
+            TextField conditionTextField = new TextField();
+            conditionTextField.setText(condition.getCondition());
+            setGraphic(conditionTextField);
+        }
+    }
+
+    /**
+     * A RemoveButtonCell that contains the button used to remove an AcceptanceCondition from a story.
+     */
+    private class RemoveButtonCell extends TableCell<AcceptanceCondition, Object> {
+        @Override
+        protected void updateItem(final Object unused, final boolean empty) {
+            super.updateItem(unused, empty);
+            AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
+
+            if (condition == null || empty) {
+                setText(null);
+                setGraphic(null);
+                return;
+            }
+
+            Button button = new Button("X");
+            button.setOnAction(event -> {
+                GenericPopup popup = new GenericPopup();
+                popup.setTitleText("Are you sure?");
+                popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
+                popup.addYesNoButtons(p -> {
+                    getModel().removeAcceptanceCriteria(condition);
+                    updateAcceptanceCriteria();
+                    popup.close();
+                });
+                popup.show();
+            });
+            setGraphic(button);
         }
     }
 }
