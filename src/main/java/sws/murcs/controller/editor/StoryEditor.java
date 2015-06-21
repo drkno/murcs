@@ -21,16 +21,19 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     private TextField shortNameTextField;
+
     /**
      * The description of the story.
      */
     @FXML
     private TextArea descriptionTextArea;
+
     /**
      * A choice box for the creator.
      */
     @FXML
     private ChoiceBox creatorChoiceBox;
+
     /**
      * A label that indicates any errors.
      */
