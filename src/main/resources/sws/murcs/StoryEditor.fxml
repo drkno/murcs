@@ -26,7 +26,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </padding>
                 </VBox>
-                <VBox >
+                <VBox>
                     <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Creator">
                             <VBox.margin>
@@ -43,6 +43,42 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </padding>
                 </VBox>
+            <TitledPane text="Acceptance Criteria">
+               <content>
+                  <VBox>
+                     <children>
+                        <TableView fx:id="acceptanceCriteriaTable" prefHeight="200.0" prefWidth="200.0">
+                          <columns>
+                            <TableColumn minWidth="150.0" prefWidth="-1.0" sortable="false" text="Condition" />
+                              <TableColumn prefWidth="75.0" sortable="false" />
+                          </columns>
+                        </TableView>
+                        <GridPane>
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                              <ColumnConstraints hgrow="NEVER" minWidth="10.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <TextField fx:id="addConditionText" GridPane.rowIndex="1" />
+                              <Button mnemonicParsing="false" onAction="#addConditionButtonClicked" text="Add" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="10.0" />
+                                 </GridPane.margin>
+                              </Button>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Condition" GridPane.columnSpan="2" />
+                           </children>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </GridPane>
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
                 <Label fx:id="labelErrorMessage">
                <VBox.margin>
                   <Insets left="10.0" right="10.0" />
