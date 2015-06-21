@@ -107,9 +107,15 @@ public class StoryEditor extends GenericEditor<Story> {
      * Updates the list of acceptance criteria in the Table
      */
     private void updateAcceptanceCriteria(){
+        //store selection
+        AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
+
         //Load the acceptance conditions
         acceptanceCriteriaTable.getItems().clear();
         acceptanceCriteriaTable.getItems().addAll(getModel().getAcceptanceCriteria());
+
+        //restore selection
+        acceptanceCriteriaTable.getSelectionModel().select(selected);
         refreshPriorityButtons();
     }
 
@@ -118,35 +124,28 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     private void refreshPriorityButtons(){
         //Enable both buttons, we'll turn them off if we have to
-        boolean increaseEnabled = true;
-        boolean decreaseEnabled = true;
+        increasePriorityButton.setDisable(false);
+        decreasePriorityButton.setDisable(false);
 
         AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
 
         //If nothing is selected then both buttons should be disabled
         if (selected == null){
-            increaseEnabled = false;
-            decreaseEnabled = false;
-        }else {
-            //If something is selected we don't have to worry about having no items in the list
+            increasePriorityButton.setDisable(true);
+            decreasePriorityButton.setDisable(true);
+            return;
+        }
 
-            //If this is the first item, we can't go up
-            if (selected == getModel().getAcceptanceCriteria().get(0)) {
-                increaseEnabled = false;
-            }
+        //If something is selected we don't have to worry about having no items in the list
 
-            //If this is the last item, we can't go down
-            if (selected == getModel().getAcceptanceCriteria().get(getModel().getAcceptanceCriteria().size() - 1)) {
-                decreaseEnabled = false;
-            }
+        //If this is the first item, we can't go up
+        if (selected == getModel().getAcceptanceCriteria().get(0)){
+            increasePriorityButton.setDisable(true);
+        }
 
-            if (increaseEnabled == increasePriorityButton.isDisabled()) {
-                increasePriorityButton.setDisable(!increaseEnabled);
-            }
-
-            if (decreaseEnabled == decreasePriorityButton.isDisabled()) {
-                decreasePriorityButton.setDisable(!decreaseEnabled);
-            }
+        //If this is the last item, we can't go down
+        if (selected == getModel().getAcceptanceCriteria().get(getModel().getAcceptanceCriteria().size() - 1)){
+            decreasePriorityButton.setDisable(true);
         }
     }
 
@@ -241,8 +240,6 @@ public class StoryEditor extends GenericEditor<Story> {
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, -1);
         updateAcceptanceCriteria();
-
-        acceptanceCriteriaTable.getSelectionModel().select(condition);
     }
 
     /**
@@ -254,8 +251,6 @@ public class StoryEditor extends GenericEditor<Story> {
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, 1);
         updateAcceptanceCriteria();
-
-        acceptanceCriteriaTable.getSelectionModel().select(condition);
     }
 
     /**
@@ -281,6 +276,7 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         getModel().repositionCondition(condition, index);
+        acceptanceCriteriaTable.getSelectionModel().select(condition);
     }
 
     /**
