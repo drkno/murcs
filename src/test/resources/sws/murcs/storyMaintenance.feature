@@ -50,3 +50,4 @@ Feature: Story Maintenance
     Given I have created an Acceptance Condition
     Then I can edit that acceptance condition
     And reprioritise it
+    And remove it
