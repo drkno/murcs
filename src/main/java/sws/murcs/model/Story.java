@@ -32,6 +32,12 @@ public class Story extends Model {
     }
 
     /**
+     * Indicates the current state of the story
+     * (e.g. ready, not ready, in progress)
+     */
+    private StoryState storyState;
+
+    /**
      * A list of the conditions that have to be met before this
      * story can be marked as done. This has been made a list
      * (as opposed to a Collection) as order is important.
@@ -104,6 +110,23 @@ public class Story extends Model {
     public final void removeAcceptanceCriteria(final AcceptanceCondition condition){
         this.acceptanceCriteria.remove(condition);
         commit("edit acceptance criteria");
+    }
+
+    /**
+     * Gets the current state of the story
+     * @return The current state of the story
+     */
+    public final StoryState getStoryState(){
+        return storyState;
+    }
+
+    /**
+     * Sets the current state of a story.
+     * @param newState The new state for the story.
+     */
+    public final void setStoryState(final StoryState newState){
+        //TODO add some checks here (story is in backlog, story has ACs ect)
+        this.storyState = newState;
     }
 
     /**
