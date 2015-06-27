@@ -16,6 +16,22 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
     /**
+     * Represents the current state of a story
+     */
+    public enum StoryState{
+        /**
+         * Indicates that a story has not been started
+         */
+        NotStarted,
+
+        /**
+         * Indicates that a story is not yet ready to
+         * be pulled into a sprint
+         */
+        Ready
+    }
+
+    /**
      * A list of the conditions that have to be met before this
      * story can be marked as done. This has been made a list
      * (as opposed to a Collection) as order is important.
