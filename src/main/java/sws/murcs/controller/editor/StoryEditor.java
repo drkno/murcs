@@ -7,8 +7,10 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
@@ -27,6 +29,12 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     private TextArea descriptionTextArea;
+
+    /**
+     * A choice box for changing the story state
+     */
+    @FXML
+    private ChoiceBox storyStateChoiceBox;
 
     /**
      * A choice box for the creator.
@@ -77,6 +85,11 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
+
+        //Add all the story states to the choice box
+        storyStateChoiceBox.getItems().clear();
+        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -160,6 +173,7 @@ public class StoryEditor extends GenericEditor<Story> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
+        storyStateChoiceBox.focusedProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
@@ -197,6 +211,10 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
+        //This will throw an exception if something goes wrong
+        validateStoryState();
+        getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
             Person viewCreator = (Person) creatorChoiceBox.getValue();
@@ -206,6 +224,36 @@ public class StoryEditor extends GenericEditor<Story> {
                 throw new InvalidParameterException("Creator cannot be empty");
             }
         }
+    }
+
+    /**
+     * Checks to see if the current story state is valid and
+     * displays an error if it isn't
+     * @return Whether the story is valid
+     * @throws Exception if the state cannot be set
+     */
+    private void validateStoryState() throws Exception {
+        Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+        Story model = getModel();
+
+        String errors = "";
+
+        if (state == Story.StoryState.Ready){
+            if (getModel().getAcceptanceCriteria().size() == 0){
+                errors += "The story must have at least one AC {state}! ";
+            }
+            if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)){
+                errors += "The story must be part of a backlog {state}! ";
+            }
+            //TODO check that the model has an estimate
+//            if (model.getEstimate() != null){
+//                errors += "The story must be estimated {state}! ";
+//            }
+        }
+
+        //Add the state to make the error message more helpful
+        errors = errors.replace("{state}", " to set the state to " + state);
+        if (!errors.isEmpty()) throw new InvalidParameterException(errors);
     }
 
     /**

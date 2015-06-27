@@ -20,9 +20,9 @@ public class Story extends Model {
      */
     public enum StoryState{
         /**
-         * Indicates that a story has not been started
+         * Indicates that the story state has not yet been set
          */
-        NotStarted,
+        None,
 
         /**
          * Indicates that a story is not yet ready to
@@ -35,7 +35,8 @@ public class Story extends Model {
      * Indicates the current state of the story
      * (e.g. ready, not ready, in progress)
      */
-    private StoryState storyState;
+    @TrackableValue
+    private StoryState storyState = StoryState.None;
 
     /**
      * A list of the conditions that have to be met before this
@@ -121,12 +122,14 @@ public class Story extends Model {
     }
 
     /**
-     * Sets the current state of a story.
+     * Sets the current state of a story. We're trusting you don't
+     * do something silly here. Don't let us down.
      * @param newState The new state for the story.
      */
     public final void setStoryState(final StoryState newState){
-        //TODO add some checks here (story is in backlog, story has ACs ect)
+        if (storyState == newState) return;
         this.storyState = newState;
+        commit("edit story");
     }
 
     /**
