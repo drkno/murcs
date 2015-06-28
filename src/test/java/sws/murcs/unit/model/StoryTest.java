@@ -99,6 +99,20 @@ public class StoryTest {
     }
 
     @Test
+    public void testChangeStoryState(){
+        //Test that the story initially has "None" as its state
+        assertEquals("Initially a story should have no state",Story.StoryState.None, story.getStoryState());
+
+        //Ideally, you would not be able to change the story state to ready unless a number of conditions
+        //are met, such as the story has ACs and is in a backlog. However, a lot of these conditions depend on
+        //the state of the model as a whole, so it is not possible to test all these conditions are met here.
+        //Instead, this is done on the GUI side of things, which makes testing a lot more difficult.
+        story.setStoryState(Story.StoryState.Ready);
+
+        assertEquals("Story state should be ready!", Story.StoryState.Ready, story.getStoryState());
+    }
+
+    @Test
     public void equalsTest() throws Exception {
         story2.setShortName("OMG");
         assertTrue(story.equals(story2));
