@@ -1,3 +1,6 @@
+# Manuel: Ah, your horse. It win! It win!
+# Basil Fawlty: [wanting him to keep quiet about his gambling venture] Shhh-shh-shh, Manuel. You - know - nothing.
+# Manuel: You ALWAYS say, Mr. Fawlty, but I learn.
 @Manual
 Feature: Changing Story State
 
