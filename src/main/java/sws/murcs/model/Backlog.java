@@ -1,19 +1,14 @@
 package sws.murcs.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import javax.xml.bind.annotation.*;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Model of a Backlog. A backlog is basically a group of stories created by a Person. This group of stories can be
@@ -50,7 +45,7 @@ public class Backlog extends Model {
     private List<Story> unprioritisedStories;
 
     /**
-     * The type of estimation used for this backlog.
+     * The type of estimation used for this backlog. Defaults to Fibonacci
      */
     @TrackableValue
     private EstimateType estimateType;
