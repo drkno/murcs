@@ -3,7 +3,6 @@ package sws.murcs.model;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.Commit;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 
@@ -282,11 +281,17 @@ public class Backlog extends Model {
             return;
         }
 
+        long commitNumber;
+        if (UndoRedoManager.getHead() == null) {
+            commitNumber = 0;
+        }
+        else {
+            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+        }
+
         EstimateType oldEstimateType = this.estimateType;
         this.estimateType = newEstimateType;
         commit("edit backlog");
-
-        long commit = UndoRedoManager.getDisable() ? 0: UndoRedoManager.getHead().getCommitNumber();
 
         for(Story story : getAllStories()) {
             String newEstimate = oldEstimateType.convert(newEstimateType, story.getEstimate());
@@ -296,9 +301,12 @@ public class Backlog extends Model {
         if (UndoRedoManager.getDisable()) {
             return;
         }
+
         try {
-            UndoRedoManager.assimilate(commit);
+            UndoRedoManager.assimilate(commitNumber);
+            commit("edit backlog");
         } catch (Exception e) {
+            // This should never happen  because we have called commit before calling assimilate
             e.printStackTrace();
         }
     }
