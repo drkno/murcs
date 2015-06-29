@@ -14,14 +14,17 @@ public class StoryGenerator implements Generator<Story> {
      * The minimum number of Acceptance Conditions a story can have.
      */
     public static final int MIN_ACS = 2;
+
     /**
      * The maximum number of Acceptance Conditions a story can have.
      */
     public static final int MAX_ACS = 10;
+
     /**
      * The max number of stories to generate at low stress.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * The min number of stories to generate at low stress.
      */
@@ -31,6 +34,7 @@ public class StoryGenerator implements Generator<Story> {
      * The max number of stories to generate at medium stress.
      */
     public static final int MEDIUM_STRESS_MAX = 20;
+
     /**
      * The min number of stories to generate at medium stress.
      */
@@ -40,6 +44,7 @@ public class StoryGenerator implements Generator<Story> {
      * The max number of stories to generate at high stress.
      */
     public static final int HIGH_STRESS_MAX = 100;
+
     /**
      * The min number of stories to generate at high stress.
      */
