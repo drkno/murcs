@@ -1,14 +1,13 @@
 package sws.murcs.unit.model;
 
+import java.util.List;
 import org.junit.Test;
 import sws.murcs.model.EstimateType;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- * Created by james_000 on 29/06/2015.
+ * Tests for the estimate type enum
  */
 public class EstimateTypeTest {
 
