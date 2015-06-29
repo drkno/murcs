@@ -94,8 +94,8 @@ public class Story extends Model {
     public final void addAcceptanceCondition(final AcceptanceCondition condition) {
         if (!acceptanceCriteria.contains(condition)) {
             acceptanceCriteria.add(condition);
-            //I'm not sure about this Matthew but if I don't have it
-            //then the object is not tracked
+
+            //Make sure the new condition is tracked by UndoRedo
             UndoRedoManager.add(condition);
         }
         commit("edit acceptance criteria");
