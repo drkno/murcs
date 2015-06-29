@@ -740,13 +740,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     @Override
-    public final void selectItem(final Model parameter) {
+    public final void selectItem(Model parameter) {
         ModelType type;
         ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
             displayList.scrollTo(0);
+            parameter = (Model) displayList.getSelectionModel().getSelectedItem();
         }
         else {
             type = ModelType.getModelType(parameter);

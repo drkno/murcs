@@ -241,7 +241,7 @@ public class Backlog extends Model {
         else if (unprioritisedStories.contains(story)) {
             unprioritisedStories.remove(story);
         }
-        story.setEstimate("Not Estimated");
+        story.setEstimate(EstimateType.NOT_ESTIMATED);
         story.setStoryState(Story.StoryState.None);
         commit("edit backlog");
     }

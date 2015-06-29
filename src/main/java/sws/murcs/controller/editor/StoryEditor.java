@@ -15,6 +15,7 @@ import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
@@ -122,7 +123,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 .orElse(null);
 
         estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add("Not Estimated");
+        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
         if (backlog == null  || getModel().getAcceptanceCriteria().size() == 0) {
             estimateChoiceBox.getSelectionModel().select(0);
             estimateChoiceBox.setDisable(true);

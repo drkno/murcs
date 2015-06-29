@@ -32,7 +32,7 @@ public class EstimateTypeTest {
         assertEquals("XXXL", EstimateType.MovieClassification.convert(EstimateType.ShirtSize, "Banned"));
 
         assertEquals("M", EstimateType.ShirtSize.convert(EstimateType.ShirtSize, "M"));
-        assertEquals("Not Estimated", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "Not Estimated"));
+        assertEquals("Not Estimated", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, EstimateType.NOT_ESTIMATED));
         assertEquals("1", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "XS"));
     }
 }

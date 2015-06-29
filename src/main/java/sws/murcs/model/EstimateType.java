@@ -35,6 +35,11 @@ public enum EstimateType {
     private static Map<EstimateType, List<String>> estimates = new HashMap<>();
 
     /**
+     * Used when something is not estimated.
+     */
+    public static final String NOT_ESTIMATED = "Not Estimated";
+
+    /**
      * Gets the list of estimates for the estimate type.
      * @return A list of the estimates.
      */

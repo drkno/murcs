@@ -72,7 +72,7 @@ public class Story extends Model {
      */
     public Story() {
         acceptanceCriteria = new ArrayList<>();
-        estimate = "Not Estimated";
+        estimate = EstimateType.NOT_ESTIMATED;
     }
 
     /**
