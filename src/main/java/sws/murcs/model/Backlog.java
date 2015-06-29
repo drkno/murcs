@@ -282,16 +282,16 @@ public class Backlog extends Model {
             return;
         }
 
-
-        long commit = UndoRedoManager.getDisable() ? 0: UndoRedoManager.getHead().getCommitNumber() + 1;
-
-        for(Story story : getAllStories()) {
-            String newEstimate = estimateType.convert(newEstimateType, story.getEstimate());
-            story.setEstimate(newEstimate);
-        }
-
+        EstimateType oldEstimateType = this.estimateType;
         this.estimateType = newEstimateType;
         commit("edit backlog");
+
+        long commit = UndoRedoManager.getDisable() ? 0: UndoRedoManager.getHead().getCommitNumber();
+
+        for(Story story : getAllStories()) {
+            String newEstimate = oldEstimateType.convert(newEstimateType, story.getEstimate());
+            story.setEstimate(newEstimate);
+        }
 
         if (UndoRedoManager.getDisable()) {
             return;
