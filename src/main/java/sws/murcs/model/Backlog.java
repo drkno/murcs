@@ -293,7 +293,7 @@ public class Backlog extends Model {
         this.estimateType = newEstimateType;
         commit("edit backlog");
 
-        for(Story story : getAllStories()) {
+        for (Story story : getAllStories()) {
             String newEstimate = oldEstimateType.convert(newEstimateType, story.getEstimate());
             story.setEstimate(newEstimate);
         }
