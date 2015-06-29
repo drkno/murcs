@@ -15,6 +15,31 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
+
+    /**
+     * Represents the current state of a story.
+     */
+    public enum StoryState {
+
+        /**
+         * Indicates that the story state has not yet been set.
+         */
+        None,
+
+        /**
+         * Indicates that a story is not yet ready to
+         * be pulled into a sprint.
+         */
+        Ready
+    }
+
+    /**
+     * Indicates the current state of the story
+     * (e.g. ready, not ready, in progress)
+     */
+    @TrackableValue
+    private StoryState storyState = StoryState.None;
+
     /**
      * A list of the conditions that have to be met before this
      * story can be marked as done. This has been made a list
@@ -77,7 +102,7 @@ public class Story extends Model {
     }
 
     /**
-     * Moves an Acceptance Condition to a new position in the list
+     * Moves an Acceptance Condition to a new position in the list.
      * @param condition The condition to move
      * @param newPosition The new position
      */
@@ -89,12 +114,33 @@ public class Story extends Model {
     }
 
     /**
-     * Removes a condition from the list of acceptance criteria
+     * Removes a condition from the list of acceptance.
      * @param condition The condition to remove.
      */
     public final void removeAcceptanceCriteria(final AcceptanceCondition condition) {
         this.acceptanceCriteria.remove(condition);
         commit("edit acceptance criteria");
+    }
+
+    /**
+     * Gets the current state of the story.
+     * @return The current state of the story
+     */
+    public final StoryState getStoryState() {
+        return storyState;
+    }
+
+    /**
+     * Sets the current state of a story. We're trusting you don't
+     * do something silly here. Don't let us down.
+     * @param newState The new state for the story.
+     */
+    public final void setStoryState(final StoryState newState) {
+        if (storyState == newState) {
+            return;
+        }
+        this.storyState = newState;
+        commit("edit story");
     }
 
     /**

@@ -40,10 +40,10 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator and the estimate choice box.
+     * A choice box for the creator and the estimate choice box and a choice box for changing the story state
      */
     @FXML
-    private ChoiceBox creatorChoiceBox, estimateChoiceBox;
+    private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
 
     /**
      * A label that indicates any errors.
@@ -88,6 +88,11 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
+
+        //Add all the story states to the choice box
+        storyStateChoiceBox.getItems().clear();
+        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -191,6 +196,7 @@ public class StoryEditor extends GenericEditor<Story> {
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
         estimateChoiceBox.focusedProperty().addListener(getChangeListener());
+        storyStateChoiceBox.focusedProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
@@ -229,6 +235,10 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
+        //This will throw an exception if something goes wrong
+        validateStoryState();
+        getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
             Person viewCreator = (Person) creatorChoiceBox.getValue();
@@ -238,10 +248,40 @@ public class StoryEditor extends GenericEditor<Story> {
                 throw new InvalidParameterException("Creator cannot be empty");
             }
         }
-
+        
         if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
         }
+    }
+
+    /**
+     * Checks to see if the current story state is valid and
+     * displays an error if it isn't
+     * @return Whether the story is valid
+     * @throws Exception if the state cannot be set
+     */
+    private void validateStoryState() throws Exception {
+        Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+        Story model = getModel();
+
+        String errors = "";
+
+        if (state == Story.StoryState.Ready) {
+            if (getModel().getAcceptanceCriteria().size() == 0) {
+                errors += "The story must have at least one AC {state}! ";
+            }
+            if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
+                errors += "The story must be part of a backlog {state}! ";
+            }
+
+            if (model.getEstimate() == "No Estimate") {
+                errors += "The story must be estimated {state}! ";
+            }
+        }
+
+        //Add the state to make the error message more helpful
+        errors = errors.replace("{state}", " to set the state to " + state);
+        if (!errors.isEmpty()) throw new InvalidParameterException(errors);
     }
 
     /**
@@ -251,7 +291,6 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     protected final void addConditionButtonClicked(final ActionEvent event) {
         String conditionText = addConditionTextField.getText();
-        //TODO perform some checks and do error handling on the condition text
 
         //Create a new condition
         AcceptanceCondition newCondition = new AcceptanceCondition();
