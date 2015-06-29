@@ -177,8 +177,9 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         try {
             for (int i = 0; i < prioritised; i++) {
-                stories.get(i).setEstimate(EstimateType.Fibonacci.getEstimates()
-                        .get(NameGenerator.random(EstimateType.Fibonacci.getEstimates().size())));
+                List<String> estimates = EstimateType.Fibonacci.getEstimates();
+                stories.get(i).setEstimate(estimates.get(NameGenerator.random(estimates.size())));
+
                 stories.get(i).setStoryState(Story.StoryState
                         .values()[NameGenerator.random(Story.StoryState.values().length)]);
                 backlog.addStory(stories.get(i), i);
