@@ -37,6 +37,12 @@ public class Story extends Model {
     private Person creator;
 
     /**
+     * The estimate for this story.
+     */
+    @TrackableValue
+    private String estimate;
+
+    /**
      * Creates and initializes a new story
      */
     public Story(){
@@ -49,7 +55,7 @@ public class Story extends Model {
      * add and remove methods.
      * @return The acceptance criteria for this story
      */
-    public final List<AcceptanceCondition> getAcceptanceCriteria(){
+    public final List<AcceptanceCondition> getAcceptanceCriteria() {
         return Collections.unmodifiableList(acceptanceCriteria);
     }
 
@@ -85,7 +91,7 @@ public class Story extends Model {
      * Removes a condition from the list of acceptance criteria
      * @param condition The condition to remove.
      */
-    public final void removeAcceptanceCriteria(final AcceptanceCondition condition){
+    public final void removeAcceptanceCriteria(final AcceptanceCondition condition) {
         this.acceptanceCriteria.remove(condition);
         commit("edit acceptance criteria");
     }
@@ -122,6 +128,23 @@ public class Story extends Model {
      */
     public final void setCreator(final Person person) {
         this.creator = person;
+        commit("edit story");
+    }
+
+    /**
+     * Gets the estimate value.
+     * @return The estimate value.
+     */
+    public final String getEstimate() {
+        return estimate;
+    }
+
+    /**
+     * Sets the estimate for the story.
+     * @param newEstimate The estimate.
+     */
+    public final void setEstimate(final String newEstimate) {
+        this.estimate = newEstimate;
         commit("edit story");
     }
 
