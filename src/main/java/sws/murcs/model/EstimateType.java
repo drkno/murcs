@@ -20,7 +20,7 @@ public enum EstimateType {
     Fibonacci,
 
     /**
-     * Shirt sizes, XS, S, M, L, XL, American.
+     * Shirt sizes, XS, S, M, L, XL, XXL.
      */
     ShirtSize,
 
