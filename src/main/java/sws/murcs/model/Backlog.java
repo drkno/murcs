@@ -1,19 +1,18 @@
 package sws.murcs.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.magic.tracking.TrackableValue;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Model of a Backlog. A backlog is basically a group of stories created by a Person. This group of stories can be
@@ -284,13 +283,7 @@ public class Backlog extends Model {
             return;
         }
 
-        long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
-            commitNumber = 0;
-        }
-        else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
-        }
+        startAssimilation();
 
         EstimateType oldEstimateType = this.estimateType;
         this.estimateType = newEstimateType;
@@ -301,17 +294,7 @@ public class Backlog extends Model {
             story.setEstimate(newEstimate);
         }
 
-        if (UndoRedoManager.getDisable()) {
-            return;
-        }
-
-        try {
-            UndoRedoManager.assimilate(commitNumber);
-            commit("edit backlog");
-        } catch (Exception e) {
-            // This should never happen  because we have called commit before calling assimilate
-            e.printStackTrace();
-        }
+        endAssimilation("edit backlog");
     }
 
     @Override
