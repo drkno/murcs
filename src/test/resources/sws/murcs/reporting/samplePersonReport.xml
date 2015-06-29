@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.3</projectVersion>
+    <dateGenerated>2015-05-21</dateGenerated>
+    <content>
+        <person shortName="Daniel">
+            <longName>Daniel van Wichen</longName>
+            <id>dpv11</id>
+            <skills>
+                <skill shortName="Python">
+                    <longName>Python 2.7</longName>
+                    <description>A simple object-oriented language perfect for beginners</description>
+                </skill>
+                <skill shortName="PO">
+                    <longName>Product Owner</longName>
+                    <description>Has ability to insult design teams efforts</description>
+                </skill>
+            </skills>
+        </person>
+    </content>
+</report>

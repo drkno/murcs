@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.3</projectVersion>
+    <dateGenerated>2015-05-21</dateGenerated>
+    <content>
+        <project shortName="FITR">
+            <longName>Fitness is Training Right</longName>
+            <description>We are building a fitness tracking application for the world</description>
+            <releases>
+                <release shortName="Now">
+                    <description>This current time</description>
+                    <releaseDate>2015-04-22</releaseDate>
+                </release>
+            </releases>
+            <backlogs/>
+        </project>
+    </content>
+</report>
