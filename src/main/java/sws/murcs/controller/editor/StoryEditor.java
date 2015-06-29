@@ -277,7 +277,8 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Called when the "Add Condition" button is clicked.
+     * Called when the "Add Condition" button is clicked. Adds the Acceptance Condition
+     * created by the user
      * @param event The event information
      */
     @FXML
