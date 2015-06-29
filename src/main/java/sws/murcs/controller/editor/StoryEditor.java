@@ -2,14 +2,7 @@ package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -260,21 +253,22 @@ public class StoryEditor extends GenericEditor<Story> {
         Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
 
-        String errors = "";
+        StringBuilder errorsBuilder = new StringBuilder();
 
         if (state == Story.StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
-                errors += "The story must have at least one AC {state}! ";
+                errorsBuilder.append("The story must have at least one AC {state}! ");
             }
             if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
-                errors += "The story must be part of a backlog {state}! ";
+                errorsBuilder.append("The story must be part of a backlog {state}! ");
             }
 
             if (model.getEstimate() == "No Estimate") {
-                errors += "The story must be estimated {state}! ";
+                errorsBuilder.append("The story must be estimated {state}! ");
             }
         }
 
+        String errors = errorsBuilder.toString();
         //Add the state to make the error message more helpful
         errors = errors.replace("{state}", " to set the state to " + state);
         if (!errors.isEmpty()) {
