@@ -57,7 +57,8 @@ public enum EstimateType {
         } catch (URISyntaxException e) {
             //This shouldn't happen unless you add an estimation method with a really weird name
             e.printStackTrace();
-        } catch (IOException e){
+        }
+        catch (IOException e) {
             //This will never happen as long as you're not an idiot
             System.err.println("No such file as " + path);
         }

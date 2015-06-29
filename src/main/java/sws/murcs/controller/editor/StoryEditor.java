@@ -2,7 +2,14 @@ package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
