@@ -242,7 +242,7 @@ public class StoryGenerator implements Generator<Story> {
      * @return The acceptance criteria
      */
     private List<AcceptanceCondition> generateAcceptanceCriteria() {
-        ArrayList<AcceptanceCondition> conditions = new ArrayList<>();
+        List<AcceptanceCondition> conditions = new ArrayList<>();
 
         int count = NameGenerator.random(MIN_ACS, MAX_ACS);
         for (int i = 0; i < count; i++) {
