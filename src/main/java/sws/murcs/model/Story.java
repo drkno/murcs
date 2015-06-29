@@ -43,10 +43,11 @@ public class Story extends Model {
     private String estimate;
 
     /**
-     * Creates and initializes a new story
+     * Creates and initializes a new story.
      */
-    public Story(){
+    public Story() {
         acceptanceCriteria = new ArrayList<>();
+        estimate = "Not Estimated";
     }
 
     /**
@@ -80,7 +81,7 @@ public class Story extends Model {
      * @param condition The condition to move
      * @param newPosition The new position
      */
-    public final void repositionCondition(final AcceptanceCondition condition, final int newPosition){
+    public final void repositionCondition(final AcceptanceCondition condition, final int newPosition) {
         this.acceptanceCriteria.remove(condition);
         this.acceptanceCriteria.add(newPosition, condition);
 

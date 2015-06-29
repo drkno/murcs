@@ -48,11 +48,18 @@ public class Backlog extends Model {
     private List<Story> unprioritisedStories;
 
     /**
+     * The type of estimation used for this backlog.
+     */
+    @TrackableValue
+    private EstimateType estimateType;
+
+    /**
      * The constructor for the backlog. Initialises the lists within the backlog.
      */
     public Backlog() {
         prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
+        estimateType = EstimateType.Fibonacci;
     }
 
     /**
@@ -253,6 +260,31 @@ public class Backlog extends Model {
      */
     public final Person getAssignedPO() {
         return assignedPO;
+    }
+
+    /**
+     * Get the current estimate type.
+     * @return The estimate type.
+     */
+    public final EstimateType getEstimateType() {
+        return estimateType;
+    }
+
+    /**
+     * Sets the new estimate type.
+     * @param newEstimateType the new estimate type.
+     */
+    public final void setEstimateType(final EstimateType newEstimateType) {
+        if (this.estimateType == newEstimateType) {
+            return;
+        }
+
+        for(Story story : getAllStories()) {
+            String newEstimate = estimateType.convert(newEstimateType, story.getEstimate());
+            story.setEstimate(newEstimate);
+        }
+
+        this.estimateType = newEstimateType;
     }
 
     @Override
