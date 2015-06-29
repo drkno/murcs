@@ -93,7 +93,7 @@ public class Story extends Model {
      */
     public final void addAcceptanceCondition(final AcceptanceCondition condition) {
         if (!acceptanceCriteria.contains(condition)) {
-            this.acceptanceCriteria.add(condition);
+            acceptanceCriteria.add(condition);
             //I'm not sure about this Matthew but if I don't have it
             //then the object is not tracked
             UndoRedoManager.add(condition);
@@ -107,8 +107,8 @@ public class Story extends Model {
      * @param newPosition The new position
      */
     public final void repositionCondition(final AcceptanceCondition condition, final int newPosition) {
-        this.acceptanceCriteria.remove(condition);
-        this.acceptanceCriteria.add(newPosition, condition);
+        acceptanceCriteria.remove(condition);
+        acceptanceCriteria.add(newPosition, condition);
 
         commit("edit acceptance criteria");
     }
@@ -118,7 +118,7 @@ public class Story extends Model {
      * @param condition The condition to remove.
      */
     public final void removeAcceptanceCriteria(final AcceptanceCondition condition) {
-        this.acceptanceCriteria.remove(condition);
+        acceptanceCriteria.remove(condition);
         commit("edit acceptance criteria");
     }
 
@@ -139,7 +139,7 @@ public class Story extends Model {
         if (storyState == newState) {
             return;
         }
-        this.storyState = newState;
+        storyState = newState;
         commit("edit story");
     }
 
@@ -156,7 +156,7 @@ public class Story extends Model {
      * @param newDescription The new description.
      */
     public final void setDescription(final String newDescription) {
-        this.description = newDescription;
+        description = newDescription;
         commit("edit story");
     }
 
@@ -174,7 +174,7 @@ public class Story extends Model {
      * @param person The creator
      */
     public final void setCreator(final Person person) {
-        this.creator = person;
+        creator = person;
         commit("edit story");
     }
 
@@ -194,7 +194,7 @@ public class Story extends Model {
         if (newEstimate == estimate) {
             return;
         }
-        this.estimate = newEstimate;
+        estimate = newEstimate;
         commit("edit story");
     }
 
