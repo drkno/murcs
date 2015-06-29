@@ -171,7 +171,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //If something is selected we don't have to worry about having no items in the list
 
-        //If this is the first item, we can't go up
+        //If this is the first item priority wise, we can't increase its priority
         if (selected == getModel().getAcceptanceCriteria().get(0)) {
             increasePriorityButton.setDisable(true);
         }

@@ -44,7 +44,8 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 /**
- * Main app class controller.
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
