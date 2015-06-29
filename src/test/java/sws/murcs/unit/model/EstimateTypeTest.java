@@ -24,13 +24,13 @@ public class EstimateTypeTest {
         assertEquals(6, estimates.size());
 
         estimates = EstimateType.ShirtSize.getEstimates();
-        assertEquals("American", estimates.get(5));
+        assertEquals("XXXL", estimates.get(5));
     }
 
     @Test
     public void testConvert() throws Exception {
         assertEquals("1", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "XS"));
-        assertEquals("American", EstimateType.MovieClassification.convert(EstimateType.ShirtSize, "Banned"));
+        assertEquals("XXXL", EstimateType.MovieClassification.convert(EstimateType.ShirtSize, "Banned"));
 
         assertEquals("M", EstimateType.ShirtSize.convert(EstimateType.ShirtSize, "M"));
         assertEquals("Not Estimated", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "Not Estimated"));
