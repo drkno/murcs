@@ -35,7 +35,7 @@ public class AcceptanceCondition extends TrackableObject implements Serializable
      * @param newCondition The new condition
      */
     public final void setCondition(final String newCondition) {
-        this.condition = newCondition;
+        condition = newCondition;
         commit("edit condition");
     }
 }
