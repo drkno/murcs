@@ -65,7 +65,8 @@ public enum EstimateType {
     }
 
     /**
-     * Converts from the current estimate type to a new estimate type.
+     * Converts from the current estimate type to a new estimate type. If the estimate is not a valid option for the
+     * estimate type then the original "estimate" value is returned.
      * @param newType The type to convert to.
      * @param estimate The current estimate (as it appears in the getEstimates() list).
      * @return The estimate in the newType type....
