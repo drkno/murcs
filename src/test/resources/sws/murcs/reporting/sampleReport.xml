@@ -53,8 +53,10 @@
                                 </skill>
                             </skills>
                         </creator>
+                        <estimate>Not Estimated</estimate>
                     </story>
                 </prioritisedStories>
+                <estimateType>Fibonacci</estimateType>
             </backlog>
         </backlogs>
         <workAllocations>
@@ -153,6 +155,7 @@
                     <id>null123</id>
                     <skills/>
                 </creator>
+                <estimate>Not Estimated</estimate>
             </story>
         </unassignedStories>
         <unassignedTeams>
@@ -186,5 +189,5 @@
                 <skills/>
             </person>
         </unassignedPeople>
-        </content>
-    </report>
+    </content>
+</report>

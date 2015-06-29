@@ -182,6 +182,8 @@ public class BacklogGenerator implements Generator<Backlog> {
             for (int i = 0; i < prioritised; i++) {
                 stories.get(i).setEstimate(EstimateType.Fibonacci.getEstimates()
                         .get(NameGenerator.random(EstimateType.Fibonacci.getEstimates().size())));
+                stories.get(i).setStoryState(Story.StoryState
+                        .values()[NameGenerator.random(Story.StoryState.values().length)]);
                 backlog.addStory(stories.get(i), i);
             }
             for (Story story : stories.subList(prioritised, size)) {
@@ -189,6 +191,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.
+            System.err.print("Doh!");
         }
         backlog.setEstimateType(EstimateType.values()[NameGenerator.random(EstimateType.values().length)]);
 
