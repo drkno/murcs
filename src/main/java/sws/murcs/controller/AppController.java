@@ -1,5 +1,9 @@
 package sws.murcs.controller;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -18,33 +22,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Main app class controller.
@@ -148,6 +136,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         updateList();
     }
 
+    /**
+     * Updates the currently selected item in the display list
+     * @param newValue The new value
+     * @param oldValue The old value
+     */
     private void updateDisplayListSelection(final Object newValue, final Object oldValue) {
         if (newValue == null) {
             if (editorPane != null) {
