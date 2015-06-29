@@ -180,8 +180,8 @@ public class BacklogGenerator implements Generator<Backlog> {
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
                 stories.get(i).setEstimate(estimates.get(NameGenerator.random(estimates.size())));
 
-                stories.get(i).setStoryState(Story.StoryState
-                        .values()[NameGenerator.random(Story.StoryState.values().length)]);
+                Story.StoryState[] storyStates = Story.StoryState.values();
+                stories.get(i).setStoryState(storyStates[NameGenerator.random(storyStates.length)]);
                 backlog.addStory(stories.get(i), i);
             }
             for (Story story : stories.subList(prioritised, size)) {
