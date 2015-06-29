@@ -14,14 +14,15 @@ import sws.murcs.magic.tracking.TrackableValue;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AcceptanceCondition extends TrackableObject implements Serializable {
+
     /**
-     * The text representing the condition
+     * The text representing the condition.
      */
     @TrackableValue
     private String condition;
 
     /**
-     * Gets a string describing this condition
+     * Gets a string describing this condition.
      * @return The condition
      */
     public final String getCondition() {
@@ -30,7 +31,7 @@ public class AcceptanceCondition extends TrackableObject implements Serializable
 
     /**
      * Sets the condition that this acceptance condition
-     * describes
+     * describes.
      * @param newCondition The new condition
      */
     public final void setCondition(final String newCondition) {

@@ -20,8 +20,6 @@ import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.List;
-
 /**
  * An editor for the story model.
  */
@@ -40,7 +38,7 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator and the estimate choice box and a choice box for changing the story state
+     * A choice box for the creator and the estimate choice box and a choice box for changing the story state.
      */
     @FXML
     private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
@@ -248,7 +246,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 throw new InvalidParameterException("Creator cannot be empty");
             }
         }
-        
+
         if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
         }
@@ -256,8 +254,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Checks to see if the current story state is valid and
-     * displays an error if it isn't
-     * @return Whether the story is valid
+     * displays an error if it isn't.
      * @throws Exception if the state cannot be set
      */
     private void validateStoryState() throws Exception {
@@ -281,7 +278,9 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Add the state to make the error message more helpful
         errors = errors.replace("{state}", " to set the state to " + state);
-        if (!errors.isEmpty()) throw new InvalidParameterException(errors);
+        if (!errors.isEmpty()) {
+            throw new InvalidParameterException(errors);
+        }
     }
 
     /**

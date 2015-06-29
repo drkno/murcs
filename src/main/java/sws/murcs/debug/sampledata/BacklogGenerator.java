@@ -6,10 +6,8 @@ import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
-import javax.lang.model.element.Name;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Generates random Backlogs with stories.

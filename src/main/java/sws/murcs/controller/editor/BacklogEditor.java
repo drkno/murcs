@@ -20,7 +20,12 @@ import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidInputException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -51,7 +56,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ComboBox<Person> poComboBox;
 
     /**
-     * A choice box for choosing the estimation method for a backlog
+     * A choice box for choosing the estimation method for a backlog.
      */
     @FXML
     private ComboBox<EstimateType> estimationMethodComboBox;

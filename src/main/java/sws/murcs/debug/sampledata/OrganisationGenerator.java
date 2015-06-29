@@ -140,7 +140,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
             try {
-                g.setShortName(g.getShortName()+ " (" + i + ")");
+                g.setShortName(g.getShortName() + " (" + i + ")");
             } catch (CustomException e) {
                 //never here...
             }

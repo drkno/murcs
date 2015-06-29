@@ -238,7 +238,7 @@ public class StoryGenerator implements Generator<Story> {
     }
 
     /**
-     * Generates Acceptance Criteria for a story
+     * Generates Acceptance Criteria for a story.
      * @return The acceptance criteria
      */
     private List<AcceptanceCondition> generateAcceptanceCriteria() {
