@@ -135,7 +135,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (editorPane != null) {
+                if (editorPane != null && newValue != null) {
                         editorPane.getController().saveChanges();
                 }
                 updateDisplayListSelection(newValue, oldValue);

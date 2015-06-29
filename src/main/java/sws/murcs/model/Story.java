@@ -145,6 +145,9 @@ public class Story extends Model {
      * @param newEstimate The estimate.
      */
     public final void setEstimate(final String newEstimate) {
+        if (newEstimate == estimate) {
+            return;
+        }
         this.estimate = newEstimate;
         commit("edit story");
     }

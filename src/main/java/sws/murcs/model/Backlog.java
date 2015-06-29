@@ -3,7 +3,10 @@ package sws.murcs.model;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.magic.tracking.Commit;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -279,12 +282,21 @@ public class Backlog extends Model {
             return;
         }
 
+        commit("edit backlog");
+        long commit = UndoRedoManager.getHead().getCommitNumber();
+
         for(Story story : getAllStories()) {
             String newEstimate = estimateType.convert(newEstimateType, story.getEstimate());
             story.setEstimate(newEstimate);
         }
 
         this.estimateType = newEstimateType;
+        commit("edit backlog");
+        try {
+            UndoRedoManager.assimilate(commit);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
