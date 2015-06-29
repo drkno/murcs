@@ -270,7 +270,8 @@ public class Backlog extends Model {
     }
 
     /**
-     * Sets the new estimate type.
+     * Sets the new estimate type. This will cascade and attempt to update the estimate on all stories belonging
+     * to this backlog.
      * @param newEstimateType the new estimate type.
      */
     public final void setEstimateType(final EstimateType newEstimateType) {
