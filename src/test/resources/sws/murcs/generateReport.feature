@@ -1,3 +1,4 @@
+# Basil Fawlty: Manuel will show you to your rooms - if you're lucky.
 @Manual
 Feature: Status Reports
 
