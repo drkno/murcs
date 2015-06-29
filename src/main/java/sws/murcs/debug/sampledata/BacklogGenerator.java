@@ -2,11 +2,14 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
+import javax.lang.model.element.Name;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Generates random Backlogs with stories.
@@ -177,6 +180,8 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         try {
             for (int i = 0; i < prioritised; i++) {
+                stories.get(i).setEstimate(EstimateType.Fibonacci.getEstimates()
+                        .get(NameGenerator.random(EstimateType.Fibonacci.getEstimates().size())));
                 backlog.addStory(stories.get(i), i);
             }
             for (Story story : stories.subList(prioritised, size)) {
@@ -185,6 +190,7 @@ public class BacklogGenerator implements Generator<Backlog> {
         } catch (CustomException e) {
             // Will never happen!! We hope.
         }
+        backlog.setEstimateType(EstimateType.values()[NameGenerator.random(EstimateType.values().length)]);
 
         return backlog;
     }

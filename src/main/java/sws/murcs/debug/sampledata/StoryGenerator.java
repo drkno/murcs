@@ -230,7 +230,7 @@ public class StoryGenerator implements Generator<Story> {
 
         //Generate and add the acceptance criteria
         List<AcceptanceCondition> acceptanceConditions = generateAcceptanceCriteria();
-        for (AcceptanceCondition condition : acceptanceConditions){
+        for (AcceptanceCondition condition : acceptanceConditions) {
             story.addAcceptanceCondition(condition);
         }
 
@@ -241,11 +241,11 @@ public class StoryGenerator implements Generator<Story> {
      * Generates Acceptance Criteria for a story
      * @return The acceptance criteria
      */
-    private List<AcceptanceCondition> generateAcceptanceCriteria(){
+    private List<AcceptanceCondition> generateAcceptanceCriteria() {
         ArrayList<AcceptanceCondition> conditions = new ArrayList<>();
 
         int count = NameGenerator.random(MIN_ACS, MAX_ACS);
-        for (int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             AcceptanceCondition condition = new AcceptanceCondition();
             condition.setCondition(NameGenerator.randomDescription());
             conditions.add(condition);

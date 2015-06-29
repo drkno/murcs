@@ -282,7 +282,8 @@ public class Backlog extends Model {
             return;
         }
 
-        long commit = UndoRedoManager.getHead().getCommitNumber() + 1;
+
+        long commit = UndoRedoManager.getDisable() ? 0: UndoRedoManager.getHead().getCommitNumber() + 1;
 
         for(Story story : getAllStories()) {
             String newEstimate = estimateType.convert(newEstimateType, story.getEstimate());
@@ -291,6 +292,10 @@ public class Backlog extends Model {
 
         this.estimateType = newEstimateType;
         commit("edit backlog");
+
+        if (UndoRedoManager.getDisable()) {
+            return;
+        }
         try {
             UndoRedoManager.assimilate(commit);
         } catch (Exception e) {
