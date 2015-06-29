@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,11 +54,14 @@ public enum EstimateType {
 
             estimates.put(this, currentEstimates);
             return currentEstimates;
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
+            //This shouldn't happen unless you add an estimation method with a really weird name
+            e.printStackTrace();
+        } catch (IOException e){
             //This will never happen as long as you're not an idiot
             System.err.println("No such file as " + path);
-            return new ArrayList<>();
         }
+        return new ArrayList<>();
     }
 
     /**
