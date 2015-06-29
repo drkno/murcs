@@ -334,7 +334,7 @@ public class StoryEditor extends GenericEditor<Story> {
         //Get the current index of the AC
         int index = getModel().getAcceptanceCriteria().indexOf(condition);
 
-        //If the item is not in the list, throw an exception
+        //If the item is not in the list, return
         if (index == -1) {
             return;
         }
