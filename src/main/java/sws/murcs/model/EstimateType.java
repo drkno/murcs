@@ -38,9 +38,9 @@ public enum EstimateType {
             return estimates.get(this);
         }
 
-        String path = "./src/main/resources/sws/murcs/estimates/" + toString() + ".csv";
+        String path = "/sws/murcs/estimates/" + toString() + ".csv";
         try {
-            List<String> currentEstimates = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+            List<String> currentEstimates = Files.readAllLines(Paths.get(getClass().getResource(path).toURI()), StandardCharsets.UTF_8);
             //Trim the string and remove commas and stuff
             for (int i = 0; i < currentEstimates.size(); i++) {
                 currentEstimates.set(i, currentEstimates.get(i).replace(",", "").trim());

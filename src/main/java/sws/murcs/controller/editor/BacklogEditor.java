@@ -20,11 +20,7 @@ import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidInputException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.List;
@@ -53,6 +49,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     @FXML
     private ComboBox<Person> poComboBox;
+
+    /**
+     * A choice box for choosing the estimation method for a backlog
+     */
+    @FXML
+    private ComboBox<EstimateType> estimationMethodComboBox;
 
     /**
      * A ChoiceBox for adding a story to the backlog.
@@ -119,6 +121,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         // setup the observable stories
@@ -244,6 +247,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             descriptionTextArea.setText(modelDescription);
         }
 
+        EstimateType current = getModel().getEstimateType();
+        estimationMethodComboBox.getItems().clear();
+        estimationMethodComboBox.getItems().addAll(EstimateType.values());
+        estimationMethodComboBox.getSelectionModel().select(current);
+
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
@@ -341,6 +349,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
             getModel().setAssignedPO(viewProductOwner);
             updateAssignedPO();
+        }
+
+        EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
+        if (isNotEqual(getModel().getEstimateType(), newEstimateType)){
+            getModel().setEstimateType(newEstimateType);
         }
     }
 
