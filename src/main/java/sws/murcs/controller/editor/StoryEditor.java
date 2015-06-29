@@ -377,7 +377,7 @@ public class StoryEditor extends GenericEditor<Story> {
             //Add a change listener
             conditionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 //If nothing has changed or we received focus we don't have to do anything
-                if (oldValue == newValue || newValue) {
+                if (oldValue == newValue || newValue == null) {
                     return;
                 }
 
