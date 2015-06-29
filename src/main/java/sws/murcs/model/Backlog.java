@@ -282,8 +282,7 @@ public class Backlog extends Model {
             return;
         }
 
-        commit("edit backlog");
-        long commit = UndoRedoManager.getHead().getCommitNumber();
+        long commit = UndoRedoManager.getHead().getCommitNumber() + 1;
 
         for(Story story : getAllStories()) {
             String newEstimate = estimateType.convert(newEstimateType, story.getEstimate());
