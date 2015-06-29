@@ -26,16 +26,7 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -152,12 +143,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param oldValue The old value
      */
     private void updateDisplayListSelection(final Object newValue, final Object oldValue) {
-        if (newValue == null) {
-            if (editorPane != null) {
-                editorPane.dispose();
-                editorPane = null;
-                contentPane.getChildren().clear();
-            }
+        if (newValue == null && editorPane != null) {
+            editorPane.dispose();
+            editorPane = null;
+            contentPane.getChildren().clear();
+
             return;
         }
 
