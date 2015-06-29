@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.Organisation;
@@ -138,6 +139,11 @@ public class OrganisationGenerator implements Generator<Organisation> {
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
+            try {
+                g.setShortName(g.getShortName()+ " (" + i + ")");
+            } catch (CustomException e) {
+                //never here...
+            }
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);
             }

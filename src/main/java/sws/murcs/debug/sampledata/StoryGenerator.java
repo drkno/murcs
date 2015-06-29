@@ -11,11 +11,11 @@ import sws.murcs.model.Story;
  */
 public class StoryGenerator implements Generator<Story> {
     /**
-     * The minimum number of Acceptance Conditions a story can have
+     * The minimum number of Acceptance Conditions a story can have.
      */
     public static final int MIN_ACS = 2;
     /**
-     * The maximum number of Acceptance Conditions a story can have
+     * The maximum number of Acceptance Conditions a story can have.
      */
     public static final int MAX_ACS = 10;
     /**
