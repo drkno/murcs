@@ -120,7 +120,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
         estimateChoiceBox.getItems().clear();
         estimateChoiceBox.getItems().add("Not Estimated");
-        if (backlog == null) {
+        if (backlog == null  || getModel().getAcceptanceCriteria().size() == 0) {
             estimateChoiceBox.getSelectionModel().select(0);
             estimateChoiceBox.setDisable(true);
         }
@@ -160,7 +160,7 @@ public class StoryEditor extends GenericEditor<Story> {
         AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
 
         //If nothing is selected then both buttons should be disabled
-        if (selected == null) {
+        if (selected == null || getModel().getAcceptanceCriteria().size() == 0) {
             increasePriorityButton.setDisable(true);
             decreasePriorityButton.setDisable(true);
             return;
@@ -264,7 +264,7 @@ public class StoryEditor extends GenericEditor<Story> {
         addConditionTextField.setText("");
 
         //Make sure that the table gets updated
-        updateAcceptanceCriteria();
+        loadObject();
 
         //Select the item we just created
         acceptanceCriteriaTable.getSelectionModel().select(newCondition);
@@ -379,7 +379,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                 popup.addYesNoButtons(p -> {
                     getModel().removeAcceptanceCriteria(condition);
-                    updateAcceptanceCriteria();
+                    loadObject();
                     popup.close();
                 });
                 popup.show();
