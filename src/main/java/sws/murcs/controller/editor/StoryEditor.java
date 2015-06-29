@@ -2,14 +2,25 @@ package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.List;
 
 /**
  * An editor for the story model.
@@ -29,10 +40,10 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator.
+     * A choice box for the creator and the estimate choice box.
      */
     @FXML
-    private ChoiceBox creatorChoiceBox;
+    private ChoiceBox creatorChoiceBox, estimateChoiceBox;
 
     /**
      * A label that indicates any errors.
@@ -41,25 +52,25 @@ public class StoryEditor extends GenericEditor<Story> {
     private Label labelErrorMessage;
 
     /**
-     * A table for displaying and updating acceptance conditions
+     * A table for displaying and updating acceptance conditions.
      */
     @FXML
     private TableView<AcceptanceCondition> acceptanceCriteriaTable;
 
     /**
-     * The columns on the AC table
+     * The columns on the AC table.
      */
     @FXML
     private TableColumn conditionColumn, removeColumn;
 
     /**
-     * Buttons for increasing and decreasing the priority of an AC
+     * Buttons for increasing and decreasing the priority of an AC.
      */
     @FXML
     private Button increasePriorityButton, decreasePriorityButton;
 
     /**
-     * The TextField containing the text for the new condition
+     * The TextField containing the text for the new condition.
      */
     @FXML
     private TextField addConditionTextField;
@@ -100,13 +111,32 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.setDisable(true);
         }
 
+        String currentEstimation = getModel().getEstimate();
+        Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
+                .stream()
+                .filter(model -> model instanceof Backlog)
+                .findFirst()
+                .orElse(null);
+
+        estimateChoiceBox.getItems().clear();
+        estimateChoiceBox.getItems().add("Not Estimated");
+        if (backlog == null) {
+            estimateChoiceBox.getSelectionModel().select(0);
+            estimateChoiceBox.setDisable(true);
+        }
+        else {
+            estimateChoiceBox.setDisable(false);
+            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            estimateChoiceBox.getSelectionModel().select(currentEstimation);
+        }
+
         updateAcceptanceCriteria();
     }
 
     /**
-     * Updates the list of acceptance criteria in the Table
+     * Updates the list of acceptance criteria in the Table.
      */
-    private void updateAcceptanceCriteria(){
+    private void updateAcceptanceCriteria() {
         //store selection
         AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
 
@@ -120,9 +150,9 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Refreshes the priority buttons so they have the correct enable state
+     * Refreshes the priority buttons so they have the correct enable state.
      */
-    private void refreshPriorityButtons(){
+    private void refreshPriorityButtons() {
         //Enable both buttons, we'll turn them off if we have to
         increasePriorityButton.setDisable(false);
         decreasePriorityButton.setDisable(false);
@@ -130,7 +160,7 @@ public class StoryEditor extends GenericEditor<Story> {
         AcceptanceCondition selected = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
 
         //If nothing is selected then both buttons should be disabled
-        if (selected == null){
+        if (selected == null) {
             increasePriorityButton.setDisable(true);
             decreasePriorityButton.setDisable(true);
             return;
@@ -139,12 +169,12 @@ public class StoryEditor extends GenericEditor<Story> {
         //If something is selected we don't have to worry about having no items in the list
 
         //If this is the first item, we can't go up
-        if (selected == getModel().getAcceptanceCriteria().get(0)){
+        if (selected == getModel().getAcceptanceCriteria().get(0)) {
             increasePriorityButton.setDisable(true);
         }
 
         //If this is the last item, we can't go down
-        if (selected == getModel().getAcceptanceCriteria().get(getModel().getAcceptanceCriteria().size() - 1)){
+        if (selected == getModel().getAcceptanceCriteria().get(getModel().getAcceptanceCriteria().size() - 1)) {
             decreasePriorityButton.setDisable(true);
         }
     }
@@ -160,6 +190,7 @@ public class StoryEditor extends GenericEditor<Story> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
+        estimateChoiceBox.focusedProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
@@ -177,6 +208,7 @@ public class StoryEditor extends GenericEditor<Story> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
+        estimateChoiceBox.focusedProperty().removeListener(getChangeListener());
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -206,14 +238,18 @@ public class StoryEditor extends GenericEditor<Story> {
                 throw new InvalidParameterException("Creator cannot be empty");
             }
         }
+
+        if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
+            getModel().setEstimate((String) estimateChoiceBox.getValue());
+        }
     }
 
     /**
-     * Called when the "Add Condition" button is clicked
+     * Called when the "Add Condition" button is clicked.
      * @param event The event information
      */
     @FXML
-    protected final void addConditionButtonClicked(final ActionEvent event){
+    protected final void addConditionButtonClicked(final ActionEvent event) {
         String conditionText = addConditionTextField.getText();
         //TODO perform some checks and do error handling on the condition text
 
@@ -235,22 +271,22 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Decreases the priority of a selected row in the table
+     * Decreases the priority of a selected row in the table.
      * @param event the event information
      */
     @FXML
-    protected final void increasePriorityClicked(final ActionEvent event){
+    protected final void increasePriorityClicked(final ActionEvent event) {
         //Get the selected item and move it up one place
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, -1);
     }
 
     /**
-     * Increases the priority of a selected row in the table
+     * Increases the priority of a selected row in the table.
      * @param event the event information
      */
     @FXML
-    protected final void decreasePriorityClicked(final ActionEvent event){
+    protected final void decreasePriorityClicked(final ActionEvent event) {
         //Get the selected item and move it down one place
         AcceptanceCondition condition = acceptanceCriteriaTable.getSelectionModel().getSelectedItem();
         moveCondition(condition, 1);
@@ -258,16 +294,18 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Moves a condition down the list of Acceptance Criteria by a specified number of places (the number of
-     * places wraps)
+     * places wraps).
      * @param condition The condition to move
      * @param places The number of places to move it.
      */
-    public final void moveCondition(final AcceptanceCondition condition, final int places){
+    public final void moveCondition(final AcceptanceCondition condition, final int places) {
         //Get the current index of the AC
         int index = getModel().getAcceptanceCriteria().indexOf(condition);
 
         //If the item is not in the list, throw an exception
-        if (index == -1) return;
+        if (index == -1) {
+            return;
+        }
 
         index += places;
 
@@ -287,17 +325,17 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * A cell representing an acceptance condition in the table of conditions
+     * A cell representing an acceptance condition in the table of conditions.
      */
-    private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, Object>{
+    private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, Object> {
         @Override
-        protected void updateItem(final Object unused, final boolean empty){
+        protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
 
             //Store the acceptance condition for this row
             final AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
 
-            if (condition == null || empty){
+            if (condition == null || empty) {
                 setText(null);
                 setGraphic(null);
                 return;
@@ -307,7 +345,9 @@ public class StoryEditor extends GenericEditor<Story> {
             //Add a change listener
             conditionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 //If nothing has changed or we received focus we don't have to do anything
-                if (oldValue == newValue || newValue) return;
+                if (oldValue == newValue || newValue) {
+                    return;
+                }
 
                 //Update the text of the condition
                 condition.setCondition(conditionTextField.getText());

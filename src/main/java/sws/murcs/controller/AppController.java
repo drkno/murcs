@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Main app class controller.
@@ -133,21 +135,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (newValue == null) {
-                    if (editorPane != null) {
-                        editorPane.dispose();
-                        editorPane = null;
-                        contentPane.getChildren().clear();
-                    }
-                    return;
+                if (editorPane != null) {
+                        editorPane.getController().saveChanges();
                 }
-
-                NavigationManager.navigateTo((Model) newValue);
-                updateBackForwardButtons();
-
-                if (oldValue == null) {
-                    displayList.scrollTo(newValue);
-                }
+                updateDisplayListSelection(newValue, oldValue);
             }
         });
         setUpShortCuts();
@@ -155,6 +146,24 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    private void updateDisplayListSelection(final Object newValue, final Object oldValue) {
+        if (newValue == null) {
+            if (editorPane != null) {
+                editorPane.dispose();
+                editorPane = null;
+                contentPane.getChildren().clear();
+            }
+            return;
+        }
+
+        NavigationManager.navigateTo((Model) newValue);
+        updateBackForwardButtons();
+
+        if (oldValue == null) {
+            displayList.scrollTo(newValue);
+        }
     }
 
     /**

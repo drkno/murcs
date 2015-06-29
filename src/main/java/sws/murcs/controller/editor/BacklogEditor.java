@@ -352,7 +352,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
-        if (isNotEqual(getModel().getEstimateType(), newEstimateType)){
+        if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
     }
