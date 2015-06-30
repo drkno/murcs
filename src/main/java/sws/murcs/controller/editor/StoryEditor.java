@@ -1,17 +1,17 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
@@ -21,6 +21,9 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * An editor for the story model.
@@ -50,6 +53,17 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     private ComboBox<Story> dependenciesDropDown;
+
+    /**
+     * Container that dependencies are added to when they are added.
+     */
+    @FXML
+    private VBox dependenciesContainer;
+
+    /**
+     * A map of dependencies and their respective nodes.
+     */
+    private Map<Story, Node> dependenciesMap;
 
     /**
      * A label that indicates any errors.
@@ -106,6 +120,7 @@ public class StoryEditor extends GenericEditor<Story> {
             descriptionTextArea.setText(modelDescription);
         }
 
+        dependenciesDropDown.getItems().clear();
         dependenciesDropDown.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getStories());
         dependenciesDropDown.getItems().remove(getModel());
         dependenciesDropDown.getItems().removeAll(getModel().getImmediateDependencies());
@@ -201,11 +216,14 @@ public class StoryEditor extends GenericEditor<Story> {
             }
         });
 
+        dependenciesMap = new HashMap<>();
+
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         creatorChoiceBox.focusedProperty().addListener(getChangeListener());
         estimateChoiceBox.focusedProperty().addListener(getChangeListener());
         storyStateChoiceBox.focusedProperty().addListener(getChangeListener());
+        dependenciesDropDown.valueProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
@@ -224,6 +242,8 @@ public class StoryEditor extends GenericEditor<Story> {
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
         estimateChoiceBox.focusedProperty().removeListener(getChangeListener());
+        dependenciesDropDown.valueProperty().removeListener(getChangeListener());
+        dependenciesMap = null;
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -261,6 +281,18 @@ public class StoryEditor extends GenericEditor<Story> {
         if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
         }
+
+        Story selectedStory = dependenciesDropDown.getValue();
+        if (selectedStory != null) {
+            getModel().addDependency(selectedStory);
+            Node dependencyNode = generateStoryNode(selectedStory);
+            dependenciesContainer.getChildren().add(dependencyNode);
+            dependenciesMap.put(selectedStory, dependencyNode);
+            Platform.runLater(() -> {
+                dependenciesDropDown.getSelectionModel().clearSelection();
+                dependenciesDropDown.getItems().remove(selectedStory);
+            });
+        }
     }
 
     /**
@@ -293,6 +325,50 @@ public class StoryEditor extends GenericEditor<Story> {
         if (!errors.isEmpty()) {
             throw new InvalidParameterException(errors);
         }
+    }
+
+    private final Node generateStoryNode(final Story newDependency) {
+        Button removeButton = new Button("X");
+        removeButton.setOnAction(event -> {
+            GenericPopup popup = new GenericPopup();
+            popup.setMessageText("Are you sure you want to remove the dependency "
+                    + newDependency.getShortName() + " from "
+                    + getModel().getShortName() + "?");
+            popup.setTitleText("Remove Dependency");
+            popup.addYesNoButtons(func -> {
+                dependenciesDropDown.getItems().add(newDependency);
+                Node dependencyNode = dependenciesMap.get(newDependency);
+                dependenciesContainer.getChildren().remove(dependencyNode);
+                dependenciesMap.remove(newDependency);
+                getModel().removeDependency(newDependency);
+                popup.close();
+            });
+            popup.show();
+        });
+
+        GridPane pane = new GridPane();
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+        column1.fillWidthProperty().setValue(true);
+
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.SOMETIMES);
+
+        pane.getColumnConstraints().add(column1);
+        pane.getColumnConstraints().add(column2);
+
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(newDependency.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(newDependency.toString());
+            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            pane.add(nameLink, 0, 0);
+        }
+        pane.add(removeButton, 1, 0);
+
+        return pane;
     }
 
     /**
