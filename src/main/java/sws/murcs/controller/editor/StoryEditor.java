@@ -45,6 +45,12 @@ public class StoryEditor extends GenericEditor<Story> {
     private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
 
     /**
+     * Drop down with dependencies that can be added to this story.
+     */
+    @FXML
+    private ComboBox<Story> dependenciesDropDown;
+
+    /**
      * A label that indicates any errors.
      */
     @FXML
@@ -98,6 +104,10 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextArea.setText(modelDescription);
         }
+
+        dependenciesDropDown.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getStories());
+        dependenciesDropDown.getItems().remove(getModel());
+        dependenciesDropDown.getItems().removeAll(getModel().getImmediateDependencies());
 
         //Enable or disable whether you can change the creator
         if (isCreationMode) {
