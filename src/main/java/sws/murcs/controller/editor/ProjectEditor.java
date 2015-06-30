@@ -3,14 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -31,10 +24,17 @@ import java.time.LocalDate;
 public class ProjectEditor extends GenericEditor<Project> {
 
     /**
-     * The shortName, longName and DescriptionFields for a person.
+     * The shortName, longName for a project.
      */
     @FXML
-    private TextField shortNameTextField, longNameTextField, descriptionTextField;
+    private TextField shortNameTextField, longNameTextField;
+
+    /**
+     * A description for the current project.
+     */
+    @FXML
+    private TextArea descriptionTextArea;
+
     /**
      * The Work Allocation table, team view.
      */
@@ -81,7 +81,7 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
-        descriptionTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
@@ -116,9 +116,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
-            descriptionTextField.setText(modelDescription);
+            descriptionTextArea.setText(modelDescription);
         }
 
         choiceBoxAddTeam.getItems().setAll(organisation.getTeams());
@@ -142,7 +142,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
