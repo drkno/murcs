@@ -4,7 +4,16 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -327,7 +336,12 @@ public class StoryEditor extends GenericEditor<Story> {
         }
     }
 
-    private final Node generateStoryNode(final Story newDependency) {
+    /**
+     * Generate a new node for a story dependency.
+     * @param newDependency story to generate a node for.
+     * @return a JavaFX node representing the dependency.
+     */
+    private Node generateStoryNode(final Story newDependency) {
         Button removeButton = new Button("X");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
