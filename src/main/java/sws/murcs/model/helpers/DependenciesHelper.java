@@ -3,8 +3,9 @@ package sws.murcs.model.helpers;
 import sws.murcs.model.Story;
 
 import java.util.ArrayDeque;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -56,12 +57,49 @@ public final class DependenciesHelper {
      */
     private static boolean isReachable(final Set<Story> visitedSet, final Queue<Story> queue,
                                        final Story searchNode, final Story reachableNode) {
-        for (Story story : searchNode.getImmediateDependencies()) {
-            if (visitedSet.contains(story)) continue;
-            if (story == reachableNode) return true;
+        for (Story story : searchNode.getDependencies()) {
+            if (visitedSet.contains(story)) {
+                continue;
+            }
+            if (story == reachableNode) {
+                return true;
+            }
             queue.offer(story);
             visitedSet.add(story);
         }
         return false;
+    }
+
+    /**
+     * Determines how deep a dependency graph is on a story.
+     * @param startNode story to find depth from.
+     * @return depth of the dependency graph from the node.
+     */
+    public static int dependenciesDepth(final Story startNode) {
+        Map<Story, Integer> visitedDepth = new HashMap<>();
+        return determineDepth(startNode, visitedDepth);
+    }
+
+    /**
+     * Determines the depth of a dependency graph, using a visited map to reduce revisits of nodes.
+     * Note: this uses recursion, for arbitrarily large graphs this probably isn't a good method to use.
+     * @param startNode story to start at.
+     * @param visited map used to store results.
+     * @return depth of the graph.
+     */
+    private static int determineDepth(final Story startNode, final Map<Story, Integer> visited) {
+        int max = visited.getOrDefault(startNode, -1);
+        if (max != -1) {
+            return max;
+        }
+        max = 0;
+        for (Story s : startNode.getDependencies()) {
+            int value = determineDepth(s, visited) + 1;
+            if (value > max) {
+                max = value;
+            }
+        }
+        visited.put(startNode, max);
+        return max;
     }
 }

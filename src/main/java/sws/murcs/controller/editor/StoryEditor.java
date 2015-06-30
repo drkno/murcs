@@ -28,6 +28,7 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -376,8 +377,12 @@ public class StoryEditor extends GenericEditor<Story> {
         ColumnConstraints column2 = new ColumnConstraints();
         column2.setHgrow(Priority.SOMETIMES);
 
+        ColumnConstraints column3 = new ColumnConstraints();
+        column3.setHgrow(Priority.SOMETIMES);
+
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
+        pane.getColumnConstraints().add(column3);
 
         if (getIsCreationWindow()) {
             Text nameText = new Text(newDependency.toString());
@@ -388,7 +393,10 @@ public class StoryEditor extends GenericEditor<Story> {
             nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
             pane.add(nameLink, 0, 0);
         }
-        pane.add(removeButton, 1, 0);
+        String depth = "(" + Integer.toString(DependenciesHelper.dependenciesDepth(newDependency)) + " deep) ";
+        Text depthText = new Text(depth);
+        pane.add(depthText, 1, 0);
+        pane.add(removeButton, 2, 0);
 
         return pane;
     }
