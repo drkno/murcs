@@ -134,6 +134,14 @@ public class StoryEditor extends GenericEditor<Story> {
         dependenciesDropDown.getItems().remove(getModel());
         dependenciesDropDown.getItems().removeAll(getModel().getImmediateDependencies());
 
+        dependenciesMap.clear();
+        dependenciesContainer.getChildren().clear();
+        getModel().getImmediateDependencies().forEach(dependency -> {
+            Node dependencyNode = generateStoryNode(dependency);
+            dependenciesContainer.getChildren().add(dependencyNode);
+            dependenciesMap.put(dependency, dependencyNode);
+        });
+
         //Enable or disable whether you can change the creator
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
