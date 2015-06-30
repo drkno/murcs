@@ -1,6 +1,8 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.ArrayList;
 import java.util.List;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
@@ -9,9 +11,20 @@ import sws.murcs.model.Story;
  */
 public class StoryGenerator implements Generator<Story> {
     /**
+     * The minimum number of Acceptance Conditions a story can have.
+     */
+    public static final int MIN_ACS = 2;
+
+    /**
+     * The maximum number of Acceptance Conditions a story can have.
+     */
+    public static final int MAX_ACS = 10;
+
+    /**
      * The max number of stories to generate at low stress.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * The min number of stories to generate at low stress.
      */
@@ -21,6 +34,7 @@ public class StoryGenerator implements Generator<Story> {
      * The max number of stories to generate at medium stress.
      */
     public static final int MEDIUM_STRESS_MAX = 20;
+
     /**
      * The min number of stories to generate at medium stress.
      */
@@ -30,6 +44,7 @@ public class StoryGenerator implements Generator<Story> {
      * The max number of stories to generate at high stress.
      */
     public static final int HIGH_STRESS_MAX = 100;
+
     /**
      * The min number of stories to generate at high stress.
      */
@@ -218,6 +233,29 @@ public class StoryGenerator implements Generator<Story> {
         story.setDescription(description);
         story.setCreator(creator);
 
+        //Generate and add the acceptance criteria
+        List<AcceptanceCondition> acceptanceConditions = generateAcceptanceCriteria();
+        for (AcceptanceCondition condition : acceptanceConditions) {
+            story.addAcceptanceCondition(condition);
+        }
+
         return story;
+    }
+
+    /**
+     * Generates Acceptance Criteria for a story.
+     * @return The acceptance criteria
+     */
+    private List<AcceptanceCondition> generateAcceptanceCriteria() {
+        List<AcceptanceCondition> conditions = new ArrayList<>();
+
+        int count = NameGenerator.random(MIN_ACS, MAX_ACS);
+        for (int i = 0; i < count; i++) {
+            AcceptanceCondition condition = new AcceptanceCondition();
+            condition.setCondition(NameGenerator.randomDescription());
+            conditions.add(condition);
+        }
+
+        return conditions;
     }
 }

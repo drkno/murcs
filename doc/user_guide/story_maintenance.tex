@@ -45,7 +45,62 @@ To update an existing story, simply select it from the display list. In the belo
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{images/screenshots/stories4.PNG}
-\caption{The Story Creation Dialog}
+\caption{The Editing Pane}
+\label{fig:new_project}
+\end{figure}
+
+Story State\newline
+The Story State property (circled below) defines the state a story is currently in. If you try to change this but the state is not supported an error message will be displayed at the bottom of the editor. \newline
+
+Requirements\newline
+None: No requirements\newline
+Ready: Story is in a backlog, story has at least one AC and story is estimated
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/screenshots/Readiness1.PNG}
+\caption{The Story State Property}
+\label{fig:new_project}
+\end{figure}
+
+Estimating\newline
+To create an estimate for a story, your story must first be part of a backlog and have at least one Acceptance Condition (see below). The scale you estimate on depends on the scale specified in the backlog that this story is attached to. If you change this type on the backlog the program will do it's best to work out what the equivalent is on the new scale.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/screenshots/Estimate1.PNG}
+\caption{The Estimate Property}
+\label{fig:new_project}
+\end{figure}
+
+Acceptance Criteria (ACs)\newline
+A story can have any number of acceptance criteria. However, you should note that there are some things you cannot do to a story if it does not have an ACs (such as estimating that story or changing its state to ready). Acceptance criteria can be managed using "Acceptance Criteria" pane (marked below) while editing a story.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/screenshots/AcceptanceCriteria1.PNG}
+\caption{The Acceptance Criteria Pane}
+\label{fig:new_project}
+\end{figure}
+
+You can create a new Acceptance Condition by typing in the "Add Condition" text field (marked below) and pressing the add button. New acceptance conditions will be added at the end of the list by default.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/screenshots/AcceptanceCriteria2.PNG}
+\caption{The Add Condition Field}
+\label{fig:new_project}
+\end{figure}
+
+You can edit the condition on an AC by simply typing in the relevant text field. Your changes will be saved automatically, when you click away. Similarly, you can delete a condition using the 'X' button in the second column of the table.
+\newline\newline
+
+Acceptance Conditions can also be moved up and down in the list, depending on their priority. To do this, use the up and down arrows (marked below). A condition cannot be moved up from the top of the list or down from the bottom.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{images/screenshots/AcceptanceCriteria3.PNG}
+\caption{The Priority Buttons}
 \label{fig:new_project}
 \end{figure}
 

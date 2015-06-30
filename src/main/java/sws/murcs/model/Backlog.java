@@ -4,6 +4,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -48,11 +49,18 @@ public class Backlog extends Model {
     private List<Story> unprioritisedStories;
 
     /**
+     * The type of estimation used for this backlog. Defaults to Fibonacci
+     */
+    @TrackableValue
+    private EstimateType estimateType;
+
+    /**
      * The constructor for the backlog. Initialises the lists within the backlog.
      */
     public Backlog() {
         prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
+        estimateType = EstimateType.Fibonacci;
     }
 
     /**
@@ -232,6 +240,8 @@ public class Backlog extends Model {
         else if (unprioritisedStories.contains(story)) {
             unprioritisedStories.remove(story);
         }
+        story.setEstimate(EstimateType.NOT_ESTIMATED);
+        story.setStoryState(Story.StoryState.None);
         commit("edit backlog");
     }
 
@@ -253,6 +263,38 @@ public class Backlog extends Model {
      */
     public final Person getAssignedPO() {
         return assignedPO;
+    }
+
+    /**
+     * Get the current estimate type.
+     * @return The estimate type.
+     */
+    public final EstimateType getEstimateType() {
+        return estimateType;
+    }
+
+    /**
+     * Sets the new estimate type. This will cascade and attempt to update the estimate on all stories belonging
+     * to this backlog.
+     * @param newEstimateType the new estimate type.
+     */
+    public final void setEstimateType(final EstimateType newEstimateType) {
+        if (this.estimateType == newEstimateType) {
+            return;
+        }
+
+        startAssimilation();
+
+        EstimateType oldEstimateType = this.estimateType;
+        this.estimateType = newEstimateType;
+        commit("edit backlog");
+
+        for (Story story : getAllStories()) {
+            String newEstimate = oldEstimateType.convert(newEstimateType, story.getEstimate());
+            story.setEstimate(newEstimate);
+        }
+
+        endAssimilation("edit backlog");
     }
 
     @Override

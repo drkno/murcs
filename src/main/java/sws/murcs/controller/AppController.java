@@ -1,5 +1,9 @@
 package sws.murcs.controller;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -39,13 +43,9 @@ import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-
 /**
- * Main app class controller.
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
@@ -133,21 +133,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         displayChoiceBox.getSelectionModel().select(0);
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (newValue == null) {
-                    if (editorPane != null) {
-                        editorPane.dispose();
-                        editorPane = null;
-                        contentPane.getChildren().clear();
-                    }
-                    return;
+                if (editorPane != null && newValue != null) {
+                        editorPane.getController().saveChanges();
                 }
-
-                NavigationManager.navigateTo((Model) newValue);
-                updateBackForwardButtons();
-
-                if (oldValue == null) {
-                    displayList.scrollTo(newValue);
-                }
+                updateDisplayListSelection(newValue, oldValue);
             }
         });
         setUpShortCuts();
@@ -155,6 +144,28 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    /**
+     * Updates the currently selected item in the display list.
+     * @param newValue The new value
+     * @param oldValue The old value
+     */
+    private void updateDisplayListSelection(final Object newValue, final Object oldValue) {
+        if (newValue == null && editorPane != null) {
+            editorPane.dispose();
+            editorPane = null;
+            contentPane.getChildren().clear();
+
+            return;
+        }
+
+        NavigationManager.navigateTo((Model) newValue);
+        updateBackForwardButtons();
+
+        if (oldValue == null) {
+            displayList.scrollTo(newValue);
+        }
     }
 
     /**
@@ -729,13 +740,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     @Override
-    public final void selectItem(final Model parameter) {
+    public final void selectItem(Model parameter) {
         ModelType type;
         ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
 
         if (parameter == null) {
             displayList.getSelectionModel().select(0);
             displayList.scrollTo(0);
+            parameter = (Model) displayList.getSelectionModel().getSelectedItem();
         }
         else {
             type = ModelType.getModelType(parameter);

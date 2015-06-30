@@ -182,6 +182,7 @@ public class ReportGeneratorTest {
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < sampleReport.size(); i++) {
             assertEquals(sampleReport.get(i).trim(), testReport.get(i).trim());
+            //System.out.println(testReport.get(i));
         }
     }
 }
