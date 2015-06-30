@@ -2,7 +2,7 @@
 <report>
     <projectVersion>0.0.3</projectVersion>
     <dateGenerated>2015-05-21</dateGenerated>
-    <content>
+    <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
         <projects>
             <project shortName="FITR">
                 <longName>Fitness is Training Right</longName>

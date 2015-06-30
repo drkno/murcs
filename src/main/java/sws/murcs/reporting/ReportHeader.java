@@ -1,6 +1,9 @@
 package sws.murcs.reporting;
 
 import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Team;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,7 +32,7 @@ public class ReportHeader {
     /**
      * The report model (model of all the project).
      */
-    @XmlElement(name = "content")
+    @XmlElement(name = "content", type = ReportModel.class)
     private ReportModel reportModel;
 
     /**
@@ -37,7 +40,34 @@ public class ReportHeader {
      * @param organisation the organisation given.
      */
     public ReportHeader(final Organisation organisation) {
-        reportModel = new ReportModel(organisation);
+        reportModel = new ReportModelAll(organisation);
+        projectVersion = Organisation.getVersion();
+        dateGenerated = LocalDate.now();
+    }
+    /**
+     * Creates a new Report Header from a given project.
+     * @param project the organisation given.
+     */
+    public ReportHeader(final Project project) {
+        reportModel = new ReportModelProject(project);
+        projectVersion = Organisation.getVersion();
+        dateGenerated = LocalDate.now();
+    }
+    /**
+     * Creates a new Report Header from a given team.
+     * @param team the organisation given.
+     */
+    public ReportHeader(final Team team) {
+        reportModel = new ReportModelTeam(team);
+        projectVersion = Organisation.getVersion();
+        dateGenerated = LocalDate.now();
+    }
+    /**
+     * Creates a new Report Header from a given person.
+     * @param person the organisation given.
+     */
+    public ReportHeader(final Person person) {
+        reportModel = new ReportModelPerson(person);
         projectVersion = Organisation.getVersion();
         dateGenerated = LocalDate.now();
     }
