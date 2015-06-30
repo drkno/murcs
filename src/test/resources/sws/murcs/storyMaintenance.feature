@@ -1,3 +1,5 @@
+# Manuel: [after Manuel loses Basil's money by "knowing nothing"] See, I know nothing!
+# Basil Fawlty: I'm gonna sell you to a vivisectionist!
 @Manual
 Feature: Story Maintenance
 
@@ -39,3 +41,13 @@ Feature: Story Maintenance
     And I do not specify a short name
     Then an error message will be displayed
     And the story will not be created
+
+  Scenario: Creating an Acceptance Condition
+    When I create an acceptance condition
+    Then I can view that acceptance condition
+
+  Scenario: Editing an Acceptance Condition
+    Given I have created an Acceptance Condition
+    Then I can edit that acceptance condition
+    And reprioritise it
+    And remove it

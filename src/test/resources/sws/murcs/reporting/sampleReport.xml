@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.3</projectVersion>
-    <dateGenerated>2015-05-21</dateGenerated>
+    <projectVersion>0.0.4</projectVersion>
+    <dateGenerated>2015-06-29</dateGenerated>
     <content>
         <projects>
             <project shortName="FITR">
@@ -37,6 +37,7 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
+                        <storyState>None</storyState>
                         <description>Revert to last saved state</description>
                         <creator shortName="Haydon">
                             <longName>Haydon Baddock</longName>
@@ -52,8 +53,10 @@
                                 </skill>
                             </skills>
                         </creator>
+                        <estimate>Not Estimated</estimate>
                     </story>
                 </prioritisedStories>
+                <estimateType>Fibonacci</estimateType>
             </backlog>
         </backlogs>
         <workAllocations>
@@ -146,11 +149,13 @@
         <unassignedStories>
             <story shortName="2">
                 <longName>Story Maintenance</longName>
+                <storyState>None</storyState>
                 <description>add stories to project</description>
                 <creator shortName="Unallocated">
                     <id>null123</id>
                     <skills/>
                 </creator>
+                <estimate>Not Estimated</estimate>
             </story>
         </unassignedStories>
         <unassignedTeams>
