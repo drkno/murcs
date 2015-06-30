@@ -133,11 +133,11 @@ public class StoryEditor extends GenericEditor<Story> {
         dependenciesDropDown.getItems().clear();
         dependenciesDropDown.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getStories());
         dependenciesDropDown.getItems().remove(getModel());
-        dependenciesDropDown.getItems().removeAll(getModel().getImmediateDependencies());
+        dependenciesDropDown.getItems().removeAll(getModel().getDependencies());
 
         dependenciesMap.clear();
         dependenciesContainer.getChildren().clear();
-        getModel().getImmediateDependencies().forEach(dependency -> {
+        getModel().getDependencies().forEach(dependency -> {
             Node dependencyNode = generateStoryNode(dependency);
             dependenciesContainer.getChildren().add(dependencyNode);
             dependenciesMap.put(dependency, dependencyNode);

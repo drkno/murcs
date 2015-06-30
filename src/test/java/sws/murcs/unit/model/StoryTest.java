@@ -147,23 +147,23 @@ public class StoryTest {
     @Test
     public void immediateDependencyTest() throws Exception {
         story.addDependency(story2);
-        assertTrue("Story should have been added as a dependency but was not.", story.getImmediateDependencies().contains(story2));
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
     }
 
     @Test
     public void immediateMultipleDependencyTest() throws Exception {
         story.addDependency(story2);
         story.addDependency(story3);
-        assertTrue("Story should have been added as a dependency but was not.", story.getImmediateDependencies().contains(story2));
-        assertTrue("Story should have been added as a dependency but was not.", story.getImmediateDependencies().contains(story3));
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story3));
     }
 
     @Test
     public void immediateAddDuplicateDependencyTest() throws Exception {
         story.addDependency(story2);
         story.addDependency(story2);
-        assertTrue("Story should have been added as a dependency but was not.", story.getImmediateDependencies().contains(story2));
-        assertEquals("Story was added multiple times when it should not have been.", story.getImmediateDependencies().size(), 1);
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
+        assertEquals("Story was added multiple times when it should not have been.", story.getDependencies().size(), 1);
     }
 
     @Test
@@ -178,8 +178,8 @@ public class StoryTest {
         story.addDependency(story3);
 
         story.removeDependency(story2);
-        assertFalse("Story was not removed when it should have been.", story.getImmediateDependencies().contains(story2));
+        assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story2));
         story.removeDependency(story3);
-        assertFalse("Story was not removed when it should have been.", story.getImmediateDependencies().contains(story3));
+        assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story3));
     }
 }

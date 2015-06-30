@@ -39,7 +39,9 @@ public final class DependenciesHelper {
         queue.offer(searchNode);
         visitedSet.add(searchNode);
         while (!queue.isEmpty()) {
-            if (isReachable(visitedSet, queue, queue.poll(), reachableNode)) return true;
+            if (isReachable(visitedSet, queue, queue.poll(), reachableNode)) {
+                return true;
+            }
         }
 
         return false;

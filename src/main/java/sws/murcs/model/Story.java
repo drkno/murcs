@@ -85,7 +85,7 @@ public class Story extends Model {
      * requires to be complete before work can begin.
      * @return a collection of the immediate dependencies.
      */
-    public final Collection<Story> getImmediateDependencies() {
+    public final Collection<Story> getDependencies() {
         return Collections.unmodifiableCollection(dependencies);
     }
 
