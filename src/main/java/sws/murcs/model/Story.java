@@ -1,13 +1,17 @@
 package sws.murcs.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A class representing a story in the backlog for a project.
@@ -62,10 +66,10 @@ public class Story extends Model {
     private Person creator;
 
     /**
-     * The estimate for this story.
+     * Stories that must be complete before this story can be worked on.
      */
     @TrackableValue
-    private String estimate;
+    private Collection<Story> dependencies;
 
     /**
      * Creates and initializes a new story.
@@ -73,7 +77,51 @@ public class Story extends Model {
     public Story() {
         acceptanceCriteria = new ArrayList<>();
         estimate = EstimateType.NOT_ESTIMATED;
+        dependencies = new LinkedHashSet<>();
     }
+    
+    /**
+     * Gets the stories that this story immediately (not transitively)
+     * requires to be complete before work can begin.
+     * @return a collection of the immediate dependencies.
+     */
+    public final Collection<Story> getDependencies() {
+        return Collections.unmodifiableCollection(dependencies);
+    }
+
+    /**
+     * Adds a new Story that this Story requires to be complete before
+     * work can begin.
+     * @param dependentStory the new dependency.
+     * @throws CyclicDependencyException when adding the new dependency would create a
+     * dependency cycle.
+     */
+    public final void addDependency(final Story dependentStory) throws CyclicDependencyException {
+        if (dependencies.contains(dependentStory)) {
+            return;
+        }
+        if (DependenciesHelper.isReachable(dependentStory, this)) {
+            throw new CyclicDependencyException(this, dependentStory);
+        }
+        dependencies.add(dependentStory);
+        commit("edit story");
+    }
+
+    /**
+     * Removes a Story that this Story requires to be complete before
+     * work can begin.
+     * @param dependentStory the dependency to remove.
+     */
+    public final void removeDependency(final Story dependentStory) {
+        dependencies.remove(dependentStory);
+        commit("edit story");
+    }
+
+    /**
+     * The estimate for this story.
+     */
+    @TrackableValue
+    private String estimate;
 
     /**
      * Gets an unmodifiable List containing all the Acceptance

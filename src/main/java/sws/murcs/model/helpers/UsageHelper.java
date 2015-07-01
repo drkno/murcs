@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Helps to find usages of a model within the current organisation. This is a singleton class and is not designed to be
@@ -153,9 +154,11 @@ public final class UsageHelper {
      */
     private static List<Model> findUsages(final Story story) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
-        return currentModel.getBacklogs().stream()
-                .filter(backlog -> backlog.getAllStories().contains(story))
-                .collect(Collectors.toList());
+        Stream backlogStream = currentModel.getBacklogs().stream()
+                .filter(backlog -> backlog.getAllStories().contains(story));
+        Stream storiesStream = currentModel.getStories().stream()
+                .filter(storys -> storys.getDependencies().contains(story));
+        return (List<Model>) Stream.concat(backlogStream, storiesStream).collect(Collectors.toList());
     }
 
     /**
