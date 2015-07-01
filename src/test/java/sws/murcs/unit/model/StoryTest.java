@@ -3,6 +3,7 @@ package sws.murcs.unit.model;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Story;
@@ -123,5 +124,62 @@ public class StoryTest {
     public void hashCodeTest() throws Exception {
         int actual = story.getHashCodePrime() + story.getShortName().hashCode();
         assertEquals(story.hashCode(), actual);
+    }
+
+    @Test(expected = CyclicDependencyException.class)
+    public void immediateCyclicDependencyExceptionTest() throws Exception {
+        story.addDependency(story);
+    }
+
+    @Test(expected = CyclicDependencyException.class)
+    public void intermediateCyclicDependencyExceptionTest() throws Exception {
+        story2.addDependency(story);
+        story.addDependency(story2);
+    }
+
+    @Test(expected = CyclicDependencyException.class)
+    public void longCyclicDependencyExceptionTest() throws Exception {
+        story3.addDependency(story2);
+        story2.addDependency(story);
+        story.addDependency(story3);
+    }
+
+    @Test
+    public void immediateDependencyTest() throws Exception {
+        story.addDependency(story2);
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
+    }
+
+    @Test
+    public void immediateMultipleDependencyTest() throws Exception {
+        story.addDependency(story2);
+        story.addDependency(story3);
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story3));
+    }
+
+    @Test
+    public void immediateAddDuplicateDependencyTest() throws Exception {
+        story.addDependency(story2);
+        story.addDependency(story2);
+        assertTrue("Story should have been added as a dependency but was not.", story.getDependencies().contains(story2));
+        assertEquals("Story was added multiple times when it should not have been.", story.getDependencies().size(), 1);
+    }
+
+    @Test
+    public void transitiveDependencyTest() throws Exception {
+        story2.addDependency(story3);
+        story.addDependency(story2);
+    }
+
+    @Test
+    public void removeDependencyTest() throws Exception {
+        story.addDependency(story2);
+        story.addDependency(story3);
+
+        story.removeDependency(story2);
+        assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story2));
+        story.removeDependency(story3);
+        assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story3));
     }
 }
