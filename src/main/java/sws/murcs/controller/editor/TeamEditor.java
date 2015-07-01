@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -39,30 +41,42 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     @FXML
     private VBox teamMembersContainer;
+
     /**
      * The shortName, longName and description fields for a Team.
      */
     @FXML
     private TextField shortNameTextField, longNameTextField, descriptionTextField;
+
     /**
      * The product owner and scrum master pickers.
      */
     @FXML
     private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker;
+
     /**
      * The member picker.
      */
     @FXML
     private ComboBox<Person> addTeamMemberPicker;
+
     /**
      * The label for showing error messages.
      */
     @FXML
     private Label labelErrorMessage;
+
+    /**
+     * Buttons for clearing the current SM and PO
+     */
+    @FXML
+    private Button clearPOButton, clearSMButton;
+
     /**
      * List of people that can be added to the team.
      */
     private List<Person> allocatablePeople;
+
     /**
      * A map of people to their nodes in the member list on the view.
      */
@@ -215,12 +229,16 @@ public class TeamEditor extends GenericEditor<Team> {
         // The ScrumMaster can not be a valid product owner
         productOwners.remove(modelScrumMaster);
 
+        clearPOButton.setDisable(true);
+
         // Remove listener while editing the product owner picker
         productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         productOwnerPicker.getItems().clear();
         productOwnerPicker.getItems().addAll(productOwners);
         if (modelProductOwner != null) {
             productOwnerPicker.getSelectionModel().select(modelProductOwner);
+            clearPOButton.setDisable(false);
+
         }
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -242,6 +260,8 @@ public class TeamEditor extends GenericEditor<Team> {
         // The ProductOwner cannot be a valid scrum master
         scrumMasters.remove(modelProductOwner);
 
+        clearSMButton.setDisable(true);
+
         // Remove listener while editing the scrum master picker
         scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         scrumMasterPicker.getItems().clear();
@@ -249,8 +269,37 @@ public class TeamEditor extends GenericEditor<Team> {
         scrumMasterPicker.getSelectionModel().clearSelection();
         if (modelScrumMaster != null) {
             scrumMasterPicker.getSelectionModel().select(modelScrumMaster);
+            clearSMButton.setDisable(false);
         }
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+    }
+
+    /**
+     * Clears the currently selected Product Owner.
+     * @param event The event
+     */
+    @FXML
+    private void clearPO(final ActionEvent event) {
+        try {
+            getModel().setProductOwner(null);
+        } catch (MultipleRolesException e) {
+            e.printStackTrace();
+        }
+        updatePOSM();
+    }
+
+    /**
+     * Clears the currently selected Scrum Master.
+     * @param event The event
+     */
+    @FXML
+    private void clearSM(final ActionEvent event) {
+        try {
+            getModel().setScrumMaster(null);
+        } catch (MultipleRolesException e) {
+            e.printStackTrace();
+        }
+        updatePOSM();
     }
 
     /**
