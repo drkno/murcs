@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -21,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
@@ -62,7 +62,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * Drop down with dependencies that can be added to this story.
      */
     @FXML
-    private ComboBox<Story> dependenciesDropDown;
+    private SearchableComboBox<Story> dependenciesDropDown;
 
     /**
      * Container that dependencies are added to when they are added.
@@ -233,7 +233,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 saveChanges();
             }
         });
-
+       // new AutoCompleteComboBoxListener(dependenciesDropDown);
         dependenciesMap = new HashMap<>();
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
