@@ -37,7 +37,7 @@ public class SearchableComboBox<T> {
     private EventHandler<MouseEvent> mouseEvent;
 
     /**
-     * Converter to convert string's into generics.
+     * Converter to convert strings into generics.
      */
     private StringConverter<T> converter;
 

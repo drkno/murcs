@@ -97,7 +97,9 @@ public class Story extends Model {
      * dependency cycle.
      */
     public final void addDependency(final Story dependentStory) throws CyclicDependencyException {
-        if (dependencies.contains(dependentStory)) return;
+        if (dependencies.contains(dependentStory)) {
+            return;
+        }
         if (DependenciesHelper.isReachable(dependentStory, this)) {
             throw new CyclicDependencyException(this, dependentStory);
         }
