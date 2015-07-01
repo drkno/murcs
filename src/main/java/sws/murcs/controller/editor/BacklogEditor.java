@@ -28,6 +28,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -291,14 +292,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * in the backlog.
      */
     private void updateAvailableStories() {
-        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-
         Platform.runLater(() -> {
+            Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
             int selectedIndex = storyPicker.getSelectionModel().getSelectedIndex();
 
+            Collection<Story> stories = organisation.getUnassignedStories();
+            for (Story story : getModel().getAllStories()) {
+                stories.remove(story);
+            }
             storyPicker.getItems().clear();
-            storyPicker.getItems().addAll(organisation.getUnassignedStories());
-            storyPicker.getSelectionModel().select(selectedIndex);
+            storyPicker.getItems().addAll(stories);
+            storyPicker.getSelectionModel().select(Math.min(selectedIndex, stories.size() - 1));
         });
     }
 
