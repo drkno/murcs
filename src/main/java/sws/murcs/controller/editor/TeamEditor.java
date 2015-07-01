@@ -67,7 +67,7 @@ public class TeamEditor extends GenericEditor<Team> {
     private Label labelErrorMessage;
 
     /**
-     * Buttons for clearing the current SM and PO
+     * Buttons for clearing the current SM and PO.
      */
     @FXML
     private Button clearPOButton, clearSMButton;
