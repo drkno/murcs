@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -62,7 +63,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * Drop down with dependencies that can be added to this story.
      */
     @FXML
-    private SearchableComboBox<Story> dependenciesDropDown;
+    private ComboBox<Story> dependenciesDropDown;
 
     /**
      * Container that dependencies are added to when they are added.
@@ -74,6 +75,12 @@ public class StoryEditor extends GenericEditor<Story> {
      * A map of dependencies and their respective nodes.
      */
     private Map<Story, Node> dependenciesMap;
+
+    /**
+     * A decorator to make the ComboBox searchable.
+     * Done a little weirdly to ensure SceneBuilder still works.
+     */
+    private SearchableComboBox<Story> searchableComboBoxDecorator;
 
     /**
      * A label that indicates any errors.
@@ -233,7 +240,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 saveChanges();
             }
         });
-       // new AutoCompleteComboBoxListener(dependenciesDropDown);
+        searchableComboBoxDecorator = new SearchableComboBox(dependenciesDropDown);
         dependenciesMap = new HashMap<>();
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
@@ -261,6 +268,8 @@ public class StoryEditor extends GenericEditor<Story> {
         creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
         estimateChoiceBox.focusedProperty().removeListener(getChangeListener());
         dependenciesDropDown.valueProperty().removeListener(getChangeListener());
+        searchableComboBoxDecorator.dispose();
+        searchableComboBoxDecorator = null;
         dependenciesMap = null;
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);

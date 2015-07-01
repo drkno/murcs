@@ -142,7 +142,7 @@
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <SearchableComboBox fx:id="dependenciesDropDown" editable="true" maxWidth="1.7976931348623157E308" promptText="Search for or select a new dependency" />
+                        <ComboBox fx:id="dependenciesDropDown" editable="true" maxWidth="1.7976931348623157E308" promptText="Search for or select a new dependency" />
                         <VBox fx:id="dependenciesContainer" prefHeight="200.0" prefWidth="100.0" />
                      </children>
                   </VBox>

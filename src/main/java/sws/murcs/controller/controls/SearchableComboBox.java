@@ -15,7 +15,12 @@ import java.util.Optional;
  * A searchable/autocomplete ComboBox to make finding items more achievable.
  * @param <T> type of the ComboBox.
  */
-public class SearchableComboBox<T> extends ComboBox<T> {
+public class SearchableComboBox<T> {
+    /**
+     * The ComboBox this affects.
+     */
+    private ComboBox<T> comboBox;
+
     /**
      * Data contained within the ComboBox.
      */
@@ -38,28 +43,30 @@ public class SearchableComboBox<T> extends ComboBox<T> {
 
     /**
      * Instantiates a new searchable ComboBox.
+     * @param aComboBox the ComboBox this affects.
      */
-    public SearchableComboBox() {
-        data = getItems();
-        setEditable(true);
+    public SearchableComboBox(final ComboBox<T> aComboBox) {
+        comboBox = aComboBox;
+        data = comboBox.getItems();
+        comboBox.setEditable(true);
         keyEvent = createKeyEventHandler();
-        setOnKeyReleased(keyEvent);
+        comboBox.setOnKeyReleased(keyEvent);
         mouseEvent = createMouseEventHandler();
-        getEditor().setOnMouseClicked(mouseEvent);
+        comboBox.getEditor().setOnMouseClicked(mouseEvent);
         converter = createStringConverter();
-        setConverter(converter);
-        setTooltip(new Tooltip(getPromptText()));
+        comboBox.setConverter(converter);
+        comboBox.setTooltip(new Tooltip(comboBox.getPromptText()));
     }
 
     /**
      * Disposes of the current SearchableComboBox.
      */
     public final void dispose() {
-        setOnKeyPressed(null);
+        comboBox.setOnKeyPressed(null);
         keyEvent = null;
-        getEditor().setOnMouseClicked(null);
+        comboBox.getEditor().setOnMouseClicked(null);
         mouseEvent = null;
-        setConverter(null);
+        comboBox.setConverter(null);
         converter = null;
     }
 
@@ -94,8 +101,8 @@ public class SearchableComboBox<T> extends ComboBox<T> {
      */
     private EventHandler<MouseEvent> createMouseEventHandler() {
         return event -> {
-            if (!isShowing()) {
-                show();
+            if (!comboBox.isShowing()) {
+                comboBox.show();
             }
         };
     }
@@ -106,19 +113,19 @@ public class SearchableComboBox<T> extends ComboBox<T> {
      */
     private EventHandler<KeyEvent> createKeyEventHandler() {
         return event -> {
-            if (!isShowing()) {
-                show();
+            if (!comboBox.isShowing()) {
+                comboBox.show();
             }
 
-            String text = getEditor().getText();
+            String text = comboBox.getEditor().getText();
             KeyCode code = event.getCode();
             if (code == KeyCode.UP || code == KeyCode.DOWN || code == KeyCode.ENTER) {
                 positionCursor(text.length());
                 return;
             }
             else if ((code == KeyCode.TAB || code == KeyCode.ENTER || code == KeyCode.CONTROL)
-                    && getItems().size() > 0) {
-                getEditor().setText(getItems().get(0).toString());
+                    && comboBox.getItems().size() > 0) {
+                comboBox.getEditor().setText(comboBox.getItems().get(0).toString());
                 event.consume();
                 return;
             }
@@ -137,17 +144,17 @@ public class SearchableComboBox<T> extends ComboBox<T> {
                 }
             });
 
-            setItems(list);
+            comboBox.setItems(list);
 
             if (list.size() == 1 && code != KeyCode.DELETE) {
                 text = list.get(0).toString();
                 if (text.toLowerCase().startsWith(typedInput)) {
-                    int pos = getEditor().getCaretPosition();
+                    int pos = comboBox.getEditor().getCaretPosition();
                     if (code == KeyCode.BACK_SPACE) {
                         pos -= 1;
                     }
-                    getEditor().setText(text);
-                    getEditor().selectRange(pos, text.length());
+                    comboBox.getEditor().setText(text);
+                    comboBox.getEditor().selectRange(pos, text.length());
                 }
             }
         };
@@ -158,6 +165,6 @@ public class SearchableComboBox<T> extends ComboBox<T> {
      * @param position position of the cursor.
      */
     private void positionCursor(final int position) {
-        getEditor().positionCaret(position);
+        comboBox.getEditor().positionCaret(position);
     }
 }
