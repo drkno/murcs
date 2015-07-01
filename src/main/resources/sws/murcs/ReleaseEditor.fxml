@@ -79,7 +79,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                      </GridPane.margin>
                   </GridPane>
-                   <Label fx:id="labelErrorMessage" GridPane.rowIndex="5">
+                   <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="5">
                      <GridPane.margin>
                         <Insets left="10.0" top="10.0" />
                      </GridPane.margin></Label>

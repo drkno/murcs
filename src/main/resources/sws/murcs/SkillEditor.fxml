@@ -53,7 +53,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
             </GridPane>
-                <Label fx:id="labelErrorMessage" GridPane.rowIndex="3">
+                <Label fx:id="labelErrorMessage" textFill="RED"  GridPane.rowIndex="3">
                <padding>
                   <Insets left="10.0" />
                </padding>

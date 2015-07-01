@@ -148,7 +148,7 @@
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                      </padding>
                   </VBox>
-                   <Label fx:id="labelErrorMessage" GridPane.rowIndex="6">
+                   <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="6">
                      <GridPane.margin>
                         <Insets left="10.0" />
                      </GridPane.margin>
