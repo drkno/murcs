@@ -5,9 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.NameGenerator;
-import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.GenerationHelper;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
+import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -207,7 +207,7 @@ public class OrganisationPersonTest {
 
             model.add(p);
             //Add the person to a random team
-            model.getTeams().get(NameGenerator.random(model.getTeams().size())).addMember(p);
+            model.getTeams().get(GenerationHelper.random(model.getTeams().size())).addMember(p);
         }
 
         //Remove all the people from the model. This should cascade, removing them from teams too

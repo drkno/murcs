@@ -1,8 +1,5 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
@@ -14,6 +11,10 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Generates random Organisations.
@@ -134,7 +135,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private List<Model> generateItems(final Generator<? extends Model> generator, final int min, final int max) {
         List<Model> items = new ArrayList<>();
 
-        int count = NameGenerator.random(min, max);
+        int count = GenerationHelper.random(min, max);
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
@@ -221,7 +222,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             teamGenerator.setPersonPool(teamPeople);
             List<Team> teams = new ArrayList<>();
             min = getMin(stress, TeamGenerator.LOW_STRESS_MIN, TeamGenerator.MEDIUM_STRESS_MIN,
-					TeamGenerator.HIGH_STRESS_MIN);
+                    TeamGenerator.HIGH_STRESS_MIN);
             max = getMax(stress, TeamGenerator.LOW_STRESS_MAX, TeamGenerator.MEDIUM_STRESS_MAX,
                     TeamGenerator.HIGH_STRESS_MAX);
             teams.addAll(generateItems(teamGenerator, min, max)
@@ -256,6 +257,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     StoryGenerator.HIGH_STRESS_MAX);
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
+            storyGenerator.addDependencies(stories, max, min);
 
             backlogGenerator.setStoryPool(new ArrayList<>(stories));
             backlogGenerator.setPersonsPool(people);

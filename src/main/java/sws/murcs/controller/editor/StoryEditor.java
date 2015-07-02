@@ -316,8 +316,8 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesContainer.getChildren().add(dependencyNode);
             dependenciesMap.put(selectedStory, dependencyNode);
             Platform.runLater(() -> {
+                searchableComboBoxDecorator.remove(selectedStory);
                 dependenciesDropDown.getSelectionModel().clearSelection();
-                dependenciesDropDown.getItems().remove(selectedStory);
             });
         }
     }
@@ -368,7 +368,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     + getModel().getShortName() + "?");
             popup.setTitleText("Remove Dependency");
             popup.addYesNoButtons(func -> {
-                dependenciesDropDown.getItems().add(newDependency);
+                searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
                 dependenciesContainer.getChildren().remove(dependencyNode);
                 dependenciesMap.remove(newDependency);
