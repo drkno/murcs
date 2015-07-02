@@ -17,6 +17,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -112,6 +114,8 @@ public class PersonEditor extends GenericEditor<Person> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<>();
+
         Skill selectedSkill = skillComboBox.getValue();
         if (selectedSkill != null) {
             getModel().addSkill(selectedSkill);
@@ -127,7 +131,11 @@ public class PersonEditor extends GenericEditor<Person> {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -139,7 +147,15 @@ public class PersonEditor extends GenericEditor<Person> {
         String modelUserId = getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNullOrNotEqual(modelUserId, viewUserId)) {
-            getModel().setUserId(viewUserId);
+            try {
+                getModel().setUserId(viewUserId);
+            } catch (CustomException e) {
+                invalidSections.put(userIdTextField, e.getMessage());
+            }
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
         }
     }
 
