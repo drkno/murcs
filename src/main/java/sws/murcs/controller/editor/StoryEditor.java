@@ -22,6 +22,8 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
@@ -240,9 +242,9 @@ public class StoryEditor extends GenericEditor<Story> {
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-        creatorChoiceBox.focusedProperty().addListener(getChangeListener());
-        estimateChoiceBox.focusedProperty().addListener(getChangeListener());
-        storyStateChoiceBox.focusedProperty().addListener(getChangeListener());
+        creatorChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyStateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         dependenciesDropDown.valueProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
@@ -267,10 +269,16 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<>();
+
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelDescription = getModel().getDescription();
@@ -280,8 +288,12 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         //This will throw an exception if something goes wrong
-        validateStoryState();
-        getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+        try {
+            validateStoryState();
+            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+        } catch (CustomException e) {
+            invalidSections.put(storyStateChoiceBox, e.getMessage());
+        }
 
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
@@ -289,24 +301,32 @@ public class StoryEditor extends GenericEditor<Story> {
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
             } else {
-                throw new InvalidParameterException("Creator cannot be empty");
+                invalidSections.put(creatorChoiceBox, "Creator cannot be empty");
             }
         }
 
-        if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
+        if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
         }
 
         Story selectedStory = dependenciesDropDown.getValue();
         if (selectedStory != null) {
-            getModel().addDependency(selectedStory);
-            Node dependencyNode = generateStoryNode(selectedStory);
-            dependenciesContainer.getChildren().add(dependencyNode);
-            dependenciesMap.put(selectedStory, dependencyNode);
-            Platform.runLater(() -> {
-                searchableComboBoxDecorator.remove(selectedStory);
-                dependenciesDropDown.getSelectionModel().clearSelection();
-            });
+            try {
+                getModel().addDependency(selectedStory);
+                Node dependencyNode = generateStoryNode(selectedStory);
+                dependenciesContainer.getChildren().add(dependencyNode);
+                dependenciesMap.put(selectedStory, dependencyNode);
+                Platform.runLater(() -> {
+                    searchableComboBoxDecorator.remove(selectedStory);
+                    dependenciesDropDown.getSelectionModel().clearSelection();
+                });
+            } catch (CustomException e) {
+                invalidSections.put(dependenciesDropDown, e.getMessage());
+            }
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
         }
     }
 
@@ -329,7 +349,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 errorsBuilder.append("The story must be part of a backlog {state}! ");
             }
 
-            if (model.getEstimate() == "No Estimate") {
+            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
                 errorsBuilder.append("The story must be estimated {state}! ");
             }
         }
