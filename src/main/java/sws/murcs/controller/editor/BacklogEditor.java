@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
@@ -18,6 +19,7 @@ import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.exceptions.InvalidInputException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
@@ -29,7 +31,9 @@ import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -109,10 +113,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
-                int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
-                Integer priority = getModel().getStoryPriority(selectedStory.get());
-                increasePriorityButton.setDisable(selectedIndex == 0 && priority != null);
-                decreasePriorityButton.setDisable(priority == null);
             }
         });
 
@@ -123,6 +123,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
+            Integer priority = getModel().getStoryPriority(selectedStory.get());
+            increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
+            decreasePriorityButton.setDisable(priority == null);
+        });
+
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -322,10 +329,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<>();
+
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -343,13 +356,21 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Person modelProductOwner = getModel().getAssignedPO();
         Person viewProductOwner = poComboBox.getValue();
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
-            getModel().setAssignedPO(viewProductOwner);
-            updateAssignedPO();
+            try {
+                getModel().setAssignedPO(viewProductOwner);
+                updateAssignedPO();
+            } catch (CustomException e) {
+                invalidSections.put(poComboBox, e.getMessage());
+            }
         }
 
         EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
         }
     }
 
