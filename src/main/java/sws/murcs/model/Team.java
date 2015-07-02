@@ -148,6 +148,12 @@ public class Team extends Model {
      */
     public final void removeMember(final Person person) {
         if (this.members.contains(person)) {
+            if (person.equals(scrumMaster)) {
+                scrumMaster = null;
+            }
+            if (person.equals(productOwner)) {
+                productOwner = null;
+            }
             this.members.remove(person);
             commit("edit team");
         }

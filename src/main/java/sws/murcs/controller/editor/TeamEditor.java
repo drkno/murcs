@@ -19,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Person;
@@ -26,6 +28,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import javax.swing.text.DefaultEditorKit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,37 +134,55 @@ public class TeamEditor extends GenericEditor<Team> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<>();
+
         Person modelProductOwner = getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
-            getModel().setProductOwner(viewProductOwner);
-            updatePOSM();
+            try {
+                getModel().setProductOwner(viewProductOwner);
+                updatePOSM();
+            } catch (CustomException e) {
+                invalidSections.put(productOwnerPicker, e.getMessage());
+            }
         }
 
         Person modelScrumMaster = getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNullOrNotEqual(modelScrumMaster, viewScrumMaster)) {
-            getModel().setScrumMaster(viewScrumMaster);
-            updatePOSM();
+            try {
+                getModel().setScrumMaster(viewScrumMaster);
+                updatePOSM();
+            } catch (CustomException e) {
+                invalidSections.put(scrumMasterPicker, e.getMessage());
+            }
         }
 
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
-            getModel().addMember(person);
-            Node memberNode = generateMemberNode(person);
-            teamMembersContainer.getChildren().add(memberNode);
-            memberNodeIndex.put(person, memberNode);
-            Platform.runLater(() -> {
-                addTeamMemberPicker.getSelectionModel().clearSelection();
-                allocatablePeople.remove(person);
-            });
-            updatePOSM();
+            try {
+                getModel().addMember(person);
+                Node memberNode = generateMemberNode(person);
+                teamMembersContainer.getChildren().add(memberNode);
+                memberNodeIndex.put(person, memberNode);
+                Platform.runLater(() -> {
+                    addTeamMemberPicker.getSelectionModel().clearSelection();
+                    allocatablePeople.remove(person);
+                });
+                updatePOSM();
+            } catch (CustomException e) {
+                invalidSections.put(addTeamMemberPicker, e.getMessage());
+            }
         }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -174,6 +195,10 @@ public class TeamEditor extends GenericEditor<Team> {
         String viewDescription = descriptionTextField.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
         }
     }
 
