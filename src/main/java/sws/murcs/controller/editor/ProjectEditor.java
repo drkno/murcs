@@ -68,11 +68,7 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     @FXML
     private ChoiceBox<Team> choiceBoxAddTeam;
-    /**
-     * The label to show error messages.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * An observable list of work allocations.
      */
@@ -98,12 +94,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -165,7 +155,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     /**

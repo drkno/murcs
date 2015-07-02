@@ -2,7 +2,7 @@ package sws.murcs.controller;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import sws.murcs.controller.editor.Editor;
+import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 
@@ -17,7 +17,7 @@ public class EditorPane {
     /**
      * The controller for the editor.
      */
-    private Editor<Model> controller;
+    private GenericEditor<Model> controller;
     /**
      * The Model to model.
      */
@@ -58,7 +58,7 @@ public class EditorPane {
      * Gets the controller of the editor pane.
      * @return The editor pane controller.
      */
-    protected final Editor<Model> getController() {
+    protected final GenericEditor<Model> getController() {
         return controller;
     }
 

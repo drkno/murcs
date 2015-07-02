@@ -36,25 +36,24 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @FXML
     private TextField shortNameTextField, userIdTextField, longNameTextField;
-    /**
-     * The label for showing errors.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * The ChoiceBox for selecting skills.
      */
     @FXML
     private ComboBox<Skill> skillComboBox;
+
     /**
      * The VBox which contains the list of skills the person has.
      */
     @FXML
     private VBox allocatedSkillsContainer;
+
     /**
      * List of skill that can be added to the person.
      */
     private List<Skill> allocatableSkills;
+
     /**
      * A map of skills to their nodes in the skill list on the view.
      */
@@ -77,12 +76,6 @@ public class PersonEditor extends GenericEditor<Person> {
         allocatableSkills = FXCollections.observableArrayList();
         skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
         skillNodeIndex = new HashMap<>();
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -161,7 +154,6 @@ public class PersonEditor extends GenericEditor<Person> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     /**

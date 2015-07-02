@@ -25,26 +25,25 @@ public class ReleaseEditor extends GenericEditor<Release> {
      */
     @FXML
     private TextField shortNameTextField;
+
     /**
      * The Description of a release.
      */
     @FXML
     private TextArea descriptionTextArea;
+
     /**
      * Release date picker.
      */
     @FXML
     private DatePicker releaseDatePicker;
-    /**
-     * The label to show the error message.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * The list of projects to choose from.
      */
     @FXML
     private ChoiceBox<Project> projectChoiceBox;
+
     /**
      * The releases associated project.
      */
@@ -63,12 +62,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         releaseDatePicker.focusedProperty().addListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
 
@@ -145,7 +138,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     /**

@@ -61,12 +61,6 @@ public class TeamEditor extends GenericEditor<Team> {
     private ComboBox<Person> addTeamMemberPicker;
 
     /**
-     * The label for showing error messages.
-     */
-    @FXML
-    private Label labelErrorMessage;
-
-    /**
      * Buttons for clearing the current SM and PO.
      */
     @FXML
@@ -101,12 +95,6 @@ public class TeamEditor extends GenericEditor<Team> {
         allocatablePeople = FXCollections.observableArrayList();
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
         memberNodeIndex = new HashMap<>();
-
-        setErrorCallback(message -> {
-            if (message != null && message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -202,7 +190,6 @@ public class TeamEditor extends GenericEditor<Team> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     /**

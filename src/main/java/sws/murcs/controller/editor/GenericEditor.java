@@ -1,17 +1,26 @@
 package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.listeners.ErrorMessageListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor {
+public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * The type of model the editor is being used for.
@@ -19,9 +28,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     private T model;
 
     /**
-     * The error callback.
+     * The label for showing error messages.
      */
-    private ErrorMessageListener errorCallback;
+    @FXML
+    protected Label labelErrorMessage;
 
     /**
      * A collection of change listeners for an editor.
@@ -34,65 +44,67 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     private boolean isCreationWindow;
 
     /**
+     * All the invalid sections in the form.
+     */
+    private Map<Node, String> invalidSections = new HashMap<>();
+
+    /**
      * A generic editor for editing models.
      */
     public GenericEditor() {
         UndoRedoManager.addChangeListener(this);
     }
 
-    @Override
     public final void setModel(final Object pModel) {
         if (pModel != null) {
             model = (T) pModel;
         }
     }
 
-    @Override
     public final T getModel() {
         return model;
     }
 
-    @Override
-    public final void setErrorCallback(final ErrorMessageListener pCallback) {
-        errorCallback = pCallback;
-    }
-
-    @Override
-    public final ErrorMessageListener getErrorCallback() {
-        return errorCallback;
-    }
-
-    @Override
     public final void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             loadObject();
         }
     }
 
-    @Override
-    public final void showErrors(final String pMessage) {
-        errorCallback.notify(pMessage);
-    }
-
-    @Override
-    public final void clearErrors() {
-        if (errorCallback != null) {
-            errorCallback.notify("");
+    private void showErrors(final InvalidFormException e) {
+        invalidSections = e.getInvalidSections();
+        StringBuilder errorMessageBuilder = new StringBuilder();
+        for (Entry<Node, String> entry : invalidSections.entrySet()) {
+            entry.getKey().getStyleClass().add("error");
+            if (errorMessageBuilder.length() != 0) {
+                errorMessageBuilder.append("\n");
+            }
+            errorMessageBuilder.append(entry.getValue());
         }
+        labelErrorMessage.setText(errorMessageBuilder.toString());
     }
 
-    @Override
+    public final void clearErrors() {
+        for (Entry<Node, String> entry : invalidSections.entrySet()) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+        }
+        labelErrorMessage.setText("");
+    }
+
     public final void saveChanges() {
+        clearErrors();
         try {
             saveChangesWithException();
-            clearErrors();
+        } catch (InvalidFormException e) {
+            showErrors(e);
         }
         catch (Exception e) {
-            handleException(e);
+            e.printStackTrace();
         }
     }
 
-    @Override
+    public abstract void loadObject();
+
     public abstract void dispose();
 
     /**
@@ -128,19 +140,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     /**
-     * Checks to see if the Exception is a custom type.
-     * @param e Exception to check
-     */
-    private void handleException(final Exception e) {
-        if (e instanceof CustomException) {
-            showErrors(e.getMessage());
-        }
-        else {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Checks to see if the view Object is empty or the model Object is null,
      * or not equal to the view Object.
      * @param modelObject model Object to check against
@@ -166,4 +165,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
      * @throws Exception When an error occurs
      */
     protected abstract void saveChangesWithException() throws Exception;
+
+    /**
+     * Sets up the form with all its event handlers and things.
+     */
+    @FXML
+    protected abstract void initialize();
 }

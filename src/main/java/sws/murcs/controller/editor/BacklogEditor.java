@@ -87,12 +87,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private TableColumn<Story, Object> deleteColumn;
 
     /**
-     * A label that will display an error message.
-     */
-    @FXML
-    private Label labelErrorMessage;
-
-    /**
      * Increase and decrease priority buttons.
      */
     @FXML
@@ -136,12 +130,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
         deleteColumn.setCellFactory(param -> new RemoveButtonCell());
         storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     /**
@@ -330,7 +318,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     @Override

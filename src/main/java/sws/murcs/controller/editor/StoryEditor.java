@@ -83,12 +83,6 @@ public class StoryEditor extends GenericEditor<Story> {
     private SearchableComboBox<Story> searchableComboBoxDecorator;
 
     /**
-     * A label that indicates any errors.
-     */
-    @FXML
-    private Label labelErrorMessage;
-
-    /**
      * A table for displaying and updating acceptance conditions.
      */
     @FXML
@@ -233,6 +227,7 @@ public class StoryEditor extends GenericEditor<Story> {
         }
     }
 
+    @FXML
     @Override
     public final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
@@ -253,12 +248,6 @@ public class StoryEditor extends GenericEditor<Story> {
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         removeColumn.setCellFactory(param -> new RemoveButtonCell());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -274,7 +263,6 @@ public class StoryEditor extends GenericEditor<Story> {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
-        setErrorCallback(null);
     }
 
     @Override

@@ -133,7 +133,9 @@ public class App extends Application {
         Parent parent = loader.load();
         appController = loader.getController();
 
-        primaryStage.setScene(new Scene(parent));
+        Scene scene = new Scene(parent);
+        scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
+        primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
