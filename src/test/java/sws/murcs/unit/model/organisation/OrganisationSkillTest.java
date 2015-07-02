@@ -5,9 +5,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.NameGenerator;
-import sws.murcs.debug.sampledata.PersonGenerator;
+import sws.murcs.debug.sampledata.GenerationHelper;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
+import sws.murcs.debug.sampledata.PersonGenerator;
 import sws.murcs.debug.sampledata.SkillGenerator;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -192,7 +192,7 @@ public class OrganisationSkillTest {
             skill.setShortName(skill.getShortName() + i);
 
             model.add(skill);
-            model.getPeople().get(NameGenerator.random(model.getPeople().size())).addSkill(skill);
+            model.getPeople().get(GenerationHelper.random(model.getPeople().size())).addSkill(skill);
         }
 
         //Remove all the skills from the model. This should cascade to the people with the skills being removed

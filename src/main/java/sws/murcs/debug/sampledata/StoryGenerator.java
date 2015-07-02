@@ -1,10 +1,12 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.ArrayList;
-import java.util.List;
+import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A generator for stories.
@@ -212,15 +214,15 @@ public class StoryGenerator implements Generator<Story> {
 
     @Override
     public final Story generate() {
-        String name = storyNames[NameGenerator.random(storyNames.length)];
-        String description = descriptions[NameGenerator.random(descriptions.length)];
+        String name = storyNames[GenerationHelper.random(storyNames.length)];
+        String description = descriptions[GenerationHelper.random(descriptions.length)];
 
         Person creator;
         if (personsPool == null || personsPool.isEmpty()) {
             creator = personGenerator.generate();
         }
         else {
-            creator = personsPool.get(NameGenerator.random(personsPool.size()));
+            creator = personsPool.get(GenerationHelper.random(personsPool.size()));
         }
 
         Story story = new Story();
@@ -249,7 +251,7 @@ public class StoryGenerator implements Generator<Story> {
     private List<AcceptanceCondition> generateAcceptanceCriteria() {
         List<AcceptanceCondition> conditions = new ArrayList<>();
 
-        int count = NameGenerator.random(MIN_ACS, MAX_ACS);
+        int count = GenerationHelper.random(MIN_ACS, MAX_ACS);
         for (int i = 0; i < count; i++) {
             AcceptanceCondition condition = new AcceptanceCondition();
             condition.setCondition(NameGenerator.randomDescription());
@@ -257,5 +259,27 @@ public class StoryGenerator implements Generator<Story> {
         }
 
         return conditions;
+    }
+
+    /**
+     * Add dependencies between items of a story collection.
+     * @param stories stories to add dependencies between.
+     * @param max maximum number of dependencies to have.
+     * @param min minimum number of dependencies to have.
+     */
+    public final void addDependencies(final List<Story> stories, final int max, final int min) {
+        stories.forEach(s -> {
+            int count = GenerationHelper.random(min, max);
+            for (int i = 0; i < count; i++) {
+                try {
+                    int index = GenerationHelper.random(stories.size());
+                    s.addDependency(stories.get(index));
+                }
+                catch (CyclicDependencyException e) {
+                    // Ignore this, there is no effective way of checking for and
+                    // dealing with these in an acceptable time frame.
+                }
+            }
+        });
     }
 }

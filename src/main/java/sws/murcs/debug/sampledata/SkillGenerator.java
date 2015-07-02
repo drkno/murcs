@@ -281,7 +281,7 @@ public class SkillGenerator implements Generator<Skill> {
     public final Skill generate() {
         Skill skill = new Skill();
 
-        String name = NameGenerator.randomElement(skills);
+        String name = GenerationHelper.randomElement(skills);
         String description = NameGenerator.randomDescription();
 
         try {

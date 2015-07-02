@@ -103,7 +103,7 @@ public class ProjectGenerator implements Generator<Project> {
      */
     private List<Team> generateTeams(final int min, final int max) {
         List<Team> generated = new ArrayList<>();
-        int teamCount = NameGenerator.random(min, max);
+        int teamCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of teams, make some up
         if (teamPool == null) {
@@ -122,7 +122,7 @@ public class ProjectGenerator implements Generator<Project> {
 
             for (int i = 0; i < teamCount; i++) {
                 //Remove the team so we can't pick it again. We'll put it back when we're done
-                Team team = teamPool.remove(NameGenerator.random(teamPool.size()));
+                Team team = teamPool.remove(GenerationHelper.random(teamPool.size()));
                 generated.add(team);
             }
 
@@ -141,8 +141,8 @@ public class ProjectGenerator implements Generator<Project> {
 
         Project project = new Project();
 
-        String shortName = NameGenerator.randomElement(projectNames);
-        String longName = NameGenerator.randomString(longNameLength);
+        String shortName = GenerationHelper.randomElement(projectNames);
+        String longName = GenerationHelper.randomString(longNameLength);
         String description = NameGenerator.randomDescription();
 
         //List<Team> teams = generateTeams(10, 50);
