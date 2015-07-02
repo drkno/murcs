@@ -135,7 +135,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private List<Model> generateItems(final Generator<? extends Model> generator, final int min, final int max) {
         List<Model> items = new ArrayList<>();
 
-        int count = NameGenerator.random(min, max);
+        int count = GenerationHelper.random(min, max);
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();

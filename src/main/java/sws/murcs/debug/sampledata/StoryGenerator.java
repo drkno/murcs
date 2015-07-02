@@ -214,15 +214,15 @@ public class StoryGenerator implements Generator<Story> {
 
     @Override
     public final Story generate() {
-        String name = storyNames[NameGenerator.random(storyNames.length)];
-        String description = descriptions[NameGenerator.random(descriptions.length)];
+        String name = storyNames[GenerationHelper.random(storyNames.length)];
+        String description = descriptions[GenerationHelper.random(descriptions.length)];
 
         Person creator;
         if (personsPool == null || personsPool.isEmpty()) {
             creator = personGenerator.generate();
         }
         else {
-            creator = personsPool.get(NameGenerator.random(personsPool.size()));
+            creator = personsPool.get(GenerationHelper.random(personsPool.size()));
         }
 
         Story story = new Story();
@@ -251,7 +251,7 @@ public class StoryGenerator implements Generator<Story> {
     private List<AcceptanceCondition> generateAcceptanceCriteria() {
         List<AcceptanceCondition> conditions = new ArrayList<>();
 
-        int count = NameGenerator.random(MIN_ACS, MAX_ACS);
+        int count = GenerationHelper.random(MIN_ACS, MAX_ACS);
         for (int i = 0; i < count; i++) {
             AcceptanceCondition condition = new AcceptanceCondition();
             condition.setCondition(NameGenerator.randomDescription());
@@ -269,10 +269,10 @@ public class StoryGenerator implements Generator<Story> {
      */
     public final void addDependencies(final List<Story> stories, final int max, final int min) {
         stories.forEach(s -> {
-            int count = NameGenerator.random(min, max);
+            int count = GenerationHelper.random(min, max);
             for (int i = 0; i < count; i++) {
                 try {
-                    int index = NameGenerator.random(stories.size());
+                    int index = GenerationHelper.random(stories.size());
                     s.addDependency(stories.get(index));
                 }
                 catch (CyclicDependencyException e) {

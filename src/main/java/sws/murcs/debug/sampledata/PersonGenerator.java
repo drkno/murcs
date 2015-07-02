@@ -96,7 +96,7 @@ public class PersonGenerator implements Generator<Person> {
      */
     private List<Skill> generateSkills(final int min, final int max) {
         List<Skill> generated = new ArrayList<>();
-        int skillCount = NameGenerator.random(min, max);
+        int skillCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of skills, make some up
         if (skillPool == null) {
@@ -115,7 +115,7 @@ public class PersonGenerator implements Generator<Person> {
 
             for (int i = 0; i < skillCount; i++) {
                 //Remove the skill so we can't pick it again. We'll put it back when we're done
-                Skill skill = skillPool.remove(NameGenerator.random(skillPool.size()));
+                Skill skill = skillPool.remove(GenerationHelper.random(skillPool.size()));
                 generated.add(skill);
             }
 
@@ -133,7 +133,7 @@ public class PersonGenerator implements Generator<Person> {
 
         Person p = new Person();
 
-        String userId = NameGenerator.randomString(userIdLength, "0123456789");
+        String userId = GenerationHelper.randomString(userIdLength, "0123456789");
 
         String shortName = NameGenerator.randomName();
         String longName = NameGenerator.randomTitle() + " " + shortName;

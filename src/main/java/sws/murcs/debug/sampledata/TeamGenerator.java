@@ -895,7 +895,7 @@ public class TeamGenerator implements Generator<Team> {
      */
     private List<Person> generateMembers(final int min, final int max) {
         List<Person> generated = new ArrayList<>();
-        int personCount = NameGenerator.random(min, max);
+        int personCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of person, make some up
         if (personPool == null) {
@@ -915,7 +915,7 @@ public class TeamGenerator implements Generator<Team> {
             for (int i = 0; i < personCount; i++) {
                 // Remove the person so we can't pick it again.
                 // We'll put it back when we're done
-                Person person = personPool.remove(NameGenerator.random(personPool.size()));
+                Person person = personPool.remove(GenerationHelper.random(personPool.size()));
                 generated.add(person);
             }
         }
@@ -930,8 +930,8 @@ public class TeamGenerator implements Generator<Team> {
 
         Team team = new Team();
 
-        String shortName = NameGenerator.randomElement(teamNames);
-        String longName = shortName + NameGenerator.random(longNameMax);
+        String shortName = GenerationHelper.randomElement(teamNames);
+        String longName = shortName + GenerationHelper.random(longNameMax);
 
         String description = NameGenerator.randomDescription();
 

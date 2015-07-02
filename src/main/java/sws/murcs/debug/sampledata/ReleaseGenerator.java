@@ -713,7 +713,7 @@ public class ReleaseGenerator implements Generator<Release> {
      */
     private List<Project> generateProjects(final int min, final int max) {
         List<Project> generated = new ArrayList<>();
-        int projectCount = NameGenerator.random(min, max);
+        int projectCount = GenerationHelper.random(min, max);
 
         if (projectPool == null) {
             for (int i = 0; i < projectCount; i++) {
@@ -728,7 +728,7 @@ public class ReleaseGenerator implements Generator<Release> {
             }
 
             for (int i = 0; i < projectCount; i++) {
-                Project project = projectPool.remove(NameGenerator.random(projectPool.size()));
+                Project project = projectPool.remove(GenerationHelper.random(projectPool.size()));
                 generated.add(project);
             }
 
@@ -749,8 +749,8 @@ public class ReleaseGenerator implements Generator<Release> {
 
         Release r = new Release();
 
-        String shortName = NameGenerator.randomElement(defaultNames);
-        String description = NameGenerator.randomElement(descriptions);
+        String shortName = GenerationHelper.randomElement(defaultNames);
+        String description = GenerationHelper.randomElement(descriptions);
         LocalDate releaseDate = LocalDate.of(
                 RANDOM.nextInt(yearVariance) + epoch,
                 RANDOM.nextInt(months) + 1,
@@ -767,7 +767,7 @@ public class ReleaseGenerator implements Generator<Release> {
         }
 
         try {
-            projects.get(NameGenerator.random(projects.size())).addRelease(r);
+            projects.get(GenerationHelper.random(projects.size())).addRelease(r);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
