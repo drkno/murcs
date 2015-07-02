@@ -1,11 +1,14 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
@@ -13,6 +16,8 @@ import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -107,10 +112,16 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<>();
+
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelDescription = getModel().getDescription();
@@ -125,7 +136,15 @@ public class ReleaseEditor extends GenericEditor<Release> {
             getModel().setReleaseDate(viewReleaseDate);
         }
 
-        updateAssociatedProject();
+        try {
+            updateAssociatedProject();
+        } catch (CustomException e) {
+            invalidSections.put(projectChoiceBox, e.getMessage());
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
+        }
     }
 
     @Override
@@ -157,9 +176,8 @@ public class ReleaseEditor extends GenericEditor<Release> {
                 associatedProject = viewAssociatedProject;
                 getModel().changeRelease(viewAssociatedProject);
             }
+            return;
         }
-        else {
-            throw new InvalidParameterException("There needs to be an associated project");
-        }
+        throw new InvalidParameterException("There needs to be an associated project");
     }
 }
