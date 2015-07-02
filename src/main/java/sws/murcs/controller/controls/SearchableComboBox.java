@@ -37,9 +37,19 @@ public class SearchableComboBox<T> {
     private EventHandler<MouseEvent> mouseEvent;
 
     /**
+     * Event filter to ensure the tab key works.
+     */
+    private EventHandler<KeyEvent> tabConsumerEvent;
+
+    /**
      * Converter to convert strings into generics.
      */
     private StringConverter<T> converter;
+
+    /**
+     * Index in the currently filtered list of the current tab selection.
+     */
+    private int tabIndex = -1;
 
     /**
      * Instantiates a new searchable ComboBox.
@@ -56,6 +66,8 @@ public class SearchableComboBox<T> {
         converter = createStringConverter();
         comboBox.setConverter(converter);
         comboBox.setTooltip(new Tooltip(comboBox.getPromptText()));
+        tabConsumerEvent = createTabKeyFilter();
+        comboBox.getEditor().addEventFilter(KeyEvent.KEY_PRESSED, tabConsumerEvent);
     }
 
     /**
@@ -68,6 +80,30 @@ public class SearchableComboBox<T> {
         mouseEvent = null;
         comboBox.setConverter(null);
         converter = null;
+        comboBox.getEditor().removeEventFilter(KeyEvent.KEY_PRESSED, tabConsumerEvent);
+        tabConsumerEvent = null;
+    }
+
+    /**
+     * Creates a new event filter to ensure the tab key works.
+     * @return new tab key event filter.
+     */
+    private EventHandler<KeyEvent> createTabKeyFilter() {
+        return k -> {
+            if (k.getCode() == KeyCode.TAB) {
+                tabIndex++;
+                if (tabIndex >= comboBox.getItems().size()) {
+                    tabIndex = 0;
+                }
+                String text = comboBox.getItems().get(tabIndex).toString();
+                comboBox.getEditor().setText(text);
+                comboBox.getEditor().positionCaret(text.length());
+                k.consume();
+            }
+            else {
+                tabIndex = -1;
+            }
+        };
     }
 
     /**
@@ -125,7 +161,6 @@ public class SearchableComboBox<T> {
             }
             else if ((code == KeyCode.TAB || code == KeyCode.ENTER || code == KeyCode.CONTROL)
                     && comboBox.getItems().size() > 0) {
-                comboBox.getEditor().setText(comboBox.getItems().get(0).toString());
                 event.consume();
                 return;
             }
@@ -136,7 +171,7 @@ public class SearchableComboBox<T> {
                 return;
             }
 
-            ObservableList list = FXCollections.observableArrayList();
+            ObservableList<T> list = FXCollections.observableArrayList();
             String typedInput = text.toLowerCase();
             data.forEach(d -> {
                 if (d.toString().toLowerCase().contains(typedInput)) {
