@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -24,6 +26,8 @@ import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for the model creator popup window.
@@ -127,10 +131,16 @@ public class ProjectEditor extends GenericEditor<Project> {
 
     @Override
     protected final void saveChangesWithException() throws Exception {
+        Map<Node, String> invalidSections = new HashMap<Node, String>();
+
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                invalidSections.put(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -143,6 +153,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
+        }
+
+        if (invalidSections.size() > 0) {
+            throw new InvalidFormException(invalidSections);
         }
     }
 
