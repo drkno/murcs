@@ -204,28 +204,34 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story currentStory = storyPicker.getValue();
         Integer priority = null;
         String priorityString = priorityTextField.getText().trim();
-        if (currentStory != null) {
-            if (!priorityString.isEmpty()) {
-                try {
-                    priority = Integer.parseInt(priorityString) - 1;
-                } catch (Exception e) {
-                    addFormError(priorityTextField, "Position is not a number");
-                }
-                if (priority < 0) {
-                    addFormError(priorityTextField, "Priority cannot be less than 0");
-                }
-            }
+        boolean hasErrors = false;
 
-            try {
-                getModel().addStory(currentStory, priority);
-                updateAvailableStories();
-                updateStoryTable();
-            } catch (CustomException e) {
-                addFormError(storyPicker, e.getMessage());
-            }
-
-        } else {
+        if (currentStory == null) {
             addFormError(storyPicker, "No story selected");
+            hasErrors = true;
+        }
+        if (!priorityString.isEmpty()) {
+            try {
+                priority = Integer.parseInt(priorityString) - 1;
+            } catch (Exception e) {
+                addFormError(priorityTextField, "Position is not a number");
+                hasErrors = true;
+            }
+            if (priority < 0) {
+                addFormError(priorityTextField, "Priority cannot be less than 0");
+                hasErrors = true;
+            }
+        }
+
+        if (hasErrors) {
+            return;
+        }
+        try {
+            getModel().addStory(currentStory, priority);
+            updateAvailableStories();
+            updateStoryTable();
+        } catch (CustomException e) {
+            addFormError(storyPicker, e.getMessage());
         }
     }
 
