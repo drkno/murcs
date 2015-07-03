@@ -1,17 +1,10 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidFormException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Skill;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A controller to model skills.

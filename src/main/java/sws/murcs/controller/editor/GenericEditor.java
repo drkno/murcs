@@ -8,7 +8,9 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A generic class for making editing easier.
@@ -73,6 +75,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         return model;
     }
 
+    /**
+     * Updates the form with an undo redo notification.
+     * @param param event arguments.
+     */
     public final void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             loadObject();
@@ -81,7 +87,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * Highlights errors on the form.
-     * @param e The exception containing errors.
      */
     private void showErrors() {
         for (Node node : invalidNodes) {
@@ -156,7 +161,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     public abstract void loadObject();
 
     /**
-     * Cleans up event handlers and stuff.
+     * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
      */
     public void dispose() {
         setChangeListener(null);

@@ -165,7 +165,7 @@ public class Story extends Model {
      * Removes a condition from the list of acceptance.
      * @param condition The condition to remove.
      */
-    public final void removeAcceptanceCriteria(final AcceptanceCondition condition) {
+    public final void removeAcceptanceCondition(final AcceptanceCondition condition) {
         acceptanceCriteria.remove(condition);
         // If we have no acceptance criteria then we shouldn't have an estimate or a story state other than none.
         if (acceptanceCriteria.size() == 0) {

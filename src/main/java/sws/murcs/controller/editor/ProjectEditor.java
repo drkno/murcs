@@ -3,11 +3,9 @@ package sws.murcs.controller.editor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,8 +15,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidFormException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
@@ -26,8 +22,6 @@ import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller for the model creator popup window.

@@ -72,7 +72,7 @@ public class Person extends Model {
     /**
      * Sets the user id.
      * @param newUserID The new user id
-     * @throws Exception User id is invalid
+     * @throws CustomException User id is invalid
      */
     public final void setUserId(final String newUserID) throws CustomException {
         validateUserId(newUserID);
@@ -83,7 +83,7 @@ public class Person extends Model {
     /**
      * Indicates whether a value is a valid value for 'userId' to hold.
      * @param value The value.
-     * @throws Exception if there is a duplicate object.
+     * @throws CustomException if there is a duplicate object.
      */
     private void validateUserId(final String value) throws CustomException {
         Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));

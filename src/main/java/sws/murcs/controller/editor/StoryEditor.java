@@ -534,7 +534,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setTitleText("Are you sure?");
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                 popup.addYesNoButtons(p -> {
-                    getModel().removeAcceptanceCriteria(condition);
+                    getModel().removeAcceptanceCondition(condition);
                     loadObject();
                     popup.close();
                 });

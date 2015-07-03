@@ -1,23 +1,17 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidFormException;
 import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -153,7 +147,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
 
     /**
      * Updates the associated project.
-     * @throws Exception when updating fails.
+     * @throws CustomException when updating fails.
      */
     private void updateAssociatedProject() throws CustomException {
         Project viewAssociatedProject = projectChoiceBox.getValue();

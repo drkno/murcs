@@ -6,6 +6,7 @@ import org.junit.Test;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.EstimateType;
 import sws.murcs.model.Story;
 
 import static org.junit.Assert.*;
@@ -67,13 +68,47 @@ public class StoryTest {
                 story.getAcceptanceCriteria().get(1),
                 second);
 
-        story.removeAcceptanceCriteria(first);
+        story.removeAcceptanceCondition(first);
         assertEquals("The first condition should be \"I'm the second\"",
                 story.getAcceptanceCriteria().get(0),
                 second);
 
-        story.removeAcceptanceCriteria(second);
+        story.removeAcceptanceCondition(second);
         assertTrue("There should be no acceptance criteria", story.getAcceptanceCriteria().size() == 0);
+    }
+
+    @Test
+    public void testResetEstimationResetsState() {
+        story.setEstimate("Foo");
+        story.setStoryState(Story.StoryState.Ready);
+
+        story.setEstimate(EstimateType.NOT_ESTIMATED);
+        assertEquals("Story state should have reset to 'None'", Story.StoryState.None, story.getStoryState());
+    }
+
+    @Test
+    public void testRemoveLastACClearsEstimateAndStoryState() {
+        AcceptanceCondition condition = new AcceptanceCondition();
+        condition.setCondition("I'm not a frog");
+
+        story.addAcceptanceCondition(condition);
+
+        story.setEstimate("Foo");
+        story.removeAcceptanceCondition(condition);
+        assertEquals("The story should have no estimates", EstimateType.NOT_ESTIMATED, story.getEstimate());
+
+        story.addAcceptanceCondition(condition);
+        story.setStoryState(Story.StoryState.Ready);
+        story.removeAcceptanceCondition(condition);
+        assertEquals("The story should have state 'None'", Story.StoryState.None, story.getStoryState());
+
+        story.addAcceptanceCondition(condition);
+        story.setEstimate("Foo");
+        story.setStoryState(Story.StoryState.Ready);
+        story.removeAcceptanceCondition(condition);
+        assertEquals("The story should have no estimates", EstimateType.NOT_ESTIMATED, story.getEstimate());
+        assertEquals("The story should have state 'None'", Story.StoryState.None, story.getStoryState());
+
     }
 
     @Test
