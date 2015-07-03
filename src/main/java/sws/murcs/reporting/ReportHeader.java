@@ -4,6 +4,11 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
+import sws.murcs.reporting.model.ReportModel;
+import sws.murcs.reporting.model.ReportModelAll;
+import sws.murcs.reporting.model.ReportModelPerson;
+import sws.murcs.reporting.model.ReportModelProject;
+import sws.murcs.reporting.model.ReportModelTeam;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

@@ -1,4 +1,4 @@
-package sws.murcs.reporting;
+package sws.murcs.reporting.model;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 

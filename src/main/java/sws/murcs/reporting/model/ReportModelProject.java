@@ -1,4 +1,4 @@
-package sws.murcs.reporting;
+package sws.murcs.reporting.model;
 
 import sws.murcs.model.Project;
 
