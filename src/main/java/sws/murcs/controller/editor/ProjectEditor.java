@@ -198,7 +198,9 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
         }
         catch (CustomException e) {
-            addFormError(choiceBoxAddTeam, e.getMessage());
+            addFormError(e.getMessage());
+            addFormError(datePickerStartDate);
+            addFormError(datePickerEndDate);
         }
     }
 
