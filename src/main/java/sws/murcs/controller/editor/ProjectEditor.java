@@ -22,6 +22,7 @@ import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the model creator popup window.
@@ -93,6 +94,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
         tableColumnTeams.setCellFactory(a -> new HyperlinkTeamCell());
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        tableColumnStartDates.setCellFactory(a -> new NullableLocalDateCell());
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
@@ -257,17 +259,21 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Used to represent the end date cell as it could receive a null pointer if no end is specified.
+     * Used to represent a date cell that can contain a null value.
      */
     private class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
+        /**
+         * The format for displaying the date in a cell.
+         */
+        private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         @Override
         protected void updateItem(final LocalDate date, final boolean empty) {
             super.updateItem(date, empty);
             if (date != null) {
-                setText(date.toString());
+                setText(dateFormatter.format(date));
             }
             else {
-                setText("");
+                setText(null);
             }
         }
     }
