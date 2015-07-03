@@ -29,6 +29,7 @@ public class Person extends Model {
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+
     /**
      * The list of skills the person has.
      */

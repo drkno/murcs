@@ -25,10 +25,12 @@ public class GenericPopup extends AnchorPane {
      * Enum for specifying which side of the dialog you want the button to appear on.
      */
     public enum Position {
+
         /**
          * The left side of the window.
          */
         LEFT,
+
         /**
          * The right side of the window.
          */
@@ -39,14 +41,17 @@ public class GenericPopup extends AnchorPane {
      * Enum for specifying if a button should have a default action.
      */
     public enum Action {
+
         /**
          * Sets the button to be linked with the enter key.
          */
         DEFAULT,
+
         /**
          * Sets to be linked with esc key.
          */
         CANCEL,
+
         /**
          * No action.
          */

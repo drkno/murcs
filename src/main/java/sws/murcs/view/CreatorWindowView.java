@@ -22,10 +22,12 @@ public class CreatorWindowView {
      * The model object to create.
      */
     private Model model;
+
     /**
      * The create callback.
      */
     private Consumer<Model> createAction;
+
     /**
      * The cancel callback.
      */

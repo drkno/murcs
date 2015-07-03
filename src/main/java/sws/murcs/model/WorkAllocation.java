@@ -20,15 +20,18 @@ public class WorkAllocation implements Serializable, Comparable<WorkAllocation> 
      * The project that belongs to this work allocation.
      */
     private final Project project;
+
     /**
      * The team that relates to this work allocation.
      */
     private final Team team;
+
     /**
      * The start date of the work allocation.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate startDate;
+
     /**
      * The end date of the work allocation.
      */

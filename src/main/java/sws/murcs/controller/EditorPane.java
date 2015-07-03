@@ -18,10 +18,12 @@ public class EditorPane {
      * The controller for the editor.
      */
     private GenericEditor<Model> controller;
+
     /**
      * The Model to model.
      */
     private Model model;
+
     /**
      * The editor pane view.
      */

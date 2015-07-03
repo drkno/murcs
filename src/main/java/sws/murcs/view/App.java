@@ -27,26 +27,32 @@ public class App extends Application {
      * Default window title to use.
      */
     private final String defaultWindowTitle = "- Untitled -";
+
     /**
      * The main stage of the application.
      */
     private static Stage stage;
+
     /**
      * An list of listeners relating to the app closing.
      */
     private static List<AppClosingListener> listeners = new ArrayList<>();
+
     /**
      * The minimum height of the application.
      */
     private final int minimumApplicationHeight = 650;
+
     /**
      * The minimum width of the application.
      */
     private final int minimumApplicationWidth = 650;
+
     /**
      * The subString length to search over, when parsing debugging mode.
      */
     private static final int SUBSTRINGLENGTH = 3;
+
     /**
      * The current app controller.
      */

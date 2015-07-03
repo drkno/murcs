@@ -5,6 +5,7 @@ package sws.murcs.exceptions;
  * that all custom exceptions can be caught whilst ignoring built in exceptions.
  */
 public abstract class CustomException extends Exception {
+
     /**
      * Instantiates a new CustomException.
      */

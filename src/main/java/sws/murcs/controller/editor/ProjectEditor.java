@@ -46,21 +46,25 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     @FXML
     private TableView<WorkAllocation> teamsViewer;
+
     /**
      * The Work Allocation table, team column.
      */
     @FXML
     private TableColumn<WorkAllocation, Team> tableColumnTeams;
+
     /**
      * The Work Allocation table, start and end date columns.
      */
     @FXML
     private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates, tableColumnEndDates;
+
     /**
      * The date picker for the start and end dates of a work allocation.
      */
     @FXML
     private DatePicker datePickerStartDate, datePickerEndDate;
+
     /**
      * The team picker for a work allocation.
      */

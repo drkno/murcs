@@ -55,44 +55,52 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert;
+
     /**
      * The side display which contains the display list.
      */
     @FXML
     private VBox vBoxSideDisplay;
+
     /**
      * The main display of the window which contains the display
      * list and the content pane.
      */
     @FXML
     private HBox hBoxMainDisplay;
+
     /**
      * The root of the fxml file.
      */
     @FXML
     private BorderPane borderPaneMain;
+
     /**
      * The choice box for selecting the model type to be
      * displayed in the list.
      */
     @FXML
     private ChoiceBox<ModelType> displayChoiceBox;
+
     /**
      * The list which contains the models of the type selected
      * in the display list choice box.
      */
     @FXML
     private ListView displayList;
+
     /**
      * The button used to remove models from the display list.
      */
     @FXML
     private Button removeButton;
+
     /**
      * The back and forward buttons.
      */
     @FXML
     private Button backButton, forwardButton;
+
     /**
      * The content pane contains the information about the
      * currently selected model item.
@@ -104,6 +112,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * The content pane to show the view for a model.
      */
     private EditorPane editorPane;
+
     /**
      * A creation window.
      */
