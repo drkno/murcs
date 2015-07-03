@@ -111,16 +111,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<>();
-
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -139,11 +137,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         try {
             updateAssociatedProject();
         } catch (CustomException e) {
-            invalidSections.put(projectChoiceBox, e.getMessage());
-        }
-
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
+            addFormError(projectChoiceBox, e.getMessage());
         }
     }
 
@@ -154,16 +148,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         associatedProject = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     /**
      * Updates the associated project.
      * @throws Exception when updating fails.
      */
-    private void updateAssociatedProject() throws Exception {
+    private void updateAssociatedProject() throws CustomException {
         Project viewAssociatedProject = projectChoiceBox.getValue();
 
         if (viewAssociatedProject != null) {

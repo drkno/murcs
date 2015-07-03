@@ -81,22 +81,18 @@ public class SkillEditor extends GenericEditor<Skill> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<>();
-
+    protected final void saveChangesAndErrors() {
         String modelShortName =  getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -110,9 +106,6 @@ public class SkillEditor extends GenericEditor<Skill> {
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription); //This is always valid
-        }
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
         }
     }
 }

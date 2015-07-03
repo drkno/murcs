@@ -130,16 +130,14 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<Node, String>();
-
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -154,10 +152,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
-
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
-        }
     }
 
     @Override
@@ -166,9 +160,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         observableAllocations = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     /**
@@ -177,27 +169,26 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     @FXML
     private void buttonScheduleTeamClick() {
+        //Save all the changes first so that if there are any problems in the form they will show up as errors.
+        saveChanges();
+
         Team team = choiceBoxAddTeam.getValue();
         LocalDate startDate = datePickerStartDate.getValue();
         LocalDate endDate = datePickerEndDate.getValue();
+        boolean hasErrors = false;
 
         // Must meet minimum requirements for an allocation
-        String message = "";
         if (team == null) {
-            message += "Team may not be null";
+            addFormError(choiceBoxAddTeam, "Team may not be null");
+            hasErrors = true;
         }
         if (startDate == null) {
-            if (message.length() != 0) {
-                message += " and ";
-            }
-            message += "Start Date may not be null";
+            addFormError(datePickerStartDate, "Start date must be specified");
+            hasErrors = true;
         }
-        if (!message.equals("")) {
-            labelErrorMessage.setText(message);
+
+        if (hasErrors) {
             return;
-        }
-        else {
-            labelErrorMessage.setText("");
         }
 
         try {
@@ -213,7 +204,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
         }
         catch (CustomException e) {
-            labelErrorMessage.setText(e.getMessage());
+            addFormError(choiceBoxAddTeam, e.getMessage());
         }
     }
 

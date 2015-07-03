@@ -133,9 +133,7 @@ public class TeamEditor extends GenericEditor<Team> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<>();
-
+    protected final void saveChangesAndErrors() {
         Person modelProductOwner = getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
@@ -143,7 +141,8 @@ public class TeamEditor extends GenericEditor<Team> {
                 getModel().setProductOwner(viewProductOwner);
                 updatePOSM();
             } catch (CustomException e) {
-                invalidSections.put(productOwnerPicker, e.getMessage());
+                //This should never happen as the list of PO's should only contain valid options
+                e.printStackTrace();
             }
         }
 
@@ -154,7 +153,8 @@ public class TeamEditor extends GenericEditor<Team> {
                 getModel().setScrumMaster(viewScrumMaster);
                 updatePOSM();
             } catch (CustomException e) {
-                invalidSections.put(scrumMasterPicker, e.getMessage());
+                //This should never happen as the list of SM's should only contain valid options
+                e.printStackTrace();
             }
         }
 
@@ -171,7 +171,8 @@ public class TeamEditor extends GenericEditor<Team> {
                 });
                 updatePOSM();
             } catch (CustomException e) {
-                invalidSections.put(addTeamMemberPicker, e.getMessage());
+                //This should never happen as the list of people to add should only contain valid options
+                e.printStackTrace();
             }
         }
 
@@ -181,7 +182,7 @@ public class TeamEditor extends GenericEditor<Team> {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -196,10 +197,6 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
-
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
-        }
     }
 
     @Override
@@ -212,9 +209,7 @@ public class TeamEditor extends GenericEditor<Team> {
         descriptionTextField.focusedProperty().removeListener(getChangeListener());
         allocatablePeople = null;
         memberNodeIndex = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     /**

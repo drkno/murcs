@@ -113,19 +113,23 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<>();
-
+    protected final void saveChangesAndErrors() {
         Skill selectedSkill = skillComboBox.getValue();
         if (selectedSkill != null) {
-            getModel().addSkill(selectedSkill);
-            Node skillNode = generateSkillNode(selectedSkill);
-            allocatedSkillsContainer.getChildren().add(skillNode);
-            skillNodeIndex.put(selectedSkill, skillNode);
-            Platform.runLater(() -> {
-                skillComboBox.getSelectionModel().clearSelection();
-                allocatableSkills.remove(selectedSkill);
-            });
+            try {
+                getModel().addSkill(selectedSkill);
+                Node skillNode = generateSkillNode(selectedSkill);
+                allocatedSkillsContainer.getChildren().add(skillNode);
+                skillNodeIndex.put(selectedSkill, skillNode);
+                Platform.runLater(() -> {
+                    skillComboBox.getSelectionModel().clearSelection();
+                    allocatableSkills.remove(selectedSkill);
+                });
+            } catch (CustomException e) {
+                //This should never occur, we should be populating the
+                //list with valid items
+                e.printStackTrace();
+            }
         }
 
         String modelShortName = getModel().getShortName();
@@ -134,7 +138,7 @@ public class PersonEditor extends GenericEditor<Person> {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -150,12 +154,8 @@ public class PersonEditor extends GenericEditor<Person> {
             try {
                 getModel().setUserId(viewUserId);
             } catch (CustomException e) {
-                invalidSections.put(userIdTextField, e.getMessage());
+                addFormError(userIdTextField, e.getMessage());
             }
-        }
-
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
         }
     }
 
@@ -167,9 +167,7 @@ public class PersonEditor extends GenericEditor<Person> {
         skillComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         allocatableSkills = null;
         skillNodeIndex = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     /**

@@ -4,17 +4,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidFormException;
-import sws.murcs.listeners.ErrorMessageListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 /**
  * A generic class for making editing easier.
@@ -31,7 +25,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * The label for showing error messages.
      */
     @FXML
-    protected Label labelErrorMessage;
+    private Label labelErrorMessage;
 
     /**
      * A collection of change listeners for an editor.
@@ -46,7 +40,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * All the invalid sections in the form.
      */
-    private Map<Node, String> invalidSections = new HashMap<>();
+    private Collection<Node> invalidNodes = new ArrayList<>();
+
+    /**
+     * A helpful error message telling you about all that's wrong
+     * in the world.
+     */
+    private String errorMessage = "";
 
     /**
      * A generic editor for editing models.
@@ -55,12 +55,20 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         UndoRedoManager.addChangeListener(this);
     }
 
+    /**
+     * Sets the current model for the editor.
+     * @param pModel The new model to edit
+     */
     public final void setModel(final Object pModel) {
         if (pModel != null) {
             model = (T) pModel;
         }
     }
 
+    /**
+     * Gets the object that this form is editing.
+     * @return The current model object
+     */
     public final T getModel() {
         return model;
     }
@@ -71,41 +79,91 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         }
     }
 
-    private void showErrors(final InvalidFormException e) {
-        invalidSections = e.getInvalidSections();
-        StringBuilder errorMessageBuilder = new StringBuilder();
-        for (Entry<Node, String> entry : invalidSections.entrySet()) {
-            entry.getKey().getStyleClass().add("error");
-            if (errorMessageBuilder.length() != 0) {
-                errorMessageBuilder.append("\n");
+    /**
+     * Highlights errors on the form.
+     * @param e The exception containing errors.
+     */
+    private void showErrors() {
+        for (Node node : invalidNodes) {
+            if (!node.getStyleClass().contains("error")) {
+                node.getStyleClass().add("error");
             }
-            errorMessageBuilder.append(entry.getValue());
         }
-        labelErrorMessage.setText(errorMessageBuilder.toString());
+        labelErrorMessage.setText(errorMessage);
     }
 
+    /**
+     * Clears the errors on the form.
+     */
     public final void clearErrors() {
-        for (Entry<Node, String> entry : invalidSections.entrySet()) {
-            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+        for (Node node : invalidNodes) {
+            node.getStyleClass().removeAll(Collections.singleton("error"));
         }
-        labelErrorMessage.setText("");
+        errorMessage = "";
+        invalidNodes.clear();
+
+        labelErrorMessage.setText(errorMessage);
     }
 
+    /**
+     * Saves the changes on the current form.
+     */
     public final void saveChanges() {
         clearErrors();
-        try {
-            saveChangesWithException();
-        } catch (InvalidFormException e) {
-            showErrors(e);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        saveChangesAndErrors();
     }
 
+    /**
+     * Highlights an error on the form.
+     * @param invalidNode The invalid node
+     */
+    protected final void addFormError(final Node invalidNode) {
+        addFormError(invalidNode, "");
+    }
+
+    /**
+     * Adds an error message to the form.
+     * @param helpfulMessage A helpful error message describing the problem.
+     */
+    protected final void addFormError(final String helpfulMessage) {
+        addFormError(null, helpfulMessage);
+    }
+
+    /**
+     * Adds an error to the form and highlights the node that caused it.
+     * @param invalidNode The node that has the problem
+     * @param helpfulMessage A helpful message describing the problem.
+     */
+    protected final void addFormError(final Node invalidNode, final String helpfulMessage) {
+        if (invalidNode != null) {
+            invalidNodes.add(invalidNode);
+        }
+
+        if (helpfulMessage == null || helpfulMessage.isEmpty()) {
+            return;
+        }
+
+        if (errorMessage.length() > 0) {
+            errorMessage += "\n";
+        }
+        errorMessage += helpfulMessage;
+        showErrors();
+    }
+
+    /**
+     * Loads the current model object into the form.
+     */
     public abstract void loadObject();
 
-    public abstract void dispose();
+    /**
+     * Cleans up event handlers and stuff.
+     */
+    public void dispose() {
+        setChangeListener(null);
+        UndoRedoManager.removeChangeListener(this);
+        setModel(null);
+        clearErrors();
+    }
 
     /**
      * Sets the change listener.
@@ -161,10 +219,9 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     }
 
     /**
-     * Saves changes and throws an Exception if an error occurs.
-     * @throws Exception When an error occurs
+     * Saves changes and tells the editor about any errors that have occurred.
      */
-    protected abstract void saveChangesWithException() throws Exception;
+    protected abstract void saveChangesAndErrors();
 
     /**
      * Sets up the form with all its event handlers and things.

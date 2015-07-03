@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -73,7 +74,7 @@ public class Person extends Model {
      * @param newUserID The new user id
      * @throws Exception User id is invalid
      */
-    public final void setUserId(final String newUserID) throws Exception {
+    public final void setUserId(final String newUserID) throws CustomException {
         validateUserId(newUserID);
         this.userId = newUserID.trim();
         commit("edit person");
@@ -84,7 +85,7 @@ public class Person extends Model {
      * @param value The value.
      * @throws Exception if there is a duplicate object.
      */
-    private void validateUserId(final String value) throws Exception {
+    private void validateUserId(final String value) throws CustomException {
         Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));
         if (model != null) {
             throw new DuplicateObjectException("A person with this ID already exists.");

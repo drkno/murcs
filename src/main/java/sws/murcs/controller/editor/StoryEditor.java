@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,9 +22,6 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidFormException;
-import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -256,28 +252,25 @@ public class StoryEditor extends GenericEditor<Story> {
     public final void dispose() {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
-        estimateChoiceBox.focusedProperty().removeListener(getChangeListener());
+        creatorChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        estimateChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        storyStateChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         dependenciesDropDown.valueProperty().removeListener(getChangeListener());
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
+        super.dispose();
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
-        Map<Node, String> invalidSections = new HashMap<>();
-
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
             } catch (CustomException e) {
-                invalidSections.put(shortNameTextField, e.getMessage());
+                addFormError(shortNameTextField, e.getMessage());
             }
         }
 
@@ -287,13 +280,7 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
-        //This will throw an exception if something goes wrong
-        try {
-            validateStoryState();
-            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
-        } catch (CustomException e) {
-            invalidSections.put(storyStateChoiceBox, e.getMessage());
-        }
+        updateStoryState();
 
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
@@ -301,12 +288,14 @@ public class StoryEditor extends GenericEditor<Story> {
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
             } else {
-                invalidSections.put(creatorChoiceBox, "Creator cannot be empty");
+                addFormError(creatorChoiceBox, "Creator cannot be empty");
             }
         }
 
         if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
+            // Updates the story state as this gets changed if you set the estimate to Not Estimated
+            storyStateChoiceBox.setValue(getModel().getStoryState());
         }
 
         Story selectedStory = dependenciesDropDown.getValue();
@@ -321,44 +310,37 @@ public class StoryEditor extends GenericEditor<Story> {
                     dependenciesDropDown.getSelectionModel().clearSelection();
                 });
             } catch (CustomException e) {
-                invalidSections.put(dependenciesDropDown, e.getMessage());
+                addFormError(dependenciesDropDown, e.getMessage());
             }
-        }
-
-        if (invalidSections.size() > 0) {
-            throw new InvalidFormException(invalidSections);
         }
     }
 
     /**
      * Checks to see if the current story state is valid and
      * displays an error if it isn't.
-     * @throws Exception if the state cannot be set
      */
-    private void validateStoryState() throws Exception {
+    private void updateStoryState() {
         Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
-
-        StringBuilder errorsBuilder = new StringBuilder();
+        boolean hasErrors = false;
 
         if (state == Story.StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
-                errorsBuilder.append("The story must have at least one AC {state}! ");
+                addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
+                hasErrors = true;
             }
             if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
-                errorsBuilder.append("The story must be part of a backlog {state}! ");
+                addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
+                hasErrors = true;
             }
-
             if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
-                errorsBuilder.append("The story must be estimated {state}! ");
+                addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
+                hasErrors = true;
             }
         }
 
-        String errors = errorsBuilder.toString();
-        //Add the state to make the error message more helpful
-        errors = errors.replace("{state}", " to set the state to " + state);
-        if (!errors.isEmpty()) {
-            throw new InvalidParameterException(errors);
+        if (!hasErrors) {
+            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 
