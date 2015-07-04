@@ -1,5 +1,5 @@
 Running the Application
-Note: In order to run this application you must have Java 1.8u40 or higher. If you do not use this version of Java then the program is not guaranteed to function as intended.
+Note: In order to run this application you must have Java 1.8u25 or higher (Java 1.8u40 is highly recommended due to security vulnerabilities). If you do not use this version of Java then the program is not guaranteed to function as intended.
 
 The entry point for this application is sws.murcs.view.App when running manually.
 
@@ -17,3 +17,10 @@ The acceptance tests are written uses the Gherkin syntax and they are not intend
 While some of these tests do have 'Step Defs' written (which allow them to be run in an automated manner), these have been provided as a 'Proof of Concept', so that if we do decide to write automated tests we have a quick reference point.
 
 For a list of who tested what see the word document 'Manual Testing' located in the 'doc' folder.
+
+Debug mode
+Sample data can be generated using the debug command line input.
+This is configurable to three levels, low, med, high
+example: java -jar Murcs-0.0.4.jar debug med
+
+For convenience a sample organisation file is also included.
