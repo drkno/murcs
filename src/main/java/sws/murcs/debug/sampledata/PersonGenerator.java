@@ -18,6 +18,7 @@ public class PersonGenerator implements Generator<Person> {
      * threshold.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * Min number people generated for a low
      * threshold.
@@ -29,6 +30,7 @@ public class PersonGenerator implements Generator<Person> {
      * threshold.
      */
     public static final int MEDIUM_STRESS_MAX = 50;
+
     /**
      * Min number people generated for a medium
      * threshold.
@@ -40,6 +42,7 @@ public class PersonGenerator implements Generator<Person> {
      * threshold.
      */
     public static final int HIGH_STRESS_MAX = 500;
+
     /**
      * Min number of people generated for a high
      * threshold.
@@ -51,6 +54,7 @@ public class PersonGenerator implements Generator<Person> {
      * that are added to the people generated.
      */
     private Generator<Skill> skillGenerator;
+
     /**
      * A pool of skills to choose from when adding
      * skills to people.

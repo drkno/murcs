@@ -29,30 +29,35 @@ public class ReportModelAll extends ReportModel {
     @XmlElementWrapper(name = "projects")
     @XmlElement(name = "project")
     private List<Project> projects;
+
     /**
      * The backlogs in the report.
      */
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")
     private List<Backlog> backlogs;
+
     /**
      * The work allocations in the report.
      */
     @XmlElementWrapper(name = "workAllocations")
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations;
+
     /**
      * The unassigned people in the report.
      */
     @XmlElementWrapper(name = "unassignedStories")
     @XmlElement(name = "story")
     private List<Story> listUnassignedStories;
+
     /**
      * The unassigned teams in the report.
      */
     @XmlElementWrapper(name = "unassignedTeams")
     @XmlElement(name = "team")
     private List<Team> listUnassignedTeams;
+
     /**
      * The unassigned people in the report.
      */

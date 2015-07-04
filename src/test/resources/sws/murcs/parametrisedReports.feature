@@ -8,23 +8,23 @@
       And I generate the report
       Then A report for the whole organisation is generated
 
-    Scenario: Generate report for a project
-      Given I have data about a specific project
+    Scenario: Generate report for projects
+      Given I have data about one or more projects
       When I opt to generate a report
-      And I select a project from the available projects
+      And I select one or more projects from the available projects
       And I generate the report
-      Then A report for that project is generated
+      Then A report for that project(s) is generated
 
-    Scenario: Generate report for a team
-      Given I have data about a specific team
+    Scenario: Generate report for teams
+      Given I have data about one or more teams
       When I opt to generate a report
-      And I select a team from the available teams
+      And I select one or more teams from the available teams
       And I generate the report
-      Then A report for that team is generated
+      Then A report for that team(s) is generated
 
-    Scenario: Generate report for a person
-      Given I have data about a specific person
+    Scenario: Generate report for people
+      Given I have data about some people
       When I opt to generate a report
-      And I select a person from the available people
+      And I select one or more people from the available people
       And I generate the report
-      Then A report for that person is generated
+      Then A report for that person / people is generated

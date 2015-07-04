@@ -5,6 +5,7 @@ package sws.murcs.debug.sampledata;
  * @param <T> The model type of the generator.
  */
 public interface Generator<T> {
+
     /**
      * Generates sample data of type T.
      * @return new sample data.

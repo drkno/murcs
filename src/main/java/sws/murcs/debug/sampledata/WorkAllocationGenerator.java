@@ -20,6 +20,7 @@ public class WorkAllocationGenerator {
      * generating work allocations.
      */
     private List<Project> projectPool;
+
     /**
      * A pool of teams to choose from when
      * generating work allocations.

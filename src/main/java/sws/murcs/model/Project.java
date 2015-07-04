@@ -11,6 +11,7 @@ import java.util.List;
  * Model of a Project.
  */
 public class Project extends Model {
+
     /**
      * The description of the project.
      */

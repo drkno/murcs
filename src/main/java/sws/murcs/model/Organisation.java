@@ -385,6 +385,14 @@ public class Organisation extends TrackableObject implements Serializable {
         LocalDate startDate = workAllocation.getStartDate();
         LocalDate endDate = workAllocation.getEndDate();
 
+        if (team == null) {
+            throw new InvalidParameterException("The team cannot be nothing");
+        }
+
+        if (startDate == null) {
+            throw new InvalidParameterException("The start date cannot be nothing");
+        }
+
         if (endDate != null && startDate.isAfter(endDate)) {
             throw new InvalidParameterException("End Date is before Start Date");
         }

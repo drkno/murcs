@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -28,6 +29,7 @@ public class Person extends Model {
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+
     /**
      * The list of skills the person has.
      */
@@ -71,9 +73,9 @@ public class Person extends Model {
     /**
      * Sets the user id.
      * @param newUserID The new user id
-     * @throws Exception User id is invalid
+     * @throws CustomException User id is invalid
      */
-    public final void setUserId(final String newUserID) throws Exception {
+    public final void setUserId(final String newUserID) throws CustomException {
         validateUserId(newUserID);
         this.userId = newUserID.trim();
         commit("edit person");
@@ -82,9 +84,9 @@ public class Person extends Model {
     /**
      * Indicates whether a value is a valid value for 'userId' to hold.
      * @param value The value.
-     * @throws Exception if there is a duplicate object.
+     * @throws CustomException if there is a duplicate object.
      */
-    private void validateUserId(final String value) throws Exception {
+    private void validateUserId(final String value) throws CustomException {
         Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));
         if (model != null) {
             throw new DuplicateObjectException("A person with this ID already exists.");
