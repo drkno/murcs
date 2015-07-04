@@ -1,15 +1,14 @@
 package sws.murcs.magic.tracking;
 
-import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
-import sws.murcs.magic.tracking.listener.ChangeState;
-import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Organisation;
-
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Organisation;
 
 /**
  * Manages undo and redo operations.
@@ -390,6 +389,7 @@ public final class UndoRedoManager {
         model.getProjects().forEach(l -> UndoRedoManager.add(l));
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
         model.getStories().forEach(s -> UndoRedoManager.add(s));
+        model.getStories().forEach(s -> s.getAcceptanceCriteria().forEach(ac -> UndoRedoManager.add(ac)));
         model.getBacklogs().forEach(b -> UndoRedoManager.add(b));
         commit("open project");
     }

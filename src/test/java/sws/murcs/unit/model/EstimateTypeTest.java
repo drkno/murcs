@@ -1,0 +1,38 @@
+package sws.murcs.unit.model;
+
+import java.util.List;
+import org.junit.Test;
+import sws.murcs.model.EstimateType;
+
+import static org.junit.Assert.assertEquals;
+
+/**
+ * Tests for the estimate type enum
+ */
+public class EstimateTypeTest {
+
+    @Test
+    public void testGetEstimates() throws Exception {
+        List<String> estimates = EstimateType.Fibonacci.getEstimates();
+
+        assertEquals("1", estimates.get(0));
+        assertEquals(6, estimates.size());
+
+        estimates = EstimateType.MovieClassification.getEstimates();
+        assertEquals("M", estimates.get(2));
+        assertEquals(6, estimates.size());
+
+        estimates = EstimateType.ShirtSize.getEstimates();
+        assertEquals("XXXL", estimates.get(5));
+    }
+
+    @Test
+    public void testConvert() throws Exception {
+        assertEquals("1", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "XS"));
+        assertEquals("XXXL", EstimateType.MovieClassification.convert(EstimateType.ShirtSize, "Banned"));
+
+        assertEquals("M", EstimateType.ShirtSize.convert(EstimateType.ShirtSize, "M"));
+        assertEquals("Not Estimated", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, EstimateType.NOT_ESTIMATED));
+        assertEquals("1", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "XS"));
+    }
+}

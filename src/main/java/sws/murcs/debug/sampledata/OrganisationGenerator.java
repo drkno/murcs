@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.Organisation;
@@ -134,10 +135,16 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private List<Model> generateItems(final Generator<? extends Model> generator, final int min, final int max) {
         List<Model> items = new ArrayList<>();
 
-        int count = NameGenerator.random(min, max);
+        int count = GenerationHelper.random(min, max);
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
+            try {
+                g.setShortName(g.getShortName() + " (" + i + ")");
+            } catch (CustomException e) {
+                //never here... EVER.
+                e.printStackTrace();
+            }
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);
             }
@@ -215,7 +222,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             teamGenerator.setPersonPool(teamPeople);
             List<Team> teams = new ArrayList<>();
             min = getMin(stress, TeamGenerator.LOW_STRESS_MIN, TeamGenerator.MEDIUM_STRESS_MIN,
-					TeamGenerator.HIGH_STRESS_MIN);
+                    TeamGenerator.HIGH_STRESS_MIN);
             max = getMax(stress, TeamGenerator.LOW_STRESS_MAX, TeamGenerator.MEDIUM_STRESS_MAX,
                     TeamGenerator.HIGH_STRESS_MAX);
             teams.addAll(generateItems(teamGenerator, min, max)
@@ -250,6 +257,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     StoryGenerator.HIGH_STRESS_MAX);
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
+            storyGenerator.addDependencies(stories, max, min);
 
             backlogGenerator.setStoryPool(new ArrayList<>(stories));
             backlogGenerator.setPersonsPool(people);
