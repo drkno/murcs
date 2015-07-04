@@ -28,3 +28,17 @@
       And I select one or more people from the available people
       And I generate the report
       Then A report for that person / people is generated
+
+    Scenario: Generate report for backlogs
+      Given I have data about one or more backlogs
+      When I opt to generate a report
+      And I select one or more backlogs from the available backlogs
+      And I generate the report
+      Then A report for that backlog(s) is generated
+
+    Scenario: Generate report for stories
+      Given I have data about one or more stories
+      When I opt to generate a report
+      And I select one or more stories from the available stories
+      And I generate the report
+      Then A report for that story(s) is generated
