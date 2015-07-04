@@ -1,90 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400" prefWidth="300" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.reporting.ui.ReportGeneratorController">
-   <top>
-       <ToolBar fx:id="toolBar" BorderPane.alignment="CENTER">
-          <items>
-           <HBox fx:id="toolBarContainer" alignment="CENTER" prefHeight="50.0" prefWidth="200.0">
-        </HBox>
-          </items>
-       </ToolBar>
-   </top>
-   <bottom>
-      <GridPane BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints />
-        </rowConstraints>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="305.0" prefWidth="350" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.reporting.ui.ReportGeneratorController">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <Label fx:id="errorMessage" textFill="RED" />
-                  <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
-                     <children>
-                        <Button fx:id="createButton" alignment="CENTER" defaultButton="true" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" GridPane.rowIndex="1">
-                           <GridPane.margin>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </GridPane.margin>
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Button>
-                        <Button fx:id="cancelButton" alignment="CENTER" cancelButton="true" contentDisplay="CENTER" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#cancelButtonClicked" text="Cancel" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
-                           <GridPane.margin>
-                              <Insets bottom="10.0" right="10.0" top="10.0" />
-                           </GridPane.margin>
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
-                           </HBox.margin>
-                        </Button>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </children>
-      </GridPane>
-   </bottom>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
-            <VBox fx:id="managementContent" prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <Label text="Report Type">
-                           <HBox.margin>
-                              <Insets right="20.0" />
-                           </HBox.margin>
-                        </Label>
-                        <ComboBox fx:id="managementTypeComboBox" prefWidth="150.0" promptText="Select report type" />
-                     </children>
-                  </HBox>
-                  <ListView fx:id="managementList" prefHeight="200.0" prefWidth="200.0" />
-               </children>
-            </VBox>
-            <VBox fx:id="workflowContent" prefHeight="200.0" prefWidth="100.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <Label text="Report Type">
-                            <HBox.margin>
-                                <Insets right="20.0"/>
-                            </HBox.margin>
-                        </Label>
-                        <ComboBox fx:id="workflowTypeComboBox" prefWidth="150.0" promptText="Select report type"/>
-                     </children>
-                  </HBox>
-                  <ListView fx:id="workflowList" prefHeight="200.0" prefWidth="100.0" />
-               </children>
-            </VBox>
+             <ToolBar fx:id="toolBar" minHeight="-Infinity" prefHeight="60.0" VBox.vgrow="ALWAYS">
+                <items>
+                <HBox fx:id="toolBarContainer" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" />
+                </items>
+             </ToolBar>
+               <VBox prefHeight="200.0" prefWidth="100.0">
+                  <children>
+                     <VBox fx:id="managementContent" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                           <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" prefWidth="200.0">
+                              <children>
+                                 <Label text="Report Type">
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </Label>
+                                 <ComboBox fx:id="managementTypeComboBox" prefWidth="150.0" promptText="Select report type" />
+                              </children>
+                           </HBox>
+                           <ListView fx:id="managementList" minHeight="-Infinity" prefHeight="150.0" prefWidth="200.0" />
+                        </children>
+                     </VBox>
+                      <VBox fx:id="workflowContent" prefHeight="200.0" prefWidth="100.0">
+                          <children>
+                              <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="50.0" prefWidth="200.0">
+                                  <children>
+                                      <Label text="Report Type">
+                                          <HBox.margin>
+                                              <Insets right="20.0" />
+                                          </HBox.margin>
+                                      </Label>
+                                      <ComboBox fx:id="workflowTypeComboBox" prefWidth="150.0" promptText="Select report type" />
+                                  </children>
+                              </HBox>
+                              <ListView fx:id="workflowList" minHeight="-Infinity" prefHeight="150.0" prefWidth="200.0" />
+                          </children>
+                      </VBox>
+                  </children>
+               </VBox>
+               <GridPane>
+                 <columnConstraints>
+                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                 </columnConstraints>
+                 <rowConstraints>
+                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     <RowConstraints />
+                 </rowConstraints>
+                  <children>
+                     <VBox prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                           <Label fx:id="errorMessage" textFill="RED">
+                               <VBox.margin>
+                                  <Insets bottom="10.0" />
+                               </VBox.margin>
+                           </Label>
+                           <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
+                              <children>
+                                 <Button fx:id="createButton" alignment="CENTER" defaultButton="true" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" GridPane.rowIndex="1">
+                                    <GridPane.margin>
+                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                    </GridPane.margin>
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                                    </HBox.margin>
+                                 </Button>
+                                 <Button fx:id="cancelButton" alignment="CENTER" cancelButton="true" contentDisplay="CENTER" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#cancelButtonClicked" text="Cancel" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
+                                    <GridPane.margin>
+                                       <Insets bottom="10.0" right="10.0" top="10.0" />
+                                    </GridPane.margin>
+                                    <HBox.margin>
+                                       <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
+                                    </HBox.margin>
+                                 </Button>
+                              </children>
+                           </HBox>
+                        </children>
+                     </VBox>
+                  </children>
+               </GridPane>
          </children>
       </VBox>
-   </center>
-</BorderPane>
+   </children>
+</AnchorPane>

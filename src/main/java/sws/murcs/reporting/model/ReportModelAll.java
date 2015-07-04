@@ -4,6 +4,7 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
+import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
@@ -12,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +58,7 @@ public class ReportModelAll extends ReportModel {
      */
     @XmlElementWrapper(name = "unassignedTeams")
     @XmlElement(name = "team")
+    @XmlIDREF
     private List<Team> listUnassignedTeams;
 
     /**
@@ -63,7 +66,29 @@ public class ReportModelAll extends ReportModel {
      */
     @XmlElementWrapper(name = "unassignedPeople")
     @XmlElement(name = "person")
+    @XmlIDREF
     private List<Person> listUnassignedPeople;
+
+    /**
+     * The list of Teams and their details.
+     */
+    @XmlElementWrapper(name = "Teams")
+    @XmlElement(name = "team")
+    private List<Team> listTeams;
+
+    /**
+     * The list of people and their details.
+     */
+    @XmlElementWrapper(name = "People")
+    @XmlElement(name = "person")
+    private List<Person> listPeople;
+
+    /**
+     * The list of skills and their details.
+     */
+    @XmlElementWrapper(name = "Skills")
+    @XmlElement(name = "skill")
+    private List<Skill> listSkills;
 
     /**
      * Constructor.
@@ -82,6 +107,15 @@ public class ReportModelAll extends ReportModel {
                 .toLowerCase().compareTo(p2.getShortName().toLowerCase()));
         Collections.sort(listUnassignedTeams, (Team t1, Team t2) -> t1.getShortName()
                 .toLowerCase().compareTo(t2.getShortName().toLowerCase()));
+        listTeams = new ArrayList<>(organisation.getTeams());
+        listPeople = new ArrayList<>(organisation.getPeople());
+        listSkills = new ArrayList<>(organisation.getSkills());
+        Collections.sort(listTeams, (Team t1, Team t2) -> t1.getShortName()
+                .toLowerCase().compareTo(t2.getShortName().toLowerCase()));
+        Collections.sort(listPeople, (Person p1, Person p2) -> p1.getShortName()
+                .toLowerCase().compareTo(p2.getShortName().toLowerCase()));
+        Collections.sort(listSkills, (Skill s1, Skill s2) -> s1.getShortName()
+                .toLowerCase().compareTo(s2.getShortName().toLowerCase()));
     }
 
     /**

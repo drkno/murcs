@@ -4,6 +4,7 @@ import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
@@ -19,11 +20,13 @@ public class WorkAllocation implements Serializable, Comparable<WorkAllocation> 
     /**
      * The project that belongs to this work allocation.
      */
+    @XmlIDREF
     private final Project project;
 
     /**
      * The team that relates to this work allocation.
      */
+    @XmlIDREF
     private final Team team;
 
     /**

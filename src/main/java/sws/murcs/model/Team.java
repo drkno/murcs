@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +32,21 @@ public class Team extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
+    @XmlIDREF
     private List<Person> members = new ArrayList<>();
 
     /**
      * The scrum master of the team.
      */
     @TrackableValue
+    @XmlIDREF
     private Person scrumMaster;
 
     /**
      * The product owner of the team.
      */
     @TrackableValue
+    @XmlIDREF
     private Person productOwner;
 
     /**
