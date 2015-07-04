@@ -189,6 +189,7 @@ public class ReportGeneratorController {
         else if (selected == management) {
             managementContent.setVisible(true);
         }
+        stage.sizeToScene();
     }
 
     /**
