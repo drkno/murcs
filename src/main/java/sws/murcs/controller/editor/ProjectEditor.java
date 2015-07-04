@@ -6,16 +6,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
@@ -23,6 +22,7 @@ import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the model creator popup window.
@@ -31,40 +31,47 @@ import java.time.LocalDate;
 public class ProjectEditor extends GenericEditor<Project> {
 
     /**
-     * The shortName, longName and DescriptionFields for a person.
+     * The shortName, longName for a project.
      */
     @FXML
-    private TextField shortNameTextField, longNameTextField, descriptionTextField;
+    private TextField shortNameTextField, longNameTextField;
+
+    /**
+     * A description for the current project.
+     */
+    @FXML
+    private TextArea descriptionTextArea;
+
     /**
      * The Work Allocation table, team view.
      */
     @FXML
     private TableView<WorkAllocation> teamsViewer;
+
     /**
      * The Work Allocation table, team column.
      */
     @FXML
     private TableColumn<WorkAllocation, Team> tableColumnTeams;
+
     /**
      * The Work Allocation table, start and end date columns.
      */
     @FXML
     private TableColumn<WorkAllocation, LocalDate> tableColumnStartDates, tableColumnEndDates;
+
     /**
      * The date picker for the start and end dates of a work allocation.
      */
     @FXML
     private DatePicker datePickerStartDate, datePickerEndDate;
+
     /**
      * The team picker for a work allocation.
      */
     @FXML
     private ChoiceBox<Team> choiceBoxAddTeam;
-    /**
-     * The label to show error messages.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * An observable list of work allocations.
      */
@@ -81,21 +88,16 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
-        descriptionTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
         tableColumnTeams.setCellFactory(a -> new HyperlinkTeamCell());
         tableColumnStartDates.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        tableColumnStartDates.setCellFactory(a -> new NullableLocalDateCell());
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -116,9 +118,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
-            descriptionTextField.setText(modelDescription);
+            descriptionTextArea.setText(modelDescription);
         }
 
         choiceBoxAddTeam.getItems().setAll(organisation.getTeams());
@@ -128,11 +130,15 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -142,7 +148,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
@@ -154,10 +160,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         observableAllocations = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     /**
@@ -166,27 +169,26 @@ public class ProjectEditor extends GenericEditor<Project> {
      */
     @FXML
     private void buttonScheduleTeamClick() {
+        //Save all the changes first so that if there are any problems in the form they will show up as errors.
+        saveChanges();
+
         Team team = choiceBoxAddTeam.getValue();
         LocalDate startDate = datePickerStartDate.getValue();
         LocalDate endDate = datePickerEndDate.getValue();
+        boolean hasErrors = false;
 
         // Must meet minimum requirements for an allocation
-        String message = "";
         if (team == null) {
-            message += "Team may not be null";
+            addFormError(choiceBoxAddTeam, "Team may not be null");
+            hasErrors = true;
         }
         if (startDate == null) {
-            if (message.length() != 0) {
-                message += " and ";
-            }
-            message += "Start Date may not be null";
+            addFormError(datePickerStartDate, "Start date must be specified");
+            hasErrors = true;
         }
-        if (!message.equals("")) {
-            labelErrorMessage.setText(message);
+
+        if (hasErrors) {
             return;
-        }
-        else {
-            labelErrorMessage.setText("");
         }
 
         try {
@@ -202,7 +204,9 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
         }
         catch (CustomException e) {
-            labelErrorMessage.setText(e.getMessage());
+            addFormError(e.getMessage());
+            addFormError(datePickerStartDate);
+            addFormError(datePickerEndDate);
         }
     }
 
@@ -255,17 +259,21 @@ public class ProjectEditor extends GenericEditor<Project> {
     }
 
     /**
-     * Used to represent the end date cell as it could receive a null pointer if no end is specified.
+     * Used to represent a date cell that can contain a null value.
      */
     private class NullableLocalDateCell extends TableCell<WorkAllocation, LocalDate> {
+        /**
+         * The format for displaying the date in a cell.
+         */
+        private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         @Override
         protected void updateItem(final LocalDate date, final boolean empty) {
             super.updateItem(date, empty);
             if (date != null) {
-                setText(date.toString());
+                setText(dateFormatter.format(date));
             }
             else {
-                setText("");
+                setText(null);
             }
         }
     }

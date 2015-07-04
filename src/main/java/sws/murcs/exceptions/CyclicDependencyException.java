@@ -7,6 +7,7 @@ import sws.murcs.model.Story;
  * a dependency cycle.
  */
 public final class CyclicDependencyException extends CustomException {
+
     /**
      * The story the dependency is being added to.
      */

@@ -20,10 +20,12 @@ public final class NavigationManager {
      * Limit on the size of the stacks.
      */
     private static final int STACK_LIMIT = 5;
+
     /**
      * The app controller.
      */
     private static AppController appController;
+
     /**
      * Whether the navigation manager should ignore changes.
      */
@@ -36,10 +38,12 @@ public final class NavigationManager {
     public static void setAppController(final AppController controller) {
         appController = controller;
     }
+
     /**
      * The forward stack used in hyperlinking.
      */
     private static Deque<Model> forwardStack = new ArrayDeque<>();
+
     /**
      * The back stack used in hyperlinking.
      */

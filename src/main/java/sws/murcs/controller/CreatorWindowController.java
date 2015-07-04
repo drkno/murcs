@@ -23,27 +23,33 @@ public class CreatorWindowController {
      */
     @FXML
     private GridPane contentPane;
+
     /**
      * The buttons in the create window.
      */
     @FXML
     private Button createButton, cancelButton;
+
     /**
      * The command to be issued on okay being clicked.
      */
     private Consumer<Model> createClicked;
+
     /**
      * The command to be issued on cancel being clicked.
      */
     private Consumer<Model> cancelClicked;
+
     /**
      * The stage of the creation window.
      */
     private Stage stage;
+
     /**
      * The model to be created.
      */
     private Model model;
+
     /**
      * The editor of the grid pane.
      */

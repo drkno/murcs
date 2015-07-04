@@ -9,73 +9,88 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="editor" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
+<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
     <children>
-        <ScrollPane fitToWidth="true" layoutY="112.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <content>
-                <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <children>
-                        <VBox>
-                            <children>
-                                <Label text="Short Name" />
-                                <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                            </children>
-                            <padding>
-                                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                            </padding>
-                        </VBox>
-                        <VBox>
-                            <children>
-                                <Label text="Long Name" GridPane.rowIndex="1" />
-                                <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
-                            </children>
-                            <padding>
-                                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                            </padding>
-                        </VBox>
-                        <VBox>
-                            <children>
-                                <Label text="Description" />
-                                <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
-                            </children>
-                            <padding>
-                                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                            </padding>
-                        </VBox>
-                        <VBox>
-                            <children>
-                                <Label text="Product Owner" GridPane.rowIndex="1" />
-                        <AnchorPane>
-                           <children>
-                                      <ComboBox fx:id="poComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
-                            </children>
-                            <padding>
-                                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                            </padding>
-                        </VBox>
-                  <VBox>
+      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER" />
+         </rowConstraints>
+         <children>
+              <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="112.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <content>
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints vgrow="NEVER" />
+                        <RowConstraints vgrow="NEVER" />
+                        <RowConstraints vgrow="SOMETIMES" />
+                        <RowConstraints vgrow="NEVER" />
+                        <RowConstraints vgrow="NEVER" />
+                        <RowConstraints vgrow="ALWAYS" />
+                     </rowConstraints>
                      <children>
-                        <Label text="Estimation Method" GridPane.rowIndex="1" />
-                        <AnchorPane>
+                              <VBox GridPane.rowIndex="1">
+                                  <children>
+                                      <Label text="Long Name" GridPane.rowIndex="1" />
+                                      <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
+                                  </children>
+                                  <padding>
+                                      <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                  </padding>
+                              </VBox>
+                              <VBox>
+                                  <children>
+                                      <Label text="Short Name" />
+                                      <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                  </children>
+                                  <padding>
+                                      <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                  </padding>
+                              </VBox>
+                              <VBox GridPane.rowIndex="2">
+                                  <children>
+                                      <Label text="Description" />
+                                      <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
+                                  </children>
+                                  <padding>
+                                      <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                  </padding>
+                              </VBox>
+                              <VBox GridPane.rowIndex="3">
+                                  <children>
+                                      <Label text="Product Owner" GridPane.rowIndex="1" />
+                              <AnchorPane>
+                                 <children>
+                                            <ComboBox fx:id="poComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                                  </children>
+                                  <padding>
+                                      <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                                  </padding>
+                              </VBox>
+                        <VBox GridPane.rowIndex="4">
                            <children>
-                              <ComboBox fx:id="estimationMethodComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Label text="Estimation Method" GridPane.rowIndex="1" />
+                              <AnchorPane>
+                                 <children>
+                                    <ComboBox fx:id="estimationMethodComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
                            </children>
-                        </AnchorPane>
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                     </padding>
-                  </VBox>
-                        <VBox>
-                            <padding>
-                                <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                            </padding>
-                            <children>
-                                <AnchorPane>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                                <AnchorPane minHeight="200.0" GridPane.rowIndex="5" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
                                     <children>
-                                        <TableView fx:id="storyTable" focusTraversable="false" prefHeight="230.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
+                                        <TableView fx:id="storyTable" focusTraversable="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
                                             <columns>
                                                 <TableColumn fx:id="storyColumn" editable="false" prefWidth="75.0" sortable="false" text="Story" />
                                                 <TableColumn fx:id="deleteColumn" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" />
@@ -86,15 +101,15 @@
                                         </TableView>
                                         <Button fx:id="increasePriorityButton" layoutX="206.0" layoutY="14.0" mnemonicParsing="false" onAction="#increasePriority" prefHeight="30.0" prefWidth="30.0" text="^" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                         <Button fx:id="decreasePriorityButton" layoutX="216.0" layoutY="24.0" mnemonicParsing="false" onAction="#decreasePriority" prefHeight="30.0" prefWidth="30.0" text="v" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0" />
-                                        <GridPane layoutY="150.0" prefHeight="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                        <GridPane layoutY="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                             <columnConstraints>
                                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
                                                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="60.0" minWidth="60.0" prefWidth="60.0" />
                                                 <ColumnConstraints hgrow="NEVER" maxWidth="60.0" minWidth="60.0" prefWidth="60.0" />
                                             </columnConstraints>
                                             <rowConstraints>
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                             <children>
                                                 <Label text="Story" />
@@ -103,36 +118,47 @@
                                                     <children>
                                                         <Button mnemonicParsing="false" onAction="#addStory" text="Add" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                    </padding>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
                                                 </AnchorPane>
                                                 <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                     <children>
                                                         <TextField fx:id="priorityTextField" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                    </padding>
+                                       <GridPane.margin>
+                                          <Insets />
+                                       </GridPane.margin>
                                                 </AnchorPane>
                                                 <AnchorPane GridPane.rowIndex="1">
                                                     <children>
                                                         <ComboBox fx:id="storyPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" />
                                                     </children>
-                                                    <padding>
-                                                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                    </padding>
+                                       <GridPane.margin>
+                                          <Insets right="5.0" />
+                                       </GridPane.margin>
                                                 </AnchorPane>
                                             </children>
                                         </GridPane>
                                     </children>
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
                                 </AnchorPane>
-                            </children>
-                        </VBox>
-                        <Label fx:id="labelErrorMessage" />
-                    </children>
-                </VBox>
-            </content>
-        </ScrollPane>
+                     </children>
+                  </GridPane>
+                  </content>
+              </ScrollPane>
+            <ScrollPane prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
+               <content>
+                  <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+               </content>
+            </ScrollPane>
+         </children>
+      </GridPane>
     </children>
 </AnchorPane>

@@ -21,11 +21,13 @@ public class ReportHeader {
      * The version of the project.
      */
     private String projectVersion;
+
     /**
      * The date the report was generated.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate dateGenerated;
+
     /**
      * The report model (model of all the project).
      */
