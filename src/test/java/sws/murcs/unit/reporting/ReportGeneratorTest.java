@@ -29,6 +29,8 @@ public class ReportGeneratorTest {
     private Project project;
     private Team team;
     private Person person;
+    private Backlog backlog;
+    private Story story;
 
     private void adjust(List<String> report) {
         for (int i = 0; i < report.size(); i++) {
@@ -138,11 +140,11 @@ public class ReportGeneratorTest {
         project.addRelease(release);
 
         //Stories
-        Story story1 = new Story();
-        story1.setShortName("1");
-        story1.setLongName("Revert");
-        story1.setDescription("Revert to last saved state");
-        story1.setCreator(person3);
+        story = new Story();
+        story.setShortName("1");
+        story.setLongName("Revert");
+        story.setDescription("Revert to last saved state");
+        story.setCreator(person3);
 
         Story story2 = new Story();
         story2.setShortName("2");
@@ -151,18 +153,18 @@ public class ReportGeneratorTest {
         story2.setCreator(person4);
 
         //Backlog
-        Backlog backlog = new Backlog();
+        backlog = new Backlog();
         backlog.setShortName("This is the backlog");
         backlog.setLongName("back log be what");
         backlog.setDescription("high five");
         backlog.setAssignedPO(person);
-        backlog.addStory(story1, 1);
+        backlog.addStory(story, 1);
 
         organisation.add(project);
         organisation.add(team);
         organisation.add(team2);
         organisation.add(team3);
-        organisation.add(story1);
+        organisation.add(story);
         organisation.add(story2);
         organisation.add(person);
         organisation.add(person2);
@@ -231,6 +233,36 @@ public class ReportGeneratorTest {
         List<Model> people = new ArrayList<>();
         people.add(person);
         ReportGenerator.generate(people, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateBacklog() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleBacklogReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> backlogs = new ArrayList<>();
+        backlogs.add(backlog);
+        ReportGenerator.generate(backlogs, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateStory() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleStoryReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> stories = new ArrayList<>();
+        stories.add(story);
+        ReportGenerator.generate(stories, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < report.size(); i++) {

@@ -1,15 +1,19 @@
 package sws.murcs.reporting;
 
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
+import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.reporting.header.ReportHeader;
 import sws.murcs.reporting.header.ReportHeaderAll;
+import sws.murcs.reporting.header.ReportHeaderBacklog;
 import sws.murcs.reporting.header.ReportHeaderPerson;
 import sws.murcs.reporting.header.ReportHeaderProject;
+import sws.murcs.reporting.header.ReportHeaderStory;
 import sws.murcs.reporting.header.ReportHeaderTeam;
 
 import javax.xml.bind.JAXBContext;
@@ -70,6 +74,20 @@ public abstract class ReportGenerator {
                         .collect(Collectors.toList());
                 generatePeople(people, file);
                 break;
+            case Backlog:
+                List<Backlog> backlogs = model
+                        .stream()
+                        .map(e -> (Backlog) e)
+                        .collect(Collectors.toList());
+                generateBacklogs(backlogs, file);
+                break;
+            case Story:
+                List<Story> stories = model
+                        .stream()
+                        .map(e -> (Story) e)
+                        .collect(Collectors.toList());
+                generateStories(stories, file);
+                break;
             default:
                 throw new UnsupportedOperationException(
                         "Report generation for this model type is yet to be implemented");
@@ -115,6 +133,38 @@ public abstract class ReportGenerator {
      */
     private static void generatePeople(final List<Person> people, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderPerson(people);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.marshal(reportModel, file);
+    }
+
+    /**
+     * Generates an xml report to file from backlogs.
+     * @param backlogs the backlogs from which to create the report
+     * @param file the file to output the report
+     * @throws JAXBException Exceptions from JAXB
+     */
+    private static void generateBacklogs(final List<Backlog> backlogs, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderBacklog(backlogs);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.marshal(reportModel, file);
+    }
+
+    /**
+     * Generates an xml report to file from stories.
+     * @param stories the stories from which to create the report
+     * @param file the file to output the report
+     * @throws JAXBException Exceptions from JAXB
+     */
+    private static void generateStories(final List<Story> stories, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderStory(stories);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

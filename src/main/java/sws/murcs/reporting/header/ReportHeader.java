@@ -12,7 +12,12 @@ import java.time.LocalDate;
  * A class that gets the information needed for the header of the report, such as the product version and
  * date generated.
  */
-@XmlSeeAlso({ReportHeaderAll.class, ReportHeaderPerson.class, ReportHeaderProject.class, ReportHeaderTeam.class})
+@XmlSeeAlso({ReportHeaderAll.class,
+        ReportHeaderPerson.class,
+        ReportHeaderProject.class,
+        ReportHeaderTeam.class,
+        ReportHeaderBacklog.class,
+        ReportHeaderStory.class})
 public  abstract class ReportHeader {
     /**
      * The version of the project.
