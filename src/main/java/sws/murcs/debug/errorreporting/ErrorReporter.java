@@ -1,0 +1,239 @@
+package sws.murcs.debug.errorreporting;
+
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Parent;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
+import sws.murcs.controller.NavigationManager;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.view.App;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Handles sending error reports in to SWS when something
+ * goes wrong when it should not have.
+ */
+public final class ErrorReporter {
+
+    /**
+     * Current instance of this singleton.
+     */
+    private static ErrorReporter reporter;
+
+    /**
+     * Creates a new ErrorReporter and binds unhandled exceptions to this class.
+     * @param args the arguments the program was started with.
+     */
+    public static void setup(final String[] args) {
+        if (reporter == null) {
+            reporter = new ErrorReporter(args);
+        }
+    }
+
+    /**
+     * Gets the current ErrorReporter instance.
+     * @return the current ErrorReporter instance.
+     */
+    public static ErrorReporter get() {
+        return reporter;
+    }
+
+    /**
+     * Arguments the program was started with.
+     */
+    private String arguments;
+
+    /**
+     * Creates a new ErrorReporter.
+     * ErrorReporter handles the reporting of errors to the SWS server when they
+     * are unhanded or unexpected.
+     * @param arg arguments the program was started with.
+     */
+    private ErrorReporter(final String[] arg) {
+        StringBuilder builder = new StringBuilder(arg.length * 2);
+        for (String a : arg) {
+            builder.append(a);
+            builder.append(" ");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+        arguments = builder.toString();
+        Thread.setDefaultUncaughtExceptionHandler(this::reportException);
+    }
+
+    /**
+     * Perform a manual report of an error.
+     * This MUST be used on the JavaFX application thread.
+     */
+    public void reportManually() {
+        report(Thread.currentThread(), null, true, ErrorType.Manual);
+    }
+
+    /**
+     * Performs a report of a Throwable (exception) error.
+     * This MUST be used on the JavaFX application thread unless showDialog is set to false.
+     * @param e the throwable to report.
+     * @param showDialog ask for the user to describe their actions before submitting.
+     */
+    public void reportError(final Throwable e, final boolean showDialog) {
+        report(Thread.currentThread(), null, showDialog, ErrorType.Automatic);
+    }
+
+    /**
+     * Callback for the uncaught exception handler.
+     * @param thread thread error occurred on.
+     * @param e error that occurred.
+     */
+    private void reportException(final Thread thread, final Throwable e) {
+        report(thread, e, true, ErrorType.Automatic);
+    }
+
+    /**
+     * Reports an exception and gathers information from the user where possible.
+     * @param thread thread error occurred on.
+     * @param throwable the error that occurred.
+     * @param showDialog whether to show a dialog.
+     * @param dialogType type of dialog to display.
+     */
+    private void report(final Thread thread, final Throwable throwable,
+                        final boolean showDialog, final ErrorType dialogType) {
+        if (!showDialog) {
+            performReporting(thread, throwable, null);
+            return;
+        }
+
+        ErrorReportPopup popup = new ErrorReportPopup();
+        popup.setType(dialogType);
+        popup.setReportListener(description -> performReporting(thread, throwable, description));
+        popup.show();
+    }
+
+    /**
+     * Generates a report and sends it to the sws servers.
+     * @param thread thread the error occurred on.
+     * @param throwable the exception that caused the error.
+     * @param userDescription the description the user provided.
+     */
+    private void performReporting(final Thread thread, final Throwable throwable, final String userDescription) {
+        String stackTrace = throwableToString(throwable);
+        String threadInfo = thread.toString();
+        String report = buildReport(userDescription, stackTrace, threadInfo);
+        sendReport(report);
+    }
+
+    /**
+     * Creates a report based on the provided data from the user.
+     * @param userDescription description of the problem.
+     * @param exceptionData the data from the exception that caused the error.
+     * @param miscData other data that might be helpful.
+     * @return a URL encoded string report.
+     */
+    private String buildReport(final String userDescription, final String exceptionData, final String miscData) {
+        final int multiplier = 4;
+        Map<String, String> reportFields = new HashMap<>();
+
+        try {
+            reportFields.put("description", URLEncoder.encode(userDescription, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            // encoding is hard coded so will never happen
+        }
+
+        reportFields.put("misc", miscData);
+        reportFields.put("args", arguments);
+        reportFields.put("exception", exceptionData);
+        reportFields.put("screenshot", getScreenshot());
+        reportFields.put("dateTime", LocalDate.now().toString() + " " + LocalTime.now().toString());
+        reportFields.put("osName", System.getProperty("os.name"));
+        reportFields.put("osVersion", System.getProperty("os.version"));
+        reportFields.put("javaVersion", System.getProperty("java.version"));
+        reportFields.put("navForwardPossible", Boolean.toString(NavigationManager.canGoForward()));
+        reportFields.put("navBackwardPossible", Boolean.toString(NavigationManager.canGoBack()));
+        reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
+        reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
+
+        StringBuilder builder = new StringBuilder(reportFields.size() * multiplier);
+        for (Map.Entry<String, String> entry : reportFields.entrySet()) {
+            builder.append(entry.getKey());
+            builder.append("=");
+            builder.append(entry.getValue());
+            builder.append("&");
+        }
+        builder.deleteCharAt(builder.length() - 1);
+
+        return builder.toString();
+    }
+
+    /**
+     * Converts a throwable to a string stacktrace.
+     * @param e the throwable to convert.
+     * @return the string representation.
+     */
+    private String throwableToString(final Throwable e) {
+        if (e == null) {
+            return null;
+        }
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        String stackTrace = stringWriter.toString();
+        String message = e.getMessage();
+        return message + "\n" + stackTrace;
+    }
+
+    /**
+     * Grabs a screenshot of the currently displayed screen.
+     * @return screenshot as a base64 PNG image.
+     */
+    private String getScreenshot() {
+        try {
+            Parent snapshotNode = App.getStage().getScene().getRoot();
+            WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
+            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "png", outputStream);
+            byte[] bytes = outputStream.toByteArray();
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            return "data:image/png;base64," + base64;
+        }
+        catch (Exception e) {
+            // JavaFX probably hasn't started up yet.
+            return "";
+        }
+    }
+
+    /**
+     * Send the error report to the server.
+     * @param report report to send.
+     */
+    private void sendReport(final String report) {
+        try {
+            String url = "http://bugs.sws.nz/report";
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("User-Agent", "SWS Error Reporter");
+            con.setDoOutput(true);
+            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+            wr.writeBytes(report);
+            wr.flush();
+            wr.close();
+        }
+        catch (Exception e) {
+            System.err.println("Could not submit error report.");
+        }
+    }
+}
