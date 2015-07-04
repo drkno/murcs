@@ -9,6 +9,8 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -23,6 +25,7 @@ import sws.murcs.view.App;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -57,6 +60,18 @@ public class ReportGeneratorController {
     private ToolBar toolBar;
 
     /**
+     * Container for toolbar buttons
+     */
+    @FXML
+    private HBox toolBarContainer;
+
+    /**
+     * The error message displayed.
+     */
+    @FXML
+    private Label errorMessage;
+
+    /**
      * The stage of the creation window.
      */
     private Stage stage;
@@ -89,6 +104,8 @@ public class ReportGeneratorController {
     public final void initialize() {
         all = new ToggleButton("All");
         management = new ToggleButton("Management");
+        all.alignmentProperty().setValue(Pos.CENTER);
+        management.alignmentProperty().setValue(Pos.CENTER);
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(
                 all,
@@ -100,7 +117,7 @@ public class ReportGeneratorController {
                 changeView();
             }
         }));
-        toolBar.getItems().addAll(
+        toolBarContainer.getChildren().addAll(
                 all,
                 management
         );
@@ -193,29 +210,52 @@ public class ReportGeneratorController {
      */
     @FXML
     private void createButtonClicked(final ActionEvent event) {
-        File file = null;
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
-            fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
-            fileChooser.setTitle("Report Save Location");
-            file = fileChooser.showSaveDialog(App.getStage());
-            if (file != null) {
-                generateReport(file);
-                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+        if (validateSelection()) {
+            File file = null;
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters()
+                        .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
+                fileChooser.getExtensionFilters()
+                        .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
+                fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
+                fileChooser.setTitle("Report Save Location");
+                file = fileChooser.showSaveDialog(App.getStage());
+                if (file != null) {
+                    generateReport(file);
+                    PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                }
+                stage.close();
+            } catch (Exception e) {
+                if (file != null) {
+                    file.delete();
+                }
+                GenericPopup popup = new GenericPopup(e);
+                popup.show();
             }
-            stage.close();
         }
-        catch (Exception e) {
-            if (file != null) {
-                file.delete();
-            }
-            GenericPopup popup = new GenericPopup(e);
-            popup.show();
+    }
+
+    /**
+     * Clears all errors.
+     */
+    private void clearErrors() {
+        errorMessage.setText("");
+        managementTypeComboBox.getStyleClass().removeAll(Collections.singleton("error"));
+        managementList.getStyleClass().removeAll(Collections.singleton("error"));
+    }
+
+    /**
+     * Checks that something is selected to generate a report from.
+     * @return if the selection is valid.
+     */
+    private boolean validateSelection() {
+        clearErrors();
+        Toggle type = toggleGroup.getSelectedToggle();
+        if (type == management) {
+            return checkForErrors(managementTypeComboBox, managementList);
         }
+        return true;
     }
 
     /**
@@ -230,8 +270,33 @@ public class ReportGeneratorController {
             ReportGenerator.generate(PersistenceManager.getCurrent().getCurrentModel(), file);
         }
         else if (type == management) {
-            //Todo error handling when the user has not selected anything.
             ReportGenerator.generate(managementList.getSelectionModel().getSelectedItem(), file);
+        }
+    }
+
+    /**
+     * Checks that something is selected to generate a report from.
+     * @param type the comboBox type
+     * @param list the list of model objects
+     * @return if something is selected to create a report from.
+     */
+    private boolean checkForErrors(final ComboBox<ModelType> type, final ListView<Model> list) {
+        if (type.getSelectionModel().getSelectedIndex() == -1) {
+            if (!type.getStyleClass().contains("error")) {
+                type.getStyleClass().add("error");
+            }
+            errorMessage.setText("Oh no, you don't have a type of report selected.");
+            return false;
+        }
+        else if (list.getSelectionModel().getSelectedItem() == null) {
+            if (!list.getStyleClass().contains("error")) {
+                list.getStyleClass().add("error");
+            }
+            errorMessage.setText("Well now you need to select something to generate a report for.");
+            return false;
+        }
+        else {
+            return true;
         }
     }
 }
