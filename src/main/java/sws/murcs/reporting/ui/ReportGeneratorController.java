@@ -61,7 +61,7 @@ public class ReportGeneratorController {
     private ToolBar toolBar;
 
     /**
-     * Container for toolbar buttons
+     * Container for toolbar buttons.
      */
     @FXML
     private HBox toolBarContainer;
@@ -149,6 +149,7 @@ public class ReportGeneratorController {
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(((observable, oldValue, newValue) -> changeManagementSelection()));
+        managementList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     /**
@@ -271,7 +272,7 @@ public class ReportGeneratorController {
             ReportGenerator.generate(PersistenceManager.getCurrent().getCurrentModel(), file);
         }
         else if (type == management) {
-            ReportGenerator.generate(managementList.getSelectionModel().getSelectedItem(), file);
+            ReportGenerator.generate(managementList.getSelectionModel().getSelectedItems(), file);
         }
     }
 

@@ -6,11 +6,18 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
+import sws.murcs.reporting.header.ReportHeader;
+import sws.murcs.reporting.header.ReportHeaderAll;
+import sws.murcs.reporting.header.ReportHeaderPerson;
+import sws.murcs.reporting.header.ReportHeaderProject;
+import sws.murcs.reporting.header.ReportHeaderTeam;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contains a static method for generating the xml status report from the organisation.
@@ -24,7 +31,7 @@ public abstract class ReportGenerator {
      * @throws JAXBException Exceptions from JAXB
      */
     public static void generate(final Organisation organisation, final File file) throws JAXBException {
-        ReportHeader reportModel = new ReportHeader(organisation);
+        ReportHeader reportModel = new ReportHeaderAll(organisation);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -39,17 +46,29 @@ public abstract class ReportGenerator {
      * @param file the file to output the report to
      * @throws JAXBException Exceptions from JAXB
      */
-    public static void generate(final Model model, final File file) throws JAXBException {
-        ModelType type = ModelType.getModelType(model);
+    public static void generate(final List<Model> model, final File file) throws JAXBException {
+        ModelType type = ModelType.getModelType(model.get(0));
         switch (type) {
             case Project:
-                generate((Project) model, file);
+                List<Project> projects = model
+                        .stream()
+                        .map(e -> (Project) e)
+                        .collect(Collectors.toList());
+                generateProjects(projects, file);
                 break;
             case Team:
-                generate((Team) model, file);
+                List<Team> teams = model
+                        .stream()
+                        .map(e -> (Team) e)
+                        .collect(Collectors.toList());
+                generateTeams(teams, file);
                 break;
             case Person:
-                generate((Person) model, file);
+                List<Person> people = model
+                        .stream()
+                        .map(e -> (Person) e)
+                        .collect(Collectors.toList());
+                generatePeople(people, file);
                 break;
             default:
                 throw new UnsupportedOperationException(
@@ -59,12 +78,12 @@ public abstract class ReportGenerator {
 
     /**
      * Generates an xml report to file from a project.
-     * @param project the model from which to create the report
+     * @param projects the models from which to create the report
      * @param file the file to output the report
      * @throws JAXBException Exceptions from JAXB
      */
-    private static void generate(final Project project, final File file) throws JAXBException {
-        ReportHeader reportModel = new ReportHeader(project);
+    private static void generateProjects(final List<Project> projects, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderProject(projects);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -74,12 +93,12 @@ public abstract class ReportGenerator {
 
     /**
      * Generates an xml report to file from a team.
-     * @param team the model from which to create the report
+     * @param teams the teams from which to create the report
      * @param file the file to output the report
      * @throws JAXBException Exceptions from JAXB
      */
-    private static void generate(final Team team, final File file) throws JAXBException {
-        ReportHeader reportModel = new ReportHeader(team);
+    private static void generateTeams(final List<Team> teams, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderTeam(teams);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
@@ -90,12 +109,12 @@ public abstract class ReportGenerator {
 
     /**
      * Generates an xml report to file from a person.
-     * @param person the model from which to create the report
+     * @param people the people from which to create the report
      * @param file the file to output the report
      * @throws JAXBException Exceptions from JAXB
      */
-    private static void generate(final Person person, final File file) throws JAXBException {
-        ReportHeader reportModel = new ReportHeader(person);
+    private static void generatePeople(final List<Person> people, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderPerson(people);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

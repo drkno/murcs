@@ -3,16 +3,18 @@
     <projectVersion>0.0.3</projectVersion>
     <dateGenerated>2015-05-21</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelProject">
-        <project shortName="FITR">
-            <longName>Fitness is Training Right</longName>
-            <description>We are building a fitness tracking application for the world</description>
-            <releases>
-                <release shortName="Now">
-                    <description>This current time</description>
-                    <releaseDate>2015-04-22</releaseDate>
-                </release>
-            </releases>
-            <backlogs/>
-        </project>
+        <projects>
+            <project shortName="FITR">
+                <longName>Fitness is Training Right</longName>
+                <description>We are building a fitness tracking application for the world</description>
+                <releases>
+                    <release shortName="Now">
+                        <description>This current time</description>
+                        <releaseDate>2015-04-22</releaseDate>
+                    </release>
+                </releases>
+                <backlogs/>
+            </project>
+        </projects>
     </content>
 </report>

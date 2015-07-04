@@ -3,23 +3,26 @@ package sws.murcs.reporting.model;
 import sws.murcs.model.Person;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
  * A model which matches the output of the status reports so it can be directly serialized.
  */
 public class ReportModelPerson extends ReportModel {
     /**
-     * The person in the report.
+     * The people in the report.
      */
+    @XmlElementWrapper(name = "people")
     @XmlElement(name = "person")
-    private Person person;
+    private List<Person> people;
 
     /**
      * Constructor.
-     * @param pPerson a person
+     * @param pPeople people
      */
-    public ReportModelPerson(final Person pPerson) {
-        person = pPerson;
+    public ReportModelPerson(final List<Person> pPeople) {
+        people = pPeople;
     }
 
     /**

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -197,7 +198,9 @@ public class ReportGeneratorTest {
         String reportPath = "./src/test/resources/sws/murcs/reporting/sampleProjectReport.xml";
         List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
         adjust(report);
-        ReportGenerator.generate(project, tempReport);
+        List<Model> projects = new ArrayList<>();
+        projects.add(project);
+        ReportGenerator.generate(projects, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < report.size(); i++) {
@@ -210,7 +213,9 @@ public class ReportGeneratorTest {
         String reportPath = "./src/test/resources/sws/murcs/reporting/sampleTeamReport.xml";
         List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
         adjust(report);
-        ReportGenerator.generate(team, tempReport);
+        List<Model> teams = new ArrayList<>();
+        teams.add(team);
+        ReportGenerator.generate(teams, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < report.size(); i++) {
@@ -223,7 +228,9 @@ public class ReportGeneratorTest {
         String reportPath = "./src/test/resources/sws/murcs/reporting/samplePersonReport.xml";
         List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
         adjust(report);
-        ReportGenerator.generate(person, tempReport);
+        List<Model> people = new ArrayList<>();
+        people.add(person);
+        ReportGenerator.generate(people, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < report.size(); i++) {

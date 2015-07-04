@@ -3,23 +3,26 @@ package sws.murcs.reporting.model;
 import sws.murcs.model.Team;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.util.List;
 
 /**
  * A model which matches the output of the status reports so it can be directly serialized.
  */
 public class ReportModelTeam extends ReportModel {
     /**
-     * The project in the report.
+     * The teams in the report.
      */
+    @XmlElementWrapper(name = "teams")
     @XmlElement(name = "team")
-    private Team team;
+    private List<Team> teams;
 
     /**
      * Constructor.
-     * @param pTeam a team
+     * @param pTeams teams
      */
-    public ReportModelTeam(final Team pTeam) {
-        team = pTeam;
+    public ReportModelTeam(final List<Team> pTeams) {
+        teams = pTeams;
     }
 
     /**
