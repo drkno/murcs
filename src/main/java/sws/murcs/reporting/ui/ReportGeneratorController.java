@@ -175,6 +175,8 @@ public class ReportGeneratorController {
             default:
                 throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
         }
+        Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
+                .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
         managementList.getItems().setAll(values);
     }
 
