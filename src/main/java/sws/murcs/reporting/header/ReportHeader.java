@@ -18,15 +18,15 @@ public  abstract class ReportHeader {
      * The version of the project.
      */
     @XmlElement(name = "projectVersion")
-    protected String projectVersion;
+    String projectVersion;
     /**
      * The date the report was generated.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
-    protected LocalDate dateGenerated;
+    LocalDate dateGenerated;
     /**
      * The report model (model of all the project).
      */
     @XmlElement(name = "content", type = ReportModel.class)
-    protected ReportModel reportModel;
+    ReportModel reportModel;
 }

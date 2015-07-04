@@ -79,7 +79,6 @@ public class Story extends Model {
         estimate = EstimateType.NOT_ESTIMATED;
         dependencies = new LinkedHashSet<>();
     }
-    
     /**
      * Gets the stories that this story immediately (not transitively)
      * requires to be complete before work can begin.
