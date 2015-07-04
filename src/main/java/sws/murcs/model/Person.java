@@ -36,6 +36,7 @@ public class Person extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
+    @XmlIDREF
     private List<Skill> skills = new ArrayList<>();
 
     /**

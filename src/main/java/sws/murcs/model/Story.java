@@ -6,6 +6,7 @@ import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,12 +64,14 @@ public class Story extends Model {
      * initial creation.
      */
     @TrackableValue
+    @XmlIDREF
     private Person creator;
 
     /**
      * Stories that must be complete before this story can be worked on.
      */
     @TrackableValue
+    @XmlIDREF
     private Collection<Story> dependencies;
 
     /**

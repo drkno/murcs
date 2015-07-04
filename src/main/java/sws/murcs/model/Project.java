@@ -4,6 +4,7 @@ import sws.murcs.magic.tracking.TrackableValue;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")
+    @XmlIDREF
     private List<Backlog> backlogs = new ArrayList<>();
 
     /**

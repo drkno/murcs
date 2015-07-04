@@ -31,18 +31,21 @@ public class Team extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
+    @XmlIDREF
     private List<Person> members = new ArrayList<>();
 
     /**
      * The scrum master of the team.
      */
     @TrackableValue
+    @XmlIDREF
     private Person scrumMaster;
 
     /**
      * The product owner of the team.
      */
     @TrackableValue
+    @XmlIDREF
     private Person productOwner;
 
     /**

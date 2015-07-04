@@ -33,6 +33,7 @@ public class Backlog extends Model {
      * The PO who is assigned to the backlog.
      */
     @TrackableValue
+    @XmlIDREF
     private Person assignedPO;
 
     /**

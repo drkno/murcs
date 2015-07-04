@@ -25,6 +25,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     @TrackableValue
     @XmlAttribute
+    @XmlID
     private String shortName;
 
     /**
