@@ -52,7 +52,8 @@ public abstract class ReportGenerator {
                 generate((Person) model, file);
                 break;
             default:
-                throw new UnsupportedOperationException("Report generation for this model type is yet to be implemented");
+                throw new UnsupportedOperationException(
+                        "Report generation for this model type is yet to be implemented");
         }
     }
 
