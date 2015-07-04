@@ -35,20 +35,20 @@ import java.util.List;
  */
 public class ReportGeneratorController {
     /**
-     * The content relevant to management.
+     * The content relevant to management or workflow.
      */
     @FXML
-    private VBox managementContent;
+    private VBox managementContent, workflowContent;
     /**
-     * The combo box for selecting different management types.
+     * The combo box for selecting different management or workflow types.
      */
     @FXML
-    private ComboBox<ModelType> managementTypeComboBox;
+    private ComboBox<ModelType> managementTypeComboBox, workflowTypeComboBox;
     /**
-     * The list which is populated with selected mangagement type.
+     * The list which is populated with selected management or workflow type.
      */
     @FXML
-    private ListView<Model> managementList;
+    private ListView<Model> managementList, workflowList;
     /**
      * The buttons in the create window.
      */
@@ -80,7 +80,7 @@ public class ReportGeneratorController {
     /**
      * toggle buttons for type of report generation.
      */
-    private ToggleButton all, management;
+    private ToggleButton all, management, workflow;
     /**
      * Group containing toggle buttons.
      */
@@ -106,12 +106,15 @@ public class ReportGeneratorController {
     public final void initialize() {
         all = new ToggleButton("All");
         management = new ToggleButton("Management");
+        workflow = new ToggleButton("Workflow");
         all.alignmentProperty().setValue(Pos.CENTER);
         management.alignmentProperty().setValue(Pos.CENTER);
+        workflow.alignmentProperty().setValue(Pos.CENTER);
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(
                 all,
-                management
+                management,
+                workflow
         );
         toggleGroup.selectToggle(all);
         toggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
@@ -121,10 +124,14 @@ public class ReportGeneratorController {
         }));
         toolBarContainer.getChildren().addAll(
                 all,
-                management
+                management,
+                workflow
         );
         if (!managementContent.managedProperty().isBound()) {
             managementContent.managedProperty().bind(managementContent.visibleProperty());
+        }
+        if (!workflowContent.managedProperty().isBound()) {
+            workflowContent.managedProperty().bind(workflowContent.visibleProperty());
         }
         setupInnerContent();
         hideAllContent();
@@ -135,6 +142,22 @@ public class ReportGeneratorController {
      */
     private void setupInnerContent() {
         setupManagementContent();
+        setupWorkflowContent();
+    }
+
+    /**
+     * Sets up the content for the workflow report type.
+     */
+    private void setupWorkflowContent() {
+        workflowTypeComboBox.getItems().addAll(
+                ModelType.Backlog,
+                ModelType.Story
+        );
+        workflowTypeComboBox
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(((observable, oldValue, newValue) -> changeWorkflowSelection()));
+        workflowList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     /**
@@ -157,7 +180,7 @@ public class ReportGeneratorController {
      * Repopulates the list of models to generate a report from.
      */
     private void changeManagementSelection() {
-        ModelType type = (ModelType) managementTypeComboBox.getSelectionModel().getSelectedItem();
+        ModelType type = managementTypeComboBox.getSelectionModel().getSelectedItem();
         managementList.getItems().clear();
         List<Model> values = new ArrayList<>();
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
@@ -179,6 +202,28 @@ public class ReportGeneratorController {
     }
 
     /**
+     * Repopulates the list of models to generate a report from.
+     */
+    private void changeWorkflowSelection() {
+        ModelType type = workflowTypeComboBox.getSelectionModel().getSelectedItem();
+        workflowList.getItems().clear();
+        List<Model> values = new ArrayList<>();
+        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+
+        switch (type) {
+            case Backlog:
+                values.addAll(organisation.getBacklogs());
+                break;
+            case Story:
+                values.addAll(organisation.getStories());
+                break;
+            default:
+                throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+        }
+        workflowList.getItems().setAll(values);
+    }
+
+    /**
      * Changes the view dependent on the report type.
      */
     private void changeView() {
@@ -188,6 +233,11 @@ public class ReportGeneratorController {
         }
         else if (selected == management) {
             managementContent.setVisible(true);
+            workflowContent.setVisible(false);
+        }
+        else if (selected == workflow) {
+            workflowContent.setVisible(true);
+            managementContent.setVisible(false);
         }
     }
 
@@ -196,6 +246,7 @@ public class ReportGeneratorController {
      */
     private void hideAllContent() {
         managementContent.setVisible(false);
+        workflowContent.setVisible(false);
     }
 
     /**
@@ -246,6 +297,8 @@ public class ReportGeneratorController {
         errorMessage.setText("");
         managementTypeComboBox.getStyleClass().removeAll(Collections.singleton("error"));
         managementList.getStyleClass().removeAll(Collections.singleton("error"));
+        workflowTypeComboBox.getStyleClass().removeAll(Collections.singleton("error"));
+        workflowList.getStyleClass().removeAll(Collections.singleton("error"));
     }
 
     /**
@@ -257,6 +310,9 @@ public class ReportGeneratorController {
         Toggle type = toggleGroup.getSelectedToggle();
         if (type == management) {
             return checkForErrors(managementTypeComboBox, managementList);
+        }
+        else if (type == workflow) {
+            return checkForErrors(workflowTypeComboBox, workflowList);
         }
         return true;
     }
@@ -274,6 +330,9 @@ public class ReportGeneratorController {
         }
         else if (type == management) {
             ReportGenerator.generate(managementList.getSelectionModel().getSelectedItems(), file);
+        }
+        else if (type == workflow) {
+            ReportGenerator.generate(workflowList.getSelectionModel().getSelectedItems(), file);
         }
     }
 
