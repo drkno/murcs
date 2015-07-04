@@ -13,7 +13,7 @@ import java.time.LocalDate;
  * date generated.
  */
 @XmlSeeAlso({ReportHeaderAll.class, ReportHeaderPerson.class, ReportHeaderProject.class, ReportHeaderTeam.class})
-public  abstract class ReportHeader {
+public abstract class ReportHeader {
     /**
      * The version of the project.
      */

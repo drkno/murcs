@@ -227,8 +227,8 @@ public class ReportGeneratorController {
                 if (file != null) {
                     generateReport(file);
                     PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
+                    stage.close();
                 }
-                stage.close();
             } catch (Exception e) {
                 if (file != null) {
                     file.delete();
