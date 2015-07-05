@@ -212,8 +212,9 @@ public class App extends Application {
             UndoRedoManager.importModel(model);
         }
         catch (Exception e) {
-            //There is a problem if this fails
-            e.printStackTrace();
+            //There is a big problem if this fails
+            ErrorReporter.get().reportError(e, "Importing model failed in main()");
+            return;
         }
         launch(args);
     }

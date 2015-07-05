@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Skill;
 
 /**
@@ -288,7 +289,7 @@ public class SkillGenerator implements Generator<Skill> {
             skill.setShortName(name);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "SkillGenerator: setting short name failed");
             return null;
             //Do nothing, don't have to deal with the
             // exception if only generating test data.

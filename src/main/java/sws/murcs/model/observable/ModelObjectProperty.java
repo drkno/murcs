@@ -1,6 +1,7 @@
 package sws.murcs.model.observable;
 
 import javafx.beans.property.SimpleObjectProperty;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 
 import java.lang.reflect.Field;
 
@@ -40,7 +41,7 @@ public class ModelObjectProperty<T> extends SimpleObjectProperty<T> {
             return (T) field.get(object);
         }
         catch (IllegalAccessException e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Could not get the watched object.");
             return null;
         }
     }

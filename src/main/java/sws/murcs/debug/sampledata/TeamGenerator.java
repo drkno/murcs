@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
@@ -951,7 +952,7 @@ public class TeamGenerator implements Generator<Team> {
             team.setShortName(shortName);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "TeamGenerator: setting short name failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
@@ -971,7 +972,7 @@ public class TeamGenerator implements Generator<Team> {
         } catch (Exception e) {
             // Do nothing, don't have to deal with the
             // exception if only generating test data.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "TeamGenerator: adding members and setting PO/SM failed");
             return null;
         }
 

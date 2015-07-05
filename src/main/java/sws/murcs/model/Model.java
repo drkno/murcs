@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -102,9 +103,8 @@ public abstract class Model extends TrackableObject implements Serializable {
         if (shortNameProperty == null) {
             try {
                 shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
-            } catch (Exception e) {
-                System.err.println("Couldn't create property for shortName. Failed with error:");
-                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                ErrorReporter.get().reportError(e, "Couldn't create property for shortName.");
             }
         }
         return shortNameProperty;

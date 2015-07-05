@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -167,7 +168,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             backlog.setAssignedPO(po);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "BacklogGenerator: creating backlog failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
@@ -190,7 +191,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "BacklogGenerator: adding stories to backlog failed");
         }
         backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);
 

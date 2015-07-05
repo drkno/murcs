@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.view.App;
 
 import java.util.function.Consumer;
@@ -154,7 +155,7 @@ public class GenericPopup extends AnchorPane {
             loader.load();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Generic popup failed to load");
         }
         popupScene = new Scene(this);
         popupStage.initOwner(App.getStage());

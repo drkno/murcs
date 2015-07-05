@@ -1,5 +1,6 @@
 package sws.murcs.debug.errorreporting;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
@@ -59,6 +60,11 @@ public final class ErrorReporter {
     private String arguments;
 
     /**
+     * Whether to print stack traces for caught exceptions to the console.
+     */
+    private boolean printStackTraces;
+
+    /**
      * Creates a new ErrorReporter.
      * ErrorReporter handles the reporting of errors to the SWS server when they
      * are unhanded or unexpected.
@@ -68,6 +74,9 @@ public final class ErrorReporter {
         StringBuilder builder = new StringBuilder(arg.length * 2);
         for (String a : arg) {
             builder.append(a);
+            if (a.equalsIgnoreCase("debug")) {
+                printStackTraces = true;
+            }
             builder.append(" ");
         }
         builder.deleteCharAt(builder.length() - 1);
@@ -80,17 +89,30 @@ public final class ErrorReporter {
      * This MUST be used on the JavaFX application thread.
      */
     public void reportManually() {
-        report(Thread.currentThread(), null, true, ErrorType.Manual);
+        report(Thread.currentThread(), null, "![MANUAL]", true, ErrorType.Manual);
     }
 
     /**
      * Performs a report of a Throwable (exception) error.
-     * This MUST be used on the JavaFX application thread unless showDialog is set to false.
      * @param e the throwable to report.
-     * @param showDialog ask for the user to describe their actions before submitting.
+     * @param description a brief message describing some context (for an issue report title).
      */
-    public void reportError(final Throwable e, final boolean showDialog) {
-        report(Thread.currentThread(), null, showDialog, ErrorType.Automatic);
+    public void reportError(final Throwable e, final String description) {
+        report(Thread.currentThread(), e, description, true, ErrorType.Automatic);
+    }
+
+    /**
+     * Performs a secret report of a Throwable (exception) error.
+     * If this is used, there will be NO prompting of the user that something is wrong
+     * and the user will NOT be notified that their data is being sent without their
+     * permission.
+     * Should ONLY be used within internal classes such as tests where user prompting
+     * is not a viable option.
+     * @param e the throwable to report.
+     * @param description a brief message describing some context (for an issue report title).
+     */
+    public void reportErrorSecretly(final Throwable e, final String description) {
+        report(Thread.currentThread(), e, description, false, ErrorType.Automatic);
     }
 
     /**
@@ -99,27 +121,35 @@ public final class ErrorReporter {
      * @param e error that occurred.
      */
     private void reportException(final Thread thread, final Throwable e) {
-        report(thread, e, true, ErrorType.Automatic);
+        report(thread, e, "![UNHANDLED]", true, ErrorType.Automatic);
     }
 
     /**
      * Reports an exception and gathers information from the user where possible.
      * @param thread thread error occurred on.
      * @param throwable the error that occurred.
+     * @param progDescription the description of the problem provided by the program.
      * @param showDialog whether to show a dialog.
      * @param dialogType type of dialog to display.
      */
-    private void report(final Thread thread, final Throwable throwable,
+    private void report(final Thread thread, final Throwable throwable, final String progDescription,
                         final boolean showDialog, final ErrorType dialogType) {
+        if (throwable != null && printStackTraces) {
+            System.err.println(progDescription);
+            throwable.printStackTrace();
+        }
+
         if (!showDialog) {
-            performReporting(thread, throwable, null);
+            performReporting(thread, throwable, null, progDescription);
             return;
         }
 
-        ErrorReportPopup popup = new ErrorReportPopup();
-        popup.setType(dialogType);
-        popup.setReportListener(description -> performReporting(thread, throwable, description));
-        popup.show();
+        Platform.runLater(() -> {
+            ErrorReportPopup popup = new ErrorReportPopup();
+            popup.setType(dialogType);
+            popup.setReportListener(description -> performReporting(thread, throwable, description, progDescription));
+            popup.show();
+        });
     }
 
     /**
@@ -127,35 +157,41 @@ public final class ErrorReporter {
      * @param thread thread the error occurred on.
      * @param throwable the exception that caused the error.
      * @param userDescription the description the user provided.
+     * @param progDescription the description the program provided.
      */
-    private void performReporting(final Thread thread, final Throwable throwable, final String userDescription) {
+    private void performReporting(final Thread thread, final Throwable throwable,
+                                  final String userDescription, final String progDescription) {
         String stackTrace = throwableToString(throwable);
         String threadInfo = thread.toString();
-        String report = buildReport(userDescription, stackTrace, threadInfo);
+        String report = buildReport(userDescription, progDescription, stackTrace, threadInfo);
         sendReport(report);
     }
 
     /**
      * Creates a report based on the provided data from the user.
-     * @param userDescription description of the problem.
+     * @param userDescription description of the problem provided by the user.
+     * @param progDescription description of the problem provided by the program.
      * @param exceptionData the data from the exception that caused the error.
      * @param miscData other data that might be helpful.
      * @return a URL encoded string report.
      */
-    private String buildReport(final String userDescription, final String exceptionData, final String miscData) {
+    private String buildReport(final String userDescription, final String progDescription,
+                               final String exceptionData, final String miscData) {
         final int multiplier = 4;
         Map<String, String> reportFields = new HashMap<>();
 
         try {
-            reportFields.put("description", URLEncoder.encode(userDescription, "UTF-8"));
+            reportFields.put("userDescription", URLEncoder.encode(userDescription, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            // encoding is hard coded so will never happen
+            // encoding is hard coded so can never happen.
+            e.printStackTrace();
         }
 
         reportFields.put("misc", miscData);
         reportFields.put("args", arguments);
         reportFields.put("exception", exceptionData);
         reportFields.put("screenshot", getScreenshot());
+        reportFields.put("progDescription", progDescription);
         reportFields.put("dateTime", LocalDate.now().toString() + " " + LocalTime.now().toString());
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));

@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.ErrorMessageListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -136,7 +137,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
             showErrors(e.getMessage());
         }
         else {
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Unhandled error occurred in an editor.");
         }
     }
 

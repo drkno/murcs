@@ -1,9 +1,5 @@
 package sws.murcs.controller;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -22,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -42,6 +39,11 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
@@ -523,6 +525,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         catch (Exception e) {
             // Something went very wrong
             UndoRedoManager.forget();
+            ErrorReporter.get().reportError(e, "Undo-redo failed to revert");
         }
     }
 
@@ -538,7 +541,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         catch (Exception e) {
             // something went terribly wrong....
             UndoRedoManager.forget();
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Undo-redo failed to remake");
         }
     }
 
@@ -684,7 +687,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 creatorWindow.show();
             }
             catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Initialising a creation window failed");
             }
         }
     }
@@ -823,5 +826,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
         displayList.getSelectionModel().clearSelection();
         NavigationManager.goForward();
+    }
+
+    /**
+     * Reports a bug to the developers.
+     */
+    @FXML
+    private void reportBug() {
+        ErrorReporter.get().reportManually();
     }
 }
