@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -22,8 +21,7 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
-import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -81,12 +79,6 @@ public class StoryEditor extends GenericEditor<Story> {
      * Done a little weirdly to ensure SceneBuilder still works.
      */
     private SearchableComboBox<Story> searchableComboBoxDecorator;
-
-    /**
-     * A label that indicates any errors.
-     */
-    @FXML
-    private Label labelErrorMessage;
 
     /**
      * A table for displaying and updating acceptance conditions.
@@ -233,6 +225,7 @@ public class StoryEditor extends GenericEditor<Story> {
         }
     }
 
+    @FXML
     @Override
     public final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
@@ -245,44 +238,40 @@ public class StoryEditor extends GenericEditor<Story> {
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-        creatorChoiceBox.focusedProperty().addListener(getChangeListener());
-        estimateChoiceBox.focusedProperty().addListener(getChangeListener());
-        storyStateChoiceBox.focusedProperty().addListener(getChangeListener());
+        creatorChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyStateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         dependenciesDropDown.valueProperty().addListener(getChangeListener());
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         removeColumn.setCellFactory(param -> new RemoveButtonCell());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
     public final void dispose() {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        creatorChoiceBox.focusedProperty().removeListener(getChangeListener());
-        estimateChoiceBox.focusedProperty().removeListener(getChangeListener());
+        creatorChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        estimateChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        storyStateChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         dependenciesDropDown.valueProperty().removeListener(getChangeListener());
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelDescription = getModel().getDescription();
@@ -291,9 +280,7 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
-        //This will throw an exception if something goes wrong
-        validateStoryState();
-        getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+        updateStoryState();
 
         if (isCreationMode) {
             Person modelCreator = getModel().getCreator();
@@ -301,56 +288,59 @@ public class StoryEditor extends GenericEditor<Story> {
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
             } else {
-                throw new InvalidParameterException("Creator cannot be empty");
+                addFormError(creatorChoiceBox, "Creator cannot be empty");
             }
         }
 
-        if (getModel().getEstimate() != estimateChoiceBox.getValue()) {
+        if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
             getModel().setEstimate((String) estimateChoiceBox.getValue());
+            // Updates the story state as this gets changed if you set the estimate to Not Estimated
+            storyStateChoiceBox.setValue(getModel().getStoryState());
         }
 
         Story selectedStory = dependenciesDropDown.getValue();
         if (selectedStory != null) {
-            getModel().addDependency(selectedStory);
-            Node dependencyNode = generateStoryNode(selectedStory);
-            dependenciesContainer.getChildren().add(dependencyNode);
-            dependenciesMap.put(selectedStory, dependencyNode);
-            Platform.runLater(() -> {
-                dependenciesDropDown.getSelectionModel().clearSelection();
-                dependenciesDropDown.getItems().remove(selectedStory);
-            });
+            try {
+                getModel().addDependency(selectedStory);
+                Node dependencyNode = generateStoryNode(selectedStory);
+                dependenciesContainer.getChildren().add(dependencyNode);
+                dependenciesMap.put(selectedStory, dependencyNode);
+                Platform.runLater(() -> {
+                    searchableComboBoxDecorator.remove(selectedStory);
+                    dependenciesDropDown.getSelectionModel().clearSelection();
+                });
+            } catch (CustomException e) {
+                addFormError(dependenciesDropDown, e.getMessage());
+            }
         }
     }
 
     /**
      * Checks to see if the current story state is valid and
      * displays an error if it isn't.
-     * @throws Exception if the state cannot be set
      */
-    private void validateStoryState() throws Exception {
+    private void updateStoryState() {
         Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
-
-        StringBuilder errorsBuilder = new StringBuilder();
+        boolean hasErrors = false;
 
         if (state == Story.StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
-                errorsBuilder.append("The story must have at least one AC {state}! ");
+                addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
+                hasErrors = true;
             }
             if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
-                errorsBuilder.append("The story must be part of a backlog {state}! ");
+                addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
+                hasErrors = true;
             }
-
-            if (model.getEstimate() == "No Estimate") {
-                errorsBuilder.append("The story must be estimated {state}! ");
+            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
+                addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
+                hasErrors = true;
             }
         }
 
-        String errors = errorsBuilder.toString();
-        //Add the state to make the error message more helpful
-        errors = errors.replace("{state}", " to set the state to " + state);
-        if (!errors.isEmpty()) {
-            throw new InvalidParameterException(errors);
+        if (!hasErrors) {
+            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 
@@ -368,7 +358,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     + getModel().getShortName() + "?");
             popup.setTitleText("Remove Dependency");
             popup.addYesNoButtons(func -> {
-                dependenciesDropDown.getItems().add(newDependency);
+                searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
                 dependenciesContainer.getChildren().remove(dependencyNode);
                 dependenciesMap.remove(newDependency);
@@ -544,7 +534,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setTitleText("Are you sure?");
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                 popup.addYesNoButtons(p -> {
-                    getModel().removeAcceptanceCriteria(condition);
+                    getModel().removeAcceptanceCondition(condition);
                     loadObject();
                     popup.close();
                 });

@@ -1,7 +1,5 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.Random;
-
 /**
  * Generates random names.
  */
@@ -13,11 +11,6 @@ public final class NameGenerator {
     private NameGenerator() {
         // Blank constructor as this is a utility class.
     }
-
-    /**
-     * The random generator used in this class.
-     */
-    private static final Random RANDOM = new Random();
 
     /**
      * A list of random sentences to be used in descriptions.
@@ -1086,7 +1079,7 @@ public final class NameGenerator {
      * @return a new random name.
      */
     private static String randomName(final String[] firstNames, final String[] lastNames) {
-        return randomElement(firstNames) + " " + randomElement(lastNames);
+        return GenerationHelper.randomElement(firstNames) + " " + GenerationHelper.randomElement(lastNames);
     }
 
     /**
@@ -1094,7 +1087,7 @@ public final class NameGenerator {
      * @return a random title.
      */
     public static String randomTitle() {
-        return randomElement(TITLES);
+        return GenerationHelper.randomElement(TITLES);
     }
 
     /**
@@ -1102,81 +1095,29 @@ public final class NameGenerator {
      * @return The random description
      */
     public static String randomDescription() {
-        return randomElement(DESCRIPTIONS);
-    }
-
-    /**
-     * Generates a random string of lowercase letters.
-     * @param length length of the generated string.
-     * @return a random string of lowercase letters.
-     */
-    public static String randomString(final int length) {
-        return randomString(length, "abcdefghijklmnopqrstuvwxyz");
-    }
-
-    /**
-     * Selects a random element from an array of Strings.
-     * @param from array to select element from.
-     * @return a random element.
-     */
-    public static String randomElement(final String[] from) {
-        return from[RANDOM.nextInt(from.length)];
-    }
-
-    /**
-     * Generates a random string.
-     * @param length length of the string to generate.
-     * @param from alphabet to generate the RANDOM string from.
-     * @return a random string.
-     */
-    public static String randomString(final int length, final String from) {
-        String result = "";
-        int i = length;
-        while (i-- > 0) {
-            result += from.charAt(RANDOM.nextInt(from.length()));
-        }
-        return result;
+        return GenerationHelper.randomElement(DESCRIPTIONS);
     }
 
     /**
      * Gets the Lorem Ispum placeholder string.
      * @return the placeholder string.
      */
-    static String getLoremIpsum() {
-        return "Lorem ipsum dolor sit amet, consectetur "
-                + "adipiscing elit. Donec facilisis ac quam in "
-                + "blandit. Donec ut velit erat. Vestibulum nec "
-                + "condimentum tellus. Morbi finibus augue vestibulum "
-                + "neque vehicula, nec auctor elit maximus. Etiam "
-                + "malesuada quis dui vitae luctus. Nulla lacinia "
-                + "felis vel tortor finibus, accumsan tempor risus "
-                + "pulvinar. Quisque sit amet nulla vitae justo "
-                + "imperdiet ornare. Phasellus venenatis mollis "
-                + "facilisis. Nullam pretium justo erat. Cras nibh "
-                + "velit, maximus pellentesque ex sed, faucibus "
-                + "congue neque. Morbi tempus odio nec sapien "
-                + "iaculis commodo. Quisque quis cursus elit. Sed "
-                + "in leo at purus malesuada vestibulum. Nunc id "
-                + "urna varius nibh malesuada vulputate. Nullam "
-                + "ultrices congue tortor, ut scelerisque augue.";
-    }
-
-    /**
-     * Generates a random number between 0 and a maximum number.
-     * @param max maximum number.
-     * @return a random number.
-     */
-    public static int random(final int max) {
-        return random(0, max);
-    }
-
-    /**
-     * Generates a random number between a min and a max value.
-     * @param min minimum value.
-     * @param max maximum value.
-     * @return a random number.
-     */
-    public static int random(final int min, final int max) {
-        return RANDOM.nextInt(max - min) + min;
+    public static String getLoremIpsum() {
+            return "Lorem ipsum dolor sit amet, consectetur "
+                    + "adipiscing elit. Donec facilisis ac quam in "
+                    + "blandit. Donec ut velit erat. Vestibulum nec "
+                    + "condimentum tellus. Morbi finibus augue vestibulum "
+                    + "neque vehicula, nec auctor elit maximus. Etiam "
+                    + "malesuada quis dui vitae luctus. Nulla lacinia "
+                    + "felis vel tortor finibus, accumsan tempor risus "
+                    + "pulvinar. Quisque sit amet nulla vitae justo "
+                    + "imperdiet ornare. Phasellus venenatis mollis "
+                    + "facilisis. Nullam pretium justo erat. Cras nibh "
+                    + "velit, maximus pellentesque ex sed, faucibus "
+                    + "congue neque. Morbi tempus odio nec sapien "
+                    + "iaculis commodo. Quisque quis cursus elit. Sed "
+                    + "in leo at purus malesuada vestibulum. Nunc id "
+                    + "urna varius nibh malesuada vulputate. Nullam "
+                    + "ultrices congue tortor, ut scelerisque augue.";
     }
 }

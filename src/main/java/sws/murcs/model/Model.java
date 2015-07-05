@@ -26,15 +26,18 @@ public abstract class Model extends TrackableObject implements Serializable {
     @TrackableValue
     @XmlAttribute
     private String shortName;
+
     /**
      * The long name of a model object.
      */
     @TrackableValue
     private String longName;
+
     /**
      * Listenable property for the short name.
      */
     private transient ModelObjectProperty<String> shortNameProperty;
+
     /**
      * Hashcode prime number.
      */

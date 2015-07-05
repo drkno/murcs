@@ -1,43 +1,51 @@
 package sws.murcs.debug.sampledata;
 
-import java.util.ArrayList;
-import java.util.List;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Generates random Backlogs with stories.
  */
 public class BacklogGenerator implements Generator<Backlog> {
+
     /**
      * The max number of projects generated when stress level is low.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * The min number of projects generated when stress level is low.
      */
     public static final int LOW_STRESS_MIN = 1;
 
+
     /**
      * The max number of projects generated when stress level is medium.
      */
     public static final int MEDIUM_STRESS_MAX = 10;
+
     /**
      * The min number of projects generated when stress level is medium.
      */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+
     /**
      * The max number of projects generated when stress level is high.
      */
     public static final int HIGH_STRESS_MAX = 20;
+
     /**
      * The min number of projects generated when stress level is high.
      */
     public static final int HIGH_STRESS_MIN = 10;
+
 
     /**
      * A list of backlog names.
@@ -117,7 +125,7 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     private List<Story> generateStories(final int min, final int max) {
         List<Story> generated = new ArrayList<>();
-        int storyCount = NameGenerator.random(min, max);
+        int storyCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of stories, make some up
         if (storyPool == null) {
@@ -137,7 +145,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             for (int i = 0; i < storyCount; i++) {
                 // Remove the story so we can't pick it again.
                 // We'll put it back when we're done
-                Story story = storyPool.remove(NameGenerator.random(storyPool.size()));
+                Story story = storyPool.remove(GenerationHelper.random(storyPool.size()));
                 generated.add(story);
             }
         }
@@ -152,8 +160,8 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         Backlog backlog = new Backlog();
 
-        String shortName = NameGenerator.randomElement(backlogNames);
-        String longName = NameGenerator.randomString(longNameMax);
+        String shortName = GenerationHelper.randomElement(backlogNames);
+        String longName = GenerationHelper.randomString(longNameMax);
         String description = NameGenerator.randomDescription();
 
         List<Story> stories = generateStories(minStories, maxStories);
@@ -178,10 +186,10 @@ public class BacklogGenerator implements Generator<Backlog> {
         try {
             for (int i = 0; i < prioritised; i++) {
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
-                stories.get(i).setEstimate(estimates.get(NameGenerator.random(estimates.size())));
+                stories.get(i).setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
 
                 Story.StoryState[] storyStates = Story.StoryState.values();
-                stories.get(i).setStoryState(storyStates[NameGenerator.random(storyStates.length)]);
+                stories.get(i).setStoryState(storyStates[GenerationHelper.random(storyStates.length)]);
                 backlog.addStory(stories.get(i), i);
             }
             for (Story story : stories.subList(prioritised, size)) {
@@ -191,7 +199,7 @@ public class BacklogGenerator implements Generator<Backlog> {
             // Will never happen!! We hope.
             e.printStackTrace();
         }
-        backlog.setEstimateType(EstimateType.values()[NameGenerator.random(EstimateType.values().length)]);
+        backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);
 
         return backlog;
     }

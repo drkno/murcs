@@ -1,5 +1,6 @@
 package sws.murcs.controller.controls;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -37,9 +38,24 @@ public class SearchableComboBox<T> {
     private EventHandler<MouseEvent> mouseEvent;
 
     /**
+     * Event filter to ensure the tab key works.
+     */
+    private EventHandler<KeyEvent> tabConsumerEvent;
+
+    /**
      * Converter to convert strings into generics.
      */
     private StringConverter<T> converter;
+
+    /**
+     * Index in the currently filtered list of the current tab selection.
+     */
+    private int tabIndex = -1;
+
+    /**
+     * Listener to listen for changes in focus.
+     */
+    private ChangeListener<? super Boolean> focusListener;
 
     /**
      * Instantiates a new searchable ComboBox.
@@ -56,6 +72,10 @@ public class SearchableComboBox<T> {
         converter = createStringConverter();
         comboBox.setConverter(converter);
         comboBox.setTooltip(new Tooltip(comboBox.getPromptText()));
+        tabConsumerEvent = createTabKeyFilter();
+        comboBox.getEditor().addEventFilter(KeyEvent.KEY_PRESSED, tabConsumerEvent);
+        focusListener = createFocusListener();
+        comboBox.focusedProperty().addListener(focusListener);
     }
 
     /**
@@ -68,6 +88,46 @@ public class SearchableComboBox<T> {
         mouseEvent = null;
         comboBox.setConverter(null);
         converter = null;
+        comboBox.getEditor().removeEventFilter(KeyEvent.KEY_PRESSED, tabConsumerEvent);
+        tabConsumerEvent = null;
+        comboBox.focusedProperty().removeListener(focusListener);
+        focusListener = null;
+    }
+
+    /**
+     * Creates a listener for handling gain and loss of focus.
+     * @return a new focus listener.
+     */
+    private ChangeListener<? super Boolean> createFocusListener() {
+        return (observableValue, oldValue, newValue) -> {
+            if (!comboBox.isFocused()) {
+                comboBox.getEditor().setText(null);
+                comboBox.setItems(data);
+                comboBox.setVisibleRowCount(data.size());
+            }
+        };
+    }
+
+    /**
+     * Creates a new event filter to ensure the tab key works.
+     * @return new tab key event filter.
+     */
+    private EventHandler<KeyEvent> createTabKeyFilter() {
+        return k -> {
+            if (k.getCode() == KeyCode.TAB && comboBox.getItems().size() > 0) {
+                tabIndex++;
+                if (tabIndex >= comboBox.getItems().size()) {
+                    tabIndex = 0;
+                }
+                String text = comboBox.getItems().get(tabIndex).toString();
+                comboBox.getEditor().setText(text);
+                comboBox.getEditor().positionCaret(text.length());
+                k.consume();
+            }
+            else {
+                tabIndex = -1;
+            }
+        };
     }
 
     /**
@@ -125,7 +185,6 @@ public class SearchableComboBox<T> {
             }
             else if ((code == KeyCode.TAB || code == KeyCode.ENTER || code == KeyCode.CONTROL)
                     && comboBox.getItems().size() > 0) {
-                comboBox.getEditor().setText(comboBox.getItems().get(0).toString());
                 event.consume();
                 return;
             }
@@ -136,8 +195,14 @@ public class SearchableComboBox<T> {
                 return;
             }
 
-            ObservableList list = FXCollections.observableArrayList();
-            String typedInput = text.toLowerCase();
+            ObservableList<T> list = FXCollections.observableArrayList();
+            String typedInput;
+            if (text != null) {
+                typedInput = text.toLowerCase();
+            }
+            else {
+                typedInput = "";
+            }
             data.forEach(d -> {
                 if (d.toString().toLowerCase().contains(typedInput)) {
                     list.add(d);
@@ -145,14 +210,22 @@ public class SearchableComboBox<T> {
             });
 
             comboBox.setItems(list);
+            comboBox.setVisibleRowCount(list.size());
 
             if (list.size() == 1 && code != KeyCode.DELETE) {
                 text = list.get(0).toString();
                 if (text.toLowerCase().startsWith(typedInput)) {
                     int pos = comboBox.getEditor().getCaretPosition();
                     if (code == KeyCode.BACK_SPACE) {
-                        pos -= 1;
+                        if (pos == 0) {
+                            text = "";
+                            comboBox.setItems(data);
+                        }
+                        else {
+                            pos -= 1;
+                        }
                     }
+                    comboBox.getSelectionModel().select(null);
                     comboBox.getEditor().setText(text);
                     comboBox.getEditor().selectRange(pos, text.length());
                 }
@@ -166,5 +239,31 @@ public class SearchableComboBox<T> {
      */
     private void positionCursor(final int position) {
         comboBox.getEditor().positionCaret(position);
+    }
+
+    /**
+     * Adds an item to the searchable items.
+     * @param item item to add.
+     * @return if the item was successfully added.
+     */
+    public final boolean add(final T item) {
+        boolean result = data.add(item);
+        comboBox.getEditor().setText("");
+        comboBox.setItems(data);
+        comboBox.setVisibleRowCount(data.size());
+        return result;
+    }
+
+    /**
+     * Removes an item from the searchable items.
+     * @param item item to remove.
+     * @return if the item was successfully removed.
+     */
+    public final boolean remove(final T item) {
+        boolean result = data.remove(item);
+        comboBox.getEditor().setText("");
+        comboBox.setItems(data);
+        comboBox.setVisibleRowCount(data.size());
+        return result;
     }
 }

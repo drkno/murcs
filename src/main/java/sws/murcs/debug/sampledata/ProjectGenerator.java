@@ -10,19 +10,23 @@ import java.util.List;
  * Generates random projects with teams.
  */
 public class ProjectGenerator implements Generator<Project> {
+
     /**
      * The max number of projects generated when stress level is low.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * The min number of projects generated when stress level is low.
      */
     public static final int LOW_STRESS_MIN = 1;
 
+
     /**
      * The max number of projects generated when stress level is medium.
      */
     public static final int MEDIUM_STRESS_MAX = 10;
+
     /**
      * The min number of projects generated when stress level is medium.
      */
@@ -32,6 +36,7 @@ public class ProjectGenerator implements Generator<Project> {
      * The max number of projects generated when stress level is high.
      */
     public static final int HIGH_STRESS_MAX = 20;
+
     /**
      * The min number of projects generated when stress level is high.
      */
@@ -57,6 +62,7 @@ public class ProjectGenerator implements Generator<Project> {
      * A team generator for the project.
      */
     private Generator<Team> teamGenerator;
+
     /**
      * A pool of teams for adding to projects.
      */
@@ -103,7 +109,7 @@ public class ProjectGenerator implements Generator<Project> {
      */
     private List<Team> generateTeams(final int min, final int max) {
         List<Team> generated = new ArrayList<>();
-        int teamCount = NameGenerator.random(min, max);
+        int teamCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of teams, make some up
         if (teamPool == null) {
@@ -122,7 +128,7 @@ public class ProjectGenerator implements Generator<Project> {
 
             for (int i = 0; i < teamCount; i++) {
                 //Remove the team so we can't pick it again. We'll put it back when we're done
-                Team team = teamPool.remove(NameGenerator.random(teamPool.size()));
+                Team team = teamPool.remove(GenerationHelper.random(teamPool.size()));
                 generated.add(team);
             }
 
@@ -141,8 +147,8 @@ public class ProjectGenerator implements Generator<Project> {
 
         Project project = new Project();
 
-        String shortName = NameGenerator.randomElement(projectNames);
-        String longName = NameGenerator.randomString(longNameLength);
+        String shortName = GenerationHelper.randomElement(projectNames);
+        String longName = GenerationHelper.randomString(longNameLength);
         String description = NameGenerator.randomDescription();
 
         //List<Team> teams = generateTeams(10, 50);

@@ -22,6 +22,7 @@ import java.util.Objects;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Backlog extends Model {
+
     /**
      * the description of the Backlog.
      */

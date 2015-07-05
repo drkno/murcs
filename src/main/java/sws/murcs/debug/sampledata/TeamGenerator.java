@@ -10,10 +10,12 @@ import java.util.List;
  * Generates random teams with people.
  */
 public class TeamGenerator implements Generator<Team> {
+
     /**
      * The max number of projects generated when stress level is low.
      */
     public static final int LOW_STRESS_MAX = 5;
+
     /**
      * The min number of projects generated when stress level is low.
      */
@@ -23,6 +25,7 @@ public class TeamGenerator implements Generator<Team> {
      * The max number of projects generated when stress level is medium.
      */
     public static final int MEDIUM_STRESS_MAX = 10;
+
     /**
      * The min number of projects generated when stress level is medium.
      */
@@ -32,6 +35,7 @@ public class TeamGenerator implements Generator<Team> {
      * The max number of projects generated when stress level is high.
      */
     public static final int HIGH_STRESS_MAX = 20;
+
     /**
      * The min number of projects generated when stress level is high.
      */
@@ -823,14 +827,17 @@ public class TeamGenerator implements Generator<Team> {
             "Zupplers",
             "ZURB"
     };
+
     /**
      * Another list of team names.
      */
     private String[] teamNames = PREDEFINED_TEAM_NAMES;
+
     /**
      * The probably of a person being a scrum master.
      */
     private float probOfScrumMaster;
+
     /**
      * The probability of a person being a product owner.
      */
@@ -840,6 +847,7 @@ public class TeamGenerator implements Generator<Team> {
      * The person generator for this team generator.
      */
     private Generator<Person> personGenerator;
+
     /**
      * A pool of persons to use in this team.
      */
@@ -895,7 +903,7 @@ public class TeamGenerator implements Generator<Team> {
      */
     private List<Person> generateMembers(final int min, final int max) {
         List<Person> generated = new ArrayList<>();
-        int personCount = NameGenerator.random(min, max);
+        int personCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of person, make some up
         if (personPool == null) {
@@ -915,7 +923,7 @@ public class TeamGenerator implements Generator<Team> {
             for (int i = 0; i < personCount; i++) {
                 // Remove the person so we can't pick it again.
                 // We'll put it back when we're done
-                Person person = personPool.remove(NameGenerator.random(personPool.size()));
+                Person person = personPool.remove(GenerationHelper.random(personPool.size()));
                 generated.add(person);
             }
         }
@@ -930,8 +938,8 @@ public class TeamGenerator implements Generator<Team> {
 
         Team team = new Team();
 
-        String shortName = NameGenerator.randomElement(teamNames);
-        String longName = shortName + NameGenerator.random(longNameMax);
+        String shortName = GenerationHelper.randomElement(teamNames);
+        String longName = shortName + GenerationHelper.random(longNameMax);
 
         String description = NameGenerator.randomDescription();
 

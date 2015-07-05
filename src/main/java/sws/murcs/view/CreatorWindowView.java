@@ -22,10 +22,12 @@ public class CreatorWindowView {
      * The model object to create.
      */
     private Model model;
+
     /**
      * The create callback.
      */
     private Consumer<Model> createAction;
+
     /**
      * The cancel callback.
      */
@@ -122,6 +124,7 @@ public class CreatorWindowView {
                 return;
             }
             Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
             stage.setScene(scene);
 
             // Give the stage a name and icon

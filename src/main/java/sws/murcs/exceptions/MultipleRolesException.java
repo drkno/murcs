@@ -7,10 +7,12 @@ import sws.murcs.model.Team;
  * Exception for when a person is set to multiple roles.
  */
 public class MultipleRolesException extends CustomException {
+
     /**
      * The team affected.
      */
     private Team affectedTeam;
+
     /**
      * the person affected.
      */

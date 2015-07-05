@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -18,8 +17,6 @@ import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.InvalidInputException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Organisation;
@@ -28,6 +25,7 @@ import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,12 +84,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private TableColumn<Story, Object> deleteColumn;
 
     /**
-     * A label that will display an error message.
-     */
-    @FXML
-    private Label labelErrorMessage;
-
-    /**
      * Increase and decrease priority buttons.
      */
     @FXML
@@ -114,10 +106,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
-                int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
-                Integer priority = getModel().getStoryPriority(selectedStory.get());
-                increasePriorityButton.setDisable(selectedIndex == 0 && priority != null);
-                decreasePriorityButton.setDisable(priority == null);
             }
         });
 
@@ -128,6 +116,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
+            Integer priority = getModel().getStoryPriority(selectedStory.get());
+            increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
+            decreasePriorityButton.setDisable(priority == null);
+        });
+
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -135,12 +130,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
         deleteColumn.setCellFactory(param -> new RemoveButtonCell());
         storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     /**
@@ -162,7 +151,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 getModel().modifyStory(story, storyPriority - 1);
             }
             catch (CustomException e) {
-                labelErrorMessage.setText(e.getMessage());
+                //Should not ever happen, this should be handled by the GUI,
+                //e.g Disabling buttons.
+                e.printStackTrace();
             }
             updateStoryTable();
         }
@@ -190,7 +181,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 getModel().modifyStory(story, storyPriority);
             }
             catch (CustomException e) {
-                labelErrorMessage.setText(e.getMessage());
+                //Should not ever happen, this should be handled by the GUI
+                e.printStackTrace();
             }
             updateStoryTable();
         }
@@ -202,32 +194,37 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     @FXML
     private void addStory(final ActionEvent event) {
-        try {
-            Story currentStory = storyPicker.getValue();
-            Integer priority = null;
-            String priorityString = priorityTextField.getText().trim();
-            if (currentStory != null) {
-                if (!priorityString.isEmpty()) {
-                    try {
-                        priority = Integer.parseInt(priorityString) - 1;
-                    } catch (Exception e) {
-                        throw new InvalidInputException("Position is not a number");
-                    }
-                    if (priority < 0) {
-                        throw new InvalidInputException("Invalid number");
-                    }
-                }
-                getModel().addStory(currentStory, priority);
-                updateAvailableStories();
-                updateStoryTable();
-            }
-            else {
-                throw new InvalidInputException("No story selected");
-            }
-            labelErrorMessage.setText("");
+        Story currentStory = storyPicker.getValue();
+        Integer priority = null;
+        String priorityString = priorityTextField.getText().trim();
+        boolean hasErrors = false;
+
+        if (currentStory == null) {
+            addFormError(storyPicker, "No story selected");
+            hasErrors = true;
         }
-        catch (CustomException e) {
-            labelErrorMessage.setText(e.getMessage());
+        if (!priorityString.isEmpty()) {
+            try {
+                priority = Integer.parseInt(priorityString) - 1;
+            } catch (Exception e) {
+                addFormError(priorityTextField, "Position is not a number");
+                hasErrors = true;
+            }
+            if (priority < 0) {
+                addFormError(priorityTextField, "Priority cannot be less than 0");
+                hasErrors = true;
+            }
+        }
+
+        if (hasErrors) {
+            return;
+        }
+        try {
+            getModel().addStory(currentStory, priority);
+            updateAvailableStories();
+            updateStoryTable();
+        } catch (CustomException e) {
+            addFormError(storyPicker, e.getMessage());
         }
     }
 
@@ -291,14 +288,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * in the backlog.
      */
     private void updateAvailableStories() {
-        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-
         Platform.runLater(() -> {
+            Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
             int selectedIndex = storyPicker.getSelectionModel().getSelectedIndex();
 
+            Collection<Story> stories = organisation.getUnassignedStories();
+            for (Story story : getModel().getAllStories()) {
+                stories.remove(story);
+            }
             storyPicker.getItems().clear();
-            storyPicker.getItems().addAll(organisation.getUnassignedStories());
-            storyPicker.getSelectionModel().select(selectedIndex);
+            storyPicker.getItems().addAll(stories);
+            storyPicker.getSelectionModel().select(Math.min(selectedIndex, stories.size() - 1));
         });
     }
 
@@ -323,18 +323,19 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         observableStories = null;
         selectedStory = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -351,9 +352,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         Person modelProductOwner = getModel().getAssignedPO();
         Person viewProductOwner = poComboBox.getValue();
-        if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
-            getModel().setAssignedPO(viewProductOwner);
-            updateAssignedPO();
+        if (isNotEqual(modelProductOwner, viewProductOwner) && viewProductOwner != null) {
+            try {
+                getModel().setAssignedPO(viewProductOwner);
+                updateAssignedPO();
+            } catch (CustomException e) {
+                addFormError(poComboBox, e.getMessage());
+            }
+        }
+        if (getModel().getAssignedPO() == null) {
+            addFormError(poComboBox, "There must be a PO");
         }
 
         EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
