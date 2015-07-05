@@ -241,6 +241,7 @@ public class ReportGeneratorController {
             workflowContent.setVisible(true);
             managementContent.setVisible(false);
         }
+        clearErrors();
         stage.sizeToScene();
     }
 
