@@ -261,6 +261,8 @@ public final class ErrorReporter {
      * @param report report to send.
      */
     private void sendReport(final String report) {
+        final int successfulCode = 200;
+
         try {
             URL obj = new URL(BUG_REPORT_URL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -271,6 +273,10 @@ public final class ErrorReporter {
             wr.writeBytes(report);
             wr.flush();
             wr.close();
+
+            if (con.getResponseCode() != successfulCode) {
+                throw new Exception("Transmission failed.");
+            }
         }
         catch (Exception e) {
             System.err.println("Could not submit error report.");
