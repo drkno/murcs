@@ -122,9 +122,7 @@ public abstract class TrackableObject {
             return UndoRedoManager.getHead().getCommitNumber();
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
-            System.err.println("Exception during assimilation. "
-                    + "Did you fail to call commit() before endAssimilation()?");
-            ErrorReporter.get().reportError(e, true);
+            ErrorReporter.get().reportError(e, "Assimilation failed. Commit was probably not called before using.");
             return 0L;
         }
     }

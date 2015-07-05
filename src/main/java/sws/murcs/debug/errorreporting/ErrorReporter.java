@@ -32,6 +32,11 @@ import java.util.Map;
 public final class ErrorReporter {
 
     /**
+     * The URL to report bugs to.
+     */
+    private static final String BUG_REPORT_URL = "http://csse-s302g1.canterbury.ac.nz/report";
+
+    /**
      * Current instance of this singleton.
      */
     private static ErrorReporter reporter;
@@ -257,8 +262,7 @@ public final class ErrorReporter {
      */
     private void sendReport(final String report) {
         try {
-            String url = "http://bugs.sws.nz/report";
-            URL obj = new URL(url);
+            URL obj = new URL(BUG_REPORT_URL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", "SWS Error Reporter");
