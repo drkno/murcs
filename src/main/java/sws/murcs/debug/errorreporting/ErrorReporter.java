@@ -34,7 +34,7 @@ public final class ErrorReporter {
     /**
      * The URL to report bugs to.
      */
-    private static final String BUG_REPORT_URL = "http://csse-s302g1.canterbury.ac.nz/report";
+    private static final String BUG_REPORT_URL = "http://bugs.sws.nz/api/submitbug";
 
     /**
      * Current instance of this singleton.
@@ -182,7 +182,7 @@ public final class ErrorReporter {
      */
     private String buildReport(final String userDescription, final String progDescription,
                                final String exceptionData, final String miscData) {
-        final int multiplier = 4;
+        final int multiplier = 5;
         Map<String, String> reportFields = new HashMap<>();
 
         try {
@@ -206,14 +206,17 @@ public final class ErrorReporter {
         reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
         reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
 
-        StringBuilder builder = new StringBuilder(reportFields.size() * multiplier);
+        StringBuilder builder = new StringBuilder(reportFields.size() * multiplier + 2);
+        builder.append("{");
         for (Map.Entry<String, String> entry : reportFields.entrySet()) {
+            builder.append("\"");
             builder.append(entry.getKey());
-            builder.append("=");
+            builder.append("\":\"");
             builder.append(entry.getValue());
-            builder.append("&");
+            builder.append("\",");
         }
         builder.deleteCharAt(builder.length() - 1);
+        builder.append("}");
 
         return builder.toString();
     }
