@@ -1,0 +1,15 @@
+{
+  "name": "bugs-sws",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "MD5": "~1.2.1",
+    "body-parser": "~1.12.0",
+    "express": "~4.12.2",
+    "mongoose": "^4.0.6",
+    "mongoose-auto-increment": "^4.0.0",
+    "mongoose-timestamp": "^0.4.0"
+  }
+}
