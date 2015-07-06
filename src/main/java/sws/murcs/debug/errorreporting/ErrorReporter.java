@@ -271,6 +271,7 @@ public final class ErrorReporter {
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("User-Agent", "SWS Error Reporter");
+            con.setRequestProperty("Content-Type", "application/json");
             con.setDoOutput(true);
             DataOutputStream wr = new DataOutputStream(con.getOutputStream());
             wr.writeBytes(report);
