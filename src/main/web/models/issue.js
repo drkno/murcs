@@ -1,5 +1,4 @@
-var mongoose = require('mongoose'),
-	autoIncrement = require('mongoose-auto-increment');
+var mongoose = require('mongoose');
 
 var issueSchema = new mongoose.Schema({
 	exception: String,
@@ -19,9 +18,4 @@ var issueSchema = new mongoose.Schema({
 	misc: String
 });
 
-var connection = mongoose.createConnection("mongodb://localhost/sws");
- 
-autoIncrement.initialize(connection);
-
-issueSchema.plugin(autoIncrement.plugin, {model: 'issue', field: 'issueId'});
 module.exports = mongoose.model('issue', issueSchema);

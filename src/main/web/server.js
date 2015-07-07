@@ -25,8 +25,8 @@ REST.prototype.connectMonodb = function() {
 
 REST.prototype.configureExpress = function() {
       var self = this;
-      app.use(bodyParser.urlencoded({ extended: true }));
       app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
       var router = express.Router();
       app.use('/api', router);
       var rest_router = new rest(router, md5);
