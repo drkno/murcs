@@ -218,7 +218,10 @@ public final class ErrorReporter {
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
 
-        return builder.toString();
+        String json = builder.toString();
+        json = json.replace("\t", "");
+        json = json.replace("\r", "");
+        return json.replace("\n", "\\n");
     }
 
     /**
