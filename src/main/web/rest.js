@@ -33,13 +33,66 @@ REST_ROUTER.prototype.handleRoutes= function(router, md5, self) {
         query.populate('issues');
         query.exec(function (err, result) {
             if (err) {
-                res.status(500).json({"error" : true, "message" : "error getting bugs", "dbError": bugs.err});
+                res.status(500).json({"error" : true, "message" : "error getting bugs", "dbError": err});
             }
             else {
                 res.json({"error" : false, "message" : "All the bugs", "data": result});
             }
         }.bind(this));
     }.bind(self));
+
+    router.get("/bug/:id", function (req, res) {
+        var id = req.params.id;
+        if (id.length === 24) {
+            var query = bug.findById(id, function (err, result) {
+                if (err) {
+                     res.status(500).json({"error" : true, "message" : "error getting bug with id " + req.params.id, "dbError": err});
+                }
+                else if (result === null) {
+                    res.status(404).json({"error" : true, "message" : "Bug with id " + id + " was not found"});
+                }
+                else {
+                    res.json({"error" : false, "message" : "Found bug with id " + id, "data": result});
+                }
+            }.bind(this));
+        }
+        else {
+            res.status(404).json({"error" : true, "message" : "Invalid id"});
+        }
+    }.bind(self));
+
+    router.get("/issue", function (req, res) {
+        var query = issue.find();
+        query.exec(function (err, result) {
+            if (err) {
+                res.status(500).json({"error" : true, "message" : "error getting issues", "dbError": err});
+            }
+            else {
+                res.json({"error" : false, "message" : "All issues", "data": result});
+            }
+        }.bind(this));
+    }.bind(self));
+
+    router.get("/issue/:id", function (req, res) {
+        var id = req.params.id;
+        if (id.length === 24) {
+            var query = issue.findById(id, function (err, result) {
+                if (err) {
+                     res.status(500).json({"error" : true, "message" : "error getting issue with id " + req.params.id, "dbError": err});
+                }
+                else if (result === null) {
+                    res.status(404).json({"error" : true, "message" : "Issue with id " + id + " was not found"});
+                }
+                else {
+                    res.json({"error" : false, "message" : "Found issue with id " + id, "data": result});
+                }
+            }.bind(this));
+        }
+        else {
+            res.status(404).json({"error" : true, "message" : "Invalid id"});
+        }
+    }.bind(self));
+
 }
 
 function submitBug(issueData, md5, callback) {
