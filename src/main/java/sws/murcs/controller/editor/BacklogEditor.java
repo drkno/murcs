@@ -352,7 +352,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         Person modelProductOwner = getModel().getAssignedPO();
         Person viewProductOwner = poComboBox.getValue();
-        if (isNotEqual(modelProductOwner, viewProductOwner) && viewProductOwner != null) {
+        if (isNullOrNotEqual(modelProductOwner, viewProductOwner) && viewProductOwner != null) {
             try {
                 getModel().setAssignedPO(viewProductOwner);
                 updateAssignedPO();
