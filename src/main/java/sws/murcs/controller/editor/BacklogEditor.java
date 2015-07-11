@@ -1,19 +1,29 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -78,10 +88,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private TableColumn<Story, Object> storyColumn;
 
     /**
-     * A column containing delete buttons.
+     * A column containing story priorities.
      */
     @FXML
-    private TableColumn<Story, Object> deleteColumn;
+    private TableColumn<Story, Object> priorityColumn;
 
     /**
      * Increase and decrease priority buttons.
@@ -128,8 +138,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         observableStories = FXCollections.observableArrayList();
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
-        deleteColumn.setCellFactory(param -> new RemoveButtonCell());
         storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
+        priorityColumn.setCellFactory(param -> new EditablePriorityCell());
+        priorityColumn.setEditable(true);
+        storyTable.setEditable(true);
     }
 
     /**
@@ -206,12 +218,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!priorityString.isEmpty()) {
             try {
                 priority = Integer.parseInt(priorityString) - 1;
+                if (priority < 0) {
+                    addFormError(priorityTextField, "Priority cannot be less than 0");
+                    hasErrors = true;
+                }
             } catch (Exception e) {
                 addFormError(priorityTextField, "Position is not a number");
-                hasErrors = true;
-            }
-            if (priority < 0) {
-                addFormError(priorityTextField, "Priority cannot be less than 0");
                 hasErrors = true;
             }
         }
@@ -403,42 +415,153 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
+     *
+     */
+    private class EditablePriorityCell extends TableCell<Story, Object> {
+
+        /**
+         * The text field for.
+         */
+        private TextField textField;
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.requestFocus();
+            }
+        }
+
+        @Override
+        public void commitEdit(final Object newValue) {
+            super.commitEdit(newValue);
+            if (newValue != null) {
+                setPriority(newValue.toString());
+            }
+        }
+
+        @Override
+        public void cancelEdit() {
+
+        }
+
+        @Override
+        protected void updateItem(final Object unused, final boolean empty) {
+            super.updateItem(unused, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else if (isEditing()) {
+                if (textField != null) {
+                    textField.setText(getString());
+                }
+                setText(null);
+                setGraphic(textField);
+            } else {
+                setText(getString());
+                setGraphic(null);
+            }
+        }
+
+        /**
+         *
+         */
+        private void createTextField() {
+            textField = new TextField(getString());
+
+            //doesn't work if clicking a different cell, only focusing out of table
+            textField.focusedProperty().addListener(
+                        (ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
+                            if (!arg2) {
+                                commitEdit(textField.getText());
+                            }
+                        });
+
+            textField.setOnKeyReleased((KeyEvent t) -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    commitEdit(textField.getText());
+                }
+                if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
+
+        /**
+         *
+         * @return HI.
+         */
+        private String getString() {
+            TableRow<Story> row = getTableRow();
+            Story story = null;
+            Integer priority;
+            String priorityString = null;
+            if (row != null) {
+                story = row.getItem();
+            }
+            if (story != null) {
+                priority = getModel().getStoryPriority(story);
+                if (priority != null) {
+                    priority += 1;
+                    priorityString = priority.toString();
+                }
+            }
+
+            return priorityString;
+        }
+
+        /**
+         *
+         * @param priorityString The new priority of this story
+         */
+        private void setPriority(final String priorityString) {
+            Story story = (Story) getTableRow().getItem();
+            if (!priorityString.trim().isEmpty()) {
+                try {
+                    int priority = Integer.parseInt(priorityString) - 1;
+                    if (priority < 0) {
+                        addFormError("Priority cannot be less than 1");
+                    }
+                    else {
+                        getModel().changeStoryPriority(story, priority);
+                    }
+                } catch (Exception e) {
+                    addFormError("Priority must be an int");
+                }
+            }
+            else {
+                try {
+                    getModel().changeStoryPriority(story, null);
+                }
+                catch (CustomException e) {
+                }
+            }
+        }
+    }
+
+    /**
      * A TableView cell that contains a link to the story it represents.
      */
     private class HyperlinkButtonCell extends TableCell<Story, Object> {
         @Override
         protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
-            Story story = (Story) getTableRow().getItem();
-            if (story == null || empty) {
+            TableRow<Story> row = getTableRow();
+            if (row == null || empty || row.getItem() == null) {
                 setText(null);
                 setGraphic(null);
-            }
-            else {
-                Integer storyPriority = getModel().getStoryPriority(story);
-                if (storyPriority != null) {
-                    if (getIsCreationWindow()) {
-                        setText(String.valueOf(storyPriority + 1)
-                                + ". "
-                                + story.getShortName());
-                    }
-                    else {
-                        Hyperlink nameLink = new Hyperlink(String.valueOf(storyPriority + 1)
-                                + ". "
-                                + story.getShortName());
-                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
-                        setGraphic(nameLink);
-                    }
-                }
-                else {
-                    if (getIsCreationWindow()) {
-                        setText(story.getShortName());
-                    }
-                    else {
-                        Hyperlink nameLink = new Hyperlink(story.getShortName());
-                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
-                        setGraphic(nameLink);
-                    }
+            } else {
+                Story story = row.getItem();
+                if (getIsCreationWindow()) {
+                    setText(story.getShortName());
+                } else {
+                    Hyperlink nameLink = new Hyperlink(story.getShortName());
+                    nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                    setGraphic(nameLink);
                 }
             }
         }
