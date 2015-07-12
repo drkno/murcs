@@ -1,17 +1,12 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
@@ -24,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -128,11 +124,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
-            Integer priority = getModel().getStoryPriority(selectedStory.get());
 
+            //Configures the change-priority buttons
+            Integer priority = getModel().getStoryPriority(selectedStory.get());
             boolean isMaxPriority = selectedIndex == 0 && priority != null || selectedIndex == -1;
             boolean isMinPriority = priority == null;
-
             increasePriorityButton.setDisable(isMaxPriority);
             decreasePriorityButton.setDisable(isMinPriority);
             jumpPriorityButton.setDisable(isMaxPriority);
@@ -144,10 +140,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         observableStories = FXCollections.observableArrayList();
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
-        storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
         priorityColumn.setCellFactory(param -> new EditablePriorityCell());
-        priorityColumn.setEditable(true);
         storyTable.setEditable(true);
+        priorityColumn.setEditable(true);
     }
 
     /**
@@ -433,38 +429,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * A RemoveButtonCell that contains the button used to remove a story from the backlog.
-     */
-    private class RemoveButtonCell extends TableCell<Story, Object> {
-        @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
-            Story story = (Story) getTableRow().getItem();
-            if (story == null || empty) {
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                Button button = new Button("X");
-                button.setOnAction(event -> {
-                    GenericPopup popup = new GenericPopup();
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \""
-                            + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(p -> {
-                        getModel().removeStory(story);
-                        updateStoryTable();
-                        updateAvailableStories();
-                        popup.close();
-                    });
-                    popup.show();
-                });
-                setGraphic(button);
-            }
-        }
-    }
-
-    /**
      *
      */
     private class EditablePriorityCell extends TableCell<Story, Object> {
@@ -594,9 +558,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * A TableView cell that contains a link to the story it represents.
+     * A TableView cell that contains a link to the story it represents and a button to remove it.
      */
-    private class HyperlinkButtonCell extends TableCell<Story, Object> {
+    private class RemovableHyperlinkCell extends TableCell<Story, Object> {
         @Override
         protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
@@ -606,13 +570,39 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 setGraphic(null);
             } else {
                 Story story = row.getItem();
+                AnchorPane container = new AnchorPane();
+                container.setPrefWidth(461);
                 if (getIsCreationWindow()) {
-                    setText(story.getShortName());
+                    Label name = new Label(story.getShortName());
+                    container.getChildren().add(name);
                 } else {
                     Hyperlink nameLink = new Hyperlink(story.getShortName());
                     nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
-                    setGraphic(nameLink);
+                    container.getChildren().add(nameLink);
                 }
+
+                //Delete button
+                Button button = new Button("X");
+                button.setVisible(false);
+                button.setOnAction(e -> {
+                    GenericPopup popup = new GenericPopup();
+                    popup.setTitleText("Are you sure?");
+                    popup.setMessageText("Are you sure you wish to remove the story \""
+                            + story.getShortName() + "\" from this backlog?");
+                    popup.addYesNoButtons(p -> {
+                        getModel().removeStory(story);
+                        updateStoryTable();
+                        updateAvailableStories();
+                        popup.close();
+                    });
+                    popup.show();
+                });
+                this.setOnMouseEntered(event -> button.setVisible(true));
+                this.setOnMouseExited(event -> button.setVisible(false));
+                AnchorPane.setRightAnchor(button, 0.0);
+                container.getChildren().add(button);
+
+                setGraphic(container);
             }
         }
     }

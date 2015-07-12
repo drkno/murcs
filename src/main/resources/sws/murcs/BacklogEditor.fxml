@@ -73,8 +73,8 @@
                                     <children>
                                         <TableView fx:id="storyTable" focusTraversable="false" layoutY="-7.0" prefHeight="230.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
                                             <columns>
-                                                <TableColumn fx:id="priorityColumn" prefWidth="75.0" resizable="false" sortable="false" text="Priority" />
-                                                <TableColumn fx:id="storyColumn" editable="false" sortable="false" text="Story" />
+                                                <TableColumn fx:id="priorityColumn" maxWidth="75.0" minWidth="75.0" prefWidth="75.0" resizable="false" sortable="false" text="Priority" />
+                                                <TableColumn fx:id="storyColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" sortable="false" text="Story" />
                                             </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
