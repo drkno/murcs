@@ -97,7 +97,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Increase and decrease priority buttons.
      */
     @FXML
-    private Button increasePriorityButton, decreasePriorityButton;
+    private Button increasePriorityButton, decreasePriorityButton, jumpPriorityButton, dropPriorityButton;
 
     /**
      * An observable list of backlog stories.
@@ -129,8 +129,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
             Integer priority = getModel().getStoryPriority(selectedStory.get());
-            increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
-            decreasePriorityButton.setDisable(priority == null);
+
+            boolean isMaxPriority = selectedIndex == 0 && priority != null || selectedIndex == -1;
+            boolean isMinPriority = priority == null;
+
+            increasePriorityButton.setDisable(isMaxPriority);
+            decreasePriorityButton.setDisable(isMinPriority);
+            jumpPriorityButton.setDisable(isMaxPriority);
+            dropPriorityButton.setDisable(isMinPriority);
         });
 
 
@@ -197,6 +203,50 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 e.printStackTrace();
             }
             updateStoryTable();
+        }
+    }
+
+    /**
+     * Increases the selected stories priority up to the maximum value of 0.
+     * @param event Button clicked event
+     */
+    @FXML
+    private void jumpPriority(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority == null || storyPriority != 0) {
+                try {
+                    getModel().modifyStory(story, 0);
+                }
+                catch (CustomException e) {
+                    //Should not ever happen, this should be handled by the GUI
+                    e.printStackTrace();
+                }
+                updateStoryTable();
+            }
+        }
+    }
+
+    /**
+     * Unprioritises the selected story.
+     * @param event Button clicked event
+     */
+    @FXML
+    private void dropPriority(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority != null) {
+                try {
+                    getModel().modifyStory(story, null);
+                }
+                catch (CustomException e) {
+                    //Should not ever happen, this should be handled by the GUI
+                    e.printStackTrace();
+                }
+                updateStoryTable();
+            }
         }
     }
 
