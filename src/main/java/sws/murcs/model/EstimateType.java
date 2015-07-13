@@ -16,6 +16,7 @@ import java.util.Map;
  * The type of estimation that you are using for stuff and things.
  */
 public enum EstimateType {
+
     /**
      * Numbers. Or the Fibonacci numbers from 1 to 13.
      */

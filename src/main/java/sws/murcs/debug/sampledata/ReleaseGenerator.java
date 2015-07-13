@@ -18,15 +18,18 @@ public class ReleaseGenerator implements Generator<Release> {
      * The max number of releases generated on low stress.
      */
     protected static final int LOW_STRESS_MIN = 1;
+
     /**
      * The min number of releases generated on low stress.
      */
     protected static final int LOW_STRESS_MAX = 10;
 
+
     /**
      * The max number of releases generated on medium stress.
      */
     protected static final int MEDIUM_STRESS_MIN = 10;
+
     /**
      * The min number of releases generated on medium stress.
      */
@@ -36,6 +39,7 @@ public class ReleaseGenerator implements Generator<Release> {
      * The max number of releases generated on high stress.
      */
     protected static final int HIGH_STRESS_MIN = 20;
+
     /**
      * The min number of releases generated on high stress.
      */

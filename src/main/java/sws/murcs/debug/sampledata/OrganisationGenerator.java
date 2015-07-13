@@ -26,14 +26,17 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * The various stress level the generator can produce.
      */
     public enum Stress {
+
         /**
          * High stress level.
          */
         High,
+
         /**
          * Medium stress level.
          */
         Medium,
+
         /**
          * Low stress level.
          */

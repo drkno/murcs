@@ -6,9 +6,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -17,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -36,25 +35,24 @@ public class PersonEditor extends GenericEditor<Person> {
      */
     @FXML
     private TextField shortNameTextField, userIdTextField, longNameTextField;
-    /**
-     * The label for showing errors.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * The ChoiceBox for selecting skills.
      */
     @FXML
     private ComboBox<Skill> skillComboBox;
+
     /**
      * The VBox which contains the list of skills the person has.
      */
     @FXML
     private VBox allocatedSkillsContainer;
+
     /**
      * List of skill that can be added to the person.
      */
     private List<Skill> allocatableSkills;
+
     /**
      * A map of skills to their nodes in the skill list on the view.
      */
@@ -77,12 +75,6 @@ public class PersonEditor extends GenericEditor<Person> {
         allocatableSkills = FXCollections.observableArrayList();
         skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
         skillNodeIndex = new HashMap<>();
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
@@ -118,23 +110,33 @@ public class PersonEditor extends GenericEditor<Person> {
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         Skill selectedSkill = skillComboBox.getValue();
         if (selectedSkill != null) {
-            getModel().addSkill(selectedSkill);
-            Node skillNode = generateSkillNode(selectedSkill);
-            allocatedSkillsContainer.getChildren().add(skillNode);
-            skillNodeIndex.put(selectedSkill, skillNode);
-            Platform.runLater(() -> {
-                skillComboBox.getSelectionModel().clearSelection();
-                allocatableSkills.remove(selectedSkill);
-            });
+            try {
+                getModel().addSkill(selectedSkill);
+                Node skillNode = generateSkillNode(selectedSkill);
+                allocatedSkillsContainer.getChildren().add(skillNode);
+                skillNodeIndex.put(selectedSkill, skillNode);
+                Platform.runLater(() -> {
+                    skillComboBox.getSelectionModel().clearSelection();
+                    allocatableSkills.remove(selectedSkill);
+                });
+            } catch (CustomException e) {
+                //This should never occur, we should be populating the
+                //list with valid items
+                e.printStackTrace();
+            }
         }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -146,7 +148,11 @@ public class PersonEditor extends GenericEditor<Person> {
         String modelUserId = getModel().getUserId();
         String viewUserId = userIdTextField.getText();
         if (isNullOrNotEqual(modelUserId, viewUserId)) {
-            getModel().setUserId(viewUserId);
+            try {
+                getModel().setUserId(viewUserId);
+            } catch (CustomException e) {
+                addFormError(userIdTextField, e.getMessage());
+            }
         }
     }
 
@@ -158,10 +164,7 @@ public class PersonEditor extends GenericEditor<Person> {
         skillComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         allocatableSkills = null;
         skillNodeIndex = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     /**

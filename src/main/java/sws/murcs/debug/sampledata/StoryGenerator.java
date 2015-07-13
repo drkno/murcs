@@ -13,6 +13,7 @@ import java.util.List;
  * A generator for stories.
  */
 public class StoryGenerator implements Generator<Story> {
+
     /**
      * The minimum number of Acceptance Conditions a story can have.
      */

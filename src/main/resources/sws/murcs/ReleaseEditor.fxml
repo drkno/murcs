@@ -1,59 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+
 <AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ReleaseEditor">
    <children>
-      <VBox spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER" />
+         </rowConstraints>
          <children>
-            <VBox>
-               <children>
-                  <Label text="Release Name" />
-                  <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding>
-            </VBox>
-            <VBox>
-               <children>
-                  <Label text="Estimated Release Date" />
-                  <DatePicker fx:id="releaseDatePicker" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding>
-            </VBox>
-            <VBox>
-               <children>
-                  <Label text="Description" />
-                  <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" />
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding>
-            </VBox>
-            <VBox>
-               <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Associated Project">
-                     <VBox.margin>
-                        <Insets top="5.0" />
-                     </VBox.margin>
-                  </Text>
-                  <AnchorPane>
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="287.0" prefViewportWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                        <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                        <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                        <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                        <RowConstraints />
+                     </rowConstraints>
                      <children>
-                        <ChoiceBox fx:id="projectChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox GridPane.rowIndex="3">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Associated Project">
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                              </Text>
+                              <AnchorPane>
+                                 <children>
+                                    <ChoiceBox fx:id="projectChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <VBox GridPane.rowIndex="1">
+                           <children>
+                              <Label text="Estimated Release Date" />
+                              <AnchorPane>
+                                 <children>
+                                    <DatePicker fx:id="releaseDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <VBox>
+                           <children>
+                              <Label text="Release Name" />
+                              <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <GridPane GridPane.rowIndex="2">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints vgrow="NEVER" />
+                              <RowConstraints vgrow="ALWAYS" />
+                           </rowConstraints>
+                           <children>
+                              <Label text="Description" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
+                              <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                           </children>
+                           <GridPane.margin>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                           </GridPane.margin>
+                        </GridPane>
                      </children>
-                  </AnchorPane>
-               </children>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding>
-            </VBox>
-            <Label fx:id="labelErrorMessage" />
+                  </GridPane>
+               </content>
+            </ScrollPane>
+            <ScrollPane prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
+               <content>
+                  <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+               </content>
+            </ScrollPane>
          </children>
-      </VBox>
+      </GridPane>
    </children>
 </AnchorPane>

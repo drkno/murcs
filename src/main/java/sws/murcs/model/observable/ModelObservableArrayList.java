@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class ModelObservableArrayList<T extends Model>
         extends ObservableArrayList<T> implements Serializable, Comparator<T> {
+
     /**
      * Serializable backing field.
      * Required because JavaFX observable lists are not serializable.

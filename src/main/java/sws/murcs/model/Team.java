@@ -24,6 +24,7 @@ public class Team extends Model {
      */
     @TrackableValue
     private String description;
+
     /**
      * A list of members in the team.
      */
@@ -31,11 +32,13 @@ public class Team extends Model {
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
     private List<Person> members = new ArrayList<>();
+
     /**
      * The scrum master of the team.
      */
     @TrackableValue
     private Person scrumMaster;
+
     /**
      * The product owner of the team.
      */
@@ -148,6 +151,12 @@ public class Team extends Model {
      */
     public final void removeMember(final Person person) {
         if (this.members.contains(person)) {
+            if (person.equals(scrumMaster)) {
+                scrumMaster = null;
+            }
+            if (person.equals(productOwner)) {
+                productOwner = null;
+            }
             this.members.remove(person);
             commit("edit team");
         }

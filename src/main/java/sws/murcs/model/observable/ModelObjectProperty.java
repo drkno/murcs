@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
  * @param <T> type of the field.
  */
 public class ModelObjectProperty<T> extends SimpleObjectProperty<T> {
+
     /**
      * Field that the property is tracking.
      */

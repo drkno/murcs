@@ -165,8 +165,13 @@ public class Story extends Model {
      * Removes a condition from the list of acceptance.
      * @param condition The condition to remove.
      */
-    public final void removeAcceptanceCriteria(final AcceptanceCondition condition) {
+    public final void removeAcceptanceCondition(final AcceptanceCondition condition) {
         acceptanceCriteria.remove(condition);
+        // If we have no acceptance criteria then we shouldn't have an estimate or a story state other than none.
+        if (acceptanceCriteria.size() == 0) {
+            estimate = EstimateType.NOT_ESTIMATED;
+            storyState = StoryState.None;
+        }
         commit("edit acceptance criteria");
     }
 
@@ -241,6 +246,10 @@ public class Story extends Model {
     public final void setEstimate(final String newEstimate) {
         if (newEstimate == estimate) {
             return;
+        }
+        // If you change the estimate type to not estimated, then None is the only valid story state
+        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+            storyState = StoryState.None;
         }
         estimate = newEstimate;
         commit("edit story");
