@@ -122,6 +122,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
             decreasePriorityButton.setDisable(priority == null);
         });
+        super.setupSaveChangesButton();
 
 
         // setup the observable stories

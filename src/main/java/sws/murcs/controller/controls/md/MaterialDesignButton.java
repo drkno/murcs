@@ -1,4 +1,4 @@
-package md;
+package sws.murcs.controller.controls.md;
 
 import com.sun.javafx.scene.control.skin.ButtonSkin;
 import javafx.animation.FadeTransition;

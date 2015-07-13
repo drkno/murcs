@@ -68,13 +68,17 @@
                </content>
             </ScrollPane>
             <ScrollPane prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
-               <content>
-                  <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
-               </content>
+                <content>
+                    <HBox fx:id="bottomBar" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                        <children>
+                            <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
+                                <padding>
+                                    <Insets left="10.0" />
+                                </padding>
+                            </Label>
+                        </children>
+                    </HBox>
+                </content>
             </ScrollPane>
          </children>
       </GridPane>
