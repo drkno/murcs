@@ -119,7 +119,15 @@ REST_ROUTER.prototype.handleRoutes= function(router, md5, self) {
 
     router.get("/bug/summary", function(req, res) {
         var query = bug.find();
-        query.select('hash _id issues._id issues.dateTime issues.progDescription issues.userDescription');
+        query.select('hash ' +
+        '_id ' +
+        'issues._id issues.dateTime ' +
+        'issues.progDescription ' +
+        'issues.userDescription ' +
+        'issues.histRedoPossible ' +
+        'issues.histUndoPossible ' +
+        'issues.navBackwardPossible ' +
+        'issues.navForwardPossible');
         query.exec(function (err, result) {
             if (err) {
                 res.status(500).jsonp({"error" : true, "message" : "error getting bugs", "dbError": err});
@@ -154,7 +162,16 @@ REST_ROUTER.prototype.handleRoutes= function(router, md5, self) {
     router.get("/bug/:id/summary", function (req, res) {
         var id = req.params.id;
         if (id.length === 24) {
-            var query = bug.findById(id, 'hash _id issues._id issues.dateTime issues.progDescription issues.userDescription', function (err, result) {
+            var query = bug.findById(id,
+                'hash ' +
+                '_id ' +
+                'issues._id issues.dateTime ' +
+                'issues.progDescription ' +
+                'issues.userDescription ' +
+                'issues.histRedoPossible ' +
+                'issues.histUndoPossible ' +
+                'issues.navBackwardPossible ' +
+                'issues.navForwardPossible', function (err, result) {
                 if (err) {
                      res.status(500).jsonp({"error" : true, "message" : "error getting bug with id " + req.params.id, "dbError": err});
                 }
@@ -186,7 +203,14 @@ REST_ROUTER.prototype.handleRoutes= function(router, md5, self) {
 
     router.get("/issue/summary", function (req, res) {
         var query = issue.find();
-        query.select('_id dateTime progDescription userDescription');
+        query.select('_id ' +
+        'dateTime ' +
+        'progDescription ' +
+        'userDescription ' +
+        'histRedoPossible ' +
+        'histUndoPossible ' +
+        'navBackwardPossible ' +
+        'navForwardPossible');
         query.exec(function (err, result) {
             if (err) {
                 res.status(500).jsonp({"error" : true, "message" : "error getting issues", "dbError": err});
@@ -220,7 +244,14 @@ REST_ROUTER.prototype.handleRoutes= function(router, md5, self) {
     router.get("/issue/:id/summary", function (req, res) {
         var id = req.params.id;
         if (id.length === 24) {
-            var query = issue.findById(id, '_id dateTime progDescription userDescription', function (err, result) {
+            var query = issue.findById(id, '_id ' +
+            'dateTime ' +
+            'progDescription ' +
+            'userDescription ' +
+            'histRedoPossible ' +
+            'histUndoPossible ' +
+            'navBackwardPossible ' +
+            'navForwardPossible', function (err, result) {
                 if (err) {
                      res.status(500).jsonp({"error" : true, "message" : "error getting issue with id " + req.params.id, "dbError": err});
                 }
