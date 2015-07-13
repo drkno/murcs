@@ -529,7 +529,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         /**
-         *
+         * Changes the priority of the selected story to the given value.
          * @param priorityString The new priority of this story
          */
         private void setPriority(final String priorityString) {
@@ -583,7 +583,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 //Delete button
                 Button button = new Button("X");
-                button.setVisible(false);
+                button.setOpacity(0.3);
                 button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
@@ -597,8 +597,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     });
                     popup.show();
                 });
-                this.setOnMouseEntered(event -> button.setVisible(true));
-                this.setOnMouseExited(event -> button.setVisible(false));
+                this.setOnMouseEntered(event -> button.setOpacity(1.0));
+                this.setOnMouseExited(event -> button.setOpacity(0.3));
                 AnchorPane.setRightAnchor(button, 0.0);
                 container.getChildren().add(button);
 
