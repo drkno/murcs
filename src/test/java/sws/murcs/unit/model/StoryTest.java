@@ -51,7 +51,7 @@ public class StoryTest {
     }
 
     @Test
-    public void testManipulateAcceptanceCriteria(){
+    public void testManipulateAcceptanceCriteria() throws Exception{
         assertTrue("A new story should have no conditions", story.getAcceptanceCriteria().size() == 0);
 
         AcceptanceCondition first = new AcceptanceCondition();
@@ -87,7 +87,7 @@ public class StoryTest {
     }
 
     @Test
-    public void testRemoveLastACClearsEstimateAndStoryState() {
+    public void testRemoveLastACClearsEstimateAndStoryState() throws Exception{
         AcceptanceCondition condition = new AcceptanceCondition();
         condition.setCondition("I'm not a frog");
 
@@ -112,7 +112,7 @@ public class StoryTest {
     }
 
     @Test
-    public void testReorderAcceptanceConditions(){
+    public void testReorderAcceptanceConditions() throws Exception{
         for (int i = 0; i < 10; i++){
             AcceptanceCondition condition = new AcceptanceCondition();
             condition.setCondition("Condition " + i);
