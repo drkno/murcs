@@ -35,6 +35,7 @@ public class SkillEditor extends GenericEditor<Skill> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
+        super.setupSaveChangesButton();
     }
 
     @Override

@@ -61,6 +61,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         releaseDatePicker.focusedProperty().addListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        super.setupSaveChangesButton();
     }
 
 

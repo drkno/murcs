@@ -242,6 +242,7 @@ public class StoryEditor extends GenericEditor<Story> {
         estimateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyStateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         dependenciesDropDown.valueProperty().addListener(getChangeListener());
+        super.setupSaveChangesButton();
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
