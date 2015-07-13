@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 public class AcceptanceConditionTest {
 
     @Test
-    public void testModifyCondition(){
+    public void testModifyCondition() throws Exception{
         AcceptanceCondition condition = new AcceptanceCondition();
 
         condition.setCondition("foo");
