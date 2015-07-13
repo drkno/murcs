@@ -15,8 +15,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 
-public class MaterialDesignButton {
+public class MaterialDesignButton extends Button {
 
     private Circle circleRipple;
     private Rectangle rippleClip = new Rectangle();
@@ -25,25 +26,19 @@ public class MaterialDesignButton {
     private double lastRippleWidth = 0;
     private Color rippleColor = new Color(0, 0, 0, 0.11);
 
-    /**
-     * The Button this affects.
-     */
-    private Button button;
+    public MaterialDesignButton(String text) {
+        super(text);
 
-    /**
-     * Instantiates a new material design button.
-     * @param aButton the Button this affects.
-     */
-    public MaterialDesignButton(final Button aButton) {
-        button = aButton;
-        button.getStyleClass().addAll("md-button");
+        getStyleClass().addAll("md-button");
+
         createRippleEffect();
     }
 
+    @Override
     protected Skin<?> createDefaultSkin() {
-        final ButtonSkin buttonSkin = new ButtonSkin(button);
+        final ButtonSkin buttonSkin = new ButtonSkin(this);
         // Adding circleRipple as fist node of button nodes to be on the bottom
-        button.getChildren().add(0, circleRipple);
+        this.getChildren().add(0, circleRipple);
         return buttonSkin;
     }
 
@@ -72,7 +67,7 @@ public class MaterialDesignButton {
             circleRipple.setRadius(0.1);
         });
 
-        button.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+        this.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             parallelTransition.stop();
             parallelTransition.getOnFinished().handle(null);
 
@@ -80,23 +75,23 @@ public class MaterialDesignButton {
             circleRipple.setCenterY(event.getY());
 
             // Recalculate ripple size if size of button from last time was changed
-            if (button.getWidth() != lastRippleWidth || button.getHeight() != lastRippleHeight) {
-                lastRippleWidth = button.getWidth();
-                lastRippleHeight = button.getHeight();
+            if (getWidth() != lastRippleWidth || getHeight() != lastRippleHeight) {
+                lastRippleWidth = getWidth();
+                lastRippleHeight = getHeight();
 
                 rippleClip.setWidth(lastRippleWidth);
                 rippleClip.setHeight(lastRippleHeight);
 
                 try {
-                    rippleClip.setArcHeight(button.getBackground().getFills().get(0).getRadii().getTopLeftHorizontalRadius());
-                    rippleClip.setArcWidth(button.getBackground().getFills().get(0).getRadii().getTopLeftHorizontalRadius());
+                    rippleClip.setArcHeight(this.getBackground().getFills().get(0).getRadii().getTopLeftHorizontalRadius());
+                    rippleClip.setArcWidth(this.getBackground().getFills().get(0).getRadii().getTopLeftHorizontalRadius());
                     circleRipple.setClip(rippleClip);
                 } catch (Exception e) {
-
+                    ErrorReporter.get().reportError(e, "Unable to set ripple of material design button");
                 }
 
                 // Getting 45% of longest button's length, because we want edge of ripple effect always visible
-                double circleRippleRadius = Math.max(button.getHeight(), button.getWidth()) * 0.45;
+                double circleRippleRadius = Math.max(getHeight(), getWidth()) * 0.45;
                 final KeyValue keyValue = new KeyValue(circleRipple.radiusProperty(), circleRippleRadius, Interpolator.EASE_OUT);
                 final KeyFrame keyFrame = new KeyFrame(rippleDuration, keyValue);
                 scaleRippleTimeline.getKeyFrames().clear();
