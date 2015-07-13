@@ -12,8 +12,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.HBox;
-import md.MaterialDesignButton;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -32,8 +30,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class ProjectEditor extends GenericEditor<Project> {
 
-    @FXML
-    public HBox bottomBar;
     /**
      * The shortName, longName for a project.
      */
@@ -93,7 +89,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-        bottomBar.getChildren().add(new MaterialDesignButton("Save Changes"));
+        super.setupSaveChangesButton();
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));

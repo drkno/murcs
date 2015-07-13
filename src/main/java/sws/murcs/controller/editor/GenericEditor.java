@@ -2,8 +2,12 @@ package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import md.MaterialDesignButton;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -28,6 +32,17 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     @FXML
     private Label labelErrorMessage;
+
+    /**
+     * The container for the error message and save button
+     */
+    @FXML
+    public HBox bottomBar;
+
+    /**
+     * Placebo button for saving.
+     */
+    private MaterialDesignButton saveButton;
 
     /**
      * A collection of change listeners for an editor.
@@ -233,4 +248,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     @FXML
     protected abstract void initialize();
+
+    protected void setupSaveChangesButton() {
+        saveButton = new MaterialDesignButton("Save Changes");
+        saveButton.setPadding(new Insets(5, 0, 0, 0));
+        saveButton.setRippleColor(Color.color(0.611, 0.8, 0.396));
+        bottomBar.getChildren().add(saveButton);
+        bottomBar.setMargin(saveButton, new Insets(5, 0, 0, 5));
+    }
 }
