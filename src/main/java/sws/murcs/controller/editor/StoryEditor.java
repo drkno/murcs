@@ -178,6 +178,7 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         updateAcceptanceCriteria();
+        setIsCreationWindow(modelShortName == null);
     }
 
     /**
