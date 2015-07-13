@@ -131,9 +131,9 @@ public class ErrorReportPopup extends AnchorPane {
                         + "application before continuing.");
                 break;
             case Manual:
-                setTitleText("Report a bug.");
+                setTitleText("Feedback");
                 setMessageText("Noticed something isn't right? Describe it below.\n\nNote: we will automatically "
-                        + "receive a screenshot of what is currently displayed within the application for you.");
+                        + "receive a screenshot of what is currently displayed within the application for you.\n");
                 break;
         }
     }
