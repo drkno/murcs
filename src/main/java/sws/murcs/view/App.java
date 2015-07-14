@@ -140,6 +140,7 @@ public class App extends Application {
         appController = loader.getController();
 
         Scene scene = new Scene(parent);
+        scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/globalStyles.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/materialDesignButton.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRound.css").toExternalForm());

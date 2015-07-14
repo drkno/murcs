@@ -1,14 +1,9 @@
 package sws.murcs.controller.controls.md;
 
-import com.sun.javafx.scene.control.skin.ButtonSkin;
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.SequentialTransition;
-import javafx.animation.Timeline;
-import javafx.scene.control.Button;
+import com.sun.javafx.scene.control.skin.ToggleButtonSkin;
+import javafx.animation.*;
 import javafx.scene.control.Skin;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -16,8 +11,10 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-public class MaterialDesignButton extends Button {
-
+/**
+ * Material design toggle button class.
+ */
+public class MaterialDesignToggleButton extends ToggleButton{
     private Circle circleRipple;
     private Rectangle rippleClip = new Rectangle();
     private Duration rippleDuration =  Duration.millis(250);
@@ -25,7 +22,7 @@ public class MaterialDesignButton extends Button {
     private double lastRippleWidth = 0;
     private Color rippleColor = new Color(0, 0, 0, 0.11);
 
-    public MaterialDesignButton(String text) {
+    public MaterialDesignToggleButton(String text) {
         super(text);
 
         getStyleClass().addAll("md-button");
@@ -35,7 +32,7 @@ public class MaterialDesignButton extends Button {
 
     @Override
     protected Skin<?> createDefaultSkin() {
-        final ButtonSkin buttonSkin = new ButtonSkin(this);
+        final ToggleButtonSkin buttonSkin = new ToggleButtonSkin(this);
         // Adding circleRipple as fist node of button nodes to be on the bottom
         this.getChildren().add(0, circleRipple);
         return buttonSkin;

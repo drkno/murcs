@@ -1,0 +1,18 @@
+.list-cell {
+    -fx-font-family: 'Roboto';
+    -fx-text-fill: #444;
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-background-insets: 0;
+    -fx-padding: 3 6;
+    -fx-background-radius: 1px;
+}
+
+.list-cell:pressed {
+}
+
+.list-cell:focused {
+    -fx-background-color:
+    rgba(245, 245, 245, 1),
+    rgba(230, 230, 230, 1);
+    -fx-background-insets: 0, 1;
+}

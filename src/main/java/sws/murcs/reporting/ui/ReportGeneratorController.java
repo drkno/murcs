@@ -2,21 +2,17 @@ package sws.murcs.reporting.ui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
@@ -34,6 +30,8 @@ import java.util.List;
  * Controller for the report generator.
  */
 public class ReportGeneratorController {
+    public HBox buttonContainer;
+    public GridPane lowerThird;
     /**
      * The content relevant to management or workflow.
      */
@@ -52,8 +50,7 @@ public class ReportGeneratorController {
     /**
      * The buttons in the create window.
      */
-    @FXML
-    private Button createButton, cancelButton;
+    private MaterialDesignButton createButton, cancelButton;
 
     /**
      * The toolbar for containing toggle buttons.
@@ -80,7 +77,7 @@ public class ReportGeneratorController {
     /**
      * toggle buttons for type of report generation.
      */
-    private ToggleButton all, management, workflow;
+    private MaterialDesignToggleButton all, management, workflow;
     /**
      * Group containing toggle buttons.
      */
@@ -104,12 +101,57 @@ public class ReportGeneratorController {
      */
     @FXML
     public final void initialize() {
-        all = new ToggleButton("All");
-        management = new ToggleButton("Management");
-        workflow = new ToggleButton("Workflow");
+        if (!managementContent.managedProperty().isBound()) {
+            managementContent.managedProperty().bind(managementContent.visibleProperty());
+        }
+        if (!workflowContent.managedProperty().isBound()) {
+            workflowContent.managedProperty().bind(workflowContent.visibleProperty());
+        }
+        setupToolbar();
+        setupInnerContent();
+        setupLowerThird();
+        hideAllContent();
+    }
+
+    private void setupLowerThird() {
+        createButton = new MaterialDesignButton("Generate Report");
+        buttonContainer.getChildren().add(createButton);
+        createButton.alignmentProperty().set(Pos.CENTER);
+        createButton.setDefaultButton(true);
+        createButton.setMinHeight(0);
+        createButton.setMinWidth(80);
+        createButton.setMnemonicParsing(false);
+        createButton.setOnAction(this::createButtonClicked);
+        GridPane.setRowIndex(createButton, 1);
+        lowerThird.setMargin(createButton, new Insets(10, 10, 10, 10));
+        buttonContainer.setMargin(createButton, new Insets(5, 5, 5, 10));
+
+        cancelButton = new MaterialDesignButton("Cancel");
+        buttonContainer.getChildren().add(cancelButton);
+        cancelButton.alignmentProperty().set(Pos.CENTER);
+        cancelButton.setCancelButton(true);
+        cancelButton.setMinHeight(0);
+        cancelButton.setMinWidth(80);
+        cancelButton.setMnemonicParsing(false);
+        cancelButton.setOnAction(this::cancelButtonClicked);
+        GridPane.setColumnIndex(cancelButton, 1);
+        lowerThird.setMargin(cancelButton, new Insets(10, 10, 10, 10));
+        buttonContainer.setMargin(cancelButton, new Insets(5, 10, 5, 10));
+    }
+
+    /**
+     * Sets up the content inside the toolbar.
+     */
+    private void setupToolbar() {
+        all = new MaterialDesignToggleButton("All");
+        management = new MaterialDesignToggleButton("Management");
+        workflow = new MaterialDesignToggleButton("Workflow");
         all.alignmentProperty().setValue(Pos.CENTER);
         management.alignmentProperty().setValue(Pos.CENTER);
         workflow.alignmentProperty().setValue(Pos.CENTER);
+        all.getStyleClass().add("md-button");
+        management.getStyleClass().add("md-button");
+        workflow.getStyleClass().add("md-button");
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(
                 all,
@@ -127,14 +169,6 @@ public class ReportGeneratorController {
                 management,
                 workflow
         );
-        if (!managementContent.managedProperty().isBound()) {
-            managementContent.managedProperty().bind(managementContent.visibleProperty());
-        }
-        if (!workflowContent.managedProperty().isBound()) {
-            workflowContent.managedProperty().bind(workflowContent.visibleProperty());
-        }
-        setupInnerContent();
-        hideAllContent();
     }
 
     /**
