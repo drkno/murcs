@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -10,7 +11,7 @@
          <children>
              <ToolBar fx:id="toolBar" minHeight="-Infinity" prefHeight="60.0" VBox.vgrow="ALWAYS">
                 <items>
-                <HBox fx:id="toolBarContainer" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" />
+                <HBox fx:id="toolBarContainer" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="348.0" />
                 </items>
              </ToolBar>
                <VBox prefHeight="200.0" prefWidth="100.0">
