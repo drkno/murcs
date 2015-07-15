@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -20,6 +21,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -101,6 +103,31 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ObservableList<Story> observableStories;
 
     /**
+     * The sort order
+     */
+    private enum StorySortOrder {
+        /**
+         * Sorted by priority.
+         */
+        PRIORITY,
+        /**
+         * Sorted by story name.
+         */
+        NAME
+    }
+
+    /**
+     * The current story sort order of the the stories in the backlog. Defaults to story priority ordering.
+     */
+    private static StorySortOrder sortOrder = StorySortOrder.PRIORITY;
+
+    /**
+     * The combo box for choosing the sort order of stories in the backlog.
+     */
+    @FXML
+    private ComboBox<StorySortOrder> sortOrderComboBox;
+
+    /**
      * An observable object representing the currently selected story.
      */
     private ObservableObjectValue<Story> selectedStory;
@@ -144,6 +171,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         priorityColumn.setCellFactory(param -> new EditablePriorityCell());
         storyTable.setEditable(true);
         priorityColumn.setEditable(true);
+        sortOrderComboBox.setItems(FXCollections.observableArrayList(StorySortOrder.values()));
+        sortOrderComboBox.getSelectionModel().selectFirst();
+        sortOrderComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sortOrder = newValue;
+            updateStoryTable();
+        });
     }
 
     /**
@@ -364,12 +397,30 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Updates the table containing the list of stories.
      */
     private void updateStoryTable() {
-        observableStories.setAll(getModel().getAllStories());
+        List<Story> stories = getModel().getAllStories();
+        switch (sortOrder) {
+            case NAME:
+                stories.sort((o1, o2) -> o1.getShortName().compareTo(o2.getShortName()));
+                break;
+            case PRIORITY:
+                stories.clear();
+                stories.addAll(getModel().getPrioritisedStories()
+                        .stream()
+                        .sorted((o1, o2) -> getModel().getStoryPriority(o1).compareTo(getModel().getStoryPriority(o2)))
+                        .collect(Collectors.toList()));
+                stories.addAll(getModel().getUnprioritisedStories()
+                        .stream()
+                        .sorted((o1, o2) -> o1.getShortName().compareTo(o2.getShortName()))
+                        .collect(Collectors.toList()));
+                break;
+            default: {
+                throw new NotImplementedException("You should add this sort type to the this method");
+            }
+        }
+        observableStories.setAll(stories);
+
         if (selectedStory.get() != null) {
             storyTable.getSelectionModel().select(selectedStory.get());
-        }
-        else {
-            storyTable.getSelectionModel().selectFirst();
         }
     }
 
