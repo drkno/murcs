@@ -1,7 +1,6 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -32,6 +31,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
@@ -103,6 +103,18 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private ObservableList<Story> observableStories;
 
     /**
+     * The state of the story highlighting.
+     */
+    public static boolean highlighted;
+
+    /**
+     * Sets the state of the story highlighting.
+     */
+    public static void toggleHighlightState() {
+        highlighted = !highlighted;
+    }
+
+    /**
      * The sort order
      */
     private enum StorySortOrder {
@@ -141,6 +153,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 saveChanges();
             }
         });
+
+        //Enable the highlight stories menu item
+        App.getAppController().enableMenuItem();
 
         // assign change listeners to fields
         shortNameTextField.focusedProperty().addListener(getChangeListener());
@@ -426,6 +441,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
     @Override
     public final void dispose() {
+
+        //Disable the menu item
+        App.getAppController().disableMenuItem();
+
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());

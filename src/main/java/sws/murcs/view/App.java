@@ -59,6 +59,14 @@ public class App extends Application {
     private static AppController appController;
 
     /**
+     * Gets the app controller that was created.
+     * @return The App Controller
+     */
+    public static AppController getAppController() {
+        return appController;
+    }
+
+    /**
      * Gets the stage of App.
      * @return The App stage
      */

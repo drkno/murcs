@@ -42,6 +42,7 @@
              <Menu id="viewMenu" mnemonicParsing="false" text="View">
                 <items>
                     <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                  <CheckMenuItem fx:id="highlightToggle" disable="true" mnemonicParsing="false" onAction="#toggleBacklogStories" text="Highlight Stories" />
                 </items>
              </Menu>
          </menus>
