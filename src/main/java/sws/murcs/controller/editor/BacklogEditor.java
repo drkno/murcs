@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -35,6 +36,7 @@ import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -105,13 +107,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      * The state of the story highlighting.
      */
-    public static boolean highlighted;
+    public static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(false);
 
     /**
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
-        highlighted = !highlighted;
+        highlighted.setValue(!highlighted.getValue());
     }
 
     /**
@@ -158,6 +160,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         App.getAppController().enableMenuItem();
 
         // assign change listeners to fields
+        highlighted.addListener((observable, oldValue, newValue) -> {
+            updateStoryTable();
+        });
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -176,7 +181,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             jumpPriorityButton.setDisable(isMaxPriority);
             dropPriorityButton.setDisable(isMinPriority);
         });
-
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -639,10 +643,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             if (row == null || empty || row.getItem() == null) {
                 setText(null);
                 setGraphic(null);
-            } else {
+                getTableRow().setStyle("-fx-border-color: #FFFFFF;");
+            }
+            else {
                 Story story = row.getItem();
                 AnchorPane container = new AnchorPane();
-                container.setPrefWidth(461);
+                //container.setPrefWidth(461);
                 if (getIsCreationWindow()) {
                     Label name = new Label(story.getShortName());
                     container.getChildren().add(name);
@@ -672,6 +678,51 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 this.setOnMouseExited(event -> button.setOpacity(0.3));
                 AnchorPane.setRightAnchor(button, 0.0);
                 container.getChildren().add(button);
+
+                Story.StoryState storyState = story.getStoryState();
+                Optional<Story> lowestStory1 = story.getDependencies()
+                        .stream()
+                        .sorted((s1, s2) -> {
+                            Integer p1 = getModel().getStoryPriority(s1);
+                            Integer p2 = getModel().getStoryPriority(s2);
+                            p1 = p1 == null ? -1 : p1;
+                            p2 = p2 == null ? -1 : p2;
+                            return p1.compareTo(p2);
+                        })
+                        .findFirst();
+                Story lowestStory = lowestStory1.isPresent() ? lowestStory1.get() : null;
+                Integer lowestPriority = null;
+                if (lowestStory != null) {
+                    lowestPriority = getModel().getStoryPriority(lowestStory);
+                }
+
+                if (highlighted.getValue()) {
+                    //Finds out if any of the stories dependencies are of a higher priority
+                    boolean badDependency = false;
+                    Integer priority = getModel().getStoryPriority(story);
+                    if (priority != null) {
+                        for (Story s : story.getDependencies()) {
+                            Integer p = getModel().getStoryPriority(s);
+                            if (p == null || p < priority) {
+                                badDependency = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    //Sets the colour of the table row according to the state of the story
+                    getTableRow().setStyle("-fx-border-width: 2; -fx-border-insets: 2");
+                    if (badDependency) {
+                        getTableRow().setStyle("-fx-border-color: red;");
+                    } else if (storyState == Story.StoryState.Ready) {
+                        getTableRow().setStyle("-fx-border-color: green;");
+                    } else if (story.getAcceptanceCriteria().size() > 0) {
+                        getTableRow().setStyle("-fx-border-color: orange;");
+                    }
+                }
+                else {
+                    getTableRow().setStyle("-fx-border-color: #FFFFFF;");
+                }
 
                 setGraphic(container);
             }
