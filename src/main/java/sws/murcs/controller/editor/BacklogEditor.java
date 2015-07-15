@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
@@ -8,6 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
@@ -21,6 +24,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -91,7 +95,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A column containing story priorities.
      */
     @FXML
-    private TableColumn<Story, Object> priorityColumn;
+    private TableColumn<Story, String> priorityColumn;
 
     /**
      * Increase and decrease priority buttons.
@@ -187,6 +191,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
+        priorityColumn.setCellValueFactory(param -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            Integer priority = getModel().getStoryPriority(param.getValue());
+            if (priority != null) {
+                property.set(priority.toString());
+            }
+            return property;
+        });
         priorityColumn.setCellFactory(param -> new EditablePriorityCell());
         storyTable.setEditable(true);
         priorityColumn.setEditable(true);
@@ -432,9 +444,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         .sorted((o1, o2) -> o1.getShortName().compareTo(o2.getShortName()))
                         .collect(Collectors.toList()));
                 break;
-            default: {
+            default:
                 throw new NotImplementedException("You should add this sort type to the this method");
-            }
         }
         observableStories.setAll(stories);
 
@@ -505,7 +516,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      *
      */
-    private class EditablePriorityCell extends TableCell<Story, Object> {
+    private class EditablePriorityCell extends TableCell<Story, String> {
 
         /**
          * The text field for.
@@ -514,6 +525,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         @Override
         public void startEdit() {
+            super.startEdit();
             if (!isEmpty()) {
                 super.startEdit();
                 createTextField();
@@ -524,22 +536,22 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         @Override
-        public void commitEdit(final Object newValue) {
-            super.commitEdit(newValue);
-            if (newValue != null) {
-                setPriority(newValue.toString());
+        public void commitEdit(final String priority) {
+            String processedPriority = priority;
+            if (priority == null) {
+                processedPriority = "";
+            }
+            super.commitEdit(processedPriority);
+            if (!isEmpty()) {
+                setPriority(processedPriority);
                 updateStoryTable();
             }
         }
 
         @Override
-        public void cancelEdit() {
-
-        }
-
-        @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
+        protected void updateItem(final String priority, final boolean empty) {
+            super.updateItem(priority, empty);
+            this.setAlignment(Pos.CENTER);
 
             if (empty) {
                 setText(null);
@@ -643,12 +655,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             if (row == null || empty || row.getItem() == null) {
                 setText(null);
                 setGraphic(null);
-                getTableRow().setStyle("-fx-border-color: #FFFFFF;");
+                getTableRow().setStyle("-fx-border-color: -fx-background;");
             }
             else {
                 Story story = row.getItem();
                 AnchorPane container = new AnchorPane();
-                //container.setPrefWidth(461);
                 if (getIsCreationWindow()) {
                     Label name = new Label(story.getShortName());
                     container.getChildren().add(name);
@@ -680,22 +691,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 container.getChildren().add(button);
 
                 Story.StoryState storyState = story.getStoryState();
-                Optional<Story> lowestStory1 = story.getDependencies()
-                        .stream()
-                        .sorted((s1, s2) -> {
-                            Integer p1 = getModel().getStoryPriority(s1);
-                            Integer p2 = getModel().getStoryPriority(s2);
-                            p1 = p1 == null ? -1 : p1;
-                            p2 = p2 == null ? -1 : p2;
-                            return p1.compareTo(p2);
-                        })
-                        .findFirst();
-                Story lowestStory = lowestStory1.isPresent() ? lowestStory1.get() : null;
-                Integer lowestPriority = null;
-                if (lowestStory != null) {
-                    lowestPriority = getModel().getStoryPriority(lowestStory);
-                }
-
                 if (highlighted.getValue()) {
                     //Finds out if any of the stories dependencies are of a higher priority
                     boolean badDependency = false;
@@ -711,17 +706,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     }
 
                     //Sets the colour of the table row according to the state of the story
-                    getTableRow().setStyle("-fx-border-width: 2; -fx-border-insets: 2");
+                    getTableRow().setStyle("-fx-padding: 0, 0, 0, 0");
                     if (badDependency) {
                         getTableRow().setStyle("-fx-border-color: red;");
                     } else if (storyState == Story.StoryState.Ready) {
                         getTableRow().setStyle("-fx-border-color: green;");
                     } else if (story.getAcceptanceCriteria().size() > 0) {
-                        getTableRow().setStyle("-fx-border-color: orange;");
+                        getTableRow().setStyle("-fx-border-color: darkorange;");
                     }
                 }
                 else {
-                    getTableRow().setStyle("-fx-border-color: #FFFFFF;");
+                    getTableRow().setStyle("-fx-border-color: -fx-background;");
                 }
 
                 setGraphic(container);

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="editor" prefHeight="1000.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
+<AnchorPane fx:id="editor" prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
     <children>
         <ScrollPane fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <content>
@@ -66,7 +66,7 @@
                         </VBox>
                   <VBox>
                      <children>
-                        <TitledPane text="Stories">
+                        <TitledPane expanded="false" text="Stories">
                            <content>
                                     <VBox>
                                         <padding>
@@ -109,7 +109,7 @@
                                                         </rowConstraints>
                                                         <children>
                                                             <Label text="Story" />
-                                                            <Label text="Pos" GridPane.columnIndex="1" />
+                                                            <Label text="Priority" GridPane.columnIndex="1" />
                                                             <AnchorPane GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                                 <children>
                                                                     <Button mnemonicParsing="false" onAction="#addStory" text="Add" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
