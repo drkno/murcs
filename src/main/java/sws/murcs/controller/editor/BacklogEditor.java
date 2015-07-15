@@ -513,9 +513,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         @Override
         public void commitEdit(final String priority) {
-            super.commitEdit(priority);
-            if (priority != null && !isEmpty()) {
-                setPriority(priority);
+            String processedPriority = priority;
+            if (priority == null) {
+                processedPriority = "";
+            }
+            super.commitEdit(processedPriority);
+            if (!isEmpty()) {
+                setPriority(processedPriority);
                 updateStoryTable();
             }
         }
