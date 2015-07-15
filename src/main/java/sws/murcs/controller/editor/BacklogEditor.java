@@ -454,6 +454,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             super.commitEdit(newValue);
             if (newValue != null) {
                 setPriority(newValue.toString());
+                updateStoryTable();
             }
         }
 
@@ -482,7 +483,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         /**
-         *
+         * Create the text field for editing a priority.
          */
         private void createTextField() {
             textField = new TextField(getString());
@@ -507,7 +508,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         /**
          *
-         * @return HI.
+         * @return Get the string representation of a priority for a table row.
          */
         private String getString() {
             TableRow<Story> row = getTableRow();
