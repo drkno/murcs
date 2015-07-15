@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
@@ -21,6 +22,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -89,7 +91,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A column containing story priorities.
      */
     @FXML
-    private TableColumn<Story, Object> priorityColumn;
+    private TableColumn<Story, String> priorityColumn;
 
     /**
      * Increase and decrease priority buttons.
@@ -168,6 +170,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
+        priorityColumn.setCellValueFactory(param -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            Integer priority = getModel().getStoryPriority(param.getValue());
+            if (priority != null) {
+                property.set(priority.toString());
+            }
+            return property;
+        });
         priorityColumn.setCellFactory(param -> new EditablePriorityCell());
         storyTable.setEditable(true);
         priorityColumn.setEditable(true);
@@ -413,9 +423,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         .sorted((o1, o2) -> o1.getShortName().compareTo(o2.getShortName()))
                         .collect(Collectors.toList()));
                 break;
-            default: {
+            default:
                 throw new NotImplementedException("You should add this sort type to the this method");
-            }
         }
         observableStories.setAll(stories);
 
@@ -482,7 +491,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      *
      */
-    private class EditablePriorityCell extends TableCell<Story, Object> {
+    private class EditablePriorityCell extends TableCell<Story, String> {
 
         /**
          * The text field for.
@@ -491,6 +500,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         @Override
         public void startEdit() {
+            super.startEdit();
             if (!isEmpty()) {
                 super.startEdit();
                 createTextField();
@@ -501,22 +511,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         @Override
-        public void commitEdit(final Object newValue) {
-            super.commitEdit(newValue);
-            if (newValue != null) {
-                setPriority(newValue.toString());
+        public void commitEdit(final String priority) {
+            super.commitEdit(priority);
+            if (priority != null && !isEmpty()) {
+                setPriority(priority);
                 updateStoryTable();
             }
         }
 
         @Override
-        public void cancelEdit() {
-
-        }
-
-        @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
+        protected void updateItem(final String priority, final boolean empty) {
+            super.updateItem(priority, empty);
 
             if (empty) {
                 setText(null);
