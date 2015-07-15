@@ -152,17 +152,36 @@
                   </GridPane>
                </content>
             </ScrollPane>
-            <ScrollPane prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="50.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
                <content>
-                  <HBox fx:id="bottomBar" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                  <GridPane>
                      <children>
-                        <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                           </VBox.margin>
+                           <children>
+                              <Label fx:id="labelErrorMessage" textFill="RED">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox fx:id="bottomBar" alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1">
                            <padding>
-                              <Insets left="10.0" />
+                              <Insets right="10.0" />
                            </padding>
-                        </Label>
+                        </HBox>
                      </children>
-                  </HBox>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
                </content>
             </ScrollPane>
          </children>
