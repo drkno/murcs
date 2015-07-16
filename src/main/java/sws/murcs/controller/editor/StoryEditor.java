@@ -112,6 +112,7 @@ public class StoryEditor extends GenericEditor<Story> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         isCreationMode = modelShortName == null;
         if (isNotEqual(modelShortName, viewShortName)) {
@@ -179,7 +180,9 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
-        setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     /**

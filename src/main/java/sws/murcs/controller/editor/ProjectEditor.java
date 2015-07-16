@@ -127,6 +127,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
 
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override

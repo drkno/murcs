@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -62,11 +64,11 @@ public enum EstimateType {
             return currentEstimates;
         } catch (URISyntaxException e) {
             //This shouldn't happen unless you add an estimation method with a really weird name
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Estimation method with a weird name created.");
         }
         catch (IOException e) {
-            //This will never happen as long as you're not an idiot
-            System.err.println("No such file as " + path);
+            //This will never happen
+            ErrorReporter.get().reportError(e, "No such file as " + path);
         }
         return new ArrayList<>();
     }
