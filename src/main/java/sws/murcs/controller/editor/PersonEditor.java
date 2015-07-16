@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -71,7 +72,6 @@ public class PersonEditor extends GenericEditor<Person> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         userIdTextField.focusedProperty().addListener(getChangeListener());
         skillComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        super.setupSaveChangesButton();
 
         allocatableSkills = FXCollections.observableArrayList();
         skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
@@ -108,6 +108,9 @@ public class PersonEditor extends GenericEditor<Person> {
             skillNodeIndex.put(skill, skillNode);
         });
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
@@ -126,7 +129,7 @@ public class PersonEditor extends GenericEditor<Person> {
             } catch (CustomException e) {
                 //This should never occur, we should be populating the
                 //list with valid items
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
             }
         }
 

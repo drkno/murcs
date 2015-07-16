@@ -3,6 +3,7 @@ package sws.murcs.controller;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 
@@ -87,8 +88,7 @@ public class EditorPane {
             controller.loadObject();
         }
         catch (Exception e) {
-            System.err.println("Unable to create editor! (this is seriously bad)");
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Unable to create editor");
         }
     }
 

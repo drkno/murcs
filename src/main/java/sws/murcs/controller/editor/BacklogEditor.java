@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -122,7 +123,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
             decreasePriorityButton.setDisable(priority == null);
         });
-        super.setupSaveChangesButton();
 
 
         // setup the observable stories
@@ -154,7 +154,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             catch (CustomException e) {
                 //Should not ever happen, this should be handled by the GUI,
                 //e.g Disabling buttons.
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to modify the story priority");
             }
             updateStoryTable();
         }
@@ -183,7 +183,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             catch (CustomException e) {
                 //Should not ever happen, this should be handled by the GUI
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to modify the priority of the story");
             }
             updateStoryTable();
         }
@@ -233,6 +233,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -258,6 +259,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     /**

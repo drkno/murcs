@@ -34,10 +34,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     private Label labelErrorMessage;
 
     /**
-     * The container for the error message and save button
+     * The container for the error message and save button.
      */
     @FXML
-    public HBox bottomBar;
+    private HBox bottomBar;
 
     /**
      * Placebo button for saving.
@@ -249,11 +249,18 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     @FXML
     protected abstract void initialize();
 
-    protected void setupSaveChangesButton() {
+    /**
+     * Adds a save changes placebo button to the editor panes.
+     */
+    protected final void setupSaveChangesButton() {
         saveButton = new MaterialDesignButton("Save Changes");
-        saveButton.setPadding(new Insets(5, 0, 0, 0));
-        saveButton.setRippleColor(Color.color(0.611, 0.8, 0.396));
+        final int pad = 5;
+        final double red = 0.611;
+        final double green = 0.8;
+        final double blue = 0.396;
+        saveButton.setPadding(new Insets(pad, 0, 0, 0));
+        saveButton.setRippleColour(Color.color(red, green, blue));
         bottomBar.getChildren().add(saveButton);
-        bottomBar.setMargin(saveButton, new Insets(5, 0, 0, 5));
+        bottomBar.setMargin(saveButton, new Insets(pad, 0, 0, pad));
     }
 }

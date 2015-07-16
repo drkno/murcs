@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 
@@ -765,7 +766,7 @@ public class ReleaseGenerator implements Generator<Release> {
         try {
             r.setShortName(shortName);
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "ReleaseGenerator: setting short name failed");
             return null;
             //Don't need to do anything here as it's just generation
         }
@@ -773,7 +774,7 @@ public class ReleaseGenerator implements Generator<Release> {
         try {
             projects.get(GenerationHelper.random(projects.size())).addRelease(r);
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "ReleaseGenerator: adding release failed");
             return null;
         }
 

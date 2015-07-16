@@ -1,5 +1,7 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
@@ -231,7 +233,7 @@ public class StoryGenerator implements Generator<Story> {
             story.setShortName(name);
         } catch (Exception e) {
             //Do nothing this doesn't matter. Ever.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "StoryGenerator: setting short name failed");
         }
         story.setDescription(description);
         story.setCreator(creator);
@@ -254,9 +256,13 @@ public class StoryGenerator implements Generator<Story> {
 
         int count = GenerationHelper.random(MIN_ACS, MAX_ACS);
         for (int i = 0; i < count; i++) {
-            AcceptanceCondition condition = new AcceptanceCondition();
-            condition.setCondition(NameGenerator.randomDescription());
-            conditions.add(condition);
+            try {
+                AcceptanceCondition condition = new AcceptanceCondition();
+                condition.setCondition(NameGenerator.randomDescription());
+                conditions.add(condition);
+            } catch (CustomException e) {
+                ErrorReporter.get().reportErrorSecretly(e, "Failed to add AC.");
+            }
         }
 
         return conditions;
