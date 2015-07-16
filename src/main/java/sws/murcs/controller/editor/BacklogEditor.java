@@ -177,7 +177,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
             //Configures the change-priority buttons
             Integer priority = getModel().getStoryPriority(selectedStory.get());
-            boolean isMaxPriority = selectedIndex == 0 && priority != null || selectedIndex == -1;
+            boolean isMaxPriority = priority != null && priority == 0;
             boolean isMinPriority = priority == null;
             increasePriorityButton.setDisable(isMaxPriority);
             decreasePriorityButton.setDisable(isMinPriority);
