@@ -1,5 +1,7 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,9 +122,7 @@ public abstract class TrackableObject {
             return UndoRedoManager.getHead().getCommitNumber();
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
-            System.err.println("Exception during assimilation. "
-                    + "Did you fail to call commit() before endAssimilation()?");
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Assimilation failed. Commit was probably not called before using.");
             return 0L;
         }
     }

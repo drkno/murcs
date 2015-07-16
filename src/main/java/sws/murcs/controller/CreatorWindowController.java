@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -138,8 +140,8 @@ public class CreatorWindowController {
                 PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
             }
-            catch (Exception e) {
-                e.printStackTrace();
+            catch (CustomException e) {
+                ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }
         stage.close();

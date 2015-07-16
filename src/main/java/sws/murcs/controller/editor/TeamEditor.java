@@ -18,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.model.Person;
@@ -126,6 +127,9 @@ public class TeamEditor extends GenericEditor<Team> {
         updatePOSM();
 
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
@@ -138,7 +142,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 updatePOSM();
             } catch (CustomException e) {
                 //This should never happen as the list of PO's should only contain valid options
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to assign the PO. This is very bad.");
             }
         }
 
@@ -150,7 +154,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 updatePOSM();
             } catch (CustomException e) {
                 //This should never happen as the list of SM's should only contain valid options
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to assign the SM. This is very bad.");
             }
         }
 
@@ -168,7 +172,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 updatePOSM();
             } catch (CustomException e) {
                 //This should never happen as the list of people to add should only contain valid options
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to add the person to the team. This is bad.");
             }
         }
 
@@ -286,7 +290,8 @@ public class TeamEditor extends GenericEditor<Team> {
         try {
             getModel().setProductOwner(null);
         } catch (MultipleRolesException e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Failed to clear the PO. This shouldn't happen. It's definitely Jay's "
+                    + "fault.");
         }
         updatePOSM();
     }
@@ -300,7 +305,7 @@ public class TeamEditor extends GenericEditor<Team> {
         try {
             getModel().setScrumMaster(null);
         } catch (MultipleRolesException e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Failed to clear the SM. This is probably James' fault.");
         }
         updatePOSM();
     }

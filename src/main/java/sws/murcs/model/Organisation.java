@@ -1,7 +1,9 @@
 package sws.murcs.model;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.exceptions.OverlappedDatesException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -115,7 +117,7 @@ public class Organisation extends TrackableObject implements Serializable {
         } catch (Exception e) {
             // Will never ever happen! Like, ever! An exception is only thrown
             // if you try to set the shortName as null or empty.
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Adding PO and SM skills to Organisation failed");
         }
     }
 
@@ -307,9 +309,9 @@ public class Organisation extends TrackableObject implements Serializable {
                     if (team.getScrumMaster() != null && team.getScrumMaster().equals(person)) {
                         team.setScrumMaster(null);
                     }
-                } catch (Exception e) {
+                } catch (MultipleRolesException e) {
                     //If this happens we're in deep doo doo
-                    e.printStackTrace();
+                    ErrorReporter.get().reportError(e, "Cannot remove a person from a role");
                 }
                 team.removeMember(person);
             });
@@ -600,7 +602,7 @@ public class Organisation extends TrackableObject implements Serializable {
         }
         catch (Exception e) {
             // This will never happen  because we have called commit before calling assimilate
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Could not assimilate while adding");
         }
         UndoRedoManager.add(model);
         commit("create " + type.toString().toLowerCase());
@@ -652,7 +654,7 @@ public class Organisation extends TrackableObject implements Serializable {
             UndoRedoManager.assimilate(commitNumber);
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Could not assimilate while removing");
         }
         UndoRedoManager.remove(model);
         commit("remove " + type.toString().toLowerCase());
