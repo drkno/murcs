@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -128,7 +129,7 @@ public class PersonEditor extends GenericEditor<Person> {
             } catch (CustomException e) {
                 //This should never occur, we should be populating the
                 //list with valid items
-                e.printStackTrace();
+                ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
             }
         }
 

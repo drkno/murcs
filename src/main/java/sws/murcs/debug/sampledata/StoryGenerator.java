@@ -261,7 +261,7 @@ public class StoryGenerator implements Generator<Story> {
                 condition.setCondition(NameGenerator.randomDescription());
                 conditions.add(condition);
             } catch (CustomException e) {
-                e.printStackTrace();
+                ErrorReporter.get().reportErrorSecretly(e, "Failed to add AC.");
             }
         }
 
