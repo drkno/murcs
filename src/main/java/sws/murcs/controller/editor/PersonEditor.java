@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
@@ -218,6 +219,7 @@ public class PersonEditor extends GenericEditor<Person> {
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
     }

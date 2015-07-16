@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -21,6 +22,7 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
@@ -354,7 +356,9 @@ public class StoryEditor extends GenericEditor<Story> {
      * @return a JavaFX node representing the dependency.
      */
     private Node generateStoryNode(final Story newDependency) {
-        Button removeButton = new Button("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        removeButton.getStyleClass().add("mdr-button");
+        removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove the dependency "
@@ -400,6 +404,7 @@ public class StoryEditor extends GenericEditor<Story> {
         Text depthText = new Text(depth);
         pane.add(depthText, 1, 0);
         pane.add(removeButton, 2, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
     }
