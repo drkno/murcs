@@ -76,3 +76,6 @@ release.properties
 *.testProject
 *.css
 *.map
+
+### SASS ###
+.sass-cache
