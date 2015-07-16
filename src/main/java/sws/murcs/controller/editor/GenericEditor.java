@@ -259,7 +259,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         final double green = 0.8;
         final double blue = 0.396;
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
-        saveButton.setRippleColor(Color.color(red, green, blue));
+        saveButton.setRippleColour(Color.color(red, green, blue));
         bottomBar.getChildren().add(saveButton);
         bottomBar.setMargin(saveButton, new Insets(pad, 0, 0, pad));
     }
