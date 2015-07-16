@@ -26,6 +26,7 @@ import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -715,10 +716,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(nameLink);
                 }
 
-                //Delete button
                 Button button = new Button("X");
-                button.setOpacity(0.0);
                 button.setStyle("-fx-background-radius: 100");
+                button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
