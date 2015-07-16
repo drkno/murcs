@@ -1,14 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-
 <AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
     <children>
@@ -100,7 +94,7 @@
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
                                         <TitledPane text="Stories" AnchorPane.leftAnchor="0.0"
-                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" expanded="false">
                                             <content>
                                                 <VBox>
                                                     <padding>
