@@ -55,6 +55,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     private boolean isCreationWindow;
 
     /**
+     * Stores if a save changes button exists, preventing a new button being created
+     * if one has already been created.
+     */
+    private boolean saveChangesButtonExists;
+
+    /**
      * All the invalid sections in the form.
      */
     private Collection<Node> invalidNodes = new ArrayList<>();
@@ -183,6 +189,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         clearErrors();
+        saveButton = null;
     }
 
     /**
@@ -251,8 +258,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * Adds a save changes placebo button to the editor panes.
+     * Will not add a new button if one already exists.
      */
     protected final void setupSaveChangesButton() {
+        if (saveChangesButtonExists) {
+            return; // prevent an existing button being added.
+        }
+        saveChangesButtonExists = true;
         saveButton = new MaterialDesignButton("Save Changes");
         final int pad = 5;
         final double red = 0.611;
@@ -261,6 +273,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
         saveButton.setRippleColour(Color.color(red, green, blue));
         bottomBar.getChildren().add(saveButton);
-        bottomBar.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+        HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
     }
 }
