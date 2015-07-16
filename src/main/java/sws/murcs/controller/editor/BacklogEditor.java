@@ -1,15 +1,17 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -24,7 +26,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.util.Callback;
 import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -40,7 +41,6 @@ import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +111,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      * The state of the story highlighting.
      */
-    public static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(false);
+    private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(false);
 
     /**
      * Sets the state of the story highlighting.
@@ -121,7 +121,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * The sort order
+     * The sort order of stories in the backlog.
      */
     private enum StorySortOrder {
         /**
@@ -185,6 +185,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             jumpPriorityButton.setDisable(isMaxPriority);
             dropPriorityButton.setDisable(isMinPriority);
         });
+        storyTable.setFixedCellSize(30.0);
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -415,9 +416,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             int selectedIndex = storyPicker.getSelectionModel().getSelectedIndex();
 
             Collection<Story> stories = organisation.getUnassignedStories();
-            for (Story story : getModel().getAllStories()) {
-                stories.remove(story);
-            }
+            getModel().getAllStories().forEach(stories::remove);
             storyPicker.getItems().clear();
             storyPicker.getItems().addAll(stories);
             storyPicker.getSelectionModel().select(Math.min(selectedIndex, stories.size() - 1));
@@ -447,11 +446,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             default:
                 throw new NotImplementedException("You should add this sort type to the this method");
         }
-        observableStories.setAll(stories);
+        Platform.runLater(() -> {
+            observableStories.setAll(stories);
 
-        if (selectedStory.get() != null) {
-            storyTable.getSelectionModel().select(selectedStory.get());
-        }
+            if (selectedStory.get() != null) {
+                storyTable.getSelectionModel().select(selectedStory.get());
+            }
+        });
+
     }
 
     @Override
@@ -549,11 +551,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         @Override
-        protected void updateItem(final String priority, final boolean empty) {
-            super.updateItem(priority, empty);
+        protected void updateItem(final String priorityText, final boolean empty) {
+            super.updateItem(priorityText, empty);
             this.setAlignment(Pos.CENTER);
+            setColorTab(highlighted.getValue());
 
-            if (empty) {
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
                 setGraphic(null);
             } else if (isEditing()) {
@@ -565,6 +568,43 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             } else {
                 setText(getString());
                 setGraphic(null);
+            }
+        }
+
+        /**
+         * Highlight the story with a color tab. For example, if the story is not ready the color tab will be red.
+         */
+        private void setColorTab(final boolean set) {
+            String style = "-fx-border-color: transparent -fx-box-border transparent %s; -fx-border-width: 0 1 0 7; -fx-background-insets: 0 1 0 7";
+            if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
+                setStyle(String.format(style, "transparent"));
+            } else {
+                Story story = (Story) getTableRow().getItem();
+                Story.StoryState storyState = story.getStoryState();
+
+                Integer nullStoryPriority = getModel().getStoryPriority(story);
+                final int storyPriority = nullStoryPriority == null ? -1 : nullStoryPriority;
+                Long lowerPriorityCount = story.getDependencies()
+                        .stream()
+                        .filter(param -> {
+                            Integer priority = getModel().getStoryPriority(param);
+                            if (priority == null) {
+                                priority = -1;
+                            }
+                            return priority < storyPriority;
+                        })
+                        .count();
+                boolean badDependency = lowerPriorityCount > 0;
+
+                if (badDependency) {
+                    setStyle(String.format(style, "#F44336"));
+                }
+                else if (storyState == Story.StoryState.Ready) {
+                    setStyle(String.format(style, "#8BC34A"));
+                }
+                else if (story.getAcceptanceCriteria().size() > 0){
+                    setStyle(String.format(style, "#FF9800"));
+                }
             }
         }
 
@@ -651,14 +691,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         protected void updateItem(final Object unused, final boolean empty) {
             super.updateItem(unused, empty);
-            TableRow<Story> row = getTableRow();
-            if (row == null || empty || row.getItem() == null) {
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
                 setGraphic(null);
-                getTableRow().setStyle("-fx-border-color: -fx-background;");
             }
             else {
-                Story story = row.getItem();
+                Story story = (Story) getTableRow().getItem();
                 AnchorPane container = new AnchorPane();
                 if (getIsCreationWindow()) {
                     Label name = new Label(story.getShortName());
@@ -671,7 +709,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 //Delete button
                 Button button = new Button("X");
-                button.setOpacity(0.3);
+                button.setOpacity(0.0);
+                button.setStyle("-fx-background-radius: 100");
                 button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
@@ -685,41 +724,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     });
                     popup.show();
                 });
-                this.setOnMouseEntered(event -> button.setOpacity(1.0));
-                this.setOnMouseExited(event -> button.setOpacity(0.3));
+                getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
+                getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
                 AnchorPane.setRightAnchor(button, 0.0);
+                AnchorPane.setTopAnchor(button, 0.0);
+                AnchorPane.setBottomAnchor(button, 0.0);
                 container.getChildren().add(button);
 
-                Story.StoryState storyState = story.getStoryState();
-                if (highlighted.getValue()) {
-                    //Finds out if any of the stories dependencies are of a higher priority
-                    boolean badDependency = false;
-                    Integer priority = getModel().getStoryPriority(story);
-                    if (priority != null) {
-                        for (Story s : story.getDependencies()) {
-                            Integer p = getModel().getStoryPriority(s);
-                            if (p == null || p < priority) {
-                                badDependency = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    //Sets the colour of the table row according to the state of the story
-                    getTableRow().setStyle("-fx-padding: 0, 0, 0, 0");
-                    if (badDependency) {
-                        getTableRow().setStyle("-fx-border-color: red;");
-                    } else if (storyState == Story.StoryState.Ready) {
-                        getTableRow().setStyle("-fx-border-color: green;");
-                    } else if (story.getAcceptanceCriteria().size() > 0) {
-                        getTableRow().setStyle("-fx-border-color: darkorange;");
-                    }
-                }
-                else {
-                    getTableRow().setStyle("-fx-border-color: -fx-background;");
-                }
-
+                container.setMaxHeight(30);
                 setGraphic(container);
+                setAlignment(Pos.CENTER);
             }
         }
     }
