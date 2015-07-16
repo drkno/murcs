@@ -4,7 +4,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -30,23 +36,35 @@ import java.util.List;
  * Controller for the report generator.
  */
 public class ReportGeneratorController {
-    public HBox buttonContainer;
-    public GridPane lowerThird;
+
+    /**
+     * Contains all of the buttons in the ReportGenerator Window (Generate/Cancel).
+     */
+    private HBox buttonContainer;
+
+    /**
+     * Grid that contains the options section (selecting items to generate a report on) of the Report Generator Window.
+     */
+    private GridPane lowerThird;
+
     /**
      * The content relevant to management or workflow.
      */
     @FXML
     private VBox managementContent, workflowContent;
+
     /**
      * The combo box for selecting different management or workflow types.
      */
     @FXML
     private ComboBox<ModelType> managementTypeComboBox, workflowTypeComboBox;
+
     /**
      * The list which is populated with selected management or workflow type.
      */
     @FXML
     private ListView<Model> managementList, workflowList;
+
     /**
      * The buttons in the create window.
      */
@@ -74,10 +92,12 @@ public class ReportGeneratorController {
      * The stage of the creation window.
      */
     private Stage stage;
+
     /**
      * toggle buttons for type of report generation.
      */
     private MaterialDesignToggleButton all, management, workflow;
+
     /**
      * Group containing toggle buttons.
      */
@@ -96,6 +116,7 @@ public class ReportGeneratorController {
     public final void setStage(final Stage pStage) {
         stage = pStage;
     }
+
     /**
      * Sets up the report generatorUI.
      */
@@ -113,30 +134,36 @@ public class ReportGeneratorController {
         hideAllContent();
     }
 
+    /**
+     * Sets up the lower third of the Report Generator Window.
+     */
     private void setupLowerThird() {
+        final int minWidth = 80;
+        final int five = 5;
+        final int ten = 10;
         createButton = new MaterialDesignButton("Generate Report");
         buttonContainer.getChildren().add(createButton);
         createButton.alignmentProperty().set(Pos.CENTER);
         createButton.setDefaultButton(true);
         createButton.setMinHeight(0);
-        createButton.setMinWidth(80);
+        createButton.setMinWidth(minWidth);
         createButton.setMnemonicParsing(false);
         createButton.setOnAction(this::createButtonClicked);
         GridPane.setRowIndex(createButton, 1);
-        lowerThird.setMargin(createButton, new Insets(10, 10, 10, 10));
-        buttonContainer.setMargin(createButton, new Insets(5, 5, 5, 10));
+        GridPane.setMargin(createButton, new Insets(ten, ten, ten, ten));
+        HBox.setMargin(createButton, new Insets(five, five, five, ten));
 
         cancelButton = new MaterialDesignButton("Cancel");
         buttonContainer.getChildren().add(cancelButton);
         cancelButton.alignmentProperty().set(Pos.CENTER);
         cancelButton.setCancelButton(true);
         cancelButton.setMinHeight(0);
-        cancelButton.setMinWidth(80);
+        cancelButton.setMinWidth(minWidth);
         cancelButton.setMnemonicParsing(false);
         cancelButton.setOnAction(this::cancelButtonClicked);
         GridPane.setColumnIndex(cancelButton, 1);
-        lowerThird.setMargin(cancelButton, new Insets(10, 10, 10, 10));
-        buttonContainer.setMargin(cancelButton, new Insets(5, 10, 5, 10));
+        GridPane.setMargin(cancelButton, new Insets(ten, ten, ten, ten));
+        HBox.setMargin(cancelButton, new Insets(five, ten, five, ten));
     }
 
     /**

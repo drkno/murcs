@@ -17,6 +17,7 @@ import java.util.List;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportHeaderTeam extends ReportHeader {
+
     /**
      * Creates a new Report Header from a given team.
      * @param teams the teams given.

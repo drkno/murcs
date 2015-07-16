@@ -24,7 +24,6 @@ public class ReleaseGenerator implements Generator<Release> {
      */
     protected static final int LOW_STRESS_MAX = 10;
 
-
     /**
      * The max number of releases generated on medium stress.
      */

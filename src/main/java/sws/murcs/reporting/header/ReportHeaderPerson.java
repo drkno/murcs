@@ -17,6 +17,7 @@ import java.util.List;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportHeaderPerson extends ReportHeader {
+
     /**
      * Creates a new Report Header from a given person.
      * @param people the people given.

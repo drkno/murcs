@@ -17,6 +17,7 @@ import java.util.List;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportHeaderBacklog extends ReportHeader {
+
     /**
      * Creates a new Report Header from a given backlog.
      * @param backlogs the projects given.

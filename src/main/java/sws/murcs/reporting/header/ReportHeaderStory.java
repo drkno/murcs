@@ -17,6 +17,7 @@ import java.util.List;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportHeaderStory extends ReportHeader {
+
     /**
      * Creates a new Report Header from given stories.
      * @param stories the projects given.

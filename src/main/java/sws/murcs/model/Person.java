@@ -24,6 +24,7 @@ import java.util.List;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+
     /**
      * The user id of a person.
      */

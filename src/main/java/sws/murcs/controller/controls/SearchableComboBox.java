@@ -18,6 +18,7 @@ import java.util.Optional;
  * @param <T> type of the ComboBox.
  */
 public class SearchableComboBox<T> {
+
     /**
      * The ComboBox this affects.
      */

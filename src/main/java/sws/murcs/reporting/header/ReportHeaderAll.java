@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportHeaderAll extends ReportHeader {
+
     /**
      * Creates a new Report Header from a given organisation.
      * @param organisation the organisation given.

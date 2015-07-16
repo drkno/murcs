@@ -10,6 +10,7 @@ import java.util.List;
  * A model which matches the output of the status reports so it can be directly serialized.
  */
 public class ReportModelStory extends ReportModel {
+
     /**
      * The stories in the report.
      */
