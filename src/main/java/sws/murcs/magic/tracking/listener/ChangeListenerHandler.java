@@ -1,5 +1,7 @@
 package sws.murcs.magic.tracking.listener;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -17,7 +19,7 @@ public class ChangeListenerHandler extends WeakReference<UndoRedoChangeListener>
         }
         catch (Exception e) {
             // not much we can do
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Garbage collection failed");
         }
     }
 

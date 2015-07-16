@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -162,7 +163,7 @@ public class PersonGenerator implements Generator<Person> {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: adding PO/SM skills failed");
             return null;
             // Will never ever happen. ever. an exception is only
             // thrown if you try to set the short name as null/empty
@@ -172,14 +173,14 @@ public class PersonGenerator implements Generator<Person> {
             p.setUserId(userId);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: setting user ID failed");
             return null;
         }
         try {
             p.setShortName(shortName);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: setting short name failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
@@ -191,7 +192,7 @@ public class PersonGenerator implements Generator<Person> {
             p.addSkills(skills);
         }
         catch (CustomException e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: adding skills failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.

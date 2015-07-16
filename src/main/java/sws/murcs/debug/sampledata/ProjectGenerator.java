@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
@@ -159,7 +160,7 @@ public class ProjectGenerator implements Generator<Project> {
         catch (Exception e) {
             // Do nothing, don't have to deal with the
             // exception if only generating test data.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "ProjectGenerator: setting short name failed");
             return null;
         }
         project.setLongName(longName);

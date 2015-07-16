@@ -1,9 +1,9 @@
 package sws.murcs.reporting;
 
 import sws.murcs.model.Backlog;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.Organisation;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;

@@ -8,12 +8,14 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,6 +143,14 @@ public class App extends Application {
 
         Scene scene = new Scene(parent);
         scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButton.css").toExternalForm());
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRound.css").toExternalForm());
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRoundDelete.css").toExternalForm());
+        scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,"
+                + "400italic,500,500italic,700,700italic,900,900italic");
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
@@ -177,6 +187,7 @@ public class App extends Application {
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
+        ErrorReporter.setup(args);
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.setDisabled(true);
 
@@ -218,8 +229,9 @@ public class App extends Application {
             UndoRedoManager.importModel(model);
         }
         catch (Exception e) {
-            //There is a problem if this fails
-            e.printStackTrace();
+            //There is a big problem if this fails
+            ErrorReporter.get().reportError(e, "Importing model failed in main()");
+            return;
         }
         launch(args);
     }

@@ -1,5 +1,6 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
@@ -146,7 +147,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
                 g.setShortName(g.getShortName() + " (" + i + ")");
             } catch (CustomException e) {
                 //never here... EVER.
-                e.printStackTrace();
+                ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
             }
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);
@@ -284,7 +285,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             return model;
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: generating organisation failed");
             lastWasError = true;
         }
         return null;

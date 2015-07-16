@@ -1,14 +1,15 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Organisation;
+
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
-import sws.murcs.magic.tracking.listener.ChangeState;
-import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Organisation;
 
 /**
  * Manages undo and redo operations.

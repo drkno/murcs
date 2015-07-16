@@ -8,6 +8,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 
@@ -140,8 +141,7 @@ public class CreatorWindowView {
             stage.show();
         }
         catch (Exception e) {
-            System.err.println("Something went wrong loading the creation window");
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");
         }
     }
 

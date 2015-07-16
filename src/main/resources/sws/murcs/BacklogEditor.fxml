@@ -149,13 +149,36 @@
                   </GridPane>
                   </content>
               </ScrollPane>
-            <ScrollPane prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1">
                <content>
-                  <Label fx:id="labelErrorMessage" textFill="RED" GridPane.rowIndex="1">
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
-                  </Label>
+                  <GridPane>
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
+                           <children>
+                              <Label fx:id="labelErrorMessage" textFill="RED">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox fx:id="bottomBar" alignment="CENTER_RIGHT" spacing="10.0" GridPane.columnIndex="1">
+                           <padding>
+                              <Insets right="10.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints vgrow="SOMETIMES" />
+                     </rowConstraints>
+                  </GridPane>
                </content>
             </ScrollPane>
          </children>
