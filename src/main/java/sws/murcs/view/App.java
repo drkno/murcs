@@ -142,10 +142,14 @@ public class App extends Application {
 
         Scene scene = new Scene(parent);
         scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/materialDesignButton.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRound.css").toExternalForm());
-        scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRoundDelete.css").toExternalForm());
-        scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic");
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButton.css").toExternalForm());
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRound.css").toExternalForm());
+        scene.getStylesheets().add(getClass()
+                .getResource("/sws/murcs/styles/materialDesign/materialDesignButtonRoundDelete.css").toExternalForm());
+        scene.getStylesheets().add("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,"
+                + "400italic,500,500italic,700,700italic,900,900italic");
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
