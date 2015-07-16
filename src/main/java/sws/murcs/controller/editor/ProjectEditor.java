@@ -89,7 +89,6 @@ public class ProjectEditor extends GenericEditor<Project> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-        super.setupSaveChangesButton();
 
         observableAllocations = FXCollections.observableArrayList();
         tableColumnTeams.setCellValueFactory(new PropertyValueFactory<>("team"));
@@ -128,6 +127,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
 
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override

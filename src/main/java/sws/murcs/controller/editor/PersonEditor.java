@@ -71,7 +71,6 @@ public class PersonEditor extends GenericEditor<Person> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         userIdTextField.focusedProperty().addListener(getChangeListener());
         skillComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        super.setupSaveChangesButton();
 
         allocatableSkills = FXCollections.observableArrayList();
         skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
@@ -108,6 +107,9 @@ public class PersonEditor extends GenericEditor<Person> {
             skillNodeIndex.put(skill, skillNode);
         });
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override

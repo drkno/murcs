@@ -122,7 +122,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
             decreasePriorityButton.setDisable(priority == null);
         });
-        super.setupSaveChangesButton();
 
 
         // setup the observable stories
@@ -233,6 +232,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -258,6 +258,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     /**

@@ -112,6 +112,7 @@ public class StoryEditor extends GenericEditor<Story> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         isCreationMode = modelShortName == null;
         if (isNotEqual(modelShortName, viewShortName)) {
@@ -178,6 +179,9 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         updateAcceptanceCriteria();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     /**
@@ -242,7 +246,6 @@ public class StoryEditor extends GenericEditor<Story> {
         estimateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyStateChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         dependenciesDropDown.valueProperty().addListener(getChangeListener());
-        super.setupSaveChangesButton();
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());

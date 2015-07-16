@@ -90,7 +90,6 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        super.setupSaveChangesButton();
 
         allocatablePeople = FXCollections.observableArrayList();
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
@@ -127,6 +126,9 @@ public class TeamEditor extends GenericEditor<Team> {
         updatePOSM();
 
         setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
