@@ -46,6 +46,10 @@ import java.util.stream.Collectors;
  * Since there should only be one instance of this PopUp
  */
 public class BacklogEditor extends GenericEditor<Backlog> {
+    /**
+     * The fixed height of rows in the table view for stories.
+     */
+    private static final Double FIXED_ROW_HEIGHT_STORY_TABLE = 30.0;
 
     /**
      * Text fields for displaying short name, long name and priority.
@@ -184,7 +188,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             jumpPriorityButton.setDisable(isMaxPriority);
             dropPriorityButton.setDisable(isMinPriority);
         });
-        storyTable.setFixedCellSize(30.0);
+        storyTable.setFixedCellSize(FIXED_ROW_HEIGHT_STORY_TABLE);
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -575,7 +579,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          * @param set Whether the tab is being set or unset
          */
         private void setColorTab(final boolean set) {
-            String style = "-fx-border-color: transparent -fx-box-border transparent %s; -fx-border-width: 0 1 0 7; -fx-background-insets: 0 1 0 7";
+            String style = "-fx-border-color: transparent -fx-box-border transparent %s; "
+                    + "-fx-border-width: 0 1 0 7; -fx-background-insets: 0 1 0 7";
             if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
                 setStyle(String.format(style, "transparent"));
             } else {
@@ -583,7 +588,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 Story.StoryState storyState = story.getStoryState();
 
                 Integer nullStoryPriority = getModel().getStoryPriority(story);
-                final int storyPriority = nullStoryPriority == null ? -1 : nullStoryPriority;
+                if (nullStoryPriority == null) {
+                    nullStoryPriority = -1;
+                }
+                final int storyPriority = nullStoryPriority;
                 Long lowerPriorityCount = story.getDependencies()
                         .stream()
                         .filter(param -> {
@@ -602,7 +610,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 else if (storyState == Story.StoryState.Ready) {
                     setStyle(String.format(style, "#8BC34A"));
                 }
-                else if (story.getAcceptanceCriteria().size() > 0){
+                else if (story.getAcceptanceCriteria().size() > 0) {
                     setStyle(String.format(style, "#FF9800"));
                 }
             }
@@ -731,7 +739,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 AnchorPane.setBottomAnchor(button, 0.0);
                 container.getChildren().add(button);
 
-                container.setMaxHeight(30);
+                container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);
                 setGraphic(container);
                 setAlignment(Pos.CENTER);
             }

@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
-import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;

@@ -180,11 +180,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
     }
 
-    public void enableMenuItem() {
+    /**
+     * Enable the highlight toggle menu item.
+     */
+    public final void enableMenuItem() {
         highlightToggle.setDisable(false);
     }
 
-    public void disableMenuItem() {
+    /**
+     * Disable the highlight toggle menu item.
+     */
+    public final void disableMenuItem() {
         highlightToggle.setDisable(true);
     }
 
