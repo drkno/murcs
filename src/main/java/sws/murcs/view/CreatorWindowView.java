@@ -126,16 +126,12 @@ public class CreatorWindowView {
             }
             Scene scene = new Scene(root);
             scene.getStylesheets()
-                    .add(getClass()
-                    .getResource("/sws/murcs/styles/errors.css")
-                    .toExternalForm());
-            scene.getStylesheets()
-                    .add("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,"
-                            + "500italic,700,700italic,900,900italic");
+                    .add("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,"
+                            + "400italic,500,500italic,700,700italic,900,900italic");
             scene.getStylesheets()
                     .add(getClass()
-                    .getResource("/sws/murcs/styles/materialDesign/globalStyles.css")
-                    .toExternalForm());
+                            .getResource("/sws/murcs/styles/global.css")
+                            .toExternalForm());
             stage.setScene(scene);
 
             // Give the stage a name and icon

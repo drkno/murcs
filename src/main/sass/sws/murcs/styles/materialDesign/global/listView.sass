@@ -1,0 +1,24 @@
+@import "../../globalStyles"
+
+.list-view
+  -fx-text-fill: #444
+  -fx-background-color: $list-cell-color
+  -fx-background-insets: 0
+  -fx-background-radius: 1px
+
+.list-view .list-cell
+  -fx-text-fill: #444
+  -fx-background-color: $list-cell-color
+  -fx-background-insets: 0
+  -fx-padding: 3 6
+  -fx-background-radius: 1px
+
+
+.list-view .list-cell:focused, .list-view .list-cell:selected
+  -fx-background-color: $list-cell-selected-color
+  -fx-background-insets: 0, 1
+
+
+.list-view .list-cell:hover
+  -fx-background-color: $list-cell-hover-color
+  -fx-background-insets: 0, 1

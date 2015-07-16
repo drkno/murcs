@@ -74,3 +74,5 @@ release.properties
 *.project
 .gitignore
 *.testProject
+*.css
+*.map

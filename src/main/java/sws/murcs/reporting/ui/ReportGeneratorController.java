@@ -40,11 +40,13 @@ public class ReportGeneratorController {
     /**
      * Contains all of the buttons in the ReportGenerator Window (Generate/Cancel).
      */
+    @FXML
     private HBox buttonContainer;
 
     /**
      * Grid that contains the options section (selecting items to generate a report on) of the Report Generator Window.
      */
+    @FXML
     private GridPane lowerThird;
 
     /**
