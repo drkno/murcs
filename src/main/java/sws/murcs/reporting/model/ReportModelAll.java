@@ -25,6 +25,7 @@ import java.util.List;
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ReportModelAll extends ReportModel {
+
     /**
      * The projects in the report.
      */

@@ -19,16 +19,19 @@ import java.time.LocalDate;
         ReportHeaderBacklog.class,
         ReportHeaderStory.class})
 public abstract class ReportHeader {
+
     /**
      * The version of the project.
      */
     @XmlElement(name = "projectVersion")
     String projectVersion;
+
     /**
      * The date the report was generated.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     LocalDate dateGenerated;
+
     /**
      * The report model (model of all the project).
      */

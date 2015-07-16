@@ -21,6 +21,7 @@ public class Release extends Model {
      */
     @TrackableValue
     private String description;
+
     /**
      * The date the release is due.
      */

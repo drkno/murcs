@@ -22,7 +22,6 @@ public class ProjectGenerator implements Generator<Project> {
      */
     public static final int LOW_STRESS_MIN = 1;
 
-
     /**
      * The max number of projects generated when stress level is medium.
      */
