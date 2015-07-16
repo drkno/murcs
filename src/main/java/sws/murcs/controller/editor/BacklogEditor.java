@@ -1,13 +1,10 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
-import javafx.beans.value.WeakChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -167,6 +164,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         highlighted.addListener((observable, oldValue, newValue) -> {
             updateStoryTable();
         });
+
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -446,13 +444,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             default:
                 throw new NotImplementedException("You should add this sort type to the this method");
         }
-        Platform.runLater(() -> {
-            observableStories.setAll(stories);
+        observableStories.setAll(stories);
 
-            if (selectedStory.get() != null) {
-                storyTable.getSelectionModel().select(selectedStory.get());
-            }
-        });
+        if (selectedStory.get() != null) {
+            storyTable.getSelectionModel().select(selectedStory.get());
+        }
 
     }
 
@@ -466,8 +462,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        observableStories = null;
-        selectedStory = null;
         super.dispose();
     }
 
@@ -573,6 +567,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         /**
          * Highlight the story with a color tab. For example, if the story is not ready the color tab will be red.
+         * @param set Whether the tab is being set or unset
          */
         private void setColorTab(final boolean set) {
             String style = "-fx-border-color: transparent -fx-box-border transparent %s; -fx-border-width: 0 1 0 7; -fx-background-insets: 0 1 0 7";

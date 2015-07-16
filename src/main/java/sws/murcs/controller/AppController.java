@@ -318,7 +318,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
     /**
      *
-     * @param event
+     * @param event The event that is fired when the Highlight Stories menu item is clicked
      */
     @FXML
     private void toggleBacklogStories(final ActionEvent event) {
