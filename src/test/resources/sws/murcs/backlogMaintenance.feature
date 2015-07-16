@@ -60,7 +60,17 @@ Feature: Backlog Maintenance
     Given I have a backlog selected
     Then I can add an orphaned story to it with a priority
 
-  Scenario: Change priority of a story
+  Scenario: Change priority of a story using buttons
     Given I have a backlog selected
     And it has a story in it
-    Then I can change the priority of the story
+    Then I can change the priority of the story using the up/down buttons
+
+  Scenario: Change priority of a story using jump-priority buttons
+    Given I have a backlog selected
+    And it has a story in it
+    Then I can jump the priority to 1 or unprioritised using the jump-priority buttons
+
+  Scenario: Edit priority of a story
+    Given I have a backlog selected
+    And it has a story in it
+    Then I can select the priority and specify it
