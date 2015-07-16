@@ -4,15 +4,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -22,11 +14,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.AcceptanceCondition;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -93,10 +81,10 @@ public class StoryEditor extends GenericEditor<Story> {
     private TableColumn conditionColumn, removeColumn;
 
     /**
-     * Buttons for increasing and decreasing the priority of an AC.
+     * Buttons for increasing and decreasing the priority of an AC. Also the button for adding a new AC.
      */
     @FXML
-    private Button increasePriorityButton, decreasePriorityButton;
+    private Button increasePriorityButton, decreasePriorityButton, addACButton;
 
     /**
      * The TextField containing the text for the new condition.
@@ -415,7 +403,12 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Create a new condition
         AcceptanceCondition newCondition = new AcceptanceCondition();
-        newCondition.setCondition(conditionText);
+        try {
+            newCondition.setCondition(conditionText);
+        } catch (CustomException e) {
+            addFormError(addACButton, e.getMessage());
+            return;
+        }
 
         //Add the new condition to the model
         getModel().addAcceptanceCondition(newCondition);
@@ -510,7 +503,12 @@ public class StoryEditor extends GenericEditor<Story> {
                 }
 
                 //Update the text of the condition
-                condition.setCondition(conditionTextField.getText());
+                try {
+                    condition.setCondition(conditionTextField.getText());
+                } catch (CustomException e) {
+                    addFormError(conditionTextField, e.getMessage());
+                }
+                conditionTextField.setText(condition.getCondition());
             });
             conditionTextField.setText(condition.getCondition());
             setGraphic(conditionTextField);

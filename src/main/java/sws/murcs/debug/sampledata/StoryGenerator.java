@@ -1,6 +1,7 @@
 package sws.murcs.debug.sampledata;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
@@ -255,9 +256,13 @@ public class StoryGenerator implements Generator<Story> {
 
         int count = GenerationHelper.random(MIN_ACS, MAX_ACS);
         for (int i = 0; i < count; i++) {
-            AcceptanceCondition condition = new AcceptanceCondition();
-            condition.setCondition(NameGenerator.randomDescription());
-            conditions.add(condition);
+            try {
+                AcceptanceCondition condition = new AcceptanceCondition();
+                condition.setCondition(NameGenerator.randomDescription());
+                conditions.add(condition);
+            } catch (CustomException e) {
+                e.printStackTrace();
+            }
         }
 
         return conditions;
