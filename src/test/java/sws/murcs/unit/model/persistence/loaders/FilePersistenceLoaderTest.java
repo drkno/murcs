@@ -42,6 +42,7 @@ public class FilePersistenceLoaderTest {
         files = new ArrayList<>();
         random = new Random();
         UndoRedoManager.setDisabled(true);
+        PersistenceManager.getCurrent().setCurrentModel(null);
     }
 
     @After
@@ -66,7 +67,6 @@ public class FilePersistenceLoaderTest {
         }
         String testFile = getNewTestFile();
         Organisation model = generator.generate();
-        model = generator.generate();
         int numProjects = model.getProjects().size();
         loader.saveModel(testFile, model);
         Organisation loadModel = loader.loadModel(testFile);
