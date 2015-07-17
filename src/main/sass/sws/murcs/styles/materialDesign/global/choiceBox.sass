@@ -8,15 +8,15 @@
   -fx-background-radius: 1px
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
 
+.choice-box:disabled
+  -fx-opacity: 1.0
 
 .choice-box:pressed
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 8, 0.0, 0, 3)
 
-
 .choice-box:focused
   -fx-background-color: $choice-box-pressed-color
   -fx-background-insets: 0, 1
-
 
 .choice-box .context-menu .menu-item
   -fx-background-color: $list-cell-color
