@@ -158,7 +158,7 @@ public class ReportGeneratorController {
         HBox.setMargin(createButton, new Insets(five, five, ten, ten));
 
         createButton.getStyleClass().add("create-save-button");
-        createButton.setRippleColour(JavaFXHelpers.hex2RGB("#64b5f6"));
+        createButton.setRippleColour(JavaFXHelpers.hex2RGB("#42A5F5"));
 
         cancelButton = new MaterialDesignButton("Cancel");
         buttonContainer.getChildren().add(cancelButton);
@@ -172,7 +172,7 @@ public class ReportGeneratorController {
         GridPane.setMargin(cancelButton, new Insets(ten, ten, ten, ten));
         HBox.setMargin(cancelButton, new Insets(five, ten, ten, ten));
 
-        cancelButton.setRippleColour(JavaFXHelpers.hex2RGB("#64b5f6"));
+        cancelButton.setRippleColour(JavaFXHelpers.hex2RGB("#FFA726"));
     }
 
     /**
@@ -209,6 +209,10 @@ public class ReportGeneratorController {
         workflow.getStyleClass().add("md-button");
         all.getStyleClass().add("left-button");
         workflow.getStyleClass().add("right-button");
+
+        all.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
+        workflow.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
+        management.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
     }
 
     /**

@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -267,11 +268,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         saveChangesButtonExists = true;
         saveButton = new MaterialDesignButton("Save Changes");
         final int pad = 5;
-        final double red = 0.611;
-        final double green = 0.8;
-        final double blue = 0.396;
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
-        saveButton.setRippleColour(Color.color(red, green, blue));
+        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
         bottomBar.getChildren().add(saveButton);
         HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
     }
