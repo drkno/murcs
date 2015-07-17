@@ -70,8 +70,8 @@
                      <children>
                         <HBox alignment="TOP_RIGHT" spacing="10.0" GridPane.columnIndex="1" VBox.vgrow="SOMETIMES">
                            <children>
-                              <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" text="+" />
-                              <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X">
+                              <Button styleClass="mdr-button" fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" text="+" />
+                              <Button styleClass="mdr-button" fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" text="X">
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
@@ -83,8 +83,8 @@
                         </HBox>
                         <HBox spacing="10.0">
                            <children>
-                              <Button fx:id="backButton" disable="true" mnemonicParsing="false" onAction="#backClicked" text="&lt;" />
-                              <Button fx:id="forwardButton" disable="true" mnemonicParsing="false" onAction="#forwardClicked" text="&gt;">
+                              <Button styleClass="mdr-button" fx:id="backButton" disable="true" mnemonicParsing="false" onAction="#backClicked" text="&lt;" />
+                              <Button styleClass="mdr-button" fx:id="forwardButton" disable="true" mnemonicParsing="false" onAction="#forwardClicked" text="&gt;">
                                  <HBox.margin>
                                     <Insets right="50.0" />
                                  </HBox.margin>

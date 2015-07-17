@@ -389,6 +389,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             else {
                 Button button = new Button("X");
+                button.getStyleClass().add("mdr-button");
+                button.getStyleClass().add("mdrd-button");
                 button.setOnAction(event -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");

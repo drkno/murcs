@@ -548,6 +548,8 @@ public class StoryEditor extends GenericEditor<Story> {
             }
 
             Button button = new Button("X");
+            button.getStyleClass().add("mdr-button");
+            button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
                 GenericPopup popup = new GenericPopup();
                 popup.setTitleText("Are you sure?");

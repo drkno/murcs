@@ -67,7 +67,7 @@
                                           <ChoiceBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearPOButton" mnemonicParsing="false" onAction="#clearPO" text="X" GridPane.columnIndex="1">
+                                    <Button styleClass="mdr-button" fx:id="clearPOButton" mnemonicParsing="false" onAction="#clearPO" text="X" GridPane.columnIndex="1">
                                        <GridPane.margin>
                                           <Insets left="5.0" />
                                        </GridPane.margin>
@@ -144,7 +144,7 @@
                                           <ChoiceBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearSMButton" mnemonicParsing="false" onAction="#clearSM" text="X" GridPane.columnIndex="1">
+                                    <Button styleClass="mdr-button" fx:id="clearSMButton" mnemonicParsing="false" onAction="#clearSM" text="X" GridPane.columnIndex="1">
                                        <GridPane.margin>
                                           <Insets left="5.0" />
                                        </GridPane.margin>
