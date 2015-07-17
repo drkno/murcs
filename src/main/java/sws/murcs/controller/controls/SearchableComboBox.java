@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -65,6 +66,7 @@ public class SearchableComboBox<T> {
      */
     public SearchableComboBox(final ComboBox<T> aComboBox) {
         comboBox = aComboBox;
+        List<String> styles = aComboBox.getStylesheets();
         data = comboBox.getItems();
         comboBox.setEditable(true);
         keyEvent = createKeyEventHandler();
@@ -78,6 +80,9 @@ public class SearchableComboBox<T> {
         comboBox.getEditor().addEventFilter(KeyEvent.KEY_PRESSED, tabConsumerEvent);
         focusListener = createFocusListener();
         comboBox.focusedProperty().addListener(focusListener);
+        comboBox.getStyleClass().clear();
+        comboBox.getStyleClass().addAll(styles);
+        comboBox.getStyleClass().add("combo-box");
     }
 
     /**
