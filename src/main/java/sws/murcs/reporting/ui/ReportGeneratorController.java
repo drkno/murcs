@@ -14,9 +14,11 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
 import sws.murcs.model.Model;
@@ -155,6 +157,8 @@ public class ReportGeneratorController {
         GridPane.setMargin(createButton, new Insets(ten, ten, ten, ten));
         HBox.setMargin(createButton, new Insets(five, five, ten, ten));
 
+        createButton.getStyleClass().add("create-save-button");
+
         cancelButton = new MaterialDesignButton("Cancel");
         buttonContainer.getChildren().add(cancelButton);
         cancelButton.alignmentProperty().set(Pos.CENTER);
@@ -166,6 +170,8 @@ public class ReportGeneratorController {
         GridPane.setColumnIndex(cancelButton, 1);
         GridPane.setMargin(cancelButton, new Insets(ten, ten, ten, ten));
         HBox.setMargin(cancelButton, new Insets(five, ten, ten, ten));
+
+        cancelButton.setRippleColour(JavaFXHelpers.hex2RGB("#64b5f6"));
     }
 
     /**

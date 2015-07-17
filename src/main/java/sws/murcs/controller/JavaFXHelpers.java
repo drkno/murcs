@@ -2,6 +2,7 @@ package sws.murcs.controller;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -57,5 +58,17 @@ public final class JavaFXHelpers {
             }
         }
         return null;
+    }
+
+    /**
+     * Converts a hex color into an Color type.
+     * @param colorStr The hex value to convert
+     * @return A Color
+     */
+    public static Color hex2RGB(final String colorStr) {
+        return Color.color(
+                Integer.valueOf(colorStr.substring(1, 3), 16) / 255,
+                Integer.valueOf(colorStr.substring(3, 5), 16) / 255,
+                Integer.valueOf(colorStr.substring(5, 7), 16) / 255);
     }
 }
