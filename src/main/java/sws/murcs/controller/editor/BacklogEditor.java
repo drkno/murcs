@@ -1,12 +1,10 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -489,12 +487,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     *
+     * An editable cell for priorities of stories. Also contains the color tab for highlighting stories.
      */
     private class EditablePriorityCell extends TableCell<Story, Integer> {
 
         /**
-         * The text field for.
+         * The text field for editing the priority.
          */
         private TextField textField;
 
