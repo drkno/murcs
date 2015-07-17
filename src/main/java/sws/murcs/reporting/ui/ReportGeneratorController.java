@@ -153,7 +153,7 @@ public class ReportGeneratorController {
         createButton.setOnAction(this::createButtonClicked);
         GridPane.setRowIndex(createButton, 1);
         GridPane.setMargin(createButton, new Insets(ten, ten, ten, ten));
-        HBox.setMargin(createButton, new Insets(five, five, five, ten));
+        HBox.setMargin(createButton, new Insets(five, five, ten, ten));
 
         cancelButton = new MaterialDesignButton("Cancel");
         buttonContainer.getChildren().add(cancelButton);
@@ -165,7 +165,7 @@ public class ReportGeneratorController {
         cancelButton.setOnAction(this::cancelButtonClicked);
         GridPane.setColumnIndex(cancelButton, 1);
         GridPane.setMargin(cancelButton, new Insets(ten, ten, ten, ten));
-        HBox.setMargin(cancelButton, new Insets(five, ten, five, ten));
+        HBox.setMargin(cancelButton, new Insets(five, ten, ten, ten));
     }
 
     /**
@@ -178,9 +178,7 @@ public class ReportGeneratorController {
         all.alignmentProperty().setValue(Pos.CENTER);
         management.alignmentProperty().setValue(Pos.CENTER);
         workflow.alignmentProperty().setValue(Pos.CENTER);
-        all.getStyleClass().add("md-button");
-        management.getStyleClass().add("md-button");
-        workflow.getStyleClass().add("md-button");
+
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(
                 all,
@@ -198,6 +196,12 @@ public class ReportGeneratorController {
                 management,
                 workflow
         );
+
+        all.getStyleClass().add("md-button");
+        management.getStyleClass().add("md-button");
+        workflow.getStyleClass().add("md-button");
+        all.getStyleClass().add("left-button");
+        workflow.getStyleClass().add("right-button");
     }
 
     /**
@@ -305,7 +309,7 @@ public class ReportGeneratorController {
             managementContent.setVisible(false);
         }
         clearErrors();
-        stage.sizeToScene();
+        //stage.sizeToScene();
     }
 
     /**
