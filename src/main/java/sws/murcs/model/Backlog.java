@@ -166,7 +166,7 @@ public class Backlog extends Model {
      * @param priority The new priority of that story
      * @throws CustomException throws if there are problems changing the story's priority (i.e. give a priority of -1)
      */
-    private void changeStoryPriority(final Story story, final Integer priority) throws CustomException {
+    public final void changeStoryPriority(final Story story, final Integer priority) throws CustomException {
         final Integer currentStoryPriority = getStoryPriority(story);
         if (priority == null) {
             if (prioritisedStories.contains(story)) {

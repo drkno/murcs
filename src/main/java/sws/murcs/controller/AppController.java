@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -56,7 +57,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
 
     /**
      * The side display which contains the display list.
@@ -307,6 +308,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
         }
         vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
+    }
+
+    /**
+     * Switches the state of the story highlighting.
+     * @param event The event that is fired when the Highlight Stories menu item is clicked
+     */
+    @FXML
+    private void toggleBacklogStories(final ActionEvent event) {
+        BacklogEditor.toggleHighlightState();
     }
 
     /**

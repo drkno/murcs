@@ -1,0 +1,23 @@
+.default-tablecell {
+    -fx-border-color: transparent -fx-box-border transparent transparent;
+    -fx-border-width: 0 1 0 7;
+    -fx-background-insets: 0 1 0 7;
+}
+
+.red-tab-tablecell {
+    -fx-border-color: transparent -fx-box-border transparent #F44336;
+    -fx-border-width: 0 1 0 7;
+    -fx-background-insets: 0 1 0 7;
+}
+
+.green-tab-tablecell {
+    -fx-border-color: transparent -fx-box-border transparent #8BC34A;
+    -fx-border-width: 0 1 0 7;
+    -fx-background-insets: 0 1 0 7;
+}
+
+.orange-tab-tablecell {
+    -fx-border-color: transparent -fx-box-border transparent #FF9800;
+    -fx-border-width: 0 1 0 7;
+    -fx-background-insets: 0 1 0 7;
+}

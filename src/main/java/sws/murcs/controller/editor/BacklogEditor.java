@@ -1,19 +1,27 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -35,6 +43,10 @@ import java.util.stream.Collectors;
  * Since there should only be one instance of this PopUp
  */
 public class BacklogEditor extends GenericEditor<Backlog> {
+    /**
+     * The fixed height of rows in the table view for stories.
+     */
+    private static final Double FIXED_ROW_HEIGHT_STORY_TABLE = 30.0;
 
     /**
      * Text fields for displaying short name, long name and priority.
@@ -76,24 +88,36 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A column containing stories.
      */
     @FXML
-    private TableColumn<Story, Object> storyColumn;
+    private TableColumn<Story, String> storyColumn;
 
     /**
-     * A column containing delete buttons.
+     * A column containing story priorities.
      */
     @FXML
-    private TableColumn<Story, Object> deleteColumn;
+    private TableColumn<Story, Integer> priorityColumn;
 
     /**
      * Increase and decrease priority buttons.
      */
     @FXML
-    private Button increasePriorityButton, decreasePriorityButton;
+    private Button increasePriorityButton, decreasePriorityButton, jumpPriorityButton, dropPriorityButton;
 
     /**
      * An observable list of backlog stories.
      */
     private ObservableList<Story> observableStories;
+
+    /**
+     * The state of the story highlighting.
+     */
+    private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(true);
+
+    /**
+     * Sets the state of the story highlighting.
+     */
+    public static void toggleHighlightState() {
+        highlighted.setValue(!highlighted.getValue());
+    }
 
     /**
      * An observable object representing the currently selected story.
@@ -111,6 +135,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         });
 
         // assign change listeners to fields
+        highlighted.addListener((observable, oldValue, newValue) -> {
+            updateStoryTable();
+        });
+
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -119,18 +147,61 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
-            Integer priority = getModel().getStoryPriority(selectedStory.get());
-            increasePriorityButton.setDisable(selectedIndex == 0 && priority != null || selectedIndex == -1);
-            decreasePriorityButton.setDisable(priority == null);
-        });
 
+            //Configures the change-priority buttons
+            Integer priority = getModel().getStoryPriority(selectedStory.get());
+            boolean isMaxPriority = priority != null && priority == 0;
+            boolean isMinPriority = priority == null;
+            increasePriorityButton.setDisable(isMaxPriority);
+            decreasePriorityButton.setDisable(isMinPriority);
+            jumpPriorityButton.setDisable(isMaxPriority);
+            dropPriorityButton.setDisable(isMinPriority);
+        });
+        storyTable.setFixedCellSize(FIXED_ROW_HEIGHT_STORY_TABLE);
+        storyTable.getStylesheets().add(getClass()
+                        .getResource("/sws/murcs/styles/materialDesign/storyTableHighlights.css")
+                        .toExternalForm());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
         storyTable.setItems(observableStories);
         selectedStory = storyTable.getSelectionModel().selectedItemProperty();
-        deleteColumn.setCellFactory(param -> new RemoveButtonCell());
-        storyColumn.setCellFactory(param -> new HyperlinkButtonCell());
+        storyColumn.setCellValueFactory(param -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            property.set(param.getValue().getShortName());
+            return property;
+        });
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
+        priorityColumn.setCellValueFactory(param -> {
+            SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
+            Integer priority = getModel().getStoryPriority(param.getValue());
+            if (priority != null) {
+                property.set(priority);
+            }
+            return property;
+        });
+        priorityColumn.setCellFactory(param -> new EditablePriorityCell());
+        storyTable.setEditable(true);
+        priorityColumn.setEditable(true);
+        priorityColumn.setComparator((storyPriority1, storyPriority2) -> {
+            if (priorityColumn.getSortType() == TableColumn.SortType.ASCENDING) {
+                if (storyPriority1 == null) {
+                    storyPriority1 = Integer.MAX_VALUE;
+                }
+                if (storyPriority2 == null) {
+                    storyPriority2 = Integer.MAX_VALUE;
+                }
+            } else {
+                if (storyPriority1 == null) {
+                    storyPriority1 = Integer.MIN_VALUE;
+                }
+                if (storyPriority2 == null) {
+                    storyPriority2 = Integer.MIN_VALUE;
+                }
+            }
+            return storyPriority1.compareTo(storyPriority2);
+        });
+        storyColumn.setComparator((storyName1, storyName2) -> storyName1.compareTo(storyName2));
     }
 
     /**
@@ -190,6 +261,50 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
+     * Increases the selected stories priority up to the maximum value of 0.
+     * @param event Button clicked event
+     */
+    @FXML
+    private void jumpPriority(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority == null || storyPriority != 0) {
+                try {
+                    getModel().modifyStory(story, 0);
+                }
+                catch (CustomException e) {
+                    //Should not ever happen, this should be handled by the GUI
+                    ErrorReporter.get().reportError(e, "Cannot increase priority");
+                }
+                updateStoryTable();
+            }
+        }
+    }
+
+    /**
+     * Unprioritises the selected story.
+     * @param event Button clicked event
+     */
+    @FXML
+    private void dropPriority(final ActionEvent event) {
+        Story story = storyTable.getSelectionModel().getSelectedItem();
+        if (story != null) {
+            Integer storyPriority = getModel().getStoryPriority(story);
+            if (storyPriority != null) {
+                try {
+                    getModel().modifyStory(story, null);
+                }
+                catch (CustomException e) {
+                    //Should not ever happen, this should be handled by the GUI
+                    ErrorReporter.get().reportError(e, "Cannot decrease priority");
+                }
+                updateStoryTable();
+            }
+        }
+    }
+
+    /**
      * Adds a story to the backlog.
      * @param event the button clicked event
      */
@@ -207,12 +322,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!priorityString.isEmpty()) {
             try {
                 priority = Integer.parseInt(priorityString) - 1;
+                if (priority < 0) {
+                    addFormError(priorityTextField, "Priority cannot be less than 0");
+                    hasErrors = true;
+                }
             } catch (Exception e) {
                 addFormError(priorityTextField, "Position is not a number");
-                hasErrors = true;
-            }
-            if (priority < 0) {
-                addFormError(priorityTextField, "Priority cannot be less than 0");
                 hasErrors = true;
             }
         }
@@ -298,9 +413,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             int selectedIndex = storyPicker.getSelectionModel().getSelectedIndex();
 
             Collection<Story> stories = organisation.getUnassignedStories();
-            for (Story story : getModel().getAllStories()) {
-                stories.remove(story);
-            }
+            getModel().getAllStories().forEach(stories::remove);
             storyPicker.getItems().clear();
             storyPicker.getItems().addAll(stories);
             storyPicker.getSelectionModel().select(Math.min(selectedIndex, stories.size() - 1));
@@ -311,13 +424,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Updates the table containing the list of stories.
      */
     private void updateStoryTable() {
-        observableStories.setAll(getModel().getAllStories());
+        List<Story> stories = getModel().getAllStories();
+        observableStories.setAll(stories);
+
         if (selectedStory.get() != null) {
             storyTable.getSelectionModel().select(selectedStory.get());
         }
-        else {
-            storyTable.getSelectionModel().selectFirst();
-        }
+
     }
 
     @Override
@@ -326,8 +439,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        observableStories = null;
-        selectedStory = null;
         super.dispose();
     }
 
@@ -357,7 +468,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         Person modelProductOwner = getModel().getAssignedPO();
         Person viewProductOwner = poComboBox.getValue();
-        if (isNotEqual(modelProductOwner, viewProductOwner) && viewProductOwner != null) {
+        if (isNullOrNotEqual(modelProductOwner, viewProductOwner) && viewProductOwner != null) {
             try {
                 getModel().setAssignedPO(viewProductOwner);
                 updateAssignedPO();
@@ -376,20 +487,208 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
-     * A RemoveButtonCell that contains the button used to remove a story from the backlog.
+     * An editable cell for priorities of stories. Also contains the color tab for highlighting stories.
      */
-    private class RemoveButtonCell extends TableCell<Story, Object> {
+    private class EditablePriorityCell extends TableCell<Story, Integer> {
+
+        /**
+         * The text field for editing the priority.
+         */
+        private TextField textField;
+
         @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
+        public void startEdit() {
+            super.startEdit();
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.requestFocus();
+            }
+        }
+
+        @Override
+        public void commitEdit(final Integer priority) {
+            super.commitEdit(priority);
+            if (!isEmpty()) {
+                setPriority(priority);
+                updateStoryTable();
+            }
+        }
+
+        @Override
+        protected void updateItem(final Integer priority, final boolean empty) {
+            super.updateItem(priority, empty);
+            this.setAlignment(Pos.CENTER);
+            setColorTab(highlighted.getValue());
+
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+                setGraphic(null);
+            } else if (isEditing()) {
+                if (textField != null) {
+                    textField.setText(getString());
+                }
+                setText(null);
+                setGraphic(textField);
+            } else {
+                setText(getString());
+                setGraphic(null);
+            }
+        }
+
+        /**
+         * Highlight the story with a color tab. For example, if the story is not ready the color tab will be red.
+         * @param set Whether the tab is being set or unset
+         */
+        private void setColorTab(final boolean set) {
+            if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
+                getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
+                getStyleClass().add("default-tablecell");
+            } else {
+                Story story = (Story) getTableRow().getItem();
+                Story.StoryState storyState = story.getStoryState();
+
+                Integer nullStoryPriority = getModel().getStoryPriority(story);
+                if (nullStoryPriority == null) {
+                    nullStoryPriority = -1;
+                }
+                final int storyPriority = nullStoryPriority;
+                long lowerPriorityCount = story.getDependencies()
+                        .stream()
+                        .filter(param -> {
+                            Integer priority = getModel().getStoryPriority(param);
+                            if (priority == null) {
+                                priority = -1;
+                            }
+                            return priority < storyPriority;
+                        })
+                        .count();
+                boolean badDependency = lowerPriorityCount > 0;
+
+                if (badDependency) {
+                    getStyleClass().add("red-tab-tablecell");
+                }
+                else if (storyState == Story.StoryState.Ready) {
+                    getStyleClass().add("green-tab-tablecell");
+                }
+                else if (story.getAcceptanceCriteria().size() > 0) {
+                    getStyleClass().add("orange-tab-tablecell");
+                }
+            }
+        }
+
+        /**
+         * Create the text field for editing a priority.
+         */
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.focusedProperty().addListener(
+                        (observable, oldValue, newValue) -> {
+                            if (!newValue) {
+                                Integer priority = null;
+                                if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
+                                    priority = Integer.parseInt(textField.getText());
+                                }
+                                commitEdit(priority);
+                            }
+                        });
+
+            textField.setOnKeyReleased(t -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    Integer priority = null;
+                    if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
+                        priority = Integer.parseInt(textField.getText());
+                    }
+                    commitEdit(priority);
+                }
+                if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
+
+        /**
+         * Get the string representation of a priority for a table row.
+         * @return The string representation
+         */
+        private String getString() {
+            TableRow<Story> row = getTableRow();
+            Story story = null;
+            Integer priority;
+            String priorityString = null;
+            if (row != null) {
+                story = row.getItem();
+            }
+            if (story != null) {
+                priority = getModel().getStoryPriority(story);
+                if (priority != null) {
+                    priority += 1;
+                    priorityString = priority.toString();
+                }
+            }
+
+            return priorityString;
+        }
+
+        /**
+         * Changes the priority of the selected story to the given value.
+         * @param priority The new priority of this story
+         */
+        private void setPriority(final Integer priority) {
             Story story = (Story) getTableRow().getItem();
-            if (story == null || empty) {
+            if (priority != null) {
+                try {
+                    if (priority < 0) {
+                        addFormError("Priority cannot be less than 1");
+                    }
+                    else {
+                        getModel().changeStoryPriority(story, priority);
+                    }
+                }
+                catch (Exception e) {
+                    addFormError("Priority must be a number");
+                }
+            }
+            else {
+                try {
+                    getModel().changeStoryPriority(story, null);
+                }
+                catch (CustomException e) {
+                    ErrorReporter.get().reportError(e, "Failed to set priority");
+                }
+            }
+        }
+    }
+
+    /**
+     * A TableView cell that contains a link to the story it represents and a button to remove it.
+     */
+    private class RemovableHyperlinkCell extends TableCell<Story, String> {
+        @Override
+        protected void updateItem(final String storyName, final boolean empty) {
+            super.updateItem(storyName, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
                 setGraphic(null);
             }
             else {
+                Story story = (Story) getTableRow().getItem();
+                AnchorPane container = new AnchorPane();
+                if (getIsCreationWindow()) {
+                    Label name = new Label(storyName);
+                    container.getChildren().add(name);
+                } else {
+                    Hyperlink nameLink = new Hyperlink(storyName);
+                    nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                    container.getChildren().add(nameLink);
+                }
+
                 Button button = new Button("X");
-                button.setOnAction(event -> {
+                button.setStyle("-fx-background-radius: 100");
+                button.setOpacity(0.0);
+                button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
                     popup.setMessageText("Are you sure you wish to remove the story \""
@@ -402,49 +701,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     });
                     popup.show();
                 });
-                setGraphic(button);
-            }
-        }
-    }
+                getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
+                getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
+                AnchorPane.setRightAnchor(button, 0.0);
+                AnchorPane.setTopAnchor(button, 0.0);
+                AnchorPane.setBottomAnchor(button, 0.0);
+                container.getChildren().add(button);
 
-    /**
-     * A TableView cell that contains a link to the story it represents.
-     */
-    private class HyperlinkButtonCell extends TableCell<Story, Object> {
-        @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
-            Story story = (Story) getTableRow().getItem();
-            if (story == null || empty) {
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                Integer storyPriority = getModel().getStoryPriority(story);
-                if (storyPriority != null) {
-                    if (getIsCreationWindow()) {
-                        setText(String.valueOf(storyPriority + 1)
-                                + ". "
-                                + story.getShortName());
-                    }
-                    else {
-                        Hyperlink nameLink = new Hyperlink(String.valueOf(storyPriority + 1)
-                                + ". "
-                                + story.getShortName());
-                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
-                        setGraphic(nameLink);
-                    }
-                }
-                else {
-                    if (getIsCreationWindow()) {
-                        setText(story.getShortName());
-                    }
-                    else {
-                        Hyperlink nameLink = new Hyperlink(story.getShortName());
-                        nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
-                        setGraphic(nameLink);
-                    }
-                }
+                container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);
+                setGraphic(container);
+                setAlignment(Pos.CENTER);
             }
         }
     }
