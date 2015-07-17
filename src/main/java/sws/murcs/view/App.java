@@ -229,8 +229,8 @@ public class App extends Application {
             UndoRedoManager.importModel(model);
         }
         catch (Exception e) {
-            //There is a big problem if this fails
-            ErrorReporter.get().reportError(e, "Importing model failed in main()");
+            // There is a BIG problem if this fails
+            ErrorReporter.get().reportErrorSecretly(e, "Importing model failed in main()");
             return;
         }
         launch(args);
