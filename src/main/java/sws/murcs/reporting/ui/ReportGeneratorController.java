@@ -158,6 +158,7 @@ public class ReportGeneratorController {
         HBox.setMargin(createButton, new Insets(five, five, ten, ten));
 
         createButton.getStyleClass().add("create-save-button");
+        createButton.setRippleColour(JavaFXHelpers.hex2RGB("#64b5f6"));
 
         cancelButton = new MaterialDesignButton("Cancel");
         buttonContainer.getChildren().add(cancelButton);
