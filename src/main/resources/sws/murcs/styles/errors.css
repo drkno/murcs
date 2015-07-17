@@ -8,12 +8,16 @@
  * @param {string} [color-variant='500']  - quoted, lowercase color variant (e.g.
  *                                          '200', 'a100')
  */
-/* line 4, C:/Users/james/Documents/SENG302/src/main/sass/sws/murcs/styles/globalStyles.sass */
+@font-face {
+  font-family: "Roboto";
+  src: url("../../../sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf") format("truetype");
+}
+/* line 5, C:/Users/Dion/dev/projects/uniProjects/project-1/src/main/sass/sws/murcs/styles/globalStyles.sass */
 .root {
   font: 12px Roboto;
 }
 
-/* line 3, C:/Users/james/Documents/SENG302/src/main/sass/sws/murcs/styles/errors.sass */
+/* line 3, C:/Users/Dion/dev/projects/uniProjects/project-1/src/main/sass/sws/murcs/styles/errors.sass */
 .error {
   -fx-focus-color: #f44336;
   -fx-border-color: #f44336;

@@ -1,4 +1,13 @@
-@import "../../globalStyles"
+@import "../../colours"
+@font-face
+  font-family: "Roboto"
+  src: url("../../../../../sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf") format('truetype')
+
+$font-stack: Roboto
+
+.root
+  font: 12px $font-stack
+
 
 .reportingToolbar
   -fx-background-color: $secondary-500
