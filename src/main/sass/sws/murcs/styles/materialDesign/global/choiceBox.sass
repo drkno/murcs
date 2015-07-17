@@ -1,8 +1,8 @@
 @import "../../globalStyles"
 
 .choice-box
-  -fx-text-fill: #444
-  -fx-background-color: $combo-box-color
+  -fx-text-fill: $black-text
+  -fx-background-color: $choice-box-color
   -fx-background-insets: 0
   -fx-padding: 3 6
   -fx-background-radius: 1px
@@ -14,18 +14,33 @@
 
 
 .choice-box:focused
-  -fx-background-color: $combo-box-pressed-color
+  -fx-background-color: $choice-box-pressed-color
   -fx-background-insets: 0, 1
 
 
 .choice-box .context-menu .menu-item
-  -fx-text-fill: #444
   -fx-background-color: $list-cell-color
   -fx-background-insets: 0
   -fx-padding: 3 6
   -fx-background-radius: 1px
 
+.choice-box .context-menu .menu-item .label
+  -fx-text-fill: $black-text
+
+.choice-box .context-menu .menu-item:focused .label
+  -fx-text-fill: $black-text
+
+.choice-box .context-menu .menu-item:selected .label
+  -fx-text-fill: $white-text
+
+.choice-box .context-menu .menu-item:hover .label
+  -fx-text-fill: $white-text
+
 .choice-box .context-menu .menu-item:focused
+  -fx-background-color: $list-cell-focused-color
+  -fx-background-insets: 0, 1
+
+.choice-box .context-menu .menu-item:selected
   -fx-background-color: $list-cell-selected-color
   -fx-background-insets: 0, 1
 

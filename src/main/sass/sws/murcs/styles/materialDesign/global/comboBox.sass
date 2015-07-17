@@ -1,7 +1,7 @@
 @import "../../globalStyles"
 
 .combo-box
-  -fx-text-fill: #444
+  -fx-text-fill: $black-text
   -fx-background-color: $combo-box-color
   -fx-background-insets: 0
   -fx-padding: 3 6
@@ -17,15 +17,29 @@
   -fx-background-color: $combo-box-pressed-color
   -fx-background-insets: 0, 1
 
+.choice-box .list-view .list-cell .label
+  -fx-text-fill: $black-text
+
+.choice-box .list-view .list-cell:focused .label
+  -fx-text-fill: $black-text
+
+.choice-box .list-view .list-cell:selected .label
+  -fx-text-fill: $white-text
+
+.choice-box .list-view .list-cell:hover .label
+  -fx-text-fill: $white-text
 
 .combo-box .list-view .list-cell
-  -fx-text-fill: #444
   -fx-background-color: $list-cell-color
   -fx-background-insets: 0
   -fx-padding: 3 6
   -fx-background-radius: 1px
 
 .combo-box .list-view .list-cell:focused
+  -fx-background-color: $list-cell-focused-color
+  -fx-background-insets: 0, 1
+
+.combo-box .list-view .list-cell:selected
   -fx-background-color: $list-cell-selected-color
   -fx-background-insets: 0, 1
 
