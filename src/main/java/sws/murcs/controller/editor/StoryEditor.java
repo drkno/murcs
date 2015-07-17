@@ -124,7 +124,6 @@ public class StoryEditor extends GenericEditor<Story> {
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
         storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
-        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -157,7 +156,6 @@ public class StoryEditor extends GenericEditor<Story> {
         else {
             creatorChoiceBox.getItems().clear();
             creatorChoiceBox.getItems().add(getModel().getCreator());
-            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
             creatorChoiceBox.setDisable(true);
         }
 
@@ -179,7 +177,10 @@ public class StoryEditor extends GenericEditor<Story> {
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
-
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
+        if (!isCreationMode) {
+            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
+        }
         updateAcceptanceCriteria();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
@@ -346,7 +347,7 @@ public class StoryEditor extends GenericEditor<Story> {
             }
         }
 
-        if (!hasErrors) {
+        if (!hasErrors && state != null) {
             getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }

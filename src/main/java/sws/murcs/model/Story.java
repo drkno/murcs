@@ -44,7 +44,7 @@ public class Story extends Model {
      * (e.g. ready, not ready, in progress)
      */
     @TrackableValue
-    private StoryState storyState = StoryState.None;
+    private StoryState storyState;
 
     /**
      * A list of the conditions that have to be met before this
@@ -82,6 +82,7 @@ public class Story extends Model {
         acceptanceCriteria = new ArrayList<>();
         estimate = EstimateType.NOT_ESTIMATED;
         dependencies = new LinkedHashSet<>();
+        storyState = StoryState.None;
     }
 
     /**
