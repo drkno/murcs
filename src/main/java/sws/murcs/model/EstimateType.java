@@ -2,11 +2,10 @@ package sws.murcs.model;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,10 +50,15 @@ public enum EstimateType {
             return estimates.get(this);
         }
 
-        String path = "/sws/murcs/estimates/" + toString() + ".csv";
+        String path = "estimates/" + toString() + ".csv";
         try {
-            List<String> currentEstimates = Files.readAllLines(Paths.get(getClass().getResource(path).toURI()),
-                    StandardCharsets.UTF_8);
+            InputStream input = getClass().getResourceAsStream(path);
+            List<String> currentEstimates = new ArrayList<>();
+            BufferedReader br = new BufferedReader(new InputStreamReader(input));
+
+            for (String line; (line = br.readLine()) != null;) {
+                currentEstimates.add(line);
+            }
             //Trim the string and remove commas and stuff
             for (int i = 0; i < currentEstimates.size(); i++) {
                 currentEstimates.set(i, currentEstimates.get(i).replace(",", "").trim());
@@ -62,11 +66,7 @@ public enum EstimateType {
 
             estimates.put(this, currentEstimates);
             return currentEstimates;
-        } catch (URISyntaxException e) {
-            //This shouldn't happen unless you add an estimation method with a really weird name
-            ErrorReporter.get().reportError(e, "Estimation method with a weird name created.");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             //This will never happen
             ErrorReporter.get().reportError(e, "No such file as " + path);
         }

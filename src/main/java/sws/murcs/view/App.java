@@ -225,7 +225,7 @@ public class App extends Application {
         }
         catch (Exception e) {
             //There is a big problem if this fails
-            ErrorReporter.get().reportError(e, "Importing model failed in main()");
+            ErrorReporter.get().reportErrorSecretly(e, "Importing model failed in main()");
             return;
         }
         launch(args);

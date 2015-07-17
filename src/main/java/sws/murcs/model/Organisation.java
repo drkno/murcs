@@ -714,6 +714,7 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         backlogs.forEach(backlog -> backlog.removeStory(story));
+        stories.forEach(s -> s.removeDependency(story));
     }
 
     /**
