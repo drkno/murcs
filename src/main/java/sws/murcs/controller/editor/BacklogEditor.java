@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -21,12 +20,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang.NotImplementedException;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
-import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -36,7 +33,6 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
@@ -114,7 +110,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      * The state of the story highlighting.
      */
-    private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(false);
+    private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(true);
 
     /**
      * Sets the state of the story highlighting.
@@ -163,9 +159,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
         });
 
-        //Enable the highlight stories menu item
-        App.getAppController().enableMenuItem();
-
         // assign change listeners to fields
         highlighted.addListener((observable, oldValue, newValue) -> {
             updateStoryTable();
@@ -190,6 +183,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             dropPriorityButton.setDisable(isMinPriority);
         });
         storyTable.setFixedCellSize(FIXED_ROW_HEIGHT_STORY_TABLE);
+        storyTable.getStylesheets().add(getClass().getResource("/sws/murcs/styles/materialDesign/storyTableHighlights.css").toExternalForm());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -286,7 +280,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
                 catch (CustomException e) {
                     //Should not ever happen, this should be handled by the GUI
-                    e.printStackTrace();
+                    ErrorReporter.get().reportError(e, "Cannot increase priority");
                 }
                 updateStoryTable();
             }
@@ -308,7 +302,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
                 catch (CustomException e) {
                     //Should not ever happen, this should be handled by the GUI
-                    e.printStackTrace();
+                    ErrorReporter.get().reportError(e, "Cannot decrease priority");
                 }
                 updateStoryTable();
             }
@@ -464,10 +458,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
     @Override
     public final void dispose() {
-
-        //Disable the menu item
-        App.getAppController().disableMenuItem();
-
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -580,10 +570,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          * @param set Whether the tab is being set or unset
          */
         private void setColorTab(final boolean set) {
-            String style = "-fx-border-color: transparent -fx-box-border transparent %s; "
-                    + "-fx-border-width: 0 1 0 7; -fx-background-insets: 0 1 0 7";
             if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
-                setStyle(String.format(style, "transparent"));
+                getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
+                getStyleClass().add("default-tablecell");
             } else {
                 Story story = (Story) getTableRow().getItem();
                 Story.StoryState storyState = story.getStoryState();
@@ -593,7 +582,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     nullStoryPriority = -1;
                 }
                 final int storyPriority = nullStoryPriority;
-                Long lowerPriorityCount = story.getDependencies()
+                long lowerPriorityCount = story.getDependencies()
                         .stream()
                         .filter(param -> {
                             Integer priority = getModel().getStoryPriority(param);
@@ -606,13 +595,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 boolean badDependency = lowerPriorityCount > 0;
 
                 if (badDependency) {
-                    setStyle(String.format(style, "#F44336"));
+                    getStyleClass().add("red-tab-tablecell");
                 }
                 else if (storyState == Story.StoryState.Ready) {
-                    setStyle(String.format(style, "#8BC34A"));
+                    getStyleClass().add("green-tab-tablecell");
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
-                    setStyle(String.format(style, "#FF9800"));
+                    getStyleClass().add("orange-tab-tablecell");
                 }
             }
         }
@@ -622,16 +611,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          */
         private void createTextField() {
             textField = new TextField(getString());
-
-            //doesn't work if clicking a different cell, only focusing out of table
             textField.focusedProperty().addListener(
-                        (ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
-                            if (!arg2) {
+                        (observable, oldValue, newValue) -> {
+                            if (!newValue) {
                                 commitEdit(textField.getText());
                             }
                         });
 
-            textField.setOnKeyReleased((KeyEvent t) -> {
+            textField.setOnKeyReleased(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
                     commitEdit(textField.getText());
                 }
@@ -642,8 +629,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         /**
-         *
-         * @return Get the string representation of a priority for a table row.
+         * Get the string representation of a priority for a table row.
+         * @return The string representation
          */
         private String getString() {
             TableRow<Story> row = getTableRow();
@@ -679,8 +666,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     else {
                         getModel().changeStoryPriority(story, priority);
                     }
-                } catch (Exception e) {
-                    addFormError("Priority must be an int");
+                }
+                catch (Exception e) {
+                    addFormError("Priority must be a number");
                 }
             }
             else {
@@ -688,6 +676,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     getModel().changeStoryPriority(story, null);
                 }
                 catch (CustomException e) {
+                    ErrorReporter.get().reportError(e, "Failed to set priority");
                 }
             }
         }

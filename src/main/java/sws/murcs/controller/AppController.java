@@ -181,20 +181,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Enable the highlight toggle menu item.
-     */
-    public final void enableMenuItem() {
-        highlightToggle.setDisable(false);
-    }
-
-    /**
-     * Disable the highlight toggle menu item.
-     */
-    public final void disableMenuItem() {
-        highlightToggle.setDisable(true);
-    }
-
-    /**
      * Sets up the keyboard shortcuts for the application.
      */
     private void setUpShortCuts() {
@@ -325,7 +311,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     *
+     * Switches the state of the story highlighting.
      * @param event The event that is fired when the Highlight Stories menu item is clicked
      */
     @FXML
