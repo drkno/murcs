@@ -289,7 +289,6 @@ public class StoryEditor extends GenericEditor<Story> {
         updateStoryState();
 
         if (isCreationMode) {
-            Person modelCreator = getModel().getCreator();
             Person viewCreator = (Person) creatorChoiceBox.getValue();
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
@@ -307,13 +306,15 @@ public class StoryEditor extends GenericEditor<Story> {
         Story selectedStory = dependenciesDropDown.getValue();
         if (selectedStory != null) {
             try {
+                Platform.runLater(() -> {
+                    dependenciesDropDown.getSelectionModel().clearSelection();
+                });
                 getModel().addDependency(selectedStory);
                 Node dependencyNode = generateStoryNode(selectedStory);
                 dependenciesContainer.getChildren().add(dependencyNode);
                 dependenciesMap.put(selectedStory, dependencyNode);
                 Platform.runLater(() -> {
                     searchableComboBoxDecorator.remove(selectedStory);
-                    dependenciesDropDown.getSelectionModel().clearSelection();
                 });
             } catch (CustomException e) {
                 addFormError(dependenciesDropDown, e.getMessage());

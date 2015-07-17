@@ -24,8 +24,7 @@ public final class CyclicDependencyException extends CustomException {
      * @param dependency story that is being added as a dependency.
      */
     public CyclicDependencyException(final Story story, final Story dependency) {
-        super("Cannot add story \"" + dependency + "\" as a dependency of \"" + story + "\" as a "
-                + "dependency cycle would be created.");
+        super("Cannot add dependency \"" + dependency + " as a cycle would be created.");
         storyNode =  story;
         dependencyNode = dependency;
     }
