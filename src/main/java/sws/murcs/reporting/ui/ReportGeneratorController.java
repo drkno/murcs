@@ -272,6 +272,7 @@ public class ReportGeneratorController {
         Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
                 .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
         managementList.getItems().setAll(values);
+        stage.sizeToScene();
     }
 
     /**
