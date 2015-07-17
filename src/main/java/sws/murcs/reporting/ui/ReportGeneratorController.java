@@ -258,11 +258,14 @@ public class ReportGeneratorController {
                 break;
             case Team:
                 values.addAll(organisation.getTeams());
+                managementList.setVisible(true);
                 break;
             case Person:
                 values.addAll(organisation.getPeople());
+                managementList.setVisible(true);
                 break;
             default:
+                managementList.setVisible(false);
                 throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
         }
         Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
@@ -282,11 +285,14 @@ public class ReportGeneratorController {
         switch (type) {
             case Backlog:
                 values.addAll(organisation.getBacklogs());
+                workflowList.setVisible(true);
                 break;
             case Story:
                 values.addAll(organisation.getStories());
+                workflowList.setVisible(true);
                 break;
             default:
+                workflowList.setVisible(false);
                 throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
         }
         workflowList.getItems().setAll(values);
@@ -301,15 +307,16 @@ public class ReportGeneratorController {
             hideAllContent();
         }
         else if (selected == management) {
+            hideAllContent();
             managementContent.setVisible(true);
-            workflowContent.setVisible(false);
+
         }
         else if (selected == workflow) {
+            hideAllContent();
             workflowContent.setVisible(true);
-            managementContent.setVisible(false);
         }
         clearErrors();
-        //stage.sizeToScene();
+        stage.sizeToScene();
     }
 
     /**
@@ -318,6 +325,8 @@ public class ReportGeneratorController {
     private void hideAllContent() {
         managementContent.setVisible(false);
         workflowContent.setVisible(false);
+        managementList.setVisible(false);
+        workflowList.setVisible(false);
     }
 
     /**

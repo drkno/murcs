@@ -65,6 +65,7 @@ public class ReportGeneratorView {
             stage.initOwner(App.getStage());
 
             stage.show();
+            stage.sizeToScene();
         }
         catch (Exception e) {
             System.err.println("Something went wrong loading the report generator window");
