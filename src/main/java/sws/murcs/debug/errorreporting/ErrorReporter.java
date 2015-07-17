@@ -84,7 +84,9 @@ public final class ErrorReporter {
             }
             builder.append(" ");
         }
-        builder.deleteCharAt(builder.length() - 1);
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
         arguments = builder.toString();
         Thread.setDefaultUncaughtExceptionHandler(this::reportException);
     }
