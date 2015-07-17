@@ -255,6 +255,7 @@ public class ReportGeneratorController {
         switch (type) {
             case Project:
                 values.addAll(organisation.getProjects());
+                managementList.setVisible(true);
                 break;
             case Team:
                 values.addAll(organisation.getTeams());
