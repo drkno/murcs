@@ -56,8 +56,10 @@ public enum EstimateType {
             List<String> currentEstimates = new ArrayList<>();
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
 
-            for (String line; (line = br.readLine()) != null;) {
+            String line = br.readLine();
+            while (line != null) {
                 currentEstimates.add(line);
+                line = br.readLine();
             }
             //Trim the string and remove commas and stuff
             for (int i = 0; i < currentEstimates.size(); i++) {

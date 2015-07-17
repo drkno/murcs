@@ -61,14 +61,15 @@ public final class JavaFXHelpers {
     }
 
     /**
-     * Converts a hex color into an Color type.
-     * @param colorStr The hex value to convert
+     * Converts a hex colour into an Color type.
+     * @param colourStr The hex value to convert
      * @return A Color
      */
-    public static Color hex2RGB(final String colorStr) {
+    @SuppressWarnings("checkstyle:magicnumber")
+    public static Color hex2RGB(final String colourStr) {
         return Color.color(
-                Double.valueOf(Integer.valueOf(colorStr.substring(1, 3), 16)) / 255,
-                Double.valueOf(Integer.valueOf(colorStr.substring(3, 5), 16)) / 255,
-                Double.valueOf(Integer.valueOf(colorStr.substring(5, 7), 16)) / 255);
+                Double.valueOf(Integer.valueOf(colourStr.substring(1, 3), 16)) / 255,
+                Double.valueOf(Integer.valueOf(colourStr.substring(3, 5), 16)) / 255,
+                Double.valueOf(Integer.valueOf(colourStr.substring(5, 7), 16)) / 255);
     }
 }
