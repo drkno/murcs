@@ -79,3 +79,8 @@ release.properties
 
 ### SASS ###
 .sass-cache
+*.aux
+*.out
+*.toc
+*.gz
+doc/user_guide/main.pdf
