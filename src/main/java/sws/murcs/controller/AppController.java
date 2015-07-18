@@ -556,11 +556,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Revert Changes");
             popup.setTitleText("Do you wish to revert changes?");
-            popup.setMessageText("You have unsaved changes.\n "
-                    + "If you wish to save your current changes as a new file click \'Save As\'.");
-            popup.addButton("Yes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+            popup.setMessageText("There are unsaved changes that will be lost if you continue.\n"
+                    + "If you wish to save your current changes first press 'Save'.");
+            popup.addButton("Revert", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
                 try {
                     UndoRedoManager.revert(0);
@@ -570,7 +569,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 }
                 selectItem(null);
             });
-            popup.addButton("Save As", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
                 if (saveAs(null, false)) {
                     popup.close();
