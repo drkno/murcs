@@ -364,8 +364,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove the dependency "
-                    + newDependency.getShortName() + " from "
-                    + getModel().getShortName() + "?");
+                    + newDependency.getShortName() + "?");
             popup.setTitleText("Remove Dependency");
             popup.addYesNoButtons(func -> {
                 searchableComboBoxDecorator.add(newDependency);
