@@ -185,6 +185,7 @@ public class StoryEditor extends GenericEditor<Story> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        super.clearErrors();
     }
 
     /**
@@ -435,7 +436,7 @@ public class StoryEditor extends GenericEditor<Story> {
         addConditionTextField.setText("");
 
         //Make sure that the table gets updated
-        loadObject();
+        updateAcceptanceCriteria();
 
         //Select the item we just created
         acceptanceCriteriaTable.getSelectionModel().select(newCondition);
@@ -557,7 +558,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                 popup.addYesNoButtons(p -> {
                     getModel().removeAcceptanceCondition(condition);
-                    loadObject();
+                    updateAcceptanceCriteria();
                     popup.close();
                 });
                 popup.show();

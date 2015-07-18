@@ -366,7 +366,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         EstimateType current = getModel().getEstimateType();
         estimationMethodComboBox.getItems().clear();
         estimationMethodComboBox.getItems().addAll(EstimateType.values());
-        estimationMethodComboBox.getSelectionModel().select(current);
+        if (current != null) {
+            estimationMethodComboBox.getSelectionModel().select(current);
+        }
 
         updateAssignedPO();
         updateAvailableStories();
@@ -374,6 +376,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        super.clearErrors();
     }
 
     /**
