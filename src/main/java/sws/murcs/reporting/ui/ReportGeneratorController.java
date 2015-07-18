@@ -171,7 +171,7 @@ public class ReportGeneratorController {
         GridPane.setMargin(cancelButton, new Insets(ten, ten, ten, ten));
         HBox.setMargin(cancelButton, new Insets(five, ten, ten, ten));
 
-        cancelButton.setRippleColour(JavaFXHelpers.hex2RGB("#FFA726"));
+        cancelButton.setRippleColour(JavaFXHelpers.hex2RGB("#bdbdbd"));
     }
 
     /**
