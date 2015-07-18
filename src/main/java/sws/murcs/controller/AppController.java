@@ -127,7 +127,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     public final void initialize() {
-
         NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
@@ -184,28 +183,26 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Sets up the keyboard shortcuts for the application.
      */
     private void setUpShortCuts() {
-        //Menu item short cuts
-        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
-        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
-        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN
+        //Menu item shortcuts
+        // You should use SHORTCUT_DOWN as it uses the COMMAND key for Mac and the CTRL key for Windows
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
+        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN
                 , KeyCombination.SHIFT_DOWN));
-        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
-        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
-        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN,
+        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
+        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
+        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
                 KeyCombination.SHIFT_DOWN));
-        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
-        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN));
-        addProject.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.CONTROL_DOWN));
-        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.P, KeyCombination.SHIFT_DOWN,
-                KeyCombination.CONTROL_DOWN));
-        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN));
-        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN,
-                KeyCombination.CONTROL_DOWN));
-        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.T, KeyCombination.CONTROL_DOWN));
-        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.CONTROL_DOWN));
-        addStory.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.ALT_DOWN,
-                KeyCombination.CONTROL_DOWN));
-        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
+        addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
         //Key combinations for things other than menu items
         borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
