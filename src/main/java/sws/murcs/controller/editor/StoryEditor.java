@@ -106,17 +106,12 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private TextField addConditionTextField;
 
-    /**
-     * Indicates whether or not the form is in creation mode.
-     */
-    private boolean isCreationMode;
-
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
         setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
-        isCreationMode = modelShortName == null;
+        setIsCreationWindow(modelShortName == null);
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
@@ -145,7 +140,7 @@ public class StoryEditor extends GenericEditor<Story> {
         });
 
         //Enable or disable whether you can change the creator
-        if (isCreationMode) {
+        if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
             creatorChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getPeople());
@@ -178,7 +173,7 @@ public class StoryEditor extends GenericEditor<Story> {
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
         storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
-        if (!isCreationMode) {
+        if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
@@ -289,7 +284,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
         updateStoryState();
 
-        if (isCreationMode) {
+        if (getIsCreationWindow()) {
             Person viewCreator = (Person) creatorChoiceBox.getValue();
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
@@ -435,7 +430,7 @@ public class StoryEditor extends GenericEditor<Story> {
         addConditionTextField.setText("");
 
         //Make sure that the table gets updated
-        loadObject();
+        updateAcceptanceCriteria();
 
         //Select the item we just created
         acceptanceCriteriaTable.getSelectionModel().select(newCondition);
