@@ -15,10 +15,10 @@
       When I SaveAs
       Then I save as a new file
 
-    Scenario: save an existing model
+    Scenario: Save an existing model
       When I save
       Then the model is saved
 
-    Scenario: save a new model
+    Scenario: Save a new model
       When I save
       Then the saveAs dialog is shown

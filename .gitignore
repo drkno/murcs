@@ -75,5 +75,5 @@ release.properties
 .gitignore
 *.testProject
 
-# SASS #
+### Sass ###
 .sass-cache
