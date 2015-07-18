@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.view.App;
 
 /**
@@ -65,8 +66,7 @@ public class ReportGeneratorView {
             stage.sizeToScene();
         }
         catch (Exception e) {
-            System.err.println("Something went wrong loading the report generator window");
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Something went wrong loading the report generator window");
         }
     }
 }

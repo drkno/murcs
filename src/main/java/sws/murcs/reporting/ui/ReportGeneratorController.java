@@ -131,16 +131,16 @@ public class ReportGeneratorController {
         if (!workflowContent.managedProperty().isBound()) {
             workflowContent.managedProperty().bind(workflowContent.visibleProperty());
         }
-        setupToolbar();
+        setupReportTypeSelection();
         setupInnerContent();
-        setupLowerThird();
+        setupActionSection();
         hideAllContent();
     }
 
     /**
      * Sets up the lower third of the Report Generator Window.
      */
-    private void setupLowerThird() {
+    private void setupActionSection() {
         final int minWidth = 80;
         final int five = 5;
         final int ten = 10;
@@ -177,7 +177,7 @@ public class ReportGeneratorController {
     /**
      * Sets up the content inside the toolbar.
      */
-    private void setupToolbar() {
+    private void setupReportTypeSelection() {
         all = new MaterialDesignToggleButton("All");
         management = new MaterialDesignToggleButton("Management");
         workflow = new MaterialDesignToggleButton("Workflow");
@@ -209,9 +209,9 @@ public class ReportGeneratorController {
         all.getStyleClass().add("left-button");
         workflow.getStyleClass().add("right-button");
 
-        all.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
-        workflow.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
-        management.setRippleColor(JavaFXHelpers.hex2RGB("#42A5F5"));
+        all.setRippleColour(JavaFXHelpers.hex2RGB("#42A5F5"));
+        workflow.setRippleColour(JavaFXHelpers.hex2RGB("#42A5F5"));
+        management.setRippleColour(JavaFXHelpers.hex2RGB("#42A5F5"));
     }
 
     /**

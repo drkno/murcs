@@ -512,7 +512,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void generateReport(final ActionEvent event) {
-        new ReportGeneratorView().show();
+        ReportGeneratorView reportGenerator = new ReportGeneratorView();
+        reportGenerator.show();
     }
 
     /**

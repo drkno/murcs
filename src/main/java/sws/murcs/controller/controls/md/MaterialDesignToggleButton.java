@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 
 /**
  * Material design toggle button class.
@@ -137,7 +138,7 @@ public class MaterialDesignToggleButton extends ToggleButton {
                             .getFills().get(0).getRadii().getTopLeftHorizontalRadius());
                     circleRipple.setClip(rippleClip);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ErrorReporter.get().reportError(e, "Generation of material design button ripple effect failed");
                 }
 
                 // Getting 45% of longest button's length, because we want edge of ripple effect always visible
@@ -158,7 +159,7 @@ public class MaterialDesignToggleButton extends ToggleButton {
      * Sets the ripple colour.
      * @param colour The colour of the ripple.
      */
-    public final void setRippleColor(final Color colour) {
+    public final void setRippleColour(final Color colour) {
         circleRipple.setFill(colour);
     }
 
