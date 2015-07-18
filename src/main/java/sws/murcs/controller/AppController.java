@@ -37,7 +37,7 @@ import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.reporting.ReportGenerator;
+import sws.murcs.reporting.ui.ReportGeneratorView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
@@ -512,24 +512,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void generateReport(final ActionEvent event) {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("XML File (*.xml)", "*.xml"));
-            fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
-            fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
-            fileChooser.setTitle("Report Save Location");
-            File file = fileChooser.showSaveDialog(App.getStage());
-            if (file != null) {
-                ReportGenerator.generate(PersistenceManager.getCurrent().getCurrentModel(), file);
-                PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-            }
-        }
-        catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
-            popup.show();
-        }
+        ReportGeneratorView reportGenerator = new ReportGeneratorView();
+        reportGenerator.show();
     }
 
     /**

@@ -88,8 +88,8 @@
                                                       </TableView>
                                                       <VBox prefHeight="200.0" spacing="5.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER">
                                                          <children>
-                                                            <Button fx:id="increasePriorityButton" disable="true" mnemonicParsing="false" onAction="#increasePriorityClicked" prefWidth="30.0" text="^" />
-                                                            <Button fx:id="decreasePriorityButton" disable="true" mnemonicParsing="false" onAction="#decreasePriorityClicked" prefWidth="30.0" text="v">
+                                                            <Button styleClass="mdr-button" fx:id="increasePriorityButton" disable="true" mnemonicParsing="false" onAction="#increasePriorityClicked" prefWidth="30.0" text="^" />
+                                                            <Button styleClass="mdr-button" fx:id="decreasePriorityButton" disable="true" mnemonicParsing="false" onAction="#decreasePriorityClicked" prefWidth="30.0" text="v">
                                                                <VBox.margin>
                                                                   <Insets />
                                                                </VBox.margin>

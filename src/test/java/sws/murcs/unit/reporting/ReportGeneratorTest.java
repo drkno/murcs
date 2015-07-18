@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +26,23 @@ public class ReportGeneratorTest {
 
     private Organisation organisation;
     private File tempReport;
-    private List<String> sampleReport;
+    private Project project;
+    private Team team;
+    private Person person;
+    private Backlog backlog;
+    private Story story;
+
+    private void adjust(List<String> report) {
+        for (int i = 0; i < report.size(); i++) {
+            if (report.get(i).matches(".*<projectVersion>(\\d+\\.){2}(\\d+)</projectVersion>.*")) {
+                report.set(i, "<projectVersion>" + organisation.getVersion() + "</projectVersion>");
+            }
+            if (report.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
+                report.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
+                break;
+            }
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -33,18 +50,8 @@ public class ReportGeneratorTest {
         if (PersistenceManager.getCurrent() != null) {
             PersistenceManager.getCurrent().setCurrentModel(null);
         }
-        String sampleReportPath = "./src/test/resources/sws/murcs/reporting/sampleReport.xml";
         organisation = new Organisation();
-        sampleReport = Files.readAllLines(Paths.get(sampleReportPath), StandardCharsets.UTF_8);
-        for (int i = 0; i < sampleReport.size(); i++) {
-            if (sampleReport.get(i).matches(".*<projectVersion>(\\d+\\.){2}(\\d+)</projectVersion>.*")) {
-                sampleReport.set(i, "<projectVersion>" + organisation.getVersion() + "</projectVersion>");
-            }
-            if (sampleReport.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
-                sampleReport.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
-                break;
-            }
-        }
+
         tempReport = Files.createTempFile("", "").toFile();
 
         // Skill
@@ -69,12 +76,12 @@ public class ReportGeneratorTest {
         skillSM.setDescription("Is able to manage the efforts of a team and resolve difficulties");
 
         // Person
-        Person person1 = new Person();
-        person1.setShortName("Daniel");
-        person1.setLongName("Daniel van Wichen");
-        person1.setUserId("dpv11");
-        person1.addSkill(skillPython);
-        person1.addSkill(skillPO);
+        person = new Person();
+        person.setShortName("Daniel");
+        person.setLongName("Daniel van Wichen");
+        person.setUserId("dpv11");
+        person.addSkill(skillPython);
+        person.addSkill(skillPO);
 
         Person person2 = new Person();
         person2.setShortName("Dion");
@@ -96,14 +103,14 @@ public class ReportGeneratorTest {
         person4.setUserId("null123");
 
         // Teams
-        Team team1 = new Team();
-        team1.setShortName("Sengineers");
-        team1.setLongName("Software Engineers");
-        team1.setDescription("We are the best software engineers in the world");
-        team1.addMember(person1);
-        team1.addMember(person2);
-        team1.setProductOwner(person1);
-        team1.setScrumMaster(person2);
+        team = new Team();
+        team.setShortName("Sengineers");
+        team.setLongName("Software Engineers");
+        team.setDescription("We are the best software engineers in the world");
+        team.addMember(person);
+        team.addMember(person2);
+        team.setProductOwner(person);
+        team.setScrumMaster(person2);
 
         Team team2 = new Team();
         team2.setShortName("Riding Solo");
@@ -115,7 +122,7 @@ public class ReportGeneratorTest {
         team3.setLongName("Mr Lonely");
 
         // Project
-        Project project = new Project();
+        project = new Project();
         project.setShortName("FITR");
         project.setLongName("Fitness is Training Right");
         project.setDescription("We are building a fitness tracking application for the world");
@@ -123,7 +130,7 @@ public class ReportGeneratorTest {
         // Work Allocation
         LocalDate startDate = LocalDate.of(2015, 5, 1);
         LocalDate endDate = startDate.plus(7, ChronoUnit.DAYS);
-        WorkAllocation allocation = new WorkAllocation(project, team1, startDate, endDate);
+        WorkAllocation allocation = new WorkAllocation(project, team, startDate, endDate);
 
         // Release
         Release release = new Release();
@@ -133,11 +140,11 @@ public class ReportGeneratorTest {
         project.addRelease(release);
 
         //Stories
-        Story story1 = new Story();
-        story1.setShortName("1");
-        story1.setLongName("Revert");
-        story1.setDescription("Revert to last saved state");
-        story1.setCreator(person3);
+        story = new Story();
+        story.setShortName("1");
+        story.setLongName("Revert");
+        story.setDescription("Revert to last saved state");
+        story.setCreator(person3);
 
         Story story2 = new Story();
         story2.setShortName("2");
@@ -146,20 +153,20 @@ public class ReportGeneratorTest {
         story2.setCreator(person4);
 
         //Backlog
-        Backlog backlog = new Backlog();
+        backlog = new Backlog();
         backlog.setShortName("This is the backlog");
         backlog.setLongName("back log be what");
         backlog.setDescription("high five");
-        backlog.setAssignedPO(person1);
-        backlog.addStory(story1, 1);
+        backlog.setAssignedPO(person);
+        backlog.addStory(story, 1);
 
         organisation.add(project);
-        organisation.add(team1);
+        organisation.add(team);
         organisation.add(team2);
         organisation.add(team3);
-        organisation.add(story1);
+        organisation.add(story);
         organisation.add(story2);
-        organisation.add(person1);
+        organisation.add(person);
         organisation.add(person2);
         organisation.add(person3);
         organisation.add(person4);
@@ -176,13 +183,90 @@ public class ReportGeneratorTest {
     }
 
     @Test
-    public void testGenerate() throws Exception {
+    public void testGenerateAll() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleFullReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
         ReportGenerator.generate(organisation, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < sampleReport.size(); i++) {
-            assertEquals(sampleReport.get(i).trim(), testReport.get(i).trim());
-            //System.out.println(testReport.get(i));
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateProject() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleProjectReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> projects = new ArrayList<>();
+        projects.add(project);
+        ReportGenerator.generate(projects, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateTeam() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleTeamReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> teams = new ArrayList<>();
+        teams.add(team);
+        ReportGenerator.generate(teams, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGeneratePerson() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/samplePersonReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> people = new ArrayList<>();
+        people.add(person);
+        ReportGenerator.generate(people, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateBacklog() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleBacklogReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> backlogs = new ArrayList<>();
+        backlogs.add(backlog);
+        ReportGenerator.generate(backlogs, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateStory() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleStoryReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> stories = new ArrayList<>();
+        stories.add(story);
+        ReportGenerator.generate(stories, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < report.size(); i++) {
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 }

@@ -35,7 +35,7 @@ public class MaterialDesignButton extends Button {
     /**
      * The radius of the ripple effect.
      */
-    private static final double RADIUS = 0.1;
+    private static final double RADIUS = 0.15;
 
     /**
      * The ripple effect for the circle.

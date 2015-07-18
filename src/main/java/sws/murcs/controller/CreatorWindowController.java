@@ -129,10 +129,11 @@ public class CreatorWindowController {
                 //Save changes to the editor pane before proceeding
                 editorPane.getController().saveChanges();
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
-                if (node != null && node instanceof Label
-                        && (!(((Label) node).getText() == null)
-                        && !(((Label) node).getText().isEmpty()))) {
-                    return;
+                if (node instanceof Label) {
+                    String nodeText = ((Label) node).getText();
+                    if (!(nodeText == null || nodeText.isEmpty())) {
+                        return;
+                    }
                 }
                 if (model == null) {
                     return;

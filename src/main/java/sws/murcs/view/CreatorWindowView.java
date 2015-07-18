@@ -125,7 +125,10 @@ public class CreatorWindowView {
                 return;
             }
             Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/errors.css").toExternalForm());
+            scene.getStylesheets()
+                    .add(getClass()
+                            .getResource("/sws/murcs/styles/global.css")
+                            .toExternalForm());
             stage.setScene(scene);
 
             // Give the stage a name and icon
@@ -139,6 +142,7 @@ public class CreatorWindowView {
             stage.initOwner(App.getStage());
 
             stage.show();
+            stage.sizeToScene();
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");

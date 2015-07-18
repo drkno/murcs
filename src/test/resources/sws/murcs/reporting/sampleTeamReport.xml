@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.3</projectVersion>
+    <dateGenerated>2015-05-21</dateGenerated>
+    <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelTeam">
+        <teams>
+            <team shortName="Sengineers">
+                <longName>Software Engineers</longName>
+                <description>We are the best software engineers in the world</description>
+                <members>
+                    <person>Daniel</person>
+                    <person>Dion</person>
+                </members>
+                <scrumMaster>Dion</scrumMaster>
+                <productOwner>Daniel</productOwner>
+            </team>
+        </teams>
+    </content>
+</report>

@@ -74,6 +74,13 @@ release.properties
 *.project
 .gitignore
 *.testProject
+*.css
+*.map
 
-### Sass ###
+### SASS ###
 .sass-cache
+*.aux
+*.out
+*.toc
+*.gz
+doc/user_guide/main.pdf

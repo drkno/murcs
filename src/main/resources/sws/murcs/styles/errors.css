@@ -1,6 +1,0 @@
-.error {
-    -fx-focus-color: red;
-    -fx-border-color: red;
-    -fx-border-radius: 3px;
-    -fx-effect: dropshadow(three-pass-box, red, 5, 0, 0, 0);
-}

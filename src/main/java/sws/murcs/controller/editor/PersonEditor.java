@@ -4,8 +4,8 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
@@ -177,10 +178,9 @@ public class PersonEditor extends GenericEditor<Person> {
      * @return the node representing the skill
      */
     private Node generateSkillNode(final Skill skill) {
-        Button removeButton = new Button("X");
-        //TODO add material design button
-        //removeButton.getStyleClass().add("mdr-button");
-        //removeButton.getStyleClass().add("mdrd-button");
+        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        removeButton.getStyleClass().add("mdr-button");
+        removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setMessageText("Are you sure you want to remove "
@@ -219,6 +219,7 @@ public class PersonEditor extends GenericEditor<Person> {
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
     }

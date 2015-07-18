@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.4</projectVersion>
+    <dateGenerated>2015-07-04</dateGenerated>
+    <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
+        <projects>
+            <project shortName="FITR">
+                <longName>Fitness is Training Right</longName>
+                <description>We are building a fitness tracking application for the world</description>
+                <releases>
+                    <release shortName="Now">
+                        <description>This current time</description>
+                        <releaseDate>2015-04-22</releaseDate>
+                    </release>
+                </releases>
+                <backlogs/>
+            </project>
+        </projects>
+        <backlogs>
+            <backlog shortName="This is the backlog">
+                <longName>back log be what</longName>
+                <description>high five</description>
+                <assignedPO>Daniel</assignedPO>
+                <prioritisedStories>
+                    <story shortName="1">
+                        <longName>Revert</longName>
+                        <storyState>None</storyState>
+                        <description>Revert to last saved state</description>
+                        <creator>Haydon</creator>
+                        <estimate>Not Estimated</estimate>
+                    </story>
+                </prioritisedStories>
+                <estimateType>Fibonacci</estimateType>
+            </backlog>
+        </backlogs>
+        <workAllocations>
+            <workAllocation>
+                <project>FITR</project>
+                <team>Sengineers</team>
+                <startDate>2015-05-01</startDate>
+                <endDate>2015-05-08</endDate>
+            </workAllocation>
+        </workAllocations>
+        <unassignedStories>
+            <story shortName="2">
+                <longName>Story Maintenance</longName>
+                <storyState>None</storyState>
+                <description>add stories to project</description>
+                <creator>Unallocated</creator>
+                <estimate>Not Estimated</estimate>
+            </story>
+        </unassignedStories>
+        <unassignedTeams>
+            <team>Lonely</team>
+            <team>Riding Solo</team>
+        </unassignedTeams>
+        <unassignedPeople>
+            <person>Unallocated</person>
+        </unassignedPeople>
+        <Teams>
+            <team shortName="Lonely">
+                <longName>Mr Lonely</longName>
+                <members/>
+            </team>
+            <team shortName="Riding Solo">
+                <longName>One man can conquer the world</longName>
+                <members>
+                    <person>Haydon</person>
+                </members>
+            </team>
+            <team shortName="Sengineers">
+                <longName>Software Engineers</longName>
+                <description>We are the best software engineers in the world</description>
+                <members>
+                    <person>Daniel</person>
+                    <person>Dion</person>
+                </members>
+                <scrumMaster>Dion</scrumMaster>
+                <productOwner>Daniel</productOwner>
+            </team>
+        </Teams>
+        <People>
+            <person shortName="Daniel">
+                <longName>Daniel van Wichen</longName>
+                <id>dpv11</id>
+                <skills>
+                    <skill>Python</skill>
+                    <skill>PO</skill>
+                </skills>
+            </person>
+            <person shortName="Dion">
+                <longName>Dion Wooley</longName>
+                <id>dmw99</id>
+                <skills>
+                    <skill>C</skill>
+                    <skill>Python</skill>
+                    <skill>SM</skill>
+                </skills>
+            </person>
+            <person shortName="Haydon">
+                <longName>Haydon Baddock</longName>
+                <id>hbk67</id>
+                <skills>
+                    <skill>Python</skill>
+                    <skill>C</skill>
+                </skills>
+            </person>
+            <person shortName="Unallocated">
+                <id>null123</id>
+                <skills/>
+            </person>
+        </People>
+        <Skills>
+            <skill shortName="C">
+                <longName>C99</longName>
+                <description>C99 is older than the current C standard, namely, C11</description>
+            </skill>
+            <skill shortName="PO">
+                <longName>Product Owner</longName>
+                <description>The projects main stakeholder. Responsible for making sure that their vision for the product is realised.</description>
+            </skill>
+            <skill shortName="Python">
+                <longName>Python 2.7</longName>
+                <description>A simple object-oriented language perfect for beginners</description>
+            </skill>
+            <skill shortName="SM">
+                <longName>Scrum Master</longName>
+                <description>Manages the efforts of a team, resolves difficulties and removes obstacles to task completion.</description>
+            </skill>
+        </Skills>
+    </content>
+</report>

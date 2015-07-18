@@ -158,9 +158,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             dropPriorityButton.setDisable(isMinPriority);
         });
         storyTable.setFixedCellSize(FIXED_ROW_HEIGHT_STORY_TABLE);
-        storyTable.getStylesheets().add(getClass()
-                        .getResource("/sws/murcs/styles/materialDesign/storyTableHighlights.css")
-                        .toExternalForm());
 
         // setup the observable stories
         observableStories = FXCollections.observableArrayList();
@@ -686,7 +683,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
 
                 Button button = new Button("X");
-                button.setStyle("-fx-background-radius: 100");
+                button.getStyleClass().add("mdr-button");
+                button.getStyleClass().add("mdrd-button");
                 button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();

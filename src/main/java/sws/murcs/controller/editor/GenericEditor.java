@@ -6,7 +6,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -53,6 +53,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Details whether or not the window is a creator for a new model or an editor.
      */
     private boolean isCreationWindow;
+
+    /**
+     * Stores if a save changes button exists, preventing a new button being created
+     * if one has already been created.
+     */
+    private boolean saveChangesButtonExists;
 
     /**
      * All the invalid sections in the form.
@@ -183,6 +189,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         clearErrors();
+        saveButton = null;
     }
 
     /**
@@ -251,16 +258,18 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * Adds a save changes placebo button to the editor panes.
+     * Will not add a new button if one already exists.
      */
     protected final void setupSaveChangesButton() {
+        if (saveChangesButtonExists) {
+            return; // prevent an existing button being added.
+        }
+        saveChangesButtonExists = true;
         saveButton = new MaterialDesignButton("Save Changes");
         final int pad = 5;
-        final double red = 0.611;
-        final double green = 0.8;
-        final double blue = 0.396;
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
-        saveButton.setRippleColour(Color.color(red, green, blue));
+        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
         bottomBar.getChildren().add(saveButton);
-        bottomBar.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+        HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
     }
 }

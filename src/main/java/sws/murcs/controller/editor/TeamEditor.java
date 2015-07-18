@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -18,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.MultipleRolesException;
@@ -316,7 +318,9 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Button removeButton = new Button("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        removeButton.getStyleClass().add("mdr-button");
+        removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Remove Team Member");
@@ -361,6 +365,7 @@ public class TeamEditor extends GenericEditor<Team> {
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
     }
