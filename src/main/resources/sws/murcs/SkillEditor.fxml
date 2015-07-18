@@ -57,7 +57,7 @@
                            </rowConstraints>
                            <children>
                                     <Label text="Description" />
-                              <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                              <TextArea wrapText="true" fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1" />
                            </children>
                            <GridPane.margin>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
