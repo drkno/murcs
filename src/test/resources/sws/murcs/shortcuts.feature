@@ -37,29 +37,29 @@
       Then a save dialog appears
 
     Scenario: Create a Project
-      Given that I press CTRL + P
+      Given that I press CTRL + 1
       Then a create dialog appears for Project
 
-    Scenario: Create a Person
-      Given that I press CTRL + SHIFT + P
-      Then a create dialog appears for Person
-
     Scenario: Create a Team
-      Given that I press CTRL + T
+      Given that I press CTRL + 2
       Then a create dialog appears for a Team
 
+    Scenario: Create a Person
+      Given that I press CTRL + 3
+      Then a create dialog appears for Person
+
     Scenario: Create a Skill
-      Given that I press CTRL + SHIFT + S
+      Given that I press CTRL + 4
       Then a create dialog appears for a Skill
 
     Scenario: Create a Release
-      Given that I press CTRL + R
+      Given that I press CTRL + 5
       Then a create dialog appears for a Release
 
     Scenario: Create a Backlog
-      Given that I press CTRL + B
+      Given that I press CTRL + 6
       Then a create dialog appears for a Release
 
     Scenario: Create a Story
-      Given that I press CTRL + ALT + S
+      Given that I press CTRL + 7
       Then a create dialog appears for a Release
