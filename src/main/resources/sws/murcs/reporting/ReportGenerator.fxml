@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" styleClass="base" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.reporting.ui.ReportGeneratorController">
+   <children>
+      <GridPane alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
+            <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+               <VBox GridPane.rowIndex="1" VBox.vgrow="ALWAYS">
+                  <children>
+                     <VBox fx:id="managementContent" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" styleClass="reportingContent">
+                        <children>
+                           <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="350.0">
+                              <children>
+                                 <Label text="Report Type">
+                                    <HBox.margin>
+                                       <Insets right="20.0" />
+                                    </HBox.margin>
+                                 </Label>
+                                 <ComboBox fx:id="managementTypeComboBox" prefWidth="150.0" promptText="Select report type" />
+                              </children>
+                           </HBox>
+                           <ListView id="managementList" fx:id="managementList" minHeight="0.0" minWidth="-Infinity" prefHeight="150.0" VBox.vgrow="ALWAYS" />
+                        </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                     </VBox>
+                      <VBox fx:id="workflowContent" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" styleClass="reportingContent">
+                          <children>
+                              <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="350.0">
+                                  <children>
+                                      <Label text="Report Type">
+                                          <HBox.margin>
+                                              <Insets right="20.0" />
+                                          </HBox.margin>
+                                      </Label>
+                                      <ComboBox fx:id="workflowTypeComboBox" prefWidth="150.0" promptText="Select report type" />
+                                  </children>
+                              </HBox>
+                              <ListView fx:id="workflowList" minHeight="0.0" minWidth="-Infinity" prefHeight="150.0" VBox.vgrow="ALWAYS" />
+                          </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                      </VBox>
+                  </children>
+               </VBox>
+          <HBox fx:id="toolBarContainer" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" styleClass="reportingToolbar" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+               <GridPane fx:id="lowerThird" prefHeight="60.0" prefWidth="360.0" styleClass="reportingLowerThird" GridPane.rowIndex="2">
+                 <columnConstraints>
+                   <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+                 </columnConstraints>
+                 <rowConstraints>
+                   <RowConstraints minHeight="40.0" prefHeight="60.0" vgrow="ALWAYS" />
+                     <RowConstraints />
+                 </rowConstraints>
+                  <children>
+                     <VBox prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                           <Label fx:id="errorMessage" prefHeight="20" textFill="RED">
+                               <VBox.margin>
+                                  <Insets left="10" />
+                               </VBox.margin>
+                           </Label>
+                           <HBox fx:id="buttonContainer" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity">
+                               <HBox.margin>
+                                   <Insets bottom="20" />
+                               </HBox.margin>
+                           </HBox>
+                        </children>
+                     </VBox>
+                  </children>
+               </GridPane>
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

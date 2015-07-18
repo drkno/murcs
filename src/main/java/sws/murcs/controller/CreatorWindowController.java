@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -23,27 +25,33 @@ public class CreatorWindowController {
      */
     @FXML
     private GridPane contentPane;
+
     /**
      * The buttons in the create window.
      */
     @FXML
     private Button createButton, cancelButton;
+
     /**
      * The command to be issued on okay being clicked.
      */
     private Consumer<Model> createClicked;
+
     /**
      * The command to be issued on cancel being clicked.
      */
     private Consumer<Model> cancelClicked;
+
     /**
      * The stage of the creation window.
      */
     private Stage stage;
+
     /**
      * The model to be created.
      */
     private Model model;
+
     /**
      * The editor of the grid pane.
      */
@@ -121,19 +129,20 @@ public class CreatorWindowController {
                 //Save changes to the editor pane before proceeding
                 editorPane.getController().saveChanges();
                 Node node = JavaFXHelpers.getByID(contentPane.getParent(), "labelErrorMessage");
-                if (node != null && node instanceof Label
-                        && (!(((Label) node).getText() == null)
-                        && !(((Label) node).getText().isEmpty()))) {
-                    return;
+                if (node instanceof Label) {
+                    String nodeText = ((Label) node).getText();
+                    if (!(nodeText == null || nodeText.isEmpty())) {
+                        return;
+                    }
                 }
                 if (model == null) {
                     return;
                 }
-                PersistenceManager.Current.getCurrentModel().add(model);
+                PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
             }
-            catch (Exception e) {
-                e.printStackTrace();
+            catch (CustomException e) {
+                ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }
         stage.close();

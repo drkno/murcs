@@ -1,24 +1,51 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Person;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates random teams with people.
  */
 public class TeamGenerator implements Generator<Team> {
+
+    /**
+     * The max number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MAX = 5;
+
+    /**
+     * The min number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MAX = 10;
+
+    /**
+     * The min number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+    /**
+     * The max number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MAX = 20;
+
+    /**
+     * The min number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MIN = 10;
 
-    private static final String[] predefinedTeamNames = {"-... .- - -- .- -.",
+    /**
+     * An array of team names.
+     */
+    private static final String[] PREDEFINED_TEAM_NAMES = {"-... .- - -- .- -.",
             "Team 10",
             "1",
             "120/-",
@@ -375,7 +402,7 @@ public class TeamGenerator implements Generator<Team> {
             "The Inner Loop",
             "Inquisitive Robots",
             "Inspector Gadget",
-            "Interesting People, Inc",
+            "Interesting Person, Inc",
             "In Theory",
             "Invictus",
             "Island",
@@ -389,7 +416,7 @@ public class TeamGenerator implements Generator<Team> {
             "Jessie and the Rippers",
             "JJ and the Jerks",
             "Joint Venture",
-            "Judean People's Front",
+            "Judean Person's Front",
             "Judean Peoples' Front",
             "judean people's front",
             "Juiced",
@@ -736,11 +763,9 @@ public class TeamGenerator implements Generator<Team> {
             "ufo",
             "Undead Defense Corps(e)",
             "Undead Last",
-            "Undead People's Front",
+            "Undead Person's Front",
             "Underdog Nillionaires",
             "Underground Rodeo",
-            "Unibangers",
-            "Unibangers (wheelless)",
             "Universal Solvent",
             "Unlicensed Nuclear Accelerator",
             "Unseen",
@@ -803,51 +828,72 @@ public class TeamGenerator implements Generator<Team> {
             "Zupplers",
             "ZURB"
     };
-    private String[] teamNames = predefinedTeamNames;
-    private String[] descriptions = {NameGenerator.getLoremIpsum()};
-    private float probOfScrumMaster = 0.5f;
-    private float probOfProductOwner = 0.5f;
 
+    /**
+     * Another list of team names.
+     */
+    private String[] teamNames = PREDEFINED_TEAM_NAMES;
+
+    /**
+     * The probably of a person being a scrum master.
+     */
+    private float probOfScrumMaster;
+
+    /**
+     * The probability of a person being a product owner.
+     */
+    private float probOfProductOwner;
+
+    /**
+     * The person generator for this team generator.
+     */
     private Generator<Person> personGenerator;
-    private ArrayList<Person> personPool;
+
+    /**
+     * A pool of persons to use in this team.
+     */
+    private List<Person> personPool;
 
     /**
      * Instantiates a new Team generator.
      */
     public TeamGenerator() {
         personGenerator = new PersonGenerator();
+
+        final float defaultProbability = 0.5f;
+        probOfProductOwner = defaultProbability;
+        probOfScrumMaster = defaultProbability;
     }
 
     /**
      * Instantiates a new Team generator.
-     * @param personGenerator person generator to use.
-     * @param teamNames team names to generate from.
-     * @param descriptions descriptions to generate from.
-     * @param probOfProductOwner probability of a product owner to use.
-     * @param probOfScrumMaster probability of a scrum master to use.
+     * @param generator person generator to use.
+     * @param names team names to generate from.
+     * @param productOwnerProbability probability of a product owner to use.
+     * @param scrumMasterProbability probability of a scrum master to use.
      */
-    public TeamGenerator(final Generator<Person> personGenerator, final String[] teamNames, final String[] descriptions, final float probOfProductOwner, final float probOfScrumMaster) {
-        this.personGenerator = personGenerator;
-        this.teamNames = teamNames;
-        this.descriptions = descriptions;
-        this.probOfProductOwner = probOfProductOwner;
-        this.probOfScrumMaster = probOfScrumMaster;
+    public TeamGenerator(final Generator<Person> generator, final String[] names,
+                         final float productOwnerProbability, final float scrumMasterProbability) {
+        this.personGenerator = generator;
+        this.teamNames = names;
+        this.probOfProductOwner = productOwnerProbability;
+        this.probOfScrumMaster = scrumMasterProbability;
     }
 
     /**
      * Sets the person generator.
-     * @param personGenerator The person generator
+     * @param generator The person generator
      */
-    public final void setPersonGenerator(final Generator<Person> personGenerator){
-        this.personGenerator = personGenerator;
+    public final void setPersonGenerator(final Generator<Person> generator) {
+        this.personGenerator = generator;
     }
 
     /**
      * Sets the person pool. If null, people will be randomly generated.
-     * @param personPool The person pool
+     * @param persons The person pool
      */
-    public final void setPersonPool(final ArrayList<Person> personPool) {
-        this.personPool = personPool;
+    public final void setPersonPool(final List<Person> persons) {
+        this.personPool = persons;
     }
 
     /**
@@ -856,15 +902,15 @@ public class TeamGenerator implements Generator<Team> {
      * @param max The max members
      * @return The members
      */
-    private ArrayList<Person> generateMembers(final int min, final int max) {
-        ArrayList<Person> generated = new ArrayList<>();
-        int personCount = NameGenerator.random(min, max);
+    private List<Person> generateMembers(final int min, final int max) {
+        List<Person> generated = new ArrayList<>();
+        int personCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of person, make some up
         if (personPool == null) {
             for (int i = 0; i < personCount; i++) {
                 Person newPerson = personGenerator.generate();
-                if (!generated.stream().filter(person -> newPerson.equals(person)).findAny().isPresent()) {
+                if (!generated.stream().filter(newPerson::equals).findAny().isPresent()) {
                     generated.add(newPerson);
                 }
             }
@@ -878,41 +924,43 @@ public class TeamGenerator implements Generator<Team> {
             for (int i = 0; i < personCount; i++) {
                 // Remove the person so we can't pick it again.
                 // We'll put it back when we're done
-                Person skill = personPool.remove(NameGenerator.random(personPool.size()));
-                generated.add(skill);
-            }
-
-            //Put all the skills we took out back
-            for (Person person : generated) {
-                personPool.add(person);
+                Person person = personPool.remove(GenerationHelper.random(personPool.size()));
+                generated.add(person);
             }
         }
-
         return generated;
     }
 
     @Override
     public final Team generate() {
+        final int longNameMax = 10;
+        final int minMembers = 3;
+        final int maxMembers = 15;
+
         Team team = new Team();
 
-        String shortName = NameGenerator.randomElement(teamNames);
-        String longName = shortName + NameGenerator.random(10);
+        String shortName = GenerationHelper.randomElement(teamNames);
+        String longName = shortName + GenerationHelper.random(longNameMax);
 
-        String description = NameGenerator.randomElement(descriptions);
+        String description = NameGenerator.randomDescription();
 
-        Person productOwner;
-        Person scrumMaster;
+        Person productOwner = null;
+        Person scrumMaster = null;
 
-        ArrayList<Person> members = generateMembers(3, 15);
+        List<Person> members = generateMembers(minMembers, maxMembers);
 
-        productOwner = members.get(0);
-        scrumMaster = members.get(1);
+        if (members.size() > 0) {
+                productOwner = members.get(0);
+        }
+        if (members.size() > 1) {
+            scrumMaster = members.get(1);
+        }
 
         try {
             team.setShortName(shortName);
         }
         catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "TeamGenerator: setting short name failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
@@ -922,13 +970,17 @@ public class TeamGenerator implements Generator<Team> {
         team.setDescription(description);
 
         try {
-            team.setScrumMaster(scrumMaster);
-            team.setProductOwner(productOwner);
+            if (scrumMaster != null) {
+                team.setScrumMaster(scrumMaster);
+            }
+            if (productOwner != null) {
+                team.setProductOwner(productOwner);
+            }
             team.addMembers(members);
         } catch (Exception e) {
             // Do nothing, don't have to deal with the
             // exception if only generating test data.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "TeamGenerator: adding members and setting PO/SM failed");
             return null;
         }
 

@@ -10,7 +10,7 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.RelationalModel;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
@@ -22,7 +22,7 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
     private FxRobot fx;
     private Stage primaryStage;
     private Application app;
-    private RelationalModel model;
+    private Organisation model;
 
     @Before("@ProjectMaintenance")
     public void setUp() throws Exception {
@@ -34,8 +34,8 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
 
         interact(() -> {
             try {
-                model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
             }
@@ -47,7 +47,7 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
 
     @After("@ProjectMaintenance")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();

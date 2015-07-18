@@ -19,7 +19,11 @@
   Finally, it is worth reading the documentation.
 -->
 
+
+
 <module name="Checker">
+
+    <module name="SuppressWarningsFilter" />
     <!--
         If you set the basedir property below, then all reported file
         names will be relative to the specified directory. See
@@ -165,7 +169,9 @@
         <module name="FinalClass"/>
         <module name="HideUtilityClassConstructor"/>
         <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
+        <module name="VisibilityModifier">
+            <property name="packageAllowed" value="true"/>
+        </module>
 
 
         <!-- Miscellaneous other checks.                   -->
@@ -174,6 +180,8 @@
         <module name="FinalParameters"/>
         <module name="TodoComment"/>
         <module name="UpperEll"/>
+
+        <module name="SuppressWarningsHolder" />
 
     </module>
 

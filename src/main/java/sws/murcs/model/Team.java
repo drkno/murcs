@@ -8,8 +8,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Model of a Team.
@@ -18,15 +20,33 @@ import java.util.ArrayList;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Team extends Model {
 
+    /**
+     * The description of the team.
+     */
     @TrackableValue
     private String description;
+
+    /**
+     * A list of members in the team.
+     */
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
-    private ArrayList<Person> members = new ArrayList<>();
+    @XmlIDREF
+    private List<Person> members = new ArrayList<>();
+
+    /**
+     * The scrum master of the team.
+     */
     @TrackableValue
+    @XmlIDREF
     private Person scrumMaster;
+
+    /**
+     * The product owner of the team.
+     */
     @TrackableValue
+    @XmlIDREF
     private Person productOwner;
 
     /**
@@ -35,7 +55,7 @@ public class Team extends Model {
      * of adding is to use getMembers().add(person);
      * @return A list of the team members
      */
-    public final ArrayList<Person> getMembers() {
+    public final List<Person> getMembers() {
         return this.members;
     }
 
@@ -93,7 +113,7 @@ public class Team extends Model {
      * Product Owner is already performing another role.
      */
     public final void setProductOwner(final Person newProductOwner) throws MultipleRolesException {
-        if (newProductOwner == getScrumMaster() && newProductOwner != null && getScrumMaster() != null) {
+        if (newProductOwner == getScrumMaster() && newProductOwner != null) {
             throw new MultipleRolesException("Product Owner", "Scrum Master", newProductOwner, this);
         }
         this.productOwner = newProductOwner;
@@ -119,11 +139,11 @@ public class Team extends Model {
 
     /**
      * Adds a list of people to the team.
-     * @param membersToAdd People to be added to the team
+     * @param membersToAdd Person to be added to the team
      * @throws DuplicateObjectException
      * if a person is already in a team
      */
-    public final void addMembers(final ArrayList<Person> membersToAdd) throws DuplicateObjectException {
+    public final void addMembers(final List<Person> membersToAdd) throws DuplicateObjectException {
         for (Person member : membersToAdd) {
             this.addMember(member);
         }
@@ -135,26 +155,36 @@ public class Team extends Model {
      */
     public final void removeMember(final Person person) {
         if (this.members.contains(person)) {
+            if (person.equals(scrumMaster)) {
+                scrumMaster = null;
+            }
+            if (person.equals(productOwner)) {
+                productOwner = null;
+            }
             this.members.remove(person);
             commit("edit team");
         }
     }
 
-    /**
-     * Returns the string of the short name.
-     * @return short name string
-     */
     @Override
-    public final String toString() {
-        return getShortName();
+    public final boolean equals(final Object object) {
+        if (object == null || !(object instanceof Team)) {
+            return false;
+        }
+        String shortName = getShortName();
+        String shortNameO = ((Team) object).getShortName();
+        if (shortName == null || shortNameO == null) {
+            return shortName == shortNameO;
+        }
+        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
     }
 
     @Override
-    public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Team)) return false;
-        String shortName = getShortName();
-        String shortNameO = ((Team) object).getShortName();
-        if (shortName == null || shortNameO == null) return shortName == shortNameO;
-        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        return getHashCodePrime() + c;
     }
 }

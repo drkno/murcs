@@ -1,16 +1,21 @@
 package sws.murcs.model;
 
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Model of a person.
@@ -19,13 +24,22 @@ import java.util.ArrayList;
 @XmlType(propOrder = {"userId", "skills"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Person extends Model {
+
+    /**
+     * The user id of a person.
+     */
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
+
+    /**
+     * The list of skills the person has.
+     */
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
-    private ArrayList<Skill> skills = new ArrayList<>();
+    @XmlIDREF
+    private List<Skill> skills = new ArrayList<>();
 
     /**
      * Gets a list of the skills the person has. Following the
@@ -33,8 +47,8 @@ public class Person extends Model {
      * list is the preferred way to add items to the list.
      * @return The person's skills.
      */
-    public final ArrayList<Skill> getSkills() {
-        return skills;
+    public final List<Skill> getSkills() {
+        return Collections.unmodifiableList(skills);
     }
 
     /**
@@ -62,9 +76,9 @@ public class Person extends Model {
     /**
      * Sets the user id.
      * @param newUserID The new user id
-     * @throws Exception User id is invalid
+     * @throws CustomException User id is invalid
      */
-    public final void setUserId(final String newUserID) throws Exception {
+    public final void setUserId(final String newUserID) throws CustomException {
         validateUserId(newUserID);
         this.userId = newUserID.trim();
         commit("edit person");
@@ -73,10 +87,13 @@ public class Person extends Model {
     /**
      * Indicates whether a value is a valid value for 'userId' to hold.
      * @param value The value.
-     * @throws Exception if there is a duplicate object.
+     * @throws CustomException if there is a duplicate object.
      */
-    private void validateUserId(final String value) throws Exception {
-        DuplicateObjectException.checkForDuplicates(this, value);
+    private void validateUserId(final String value) throws CustomException {
+        Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));
+        if (model != null) {
+            throw new DuplicateObjectException("A person with this ID already exists.");
+        }
         InvalidParameterException.validate("User Id", value);
     }
 
@@ -99,11 +116,11 @@ public class Person extends Model {
 
     /**
      * Adds a list of skills to the persons skills.
-     * @param skillsToAdd Skills to be added to person
+     * @param skillsToAdd Skill to be added to person
      * @throws DuplicateObjectException if the
      * person has any of the skills in the list
      */
-    public final void addSkills(final ArrayList<Skill> skillsToAdd) throws DuplicateObjectException {
+    public final void addSkills(final List<Skill> skillsToAdd) throws DuplicateObjectException {
         for (Skill skill : skillsToAdd) {
             this.addSkill(skill);
         }
@@ -118,11 +135,6 @@ public class Person extends Model {
             this.skills.remove(skill);
             commit("edit person");
         }
-    }
-
-    @Override
-    public final String toString() {
-        return getShortName();
     }
 
     /**
@@ -142,5 +154,25 @@ public class Person extends Model {
             return shortName1 == shortName2;
         }
         return shortName1.equalsIgnoreCase(shortName2) || person.getUserId().equals(getUserId());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c += getShortName().hashCode();
+        }
+        if (getUserId() != null) {
+            c += getUserId().hashCode();
+        }
+
+        return getHashCodePrime() + c;
+    }
+
+    /**
+     * Clears the skill that a person has.
+     */
+    public final void clearSkills() {
+        skills.clear();
     }
 }

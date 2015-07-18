@@ -1,10 +1,9 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Skill;
 
 /**
@@ -17,16 +16,12 @@ public class SkillEditor extends GenericEditor<Skill> {
      */
     @FXML
     private TextField shortNameTextField, longNameTextField;
+
     /**
      * The description of a skill.
      */
     @FXML
     private TextArea descriptionTextArea;
-    /**
-     * The label for showing error messages.
-     */
-    @FXML
-    private Label labelErrorMessage;
 
     @FXML
     @Override
@@ -40,17 +35,12 @@ public class SkillEditor extends GenericEditor<Skill> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -72,14 +62,15 @@ public class SkillEditor extends GenericEditor<Skill> {
         // then disable the short name
         // as this should be unique
         // but allow the editing of the long name and description
+        shortNameTextField.setDisable(false);
         if (modelShortName != null
                 && (modelShortName.equals(Skill.ROLES.PO.toString())
                 || modelShortName.equals(Skill.ROLES.SM.toString()))) {
             shortNameTextField.setDisable(true);
         }
-
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
@@ -87,30 +78,31 @@ public class SkillEditor extends GenericEditor<Skill> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         String modelShortName =  getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
         String viewLongName = longNameTextField.getText();
         if (isNullOrNotEqual(modelLongName, viewLongName)) {
-            getModel().setLongName(viewLongName);
+            getModel().setLongName(viewLongName); //This is always valid
         }
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
-            getModel().setDescription(viewDescription);
+            getModel().setDescription(viewDescription); //This is always valid
         }
     }
 }

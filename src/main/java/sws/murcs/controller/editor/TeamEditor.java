@@ -1,10 +1,16 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -12,13 +18,19 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -31,21 +43,40 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     @FXML
     private VBox teamMembersContainer;
+
     /**
      * The shortName, longName and description fields for a Team.
      */
     @FXML
     private TextField shortNameTextField, longNameTextField, descriptionTextField;
+
     /**
-     * The productOwner, scrumMaster and member pickers.
+     * The product owner and scrum master pickers.
      */
     @FXML
-    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker, addTeamMemberPicker;
+    private ChoiceBox<Person> productOwnerPicker, scrumMasterPicker;
+
     /**
-     * The label for showing error messages.
+     * The member picker.
      */
     @FXML
-    private Label labelErrorMessage;
+    private ComboBox<Person> addTeamMemberPicker;
+
+    /**
+     * Buttons for clearing the current SM and PO.
+     */
+    @FXML
+    private Button clearPOButton, clearSMButton;
+
+    /**
+     * List of people that can be added to the team.
+     */
+    private List<Person> allocatablePeople;
+
+    /**
+     * A map of people to their nodes in the member list on the view.
+     */
+    private Map<Person, Node> memberNodeIndex;
 
     @FXML
     @Override
@@ -63,14 +94,9 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
-        addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
+        allocatablePeople = FXCollections.observableArrayList();
+        addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
+        memberNodeIndex = new HashMap<>();
     }
 
     @Override
@@ -92,40 +118,74 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNotEqual(modelDescription, viewDescription)) {
             descriptionTextField.setText(modelDescription);
         }
-        updateTeamMembers();
+        teamMembersContainer.getChildren().clear();
+        getModel().getMembers().forEach(member -> {
+            Node memberNode = generateMemberNode(member);
+            teamMembersContainer.getChildren().add(memberNode);
+            memberNodeIndex.put(member, memberNode);
+        });
+
+        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
         updatePOSM();
 
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
+        setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         Person modelProductOwner = getModel().getProductOwner();
         Person viewProductOwner = productOwnerPicker.getValue();
         if (isNullOrNotEqual(modelProductOwner, viewProductOwner)) {
-            getModel().setProductOwner(viewProductOwner);
-            updatePOSM();
+            try {
+                getModel().setProductOwner(viewProductOwner);
+                updatePOSM();
+            } catch (CustomException e) {
+                //This should never happen as the list of PO's should only contain valid options
+                ErrorReporter.get().reportError(e, "Failed to assign the PO. This is very bad.");
+            }
         }
 
         Person modelScrumMaster = getModel().getScrumMaster();
         Person viewScrumMaster = scrumMasterPicker.getValue();
         if (isNullOrNotEqual(modelScrumMaster, viewScrumMaster)) {
-            getModel().setScrumMaster(viewScrumMaster);
-            updatePOSM();
+            try {
+                getModel().setScrumMaster(viewScrumMaster);
+                updatePOSM();
+            } catch (CustomException e) {
+                //This should never happen as the list of SM's should only contain valid options
+                ErrorReporter.get().reportError(e, "Failed to assign the SM. This is very bad.");
+            }
         }
 
         Person person = addTeamMemberPicker.getValue();
         if (person != null) {
-            getModel().addMember(person);
-            updateTeamMembers();
-            updatePOSM();
+            try {
+                getModel().addMember(person);
+                Node memberNode = generateMemberNode(person);
+                teamMembersContainer.getChildren().add(memberNode);
+                memberNodeIndex.put(person, memberNode);
+                Platform.runLater(() -> {
+                    addTeamMemberPicker.getSelectionModel().clearSelection();
+                    allocatablePeople.remove(person);
+                });
+                updatePOSM();
+            } catch (CustomException e) {
+                //This should never happen as the list of people to add should only contain valid options
+                ErrorReporter.get().reportError(e, "Failed to add the person to the team. This is bad.");
+            }
         }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelLongName = getModel().getLongName();
@@ -149,10 +209,9 @@ public class TeamEditor extends GenericEditor<Team> {
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextField.focusedProperty().removeListener(getChangeListener());
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        allocatablePeople = null;
+        memberNodeIndex = null;
+        super.dispose();
     }
 
     /**
@@ -167,8 +226,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the PO.
      */
     private void updatePO() {
-        Person productOwner = getModel().getProductOwner();
-        Person scrumMaster = getModel().getScrumMaster();
+        Person modelProductOwner = getModel().getProductOwner();
+        Person modelScrumMaster = getModel().getScrumMaster();
 
         // Add all the people with the PO skill to the list of POs
         List<Person> productOwners = getModel().getMembers()
@@ -177,14 +236,18 @@ public class TeamEditor extends GenericEditor<Team> {
                 .collect(Collectors.toList());
 
         // The ScrumMaster can not be a valid product owner
-        productOwners.remove(scrumMaster);
+        productOwners.remove(modelScrumMaster);
+
+        clearPOButton.setDisable(true);
 
         // Remove listener while editing the product owner picker
         productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         productOwnerPicker.getItems().clear();
         productOwnerPicker.getItems().addAll(productOwners);
-        if (productOwner != null) {
-            productOwnerPicker.getSelectionModel().select(productOwner);
+        if (modelProductOwner != null) {
+            productOwnerPicker.getSelectionModel().select(modelProductOwner);
+            clearPOButton.setDisable(false);
+
         }
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -193,8 +256,8 @@ public class TeamEditor extends GenericEditor<Team> {
      * Updates the SM.
      */
     private void updateSM() {
-        Person productOwner = getModel().getProductOwner();
-        Person scrumMaster = getModel().getScrumMaster();
+        Person modelProductOwner = getModel().getProductOwner();
+        Person modelScrumMaster = getModel().getScrumMaster();
 
         //Add all the people with the scrum master skill
         // to the list of scrum masters
@@ -204,17 +267,49 @@ public class TeamEditor extends GenericEditor<Team> {
                 .collect(Collectors.toList());
 
         // The ProductOwner cannot be a valid scrum master
-        scrumMasters.remove(productOwner);
+        scrumMasters.remove(modelProductOwner);
+
+        clearSMButton.setDisable(true);
 
         // Remove listener while editing the scrum master picker
         scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         scrumMasterPicker.getItems().clear();
         scrumMasterPicker.getItems().addAll(scrumMasters);
         scrumMasterPicker.getSelectionModel().clearSelection();
-        if (scrumMaster != null) {
-            scrumMasterPicker.getSelectionModel().select(scrumMaster);
+        if (modelScrumMaster != null) {
+            scrumMasterPicker.getSelectionModel().select(modelScrumMaster);
+            clearSMButton.setDisable(false);
         }
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+    }
+
+    /**
+     * Clears the currently selected Product Owner.
+     * @param event The event
+     */
+    @FXML
+    private void clearPO(final ActionEvent event) {
+        try {
+            getModel().setProductOwner(null);
+        } catch (MultipleRolesException e) {
+            ErrorReporter.get().reportError(e, "Failed to clear the PO. This shouldn't happen. It's definitely Jay's "
+                    + "fault.");
+        }
+        updatePOSM();
+    }
+
+    /**
+     * Clears the currently selected Scrum Master.
+     * @param event The event
+     */
+    @FXML
+    private void clearSM(final ActionEvent event) {
+        try {
+            getModel().setScrumMaster(null);
+        } catch (MultipleRolesException e) {
+            ErrorReporter.get().reportError(e, "Failed to clear the SM. This is probably James' fault.");
+        }
+        updatePOSM();
     }
 
     /**
@@ -223,8 +318,9 @@ public class TeamEditor extends GenericEditor<Team> {
      * @return the node representing the team member
      */
     private Node generateMemberNode(final Person person) {
-        Text nameText = new Text(person.toString());
-        Button removeButton = new Button("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        removeButton.getStyleClass().add("mdr-button");
+        removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Remove Team Member");
@@ -236,10 +332,13 @@ public class TeamEditor extends GenericEditor<Team> {
                 message += "\nThey are currently the teams Product Owner.";
             }
             popup.setMessageText(message);
-            popup.addOkCancelButtons(f -> {
+            popup.addYesNoButtons(f -> {
+                allocatablePeople.add(person);
+                Node memberNode = memberNodeIndex.get(person);
+                teamMembersContainer.getChildren().remove(memberNode);
+                memberNodeIndex.remove(person);
                 getModel().removeMember(person);
-                addTeamMemberPicker.getItems().add(person);
-                updateTeamMembers();
+                updatePOSM();
                 popup.close();
             });
             popup.show();
@@ -256,22 +355,18 @@ public class TeamEditor extends GenericEditor<Team> {
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
 
-        pane.add(nameText, 0, 0);
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(person.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(person.toString());
+            nameLink.setOnAction(a -> NavigationManager.navigateTo(person));
+            pane.add(nameLink, 0, 0);
+        }
         pane.add(removeButton, 1, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
-    }
-
-    /**
-     * Updates the view of the members in the team.
-     */
-    private void updateTeamMembers() {
-        addTeamMemberPicker.getItems().clear();
-        addTeamMemberPicker.getItems().addAll(PersistenceManager.Current.getCurrentModel().getUnassignedPeople());
-        teamMembersContainer.getChildren().clear();
-        for (Person person : getModel().getMembers()) {
-            Node node = generateMemberNode(person);
-            teamMembersContainer.getChildren().add(node);
-        }
     }
 }

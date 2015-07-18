@@ -1,28 +1,57 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
- * Generates random releases
+ * Generates RANDOM releases.
  */
 public class ReleaseGenerator implements Generator<Release> {
 
+    /**
+     * The max number of releases generated on low stress.
+     */
     protected static final int LOW_STRESS_MIN = 1;
+
+    /**
+     * The min number of releases generated on low stress.
+     */
     protected static final int LOW_STRESS_MAX = 10;
 
+    /**
+     * The max number of releases generated on medium stress.
+     */
     protected static final int MEDIUM_STRESS_MIN = 10;
+
+    /**
+     * The min number of releases generated on medium stress.
+     */
     protected static final int MEDIUM_STRESS_MAX = 20;
 
+    /**
+     * The max number of releases generated on high stress.
+     */
     protected static final int HIGH_STRESS_MIN = 20;
+
+    /**
+     * The min number of releases generated on high stress.
+     */
     protected static final int HIGH_STRESS_MAX = 40;
 
-    private static final Random random = new Random();
+    /**
+     * The RANDOM used for RANDOM numbers within this class.
+     */
+    private static final Random RANDOM = new Random();
 
+    /**
+     * A list of default names for releases. They're all birds names.
+     */
     private String[] defaultNames = {"Albatross",
             "Black-browed",
             "Black-footed",
@@ -627,6 +656,9 @@ public class ReleaseGenerator implements Generator<Release> {
             "Yellowlegs"
     };
 
+    /**
+     * A list of descriptions for releases.
+     */
     private String[] descriptions = {"A release date",
             "The time when it has to be ready",
             "That's not enough time",
@@ -635,96 +667,113 @@ public class ReleaseGenerator implements Generator<Release> {
             "I don't like doing work so don't release this"
     };
 
-    private ArrayList<Project> projectPool;
+    /**
+     * The pool of projects to be linked to the releases.
+     */
+    private List<Project> projectPool;
+    /**
+     * The project generator to be used with this releases generator.
+     */
     private Generator<Project> projectGenerator;
 
     /**
-     * Sets up a random release
+     * Sets up a random release.
      */
     public ReleaseGenerator() {
         this.projectGenerator = new ProjectGenerator();
     }
 
     /**
-     * Sets up a random release with a from one of the given descriptions
-     * @param descriptions The given descriptions
-     * @param projectGenerator The generator to be used for the generation of projects
+     * Sets up a random release with a from one of the given descriptions.
+     * @param newDescription The given descriptions
+     * @param newProjectGenerator The generator to be used for the generation of projects
      */
-    public ReleaseGenerator(Generator<Project> projectGenerator, String[] descriptions) {
-        this.descriptions = descriptions;
-        this.projectGenerator = projectGenerator;
+    public ReleaseGenerator(final Generator<Project> newProjectGenerator, final String[] newDescription) {
+        this.descriptions = newDescription;
+        this.projectGenerator = newProjectGenerator;
     }
 
     /**
-     * Sets the Project pool for the generator
-     * @param projectPool The project pool
+     * Sets the Project pool for the generator.
+     * @param newProjectPool The project pool
      */
-    public void setProjectPool(ArrayList<Project> projectPool) {
-        this.projectPool = projectPool;
+    public final void setProjectPool(final List<Project> newProjectPool) {
+        this.projectPool = newProjectPool;
     }
 
     /**
-     * Sets the project generator for use in creating more projects if necessary
-     * @param projectGenerator project generator to use while generating releases.
+     * Sets the project generator for use in creating more projects if necessary.
+     * @param newProjectGenerator project generator to use while generating releases.
      */
-    public void setProjectGenerator(Generator<Project> projectGenerator) {
-        this.projectGenerator = projectGenerator;
+    public final void setProjectGenerator(final Generator<Project> newProjectGenerator) {
+        this.projectGenerator = newProjectGenerator;
     }
 
     /**
-     * Generates a list of projects if there isn't already a pool of projects to choose from
+     * Generates a list of projects if there isn't already a pool of projects to choose from.
      * @param min The min number of projects
      * @param max The max number of projects
      * @return The array list of generated projects
      */
-    private ArrayList<Project> generateProjects(int min, int max) {
-        ArrayList<Project> generated = new ArrayList<>();
-        int projectCount = NameGenerator.random(min, max);
+    private List<Project> generateProjects(final int min, final int max) {
+        List<Project> generated = new ArrayList<>();
+        int projectCount = GenerationHelper.random(min, max);
 
         if (projectPool == null) {
             for (int i = 0; i < projectCount; i++) {
                 Project newProject = projectGenerator.generate();
-                if (!generated.stream().filter(project -> newProject.equals(project)).findAny().isPresent()) {
+                if (!generated.stream().filter(newProject::equals).findAny().isPresent()) {
                     generated.add(newProject);
                 }
             }
         } else {
-            if (projectCount > projectPool.size()) projectCount = projectPool.size();
+            if (projectCount > projectPool.size()) {
+                projectCount = projectPool.size();
+            }
 
             for (int i = 0; i < projectCount; i++) {
-                Project project = projectPool.remove(NameGenerator.random(projectPool.size()));
+                Project project = projectPool.remove(GenerationHelper.random(projectPool.size()));
                 generated.add(project);
             }
 
-            for (Project project : generated)
+            for (Project project : generated) {
                 projectPool.add(project);
+            }
         }
         return generated;
     }
 
     @Override
-    public Release generate() {
+    public final Release generate() {
+        final int yearVariance = 130;
+        final int epoch = 1970;
+        final int months = 12;
+        final int daysInMonth = 28;
+        final int maxProjects = 5;
+
         Release r = new Release();
 
-        String shortName = NameGenerator.randomElement(defaultNames);
-        String description = NameGenerator.randomElement(descriptions);
-        LocalDate releaseDate = LocalDate.of(random.nextInt(130) + 1970, random.nextInt(12) + 1, random.nextInt(28) + 1);
+        String shortName = GenerationHelper.randomElement(defaultNames);
+        String description = GenerationHelper.randomElement(descriptions);
+        LocalDate releaseDate = LocalDate.of(
+                RANDOM.nextInt(yearVariance) + epoch,
+                RANDOM.nextInt(months) + 1,
+                RANDOM.nextInt(daysInMonth) + 1);
 
-        ArrayList<Project> projects = generateProjects(1,5);
+        List<Project> projects = generateProjects(1, maxProjects);
 
         try {
             r.setShortName(shortName);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            ErrorReporter.get().reportErrorSecretly(e, "ReleaseGenerator: setting short name failed");
             return null;
             //Don't need to do anything here as it's just generation
         }
 
         try {
-            projects.get(NameGenerator.random(projects.size())).addRelease(r);
+            projects.get(GenerationHelper.random(projects.size())).addRelease(r);
         } catch (Exception e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "ReleaseGenerator: adding release failed");
             return null;
         }
 

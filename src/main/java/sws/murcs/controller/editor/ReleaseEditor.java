@@ -3,11 +3,10 @@ package sws.murcs.controller.editor;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -25,26 +24,25 @@ public class ReleaseEditor extends GenericEditor<Release> {
      */
     @FXML
     private TextField shortNameTextField;
+
     /**
      * The Description of a release.
      */
     @FXML
     private TextArea descriptionTextArea;
+
     /**
      * Release date picker.
      */
     @FXML
     private DatePicker releaseDatePicker;
-    /**
-     * The label to show the error message.
-     */
-    @FXML
-    private Label labelErrorMessage;
+
     /**
      * The list of projects to choose from.
      */
     @FXML
     private ChoiceBox<Project> projectChoiceBox;
+
     /**
      * The releases associated project.
      */
@@ -63,18 +61,12 @@ public class ReleaseEditor extends GenericEditor<Release> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         releaseDatePicker.focusedProperty().addListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-
-        setErrorCallback(message -> {
-            if (message.getClass() == String.class) {
-                labelErrorMessage.setText(message);
-            }
-        });
     }
 
 
     @Override
     public final void loadObject() {
-        Optional<Project> projectCheck = PersistenceManager.Current.getCurrentModel().getProjects()
+        Optional<Project> projectCheck = PersistenceManager.getCurrent().getCurrentModel().getProjects()
                 .stream()
                 .filter(project -> project.getReleases().contains(getModel()))
                 .findFirst();
@@ -87,13 +79,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         // this is achieved by removing the listener temporarily
         projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         projectChoiceBox.getItems().clear();
-        projectChoiceBox.getItems().addAll(PersistenceManager.Current.getCurrentModel().getProjects());
+        projectChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
         }
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         String modelShortName = getModel().getShortName();
+        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -111,16 +104,21 @@ public class ReleaseEditor extends GenericEditor<Release> {
             releaseDatePicker.setValue(modelReleaseDate);
         }
 
-        //fixme set the error text to nothing when first loading the object
-        labelErrorMessage.setText(" ");
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
     }
 
     @Override
-    protected final void saveChangesWithException() throws Exception {
+    protected final void saveChangesAndErrors() {
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
-            getModel().setShortName(viewShortName);
+            try {
+                getModel().setShortName(viewShortName);
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         String modelDescription = getModel().getDescription();
@@ -135,7 +133,11 @@ public class ReleaseEditor extends GenericEditor<Release> {
             getModel().setReleaseDate(viewReleaseDate);
         }
 
-        updateAssociatedProject();
+        try {
+            updateAssociatedProject();
+        } catch (CustomException e) {
+            addFormError(projectChoiceBox, e.getMessage());
+        }
     }
 
     @Override
@@ -145,17 +147,14 @@ public class ReleaseEditor extends GenericEditor<Release> {
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         associatedProject = null;
-        setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
-        setModel(null);
-        setErrorCallback(null);
+        super.dispose();
     }
 
     /**
      * Updates the associated project.
-     * @throws Exception when updating fails.
+     * @throws CustomException when updating fails.
      */
-    private void updateAssociatedProject() throws Exception {
+    private void updateAssociatedProject() throws CustomException {
         Project viewAssociatedProject = projectChoiceBox.getValue();
 
         if (viewAssociatedProject != null) {
@@ -168,9 +167,8 @@ public class ReleaseEditor extends GenericEditor<Release> {
                 associatedProject = viewAssociatedProject;
                 getModel().changeRelease(viewAssociatedProject);
             }
+            return;
         }
-        else {
-            throw new InvalidParameterException("There needs to be an associated project");
-        }
+        throw new InvalidParameterException("There needs to be an associated project");
     }
 }

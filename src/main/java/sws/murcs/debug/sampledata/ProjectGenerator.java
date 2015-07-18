@@ -1,21 +1,45 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Generates random projects with teams
+ * Generates random projects with teams.
  */
 public class ProjectGenerator implements Generator<Project> {
+
+    /**
+     * The max number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MAX = 5;
+
+    /**
+     * The min number of projects generated when stress level is low.
+     */
     public static final int LOW_STRESS_MIN = 1;
 
+    /**
+     * The max number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MAX = 10;
+
+    /**
+     * The min number of projects generated when stress level is medium.
+     */
     public static final int MEDIUM_STRESS_MIN = 5;
 
+    /**
+     * The max number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MAX = 20;
+
+    /**
+     * The min number of projects generated when stress level is high.
+     */
     public static final int HIGH_STRESS_MIN = 10;
 
     /**
@@ -33,25 +57,21 @@ public class ProjectGenerator implements Generator<Project> {
             "Deserted Tea",
             "Rare Albatross"
     };
-    /**
-     * The descriptions for the project.
-     */
-    private String[] descriptions = {
-            "A very exciting description",
-            NameGenerator.getLoremIpsum()};
+
     /**
      * A team generator for the project.
      */
     private Generator<Team> teamGenerator;
+
     /**
      * A pool of teams for adding to projects.
      */
-    private ArrayList<Team> teamPool;
+    private List<Team> teamPool;
 
     /**
      * Instantiates a new project generator.
      */
-    public ProjectGenerator(){
+    public ProjectGenerator() {
         teamGenerator = new TeamGenerator();
     }
 
@@ -59,12 +79,10 @@ public class ProjectGenerator implements Generator<Project> {
      * Instantiates a new project generator.
      * @param generator team generator to use.
      * @param names project names to generate project from.
-     * @param newDescriptions descriptions for projects to generate from.
      */
-    public ProjectGenerator(final Generator<Team> generator, final String[] names, final String[] newDescriptions) {
+    public ProjectGenerator(final Generator<Team> generator, final String[] names) {
         this.teamGenerator = generator;
         this.projectNames = names;
-        this.descriptions = newDescriptions;
     }
 
     /**
@@ -79,7 +97,7 @@ public class ProjectGenerator implements Generator<Project> {
      * The pool of teams to cho0se from. If null then they will be generated.
      * @param teams The pool of teams
      */
-    public final void setTeamPool(final ArrayList<Team> teams) {
+    public final void setTeamPool(final List<Team> teams) {
         this.teamPool = teams;
     }
 
@@ -89,9 +107,9 @@ public class ProjectGenerator implements Generator<Project> {
      * @param max The maximum number of teams
      * @return The teams
      */
-    private ArrayList<Team> generateTeams(final int min, final int max) {
-        ArrayList<Team> generated = new ArrayList<>();
-        int teamCount = NameGenerator.random(min, max);
+    private List<Team> generateTeams(final int min, final int max) {
+        List<Team> generated = new ArrayList<>();
+        int teamCount = GenerationHelper.random(min, max);
 
         //If we haven't been given a pool of teams, make some up
         if (teamPool == null) {
@@ -110,7 +128,7 @@ public class ProjectGenerator implements Generator<Project> {
 
             for (int i = 0; i < teamCount; i++) {
                 //Remove the team so we can't pick it again. We'll put it back when we're done
-                Team team = teamPool.remove(NameGenerator.random(teamPool.size()));
+                Team team = teamPool.remove(GenerationHelper.random(teamPool.size()));
                 generated.add(team);
             }
 
@@ -125,11 +143,13 @@ public class ProjectGenerator implements Generator<Project> {
 
     @Override
     public final Project generate() {
+        final int longNameLength = 1000;
+
         Project project = new Project();
 
-        String shortName = NameGenerator.randomElement(projectNames);
-        String longName = NameGenerator.randomString(1000);
-        String description = NameGenerator.randomElement(descriptions);
+        String shortName = GenerationHelper.randomElement(projectNames);
+        String longName = GenerationHelper.randomString(longNameLength);
+        String description = NameGenerator.randomDescription();
 
         //List<Team> teams = generateTeams(10, 50);
 
@@ -139,7 +159,7 @@ public class ProjectGenerator implements Generator<Project> {
         catch (Exception e) {
             // Do nothing, don't have to deal with the
             // exception if only generating test data.
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "ProjectGenerator: setting short name failed");
             return null;
         }
         project.setLongName(longName);

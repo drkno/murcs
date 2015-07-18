@@ -6,6 +6,7 @@ package sws.murcs.listeners;
  * @param <T> The type of the view update.
  */
 public interface ViewUpdate<T> {
+
     /**
      * The function to select an item.
      * @param parameter The item to select

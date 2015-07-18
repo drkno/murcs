@@ -16,16 +16,18 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
+import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
 public class ListDisplayStepDefs extends ApplicationTest {
 
     private FxRobot fx;
@@ -34,7 +36,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     private Person person2;
     private Person person3;
     private Project project;
-    private RelationalModel model;
+    private Organisation model;
     private Application app;
 
     @Override
@@ -50,8 +52,8 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
         interact(() -> {
             try {
-                model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -71,8 +73,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
                 model.add(person2);
                 model.add(person3);
                 model.add(project);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -81,7 +82,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @After("@ListDisplay")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
@@ -91,7 +92,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
     @When("^I change the list display type$")
     public void I_change_the_list_display_type() throws Throwable {
         fx.clickOn("#displayChoiceBox").clickOn("Project");
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
     }
 
     @Then("^the list items repopulate with that type$")
@@ -109,7 +110,7 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @When("^I select an item from the list display$")
     public void I_select_an_item_from_the_list_display() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         fx.clickOn("Dave");
     }
 
@@ -122,13 +123,17 @@ public class ListDisplayStepDefs extends ApplicationTest {
 
     @Given("^I have selected an item from the list display$")
     public void I_have_selected_an_item_from_the_list_display() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
+        fx.clickOn("#displayChoiceBox").clickOn("Person");
         fx.clickOn("Dave");
     }
 
-    @When("^I edit the items short name$")
-    public void I_edit_the_items_short_name() throws Throwable {
-        fx.clickOn("#shortNameTextField").type(KeyCode.A);
+    @When("^I (\\w+) the items short name$")
+    public void I_edit_the_items_short_name(String changeType) throws Throwable {
+        FxRobot robot = fx.clickOn("#shortNameTextField");
+        if (changeType.equals("prefix")) {
+            robot.type(KeyCode.HOME);
+        }
+        robot.type(KeyCode.Z);
         fx.clickOn("#longNameTextField");
     }
 
@@ -136,6 +141,23 @@ public class ListDisplayStepDefs extends ApplicationTest {
     public void the_short_name_is_updated_in_the_list_display() throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
         String name = displayList.getSelectionModel().getSelectedItem().toString();
-        assertTrue(Objects.equals("Davea", name));
+        assertTrue(Objects.equals("Davez", name) || Objects.equals("zDave", name));
+    }
+
+    @Given("^there are multiple items in the list display$")
+    public void there_are_multiple_items_in_the_list_display() throws Throwable {
+        I_change_the_list_display_type();
+    }
+
+    @Then("^the list is sorted alphabetically$")
+    public void the_list_is_sorted_alphabetically() throws Throwable {
+        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
+        List<Model> observableList = displayList.getItems();
+        Model previous = null;
+        for (final Model current : observableList) {
+            if (previous != null && current.getShortName().compareToIgnoreCase(previous.getShortName()) <= 0)
+                fail("the display list was not sorted alphabetically");
+            previous = current;
+        }
     }
 }

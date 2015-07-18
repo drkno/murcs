@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.3</projectVersion>
+    <dateGenerated>2015-05-21</dateGenerated>
+    <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelPerson">
+        <people>
+            <person shortName="Daniel">
+                <longName>Daniel van Wichen</longName>
+                <id>dpv11</id>
+                <skills>
+                    <skill>Python</skill>
+                    <skill>PO</skill>
+                </skills>
+            </person>
+        </people>
+    </content>
+</report>

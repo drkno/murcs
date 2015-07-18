@@ -1,5 +1,5 @@
 @Manual
-  Feature: ShortCuts
+  Feature: Shortcuts
 
     Scenario: Delete a selected item
       Given that I have selected an item
@@ -54,4 +54,12 @@
 
     Scenario: Create a Release
       Given that I press CTRL + R
+      Then a create dialog appears for a Release
+
+    Scenario: Create a Backlog
+      Given that I press CTRL + B
+      Then a create dialog appears for a Release
+
+    Scenario: Create a Story
+      Given that I press CTRL + ALT + S
       Then a create dialog appears for a Release

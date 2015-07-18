@@ -1,5 +1,7 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,11 @@ public abstract class TrackableObject {
      * Fields that can be tracked within this object.
      */
     private List<Field> trackedFields;
+
+    /**
+     * Commit to assimilate to if an assimilation has been started.
+     */
+    private Long assimilateTo;
 
     /**
      * Instantiates a new TrackableObject by getting annotated fields,
@@ -80,6 +87,43 @@ public abstract class TrackableObject {
             else {
                 return UndoRedoManager.getHead().getCommitNumber();
             }
+        }
+    }
+
+    /**
+     * Starts the assimilation (merging commits process). All subsequent commits
+     * from this point will be merged with the current head (or new head if no
+     * commits have been made yet) when endAssimilation() is used.
+     */
+    protected final void startAssimilation() {
+        if (UndoRedoManager.getHead() == null) {
+            assimilateTo = 0L;
+        }
+        else {
+            assimilateTo = UndoRedoManager.getHead().getCommitNumber();
+        }
+    }
+
+    /**
+     * Ends the assimilation process, merging all commits since startAssimilation()
+     * was called. If startAssimilation() was not called, the behaviour is undefined.
+     * At least one commit must be made to the undo/redo system before this is used.
+     * @param commitMessage commit message to use on the assimilated commit.
+     * @return the commit number of the assimilated commits.
+     */
+    protected final long endAssimilation(final String commitMessage) {
+        try {
+            if (UndoRedoManager.getDisable()) {
+                return 0L;
+            }
+            UndoRedoManager.assimilate(assimilateTo);
+            assimilateTo = null;
+            commit(commitMessage);
+            return UndoRedoManager.getHead().getCommitNumber();
+        } catch (Exception e) {
+            // This should never happen  because we have called commit before calling assimilate
+            ErrorReporter.get().reportError(e, "Assimilation failed. Commit was probably not called before using.");
+            return 0L;
         }
     }
 }

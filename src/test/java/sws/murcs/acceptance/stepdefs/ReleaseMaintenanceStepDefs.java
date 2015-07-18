@@ -14,8 +14,8 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
-import sws.murcs.model.RelationalModel;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
@@ -30,7 +30,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     private FxRobot fx;
     private Stage primaryStage;
     private Project project;
-    private RelationalModel model;
+    private Organisation model;
     private Application app;
     private Release release;
 
@@ -47,8 +47,8 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
         interact(() -> {
             try {
-                model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -69,7 +69,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @After("@ReleaseMaintenance")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
@@ -133,7 +133,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.Current.getCurrentModel().add(release);
+        PersistenceManager.getCurrent().getCurrentModel().add(release);
     }
 
     @When("^I edit the values of the release$")

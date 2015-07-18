@@ -1,0 +1,20 @@
+@import "../../globalStyles"
+
+.toggle-button
+  -fx-text-fill: $black-text
+  -fx-background-color: $button-color
+  -fx-background-insets: 0
+  -fx-padding: 6 12
+  -fx-background-radius: 2px
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+
+
+.toggle-button:pressed
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 8, 0.0, 0, 3)
+
+.toggle-button:hover
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.5), 8, 0.0, 0, 3)
+
+.toggle-button  :focused
+  -fx-background-color: $button-focus-color
+  -fx-background-insets: 0, 1

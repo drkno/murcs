@@ -1,15 +1,18 @@
 package sws.murcs.model;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObjectProperty;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
@@ -24,16 +27,20 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     @TrackableValue
     @XmlAttribute
+    @XmlID
     private String shortName;
+
     /**
      * The long name of a model object.
      */
     @TrackableValue
     private String longName;
+
     /**
      * Listenable property for the short name.
      */
     private transient ModelObjectProperty<String> shortNameProperty;
+
     /**
      * Hashcode prime number.
      */
@@ -68,7 +75,11 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @throws CustomException if the short name is invalid.
      */
     private void validateShortName(final String value) throws CustomException {
-        DuplicateObjectException.checkForDuplicates(this, value);
+        ModelType type = ModelType.getModelType(getClass());
+        Model model = UsageHelper.findBy(type, m -> m.getShortName().equalsIgnoreCase(value));
+        if (model != null) {
+            throw new DuplicateObjectException("A " + type + " with this name already exists.");
+        }
         InvalidParameterException.validate("Short Name", value);
     }
 
@@ -97,9 +108,8 @@ public abstract class Model extends TrackableObject implements Serializable {
         if (shortNameProperty == null) {
             try {
                 shortNameProperty = new ModelObjectProperty<>(this, Model.class, "shortName");
-            } catch (Exception e) {
-                System.err.println("Couldn't create property for shortName. Failed with error:");
-                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                ErrorReporter.get().reportError(e, "Couldn't create property for shortName.");
             }
         }
         return shortNameProperty;
@@ -111,5 +121,10 @@ public abstract class Model extends TrackableObject implements Serializable {
      */
     public final int getHashCodePrime() {
         return hashCodePrime;
+    }
+
+    @Override
+    public final String toString() {
+        return getShortName();
     }
 }

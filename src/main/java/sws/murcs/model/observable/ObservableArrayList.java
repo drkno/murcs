@@ -18,7 +18,7 @@ public class ObservableArrayList<T extends Model> extends ObservableListWrapper<
      * Creates a new empty ModelObservableArrayList with the default callback.
      */
     public ObservableArrayList() {
-        super(new ArrayList(), param -> new Observable[] {param.getShortNameProperty()});
+        super(new ArrayList<>(), param -> new Observable[] {param.getShortNameProperty()});
     }
 
     /**
@@ -26,7 +26,7 @@ public class ObservableArrayList<T extends Model> extends ObservableListWrapper<
      * Note: used in Undo/Redo, it is important it has this method signature.
      * @param c collection to clone.
      */
-    public ObservableArrayList(Collection c) {
+    public ObservableArrayList(final Collection c) {
         super(new ArrayList<>(c), param -> new Observable[] {param.getShortNameProperty()});
     }
 }

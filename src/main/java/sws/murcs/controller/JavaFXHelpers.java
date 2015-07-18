@@ -2,6 +2,7 @@ package sws.murcs.controller;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -33,8 +34,7 @@ public final class JavaFXHelpers {
      * @param parent The parent to get the descendants from
      * @param nodes The ArrayList of Nodes to add the descendants to
      */
-    public static void addAllDescendants(final Parent parent,
-                                         final ArrayList<Node> nodes) {
+    public static void addAllDescendants(final Parent parent, final ArrayList<Node> nodes) {
         for (Node node : parent.getChildrenUnmodifiable()) {
             nodes.add(node);
             if (node instanceof Parent) {
@@ -58,5 +58,18 @@ public final class JavaFXHelpers {
             }
         }
         return null;
+    }
+
+    /**
+     * Converts a hex colour into an Color type.
+     * @param colourStr The hex value to convert
+     * @return A Color
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    public static Color hex2RGB(final String colourStr) {
+        return Color.color(
+                Double.valueOf(Integer.valueOf(colourStr.substring(1, 3), 16)) / 255,
+                Double.valueOf(Integer.valueOf(colourStr.substring(3, 5), 16)) / 255,
+                Double.valueOf(Integer.valueOf(colourStr.substring(5, 7), 16)) / 255);
     }
 }

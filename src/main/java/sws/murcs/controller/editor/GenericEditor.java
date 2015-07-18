@@ -1,31 +1,75 @@
 package sws.murcs.controller.editor;
 
 import javafx.beans.value.ChangeListener;
-import sws.murcs.exceptions.CustomException;
-import sws.murcs.listeners.ErrorMessageListener;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import sws.murcs.controller.JavaFXHelpers;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor {
+public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * The type of model the editor is being used for.
      */
     private T model;
+
     /**
-     * The error callback.
+     * The label for showing error messages.
      */
-    private ErrorMessageListener errorCallback;
+    @FXML
+    private Label labelErrorMessage;
+
+    /**
+     * The container for the error message and save button.
+     */
+    @FXML
+    private HBox bottomBar;
+
+    /**
+     * Placebo button for saving.
+     */
+    private MaterialDesignButton saveButton;
 
     /**
      * A collection of change listeners for an editor.
      */
     private ChangeListener changeListener;
+
+    /**
+     * Details whether or not the window is a creator for a new model or an editor.
+     */
+    private boolean isCreationWindow;
+
+    /**
+     * Stores if a save changes button exists, preventing a new button being created
+     * if one has already been created.
+     */
+    private boolean saveChangesButtonExists;
+
+    /**
+     * All the invalid sections in the form.
+     */
+    private Collection<Node> invalidNodes = new ArrayList<>();
+
+    /**
+     * A helpful error message telling you about all that's wrong
+     * in the world.
+     */
+    private String errorMessage = "";
 
     /**
      * A generic editor for editing models.
@@ -34,58 +78,119 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
         UndoRedoManager.addChangeListener(this);
     }
 
-    @Override
+    /**
+     * Sets the current model for the editor.
+     * @param pModel The new model to edit
+     */
     public final void setModel(final Object pModel) {
         if (pModel != null) {
             model = (T) pModel;
         }
     }
 
-    @Override
+    /**
+     * Gets the object that this form is editing.
+     * @return The current model object
+     */
     public final T getModel() {
         return model;
     }
 
-    @Override
-    public final void setErrorCallback(final ErrorMessageListener pCallback) {
-        errorCallback = pCallback;
-    }
-
-    @Override
-    public final ErrorMessageListener getErrorCallback() {
-        return errorCallback;
-    }
-
-    @Override
+    /**
+     * Updates the form with an undo redo notification.
+     * @param param event arguments.
+     */
     public final void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             loadObject();
         }
     }
 
-    @Override
-    public final void showErrors(final String pMessage) {
-        errorCallback.notify(pMessage);
+    /**
+     * Highlights errors on the form.
+     */
+    private void showErrors() {
+        for (Node node : invalidNodes) {
+            if (!node.getStyleClass().contains("error")) {
+                node.getStyleClass().add("error");
+            }
+        }
+        labelErrorMessage.setText(errorMessage);
     }
 
-    @Override
+    /**
+     * Clears the errors on the form.
+     */
     public final void clearErrors() {
-        errorCallback.notify("");
+        for (Node node : invalidNodes) {
+            node.getStyleClass().removeAll(Collections.singleton("error"));
+        }
+        errorMessage = "";
+        invalidNodes.clear();
+
+        labelErrorMessage.setText(errorMessage);
     }
 
-    @Override
+    /**
+     * Saves the changes on the current form.
+     */
     public final void saveChanges() {
-        try {
-            saveChangesWithException();
-            clearErrors();
-        }
-        catch (Exception e) {
-            handleException(e);
-        }
+        clearErrors();
+        saveChangesAndErrors();
     }
 
-    @Override
-    public abstract void dispose();
+    /**
+     * Highlights an error on the form.
+     * @param invalidNode The invalid node
+     */
+    protected final void addFormError(final Node invalidNode) {
+        addFormError(invalidNode, "");
+    }
+
+    /**
+     * Adds an error message to the form.
+     * @param helpfulMessage A helpful error message describing the problem.
+     */
+    protected final void addFormError(final String helpfulMessage) {
+        addFormError(null, helpfulMessage);
+    }
+
+    /**
+     * Adds an error to the form and highlights the node that caused it.
+     * @param invalidNode The node that has the problem
+     * @param helpfulMessage A helpful message describing the problem.
+     */
+    protected final void addFormError(final Node invalidNode, final String helpfulMessage) {
+        if (invalidNode != null) {
+            invalidNodes.add(invalidNode);
+        }
+
+        if (helpfulMessage == null || helpfulMessage.isEmpty()) {
+            return;
+        }
+
+        if (errorMessage.length() > 0) {
+            errorMessage += "\n";
+        }
+        errorMessage += helpfulMessage;
+        showErrors();
+    }
+
+    /**
+     * Loads the current model object into the form.
+     */
+    public abstract void loadObject();
+
+    /**
+     * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
+     */
+    public void dispose() {
+        setChangeListener(null);
+        UndoRedoManager.removeChangeListener(this);
+        setModel(null);
+        clearErrors();
+        saveButton = null;
+    }
 
     /**
      * Sets the change listener.
@@ -104,16 +209,19 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     /**
-     * Checks to see if the Exception is a custom type.
-     * @param e Exception to check
+     * Gets whether or not this editor is a creation window.
+     * @return Whether or not this editor is a creation window
      */
-    private void handleException(final Exception e) {
-        if (e instanceof CustomException) {
-            showErrors(e.getMessage());
-        }
-        else {
-            e.printStackTrace();
-        }
+    public final boolean getIsCreationWindow() {
+        return isCreationWindow;
+    }
+
+    /**
+     * Sets whether or not this editor is a creation window.
+     * @param newIsCreationWindow The new value for whether or not this is a creation window
+     */
+    public final void setIsCreationWindow(final boolean newIsCreationWindow) {
+        isCreationWindow = newIsCreationWindow;
     }
 
     /**
@@ -138,8 +246,30 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener, Editor
     }
 
     /**
-     * Saves changes and throws an Exception if an error occurs.
-     * @throws Exception When an error occurs
+     * Saves changes and tells the editor about any errors that have occurred.
      */
-    protected abstract void saveChangesWithException() throws Exception;
+    protected abstract void saveChangesAndErrors();
+
+    /**
+     * Sets up the form with all its event handlers and things.
+     */
+    @FXML
+    protected abstract void initialize();
+
+    /**
+     * Adds a save changes placebo button to the editor panes.
+     * Will not add a new button if one already exists.
+     */
+    protected final void setupSaveChangesButton() {
+        if (saveChangesButtonExists) {
+            return; // prevent an existing button being added.
+        }
+        saveChangesButtonExists = true;
+        saveButton = new MaterialDesignButton("Save Changes");
+        final int pad = 5;
+        saveButton.setPadding(new Insets(pad, 0, 0, 0));
+        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
+        bottomBar.getChildren().add(saveButton);
+        HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+    }
 }

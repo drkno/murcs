@@ -6,12 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import sws.murcs.controller.ModelTypes;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -23,10 +23,12 @@ public class CreatorWindowView {
      * The model object to create.
      */
     private Model model;
+
     /**
      * The create callback.
      */
     private Consumer<Model> createAction;
+
     /**
      * The cancel callback.
      */
@@ -99,13 +101,7 @@ public class CreatorWindowView {
      */
     public final void show() {
         try {
-            String type = ModelTypes.getModelType(model).toString();
-
-            // Work around, As you can't add multiple people at a time, only a single person
-            // This is just the title of the popup dialog.
-            if (Objects.equals(type, "People")) {
-                type = "Person";
-            }
+            String type = ModelType.getModelType(model).toString();
 
             // Load the view
             FXMLLoader loader = new FXMLLoader(CreatorWindowController
@@ -123,11 +119,16 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
+            stage.setResizable(false);
             controller.setStage(stage);
             if (root == null) {
                 return;
             }
             Scene scene = new Scene(root);
+            scene.getStylesheets()
+                    .add(getClass()
+                            .getResource("/sws/murcs/styles/global.css")
+                            .toExternalForm());
             stage.setScene(scene);
 
             // Give the stage a name and icon
@@ -141,10 +142,10 @@ public class CreatorWindowView {
             stage.initOwner(App.getStage());
 
             stage.show();
+            stage.sizeToScene();
         }
         catch (Exception e) {
-            System.err.println("Something went wrong loading the creation window");
-            e.printStackTrace();
+            ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");
         }
     }
 

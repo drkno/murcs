@@ -4,7 +4,8 @@ package sws.murcs.exceptions;
  * All custom exceptions inherit from this exception. This is done so
  * that all custom exceptions can be caught whilst ignoring built in exceptions.
  */
-public class CustomException extends Exception {
+public abstract class CustomException extends Exception {
+
     /**
      * Instantiates a new CustomException.
      */
@@ -44,7 +45,8 @@ public class CustomException extends Exception {
      * @param enableSuppression ignore when thrown inside a finally block.
      * @param writableStackTrace whether or not a stack trace should be writable.
      */
-    public CustomException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+    public CustomException(final String message, final Throwable cause, final boolean enableSuppression,
+                           final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

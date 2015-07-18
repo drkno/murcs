@@ -4,27 +4,46 @@ import sws.murcs.reporting.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * A dumb information carrier used to represent a work
- * schedule by a Team on a Project.
+ * Represents a work period done by a team on a project over a period of time.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkAllocation implements Serializable {
+public class WorkAllocation implements Serializable, Comparable<WorkAllocation> {
 
+    /**
+     * The project that belongs to this work allocation.
+     */
+    @XmlIDREF
     private final Project project;
+
+    /**
+     * The team that relates to this work allocation.
+     */
+    @XmlIDREF
     private final Team team;
+
+    /**
+     * The start date of the work allocation.
+     */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate startDate;
+
+    /**
+     * The end date of the work allocation.
+     */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate endDate;
 
-    @SuppressWarnings("unused")
+    /**
+     * Creates a new empty work allocation.
+     */
     public WorkAllocation() {
         project = null;
         team = null;
@@ -79,5 +98,14 @@ public class WorkAllocation implements Serializable {
         return this.endDate;
     }
 
-
+    @Override
+    public final int compareTo(final WorkAllocation allocation) {
+        if (startDate.isBefore(allocation.startDate)) {
+            return -1;
+        }
+        if (startDate.isAfter(allocation.startDate)) {
+            return 1;
+        }
+        return 0;
+    }
 }

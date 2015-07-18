@@ -6,6 +6,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
@@ -19,6 +20,7 @@ import sws.murcs.view.App;
 
 import java.time.LocalDate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class ElementDeletionStepDefs extends ApplicationTest{
@@ -30,7 +32,9 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     private Person person;
     private Skill skill;
     private Team team;
-    private RelationalModel model;
+    private Story story;
+    private Backlog backlog;
+    private Organisation model;
     private Application app;
 
 
@@ -47,8 +51,8 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
         interact(() -> {
             try {
-                model = new RelationalModel();
-                PersistenceManager.Current.setCurrentModel(model);
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
 
@@ -74,13 +78,23 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 project.addRelease(release);
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
+                story = new Story();
+                story.setShortName("TestStory");
+                story.setCreator(person);
+
+                backlog = new Backlog();
+                backlog.setShortName("TestBacklog");
+                backlog.setAssignedPO(person);
+                backlog.addStory(story, 1);
+
                 model.add(project);
                 model.add(person);
                 model.add(release);
                 model.add(team);
                 model.add(skill);
-            }
-            catch (Exception e) {
+                model.add(story);
+                model.add(backlog);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -88,18 +102,11 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @After("@ElementDeletion")
     public void tearDown() throws Exception {
-        PersistenceManager.Current.setCurrentModel(null);
+        PersistenceManager.getCurrent().setCurrentModel(null);
         UndoRedoManager.forgetListeners();
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
-    }
-
-    @Given("^I have a project selected$")
-    public void I_have_a_project_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
-        fx.clickOn("#displayChoiceBox").clickOn("Project");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
     }
 
     @And("^I press the delete button$")
@@ -123,52 +130,38 @@ public class ElementDeletionStepDefs extends ApplicationTest{
         fx.clickOn("Yes");
     }
 
-    @Then("^the model is deleted$")
-    public void the_model_is_deleted() throws Throwable {
+    @Then("^the (\\w+) is deleted$")
+    public void the_model_is_deleted(String type) throws Throwable {
         ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        assertTrue(displayList.getItems().size() == 0);
+        assertEquals("The " + type + " was not deleted.", type.equals("skill") ? 2 : 0, displayList.getItems().size());
     }
 
-    @And("^\"([^\"]*)\" deletion can be undone$")
+    @And("^(\\w+) deletion can be undone$")
     public void the_deletion_of_a_type_can_be_undone(String type) throws Throwable {
+        ObservableList items = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems();
+        int displayListSizeBefore = items.size();
         fx.clickOn("#editMenu");
         fx.moveBy(0, 20);
         fx.clickOn("#undoMenuItem");
+        assertEquals("Deletion could not be undone", displayListSizeBefore + 1, items.size());
+    }
+
+    @Given("^I have a (\\w+) selected$")
+    public void I_have_selected(String type) throws Throwable {
+        int selectIndex = 0;
+        switch (type) {
+            case "project": fx.clickOn("#displayChoiceBox").clickOn("Person"); break;
+            case "person": type = "person"; break;
+            case "skill": type = "skill"; selectIndex = 1; break;
+        }
+        type = type.substring(0,1).toUpperCase() + type.substring(1);
+
         fx.clickOn("#displayChoiceBox").clickOn(type);
-        fx.clickOn("#editMenu");
-        int displayListSize = ((ListView) primaryStage.getScene().lookup("#displayList")).getItems().size();
-        assertTrue(displayListSize == (type.equals("Skills") ? 3: 1));
-
-    }
-
-    @Given("^I have a team selected$")
-    public void I_have_a_team_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Team");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
-    }
-
-    @Given("^I have a person selected$")
-    public void I_have_a_person_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("People");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
-    }
-
-    @Given("^I have a skill selected$")
-    public void I_have_a_skill_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Skills");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(2));
-    }
-
-    @Given("^I have a release selected$")
-    public void I_have_a_release_selected() throws Throwable {
-        fx.clickOn("#displayChoiceBox").clickOn("Release");
-        interact(() -> ((ListView) primaryStage.getScene().lookup("#displayList")).getSelectionModel().select(0));
-    }
-
-    //This is a special case as there are 2 default skills
-    @Then("^the skill is deleted$")
-    public void the_skill_is_deleted() throws Throwable {
-        ListView displayList = (ListView) primaryStage.getScene().lookup("#displayList");
-        assertTrue(displayList.getItems().size() == 2);
+        final int finalSelectIndex = selectIndex;
+        interact(() -> ((ListView) primaryStage
+                .getScene()
+                .lookup("#displayList"))
+                .getSelectionModel()
+                .select(finalSelectIndex));
     }
 }

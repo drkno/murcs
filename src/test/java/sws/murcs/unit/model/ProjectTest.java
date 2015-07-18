@@ -8,6 +8,7 @@ import sws.murcs.debug.sampledata.Generator;
 import sws.murcs.debug.sampledata.ProjectGenerator;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Project;
+import sws.murcs.model.persistence.PersistenceManager;
 
 public class ProjectTest {
 
@@ -22,6 +23,7 @@ public class ProjectTest {
 
     @Before
     public void setUp() {
+        PersistenceManager.setCurrent(null);
         generatedProject = projectGenerator.generate();
     }
 

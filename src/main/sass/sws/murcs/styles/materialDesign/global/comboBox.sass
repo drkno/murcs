@@ -1,0 +1,58 @@
+@import "../../globalStyles"
+
+.combo-box
+  -fx-text-fill: $black-text
+  -fx-background-color: $combo-box-color
+  -fx-background-insets: 0
+  -fx-padding: 3 6
+  -fx-background-radius: 1px
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 6, 0.0, 0, 2)
+
+.combo-box:disabled
+  -fx-background-color: $combo-box-color-disabled
+  -fx-opacity: 1
+
+.combo-box:disabled .label
+  -fx-text-fill: $black-text
+
+.combo-box:pressed
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 10, 0.0, 0, 3)
+
+.combo-box:hover
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 10, 0.0, 0, 3)
+  -fx-background-color: $combo-box-color-hover
+
+.combo-box:focused
+  -fx-background-color: $combo-box-color-focused
+  -fx-background-insets: 0, 1
+
+
+.choice-box .list-view .list-cell .label
+  -fx-text-fill: $black-text
+
+.choice-box .list-view .list-cell:focused .label
+  -fx-text-fill: $black-text
+
+.choice-box .list-view .list-cell:selected .label
+  -fx-text-fill: $white-text
+
+.choice-box .list-view .list-cell:hover .label
+  -fx-text-fill: $white-text
+
+.combo-box .list-view .list-cell
+  -fx-background-color: $list-cell-color
+  -fx-background-insets: 0
+  -fx-padding: 3 6
+  -fx-background-radius: 1px
+
+.combo-box .list-view .list-cell:focused
+  -fx-background-color: $list-cell-focused-color
+  -fx-background-insets: 0, 1
+
+.combo-box .list-view .list-cell:selected
+  -fx-background-color: $list-cell-selected-color
+  -fx-background-insets: 0, 1
+
+.combo-box .list-view .list-cell:hover
+  -fx-background-color: $list-cell-hover-color
+  -fx-background-insets: 0, 1
