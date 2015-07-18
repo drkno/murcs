@@ -12,6 +12,9 @@
                     <items>
                         <Menu id="newMenu" mnemonicParsing="false" text="New">
                             <items>
+                                <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel"
+                                          text="Organisation"/>
+                                <SeparatorMenuItem></SeparatorMenuItem>
                                 <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addClicked"
                                           text="Project"/>
                                 <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addClicked" text="Team"/>
@@ -25,8 +28,6 @@
                                 <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story"/>
                             </items>
                         </Menu>
-                        <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel"
-                                  text="New Organisation"/>
                         <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open"/>
                         <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save"/>
                         <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As"/>
