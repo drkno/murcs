@@ -167,6 +167,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
         popupStage.setResizable(false);
+        popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
@@ -202,8 +203,10 @@ public class GenericPopup extends AnchorPane {
         switch (action) {
             case DEFAULT:
                 button.setDefaultButton(true);
+                button.getStyleClass().add("button-default");
                 break;
             case CANCEL:
+                button.getStyleClass().add("button-cancel");
                 button.setCancelButton(true);
                 break;
             case NONE:

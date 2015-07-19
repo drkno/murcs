@@ -142,7 +142,7 @@
                                     <Insets top="10.0" />
                                  </VBox.margin>
                               </Label>
-                              <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" />
+                              <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                            </children>
                         </VBox>
                      </children>

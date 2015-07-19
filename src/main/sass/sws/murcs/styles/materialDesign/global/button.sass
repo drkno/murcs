@@ -19,10 +19,20 @@
   -fx-background-color: $button-focus-color
   -fx-background-insets: 0, 1
 
-.create-save-button
+.create-save-button, .button-default
   -fx-background-color: $secondary-500
   -fx-text-fill: $white-text
 
-.create-save-button:focused
+.create-save-button:focused, .button-default:focused
   -fx-background-color: $secondary-300
   -fx-background-insets: 0, 1
+
+
+.button-cancel
+  -fx-background-color: $button-color
+  -fx-text-fill: $black-text
+
+.button-cancel:focused
+  -fx-background-color: $button-focus-color
+  -fx-background-insets: 0, 1
+
