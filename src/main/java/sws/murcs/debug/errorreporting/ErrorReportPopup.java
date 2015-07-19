@@ -81,6 +81,7 @@ public class ErrorReportPopup extends AnchorPane {
         }
 
         Scene popupScene = new Scene(this);
+        popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
         popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
@@ -90,6 +91,8 @@ public class ErrorReportPopup extends AnchorPane {
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
+
+        reportButton.getStyleClass().add("button-default");
 
         setType(ErrorType.Automatic);
     }
