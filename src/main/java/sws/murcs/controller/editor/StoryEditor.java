@@ -609,7 +609,9 @@ public class StoryEditor extends GenericEditor<Story> {
             });
             AnchorPane conditionCell = new AnchorPane();
             AnchorPane.setLeftAnchor(node, 0.0);
-            AnchorPane.setRightAnchor(node, 30.0);
+            if (isEdit) {
+                AnchorPane.setRightAnchor(node, 30.0);
+            }
             AnchorPane.setRightAnchor(button, 0.0);
             conditionCell.getChildren().addAll(node, button);
             return conditionCell;
