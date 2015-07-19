@@ -498,7 +498,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         @Override
         public void startEdit() {
-            super.startEdit();
             if (!isEmpty()) {
                 super.startEdit();
                 createTextField();
@@ -510,8 +509,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
         @Override
         public void commitEdit(final Integer priority) {
-            super.commitEdit(priority);
             if (!isEmpty()) {
+                super.commitEdit(priority);
                 setPriority(priority);
                 updateStoryTable();
             }
@@ -705,8 +704,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
                 getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
                 AnchorPane.setRightAnchor(button, 0.0);
-                AnchorPane.setTopAnchor(button, 0.0);
-                AnchorPane.setBottomAnchor(button, 0.0);
                 container.getChildren().add(button);
 
                 container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);

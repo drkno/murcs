@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -9,11 +10,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -92,7 +96,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * The columns on the AC table.
      */
     @FXML
-    private TableColumn conditionColumn, removeColumn;
+    private TableColumn<AcceptanceCondition, String> conditionColumn;
 
     /**
      * Buttons for increasing and decreasing the priority of an AC. Also the button for adding a new AC.
@@ -248,7 +252,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
-        removeColumn.setCellFactory(param -> new RemoveButtonCell());
+        conditionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getCondition()));
     }
 
     @Override
@@ -494,56 +498,101 @@ public class StoryEditor extends GenericEditor<Story> {
     /**
      * A cell representing an acceptance condition in the table of conditions.
      */
-    private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, Object> {
+    private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, String> {
+        /**
+         * The editable acceptance condition description text field.
+         */
+        TextField textField = new TextField();
+        /**
+         * The acceptance condition description text field.
+         */
+        Label textLabel = new Label();
+
         @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
-
-            //Store the acceptance condition for this row
-            final AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
-
-            if (condition == null || empty) {
-                setText(null);
-                setGraphic(null);
-                return;
+        public void startEdit() {
+            super.startEdit();
+            if (!isEmpty()) {
+                clearErrors();
+                setGraphic(createCell(true));
+                textField.requestFocus();
             }
-
-            TextField conditionTextField = new TextField();
-            //Add a change listener
-            conditionTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                //If nothing has changed or we received focus we don't have to do anything
-                if (oldValue == newValue || newValue == null) {
-                    return;
-                }
-
-                //Update the text of the condition
-                try {
-                    condition.setCondition(conditionTextField.getText());
-                } catch (CustomException e) {
-                    addFormError(conditionTextField, e.getMessage());
-                }
-                conditionTextField.setText(condition.getCondition());
-            });
-            conditionTextField.setText(condition.getCondition());
-            setGraphic(conditionTextField);
         }
-    }
 
-    /**
-     * A RemoveButtonCell that contains the button used to remove an AcceptanceCondition from a story.
-     */
-    private class RemoveButtonCell extends TableCell<AcceptanceCondition, Object> {
         @Override
-        protected void updateItem(final Object unused, final boolean empty) {
-            super.updateItem(unused, empty);
-            AcceptanceCondition condition = (AcceptanceCondition) getTableRow().getItem();
+        public void commitEdit(final String newValue) {
+            super.commitEdit(newValue);
+            if (!isEmpty()) {
+                try {
+                    AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
+                    acceptanceCondition.setCondition(textField.getText());
+                    textLabel.setText(acceptanceCondition.getCondition());
+                    setGraphic(createCell(false));
+                    clearErrors();
+                } catch (CustomException e) {
+                    clearErrors();
+                    addFormError(textField, e.getMessage());
+                }
 
-            if (condition == null || empty) {
+            }
+        }
+
+        @Override
+        public void cancelEdit() {
+            if (!isEmpty()) {
+                super.cancelEdit();
+                AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
+                textLabel.setText(acceptanceCondition.getCondition());
+                setGraphic(createCell(false));
+            }
+        }
+
+        @Override
+        protected void updateItem(final String newCondition, final boolean empty) {
+            super.updateItem(newCondition, empty);
+            textField.setText(newCondition);
+            textLabel.setText(newCondition);
+
+            if (newCondition == null || empty) {
                 setText(null);
                 setGraphic(null);
                 return;
+            } else if (isEditing()) {
+                setGraphic(createCell(true));
+            } else {
+                setGraphic(createCell(false));
             }
 
+            textLabel.setOnMousePressed(event -> startEdit());
+            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    commitEdit(textField.getText());
+                }
+            });
+            textField.setOnKeyReleased(t -> {
+                if (t.getCode() == KeyCode.ENTER) {
+                    commitEdit(textField.getText());
+                }
+                if (t.getCode() == KeyCode.ESCAPE) {
+                    cancelEdit();
+                }
+            });
+        }
+
+        /**
+         * Creates a node to be used as the cell graphic.
+         * @param isEdit True if the cell should be editable
+         * @return The create cell node
+         */
+        @SuppressWarnings("checkstyle:magicnumber")
+        private Node createCell(final Boolean isEdit) {
+            Node node;
+            if (isEdit) {
+                node = textField;
+            }
+            else {
+                node = textLabel;
+            }
+            AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
             Button button = new Button("X");
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
@@ -552,13 +601,20 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setTitleText("Are you sure?");
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                 popup.addYesNoButtons(p -> {
-                    getModel().removeAcceptanceCondition(condition);
+                    getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
                     popup.close();
                 });
                 popup.show();
             });
-            setGraphic(button);
+            AnchorPane conditionCell = new AnchorPane();
+            AnchorPane.setLeftAnchor(node, 0.0);
+            AnchorPane.setRightAnchor(node, 30.0);
+            AnchorPane.setRightAnchor(button, 0.0);
+            conditionCell.getChildren().addAll(node, button);
+            return conditionCell;
         }
     }
+
+
 }
