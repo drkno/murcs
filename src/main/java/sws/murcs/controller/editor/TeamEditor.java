@@ -7,11 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -45,10 +41,16 @@ public class TeamEditor extends GenericEditor<Team> {
     private VBox teamMembersContainer;
 
     /**
-     * The shortName, longName and description fields for a Team.
+     * The shortName and longName fields for a Team.
      */
     @FXML
-    private TextField shortNameTextField, longNameTextField, descriptionTextField;
+    private TextField shortNameTextField, longNameTextField;
+
+    /**
+     * The description area of a Team.
+     */
+    @FXML
+    private TextArea descriptionTextArea;
 
     /**
      * The product owner and scrum master pickers.
@@ -89,7 +91,7 @@ public class TeamEditor extends GenericEditor<Team> {
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
-        descriptionTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
@@ -114,9 +116,9 @@ public class TeamEditor extends GenericEditor<Team> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNotEqual(modelDescription, viewDescription)) {
-            descriptionTextField.setText(modelDescription);
+            descriptionTextArea.setText(modelDescription);
         }
         teamMembersContainer.getChildren().clear();
         getModel().getMembers().forEach(member -> {
@@ -195,7 +197,7 @@ public class TeamEditor extends GenericEditor<Team> {
         }
 
         String modelDescription = getModel().getDescription();
-        String viewDescription = descriptionTextField.getText();
+        String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
         }
@@ -208,7 +210,7 @@ public class TeamEditor extends GenericEditor<Team> {
         addTeamMemberPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         longNameTextField.focusedProperty().removeListener(getChangeListener());
-        descriptionTextField.focusedProperty().removeListener(getChangeListener());
+        descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         allocatablePeople = null;
         memberNodeIndex = null;
         super.dispose();
