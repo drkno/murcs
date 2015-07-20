@@ -120,6 +120,8 @@ public class StoryEditor extends GenericEditor<Story> {
             shortNameTextField.setText(modelShortName);
         }
 
+        updateStoryState();
+
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
         storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
@@ -158,6 +160,21 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.setDisable(true);
         }
 
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
+        if (!getIsCreationWindow()) {
+            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
+        }
+        updateAcceptanceCriteria();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
+        super.clearErrors();
+    }
+
+    /**
+     * Updates the estimation on choicebox
+     */
+    private void updateEstimation() {
         String currentEstimation = getModel().getEstimate();
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
@@ -176,15 +193,6 @@ public class StoryEditor extends GenericEditor<Story> {
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
-        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
-        if (!getIsCreationWindow()) {
-            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
-        }
-        updateAcceptanceCriteria();
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
-        super.clearErrors();
     }
 
     /**
@@ -201,6 +209,12 @@ public class StoryEditor extends GenericEditor<Story> {
         //restore selection
         acceptanceCriteriaTable.getSelectionModel().select(selected);
         refreshPriorityButtons();
+
+        //Update the story state because otherwise we might have a ready story with no ACs
+        updateStoryState();
+
+        //Update the estimation so we don't end up with an estimated story and no ACs
+        updateEstimation();
     }
 
     /**
