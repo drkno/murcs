@@ -542,8 +542,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          * @param set Whether the tab is being set or unset
          */
         private void setColorTab(final boolean set) {
+            getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
             if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
-                getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
                 getStyleClass().add("default-tablecell");
             } else {
                 Story story = (Story) getTableRow().getItem();
