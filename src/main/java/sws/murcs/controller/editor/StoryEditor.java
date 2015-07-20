@@ -1,44 +1,26 @@
 package sws.murcs.controller.editor;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.AcceptanceCondition;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * An editor for the story model.
@@ -120,6 +102,8 @@ public class StoryEditor extends GenericEditor<Story> {
             shortNameTextField.setText(modelShortName);
         }
 
+        updateStoryState();
+
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
         storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
@@ -158,6 +142,21 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.setDisable(true);
         }
 
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
+        if (!getIsCreationWindow()) {
+            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
+        }
+        updateAcceptanceCriteria();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
+        super.clearErrors();
+    }
+
+    /**
+     * Updates the estimation on choicebox
+     */
+    private void updateEstimation() {
         String currentEstimation = getModel().getEstimate();
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
@@ -176,15 +175,6 @@ public class StoryEditor extends GenericEditor<Story> {
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
-        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
-        if (!getIsCreationWindow()) {
-            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
-        }
-        updateAcceptanceCriteria();
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
-        super.clearErrors();
     }
 
     /**
@@ -201,6 +191,12 @@ public class StoryEditor extends GenericEditor<Story> {
         //restore selection
         acceptanceCriteriaTable.getSelectionModel().select(selected);
         refreshPriorityButtons();
+
+        //Update the story state because otherwise we might have a ready story with no ACs
+        updateStoryState();
+
+        //Update the estimation so we don't end up with an estimated story and no ACs
+        updateEstimation();
     }
 
     /**
