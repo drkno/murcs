@@ -71,7 +71,8 @@ public class Story extends Model {
     /**
      * Stories that must be complete before this story can be worked on.
      */
-    @TrackableValue
+    @XmlElementWrapper(name = "dependencies")
+    @XmlElement(name = "dependence")
     @XmlIDREF
     private Collection<Story> dependencies;
 
