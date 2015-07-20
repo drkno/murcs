@@ -183,12 +183,12 @@ public class BacklogTest {
         // get the priority of an un prioritised story
         assertTrue(backlog.getUnprioritisedStories().contains(story1));
         assertFalse(backlog.getPrioritisedStories().contains(story1));
-        assertTrue(backlog.getStoryPriority(story1) == null);
+        assertTrue(backlog.getStoryPriority(story1) == -1);
 
         // get the priority of a story not allocated to the backlog
         assertFalse(backlog.getUnprioritisedStories().contains(story3));
         assertFalse(backlog.getPrioritisedStories().contains(story3));
-        assertTrue(backlog.getStoryPriority(story3) == null);
+        assertTrue(backlog.getStoryPriority(story3) == -1);
 
         // get the priority of a prioritized story
         assertFalse(backlog.getUnprioritisedStories().contains(story2));

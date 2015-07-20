@@ -521,6 +521,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             super.updateItem(priority, empty);
             this.setAlignment(Pos.CENTER);
             setColorTab(highlighted.getValue());
+            getStyleClass().add("default-tablecell");
 
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
@@ -544,23 +545,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         private void setColorTab(final boolean set) {
             getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
             if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
-                getStyleClass().add("default-tablecell");
             } else {
                 Story story = (Story) getTableRow().getItem();
                 Story.StoryState storyState = story.getStoryState();
 
-                Integer nullStoryPriority = getModel().getStoryPriority(story);
-                if (nullStoryPriority == null) {
-                    nullStoryPriority = -1;
-                }
-                final int storyPriority = nullStoryPriority;
+                final int storyPriority = getModel().getStoryPriority(story);
                 long lowerPriorityCount = story.getDependencies()
                         .stream()
                         .filter(param -> {
                             Integer priority = getModel().getStoryPriority(param);
-                            if (priority == null) {
-                                priority = -1;
-                            }
                             return priority < storyPriority;
                         })
                         .count();
@@ -588,7 +581,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                             if (!newValue) {
                                 Integer priority = null;
                                 if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
-                                    priority = Integer.parseInt(textField.getText());
+                                    try {
+                                        priority = Integer.parseInt(textField.getText());
+                                    }
+                                    catch (NumberFormatException e) {
+                                        addFormError("Priority must be a number");
+                                    }
                                 }
                                 commitEdit(priority);
                             }
@@ -598,7 +596,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (t.getCode() == KeyCode.ENTER) {
                     Integer priority = null;
                     if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
-                        priority = Integer.parseInt(textField.getText());
+                        try {
+                            priority = Integer.parseInt(textField.getText());
+                        }
+                        catch (NumberFormatException e) {
+                            addFormError("Priority must be a number");
+                        }
                     }
                     commitEdit(priority);
                 }
@@ -622,8 +625,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             if (story != null) {
                 priority = getModel().getStoryPriority(story);
-                if (priority != null) {
-                    priority += 1;
+                if (priority != -1) {
                     priorityString = priority.toString();
                 }
             }
@@ -639,7 +641,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Story story = (Story) getTableRow().getItem();
             if (priority != null) {
                 try {
-                    if (priority < 0) {
+                    if (priority < 1) {
                         addFormError("Priority cannot be less than 1");
                     }
                     else {
