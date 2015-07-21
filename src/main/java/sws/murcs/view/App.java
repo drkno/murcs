@@ -1,5 +1,6 @@
 package sws.murcs.view;
 
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,12 +21,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.apple.eawt.Application;
 
 /**
  * The main app class.
  */
-public class App extends javafx.application.Application {
+public class App extends Application {
 
     /**
      * Default window title to use.
@@ -164,7 +164,6 @@ public class App extends javafx.application.Application {
         try {
             InputStream inputStream = (classLoader.getResourceAsStream("sws/murcs/logo_small.png"));
             java.awt.Image image = ImageIO.read(inputStream);
-            Application.getApplication().setDockIconImage(image);
         } catch (Exception e) {
             // Won't work on Windows or Linux.
         }
