@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sun.awt.resources.awt;
 import sws.murcs.controller.AppController;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -16,9 +17,14 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The main app class.
@@ -159,6 +165,13 @@ public class App extends Application {
         primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        try {
+            InputStream inputStream = (classLoader.getResourceAsStream("sws/murcs/logo_small.png"));
+            java.awt.Image image = ImageIO.read(inputStream);
+            com.apple.eawt.Application.getApplication().setDockIconImage(image);
+        } catch (Exception e) {
+            // Won't work on Windows or Linux.
+        }
         primaryStage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
