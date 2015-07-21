@@ -544,8 +544,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          */
         private void setColorTab(final boolean set) {
             getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
-            if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
-            } else {
+            if (!(getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set)) {
                 Story story = (Story) getTableRow().getItem();
                 Story.StoryState storyState = story.getStoryState();
 
