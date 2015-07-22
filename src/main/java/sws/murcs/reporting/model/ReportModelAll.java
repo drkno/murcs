@@ -73,21 +73,21 @@ public class ReportModelAll extends ReportModel {
     /**
      * The list of Teams and their details.
      */
-    @XmlElementWrapper(name = "Teams")
+    @XmlElementWrapper(name = "teams")
     @XmlElement(name = "team")
     private List<Team> listTeams;
 
     /**
      * The list of people and their details.
      */
-    @XmlElementWrapper(name = "People")
+    @XmlElementWrapper(name = "people")
     @XmlElement(name = "person")
     private List<Person> listPeople;
 
     /**
      * The list of skills and their details.
      */
-    @XmlElementWrapper(name = "Skills")
+    @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")
     private List<Skill> listSkills;
 
