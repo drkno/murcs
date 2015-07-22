@@ -122,7 +122,7 @@ public class BacklogTest {
         // add a story with a priority which is already taken by another story
         assertFalse(backlog.getAllStories().contains(story4));
         backlog.addStory(story4, 1);
-        assertEquals(1, backlog.getPrioritisedStories().indexOf(story4));
+        assertEquals(0, backlog.getPrioritisedStories().indexOf(story4));
 
         // add a story with a priority greater than the current number of prioritized stories
         int priority = 7;
