@@ -6,7 +6,7 @@
 <BorderPane fx:id="borderPaneMain" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
     <top>
-        <MenuBar BorderPane.alignment="CENTER">
+        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
             <menus>
                 <Menu id="fileMenu" mnemonicParsing="false" text="File">
                     <items>

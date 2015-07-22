@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -51,6 +52,12 @@ import java.util.List;
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
+
+    /**
+     * The Menu bar for the application.
+     */
+    @FXML
+    private MenuBar menuBar;
 
     /**
      * The Menu items for the main window.
@@ -132,10 +139,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             e.consume();
             fileQuitPress(null);
         });
+        final String os = System.getProperty("os.name");
+        if (os != null && os.startsWith("Mac")) {
+            menuBar.useSystemMenuBarProperty().set(true);
+        }
 
         for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
         }
+        displayChoiceBox.getStyleClass().add("no-shadow");
         displayChoiceBox
                 .getSelectionModel()
                 .selectedItemProperty()

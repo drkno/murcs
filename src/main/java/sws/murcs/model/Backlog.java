@@ -148,7 +148,7 @@ public class Backlog extends Model {
             prioritisedStories.add(story);
         }
         else {
-            prioritisedStories.add(priority-1, story);
+            prioritisedStories.add(priority - 1, story);
         }
         commit("edit backlog");
     }
@@ -190,7 +190,7 @@ public class Backlog extends Model {
                     Story swap = prioritisedStories.get(adjPriority);
                     if (swap != null) {
                         prioritisedStories.set(adjPriority, story);
-                        prioritisedStories.set(currentStoryPriority, swap);
+                        prioritisedStories.set(currentStoryPriority - 1, swap);
                     }
                 }
                 else if (!prioritisedStories.contains(story)) {
@@ -221,7 +221,7 @@ public class Backlog extends Model {
      * @return The lowest priority story.
      */
     public final Integer getLowestPriorityStory() {
-        return prioritisedStories.size();
+        return prioritisedStories.size() + 1;
     }
 
     /**

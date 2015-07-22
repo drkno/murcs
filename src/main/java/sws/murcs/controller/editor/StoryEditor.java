@@ -172,7 +172,7 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Updates the estimation on choicebox
+     * Updates the estimation on choicebox.
      */
     private void updateEstimation() {
         String currentEstimation = getModel().getEstimate();
