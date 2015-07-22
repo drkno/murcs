@@ -343,6 +343,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         } catch (CustomException e) {
             addFormError(storyPicker, e.getMessage());
         }
+        priorityTextField.clear();
     }
 
 
@@ -514,9 +515,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         public void commitEdit(final Integer priority) {
             if (!isEmpty()) {
-                super.commitEdit(priority);
-                setPriority(priority);
-                updateStoryTable();
+                if (priority < 1) {
+                    addFormError(textField, "Priority cannot be less than 1");
+                }
+                else {
+                    super.commitEdit(priority);
+                    setPriority(priority);
+                    updateStoryTable();
+                }
             }
         }
 
@@ -586,12 +592,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                 if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
                                     try {
                                         priority = Integer.parseInt(textField.getText());
+                                        commitEdit(priority);
                                     }
                                     catch (NumberFormatException e) {
-                                        addFormError("Priority must be a number");
+                                        addFormError(textField, "Priority must be a number");
                                     }
                                 }
-                                commitEdit(priority);
                             }
                         });
 
@@ -601,12 +607,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
                         try {
                             priority = Integer.parseInt(textField.getText());
+                            commitEdit(priority);
                         }
                         catch (NumberFormatException e) {
-                            addFormError("Priority must be a number");
+                            addFormError(textField, "Priority must be a number");
                         }
                     }
-                    commitEdit(priority);
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -644,15 +650,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Story story = (Story) getTableRow().getItem();
             if (priority != null) {
                 try {
-                    if (priority < 1) {
-                        addFormError("Priority cannot be less than 1");
-                    }
-                    else {
-                        getModel().changeStoryPriority(story, priority);
-                    }
+                    getModel().changeStoryPriority(story, priority);
                 }
-                catch (Exception e) {
-                    addFormError("Priority must be a number");
+                catch (CustomException e) {
+                    addFormError(textField, "Priority must be a number");
                 }
             }
             else {
