@@ -182,17 +182,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         priorityColumn.setEditable(true);
         priorityColumn.setComparator((storyPriority1, storyPriority2) -> {
             if (priorityColumn.getSortType() == TableColumn.SortType.ASCENDING) {
-                if (storyPriority1 == null) {
+                if (storyPriority1 == -1) {
                     storyPriority1 = Integer.MAX_VALUE;
                 }
-                if (storyPriority2 == null) {
+                if (storyPriority2 == -1) {
                     storyPriority2 = Integer.MAX_VALUE;
                 }
             } else {
-                if (storyPriority1 == null) {
+                if (storyPriority1 == -1) {
                     storyPriority1 = Integer.MIN_VALUE;
                 }
-                if (storyPriority2 == null) {
+                if (storyPriority2 == -1) {
                     storyPriority2 = Integer.MIN_VALUE;
                 }
             }
