@@ -59,7 +59,7 @@
         <unassignedPeople>
             <person>Unallocated</person>
         </unassignedPeople>
-        <Teams>
+        <teams>
             <team shortName="Lonely">
                 <longName>Mr Lonely</longName>
                 <members/>
@@ -80,8 +80,8 @@
                 <scrumMaster>Dion</scrumMaster>
                 <productOwner>Daniel</productOwner>
             </team>
-        </Teams>
-        <People>
+        </teams>
+        <people>
             <person shortName="Daniel">
                 <longName>Daniel van Wichen</longName>
                 <id>dpv11</id>
@@ -111,8 +111,8 @@
                 <id>null123</id>
                 <skills/>
             </person>
-        </People>
-        <Skills>
+        </people>
+        <skills>
             <skill shortName="C">
                 <longName>C99</longName>
                 <description>C99 is older than the current C standard, namely, C11</description>
@@ -129,6 +129,6 @@
                 <longName>Scrum Master</longName>
                 <description>Manages the efforts of a team, resolves difficulties and removes obstacles to task completion.</description>
             </skill>
-        </Skills>
+        </skills>
     </content>
 </report>
