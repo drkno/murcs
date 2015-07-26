@@ -161,12 +161,6 @@ public class App extends Application {
         primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
-        try {
-            InputStream inputStream = (classLoader.getResourceAsStream("sws/murcs/logo_small.png"));
-            java.awt.Image image = ImageIO.read(inputStream);
-        } catch (Exception e) {
-            // Won't work on Windows or Linux.
-        }
         primaryStage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
