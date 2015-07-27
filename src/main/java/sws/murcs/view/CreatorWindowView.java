@@ -35,6 +35,16 @@ public class CreatorWindowView {
     private Consumer<Model> cancelAction;
 
     /**
+     * The minimum height of the application.
+     */
+    private final int minimumApplicationHeight = 650;
+
+    /**
+     * The minimum width of the application.
+     */
+    private final int minimumApplicationWidth = 300;
+
+    /**
      * Gets the model.
      * @return The model.
      */
@@ -119,7 +129,9 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
-            stage.setResizable(false);
+            stage.setResizable(true);
+            stage.setMinHeight(minimumApplicationHeight);
+            stage.setMinWidth(minimumApplicationWidth);
             controller.setStage(stage);
             if (root == null) {
                 return;
