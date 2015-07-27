@@ -21,12 +21,6 @@ import java.util.List;
 public class Team extends Model {
 
     /**
-     * The description of the team.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * A list of members in the team.
      */
     @TrackableValue
@@ -57,23 +51,6 @@ public class Team extends Model {
      */
     public final List<Person> getMembers() {
         return this.members;
-    }
-
-    /**
-     * A description of the team.
-     * @return the description
-     */
-    public final String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * Sets the description of the team.
-     * @param newDescription the new description
-     */
-    public final void setDescription(final String newDescription) {
-        this.description = newDescription;
-        commit("edit team");
     }
 
     /**

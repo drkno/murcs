@@ -25,12 +25,6 @@ import java.util.Objects;
 public class Backlog extends Model {
 
     /**
-     * the description of the Backlog.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The PO who is assigned to the backlog.
      */
     @TrackableValue
@@ -64,23 +58,6 @@ public class Backlog extends Model {
         prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
         estimateType = EstimateType.Fibonacci;
-    }
-
-    /**
-     * Gets the description of the backlog.
-     * @return a description of the backlog.
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description of the backlog.
-     * @param newDescription The description of the backlog.
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
-        commit("edit backlog");
     }
 
     /**
