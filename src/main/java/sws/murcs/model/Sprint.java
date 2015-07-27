@@ -1,7 +1,10 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.reporting.LocalDateAdapter;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,10 +13,13 @@ import java.util.List;
 /**
  * Model of a sprint.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Sprint extends Model {
     /**
      * The start and end dates for the sprint.
      */
+    @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate startDate, endDate;
 
     /**
@@ -24,16 +30,21 @@ public class Sprint extends Model {
     /**
      * The stories in this sprint.
      */
+    @XmlElementWrapper(name = "stories")
+    @XmlElement(name = "story")
+    @XmlIDREF
     private List<Story> stories = new ArrayList<>();
 
     /**
      * The backlog associated with this sprint.
      */
-    private Backlog backlog;
+    @XmlIDREF
+    private Backlog associatedBacklog;
 
     /**
      * The team who is working on this sprint.
      */
+    @XmlIDREF
     private Team team;
 
     /**
@@ -102,5 +113,37 @@ public class Sprint extends Model {
             throw new NotReadyException();
         }
         stories.add(story);
+    }
+
+    /**
+     * Get the backlog associated with this sprint.
+     * @return the sprint backlog
+     */
+    public final Backlog getBacklog() {
+        return associatedBacklog;
+    }
+
+    /**
+     * Set the backlog associated to this sprint.
+     * @param pBacklog the sprint backlog
+     */
+    public final void setBacklog(final Backlog pBacklog) {
+        this.associatedBacklog = pBacklog;
+    }
+
+    /**
+     * Get the team associated with this sprint.
+     * @return the sprint team
+     */
+    public final Team getTeam() {
+        return team;
+    }
+
+    /**
+     * Set the team associated with this sprint.
+     * @param pTeam the sprint team
+     */
+    public final void setTeam(final Team pTeam) {
+        this.team = team;
     }
 }
