@@ -150,8 +150,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
             //Configures the change-priority buttons
             Integer priority = getModel().getStoryPriority(selectedStory.get());
-            boolean isMaxPriority = priority != null && priority == 0;
-            boolean isMinPriority = priority == null;
+            boolean isMaxPriority = priority == 1;
+            boolean isMinPriority = priority == -1;
             increasePriorityButton.setDisable(isMaxPriority);
             decreasePriorityButton.setDisable(isMinPriority);
             jumpPriorityButton.setDisable(isMaxPriority);
@@ -172,7 +172,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         priorityColumn.setCellValueFactory(param -> {
             SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
             Integer priority = getModel().getStoryPriority(param.getValue());
-            if (priority != null) {
+            if (priority != -1) {
                 property.set(priority);
             }
             return property;
@@ -182,23 +182,23 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         priorityColumn.setEditable(true);
         priorityColumn.setComparator((storyPriority1, storyPriority2) -> {
             if (priorityColumn.getSortType() == TableColumn.SortType.ASCENDING) {
-                if (storyPriority1 == null) {
+                if (storyPriority1 == -1) {
                     storyPriority1 = Integer.MAX_VALUE;
                 }
-                if (storyPriority2 == null) {
+                if (storyPriority2 == -1) {
                     storyPriority2 = Integer.MAX_VALUE;
                 }
             } else {
-                if (storyPriority1 == null) {
+                if (storyPriority1 == -1) {
                     storyPriority1 = Integer.MIN_VALUE;
                 }
-                if (storyPriority2 == null) {
+                if (storyPriority2 == -1) {
                     storyPriority2 = Integer.MIN_VALUE;
                 }
             }
             return storyPriority1.compareTo(storyPriority2);
         });
-        storyColumn.setComparator((storyName1, storyName2) -> storyName1.compareTo(storyName2));
+        storyColumn.setComparator(String::compareTo);
     }
 
     /**
@@ -210,14 +210,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
-            if (storyPriority == null) {
-                storyPriority = getModel().getLowestPriorityStory() + 1;
+            if (storyPriority == -1) {
+                storyPriority = getModel().getLowestPriorityStory();
             }
-            if (storyPriority == 0) {
+            else if (storyPriority == 1) {
                 return;
             }
+            else {
+                storyPriority--;
+            }
             try {
-                getModel().modifyStory(story, storyPriority - 1);
+                getModel().modifyStory(story, storyPriority);
             }
             catch (CustomException e) {
                 //Should not ever happen, this should be handled by the GUI,
@@ -237,7 +240,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
-            if (storyPriority == null) {
+            if (storyPriority == -1) {
                 return;
             }
             else if (storyPriority + 1 >= getModel().getLowestPriorityStory()) {
@@ -266,9 +269,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
-            if (storyPriority == null || storyPriority != 0) {
+            if (storyPriority == -1 || storyPriority != 0) {
                 try {
-                    getModel().modifyStory(story, 0);
+                    getModel().modifyStory(story, 1);
                 }
                 catch (CustomException e) {
                     //Should not ever happen, this should be handled by the GUI
@@ -288,7 +291,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story story = storyTable.getSelectionModel().getSelectedItem();
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
-            if (storyPriority != null) {
+            if (storyPriority != -1) {
                 try {
                     getModel().modifyStory(story, null);
                 }
@@ -310,6 +313,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         Story currentStory = storyPicker.getValue();
         Integer priority = null;
         String priorityString = priorityTextField.getText().trim();
+        clearErrors();
         boolean hasErrors = false;
 
         if (currentStory == null) {
@@ -318,9 +322,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
         if (!priorityString.isEmpty()) {
             try {
-                priority = Integer.parseInt(priorityString) - 1;
-                if (priority < 0) {
-                    addFormError(priorityTextField, "Priority cannot be less than 0");
+                priority = Integer.parseInt(priorityString);
+                if (priority < 1) {
+                    addFormError(priorityTextField, "Priority cannot be less than 1");
                     hasErrors = true;
                 }
             } catch (Exception e) {
@@ -339,6 +343,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         } catch (CustomException e) {
             addFormError(storyPicker, e.getMessage());
         }
+        priorityTextField.clear();
     }
 
 
@@ -510,9 +515,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         public void commitEdit(final Integer priority) {
             if (!isEmpty()) {
-                super.commitEdit(priority);
-                setPriority(priority);
-                updateStoryTable();
+                if (priority < 1) {
+                    addFormError(textField, "Priority cannot be less than 1");
+                }
+                else {
+                    super.commitEdit(priority);
+                    setPriority(priority);
+                    updateStoryTable();
+                }
             }
         }
 
@@ -521,6 +531,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             super.updateItem(priority, empty);
             this.setAlignment(Pos.CENTER);
             setColorTab(highlighted.getValue());
+            getStyleClass().add("default-tablecell");
 
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
@@ -542,25 +553,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          * @param set Whether the tab is being set or unset
          */
         private void setColorTab(final boolean set) {
-            if (getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set) {
-                getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
-                getStyleClass().add("default-tablecell");
-            } else {
+            getStyleClass().removeAll("red-tab-tablecell", "green-tab-tablecell", "orange-tab-tablecell");
+            if (!(getTableRow() == null || getTableRow().getItem() == null || isEmpty() || !set)) {
                 Story story = (Story) getTableRow().getItem();
                 Story.StoryState storyState = story.getStoryState();
 
-                Integer nullStoryPriority = getModel().getStoryPriority(story);
-                if (nullStoryPriority == null) {
-                    nullStoryPriority = -1;
-                }
-                final int storyPriority = nullStoryPriority;
+                final int storyPriority = getModel().getStoryPriority(story);
                 long lowerPriorityCount = story.getDependencies()
                         .stream()
                         .filter(param -> {
                             Integer priority = getModel().getStoryPriority(param);
-                            if (priority == null) {
-                                priority = -1;
-                            }
                             return priority < storyPriority;
                         })
                         .count();
@@ -588,9 +590,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                             if (!newValue) {
                                 Integer priority = null;
                                 if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
-                                    priority = Integer.parseInt(textField.getText());
+                                    try {
+                                        priority = Integer.parseInt(textField.getText());
+                                        commitEdit(priority);
+                                    }
+                                    catch (NumberFormatException e) {
+                                        addFormError(textField, "Priority must be a number");
+                                    }
                                 }
-                                commitEdit(priority);
                             }
                         });
 
@@ -598,9 +605,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (t.getCode() == KeyCode.ENTER) {
                     Integer priority = null;
                     if (!(textField.getText() == null || textField.getText().trim().isEmpty())) {
-                        priority = Integer.parseInt(textField.getText());
+                        try {
+                            priority = Integer.parseInt(textField.getText());
+                            commitEdit(priority);
+                        }
+                        catch (NumberFormatException e) {
+                            addFormError(textField, "Priority must be a number");
+                        }
                     }
-                    commitEdit(priority);
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -622,8 +634,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             if (story != null) {
                 priority = getModel().getStoryPriority(story);
-                if (priority != null) {
-                    priority += 1;
+                if (priority != -1) {
                     priorityString = priority.toString();
                 }
             }
@@ -639,15 +650,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             Story story = (Story) getTableRow().getItem();
             if (priority != null) {
                 try {
-                    if (priority < 0) {
-                        addFormError("Priority cannot be less than 1");
-                    }
-                    else {
-                        getModel().changeStoryPriority(story, priority);
-                    }
+                    getModel().changeStoryPriority(story, priority);
                 }
-                catch (Exception e) {
-                    addFormError("Priority must be a number");
+                catch (CustomException e) {
+                    addFormError(textField, "Priority must be a number");
                 }
             }
             else {

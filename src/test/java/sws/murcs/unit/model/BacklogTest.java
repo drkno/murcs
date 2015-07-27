@@ -44,7 +44,7 @@ public class BacklogTest {
         story5.setShortName("oh look");
 
         backlog.addStory(story1, null);
-        backlog.addStory(story2, 0);
+        backlog.addStory(story2, 1);
         UndoRedoManager.setDisabled(true);
     }
 
@@ -90,12 +90,12 @@ public class BacklogTest {
     @Test
     public void testModifyStory() throws Exception {
         assertTrue(backlog.getUnprioritisedStories().contains(story1));
-        backlog.modifyStory(story1, 0);
+        backlog.modifyStory(story1, 1);
         assertFalse(backlog.getUnprioritisedStories().contains(story1));
         assertTrue(backlog.getPrioritisedStories().contains(story1));
 
         assertFalse(backlog.getAllStories().contains(story3));
-        backlog.addStory(story3, 2);
+        backlog.addStory(story3, 3);
         assertTrue(backlog.getPrioritisedStories().contains(story3));
         assertFalse(backlog.getUnprioritisedStories().contains(story3));
 
@@ -121,7 +121,7 @@ public class BacklogTest {
 
         // add a story with a priority which is already taken by another story
         assertFalse(backlog.getAllStories().contains(story4));
-        backlog.addStory(story4, 0);
+        backlog.addStory(story4, 1);
         assertEquals(0, backlog.getPrioritisedStories().indexOf(story4));
 
         // add a story with a priority greater than the current number of prioritized stories
@@ -147,15 +147,15 @@ public class BacklogTest {
         assertTrue(backlog.getUnprioritisedStories().contains(story2));
 
         // set a stories priority to its current priority
-        backlog.addStory(story4, 0);
-        backlog.addStory(story3, 1);
+        backlog.addStory(story4, 1);
+        backlog.addStory(story3, 2);
         assertEquals(1, backlog.getPrioritisedStories().indexOf(story3));
-        backlog.modifyStory(story3, 1);
+        backlog.modifyStory(story3, 2);
         assertEquals(1, backlog.getPrioritisedStories().indexOf(story3));
 
         // set a stories priority which is already taken by another story
         assertEquals(1, backlog.getPrioritisedStories().indexOf(story3));
-        backlog.modifyStory(story3, 0);
+        backlog.modifyStory(story3, 1);
         assertEquals(0, backlog.getPrioritisedStories().indexOf(story3));
         assertEquals(1, backlog.getPrioritisedStories().indexOf(story4));
 
@@ -183,17 +183,17 @@ public class BacklogTest {
         // get the priority of an un prioritised story
         assertTrue(backlog.getUnprioritisedStories().contains(story1));
         assertFalse(backlog.getPrioritisedStories().contains(story1));
-        assertTrue(backlog.getStoryPriority(story1) == null);
+        assertTrue(backlog.getStoryPriority(story1) == -1);
 
         // get the priority of a story not allocated to the backlog
         assertFalse(backlog.getUnprioritisedStories().contains(story3));
         assertFalse(backlog.getPrioritisedStories().contains(story3));
-        assertTrue(backlog.getStoryPriority(story3) == null);
+        assertTrue(backlog.getStoryPriority(story3) == -1);
 
         // get the priority of a prioritized story
         assertFalse(backlog.getUnprioritisedStories().contains(story2));
         assertTrue(backlog.getPrioritisedStories().contains(story2));
-        assertEquals(0, (int) backlog.getStoryPriority(story2));
+        assertEquals(1, (int) backlog.getStoryPriority(story2));
     }
 
     @Test

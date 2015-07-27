@@ -191,7 +191,7 @@ public class BacklogGenerator implements Generator<Backlog> {
 
                 Story.StoryState[] storyStates = Story.StoryState.values();
                 stories.get(i).setStoryState(storyStates[GenerationHelper.random(storyStates.length)]);
-                backlog.addStory(stories.get(i), i);
+                backlog.addStory(stories.get(i), i + 1);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);

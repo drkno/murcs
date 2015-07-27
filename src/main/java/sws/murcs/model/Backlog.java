@@ -139,25 +139,16 @@ public class Backlog extends Model {
         if (priority == null) {
             if (!unprioritisedStories.contains(story)) {
                 unprioritisedStories.add(story);
-                if (prioritisedStories.contains(story)) {
-                    prioritisedStories.remove(story);
-                }
             }
         }
-        else if (priority < 0) {
-            throw new InvalidParameterException("Priority less than zero");
+        else if (priority < 1) {
+            throw new InvalidParameterException("Priority less than one");
         }
-        else if (priority >= prioritisedStories.size()) {
+        else if (priority > prioritisedStories.size()) {
             prioritisedStories.add(story);
-            if (unprioritisedStories.contains(story)) {
-                unprioritisedStories.remove(story);
-            }
         }
         else {
-            prioritisedStories.add(priority, story);
-            if (unprioritisedStories.contains(story)) {
-                unprioritisedStories.remove(story);
-            }
+            prioritisedStories.add(priority - 1, story);
         }
         commit("edit backlog");
     }
@@ -179,10 +170,11 @@ public class Backlog extends Model {
             }
         }
         else if (!Objects.equals(currentStoryPriority, priority)) {
-            if (priority < 0) {
-                throw new InvalidParameterException("Priority less than zero");
+            final int adjPriority = priority - 1;
+            if (priority < 1) {
+                throw new InvalidParameterException("Priority less than one");
             }
-            else if (priority >= prioritisedStories.size()) {
+            else if (priority > prioritisedStories.size()) {
                 // check to see if the story is already in the prioritised stories
                 // if it is then remove it so it can be added to the end of the list.
                 if (prioritisedStories.contains(story)) {
@@ -195,14 +187,14 @@ public class Backlog extends Model {
             }
             else {
                 if (prioritisedStories.contains(story)) {
-                    Story swap = prioritisedStories.get(priority);
+                    Story swap = prioritisedStories.get(adjPriority);
                     if (swap != null) {
-                        prioritisedStories.set(priority, story);
-                        prioritisedStories.set(currentStoryPriority, swap);
+                        prioritisedStories.set(adjPriority, story);
+                        prioritisedStories.set(currentStoryPriority - 1, swap);
                     }
                 }
                 else if (!prioritisedStories.contains(story)) {
-                    prioritisedStories.add(priority, story);
+                    prioritisedStories.add(adjPriority, story);
                     if (unprioritisedStories.contains(story)) {
                         unprioritisedStories.remove(story);
                     }
@@ -217,11 +209,11 @@ public class Backlog extends Model {
      * @param story The story involved.
      * @return The current priority of that story. Null if story is unassigned or not in the backlog.
      */
-    public final Integer getStoryPriority(final Story story) {
+    public final int getStoryPriority(final Story story) {
         if (prioritisedStories.contains(story)) {
-            return prioritisedStories.indexOf(story);
+            return prioritisedStories.indexOf(story) + 1;
         }
-        return null;
+        return -1;
     }
 
     /**
@@ -229,7 +221,7 @@ public class Backlog extends Model {
      * @return The lowest priority story.
      */
     public final Integer getLowestPriorityStory() {
-        return prioritisedStories.size();
+        return prioritisedStories.size() + 1;
     }
 
     /**

@@ -14,6 +14,7 @@
                         <storyState>None</storyState>
                         <description>Revert to last saved state</description>
                         <creator>Haydon</creator>
+                        <dependencies/>
                         <estimate>Not Estimated</estimate>
                     </story>
                 </prioritisedStories>
