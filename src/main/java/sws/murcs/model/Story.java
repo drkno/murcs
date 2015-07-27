@@ -57,6 +57,12 @@ public class Story extends Model {
     private List<AcceptanceCondition> acceptanceCriteria;
 
     /**
+     * The list of tasks associated with this story.
+     */
+    @TrackableValue
+    private List<Task> tasks;
+
+    /**
      * A description of the story.
      */
     @TrackableValue

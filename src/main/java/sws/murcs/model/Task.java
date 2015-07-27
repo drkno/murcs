@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableValue;
+
 /**
  * A class for keeping track of a Task within a story.
  */
@@ -8,11 +10,13 @@ public class Task extends Model {
     /**
      * The estimate in hours for the time it will take to complete the task.
      */
+    @TrackableValue
     private float estimate;
 
     /**
      * The state that the task is currently in.
      */
+    @TrackableValue
     private TaskState state;
 
     /**
