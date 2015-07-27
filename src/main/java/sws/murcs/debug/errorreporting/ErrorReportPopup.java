@@ -13,6 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sws.murcs.view.App;
 
 /**
@@ -83,9 +84,9 @@ public class ErrorReportPopup extends AnchorPane {
         Scene popupScene = new Scene(this);
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
         popupStage.initOwner(App.getStage());
-        popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
-        popupStage.setResizable(false);
+        popupStage.setResizable(true);
+        popupStage.initModality(Modality.NONE);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
@@ -93,6 +94,11 @@ public class ErrorReportPopup extends AnchorPane {
         popupStage.getIcons().add(iconImage);
 
         reportButton.getStyleClass().add("button-default");
+
+        popupStage.setOnCloseRequest((event) -> {
+            App.getStageManager().removeStage(popupStage);
+        });
+        App.getStageManager().addStage(popupStage);
 
         setType(ErrorType.Automatic);
     }
@@ -102,7 +108,6 @@ public class ErrorReportPopup extends AnchorPane {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initOwner(App.getStage());
         popupStage.show();
         Platform.runLater(messageTitle::requestFocus);
@@ -148,6 +153,12 @@ public class ErrorReportPopup extends AnchorPane {
      */
     @FXML
     public final void close() {
+        popupStage.fireEvent(
+                new WindowEvent(
+                        popupStage,
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
         popupStage.close();
     }
 

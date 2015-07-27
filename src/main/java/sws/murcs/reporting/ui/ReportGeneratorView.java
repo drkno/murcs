@@ -58,10 +58,13 @@ public class ReportGeneratorView {
             Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
             stage.getIcons().add(iconImage);
 
-            // Set modality of the stage on top of the App
-            stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(App.getStage());
+            stage.initModality(Modality.NONE);
 
+            stage.setOnCloseRequest((event) -> {
+                App.getStageManager().removeStage(stage);
+            });
+            App.getStageManager().addStage(stage);
             stage.show();
             stage.sizeToScene();
         }

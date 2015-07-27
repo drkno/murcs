@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
@@ -347,7 +348,7 @@ public class ReportGeneratorController {
      */
     @FXML
     private void cancelButtonClicked(final ActionEvent event) {
-        stage.close();
+        close();
     }
 
     /**
@@ -370,7 +371,7 @@ public class ReportGeneratorController {
                 if (file != null) {
                     generateReport(file);
                     PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                    stage.close();
+                    close();
                 }
             } catch (Exception e) {
                 if (file != null) {
@@ -452,5 +453,18 @@ public class ReportGeneratorController {
         else {
             return true;
         }
+    }
+
+    /**
+     * Closes the stage.
+     */
+    private void close() {
+        stage.fireEvent(
+                new WindowEvent(
+                        stage,
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
+        stage.close();
     }
 }

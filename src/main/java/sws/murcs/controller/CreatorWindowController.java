@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
@@ -113,7 +114,7 @@ public class CreatorWindowController {
         if (cancelClicked != null) {
             cancelClicked.accept(null);
         }
-        stage.close();
+        close();
         dispose();
     }
 
@@ -145,8 +146,21 @@ public class CreatorWindowController {
                 ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }
-        stage.close();
+        close();
         dispose();
+    }
+
+    /**
+     * Closes the app.
+     */
+    private void close() {
+        stage.fireEvent(
+                new WindowEvent(
+                        stage,
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
+        stage.close();
     }
 
     /**

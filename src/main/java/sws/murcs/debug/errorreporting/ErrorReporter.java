@@ -5,6 +5,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
+import javafx.stage.Stage;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
@@ -21,7 +22,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -197,7 +200,7 @@ public final class ErrorReporter {
         reportFields.put("misc", miscData);
         reportFields.put("args", arguments);
         reportFields.put("exception", exceptionData);
-        reportFields.put("screenshot", getScreenshot());
+        reportFields.put("screenshots", getScreenshots());
         reportFields.put("progDescription", progDescription);
         reportFields.put("dateTime", LocalDate.now().toString() + " " + LocalTime.now().toString());
         reportFields.put("osName", System.getProperty("os.name"));
@@ -244,24 +247,44 @@ public final class ErrorReporter {
     }
 
     /**
-     * Grabs a screenshot of the currently displayed screen.
-     * @return screenshot as a base64 PNG image.
+     * Grabs the screenshots of the currently displayed screens.
+     * @return screenshots as base64 PNG images.
      */
-    private String getScreenshot() {
+    private String getScreenshots() {
         try {
-            Parent snapshotNode = App.getStage().getScene().getRoot();
-            WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
-            BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "png", outputStream);
-            byte[] bytes = outputStream.toByteArray();
-            String base64 = Base64.getEncoder().encodeToString(bytes);
-            return "data:image/png;base64," + base64;
+            Collection<String> images = new ArrayList<>();
+            for (Stage stage: App.getStageManager().getAllstages()) {
+                Parent snapshotNode = stage.getScene().getRoot();
+                WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
+                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(bufferedImage, "png", outputStream);
+                byte[] bytes = outputStream.toByteArray();
+                String base64 = Base64.getEncoder().encodeToString(bytes);
+                images.add("data:image/png;base64," + base64);
+            }
+            return convertArrayToJSONString(images);
         }
         catch (Exception e) {
             // JavaFX probably hasn't started up yet.
             return "";
         }
+    }
+
+    /**
+     * Creates a json array string from a collection or strings.
+     * @param list The collection to create the json string from.
+     * @return The json string.
+     */
+    private String convertArrayToJSONString(final Collection<String> list) {
+        String jsonArray = "[";
+        for (String item : list) {
+            jsonArray += "\"" + item + "\",";
+        }
+        jsonArray = jsonArray.substring(0, jsonArray.length() - 1);
+        jsonArray += "]";
+        System.out.println(jsonArray);
+        return jsonArray;
     }
 
     /**

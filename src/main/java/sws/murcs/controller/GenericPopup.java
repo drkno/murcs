@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.view.App;
 
@@ -249,7 +250,10 @@ public class GenericPopup extends AnchorPane {
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initOwner(App.getStage());
-
+        popupStage.setOnCloseRequest((event) -> {
+            App.getStageManager().removeStage(popupStage);
+        });
+        App.getStageManager().addStage(popupStage);
         popupStage.show();
     }
 
@@ -259,6 +263,12 @@ public class GenericPopup extends AnchorPane {
      * with only one lambda expression then the cancel button is automatically set to call this.
      */
     public final void close() {
+        popupStage.fireEvent(
+                new WindowEvent(
+                        popupStage,
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
         popupStage.close();
     }
 

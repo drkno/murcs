@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
+import sws.murcs.controller.stageController.StageManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
@@ -16,8 +17,6 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
-import javax.imageio.ImageIO;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +60,19 @@ public class App extends Application {
      * The current app controller.
      */
     private static AppController appController;
+
+    /**
+     * The manager for all stages.
+     */
+    private static StageManager stageManager;
+
+    /**
+     * Gets the stage manager.
+     * @return The stage manager
+     */
+    public static StageManager getStageManager() {
+        return stageManager;
+    }
 
     /**
      * Gets the app controller that was created.
@@ -145,6 +157,10 @@ public class App extends Application {
             PersistenceManager.setCurrent(new PersistenceManager(loader));
         }
 
+        if (stageManager == null) {
+            stageManager = new StageManager();
+        }
+
         // Loads the primary fxml and sets appController as its controller
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/sws/murcs/App.fxml"));
@@ -169,6 +185,7 @@ public class App extends Application {
 
         primaryStage.show();
         stage = primaryStage;
+        stageManager.addStage(stage);
     }
 
     /**
