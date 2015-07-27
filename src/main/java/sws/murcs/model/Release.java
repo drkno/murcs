@@ -17,12 +17,6 @@ import java.time.LocalDate;
 public class Release extends Model {
 
     /**
-     * Description of the release.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The date the release is due.
      */
     @TrackableValue
@@ -43,23 +37,6 @@ public class Release extends Model {
      */
     public final void setReleaseDate(final LocalDate realease) {
         this.releaseDate = realease;
-        commit("edit release");
-    }
-
-    /**
-     * Gets the description for the release.
-     * @return The description
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description of the release.
-     * @param newDescription The description
-     */
-    public final void setDescription(final String newDescription) {
-        this.description = newDescription;
         commit("edit release");
     }
 

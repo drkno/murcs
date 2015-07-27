@@ -24,29 +24,6 @@ public class Skill extends Model {
     public static final String SM_NAME = "SM";
 
     /**
-     * The description of the skill.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
-     * Gets a description of the skill.
-     * @return the description
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description.
-     * @param newDescription The new description
-     */
-    public final void setDescription(final String newDescription) {
-        this.description = newDescription;
-        commit("edit skill");
-    }
-
-    /**
      * Indicates whether the skill means you can be a scrum master.
      * @return Whether you can be a scrum master
      */
