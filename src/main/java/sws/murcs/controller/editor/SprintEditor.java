@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -13,26 +14,31 @@ public class SprintEditor extends GenericEditor<Sprint>{
     /**
      * Text fields for the short and long name of the sprint
      */
-    private TextField shortNameTextField, longNamTextField;
+    @FXML
+    private TextField shortNameTextField, longNameTextField;
 
     /**
      * A text area for the description of a sprint
      */
+    @FXML
     private TextArea descriptionTextArea;
 
     /**
      * A combo box for picking the team associated with the sprint
      */
+    @FXML
     private ComboBox<Team> teamComboBox;
 
     /**
      * A combobox for picking the backlog associated with a sprint
      */
+    @FXML
     private ComboBox<Backlog> backlogComboBox;
 
     /**
      * A combobox for picking the release associated with a sprint
      */
+    @FXML
     private ComboBox<Release> releaseComboBox;
 
     @Override
@@ -44,7 +50,7 @@ public class SprintEditor extends GenericEditor<Sprint>{
         shortNameTextField.setText(sprint.getShortName());
 
         //Fill the long name field
-        longNamTextField.setText(sprint.getLongName());
+        longNameTextField.setText(sprint.getLongName());
 
         //Fill the description field
         //TODO descriptionTextArea.setText(sprint.getDescrription());

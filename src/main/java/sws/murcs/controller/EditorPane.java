@@ -1,14 +1,13 @@
 package sws.murcs.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Creates the editor Pane.
@@ -77,8 +76,14 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
         fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
+        fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
 
-        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelType.getModelType(model));
+        ModelType type = ModelType.getModelType(model);
+        if (!fxmlPaths.containsKey(type)) {
+            throw new UnsupportedOperationException("We don't seem to have that FXML yet. You should fix this");
+        }
+
+        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(type);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
