@@ -24,13 +24,13 @@ public class Organisation extends TrackableObject implements Serializable {
      * The list of projects currently loaded in the application.
      */
     @TrackableValue
-    private final List<Project> projects;
+    private final ModelObservableArrayList<Project> projects;
 
     /**
      * The list of all the releases in the current application.
      */
     @TrackableValue
-    private final List<Release> releases;
+    private final ModelObservableArrayList<Release> releases;
 
     /**
      * The list of all the work allocations in the application.
@@ -42,37 +42,37 @@ public class Organisation extends TrackableObject implements Serializable {
      * The list of teams within the current organisation.
      */
     @TrackableValue
-    private final List<Team> teams;
+    private final ModelObservableArrayList<Team> teams;
 
     /**
      * The list of people within the current organisation.
      */
     @TrackableValue
-    private final List<Person> people;
+    private final ModelObservableArrayList<Person> people;
 
     /**
      * The list of skills that people can have within the current organisation.
      */
     @TrackableValue
-    private final List<Skill> skills;
+    private final ModelObservableArrayList<Skill> skills;
 
     /**
      * The list of backlogs within the current organisation.
      */
     @TrackableValue
-    private final List<Backlog> backlogs;
+    private final ModelObservableArrayList<Backlog> backlogs;
 
     /**
      * The list of sprints within the current organisation.
      */
     @TrackableValue
-    private final List<Sprint> sprints;
+    private final ModelObservableArrayList<Sprint> sprints;
 
     /**
      * The list of stories contained within the current organisation.
      */
     @TrackableValue
-    private final List<Story> stories;
+    private final ModelObservableArrayList<Story> stories;
 
     /**
      * Gets the current application VERSION.
@@ -126,7 +126,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets the projects.
      * @return The projects
      */
-    public final List<Project> getProjects() {
+    public final ModelObservableArrayList<Project> getProjects() {
         return projects;
     }
 
@@ -134,7 +134,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets the releases.
      * @return The releases
      */
-    public final List<Release> getReleases() {
+    public final ModelObservableArrayList<Release> getReleases() {
         return releases;
     }
 
@@ -150,7 +150,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets a list of all teams.
      * @return The teams
      */
-    public final List<Team> getTeams() {
+    public final ModelObservableArrayList<Team> getTeams() {
         return teams;
     }
 
@@ -158,7 +158,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets a list of all people.
      * @return The people
      */
-    public final List<Person> getPeople() {
+    public final ModelObservableArrayList<Person> getPeople() {
         return people;
     }
 
@@ -166,7 +166,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets the skills.
      * @return The skills
      */
-    public final List<Skill> getSkills() {
+    public final ModelObservableArrayList<Skill> getSkills() {
         return skills;
     }
 
@@ -174,7 +174,7 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets the backlogs.
      * @return The backlogs
      */
-    public final List<Backlog> getBacklogs() {
+    public final ModelObservableArrayList<Backlog> getBacklogs() {
         return backlogs;
     }
 
@@ -182,13 +182,13 @@ public class Organisation extends TrackableObject implements Serializable {
      * Gets the sprints contained within the organisation
      * @return The sprints
      */
-    public final List<Sprint> getSprints() {return sprints;}
+    public final ModelObservableArrayList<Sprint> getSprints() { return sprints;}
 
     /**
      * Gets a stories.
      * @return The stories
      */
-    public final List<Story> getStories() {
+    public final ModelObservableArrayList<Story> getStories() {
         return stories;
     }
 

@@ -1,7 +1,5 @@
 package sws.murcs.model.observable;
 
-import sws.murcs.model.Model;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import sws.murcs.model.Model;
 
 /**
  * Observable ArrayList type with custom callback property for object toStrings().
@@ -17,7 +16,7 @@ import java.util.List;
  * @param <T> type of the list, expected to extend Model.
  */
 public class ModelObservableArrayList<T extends Model>
-        extends ObservableArrayList<T> implements Serializable, Comparator<T> {
+        extends ObservableArrayList<T> implements Serializable, Comparator<T>, List<T> {
 
     /**
      * Serializable backing field.
