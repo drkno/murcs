@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -70,11 +71,64 @@ public class SprintEditor extends GenericEditor<Sprint>{
 
     @Override
     protected void saveChangesAndErrors() {
+        clearErrors();
 
+        Sprint sprint = getModel();
+
+        //Try and save the short name
+        try {
+            sprint.setShortName(shortNameTextField.getText());
+        } catch (CustomException e) {
+            addFormError(shortNameTextField, e.getMessage());
+        }
+
+        //Save the long name
+        sprint.setLongName(longNameTextField.getText());
+
+        //Save the description
+        sprint.setDescription(descriptionTextArea.getText());
+
+        //Save the team
+        if (teamComboBox.getValue() != null) {
+            sprint.setTeam(teamComboBox.getValue());
+        }
+        else {
+            addFormError(teamComboBox, "You must select a team to associate with the sprint");
+        }
+
+        //Save the backlog
+        if (backlogComboBox.getValue() != null) {
+            sprint.setBacklog(backlogComboBox.getValue());
+        }
+        else {
+            addFormError(backlogComboBox, "You must select a backlog for this sprint");
+        }
+
+        //Save the release
+        if (releaseComboBox.getValue() != null) {
+            sprint.setAssociatedRelease(releaseComboBox.getValue());
+        }
+        else {
+            addFormError(releaseComboBox, "You must select a release for this sprint");
+        }
     }
 
-    @Override
+    @Override @FXML
     protected void initialize() {
+        setChangeListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                saveChanges();
+            }
+        });
 
+        setupSaveChangesButton();
+
+        shortNameTextField.focusedProperty().addListener(getChangeListener());
+        longNameTextField.focusedProperty().addListener(getChangeListener());
+        descriptionTextArea.focusedProperty().addListener(getChangeListener());
+
+        backlogComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        teamComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        releaseComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 }
