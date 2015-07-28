@@ -3,12 +3,21 @@ package sws.murcs.search;
 import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.collections.ObservableList;
 import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
+
 import java.util.Set;
 
 public class SearchHandler {
     private Set<ObservableList<SearchResult<? extends Model>>> results;
     private boolean threadIsStarted;
     private Thread searchThread;
+
+    private [] searchMethods = {
+            Organisation::getProjects,
+            Organisation::getStories,
+            Organisation::getReleases
+    };
+
 
     public Set<ObservableList<SearchResult<? extends Model>>> getResults() {
         return (Set<ObservableList<SearchResult<? extends Model>>>) Collections.unmodifiableSet(results);
@@ -19,7 +28,7 @@ public class SearchHandler {
     }
 
     private void performSearch() {
-        
+
     }
 
     public void startSearch() {
