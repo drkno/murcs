@@ -1,7 +1,9 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
@@ -42,6 +44,12 @@ public class SprintEditor extends GenericEditor<Sprint>{
     @FXML
     private ComboBox<Release> releaseComboBox;
 
+    /**
+     * DatePickers for the start and end date
+     */
+    @FXML
+    private DatePicker startDatePicker, endDatePicker;
+
     @Override
     public void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
@@ -70,6 +78,12 @@ public class SprintEditor extends GenericEditor<Sprint>{
         teamComboBox.getItems().clear();
         teamComboBox.getItems().addAll(organisation.getTeams());
         teamComboBox.setValue(sprint.getTeam());
+
+        //Update the start date picker
+        startDatePicker.setValue(sprint.getStartDate());
+
+        //Update the end date picker
+        endDatePicker.setValue(sprint.getEndDate());
     }
 
     @Override
@@ -124,6 +138,55 @@ public class SprintEditor extends GenericEditor<Sprint>{
                 addFormError(releaseComboBox, "You must select a release for this sprint");
             }
         }
+
+        //Save dates
+        saveDates();
+    }
+
+    /**
+     * Save the start and end date for the sprint
+     */
+    private void saveDates() {
+        boolean hasProblems = false;
+        Sprint sprint = getModel();
+        LocalDate startDate = startDatePicker.getValue();
+        LocalDate endDate = endDatePicker.getValue();
+        Release release = releaseComboBox.getValue();
+
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            addFormError(startDatePicker, "Start date must be before end date");
+            addFormError(endDatePicker);
+            hasProblems = true;
+        }
+
+        if (release != null && endDate != null && endDate.isAfter(release.getReleaseDate())) {
+            addFormError(endDatePicker, "The sprint must end before its associated release");
+            hasProblems = true;
+        }
+
+        if (hasProblems) {
+            return;
+        }
+
+        //Save the start date
+        if (isNullOrNotEqual(sprint.getStartDate(), startDatePicker.getValue())) {
+            if (startDatePicker.getValue() != null){
+                sprint.setStartDate(startDatePicker.getValue());
+            }
+            else {
+                addFormError(startDatePicker, "You must specify a start date for the sprint");
+            }
+        }
+
+        //Save the end date
+        if (isNullOrNotEqual(sprint.getEndDate(), endDatePicker.getValue())) {
+            if (endDatePicker.getValue() != null) {
+                sprint.setEndDate(endDatePicker.getValue());
+            }
+            else {
+                addFormError(endDatePicker, "You must specify an end date for the sprint");
+            }
+        }
     }
 
     @Override @FXML
@@ -141,5 +204,8 @@ public class SprintEditor extends GenericEditor<Sprint>{
         backlogComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         teamComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         releaseComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+
+        startDatePicker.focusedProperty().addListener(getChangeListener());
+        endDatePicker.focusedProperty().addListener(getChangeListener());
     }
 }
