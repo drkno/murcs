@@ -1,14 +1,13 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.reporting.LocalDateAdapter;
-
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.reporting.LocalDateAdapter;
 
 /**
  * Model of a sprint.
@@ -77,6 +76,7 @@ public class Sprint extends Model {
      */
     public final void setStartDate(final LocalDate pStartDate) {
         this.startDate = pStartDate;
+        commit("edit sprint");
     }
 
     /**
@@ -93,6 +93,7 @@ public class Sprint extends Model {
      */
     public final void setAssociatedRelease(final Release pAssociatedRelease) {
         this.associatedRelease = pAssociatedRelease;
+        commit("edit sprint");
     }
 
     /**
@@ -113,6 +114,17 @@ public class Sprint extends Model {
             throw new NotReadyException();
         }
         stories.add(story);
+
+        commit("edit sprint");
+    }
+
+    /**
+     * Removes a story from the sprint
+     * @param story The story to remove from the sprint
+     */
+    public final void removeStory(final Story story) {
+        stories.remove(story);
+        commit("edit sprint");
     }
 
     /**
@@ -129,6 +141,7 @@ public class Sprint extends Model {
      */
     public final void setBacklog(final Backlog pBacklog) {
         this.associatedBacklog = pBacklog;
+        commit("edit sprint");
     }
 
     /**
@@ -144,6 +157,7 @@ public class Sprint extends Model {
      * @param pTeam the sprint team
      */
     public final void setTeam(final Team pTeam) {
-        this.team = team;
+        this.team = pTeam;
+        commit("edit sprint");
     }
 }
