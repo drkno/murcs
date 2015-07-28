@@ -50,7 +50,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
+            addTeam, addPerson, addSkill, addRelease, addStory, addSprint, addBacklog, showHide, revert, highlightToggle;
 
     /**
      * The side display which contains the display list.
@@ -200,6 +200,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
         addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
         addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
+        addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
 
         //Key combinations for things other than menu items
@@ -655,6 +656,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                     break;
                 case "addStory":
                     clazz = Story.class;
+                    break;
+                case "addSprint":
+                    clazz = Sprint.class;
                     break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");
