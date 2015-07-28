@@ -57,12 +57,6 @@ public class Story extends Model {
     private List<AcceptanceCondition> acceptanceCriteria;
 
     /**
-     * A description of the story.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The person who created this story. This should not be changed after
      * initial creation.
      */
@@ -201,23 +195,6 @@ public class Story extends Model {
             return;
         }
         storyState = newState;
-        commit("edit story");
-    }
-
-    /**
-     * Gets a description for the current story.
-     * @return The description.
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description of the story.
-     * @param newDescription The new description.
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
         commit("edit story");
     }
 
