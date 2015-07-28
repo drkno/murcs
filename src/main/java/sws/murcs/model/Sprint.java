@@ -160,4 +160,20 @@ public class Sprint extends Model {
         this.team = pTeam;
         commit("edit sprint");
     }
+
+    @Override
+    public final boolean equals(final Object object) {
+        if (!(object instanceof Sprint) || object == null) return false;
+        Sprint sprint = (Sprint) object;
+        return sprint.getShortName() != null && sprint.getShortName().equals(getShortName());
+    }
+
+    @Override
+    public final int hashCode() {
+        int c = 0;
+        if (getShortName() != null) {
+            c = getShortName().hashCode();
+        }
+        return getHashCodePrime() + c;
+    }
 }

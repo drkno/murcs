@@ -54,19 +54,22 @@ public class SprintEditor extends GenericEditor<Sprint>{
         longNameTextField.setText(sprint.getLongName());
 
         //Fill the description field
-        //TODO descriptionTextArea.setText(sprint.getDescrription());
+        descriptionTextArea.setText(sprint.getDescription());
 
         //Update the backlog combo box
         backlogComboBox.getItems().clear();
         backlogComboBox.getItems().addAll(organisation.getBacklogs());
+        backlogComboBox.setValue(sprint.getBacklog());
 
         //Update the releases combo box
         releaseComboBox.getItems().clear();
         releaseComboBox.getItems().addAll(organisation.getReleases());
+        releaseComboBox.setValue(sprint.getAssociatedRelease());
 
         //Update the team combo box
         teamComboBox.getItems().clear();
         teamComboBox.getItems().addAll(organisation.getTeams());
+        teamComboBox.setValue(sprint.getTeam());
     }
 
     @Override
@@ -76,40 +79,50 @@ public class SprintEditor extends GenericEditor<Sprint>{
         Sprint sprint = getModel();
 
         //Try and save the short name
-        try {
-            sprint.setShortName(shortNameTextField.getText());
-        } catch (CustomException e) {
-            addFormError(shortNameTextField, e.getMessage());
+        if (isNullOrNotEqual(sprint.getShortName(), shortNameTextField.getText())) {
+            try {
+                sprint.setShortName(shortNameTextField.getText());
+            } catch (CustomException e) {
+                addFormError(shortNameTextField, e.getMessage());
+            }
         }
 
         //Save the long name
-        sprint.setLongName(longNameTextField.getText());
+        if (isNullOrNotEqual(sprint.getLongName(), longNameTextField.getText())) {
+            sprint.setLongName(longNameTextField.getText());
+        }
 
         //Save the description
-        sprint.setDescription(descriptionTextArea.getText());
+        if (isNullOrNotEqual(sprint.getDescription(), descriptionTextArea.getText())) {
+            sprint.setDescription(descriptionTextArea.getText());
+        }
 
         //Save the team
-        if (teamComboBox.getValue() != null) {
-            sprint.setTeam(teamComboBox.getValue());
-        }
-        else {
-            addFormError(teamComboBox, "You must select a team to associate with the sprint");
+        if (isNullOrNotEqual(sprint.getTeam(), teamComboBox.getValue())) {
+            if (teamComboBox.getValue() != null) {
+                sprint.setTeam(teamComboBox.getValue());
+            } else {
+                addFormError(teamComboBox, "You must select a team to associate with the sprint");
+            }
         }
 
         //Save the backlog
-        if (backlogComboBox.getValue() != null) {
-            sprint.setBacklog(backlogComboBox.getValue());
-        }
-        else {
-            addFormError(backlogComboBox, "You must select a backlog for this sprint");
+        if (isNullOrNotEqual(sprint.getBacklog(), backlogComboBox.getValue())) {
+            if (backlogComboBox.getValue() != null) {
+                sprint.setBacklog(backlogComboBox.getValue());
+            }
+            else {
+                addFormError(backlogComboBox, "You must select a backlog for this sprint");
+            }
         }
 
         //Save the release
-        if (releaseComboBox.getValue() != null) {
-            sprint.setAssociatedRelease(releaseComboBox.getValue());
-        }
-        else {
-            addFormError(releaseComboBox, "You must select a release for this sprint");
+        if (isNullOrNotEqual(sprint.getAssociatedRelease(), sprint.getAssociatedRelease())) {
+            if (releaseComboBox.getValue() != null) {
+                sprint.setAssociatedRelease(releaseComboBox.getValue());
+            } else {
+                addFormError(releaseComboBox, "You must select a release for this sprint");
+            }
         }
     }
 
