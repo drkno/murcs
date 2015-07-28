@@ -121,8 +121,6 @@ public class SprintEditor extends GenericEditor<Sprint>{
             }
         });
 
-        setupSaveChangesButton();
-
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());

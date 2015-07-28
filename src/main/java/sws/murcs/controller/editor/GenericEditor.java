@@ -1,5 +1,8 @@
 package sws.murcs.controller.editor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -11,10 +14,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import sws.murcs.model.Model;
 
 /**
  * A generic class for making editing easier.
@@ -82,9 +82,11 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets the current model for the editor.
      * @param pModel The new model to edit
      */
-    public final void setModel(final Object pModel) {
+    public final void setModel(final Model pModel) {
         if (pModel != null) {
             model = (T) pModel;
+            setIsCreationWindow(pModel.getShortName() == null);
+            setupSaveChangesButton();
         }
     }
 
@@ -220,7 +222,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets whether or not this editor is a creation window.
      * @param newIsCreationWindow The new value for whether or not this is a creation window
      */
-    public final void setIsCreationWindow(final boolean newIsCreationWindow) {
+    private void setIsCreationWindow(final boolean newIsCreationWindow) {
         isCreationWindow = newIsCreationWindow;
     }
 
@@ -260,8 +262,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    protected final void setupSaveChangesButton() {
-        if (saveChangesButtonExists) {
+    private void setupSaveChangesButton() {
+        if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }
         saveChangesButtonExists = true;

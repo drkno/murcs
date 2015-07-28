@@ -1,5 +1,8 @@
 package sws.murcs.controller.editor;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,10 +25,6 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Allows you to model a model.
@@ -108,10 +107,6 @@ public class PersonEditor extends GenericEditor<Person> {
             allocatedSkillsContainer.getChildren().add(skillNode);
             skillNodeIndex.put(skill, skillNode);
         });
-        setIsCreationWindow(modelShortName == null);
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
     }
 
     @Override

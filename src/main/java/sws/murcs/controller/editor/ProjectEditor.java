@@ -1,16 +1,11 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -20,9 +15,6 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the model creator popup window.
@@ -125,11 +117,6 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         choiceBoxAddTeam.getItems().setAll(organisation.getTeams());
         observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
-
-        setIsCreationWindow(modelShortName == null);
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
     }
 
     @Override

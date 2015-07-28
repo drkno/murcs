@@ -1,42 +1,27 @@
 package sws.murcs.controller.editor;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for the model creator popup window.
@@ -350,7 +335,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -378,9 +362,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
         super.clearErrors();
     }
 
