@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
-import sws.murcs.controller.stageController.StageManager;
+import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
@@ -62,16 +62,16 @@ public class App extends Application {
     private static AppController appController;
 
     /**
-     * The manager for all stages.
+     * The manager for all windows.
      */
-    private static StageManager stageManager;
+    private static WindowManager windowManager;
 
     /**
-     * Gets the stage manager.
-     * @return The stage manager
+     * Gets the window manager.
+     * @return The window manager
      */
-    public static StageManager getStageManager() {
-        return stageManager;
+    public static WindowManager getWindowManager() {
+        return windowManager;
     }
 
     /**
@@ -157,8 +157,8 @@ public class App extends Application {
             PersistenceManager.setCurrent(new PersistenceManager(loader));
         }
 
-        if (stageManager == null) {
-            stageManager = new StageManager();
+        if (windowManager == null) {
+            windowManager = new WindowManager();
         }
 
         // Loads the primary fxml and sets appController as its controller
@@ -183,9 +183,9 @@ public class App extends Application {
         primaryStage.setMinWidth(minimumApplicationWidth);
         primaryStage.setMinHeight(minimumApplicationHeight);
 
-        primaryStage.show();
         stage = primaryStage;
-        stageManager.addStage(stage);
+        appController.show();
+
     }
 
     /**

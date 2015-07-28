@@ -21,6 +21,8 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
+import sws.murcs.controller.windowManagement.Manageable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
@@ -37,7 +39,7 @@ import java.util.List;
 /**
  * Controller for the report generator.
  */
-public class ReportGeneratorController {
+public class ReportGeneratorController implements Manageable{
 
     /**
      * Contains all of the buttons in the ReportGenerator Window (Generate/Cancel).
@@ -106,6 +108,11 @@ public class ReportGeneratorController {
      * Group containing toggle buttons.
      */
     private ToggleGroup toggleGroup;
+
+    /**
+     * The window for the report generator.
+     */
+    private Window window;
 
     /**
      * Empty Constructor for fxml creation.
@@ -456,9 +463,9 @@ public class ReportGeneratorController {
     }
 
     /**
-     * Closes the stage.
+     * Closes the window.
      */
-    private void close() {
+    public final void close() {
         stage.fireEvent(
                 new WindowEvent(
                         stage,
@@ -466,5 +473,24 @@ public class ReportGeneratorController {
                 )
         );
         stage.close();
+    }
+
+    @Override
+    public final void setCloseEvent() {
+        stage.setOnCloseRequest((event -> {
+            App.getWindowManager().removeWindow(window);
+        }));
+    }
+
+    @Override
+    public final void register(final Window pWindow) {
+        App.getWindowManager().addWindow(pWindow);
+    }
+
+    @Override
+    public final void show() {
+        window = new Window(stage, this);
+        register(window);
+        stage.show();
     }
 }

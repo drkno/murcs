@@ -153,13 +153,8 @@ public class CreatorWindowView {
             stage.initOwner(App.getStage());
             stage.initModality(Modality.NONE);
 
-            stage.setOnCloseRequest((event) -> {
-                App.getStageManager().removeStage(stage);
-            });
-
-            stage.show();
+            controller.show();
             stage.sizeToScene();
-            App.getStageManager().addStage(stage);
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");

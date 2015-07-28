@@ -19,7 +19,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 import sws.murcs.controller.editor.BacklogEditor;
+import sws.murcs.controller.windowManagement.Manageable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -51,7 +54,7 @@ import java.util.List;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, Manageable {
 
     /**
      * The Menu bar for the application.
@@ -127,6 +130,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * A creation window.
      */
     private CreatorWindowView creatorWindow;
+
+    /**
+     * Stores and instance of the main app window.
+     */
+    private Window window;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -296,6 +304,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 // Let the user save the project
                 if (save()) {
                     popup.close();
+                    close();
                     Platform.exit();
                 }
             });
@@ -845,5 +854,35 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void reportBug() {
         ErrorReporter.get().reportManually();
+    }
+
+    @Override
+    public final void close() {
+        App.getStage().fireEvent(
+                new WindowEvent(
+                        App.getStage(),
+                        WindowEvent.WINDOW_CLOSE_REQUEST
+                )
+        );
+        App.getStage().close();
+    }
+
+    @Override
+    public void setCloseEvent() {
+        App.getStage().setOnCloseRequest((event -> {
+            App.getWindowManager().removeWindow(window);
+        }));
+    }
+
+    @Override
+    public final void register(final Window pWindow) {
+        App.getWindowManager().addWindow(pWindow);
+    }
+
+    @Override
+    public final void show() {
+        window = new Window(App.getStage(), this);
+        register(window);
+        App.getStage().show();
     }
 }

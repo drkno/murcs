@@ -5,8 +5,8 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
-import javafx.stage.Stage;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 
@@ -253,8 +253,8 @@ public final class ErrorReporter {
     private String getScreenshots() {
         try {
             Collection<String> images = new ArrayList<>();
-            for (Stage stage: App.getStageManager().getAllstages()) {
-                Parent snapshotNode = stage.getScene().getRoot();
+            for (Window window: App.getWindowManager().getAllWindows()) {
+                Parent snapshotNode = window.getStage().getScene().getRoot();
                 WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
                 BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

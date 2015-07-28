@@ -14,12 +14,14 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.controller.windowManagement.Manageable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.view.App;
 
 /**
  * Popup for reporting errors/bugs.
  */
-public class ErrorReportPopup extends AnchorPane {
+public class ErrorReportPopup extends AnchorPane implements Manageable {
 
     /**
      * The main message text.
@@ -63,6 +65,11 @@ public class ErrorReportPopup extends AnchorPane {
     private Stage popupStage;
 
     /**
+     * The window for the error reporter.
+     */
+    private Window window;
+
+    /**
      * Creates a new ErrorReportPopup.
      * ErrorReportPopups are displayed to the user when something went wrong
      * which we want to then send data about back to the sws server.
@@ -95,10 +102,6 @@ public class ErrorReportPopup extends AnchorPane {
 
         reportButton.getStyleClass().add("button-default");
 
-        popupStage.setOnCloseRequest((event) -> {
-            App.getStageManager().removeStage(popupStage);
-        });
-        App.getStageManager().addStage(popupStage);
 
         setType(ErrorType.Automatic);
     }
@@ -109,6 +112,8 @@ public class ErrorReportPopup extends AnchorPane {
      */
     public final void show() {
         popupStage.initOwner(App.getStage());
+        window = new Window(popupStage, this);
+        register(window);
         popupStage.show();
         Platform.runLater(messageTitle::requestFocus);
     }
@@ -152,6 +157,7 @@ public class ErrorReportPopup extends AnchorPane {
      * with only one lambda expression then the cancel button is automatically set to call this.
      */
     @FXML
+    @Override
     public final void close() {
         popupStage.fireEvent(
                 new WindowEvent(
@@ -160,6 +166,18 @@ public class ErrorReportPopup extends AnchorPane {
                 )
         );
         popupStage.close();
+    }
+
+    @Override
+    public final void setCloseEvent() {
+        popupStage.setOnCloseRequest((event) -> {
+            App.getWindowManager().removeWindow(window);
+        });
+    }
+
+    @Override
+    public final void register(final Window pWindow) {
+        App.getWindowManager().addWindow(pWindow);
     }
 
     /**

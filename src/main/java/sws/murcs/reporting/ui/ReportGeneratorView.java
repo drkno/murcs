@@ -61,12 +61,8 @@ public class ReportGeneratorView {
             stage.initOwner(App.getStage());
             stage.initModality(Modality.NONE);
 
-            stage.setOnCloseRequest((event) -> {
-                App.getStageManager().removeStage(stage);
-            });
-            App.getStageManager().addStage(stage);
-            stage.show();
             stage.sizeToScene();
+            controller.show();
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the report generator window");

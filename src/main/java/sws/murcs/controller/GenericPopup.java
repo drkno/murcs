@@ -13,6 +13,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.controller.windowManagement.Manageable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.view.App;
 
@@ -21,7 +23,12 @@ import java.util.function.Consumer;
 /**
  * Generic popup creator and controller.
  */
-public class GenericPopup extends AnchorPane {
+public class GenericPopup extends AnchorPane implements Manageable {
+
+    /**
+     * This window of the popup.
+     */
+    private Window window;
 
     /**
      * Enum for specifying which side of the dialog you want the button to appear on.
@@ -250,10 +257,8 @@ public class GenericPopup extends AnchorPane {
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initOwner(App.getStage());
-        popupStage.setOnCloseRequest((event) -> {
-            App.getStageManager().removeStage(popupStage);
-        });
-        App.getStageManager().addStage(popupStage);
+        window = new Window(popupStage, this);
+        register(window);
         popupStage.show();
     }
 
@@ -262,6 +267,7 @@ public class GenericPopup extends AnchorPane {
      * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
      * with only one lambda expression then the cancel button is automatically set to call this.
      */
+    @Override
     public final void close() {
         popupStage.fireEvent(
                 new WindowEvent(
@@ -270,6 +276,18 @@ public class GenericPopup extends AnchorPane {
                 )
         );
         popupStage.close();
+    }
+
+    @Override
+    public final void setCloseEvent() {
+        popupStage.setOnCloseRequest((event -> {
+            App.getWindowManager().removeWindow(window);
+        }));
+    }
+
+    @Override
+    public final void register(final Window pWindow) {
+        App.getWindowManager().addWindow(pWindow);
     }
 
     /**

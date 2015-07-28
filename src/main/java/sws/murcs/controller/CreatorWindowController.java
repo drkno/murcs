@@ -8,17 +8,20 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.controller.windowManagement.Manageable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.function.Consumer;
 
 /**
  * Controller for the creation window.
  */
-public class CreatorWindowController {
+public class CreatorWindowController implements Manageable{
 
     /**
      * The main editorPane pane that contains all the
@@ -32,6 +35,11 @@ public class CreatorWindowController {
      */
     @FXML
     private Button createButton, cancelButton;
+
+    /**
+     * Stores and instance of the window, which contains an instance of this class and the stage.
+     */
+    private Window window;
 
     /**
      * The command to be issued on okay being clicked.
@@ -150,10 +158,8 @@ public class CreatorWindowController {
         dispose();
     }
 
-    /**
-     * Closes the app.
-     */
-    private void close() {
+    @Override
+    public final void close() {
         stage.fireEvent(
                 new WindowEvent(
                         stage,
@@ -161,6 +167,18 @@ public class CreatorWindowController {
                 )
         );
         stage.close();
+    }
+
+    @Override
+    public final void setCloseEvent() {
+        stage.setOnCloseRequest((event -> {
+            App.getWindowManager().removeWindow(window);
+        }));
+    }
+
+    @Override
+    public final void register(final Window pWindow) {
+        App.getWindowManager().addWindow(pWindow);
     }
 
     /**
@@ -176,5 +194,14 @@ public class CreatorWindowController {
         editorPane = null;
         model = null;
         stage = null;
+    }
+
+    /**
+     * Shows the stage when the view has finished setting up.
+     */
+    public final void show() {
+        window = new Window(stage, this);
+        register(window);
+        stage.show();
     }
 }
