@@ -738,7 +738,14 @@ public class Organisation extends TrackableObject implements Serializable {
         //Remove it from any sprints it is associated with
         getSprints().stream()
                 .filter(sprint -> release.equals(sprint.getAssociatedRelease()))
-                .forEach(sprint -> sprint.setAssociatedRelease(null));
+                .forEach(sprint -> {
+                    try {
+                        sprint.setAssociatedRelease(null);
+                    } catch (InvalidParameterException e) {
+                        //This should never happen, as the exception is dependent
+                        //on the release not being null
+                    }
+                });
     }
 
     /**

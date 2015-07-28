@@ -7,6 +7,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -133,7 +134,11 @@ public class SprintEditor extends GenericEditor<Sprint>{
         //Save the release
         if (isNullOrNotEqual(sprint.getAssociatedRelease(), sprint.getAssociatedRelease())) {
             if (releaseComboBox.getValue() != null) {
-                sprint.setAssociatedRelease(releaseComboBox.getValue());
+                try {
+                    sprint.setAssociatedRelease(releaseComboBox.getValue());
+                } catch (InvalidParameterException e){
+                    addFormError(releaseComboBox, e.getMessage());
+                }
             } else {
                 addFormError(releaseComboBox, "You must select a release for this sprint");
             }
@@ -171,7 +176,11 @@ public class SprintEditor extends GenericEditor<Sprint>{
         //Save the start date
         if (isNullOrNotEqual(sprint.getStartDate(), startDatePicker.getValue())) {
             if (startDatePicker.getValue() != null){
-                sprint.setStartDate(startDatePicker.getValue());
+                try {
+                    sprint.setStartDate(startDatePicker.getValue());
+                } catch (InvalidParameterException e){
+                    addFormError(startDatePicker, e.getMessage());
+                }
             }
             else {
                 addFormError(startDatePicker, "You must specify a start date for the sprint");
@@ -181,7 +190,11 @@ public class SprintEditor extends GenericEditor<Sprint>{
         //Save the end date
         if (isNullOrNotEqual(sprint.getEndDate(), endDatePicker.getValue())) {
             if (endDatePicker.getValue() != null) {
-                sprint.setEndDate(endDatePicker.getValue());
+                try {
+                    sprint.setEndDate(endDatePicker.getValue());
+                } catch (InvalidParameterException e){
+                    addFormError(endDatePicker, e.getMessage());
+                }
             }
             else {
                 addFormError(endDatePicker, "You must specify an end date for the sprint");

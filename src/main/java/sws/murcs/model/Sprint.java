@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.reporting.LocalDateAdapter;
 
@@ -57,9 +58,13 @@ public class Sprint extends Model {
     /**
      * Set the end date for a sprint.
      * @param pEndDate The end date
+     * @throws InvalidParameterException if the end date is before the start date or after the release date
      */
-    public final void setEndDate(final LocalDate pEndDate) {
+    public final void setEndDate(final LocalDate pEndDate) throws InvalidParameterException {
+        validateDates(startDate, pEndDate, associatedRelease);
+
         this.endDate = pEndDate;
+        commit("edit sprint");
     }
 
     /**
@@ -73,8 +78,11 @@ public class Sprint extends Model {
     /**
      * Set the start date for a sprint.
      * @param pStartDate The start date
+     * @throws InvalidParameterException if the start date is after the end date
      */
-    public final void setStartDate(final LocalDate pStartDate) {
+    public final void setStartDate(final LocalDate pStartDate) throws InvalidParameterException {
+        validateDates(pStartDate, endDate, associatedRelease);
+
         this.startDate = pStartDate;
         commit("edit sprint");
     }
@@ -90,8 +98,11 @@ public class Sprint extends Model {
     /**
      * Set the release associated with this sprint.
      * @param pAssociatedRelease the new associated release
+     * @throws InvalidParameterException if the release is before the end date of the sprint
      */
-    public final void setAssociatedRelease(final Release pAssociatedRelease) {
+    public final void setAssociatedRelease(final Release pAssociatedRelease) throws InvalidParameterException {
+        validateDates(startDate, endDate, pAssociatedRelease);
+
         this.associatedRelease = pAssociatedRelease;
         commit("edit sprint");
     }
@@ -175,5 +186,23 @@ public class Sprint extends Model {
             c = getShortName().hashCode();
         }
         return getHashCodePrime() + c;
+    }
+
+    /**
+     * Validates the dates associated with the sprint
+     * @param end The end date
+     * @param start The start date
+     * @param rel The release
+     * @throws InvalidParameterException if the dates overlap of the end date is after the release date
+     */
+    private void validateDates(final LocalDate start, final LocalDate end, final Release rel)
+            throws InvalidParameterException {
+        if (end != null && start != null && end.isBefore(start)) {
+            throw new InvalidParameterException("Start date should not be before end date");
+        }
+
+        if (end != null && rel != null && end.isAfter(rel.getReleaseDate())) {
+            throw new InvalidParameterException("The sprint should end before the release date");
+        }
     }
 }
