@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import org.apache.commons.collections.list.UnmodifiableList;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -267,6 +268,35 @@ public class Story extends Model {
         }
         estimate = newEstimate;
         commit("edit story");
+    }
+
+    /**
+     * Adds a new task to the list of tasks the story has.
+     * @param newTask The new task to add
+     */
+    public final void addTask(final Task newTask) {
+        if (!tasks.contains(newTask)) {
+            tasks.add(newTask);
+        }
+        //Todo don't know what to do otherwise currently (need to discuss)
+    }
+
+    /**
+     * Removes the specified task from the list of tasks associated with the story.
+     * @param task The task to be removed.
+     */
+    public final void removeTask(final Task task) {
+        if (tasks.contains(task)) {
+            tasks.remove(task);
+        }
+    }
+
+    /**
+     * Gets the list of all the tasks associated with this story.
+     * @return The list of all the tasks associated with this story.
+     */
+    public final List<Task> getTasks() {
+        return Collections.unmodifiableList(tasks);
     }
 
     @Override

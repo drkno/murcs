@@ -4,8 +4,10 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -27,12 +29,14 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -71,9 +75,10 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Container that dependencies are added to when they are added.
+     * Also the container for the tasks.
      */
     @FXML
-    private VBox dependenciesContainer;
+    private VBox dependenciesContainer, taskContainer;
 
     /**
      * A map of dependencies and their respective nodes.
@@ -507,6 +512,25 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the ACs in the table
         updateAcceptanceCriteria();
+    }
+
+    /**
+     * Is called when you click the 'Create Task' button and inserts a new
+     * task fxml into the task container.
+     * @param event The event that caused the function to be called
+     */
+    @FXML
+    private void createTaskClick(final ActionEvent event) {
+        Task newTask = new Task();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        try {
+            Parent view = loader.load();
+            GenericEditor<Task> controller = loader.getController();
+            controller.setModel(newTask);
+            controller.loadObject();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create new task");
+        }
     }
 
     /**
