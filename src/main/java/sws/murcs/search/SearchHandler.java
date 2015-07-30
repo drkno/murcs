@@ -8,7 +8,7 @@ import sws.murcs.model.Organisation;
 import java.util.Set;
 
 public class SearchHandler {
-    private Set<ObservableList<SearchResult<? extends Model>>> results;
+   /* private Set<ObservableList<SearchResult<? extends Model>>> results;
     private boolean threadIsStarted;
     private Thread searchThread;
 
@@ -53,5 +53,5 @@ public class SearchHandler {
             // This is because the outcome is what we wanted, there was
             // just a short race that we join() ed on the wrong side of.
         }
-    }
+    }*/
 }
