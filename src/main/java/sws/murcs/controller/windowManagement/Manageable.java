@@ -9,6 +9,7 @@ public interface Manageable {
 
     /**
      * Requires a close method to be implement to close the window safely.
+     * @param callback The function to call.
      */
     void close(GenericCallback callback);
 

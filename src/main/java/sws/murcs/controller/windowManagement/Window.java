@@ -4,10 +4,6 @@ import javafx.stage.Stage;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-
 /**
  * A Wrapper class for linking stages and controllers together, so that they can be managed.
  */

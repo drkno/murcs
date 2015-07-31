@@ -25,7 +25,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * The type of model the editor is being used for.
      */
-    private T model;
+    protected T model;
 
     /**
      * The label for showing error messages.

@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.view.App;
 
 /**
  * Sets up the report generator view.
