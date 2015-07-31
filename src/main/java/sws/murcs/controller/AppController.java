@@ -13,13 +13,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.controller.editor.BacklogEditor;
+import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
@@ -46,7 +46,9 @@ import sws.murcs.view.CreatorWindowView;
 import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
@@ -164,7 +166,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 updateDisplayListSelection(newValue, oldValue);
             }
         });
-        setUpShortCuts();
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
@@ -199,46 +200,54 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void setUpShortCuts() {
         //Menu item shortcuts
         // You should use SHORTCUT_DOWN as it uses the COMMAND key for Mac and the CTRL key for Windows
-        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
-        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
-        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN
-                , KeyCombination.SHIFT_DOWN));
-        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
-        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
-        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
-                KeyCombination.SHIFT_DOWN));
-        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
-        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
-        addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
-        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
-        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
-        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
-        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
-        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
-        addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
-        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+        ShortcutManager shortcutManager = App.getShortcutManager();
 
-        //Key combinations for things other than menu items
-        borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
-    }
+        //Global shortcuts
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN), () -> revert(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN),
+                () -> newModel(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN),
+                this::save);
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
+                        KeyCombination.SHIFT_DOWN), () -> saveAs(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN),
+                () -> open(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
+                () -> generateReport(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Project));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Team));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Person));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Skill));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Release));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Backlog));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Story));
 
-    /**
-     * Handles keys being pressed.
-     * @param event Key event
-     */
-    private void handleKey(final KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
-            addClicked(null);
-        }
-        if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
-            removeClicked(null);
-        }
-        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
-            backClicked(null);
-        }
-        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
-            forwardClicked(null);
-        }
+        //Local shortcuts.
+        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
+        accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
+                () -> undoMenuItemClicked(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
+                () -> redoMenuItemClicked(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+                () -> toggleItemListView(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
+                () -> addClicked(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
+                () -> removeClicked(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN),
+                () -> backClicked(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
+                () -> forwardClicked(null));
+
+        App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
 
     /**
@@ -688,7 +697,23 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
             clazz = ModelType.getTypeFromModel(type);
         }
+        createNewItem(clazz);
+    }
 
+    /**
+     * Adds a new item from a given model type.
+     * @param modelType The type to get the class from.
+     */
+    private void addNewItem(final ModelType modelType) {
+        Class<? extends Model> clazz = ModelType.getTypeFromModel(modelType);
+        createNewItem(clazz);
+    }
+
+    /**
+     * Creates a new model from a class instance.
+     * @param clazz the class to create the model instance from.
+     */
+    private void createNewItem(final Class<? extends Model> clazz) {
         if (clazz != null) {
             try {
                 creatorWindow = new CreatorWindowView(clazz.newInstance(),
@@ -869,5 +894,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             e.consume();
             fileQuitPress(null);
         });
+        try {
+            setUpShortCuts();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -180,5 +180,6 @@ public class CreatorWindowController {
     public final void setupWindow() {
         window = new Window(stage, this);
         window.register();
+        window.addGlobalShortcutsToWindow();
     }
 }

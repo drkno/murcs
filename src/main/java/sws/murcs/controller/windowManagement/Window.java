@@ -68,6 +68,13 @@ public class Window implements Manageable {
         }));
     }
 
+    /**
+     * Adds global shortcuts to window.
+     */
+    public final void addGlobalShortcutsToWindow() {
+        App.getShortcutManager().addAllShortcutsToWindow(this);
+    }
+
     @Override
     public final void show() {
         stage.show();
