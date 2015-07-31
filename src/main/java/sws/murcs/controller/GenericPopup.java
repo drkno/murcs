@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * Generic popup creator and controller.
  */
-public class GenericPopup extends AnchorPane implements Manageable {
+public class GenericPopup extends AnchorPane {
 
     /**
      * This window of the popup.
@@ -184,7 +184,7 @@ public class GenericPopup extends AnchorPane implements Manageable {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(m -> close());
+            addOkButton(m -> window.close());
         }
     }
 
@@ -204,7 +204,8 @@ public class GenericPopup extends AnchorPane implements Manageable {
                                 final Action action,
                                 final Consumer func) {
         Button button = new Button(buttonText);
-        button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
+        //button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
+        button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.accept(null));
 
@@ -252,42 +253,21 @@ public class GenericPopup extends AnchorPane implements Manageable {
         }
 
         if (!buttonsDefined) {
-            addOkButton(m -> close());
+            addOkButton(m -> window.close());
         }
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initOwner(App.getStage());
         window = new Window(popupStage, this);
-        register(window);
-        popupStage.show();
+        window.register();
+        window.show();
     }
 
     /**
-     * Closes the dialog.
-     * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
-     * with only one lambda expression then the cancel button is automatically set to call this.
+     * Closes the dialog window.
      */
-    @Override
     public final void close() {
-        popupStage.fireEvent(
-                new WindowEvent(
-                        popupStage,
-                        WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-        );
-        popupStage.close();
-    }
-
-    @Override
-    public final void setCloseEvent() {
-        popupStage.setOnCloseRequest((event -> {
-            App.getWindowManager().removeWindow(window);
-        }));
-    }
-
-    @Override
-    public final void register(final Window pWindow) {
-        App.getWindowManager().addWindow(pWindow);
+        window.close();
     }
 
     /**
@@ -337,7 +317,7 @@ public class GenericPopup extends AnchorPane implements Manageable {
      * @param okFunction The function you want to call on the ok button being clicked.
      */
     public final void addOkCancelButtons(final Consumer okFunction) {
-        addOkCancelButtons(okFunction, m -> close());
+        addOkCancelButtons(okFunction, m -> window.close());
     }
 
     /**
@@ -346,7 +326,7 @@ public class GenericPopup extends AnchorPane implements Manageable {
      * @param yesFunction The function you want to call on the yes button being clicked.
      */
     public final void addYesNoButtons(final Consumer yesFunction) {
-        addYesNoButtons(yesFunction, m -> close());
+        addYesNoButtons(yesFunction, m -> window.close());
     }
 
     /**

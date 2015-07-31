@@ -150,9 +150,9 @@ public class CreatorWindowView {
             stage.getIcons().add(iconImage);
 
             // Set modality of the stage on top of the App
-            stage.initOwner(App.getStage());
             stage.initModality(Modality.NONE);
 
+            controller.setupWindow();
             controller.show();
             stage.sizeToScene();
         }

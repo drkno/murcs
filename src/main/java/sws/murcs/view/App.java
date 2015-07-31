@@ -174,7 +174,6 @@ public class App extends Application {
                 .toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
-        primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         primaryStage.getIcons().add(iconImage);
@@ -192,7 +191,7 @@ public class App extends Application {
      * Call quit on all of the event listeners.
      * @param e Window event to consume to avoid the application quitting prematurely
      */
-    private static void notifyListeners(final WindowEvent e) {
+    public static void notifyListeners(final WindowEvent e) {
         listeners.forEach(l -> l.quit(e));
     }
 

@@ -1,5 +1,7 @@
 package sws.murcs.controller.windowManagement;
 
+import sws.murcs.listeners.GenericCallback;
+
 /**
  * Controllers implemented by this interface ensure that they can be properly managed by the window manager.
  */
@@ -8,18 +10,12 @@ public interface Manageable {
     /**
      * Requires a close method to be implement to close the window safely.
      */
-    void close();
+    void close(GenericCallback callback);
 
     /**
-     * Sets up the close event, to clean up after the window manager.
+     * Ensures that the window is managed by the stage manager.
      */
-    void setCloseEvent();
-
-    /**
-     * Ensures that the window is managed byt the stage manager.
-     * @param window The window to be managed
-     */
-    void register(Window window);
+    void register();
 
     /**
      * Ensures that the controller is responsible for showing the window.

@@ -58,10 +58,10 @@ public class ReportGeneratorView {
             Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
             stage.getIcons().add(iconImage);
 
-            stage.initOwner(App.getStage());
             stage.initModality(Modality.NONE);
 
             stage.sizeToScene();
+            controller.setUpWindow();
             controller.show();
         }
         catch (Exception e) {

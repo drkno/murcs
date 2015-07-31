@@ -2,6 +2,7 @@ package sws.murcs.debug.errorreporting;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
@@ -254,14 +255,17 @@ public final class ErrorReporter {
         try {
             Collection<String> images = new ArrayList<>();
             for (Window window: App.getWindowManager().getAllWindows()) {
-                Parent snapshotNode = window.getStage().getScene().getRoot();
-                WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
-                BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                ImageIO.write(bufferedImage, "png", outputStream);
-                byte[] bytes = outputStream.toByteArray();
-                String base64 = Base64.getEncoder().encodeToString(bytes);
-                images.add("data:image/png;base64," + base64);
+                // Don't include an instance of the feedback window as a screenshot.
+                if (window.getController() != ErrorReportPopup.class) {
+                    Parent snapshotNode = window.getStage().getScene().getRoot();
+                    WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
+                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage, "png", outputStream);
+                    byte[] bytes = outputStream.toByteArray();
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    images.add("data:image/png;base64," + base64);
+                }
             }
             return convertArrayToJSONString(images);
         }
@@ -283,7 +287,6 @@ public final class ErrorReporter {
         }
         jsonArray = jsonArray.substring(0, jsonArray.length() - 1);
         jsonArray += "]";
-        System.out.println(jsonArray);
         return jsonArray;
     }
 

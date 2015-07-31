@@ -13,15 +13,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import sws.murcs.controller.windowManagement.Manageable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.view.App;
 
 /**
  * Popup for reporting errors/bugs.
  */
-public class ErrorReportPopup extends AnchorPane implements Manageable {
+public class ErrorReportPopup extends AnchorPane {
 
     /**
      * The main message text.
@@ -111,10 +109,10 @@ public class ErrorReportPopup extends AnchorPane implements Manageable {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        popupStage.initOwner(App.getStage());
+        popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this);
-        register(window);
-        popupStage.show();
+        window.register();
+        window.show();
         Platform.runLater(messageTitle::requestFocus);
     }
 
@@ -124,9 +122,17 @@ public class ErrorReportPopup extends AnchorPane implements Manageable {
      */
     public final void setReportListener(final ReportError report) {
         reportButton.setOnAction(a -> {
-            close();
+            window.close();
             report.sendReport(reportDetails.getText());
         });
+    }
+
+    /**
+     * Setups up the default close method.
+     */
+    @FXML
+    public final void close() {
+        window.close();
     }
 
     /**
@@ -149,35 +155,6 @@ public class ErrorReportPopup extends AnchorPane implements Manageable {
                         + "receive a screenshot of what is currently displayed within the application for you.\n");
                 break;
         }
-    }
-
-    /**
-     * Closes the dialog.
-     * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
-     * with only one lambda expression then the cancel button is automatically set to call this.
-     */
-    @FXML
-    @Override
-    public final void close() {
-        popupStage.fireEvent(
-                new WindowEvent(
-                        popupStage,
-                        WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-        );
-        popupStage.close();
-    }
-
-    @Override
-    public final void setCloseEvent() {
-        popupStage.setOnCloseRequest((event) -> {
-            App.getWindowManager().removeWindow(window);
-        });
-    }
-
-    @Override
-    public final void register(final Window pWindow) {
-        App.getWindowManager().addWindow(pWindow);
     }
 
     /**

@@ -187,4 +187,13 @@ public class WindowManager {
     public final Object getController(final Window window) {
         return window.controller;
     }
+
+    /**
+     * Cleans up all open windows.
+     */
+    public final void cleanUp() {
+        for (Window window: windows) {
+            window.close(null);
+        }
+    }
 }

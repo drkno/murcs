@@ -19,9 +19,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.WindowEvent;
 import sws.murcs.controller.editor.BacklogEditor;
-import sws.murcs.controller.windowManagement.Manageable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
@@ -54,7 +52,7 @@ import java.util.List;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, Manageable {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
 
     /**
      * The Menu bar for the application.
@@ -143,10 +141,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     @FXML
     public final void initialize() {
         NavigationManager.setAppController(this);
-        App.addListener(e -> {
-            e.consume();
-            fileQuitPress(null);
-        });
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
@@ -291,24 +285,31 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     private void fileQuitPress(final ActionEvent event) {
-        if (UndoRedoManager.canRevert()) {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Unsaved Changes");
-            popup.setTitleText("Do you wish to save changes?");
-            popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                 popup.close();
-                Platform.exit();
+                window.close(Platform::exit);
             });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+            popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                 // Let the user save the project
                 if (save()) {
                     popup.close();
-                    close();
-                    Platform.exit();
+                    window.close(Platform::exit);
                 }
             });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> {
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController() != this)
+                        .forEach(openWindow -> {
+                    App.getWindowManager().bringToTop(openWindow);
+                });
+                popup.close();
+            });
             popup.show();
         }
         else {
@@ -856,33 +857,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         ErrorReporter.get().reportManually();
     }
 
-    @Override
-    public final void close() {
-        App.getStage().fireEvent(
-                new WindowEvent(
-                        App.getStage(),
-                        WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-        );
-        App.getStage().close();
-    }
-
-    @Override
-    public void setCloseEvent() {
-        App.getStage().setOnCloseRequest((event -> {
-            App.getWindowManager().removeWindow(window);
-        }));
-    }
-
-    @Override
-    public final void register(final Window pWindow) {
-        App.getWindowManager().addWindow(pWindow);
-    }
-
-    @Override
+    /**
+     * Shows the main app.
+     */
     public final void show() {
         window = new Window(App.getStage(), this);
-        register(window);
-        App.getStage().show();
+        window.register();
+        window.show();
+        window.getStage().setOnCloseRequest(App::notifyListeners);
+        App.addListener(e -> {
+            e.consume();
+            fileQuitPress(null);
+        });
     }
 }

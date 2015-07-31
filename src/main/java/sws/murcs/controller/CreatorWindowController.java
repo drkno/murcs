@@ -7,21 +7,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import sws.murcs.controller.windowManagement.Manageable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.function.Consumer;
 
 /**
  * Controller for the creation window.
  */
-public class CreatorWindowController implements Manageable{
+public class CreatorWindowController {
 
     /**
      * The main editorPane pane that contains all the
@@ -122,8 +119,7 @@ public class CreatorWindowController implements Manageable{
         if (cancelClicked != null) {
             cancelClicked.accept(null);
         }
-        close();
-        dispose();
+        window.close(this::dispose);
     }
 
     /**
@@ -149,36 +145,11 @@ public class CreatorWindowController implements Manageable{
                 }
                 PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
-            }
-            catch (CustomException e) {
+            } catch (CustomException e) {
                 ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }
-        close();
-        dispose();
-    }
-
-    @Override
-    public final void close() {
-        stage.fireEvent(
-                new WindowEvent(
-                        stage,
-                        WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-        );
-        stage.close();
-    }
-
-    @Override
-    public final void setCloseEvent() {
-        stage.setOnCloseRequest((event -> {
-            App.getWindowManager().removeWindow(window);
-        }));
-    }
-
-    @Override
-    public final void register(final Window pWindow) {
-        App.getWindowManager().addWindow(pWindow);
+        window.close(this::dispose);
     }
 
     /**
@@ -197,11 +168,17 @@ public class CreatorWindowController implements Manageable{
     }
 
     /**
-     * Shows the stage when the view has finished setting up.
+     * Shows the creation window.
      */
     public final void show() {
+        window.show();
+    }
+
+    /**
+     * Creates a window that can be managed.
+     */
+    public final void setupWindow() {
         window = new Window(stage, this);
-        register(window);
-        stage.show();
+        window.register();
     }
 }

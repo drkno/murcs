@@ -16,12 +16,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
-import sws.murcs.controller.windowManagement.Manageable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -39,7 +37,7 @@ import java.util.List;
 /**
  * Controller for the report generator.
  */
-public class ReportGeneratorController implements Manageable{
+public class ReportGeneratorController {
 
     /**
      * Contains all of the buttons in the ReportGenerator Window (Generate/Cancel).
@@ -355,7 +353,7 @@ public class ReportGeneratorController implements Manageable{
      */
     @FXML
     private void cancelButtonClicked(final ActionEvent event) {
-        close();
+        window.close();
     }
 
     /**
@@ -378,7 +376,7 @@ public class ReportGeneratorController implements Manageable{
                 if (file != null) {
                     generateReport(file);
                     PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                    close();
+                    window.close();
                 }
             } catch (Exception e) {
                 if (file != null) {
@@ -463,34 +461,17 @@ public class ReportGeneratorController implements Manageable{
     }
 
     /**
-     * Closes the window.
+     * Shows the creation window.
      */
-    public final void close() {
-        stage.fireEvent(
-                new WindowEvent(
-                        stage,
-                        WindowEvent.WINDOW_CLOSE_REQUEST
-                )
-        );
-        stage.close();
-    }
-
-    @Override
-    public final void setCloseEvent() {
-        stage.setOnCloseRequest((event -> {
-            App.getWindowManager().removeWindow(window);
-        }));
-    }
-
-    @Override
-    public final void register(final Window pWindow) {
-        App.getWindowManager().addWindow(pWindow);
-    }
-
-    @Override
     public final void show() {
+        window.show();
+    }
+
+    /**
+     * Creates a window that can be managed.
+     */
+    public final void setUpWindow() {
         window = new Window(stage, this);
-        register(window);
-        stage.show();
+        window.register();
     }
 }

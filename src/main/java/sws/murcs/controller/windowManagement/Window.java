@@ -1,11 +1,17 @@
 package sws.murcs.controller.windowManagement;
 
 import javafx.stage.Stage;
+import sws.murcs.listeners.GenericCallback;
+import sws.murcs.view.App;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 
 /**
  * A Wrapper class for linking stages and controllers together, so that they can be managed.
  */
-public class Window {
+public class Window implements Manageable {
 
     /**
      * The stage of the window.
@@ -42,5 +48,32 @@ public class Window {
      */
     public final Object getController() {
         return controller;
+    }
+
+    /**
+     * Override for when we don't want to pass a callback.
+     */
+    public final void close() {
+        close(() -> { });
+    }
+
+    @Override
+    public final void close(final GenericCallback callback) {
+        App.getWindowManager().removeWindow(this);
+        stage.close();
+        callback.call();
+    }
+
+    @Override
+    public final void register() {
+        App.getWindowManager().addWindow(this);
+        stage.setOnCloseRequest((event -> {
+            App.getWindowManager().removeWindow(this);
+        }));
+    }
+
+    @Override
+    public final void show() {
+        stage.show();
     }
 }
