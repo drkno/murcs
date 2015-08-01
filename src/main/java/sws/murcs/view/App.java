@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
-import sws.murcs.controller.windowManagement.ShortcutManager;
+import sws.murcs.controller.windowManagement.ShortcutManagerthing;
 import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -70,13 +70,13 @@ public class App extends Application {
     /**
      * The manager for global shortcuts.
      */
-    private static ShortcutManager shortcutManager;
+    private static ShortcutManagerthing shortcutManager;
 
     /**
      * Gets the shortcut manager.
      * @return The shortcut manager.
      */
-    public static ShortcutManager getShortcutManager() {
+    public static ShortcutManagerthing getShortcutManager() {
         return shortcutManager;
     }
 
@@ -176,7 +176,7 @@ public class App extends Application {
         }
 
         if (shortcutManager == null) {
-            shortcutManager = new ShortcutManager();
+            shortcutManager = new ShortcutManagerthing();
         }
 
         // Loads the primary fxml and sets appController as its controller

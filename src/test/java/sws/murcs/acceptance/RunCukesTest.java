@@ -7,6 +7,6 @@ import org.junit.runner.RunWith;
 @RunWith(Cucumber.class)
 @CucumberOptions(plugin = {"pretty", "json:target/cucumber.json"},
         features = {"src/test/resources/sws/murcs"},
-        tags = {"~@Manual", "~@WIP"})
+        tags = {"~@Manual", "~@WIP", "@Test"})
 public class RunCukesTest {
 }

@@ -10,7 +10,7 @@ import sws.murcs.view.App;
 /**
  * Used for tracking global shortcuts.
  */
-public class ShortcutManager {
+public class ShortcutManagerthing {
     /**
      * A Map storing shortcuts to functions.
      */
@@ -20,7 +20,7 @@ public class ShortcutManager {
     /**
      * Initialises the shortcut manager.
      */
-    public ShortcutManager() {
+    public ShortcutManagerthing() {
         accelerators  = FXCollections.observableArrayList();
         accelerators.addListener((ListChangeListener<Shortcut>) change -> {
             change.next();
