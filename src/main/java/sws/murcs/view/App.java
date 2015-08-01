@@ -169,6 +169,8 @@ public class App extends Application {
 
         primaryStage.show();
         stage = primaryStage;
+
+        SearchView.show();
     }
 
     /**
