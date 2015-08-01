@@ -3,6 +3,9 @@ package sws.murcs.search.tokens;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Represents a single piece of a search (e.g. "Foo")
+ */
 public class SearchToken extends Token {
 
     /**
@@ -25,6 +28,10 @@ public class SearchToken extends Token {
      */
     private Pattern searchRegex;
 
+    /**
+     * Creates a new search token with the specified query
+     * @param searchTerm The term to search for.
+     */
     public SearchToken(final String searchTerm) {
         String regexExp;
         if (assumeRegex) {
@@ -77,21 +84,3 @@ public class SearchToken extends Token {
         return matcher.find();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
