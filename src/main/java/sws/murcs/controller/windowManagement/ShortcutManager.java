@@ -10,8 +10,7 @@ import sws.murcs.view.App;
 /**
  * Used for tracking global shortcuts.
  */
-public class ShortcutManager
-{
+public class ShortcutManager {
     /**
      * A Map storing shortcuts to functions.
      */
