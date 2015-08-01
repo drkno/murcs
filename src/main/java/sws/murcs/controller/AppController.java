@@ -19,7 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.controller.editor.BacklogEditor;
-import sws.murcs.controller.windowManagement.ShortcutManagerthing;
+import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
@@ -200,7 +200,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void setUpShortCuts() {
         //Menu item shortcuts
         // You should use SHORTCUT_DOWN as it uses the COMMAND key for Mac and the CTRL key for Windows
-        ShortcutManagerthing shortcutManager = App.getShortcutManager();
+        ShortcutManager shortcutManager = App.getShortcutManager();
 
         //Global shortcuts
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
