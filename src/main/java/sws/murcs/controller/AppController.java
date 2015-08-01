@@ -322,7 +322,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             popup.show();
         }
         else {
-            Platform.exit();
+            window.close(Platform::exit);
         }
     }
 
@@ -429,12 +429,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void newModel(final ActionEvent event) {
         try {
-            if (UndoRedoManager.canRevert()) {
+            if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
                 GenericPopup popup = new GenericPopup();
-                popup.setWindowTitle("Unsaved Changes");
-                popup.setTitleText("Do you wish to save changes?");
-                popup.setMessageText("You have unsaved changes.");
-                popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+                popup.setWindowTitle("Still working on something?");
+                popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
+                popup.setMessageText("Do you want to,");
+                popup.addButton("Discard them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
                     popup.close();
                     try {
                         createNewModel();
@@ -443,7 +443,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         errorPopup.show();
                     }
                 });
-                popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                popup.addButton("Save them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
@@ -457,7 +457,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         showSaveFailedDialog();
                     }
                 });
-                popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+                popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
                 popup.show();
             }
             else {
@@ -496,11 +496,47 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Opens a specified project file, from a specified location.
+     * Opens a file.
      * @param event The event that caused the function to be called.
      */
     @FXML
     private void open(final ActionEvent event) {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+                popup.close();
+                openFile();
+            });
+            popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                // Let the user save the project
+                if (save()) {
+                    popup.close();
+                    openFile();
+                }
+            });
+            popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> {
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController() != this)
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow);
+                        });
+                popup.close();
+            });
+            popup.show();
+        }
+        else {
+            openFile();
+        }
+    }
+
+    /**
+     * Prompts the user to open an organisation.
+     */
+    private void openFile() {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
