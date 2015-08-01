@@ -12,7 +12,7 @@ import java.util.Set;
 public class SearchHandler {
 
 
-    private <T extends Model> ObservableList<SearchResult> performSearch(final Collection<T>... collections) {
+    /*private <T extends Model> ObservableList<SearchResult> performSearch(final Collection<T>... collections) {
         ObservableList<SearchResult> searchResults = FXCollections.observableArrayList();
-    }
+    }*/
 }

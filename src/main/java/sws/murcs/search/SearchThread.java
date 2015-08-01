@@ -56,7 +56,7 @@ public class SearchThread<T extends Model> {
                 if (searchValidator.matches(model.getShortName())
                         || searchValidator.matches(model.getLongName())
                         || searchValidator.matches(model.getDescription())) {
-                    searchResults.add(new SearchResult<>(model));
+                    //searchResults.add(new SearchResult<T>(model));
                 }
             }
         }
