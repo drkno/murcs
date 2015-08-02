@@ -200,19 +200,7 @@ public class PopOver extends PopupControl {
         return root;
     }
 
-    /**
-     * Shows the window in its current state.
-     */
-    public final void reshow() {
-        if (!isShowing()) {
-            Node skinNode = getSkin().getNode();
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
-            fadeOut.setFromValue(skinNode.getOpacity());
-            fadeOut.setToValue(1);
-            super.show();
-            fadeOut.play();
-        }
-    }
+
 
     /**
      * Shows the PopOver control.
@@ -344,7 +332,11 @@ public class PopOver extends PopupControl {
             FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
-            fadeOut.setOnFinished(evt -> super.hide());
+            fadeOut.setOnFinished(evt -> {
+                if (ownerWindow.isShowing()) {
+                    super.hide();
+                }
+            });
             fadeOut.play();
         }
     }
