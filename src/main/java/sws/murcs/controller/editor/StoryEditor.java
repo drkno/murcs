@@ -525,9 +525,9 @@ public class StoryEditor extends GenericEditor<Story> {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         try {
             Parent view = loader.load();
-            GenericEditor<Task> controller = loader.getController();
-            controller.setModel(newTask);
-            controller.loadObject();
+            TaskEditor controller = loader.getController();
+            controller.setTask(newTask);
+            taskContainer.getChildren().add(view);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
