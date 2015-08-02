@@ -208,6 +208,8 @@ public class PopOver extends PopupControl {
      */
     public final void show(final Node owner) {
         show(owner, defaultOffset);
+        ownerWindow = owner.getScene().getWindow();
+        ownerWindow.setOnHiding(ownerWindowCloseListener);
     }
 
     /**
@@ -249,14 +251,14 @@ public class PopOver extends PopupControl {
     public final void show(final Window owner) {
         super.show(owner);
         ownerWindow = owner;
-        ownerWindow.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, ownerWindowCloseListener);
+        ownerWindow.setOnHiding(ownerWindowCloseListener);
     }
 
     @Override
     public final void show(final Window theOwnerWindow, final double anchorX, final double anchorY) {
         super.show(ownerWindow, anchorX, anchorY);
         ownerWindow = theOwnerWindow;
-        ownerWindow.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, ownerWindowCloseListener);
+        ownerWindow.setOnHiding(ownerWindowCloseListener);
     }
 
     /**
@@ -311,7 +313,7 @@ public class PopOver extends PopupControl {
         fadeIn.setToValue(1);
         fadeIn.play();
 
-        ownerWindow.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, ownerWindowCloseListener);
+        ownerWindow.setOnHiding(ownerWindowCloseListener);
     }
 
     /**
@@ -320,9 +322,6 @@ public class PopOver extends PopupControl {
     private void ownerWindowClosing() {
         fadeDuration = 0;
         hide();
-        if (ownerWindow != null) {
-            ownerWindow.removeEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, ownerWindowCloseListener);
-        }
     }
 
     @Override
@@ -333,9 +332,7 @@ public class PopOver extends PopupControl {
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(evt -> {
-                if (ownerWindow.isShowing()) {
-                    super.hide();
-                }
+                super.hide();
             });
             fadeOut.play();
         }
