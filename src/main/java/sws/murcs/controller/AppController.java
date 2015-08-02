@@ -294,6 +294,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void fileQuitPress(final ActionEvent event) {
+        borderPaneMain.requestFocus();
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Still working on something?");
