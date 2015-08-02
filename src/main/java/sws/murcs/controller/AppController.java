@@ -297,32 +297,37 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
-            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
-                window.close(Platform::exit);
+                App.getWindowManager().cleanUp();
+                Platform.exit();
             });
-            popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                // Let the user save the project
-                if (save()) {
-                    popup.close();
-                    window.close(Platform::exit);
-                }
-            });
-            popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> {
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (save()) {
+                        popup.close();
+                        App.getWindowManager().cleanUp();
+                        Platform.exit();
+                    }
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
-                        .filter(openWindow -> openWindow.getController() != this)
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                    App.getWindowManager().bringToTop(openWindow);
-                });
-                popup.close();
+                            App.getWindowManager().bringToTop(openWindow);
+                        });
             });
             popup.show();
         }
         else {
-            window.close(Platform::exit);
+            App.getWindowManager().cleanUp();
+            Platform.exit();
         }
     }
 
@@ -373,8 +378,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
-            popup.show();
+            ErrorReporter.get().reportError(e, "Something went wrong saving :(");
         }
         return false;
     }
@@ -417,7 +421,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            showSaveFailedDialog();
+            ErrorReporter.get().reportError(e, "Something went wrong saving :(");
         }
         return false;
     }
@@ -428,44 +432,53 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void newModel(final ActionEvent event) {
-        try {
-            if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-                GenericPopup popup = new GenericPopup();
-                popup.setWindowTitle("Still working on something?");
-                popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
-                popup.setMessageText("Do you want to,");
-                popup.addButton("Discard them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
-                    popup.close();
-                    try {
-                        createNewModel();
-                    } catch (Exception e) {
-                        GenericPopup errorPopup = new GenericPopup(e);
-                        errorPopup.show();
-                    }
-                });
-                popup.addButton("Save them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup();
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+                popup.close();
+                try {
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
+                    createNewModel();
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
+                }
+            });
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
                         try {
+                            // Close all windows which are not the main app.
+                            App.getWindowManager().cleanUp();
                             createNewModel();
                         } catch (Exception e) {
-                            showSaveFailedDialog();
+                            ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
                         }
                     }
-                    else {
-                        showSaveFailedDialog();
-                    }
                 });
-                popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
-                popup.show();
             }
-            else {
-                createNewModel();
-            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow);
+                        });
+            });
+            popup.show();
         }
-        catch (Exception e) {
-            showSaveFailedDialog();
+        else {
+            try {
+                createNewModel();
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
+            }
         }
     }
 
@@ -477,7 +490,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         String message = "Something went wrong saving";
         errorPopup.setTitleText("Something went wrong");
         errorPopup.setMessageText(message);
-        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> errorPopup.close());
+        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, errorPopup::close);
         errorPopup.show();
     }
 
@@ -504,27 +517,35 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup();
             popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something or have unsaved changes.");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
-            popup.addButton("Discard them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
-                popup.close();
-                openFile();
-            });
-            popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                // Let the user save the project
-                if (save()) {
+            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+                if (openFile()) {
                     popup.close();
-                    openFile();
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
                 }
             });
-            popup.addButton("Back to safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> {
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (save()) {
+                        if (openFile()) {
+                            popup.close();
+                            // Close all windows which are not the main app.
+                            App.getWindowManager().cleanUp();
+                        }
+                    }
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
-                        .filter(openWindow -> openWindow.getController() != this)
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow);
                         });
-                popup.close();
             });
             popup.show();
         }
@@ -536,7 +557,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     /**
      * Prompts the user to open an organisation.
      */
-    private void openFile() {
+    private boolean openFile() {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
@@ -559,6 +580,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 //This happens because forget clears the navigation history
                 displayList.getSelectionModel().clearSelection();
                 displayList.getSelectionModel().select(0);
+                return true;
+            }
+            else {
+                return false;
             }
         }
         catch (Exception e) {
@@ -567,6 +592,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
                     + "Please use the version it was created with to open the file.");
             popup.show();
+            return false;
         }
     }
 
@@ -618,37 +644,46 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void revert(final ActionEvent event) {
-        if (UndoRedoManager.canRevert()) {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup();
-            popup.setTitleText("Do you wish to revert changes?");
-            popup.setMessageText("There are unsaved changes that will be lost if you continue.\n"
-                    + "If you wish to save your current changes first press 'Save'.");
-            popup.addButton("Revert", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
-                popup.close();
+            popup.setTitleText("Revert changes?");
+            popup.setMessageText("Look like you are still working on something.\nChanges will be lost if you continue.");
+            popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.revert(0);
-                } catch (Exception e) {
-                    GenericPopup errorPopup = new GenericPopup(e);
-                    errorPopup.show();
-                }
-                selectItem(null);
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                // Let the user save the project
-                if (saveAs(null, false)) {
                     popup.close();
-                    try {
-                        UndoRedoManager.revert(0);
-                    } catch (Exception e) {
-                        GenericPopup errorPopup = new GenericPopup(e);
-                        errorPopup.show();
-                    }
-                }
-                else {
-                    showSaveFailedDialog();
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
+                    selectItem(null);
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
                 }
             });
-            popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (saveAs(null, false)) {
+                        try {
+                            UndoRedoManager.revert(0);
+                            popup.close();
+                            // Close all windows which are not the main app.
+                            App.getWindowManager().cleanUp();
+                            selectItem(null);
+                        } catch (Exception e) {
+                            ErrorReporter.get().reportError(e, "Something went wrong saving the organisation");
+                        }
+                    }
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow);
+                        });
+            });
             popup.show();
         }
     }
@@ -813,14 +848,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         popup.setTitleText("Really delete?");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
             popup.close();
             NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             updateBackForwardButtons();
         });
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
         popup.show();
     }
 
@@ -930,11 +965,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             e.consume();
             fileQuitPress(null);
         });
-        try {
-            setUpShortCuts();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        setUpShortCuts();
     }
 }

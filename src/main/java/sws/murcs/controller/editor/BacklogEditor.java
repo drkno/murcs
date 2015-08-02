@@ -699,7 +699,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     popup.setTitleText("Are you sure?");
                     popup.setMessageText("Are you sure you wish to remove the story \""
                             + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(p -> {
+                    popup.addYesNoButtons(() -> {
                         getModel().removeStory(story);
                         updateStoryTable();
                         updateAvailableStories();

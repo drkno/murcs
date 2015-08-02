@@ -1,11 +1,13 @@
 package sws.murcs.controller.windowManagement;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.scene.input.KeyCombination;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
+
+import java.util.TreeSet;
 
 /**
  * Used for tracking global shortcuts.
@@ -14,34 +16,28 @@ public class ShortcutManager {
     /**
      * A Map storing shortcuts to functions.
      */
-    ObservableList<Shortcut> accelerators;
-
+    ObservableSet<Shortcut> accelerators;
 
     /**
      * Initialises the shortcut manager.
      */
     public ShortcutManager() {
-        accelerators  = FXCollections.observableArrayList();
-        accelerators.addListener((ListChangeListener<Shortcut>) change -> {
-            change.next();
+        accelerators  = FXCollections.observableSet(new TreeSet<>());
+        accelerators.addListener((SetChangeListener<Shortcut>) change -> {
             if (change.wasRemoved()) {
-                for (Shortcut shortcut: change.getRemoved()) {
-                    for (Window windows : App.getWindowManager().getAllWindows()) {
-                        windows.stage
-                                .getScene()
-                                .getAccelerators()
-                                .remove(shortcut.shortcutKeys);
-                    }
+                for (Window windows : App.getWindowManager().getAllWindows()) {
+                    windows.stage
+                            .getScene()
+                            .getAccelerators()
+                            .remove(change.getElementRemoved().shortcutKeys);
                 }
             }
             else if (change.wasAdded()) {
-                for (Shortcut shortcut: change.getAddedSubList()) {
-                    for (Window windows : App.getWindowManager().getAllWindows()) {
-                        windows.stage
-                                .getScene()
-                                .getAccelerators()
-                                .put(shortcut.shortcutKeys, shortcut.callback::call);
-                    }
+                for (Window windows : App.getWindowManager().getAllWindows()) {
+                    windows.stage
+                            .getScene()
+                            .getAccelerators()
+                            .put(change.getElementAdded().shortcutKeys, change.getElementAdded().callback::call);
                 }
             }
         });
@@ -80,11 +76,7 @@ public class ShortcutManager {
      * @param keyCombination The short cut to remove
      */
     public final void removeShortcut(final KeyCombination keyCombination) {
-        for (Shortcut shortcut: accelerators) {
-            if (shortcut.shortcutKeys == keyCombination) {
-                accelerators.remove(shortcut);
-            }
-        }
+        accelerators.stream().filter(shortcut -> shortcut.shortcutKeys == keyCombination).forEach(accelerators::remove);
     }
 
     /**

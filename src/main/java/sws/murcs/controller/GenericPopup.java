@@ -14,9 +14,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
-
-import java.util.function.Consumer;
 
 /**
  * Generic popup creator and controller.
@@ -182,7 +181,7 @@ public class GenericPopup extends AnchorPane {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(m -> window.close());
+            addOkButton(window::close);
         }
     }
 
@@ -200,12 +199,12 @@ public class GenericPopup extends AnchorPane {
     public final void addButton(final String buttonText,
                                 final Position position,
                                 final Action action,
-                                final Consumer func) {
+                                final GenericCallback func) {
         Button button = new Button(buttonText);
         //button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
-        button.setOnAction((a) -> func.accept(null));
+        button.setOnAction((a) -> func.call());
 
         switch (action) {
             case DEFAULT:
@@ -251,7 +250,7 @@ public class GenericPopup extends AnchorPane {
         }
 
         if (!buttonsDefined) {
-            addOkButton(m -> window.close());
+            addOkButton(window::close);
         }
 
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -314,8 +313,8 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    public final void addOkCancelButtons(final Consumer okFunction) {
-        addOkCancelButtons(okFunction, m -> window.close());
+    public final void addOkCancelButtons(final GenericCallback okFunction) {
+        addOkCancelButtons(okFunction, window::close);
     }
 
     /**
@@ -323,8 +322,8 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog).
      * @param yesFunction The function you want to call on the yes button being clicked.
      */
-    public final void addYesNoButtons(final Consumer yesFunction) {
-        addYesNoButtons(yesFunction, m -> window.close());
+    public final void addYesNoButtons(final GenericCallback yesFunction) {
+        addYesNoButtons(yesFunction, window::close);
     }
 
     /**
@@ -333,7 +332,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
+    public final void addOkCancelButtons(final GenericCallback okFunction, final GenericCallback cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -344,7 +343,7 @@ public class GenericPopup extends AnchorPane {
      * @param yesFunction The function you want to call on yes button click.
      * @param noFunction The function you want to call on no button click.
      */
-    public final void addYesNoButtons(final Consumer yesFunction, final Consumer noFunction) {
+    public final void addYesNoButtons(final GenericCallback yesFunction, final GenericCallback noFunction) {
         addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction);
         addButton("No", Position.RIGHT, Action.CANCEL, noFunction);
     }
@@ -353,7 +352,7 @@ public class GenericPopup extends AnchorPane {
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    public final void addOkButton(final Consumer okFunction) {
+    public final void addOkButton(final GenericCallback okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

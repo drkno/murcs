@@ -112,6 +112,7 @@ public class ErrorReportPopup extends AnchorPane {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this);
         window.register();
+        window.addGlobalShortcutsToWindow();
         window.show();
         Platform.runLater(messageTitle::requestFocus);
     }

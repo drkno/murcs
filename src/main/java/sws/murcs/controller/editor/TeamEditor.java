@@ -339,7 +339,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 message += "\nThey are currently the teams Product Owner.";
             }
             popup.setMessageText(message);
-            popup.addYesNoButtons(f -> {
+            popup.addYesNoButtons(() -> {
                 allocatablePeople.add(person);
                 Node memberNode = memberNodeIndex.get(person);
                 teamMembersContainer.getChildren().remove(memberNode);

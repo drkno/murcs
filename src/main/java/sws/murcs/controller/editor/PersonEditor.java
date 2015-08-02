@@ -187,7 +187,7 @@ public class PersonEditor extends GenericEditor<Person> {
                     + skill.getShortName() + " from "
                     + getModel().getShortName() + "?");
             popup.setTitleText("Remove Skill from Person");
-            popup.addYesNoButtons(func -> {
+            popup.addYesNoButtons(() -> {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);

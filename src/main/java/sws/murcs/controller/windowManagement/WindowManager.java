@@ -2,6 +2,7 @@ package sws.murcs.controller.windowManagement;
 
 
 import javafx.collections.FXCollections;
+import sws.murcs.controller.AppController;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -189,11 +190,14 @@ public class WindowManager {
     }
 
     /**
-     * Cleans up all open windows.
+     * Cleans up all open windows which are not the main controller.
      */
     public final void cleanUp() {
-        for (Window window: windows) {
-            window.close(null);
+        for (int i = 0; i < windows.size(); i++) {
+            if (windows.get(i).getController().getClass() != AppController.class) {
+                windows.get(i).close();
+                i--;
+            }
         }
     }
 }

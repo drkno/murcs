@@ -380,7 +380,7 @@ public class StoryEditor extends GenericEditor<Story> {
             popup.setMessageText("Are you sure you want to remove the dependency "
                     + newDependency.getShortName() + "?");
             popup.setTitleText("Remove Dependency");
-            popup.addYesNoButtons(func -> {
+            popup.addYesNoButtons(() -> {
                 searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
                 dependenciesContainer.getChildren().remove(dependencyNode);
@@ -614,7 +614,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 GenericPopup popup = new GenericPopup();
                 popup.setTitleText("Are you sure?");
                 popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
-                popup.addYesNoButtons(p -> {
+                popup.addYesNoButtons(() -> {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
                     popup.close();

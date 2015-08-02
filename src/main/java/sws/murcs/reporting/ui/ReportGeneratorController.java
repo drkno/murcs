@@ -473,5 +473,6 @@ public class ReportGeneratorController {
     public final void setUpWindow() {
         window = new Window(stage, this);
         window.register();
+        window.addGlobalShortcutsToWindow();
     }
 }
