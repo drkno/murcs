@@ -171,18 +171,30 @@ public class GenericPopup extends AnchorPane {
         popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
-        popupStage.setResizable(false);
+        popupStage.setResizable(true);
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
+        popupStage.sizeToScene();
+        setupWindow();
 
         if (exception != null) {
             setMessageText(exception.getMessage());
             addOkButton(window::close);
         }
+    }
+
+    /**
+     * Sets up a window for the popup.
+     */
+    private void setupWindow() {
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(App.getStage());
+        window = new Window(popupStage, this);
+        window.register();
     }
 
 
@@ -246,17 +258,12 @@ public class GenericPopup extends AnchorPane {
 
             messageImage.setVisible(false);
             messageTitle.setVisible(false);
-            popupStage.setHeight(defaultPopUpHeight);
+            //popupStage.setHeight(defaultPopUpHeight);
         }
 
         if (!buttonsDefined) {
             addOkButton(window::close);
         }
-
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.initOwner(App.getStage());
-        window = new Window(popupStage, this);
-        window.register();
         window.show();
     }
 
