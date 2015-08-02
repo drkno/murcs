@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -72,6 +73,21 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     private String errorMessage = "";
 
     /**
+     * Padding to use within the error message popover.
+     */
+    private final Insets errorMessagePopoverPadding = new Insets(0, 15, 0, 15);
+
+    /**
+     * Error message PopOver.
+     */
+    private PopOver errorMessagePopover;
+
+    /**
+     * Listener for focus on error fields.
+     */
+    private ChangeListener<Boolean> errorMessagePopoverListener;
+
+    /**
      * A generic editor for editing models.
      */
     public GenericEditor() {
@@ -113,6 +129,38 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         for (Node node : invalidNodes) {
             if (!node.getStyleClass().contains("error")) {
                 node.getStyleClass().add("error");
+
+
+                if (errorMessagePopover == null) {
+                    Label errorLabel = new Label();
+                    errorLabel.setPadding(errorMessagePopoverPadding);
+                    errorMessagePopover = new PopOver(errorLabel);
+                    errorMessagePopover.detachableProperty().setValue(false);
+                    errorMessagePopover.autoHideProperty().setValue(false);
+                }
+
+                if (errorMessagePopoverListener == null) {
+                    errorMessagePopoverListener = (observable, oldValue, newValue) -> {
+                        //Label errorLabel = (Label) errorMessagePopover.contentNodeProperty().get();
+                        System.err.println(newValue);
+                        if (newValue) {
+                            //errorLabel.setText(errorMessage);
+                            errorMessagePopover.show(node);
+                        }
+                        else {
+                            // because of a dispose cycle race condition
+                            if (errorMessagePopover != null) {
+                                errorMessagePopover.hide();
+                            }
+                        }
+                    };
+                }
+                node.focusedProperty().addListener(errorMessagePopoverListener);
+                if (node.isFocused()) {
+                    Label errorLabel = (Label) errorMessagePopover.contentNodeProperty().get();
+                    errorLabel.setText(errorMessage);
+                    errorMessagePopover.show(node);
+                }
             }
         }
         labelErrorMessage.setText(errorMessage);
@@ -124,10 +172,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     public final void clearErrors() {
         for (Node node : invalidNodes) {
             node.getStyleClass().removeAll(Collections.singleton("error"));
+            node.focusedProperty().removeListener(errorMessagePopoverListener);
         }
         errorMessage = "";
         invalidNodes.clear();
-
+        if (errorMessagePopover != null) {
+            //errorMessagePopover.hide();
+        }
         labelErrorMessage.setText(errorMessage);
     }
 
@@ -189,6 +240,16 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         clearErrors();
+        if (invalidNodes != null && errorMessagePopoverListener != null) {
+            for (Node node : invalidNodes) {
+                node.focusedProperty().removeListener(errorMessagePopoverListener);
+            }
+        }
+        errorMessagePopoverListener = null;
+        if (errorMessagePopover != null) {
+            errorMessagePopover.hide();
+        }
+        errorMessagePopover = null;
         saveButton = null;
     }
 

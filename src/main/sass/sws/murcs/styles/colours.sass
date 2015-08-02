@@ -47,3 +47,10 @@ $backlog-story-state-red: transparent -fx-box-border transparent material-color(
 $backlog-story-state-orange: transparent -fx-box-border transparent material-color('orange', '500')
 $backlog-story-state-green: transparent -fx-box-border transparent material-color('green', '500')
 
+/* opacify() doesn't appear to be working correctly for white and black
+  when the opacity values are very close to an actual colour value. */
+$popover-background-fill-colour: rgba(255, 255, 255, 0.95)
+$popover-close-line-colour: material-color('white', '500')
+$popover-close-fill-colour: material-color('grey', '500')
+$popover-blur-shadow-colour: rgba(0, 0, 0, 0.2)
+$popover-border-effect-colour: rgba(0, 0, 0, 0.95)
