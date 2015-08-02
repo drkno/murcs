@@ -8,14 +8,17 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -64,13 +67,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * All the invalid sections in the form.
      */
-    private Collection<Node> invalidNodes = new ArrayList<>();
-
-    /**
-     * A helpful error message telling you about all that's wrong
-     * in the world.
-     */
-    private String errorMessage = "";
+    private Collection<Map.Entry<Node, String>> invalidNodes = new ArrayList<>();
 
     /**
      * Padding to use within the error message popover.
@@ -126,60 +123,57 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Highlights errors on the form.
      */
     private void showErrors() {
-        for (Node node : invalidNodes) {
-            if (!node.getStyleClass().contains("error")) {
-                node.getStyleClass().add("error");
+        if (errorMessagePopover == null) {
+            Label errorLabel = new Label();
+            errorLabel.setPadding(errorMessagePopoverPadding);
+            errorMessagePopover = new PopOver(errorLabel);
+            errorMessagePopover.detachableProperty().setValue(false);
+            errorMessagePopover.autoHideProperty().setValue(false);
 
-
-                if (errorMessagePopover == null) {
-                    Label errorLabel = new Label();
-                    errorLabel.setPadding(errorMessagePopoverPadding);
-                    errorMessagePopover = new PopOver(errorLabel);
-                    errorMessagePopover.detachableProperty().setValue(false);
-                    errorMessagePopover.autoHideProperty().setValue(false);
+            errorMessagePopoverListener = (observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    observable.removeListener(errorMessagePopoverListener);
+                    errorMessagePopover.hide();
                 }
+            };
+        }
 
-                if (errorMessagePopoverListener == null) {
-                    errorMessagePopoverListener = (observable, oldValue, newValue) -> {
-                        //Label errorLabel = (Label) errorMessagePopover.contentNodeProperty().get();
-                        System.err.println(newValue);
-                        if (newValue) {
-                            //errorLabel.setText(errorMessage);
-                            errorMessagePopover.show(node);
-                        }
-                        else {
-                            // because of a dispose cycle race condition
-                            if (errorMessagePopover != null) {
-                                errorMessagePopover.hide();
-                            }
-                        }
-                    };
-                }
-                node.focusedProperty().addListener(errorMessagePopoverListener);
-                if (node.isFocused()) {
+        String errorMessage = "";
+        for (Map.Entry<Node, String> entry : invalidNodes) {
+            if (!entry.getKey().getStyleClass().contains("error")) {
+                entry.getKey().getStyleClass().add("error");
+
+                if (entry.getKey().isFocused()) {
                     Label errorLabel = (Label) errorMessagePopover.contentNodeProperty().get();
-                    errorLabel.setText(errorMessage);
-                    errorMessagePopover.show(node);
+                    errorLabel.setText(entry.getValue());
+                    errorMessagePopover.show(entry.getKey());
+                    entry.getKey().focusedProperty().addListener(errorMessagePopoverListener);
                 }
             }
+            errorMessage += entry.getValue() + "\n";
         }
-        labelErrorMessage.setText(errorMessage);
+        if (errorMessage.length() > 2) {
+            labelErrorMessage.setText(errorMessage.substring(0, errorMessage.length() - 1));
+        }
     }
 
     /**
      * Clears the errors on the form.
      */
     public final void clearErrors() {
-        for (Node node : invalidNodes) {
-            node.getStyleClass().removeAll(Collections.singleton("error"));
-            node.focusedProperty().removeListener(errorMessagePopoverListener);
+        boolean hideError = true;
+        for (Map.Entry<Node, String> entry : invalidNodes) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+            if (entry.getKey().isFocused()) {
+                hideError = false;
+            }
         }
-        errorMessage = "";
         invalidNodes.clear();
-        if (errorMessagePopover != null) {
-            //errorMessagePopover.hide();
+        if (hideError && errorMessagePopover != null) {
+            errorMessagePopover.hide();
         }
-        labelErrorMessage.setText(errorMessage);
+        labelErrorMessage.setText("");
     }
 
     /**
@@ -210,20 +204,19 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Adds an error to the form and highlights the node that caused it.
      * @param invalidNode The node that has the problem
      * @param helpfulMessage A helpful message describing the problem.
+     * @throws UnsupportedOperationException when an unhelpful error message is provided or
+     * when no node is provided to work with.
      */
     protected final void addFormError(final Node invalidNode, final String helpfulMessage) {
-        if (invalidNode != null) {
-            invalidNodes.add(invalidNode);
+        if (invalidNode == null) {
+            throw new UnsupportedOperationException("A node must be provided.");
         }
 
         if (helpfulMessage == null || helpfulMessage.isEmpty()) {
-            return;
+            throw new UnsupportedOperationException("An error message must be provided.");
         }
 
-        if (errorMessage.length() > 0) {
-            errorMessage += "\n";
-        }
-        errorMessage += helpfulMessage;
+        invalidNodes.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
         showErrors();
     }
 
@@ -240,16 +233,9 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         clearErrors();
-        if (invalidNodes != null && errorMessagePopoverListener != null) {
-            for (Node node : invalidNodes) {
-                node.focusedProperty().removeListener(errorMessagePopoverListener);
-            }
-        }
+        // don't dispose of errorMessagePopover, as it is a window in its own right
+        // it needs to decide if that is appropriate by itself
         errorMessagePopoverListener = null;
-        if (errorMessagePopover != null) {
-            errorMessagePopover.hide();
-        }
-        errorMessagePopover = null;
         saveButton = null;
     }
 
