@@ -150,7 +150,7 @@ public class WindowManager {
      * @param newPosition The new position to set the window to.
      */
     public final void setWindowPosition(final Window window, final int newPosition) {
-        if (newPosition < 0) {
+        if (newPosition <= 0) {
             windows.set(0, window);
         }
         else if (newPosition < windows.size()) {

@@ -183,7 +183,7 @@ public class GenericPopup extends AnchorPane {
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(window::close);
+            addOkButton(this::close);
         }
     }
 
@@ -262,7 +262,7 @@ public class GenericPopup extends AnchorPane {
         }
 
         if (!buttonsDefined) {
-            addOkButton(window::close);
+            addOkButton(this::close);
         }
         window.show();
     }
@@ -321,7 +321,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on the ok button being clicked.
      */
     public final void addOkCancelButtons(final GenericCallback okFunction) {
-        addOkCancelButtons(okFunction, window::close);
+        addOkCancelButtons(okFunction, this::close);
     }
 
     /**
@@ -330,7 +330,7 @@ public class GenericPopup extends AnchorPane {
      * @param yesFunction The function you want to call on the yes button being clicked.
      */
     public final void addYesNoButtons(final GenericCallback yesFunction) {
-        addYesNoButtons(yesFunction, window::close);
+        addYesNoButtons(yesFunction, this::close);
     }
 
     /**
