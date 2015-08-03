@@ -173,6 +173,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         addToolBar();
     }
 
+    /**
+     * Adds the toolbar to the applicatoin window.
+     */
     private void addToolBar() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
