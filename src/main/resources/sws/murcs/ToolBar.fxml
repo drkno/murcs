@@ -106,6 +106,18 @@
                         <Tooltip text="Add new item" />
                      </tooltip>
                   </SplitMenuButton>
+                  <Button fx:id="removeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeButtonClick" prefHeight="50.0" prefWidth="50.0">
+                     <graphic>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/delete.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Delete" />
+                     </tooltip>
+                  </Button>
                   <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="50.0" prefWidth="50.0">
                      <graphic>
                         <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">

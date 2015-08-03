@@ -46,6 +46,8 @@ public interface ToolBarCommands {
      */
     void add(ActionEvent event);
 
+    void remove(ActionEvent event);
+
     /**
      * The function to be called when you click the generate report button on the toolbar.
      * @param event Clicking the generate report button on the toolbar.

@@ -13,7 +13,7 @@ public class ToolBarController {
      * The back and forward buttons on the toolbar. Also the undo, redo and revert buttons.
      */
     @FXML
-    private Button backButton, forwardButton, undoButton, redoButton, revertButton;
+    private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton;
 
     /**
      * The controller that is linked to the toolbar that manages all of the commands coming from the toolbar.
@@ -122,12 +122,21 @@ public class ToolBarController {
     }
 
     /**
-     * The function called when you send feedback the back button. It redirects it through the linkedController.
+     * The function called when you click the send feedback button. It redirects it through the linkedController.
      * @param event Clicking the send feedback button.
      */
     @FXML
     private void sendFeedbackButtonClick(final ActionEvent event) {
         linkedController.reportBug();
+    }
+
+    /**
+     * The function called when you click the remove button. It redirects it through the linkedController.
+     * @param event Clicking the remove button in the toolbar.
+     */
+    @FXML
+    private void removeButtonClick(final ActionEvent event) {
+        linkedController.remove(event);
     }
 
     /**
@@ -150,6 +159,10 @@ public class ToolBarController {
 
     public final void updateRevertButton(boolean disabled) {
         revertButton.setDisable(disabled);
+    }
+
+    public final void removeButtonDisabled(boolean disabled) {
+        removeButton.setDisable(disabled);
     }
 
 }

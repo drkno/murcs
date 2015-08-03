@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -100,12 +99,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     private ListView displayList;
-
-    /**
-     * The button used to remove models from the display list.
-     */
-    @FXML
-    private Button removeButton;
 
     /**
      * The content pane contains the information about the
@@ -248,7 +241,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             add(null);
         }
         if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
-            removeClicked(null);
+            remove(null);
         }
         if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
             back(null);
@@ -737,7 +730,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    private void removeClicked(final ActionEvent event) {
+    public void remove(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
@@ -811,7 +804,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
 
         // The remove button should be greyed out
         // if no item is selected or built in skills (PO or SM) are selected
-        removeButton.setDisable(parameter == null
+        toolBarController.removeButtonDisabled(parameter == null
                 || parameter instanceof Skill
                 && (((Skill) parameter).getShortName().equals("PO")
                 || ((Skill) parameter).getShortName().equals("SM")));
