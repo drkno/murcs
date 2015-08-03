@@ -76,5 +76,4 @@ public interface ToolBarCommands {
      * @param event Clicking the open button on the toolbar.
      */
     void open(ActionEvent event);
-
 }

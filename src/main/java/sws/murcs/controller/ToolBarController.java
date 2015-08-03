@@ -2,11 +2,18 @@ package sws.murcs.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 
 /**
  * Controller for the toolbar.
  */
 public class ToolBarController {
+
+    /**
+     * The back and forward buttons on the toolbar.
+     */
+    @FXML
+    private Button backButton, forwardButton;
 
     /**
      * The controller that is linked to the toolbar that manages all of the commands coming from the toolbar.
@@ -122,4 +129,13 @@ public class ToolBarController {
     private void sendFeedbackButtonClick(final ActionEvent event) {
         linkedController.reportBug();
     }
+
+    /**
+     * Toggles the state of the back and forward buttons if they disabled or enabled.
+     */
+    public void updateBackForwardButtons() {
+        backButton.setDisable(!NavigationManager.canGoBack());
+        forwardButton.setDisable(!NavigationManager.canGoForward());
+    }
+
 }

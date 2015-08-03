@@ -108,12 +108,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private Button removeButton;
 
     /**
-     * The back and forward buttons.
-     */
-    @FXML
-    private Button backButton, forwardButton;
-
-    /**
      * The content pane contains the information about the
      * currently selected model item.
      */
@@ -131,11 +125,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private CreatorWindowView creatorWindow;
 
     /**
+     * The controller for the toolbar in the window.
+     */
+    private ToolBarController toolBarController;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
     @FXML
     public final void initialize() {
+        addToolBar();
         NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
@@ -169,8 +169,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
-
-        addToolBar();
     }
 
     /**
@@ -183,6 +181,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             titleVBox.getChildren().add(view);
             ToolBarController controller = loader.getController();
             controller.setLinkedController(this);
+            toolBarController = controller;
         }
         catch (Exception e) {
             ErrorReporter.get().reportErrorSecretly(e, "Unable to create editor");
@@ -204,7 +203,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         }
 
         NavigationManager.navigateTo((Model) newValue);
-        updateBackForwardButtons();
+        toolBarController.updateBackForwardButtons();
 
         if (oldValue == null) {
             displayList.scrollTo(newValue);
@@ -651,7 +650,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             case Remake:
             case Revert:
                 NavigationManager.clearHistory();
-                updateBackForwardButtons();
+                toolBarController.updateBackForwardButtons();
                 break;
             default: break;
         }
@@ -767,7 +766,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            updateBackForwardButtons();
+            toolBarController.updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
@@ -823,14 +822,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 contentPane.getChildren().add(editorPane.getView());
             }
         }
-    }
-
-    /**
-     * Toggles the state of the back and forward buttons if they disabled or enabled.
-     */
-    private void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
     }
 
     /**
