@@ -1,6 +1,5 @@
 package sws.murcs.model;
 
-import org.apache.commons.collections.list.UnmodifiableList;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;

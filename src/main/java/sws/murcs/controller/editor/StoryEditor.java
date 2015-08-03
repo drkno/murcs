@@ -521,16 +521,24 @@ public class StoryEditor extends GenericEditor<Story> {
      */
     @FXML
     private void createTaskClick(final ActionEvent event) {
-        Task newTask = new Task();
+        Task taskToDisplay = new Task();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         try {
             Parent view = loader.load();
             TaskEditor controller = loader.getController();
-            controller.setTask(newTask);
+            controller.configure(taskToDisplay, true, this::addTask);
             taskContainer.getChildren().add(view);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
+    }
+
+    /**
+     * Adds a task to this story.
+     * @param task The task to add
+     */
+    private void addTask(final Task task) {
+        getModel().addTask(task);
     }
 
     /**

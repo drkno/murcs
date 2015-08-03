@@ -1,16 +1,6 @@
 package sws.murcs.model.helpers;
 
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
-import sws.murcs.model.WorkAllocation;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
@@ -64,6 +54,8 @@ public final class UsageHelper {
                 return findUsages((Story) model);
             case Backlog:
                 return findUsages((Backlog) model);
+            case Task:
+                return findUsages((Task) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
@@ -162,6 +154,23 @@ public final class UsageHelper {
     }
 
     /**
+     * Gets a list of all the places that a task has been used.
+     * @param task The task to find the usages for
+     * @return The usages of the story
+     */
+    private static List<Model> findUsages(final Task task) {
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        for (Story story : currentModel.getStories()) {
+            if (story.getTasks().contains(task)) {
+                List<Model> list = new ArrayList<>();
+                list.add(story);
+                return list;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Finds a model object in the organisation from a predicate.
      * If there is no Organisation to search, null will be returned.
      * @param type type that should be search.
@@ -188,6 +197,7 @@ public final class UsageHelper {
             case Release: list = (List<T>) currentModel.getReleases(); break;
             case Story: list = (List<T>) currentModel.getStories(); break;
             case Backlog: list = (List<T>) currentModel.getBacklogs(); break;
+            case Task: list = new ArrayList<T>(); break;
             default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
         }
         T foundModel = list.stream()

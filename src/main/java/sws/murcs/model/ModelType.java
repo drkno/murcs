@@ -39,7 +39,13 @@ public enum ModelType {
     /**
      * Represents the class Backlog.
      */
-    Backlog(6, sws.murcs.model.Backlog.class);
+    Backlog(6, sws.murcs.model.Backlog.class),
+
+
+    /**
+     * Represents the Task class.
+     */
+    Task(7, sws.murcs.model.Task.class);
 
     /**
      * The index of the model type in the enum.
@@ -79,6 +85,7 @@ public enum ModelType {
      * 4: Release
      * 5: Story
      * 6: Backlog
+     * 7: Task
      * @param type The type of model object.
      * @return The index for selection
      */
