@@ -3,6 +3,9 @@ package sws.murcs.controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
+/**
+ * Controller for the toolbar.
+ */
 public class ToolBarController {
 
     ToolBarCommands linkedController;

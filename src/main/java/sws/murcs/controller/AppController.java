@@ -359,7 +359,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @return If the project successfully saved.
      */
     @FXML
-    public boolean save(final ActionEvent event) {
+    public final boolean save(final ActionEvent event) {
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
@@ -383,7 +383,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @return If the project successfully saved.
      */
     @FXML
-    public boolean saveAs(final ActionEvent event) {
+    public final boolean saveAs(final ActionEvent event) {
         return saveAs(event, true);
     }
 
@@ -498,7 +498,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event that caused the function to be called.
      */
     @FXML
-    public void open(final ActionEvent event) {
+    public final void open(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
@@ -537,7 +537,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event that caused the report to be generated
      */
     @FXML
-    public void generateReport(final ActionEvent event) {
+    public final void generateReport(final ActionEvent event) {
         ReportGeneratorView reportGenerator = new ReportGeneratorView();
         reportGenerator.show();
     }
@@ -547,7 +547,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event event arguments.
      */
     @FXML
-    public void undo(final ActionEvent event) {
+    public final void undo(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
         }
@@ -563,7 +563,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event event arguments.
      */
     @FXML
-    public void redo(final ActionEvent event) {
+    public final void redo(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
         }
@@ -579,7 +579,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event event arguments.
      */
     @FXML
-    public void revert(final ActionEvent event) {
+    public final void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Do you wish to revert changes?");
@@ -659,7 +659,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event of the add button being called
      */
     @FXML
-    public void add(final ActionEvent event) {
+    public final void add(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -835,7 +835,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event that caused the function to be called.
      */
     @FXML
-    public void back(final ActionEvent event) {
+    public final void back(final ActionEvent event) {
         if (!NavigationManager.canGoBack()) {
             return;
         }
@@ -848,7 +848,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event that caused the function to be called.
      */
     @FXML
-    public void forward(final ActionEvent event) {
+    public final void forward(final ActionEvent event) {
         if (!NavigationManager.canGoForward()) {
             return;
         }
@@ -860,7 +860,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * Reports a bug to the developers.
      */
     @FXML
-    public void reportBug() {
+    public final void reportBug() {
         ErrorReporter.get().reportManually();
     }
 }
