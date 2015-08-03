@@ -41,6 +41,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+import sws.murcs.view.SearchView;
 
 import java.io.File;
 import java.util.Collection;
@@ -709,6 +710,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void removeClicked(final ActionEvent event) {
+        SearchView.show();
+        if (true) {
+            return;
+        }
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;

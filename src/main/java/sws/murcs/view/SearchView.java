@@ -1,13 +1,12 @@
 package sws.murcs.view;
 
-import java.io.IOException;
-import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import sws.murcs.controller.SearchController;
+import sws.murcs.controller.controls.popover.PopOver;
+
+import java.io.IOException;
 
 /**
  * Provides methods for starting a new search pane
@@ -22,11 +21,10 @@ public class SearchView {
 
             SearchController controller = loader.getController();
 
-            Scene scene = new Scene(parent);
-            Stage stage = new Stage(StageStyle.TRANSPARENT);
-            stage.setScene(scene);
-
-            stage.show();
+            PopOver popOver = new PopOver(parent);
+            popOver.detachableProperty().setValue(true);
+            popOver.detachedProperty().setValue(true);
+            popOver.show(App.getStage().getScene().getWindow());
 
         } catch (IOException e) {
             //We should never get here
