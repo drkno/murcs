@@ -625,24 +625,34 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             revert.setDisable(true);
+            toolBarController.updateRevertButton(true);
+            String undoPrompt = "Undo...";
             undoMenuItem.setDisable(true);
-            undoMenuItem.setText("Undo...");
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(true, undoPrompt);
             App.removeTitleStar();
         }
         else {
             revert.setDisable(false);
+            toolBarController.updateRevertButton(false);
+            String undoPrompt = "Undo " + UndoRedoManager.getRevertMessage();
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(false, undoPrompt);
             App.addTitleStar();
         }
 
         if (!UndoRedoManager.canRemake()) {
             redoMenuItem.setDisable(true);
-            redoMenuItem.setText("Redo...");
+            String redoPrompt = "Redo...";
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(true, redoPrompt);
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
+            String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(false, redoPrompt);
         }
 
         switch (change) {

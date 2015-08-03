@@ -10,10 +10,10 @@ import javafx.scene.control.Button;
 public class ToolBarController {
 
     /**
-     * The back and forward buttons on the toolbar.
+     * The back and forward buttons on the toolbar. Also the undo, redo and revert buttons.
      */
     @FXML
-    private Button backButton, forwardButton;
+    private Button backButton, forwardButton, undoButton, redoButton, revertButton;
 
     /**
      * The controller that is linked to the toolbar that manages all of the commands coming from the toolbar.
@@ -133,9 +133,23 @@ public class ToolBarController {
     /**
      * Toggles the state of the back and forward buttons if they disabled or enabled.
      */
-    public void updateBackForwardButtons() {
+    public final void updateBackForwardButtons() {
         backButton.setDisable(!NavigationManager.canGoBack());
         forwardButton.setDisable(!NavigationManager.canGoForward());
+    }
+
+    public final void updateUndoButton(boolean disabled, String tooltip) {
+        undoButton.setDisable(disabled);
+        undoButton.getTooltip().setText(tooltip);
+    }
+
+    public final void updateRedoButton(boolean disabled, String tooltip) {
+        redoButton.setDisable(disabled);
+        redoButton.getTooltip().setText(tooltip);
+    }
+
+    public final void updateRevertButton(boolean disabled) {
+        revertButton.setDisable(disabled);
     }
 
 }
