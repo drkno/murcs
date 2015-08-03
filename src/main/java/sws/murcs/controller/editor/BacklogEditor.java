@@ -10,16 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
@@ -529,6 +520,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         protected void updateItem(final Integer priority, final boolean empty) {
             super.updateItem(priority, empty);
+            setTooltip(new Tooltip());
             this.setAlignment(Pos.CENTER);
             setColorTab(highlighted.getValue());
             getStyleClass().add("default-tablecell");
@@ -570,12 +562,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
+                    getTooltip().setText("The story depends on another story with a lower priority than itself");
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
+                    getTooltip().setText("The story is ready");
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
+                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
+                            + " as ready");
                 }
             }
         }
