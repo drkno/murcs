@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
@@ -51,7 +53,7 @@ import java.util.List;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
 
     /**
      * The Menu bar for the application.
@@ -67,10 +69,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
 
     /**
-     * The side display which contains the display list.
+     * The side display which contains the display list. Also the top toolbar and menu container.
      */
     @FXML
-    private VBox vBoxSideDisplay;
+    private VBox vBoxSideDisplay, titleVBox;
 
     /**
      * The main display of the window which contains the display
@@ -167,6 +169,21 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
         updateList();
+
+        addToolBar();
+    }
+
+    private void addToolBar() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            Parent view = loader.load();
+            titleVBox.getChildren().add(view);
+            ToolBarController controller = loader.getController();
+            controller.setLinkedController(this);
+        }
+        catch (Exception e) {
+            ErrorReporter.get().reportErrorSecretly(e, "Unable to create editor");
+        }
     }
 
     /**
@@ -226,16 +243,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void handleKey(final KeyEvent event) {
         if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
-            addClicked(null);
+            add(null);
         }
         if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
             removeClicked(null);
         }
         if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
-            backClicked(null);
+            back(null);
         }
         if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
-            forwardClicked(null);
+            forward(null);
         }
     }
 
@@ -342,7 +359,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean save(final ActionEvent event) {
+    public boolean save(final ActionEvent event) {
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
@@ -366,7 +383,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean saveAs(final ActionEvent event) {
+    public boolean saveAs(final ActionEvent event) {
         return saveAs(event, true);
     }
 
@@ -481,7 +498,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void open(final ActionEvent event) {
+    public void open(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
@@ -520,7 +537,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the report to be generated
      */
     @FXML
-    private void generateReport(final ActionEvent event) {
+    public void generateReport(final ActionEvent event) {
         ReportGeneratorView reportGenerator = new ReportGeneratorView();
         reportGenerator.show();
     }
@@ -530,7 +547,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void undoMenuItemClicked(final ActionEvent event) {
+    public void undo(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
         }
@@ -546,7 +563,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void redoMenuItemClicked(final ActionEvent event) {
+    public void redo(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
         }
@@ -562,7 +579,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void revert(final ActionEvent event) {
+    public void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Do you wish to revert changes?");
@@ -642,7 +659,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event of the add button being called
      */
     @FXML
-    private void addClicked(final ActionEvent event) {
+    public void add(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -818,7 +835,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void backClicked(final ActionEvent event) {
+    public void back(final ActionEvent event) {
         if (!NavigationManager.canGoBack()) {
             return;
         }
@@ -831,7 +848,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void forwardClicked(final ActionEvent event) {
+    public void forward(final ActionEvent event) {
         if (!NavigationManager.canGoForward()) {
             return;
         }
@@ -843,7 +860,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Reports a bug to the developers.
      */
     @FXML
-    private void reportBug() {
+    public void reportBug() {
         ErrorReporter.get().reportManually();
     }
 }
