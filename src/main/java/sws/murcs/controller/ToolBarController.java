@@ -147,21 +147,39 @@ public class ToolBarController {
         forwardButton.setDisable(!NavigationManager.canGoForward());
     }
 
-    public final void updateUndoButton(boolean disabled, String tooltip) {
+    /**
+     * Updates the undo button on the toolbar. Changing whether or not it is disabled and also changing the tooltip.
+     * @param disabled Whether or not the button should be disabled.
+     * @param tooltip The tooltip that should be displayed on the button.
+     */
+    public final void updateUndoButton(final boolean disabled, final String tooltip) {
         undoButton.setDisable(disabled);
         undoButton.getTooltip().setText(tooltip);
     }
 
-    public final void updateRedoButton(boolean disabled, String tooltip) {
+    /**
+     * Updates the redo button on the toolbar. Changing whether or not it is disabled and also changing the tooltip.
+     * @param disabled Wether or not the button should be disabled.
+     * @param tooltip The tooltip that should be displayed on the button.
+     */
+    public final void updateRedoButton(final boolean disabled, final String tooltip) {
         redoButton.setDisable(disabled);
         redoButton.getTooltip().setText(tooltip);
     }
 
-    public final void updateRevertButton(boolean disabled) {
+    /**
+     * Updates the revert button, depending on whether or not it should be enabled or disabled.
+     * @param disabled Whether or not the button should be enabled or disabled.
+     */
+    public final void updateRevertButton(final boolean disabled) {
         revertButton.setDisable(disabled);
     }
 
-    public final void removeButtonDisabled(boolean disabled) {
+    /**
+     * Sets wether or not the remove button is disabled or not.
+     * @param disabled Whether or not it is disabled.
+     */
+    public final void removeButtonDisabled(final boolean disabled) {
         removeButton.setDisable(disabled);
     }
 
