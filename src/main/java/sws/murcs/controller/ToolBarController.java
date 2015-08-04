@@ -2,7 +2,15 @@ package sws.murcs.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.HBox;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for the toolbar.
@@ -16,10 +24,25 @@ public class ToolBarController {
     private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton;
 
     /**
+     * The toolbar sections for the toolbar.
+     */
+    @FXML
+    private HBox navigationToolBar, historyToolbar, editToolBar, reportingToolBar;
+
+    @FXML
+    private ToolBar toolBar;
+
+    /**
      * The controller that is linked to the toolbar that manages all of the commands coming from the toolbar.
      * This would usually be the controller for the fxml that you are injecting the toolbar into.
      */
-    ToolBarCommands linkedController;
+    private ToolBarCommands linkedController;
+
+    private Map<Node, Integer> toolbarPositions;
+
+    @FXML
+    private void initialize() {
+    }
 
     /**
      * Sets the linked controller for the toolbar.
@@ -183,4 +206,41 @@ public class ToolBarController {
         removeButton.setDisable(disabled);
     }
 
+    @FXML
+    private void historyToolBarToggle(ActionEvent event) {
+        historyToolbar.setVisible(!historyToolbar.visibleProperty().getValue());
+        //Todo find a solution for hiding the separators
+    }
+
+    @FXML
+    private void navigationToolBarToggle(ActionEvent event) {
+        boolean showing = !navigationToolBar.visibleProperty().getValue();
+        navigationToolBar.setVisible(showing);
+        if (showing) {
+            navigationToolBar.setPrefWidth(110);
+        }
+        else {
+            navigationToolBar.setPrefWidth(0);
+        }
+    }
+
+    private void killThoseSeperators() {
+        Node lastItem = null;
+        Node nextItem = null;
+        for (Node item : toolBar.getItems()) {
+            if (item instanceof Separator) {
+
+            }
+        }
+    }
+
+    @FXML
+    private void editToolBarToggle(ActionEvent event) {
+        editToolBar.setVisible(!editToolBar.visibleProperty().getValue());
+    }
+
+    @FXML
+    private void reportingToolBarToggle(ActionEvent event) {
+        reportingToolBar.setVisible(!reportingToolBar.visibleProperty().getValue());
+    }
 }
