@@ -48,7 +48,7 @@ public class App extends Application {
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 850;
+    private final int minimumApplicationWidth = 900;
 
     /**
      * The subString length to search over, when parsing debugging mode.
