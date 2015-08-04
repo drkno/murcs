@@ -6,8 +6,10 @@
 .table-view .column-header .label:hover, .table-view .column-header:hover
   -fx-background-color: $table-header-hover-color
 
-.table-view .row-selection:hover
+.table-view .row-selection:hover, .table-view .row-selection:focused, .table-row:selected , .table-row:focused, .table-row:hover,.table-row-cell:selected
   -fx-background-color: $table-row-highlight-color
+  -fx-table-cell-border-color: $table-row-highlight-color
+  -fx-text-fill: black
 
 .table-view
   -fx-background-color: $primary-100
