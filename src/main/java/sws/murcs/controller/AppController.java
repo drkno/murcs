@@ -730,7 +730,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    public void remove(final ActionEvent event) {
+    public final void remove(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;

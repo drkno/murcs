@@ -46,6 +46,10 @@ public interface ToolBarCommands {
      */
     void add(ActionEvent event);
 
+    /**
+     * The function to be called when you click the remove button on the toolbar.
+     * @param event Clicking the remove button.
+     */
     void remove(ActionEvent event);
 
     /**

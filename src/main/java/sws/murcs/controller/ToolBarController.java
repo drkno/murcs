@@ -3,13 +3,13 @@ package sws.murcs.controller;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Control;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Controller for the toolbar.
@@ -28,6 +28,9 @@ public class ToolBarController {
     @FXML
     private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar;
 
+    /**
+     * The overall container for the toolbar.
+     */
     @FXML
     private ToolBar toolBar;
 
@@ -36,12 +39,6 @@ public class ToolBarController {
      * This would usually be the controller for the fxml that you are injecting the toolbar into.
      */
     private ToolBarCommands linkedController;
-
-    private Map<Node, Integer> toolbarPositions;
-
-    @FXML
-    private void initialize() {
-    }
 
     /**
      * Sets the linked controller for the toolbar.
@@ -205,8 +202,13 @@ public class ToolBarController {
         removeButton.setDisable(disabled);
     }
 
+    /**
+     * Toggles the toolbar section based on the check menu item that you have clicked on. This hides or shows that
+     * section on the toolbar. The code is slightly messy but it does work well.
+     * @param event Clicking on a check menu item in the context menu for the toolbar.
+     */
     @FXML
-    private void toolBarToggle(ActionEvent event) {
+    private void toolBarToggle(final ActionEvent event) {
         CheckMenuItem menuItem = (CheckMenuItem) event.getSource();
         HBox associatedToolBar;
         switch (menuItem.getId()) {
@@ -229,6 +231,10 @@ public class ToolBarController {
         killThoseSeparators();
     }
 
+    /**
+     * As the name implies it kills the separators between the sections of the toolbar depending on which ones are
+     * currently visible.
+     */
     private void killThoseSeparators() {
         List<Node> toolBarItems = toolBar.getItems();
 
@@ -236,7 +242,9 @@ public class ToolBarController {
             Node current = toolBarItems.get(i);
 
             boolean isHBox = current instanceof HBox;
-            if (!isHBox) continue;
+            if (!isHBox) {
+                continue;
+            }
 
             Separator separator;
             if (i == toolBarItems.size() - 1) {
