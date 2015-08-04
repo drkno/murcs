@@ -152,6 +152,8 @@ public class Sprint extends Model {
      */
     public final void setBacklog(final Backlog pBacklog) {
         this.associatedBacklog = pBacklog;
+        // Any time a new backlog is introduced should also clear the previous stories added from another backlog
+        this.stories.clear();
         commit("edit sprint");
     }
 

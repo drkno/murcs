@@ -1,58 +1,101 @@
 package sws.murcs.controller.editor;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
  * The controller for editing sprints.
  */
-public class SprintEditor extends GenericEditor<Sprint>{
+public class SprintEditor extends GenericEditor<Sprint> {
     /**
-     * Text fields for the short and long name of the sprint
+     * Text fields for the short and long name of the sprint.
      */
     @FXML
     private TextField shortNameTextField, longNameTextField;
 
     /**
-     * A text area for the description of a sprint
+     * The container for stories that have been brought into this sprint.
+     */
+    @FXML
+    private VBox storiesContainer;
+
+    /**
+     * The list of stories able to be brought into a sprint derived from the backlog.
+     */
+    @FXML
+    private ComboBox<Story> storiesList;
+
+    /**
+     * A text area for the description of a sprint.
      */
     @FXML
     private TextArea descriptionTextArea;
 
     /**
-     * A combo box for picking the team associated with the sprint
+     * A combo box for picking the team associated with the sprint.
      */
     @FXML
     private ComboBox<Team> teamComboBox;
 
     /**
-     * A combobox for picking the backlog associated with a sprint
+     * A combobox for picking the backlog associated with a sprint.
      */
     @FXML
     private ComboBox<Backlog> backlogComboBox;
 
     /**
-     * A combobox for picking the release associated with a sprint
+     * A combobox for picking the release associated with a sprint.
      */
     @FXML
     private ComboBox<Release> releaseComboBox;
 
     /**
-     * DatePickers for the start and end date
+     * DatePickers for the start and end date.
      */
     @FXML
     private DatePicker startDatePicker, endDatePicker;
 
+    /**
+     * The list of stories brought into this sprint.
+     */
+    private List<Story> allocatableStories;
+
+    /**
+     *
+     */
+    private Map<Story, Node> storyNodeIndex;
+
     @Override
-    public void loadObject() {
+    public final void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         Sprint sprint = getModel();
 
@@ -85,12 +128,25 @@ public class SprintEditor extends GenericEditor<Sprint>{
 
         //Update the end date picker
         endDatePicker.setValue(sprint.getEndDate());
+
+        //Update the sprint stories
+        allocatableStories.clear();
+        if (sprint.getBacklog() != null) {
+            allocatableStories.addAll(sprint.getBacklog().getAllStories());
+            sprint.getStories().stream().forEach(allocatableStories::remove);
+        }
+
+        storiesContainer.getChildren().clear();
+        getModel().getStories().forEach(story -> {
+            Node storyNode = generateStoryNode(story);
+            storiesContainer.getChildren().add(storyNode);
+            storyNodeIndex.put(story, storyNode);
+        });
     }
 
     @Override
-    protected void saveChangesAndErrors() {
+    protected final void saveChangesAndErrors() {
         clearErrors();
-
         Sprint sprint = getModel();
 
         //Try and save the short name
@@ -125,9 +181,30 @@ public class SprintEditor extends GenericEditor<Sprint>{
         if (isNullOrNotEqual(sprint.getBacklog(), backlogComboBox.getValue())) {
             if (backlogComboBox.getValue() != null) {
                 sprint.setBacklog(backlogComboBox.getValue());
+                storiesList.getItems().clear();
+                storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
+                allocatableStories.clear();
+                allocatableStories.addAll(sprint.getBacklog().getAllStories());
+                storyNodeIndex.clear();
             }
             else {
                 addFormError(backlogComboBox, "You must select a backlog for this sprint");
+            }
+        }
+
+        Story selectedStory = storiesList.getValue();
+        if (selectedStory != null) {
+            try {
+                getModel().addStory(selectedStory);
+                Node skillNode = generateStoryNode(selectedStory);
+                storiesContainer.getChildren().add(skillNode);
+                storyNodeIndex.put(selectedStory, skillNode);
+                Platform.runLater(() -> {
+                    storiesList.getSelectionModel().clearSelection();
+                    allocatableStories.remove(selectedStory);
+                });
+            } catch (NotReadyException e) {
+                addFormError("Story must be ready before it is added to a sprint");
             }
         }
 
@@ -136,7 +213,7 @@ public class SprintEditor extends GenericEditor<Sprint>{
             if (releaseComboBox.getValue() != null) {
                 try {
                     sprint.setAssociatedRelease(releaseComboBox.getValue());
-                } catch (InvalidParameterException e){
+                } catch (InvalidParameterException e) {
                     addFormError(releaseComboBox, e.getMessage());
                 }
             } else {
@@ -149,7 +226,7 @@ public class SprintEditor extends GenericEditor<Sprint>{
     }
 
     /**
-     * Save the start and end date for the sprint
+     * Save the start and end date for the sprint.
      */
     private void saveDates() {
         boolean hasProblems = false;
@@ -175,10 +252,10 @@ public class SprintEditor extends GenericEditor<Sprint>{
 
         //Save the start date
         if (isNullOrNotEqual(sprint.getStartDate(), startDatePicker.getValue())) {
-            if (startDatePicker.getValue() != null){
+            if (startDatePicker.getValue() != null) {
                 try {
                     sprint.setStartDate(startDatePicker.getValue());
-                } catch (InvalidParameterException e){
+                } catch (InvalidParameterException e) {
                     addFormError(startDatePicker, e.getMessage());
                 }
             }
@@ -192,7 +269,7 @@ public class SprintEditor extends GenericEditor<Sprint>{
             if (endDatePicker.getValue() != null) {
                 try {
                     sprint.setEndDate(endDatePicker.getValue());
-                } catch (InvalidParameterException e){
+                } catch (InvalidParameterException e) {
                     addFormError(endDatePicker, e.getMessage());
                 }
             }
@@ -202,14 +279,19 @@ public class SprintEditor extends GenericEditor<Sprint>{
         }
     }
 
-    @Override @FXML
-    protected void initialize() {
+    @FXML
+    @Override
+    protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 saveChanges();
             }
         });
 
+        allocatableStories = FXCollections.observableArrayList();
+        storiesList.setItems((ObservableList<Story>) allocatableStories);
+        storyNodeIndex = new HashMap<>();
+        storiesList.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -220,5 +302,57 @@ public class SprintEditor extends GenericEditor<Sprint>{
 
         startDatePicker.focusedProperty().addListener(getChangeListener());
         endDatePicker.focusedProperty().addListener(getChangeListener());
+    }
+
+    /**
+     * Generates a node for a story.
+     * @param story The story
+     * @return the node representing the story
+     */
+    private Node generateStoryNode(final Story story) {
+        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        removeButton.getStyleClass().add("mdr-button");
+        removeButton.getStyleClass().add("mdrd-button");
+        removeButton.setOnAction(event -> {
+            GenericPopup popup = new GenericPopup();
+            popup.setMessageText("Are you sure you want to remove "
+                    + story.getShortName() + " from "
+                    + getModel().getShortName() + "?");
+            popup.setTitleText("Remove Story from Sprint");
+            popup.addYesNoButtons(func -> {
+                allocatableStories.add(story);
+                Node storyNode = storyNodeIndex.get(story);
+                storiesContainer.getChildren().remove(storyNode);
+                storyNodeIndex.remove(story);
+                getModel().removeStory(story);
+                popup.close();
+            });
+            popup.show();
+        });
+
+        GridPane pane = new GridPane();
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setHgrow(Priority.ALWAYS);
+        column1.fillWidthProperty().setValue(true);
+
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setHgrow(Priority.SOMETIMES);
+
+        pane.getColumnConstraints().add(column1);
+        pane.getColumnConstraints().add(column2);
+
+        if (getIsCreationWindow()) {
+            Text nameText = new Text(story.toString());
+            pane.add(nameText, 0, 0);
+        }
+        else {
+            Hyperlink nameLink = new Hyperlink(story.toString());
+            nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+            pane.add(nameLink, 0, 0);
+        }
+        pane.add(removeButton, 1, 0);
+        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
+
+        return pane;
     }
 }
