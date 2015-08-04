@@ -207,7 +207,7 @@ public class ToolBarController {
 
     @FXML
     private void toolBarToggle(ActionEvent event) {
-        CheckMenuItem menuItem = (CheckMenuItem)event.getSource();
+        CheckMenuItem menuItem = (CheckMenuItem) event.getSource();
         HBox associatedToolBar;
         switch (menuItem.getId()) {
             case "navigation": associatedToolBar = navigationToolBar; break;
@@ -231,7 +231,6 @@ public class ToolBarController {
 
     private void killThoseSeparators() {
         List<Node> toolBarItems = toolBar.getItems();
-        boolean seenVisible = false;
 
         for (int i = 0; i < toolBarItems.size(); ++i) {
             Node current = toolBarItems.get(i);
@@ -249,7 +248,7 @@ public class ToolBarController {
                 break;
             }
 
-            separator = (Separator)toolBarItems.get(i + 1);
+            separator = (Separator) toolBarItems.get(i + 1);
             if (!current.isVisible()) {
                 separator.setVisible(false);
                 separator.setPrefWidth(0);

@@ -8,8 +8,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<ToolBar fx:id="toolBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
+<ToolBar fx:id="toolBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
   <items>
       <HBox fx:id="navigationToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
          <children>
