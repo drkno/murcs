@@ -4,11 +4,8 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Control;
-import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 
 /**
@@ -17,10 +14,11 @@ import javafx.scene.layout.HBox;
 public class ToolBarController {
 
     /**
-     * The back and forward buttons on the toolbar. Also the undo, redo and revert buttons.
+     * All the buttons on the toolbar.
      */
     @FXML
-    private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton;
+    private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton,
+            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton;
 
     /**
      * The toolbar sections for the toolbar.
@@ -35,10 +33,36 @@ public class ToolBarController {
     private ToolBar toolBar;
 
     /**
+     * The shortcut key to used based on the OS.
+     */
+    private String shortCutKey;
+
+    /**
      * The controller that is linked to the toolbar that manages all of the commands coming from the toolbar.
      * This would usually be the controller for the fxml that you are injecting the toolbar into.
      */
     private ToolBarCommands linkedController;
+
+    /**
+     * Initialises the toolbar by setting up appropriate tooltips.
+     */
+    @FXML
+    private void initialize() {
+        shortCutKey  = System.getProperty("os.name").toLowerCase().contains("mac") ? "Command" : "Ctrl";
+        setUpToolTips();
+    }
+
+    /**
+     * Sets up the tooltips for the toolbar controls that will have different shortcuts on different OS's.
+     */
+    private void setUpToolTips() {
+        revertButton.getTooltip().setText("Revert changes (" + shortCutKey + "+R)");
+        openButton.getTooltip().setText("Open project (" + shortCutKey + "+O)");
+        saveAsButton.getTooltip().setText("Save As (" + shortCutKey + "+Shift+S)");
+        saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
+        sendFeedbackButton.getTooltip().setText("Send feedback to the developers");
+        generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
+    }
 
     /**
      * Sets the linked controller for the toolbar.
@@ -173,7 +197,7 @@ public class ToolBarController {
      */
     public final void updateUndoButton(final boolean disabled, final String tooltip) {
         undoButton.setDisable(disabled);
-        undoButton.getTooltip().setText(tooltip);
+        undoButton.getTooltip().setText(tooltip + " (" + shortCutKey + "+Z)");
     }
 
     /**
@@ -183,7 +207,7 @@ public class ToolBarController {
      */
     public final void updateRedoButton(final boolean disabled, final String tooltip) {
         redoButton.setDisable(disabled);
-        redoButton.getTooltip().setText(tooltip);
+        redoButton.getTooltip().setText(tooltip + " (" + shortCutKey + "+Y)");
     }
 
     /**

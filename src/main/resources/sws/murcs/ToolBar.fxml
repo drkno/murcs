@@ -21,7 +21,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Back" />
+                  <Tooltip text="Navigate Back (Alt+Left)" />
                </tooltip>
                <HBox.margin>
                   <Insets />
@@ -36,7 +36,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Forward" />
+                  <Tooltip text="Navigate Forward (Alt+Right)" />
                </tooltip>
             </Button>
          </children>
@@ -57,7 +57,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Revert" />
+                  <Tooltip />
                </tooltip>
             </Button>
             <Button fx:id="undoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#undoButtonClick" prefHeight="30.0" prefWidth="30.0">
@@ -69,7 +69,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Undo" />
+                  <Tooltip />
                </tooltip>
             </Button>
             <Button fx:id="redoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#redoButtonClick" prefHeight="30.0" prefWidth="30.0">
@@ -81,7 +81,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Redo" />
+                  <Tooltip />
                </tooltip>
             </Button>
          </children>
@@ -93,7 +93,7 @@
       </Separator>
       <HBox fx:id="editToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
          <children>
-            <SplitMenuButton alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="30.0" prefWidth="50.0">
+            <SplitMenuButton fx:id="addButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="30.0" prefWidth="50.0">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                         <image>
@@ -111,7 +111,7 @@
                   <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addButtonClick" text="Story" />
               </items>
                <tooltip>
-                  <Tooltip text="Add new item" />
+                  <Tooltip text="Add new item (+)" />
                </tooltip>
             </SplitMenuButton>
             <Button fx:id="removeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeButtonClick" prefHeight="30.0" prefWidth="30.0">
@@ -123,10 +123,10 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Delete" />
+                  <Tooltip text="Delete currently selected item (Delete)" />
                </tooltip>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="30.0" prefWidth="30.0">
+            <Button fx:id="saveButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -135,10 +135,10 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Save Organisation" />
+                  <Tooltip />
                </tooltip>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveAsButtonClick" prefHeight="30.0" prefWidth="30.0">
+            <Button fx:id="saveAsButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveAsButtonClick" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -147,10 +147,10 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Save Organisation" />
+                  <Tooltip />
                </tooltip>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openButtonClick" prefHeight="30.0" prefWidth="30.0">
+            <Button fx:id="openButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openButtonClick" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -159,7 +159,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Open Organisation" />
+                  <Tooltip />
                </tooltip>
             </Button>
          </children>
@@ -171,7 +171,7 @@
       </Separator>
       <HBox fx:id="reportingToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
          <children>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#generateReportButtonClick" prefHeight="30.0" prefWidth="30.0">
+            <Button fx:id="generateReportButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#generateReportButtonClick" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -180,10 +180,10 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Generate Report" />
+                  <Tooltip />
                </tooltip>
             </Button>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendFeedbackButtonClick" prefHeight="30.0" prefWidth="30.0">
+            <Button fx:id="sendFeedbackButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendFeedbackButtonClick" prefHeight="30.0" prefWidth="30.0">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -192,7 +192,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Send Feedback" />
+                  <Tooltip />
                </tooltip>
             </Button>
          </children>
