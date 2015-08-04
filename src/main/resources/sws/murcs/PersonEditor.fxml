@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.PersonEditor">
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.PersonEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -31,10 +31,10 @@
                         <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
                      </rowConstraints>
                      <children>
-                      <VBox GridPane.rowIndex="2">
+                      <VBox>
                          <children>
-                            <Label text="User ID" GridPane.rowIndex="1" />
-                            <TextField fx:id="userIdTextField" GridPane.columnIndex="1" />
+                            <Label text="Name" />
+                            <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                          </children>
                           <padding>
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -49,6 +49,15 @@
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </padding>
                         </VBox>
+                      <VBox GridPane.rowIndex="2">
+                         <children>
+                            <Label text="User ID" GridPane.rowIndex="1" />
+                            <TextField fx:id="userIdTextField" GridPane.columnIndex="1" />
+                         </children>
+                          <padding>
+                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                          </padding>
+                      </VBox>
                         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="3" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -60,11 +69,11 @@
                               <RowConstraints vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <AnchorPane GridPane.rowIndex="3">
-                                  <children>
-                                      <ComboBox fx:id="skillComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                  </children>
-                              </AnchorPane>
+                              <Label text="Skills">
+                                 <GridPane.margin>
+                                    <Insets top="5.0" />
+                                 </GridPane.margin>
+                              </Label>
                               <AnchorPane GridPane.rowIndex="1">
                                  <children>
                                     <ScrollPane fitToWidth="true" maxHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
@@ -74,11 +83,6 @@
                                     </ScrollPane>
                                  </children>
                               </AnchorPane>
-                              <Label text="Skills">
-                                 <GridPane.margin>
-                                    <Insets top="5.0" />
-                                 </GridPane.margin>
-                              </Label>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a skill" GridPane.rowIndex="2">
                                   <VBox.margin>
                                       <Insets top="10.0" />
@@ -87,20 +91,16 @@
                                     <Insets top="10.0" />
                                  </GridPane.margin>
                               </Text>
+                              <AnchorPane GridPane.rowIndex="3">
+                                  <children>
+                                      <ComboBox fx:id="skillComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                  </children>
+                              </AnchorPane>
                            </children>
                            <GridPane.margin>
                               <Insets left="10.0" right="10.0" />
                            </GridPane.margin>
                         </GridPane>
-                      <VBox>
-                         <children>
-                            <Label text="Name" />
-                            <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                         </children>
-                          <padding>
-                              <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-                          </padding>
-                      </VBox>
                      </children>
                   </GridPane>
                </content>
@@ -117,7 +117,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0" VBox.vgrow="SOMETIMES">
                            <children>
-                              <Label fx:id="labelErrorMessage" textFill="RED">
+                              <Label fx:id="labelErrorMessage" focusTraversable="false" textFill="RED">
                                  <padding>
                                     <Insets left="10.0" />
                                  </padding>

@@ -9,183 +9,179 @@
 <?import javafx.scene.layout.*?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
-   <children>
-      <ToolBar layoutX="157.0" layoutY="108.0" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <items>
-            <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
-               <children>
-                  <Button fx:id="backButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#backButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/backbutton.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Navigate Back" />
-                     </tooltip>
-                  </Button>
-                <Button fx:id="forwardButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#forwardButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/forwardbutton.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Navigate Forward" />
-                     </tooltip>
-                  </Button>
-               </children>
-            </HBox>
-            <Separator orientation="VERTICAL" />
-            <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
-               <children>
-                  <Button fx:id="revertButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#revertButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/revert.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Revert" />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="undoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#undoButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/undo.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Undo" />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="redoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#redoButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/redo.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Redo" />
-                     </tooltip>
-                  </Button>
-               </children>
-            </HBox>
-            <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
-               <children>
-                  <SplitMenuButton alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="50.0" prefWidth="75.0">
-                      <graphic>
-                          <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                              <image>
-                                  <Image url="@icons/new%2050x50.png" />
-                              </image>
-                          </ImageView>
-                      </graphic>
-                    <items>
-                        <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addButtonClick" text="Project" />
-                        <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addButtonClick" text="Team" />
-                        <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addButtonClick" text="Person" />
-                        <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addButtonClick" text="Skill" />
-                        <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addButtonClick" text="Release" />
-                        <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addButtonClick" text="Backlog" />
-                        <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addButtonClick" text="Story" />
-                    </items>
-                     <tooltip>
-                        <Tooltip text="Add new item" />
-                     </tooltip>
-                  </SplitMenuButton>
-                  <Button fx:id="removeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/delete.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Delete" />
-                     </tooltip>
-                  </Button>
-                  <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/save.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Save Organisation" />
-                     </tooltip>
-                  </Button>
-                  <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveAsButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/saveas.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Save Organisation" />
-                     </tooltip>
-                  </Button>
-                  <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/open.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Open Organisation" />
-                     </tooltip>
-                  </Button>
-               </children>
-            </HBox>
-            <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
-               <children>
-                  <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#generateReportButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/report.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Generate Report" />
-                     </tooltip>
-                  </Button>
-                  <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendFeedbackButtonClick" prefHeight="50.0" prefWidth="50.0">
-                     <graphic>
-                        <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/feedback.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Send Feedback" />
-                     </tooltip>
-                  </Button>
-               </children>
-            </HBox>
-        </items>
-      </ToolBar>
-   </children>
-</AnchorPane>
+<ToolBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
+  <items>
+      <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+         <children>
+            <Button fx:id="backButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#backButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/backbutton.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Navigate Back" />
+               </tooltip>
+            </Button>
+          <Button fx:id="forwardButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#forwardButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/forwardbutton.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Navigate Forward" />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
+      <Separator orientation="VERTICAL" />
+      <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+         <children>
+            <Button fx:id="revertButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#revertButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/revert.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Revert" />
+               </tooltip>
+            </Button>
+            <Button fx:id="undoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#undoButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/undo.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Undo" />
+               </tooltip>
+            </Button>
+            <Button fx:id="redoButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#redoButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/redo.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Redo" />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
+      <Separator orientation="VERTICAL" prefHeight="200.0" />
+      <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+         <children>
+            <SplitMenuButton alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="50.0" prefWidth="75.0">
+                <graphic>
+                    <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@icons/new%2050x50.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+              <items>
+                  <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addButtonClick" text="Project" />
+                  <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addButtonClick" text="Team" />
+                  <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addButtonClick" text="Person" />
+                  <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addButtonClick" text="Skill" />
+                  <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addButtonClick" text="Release" />
+                  <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addButtonClick" text="Backlog" />
+                  <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addButtonClick" text="Story" />
+              </items>
+               <tooltip>
+                  <Tooltip text="Add new item" />
+               </tooltip>
+            </SplitMenuButton>
+            <Button fx:id="removeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/delete.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Delete" />
+               </tooltip>
+            </Button>
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/save.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Save Organisation" />
+               </tooltip>
+            </Button>
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveAsButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/saveas.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Save Organisation" />
+               </tooltip>
+            </Button>
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#openButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/open.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Open Organisation" />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
+      <Separator orientation="VERTICAL" prefHeight="200.0" />
+      <HBox minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+         <children>
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#generateReportButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/report.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Generate Report" />
+               </tooltip>
+            </Button>
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendFeedbackButtonClick" prefHeight="50.0" prefWidth="50.0">
+               <graphic>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/feedback.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="Send Feedback" />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
+  </items>
+</ToolBar>
