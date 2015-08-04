@@ -1,12 +1,11 @@
 package sws.murcs.controller;
 
+import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class ToolBarController {
      * The toolbar sections for the toolbar.
      */
     @FXML
-    private HBox navigationToolBar, historyToolbar, editToolBar, reportingToolBar;
+    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar;
 
     @FXML
     private ToolBar toolBar;
@@ -207,40 +206,58 @@ public class ToolBarController {
     }
 
     @FXML
-    private void historyToolBarToggle(ActionEvent event) {
-        historyToolbar.setVisible(!historyToolbar.visibleProperty().getValue());
-        //Todo find a solution for hiding the separators
-    }
+    private void toolBarToggle(ActionEvent event) {
+        CheckMenuItem menuItem = (CheckMenuItem)event.getSource();
+        HBox associatedToolBar;
+        switch (menuItem.getId()) {
+            case "navigation": associatedToolBar = navigationToolBar; break;
+            case "history": associatedToolBar = historyToolBar; break;
+            case "edit": associatedToolBar = editToolBar; break;
+            case "reporting": associatedToolBar = reportingToolBar; break;
+            default: throw new UnsupportedOperationException("EXPLOSION!!!!!!!!!(unsupported toolbar)");
+        }
 
-    @FXML
-    private void navigationToolBarToggle(ActionEvent event) {
-        boolean showing = !navigationToolBar.visibleProperty().getValue();
-        navigationToolBar.setVisible(showing);
+        boolean showing = !associatedToolBar.visibleProperty().getValue();
+        associatedToolBar.setVisible(showing);
         if (showing) {
-            navigationToolBar.setPrefWidth(110);
+            associatedToolBar.setPrefWidth(Control.USE_COMPUTED_SIZE);
         }
         else {
-            navigationToolBar.setPrefWidth(0);
+            associatedToolBar.setPrefWidth(0);
         }
+
+        killThoseSeparators();
     }
 
-    private void killThoseSeperators() {
-        Node lastItem = null;
-        Node nextItem = null;
-        for (Node item : toolBar.getItems()) {
-            if (item instanceof Separator) {
+    private void killThoseSeparators() {
+        List<Node> toolBarItems = toolBar.getItems();
+        boolean seenVisible = false;
 
+        for (int i = 0; i < toolBarItems.size(); ++i) {
+            Node current = toolBarItems.get(i);
+
+            boolean isHBox = current instanceof HBox;
+            if (!isHBox) continue;
+
+            Separator separator;
+            if (i == toolBarItems.size() - 1) {
+                if (!current.isVisible()) {
+                    separator = (Separator) toolBarItems.get(i - 1);
+                    separator.setVisible(false);
+                    separator.setPrefWidth(0);
+                }
+                break;
+            }
+
+            separator = (Separator)toolBarItems.get(i + 1);
+            if (!current.isVisible()) {
+                separator.setVisible(false);
+                separator.setPrefWidth(0);
+            }
+            else {
+                separator.setVisible(true);
+                separator.setPrefWidth(Control.USE_COMPUTED_SIZE);
             }
         }
-    }
-
-    @FXML
-    private void editToolBarToggle(ActionEvent event) {
-        editToolBar.setVisible(!editToolBar.visibleProperty().getValue());
-    }
-
-    @FXML
-    private void reportingToolBarToggle(ActionEvent event) {
-        reportingToolBar.setVisible(!reportingToolBar.visibleProperty().getValue());
     }
 }

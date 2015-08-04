@@ -8,7 +8,8 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<ToolBar fx:id="toolBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
+
+<ToolBar fx:id="toolBar" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.ToolBarController">
   <items>
       <HBox fx:id="navigationToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
          <children>
@@ -23,6 +24,9 @@
                <tooltip>
                   <Tooltip text="Navigate Back" />
                </tooltip>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </Button>
           <Button fx:id="forwardButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#forwardButtonClick" prefHeight="50.0" prefWidth="50.0">
                <graphic>
@@ -38,10 +42,11 @@
             </Button>
          </children>
       </HBox>
-      <Separator orientation="VERTICAL">
+      <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="10.0" right="10.0" />
-         </padding></Separator>
+            <Insets left="13.0" right="10.0" />
+         </padding>
+      </Separator>
       <HBox fx:id="historyToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
          <children>
             <Button fx:id="revertButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#revertButtonClick" prefHeight="50.0" prefWidth="50.0">
@@ -82,10 +87,11 @@
             </Button>
          </children>
       </HBox>
-      <Separator orientation="VERTICAL" prefHeight="200.0">
+      <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="10.0" right="10.0" />
-         </padding></Separator>
+            <Insets left="13.0" right="10.0" />
+         </padding>
+      </Separator>
       <HBox fx:id="editToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
          <children>
             <SplitMenuButton alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="50.0" prefWidth="75.0">
@@ -159,10 +165,11 @@
             </Button>
          </children>
       </HBox>
-      <Separator orientation="VERTICAL" prefHeight="200.0">
+      <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="10.0" right="10.0" />
-         </padding></Separator>
+            <Insets left="13.0" right="10.0" />
+         </padding>
+      </Separator>
       <HBox fx:id="reportingToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
          <children>
             <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#generateReportButtonClick" prefHeight="50.0" prefWidth="50.0">
@@ -195,10 +202,10 @@
    <contextMenu>
       <ContextMenu>
         <items>
-            <CheckMenuItem mnemonicParsing="false" onAction="#navigationToolBarToggle" selected="true" text="Navigation Toolbar" />
-            <CheckMenuItem mnemonicParsing="false" onAction="#historyToolBarToggle" selected="true" text="History Toolbar" />
-            <CheckMenuItem mnemonicParsing="false" onAction="#editToolBarToggle" selected="true" text="Edit Toolbar" />
-            <CheckMenuItem mnemonicParsing="false" onAction="#reportingToolBarToggle" selected="true" text="Reporting Toolbar" />
+            <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Navigation Toolbar" />
+            <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
+            <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
+            <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
         </items>
       </ContextMenu>
    </contextMenu>
