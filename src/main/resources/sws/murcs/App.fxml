@@ -6,9 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPaneMain" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
+<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
     <top>
-      <VBox fx:id="titleVBox">
+      <VBox fx:id="titleVBox" minHeight="-Infinity" minWidth="-Infinity">
          <children>
               <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
                   <menus>
@@ -28,8 +28,8 @@
                                   </items>
                               </Menu>
                               <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />
-                              <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save"/>
-                              <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As"/>
+                              <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save" />
+                              <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
                               <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
                               <MenuItem mnemonicParsing="false" onAction="#reportBug" text="Feedback" />
                               <SeparatorMenuItem mnemonicParsing="false" />
@@ -55,7 +55,7 @@
       </VBox>
     </top>
     <center>
-        <HBox fx:id="hBoxMainDisplay" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="650.0" BorderPane.alignment="CENTER">
             <children>
                 <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
                     <children>
