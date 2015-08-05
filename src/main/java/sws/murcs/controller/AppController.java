@@ -710,7 +710,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private void removeClicked(final ActionEvent event) {
-        SearchView.show();
+        SearchView.get().show(borderPaneMain.getScene().getWindow());
         if (true) {
             return;
         }

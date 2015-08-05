@@ -41,5 +41,19 @@ public class SearchController {
         protected void updateItem(SearchResult searchResult, boolean empty) {
             //searchResult.
         }
+    /**
+     * Disables all the controls within an editor and updates
+     * the save changes button to be an edit button.
+     * Note: this is really expensive.
+     */
+    private void disableControlsAndUpdateButton() {
+        Parent view = editorPane.getView();
+        JavaFXHelpers.findAndDestroyControls(view);
+        view.setFocusTraversable(false);
+        previewPane.setFocusTraversable(false);
+        Button saveButton = editorPane.getController().getSaveChangesButton();
+        saveButton.setVisible(true);
+        saveButton.setText("Open In Window");
+        saveButton.setOnAction(selectEvent);
     }
 }
