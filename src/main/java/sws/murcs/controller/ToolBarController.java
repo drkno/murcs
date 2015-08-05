@@ -265,22 +265,39 @@ public class ToolBarController {
         int nextVisibleIndex = -1;
 
         //If you wish to keep your brain intact ignore the following code and just accept that it works. If you don't
-        //care about your sanity or the state of your brain read on for a full look into the stupidity of James
+        //care about your sanity or the state of your brain read on for a full look into the stupidity of James.
+        //The basic idea is that we go through the items in the toolbar, turning off all the separators (visibly)
+        //and recording the indexes of visible HBoxs in the firstVisibleIndex and nextVisibleIndex. Once we've found two
+        //visible HBoxs we turn on a separator between them and make the firstVisibleIndex the nextVisibleIndex, the
+        //nextVisibleIndex -1 and carry on until we reach the end of the toolbar. Hope you had fun reading and
+        //understanding that.
+        //Firstly not the amusingly uncommon for loop that uses the <= instead of <. This is because otherwise we don't
+        //make the last separator visible after invisibling it.
         for (int i = 0; i <= toolBarItems.size(); ++i) {
+            //If we've found two HBoxs that are visible then we'll go in here.
             if (firstVisibleIndex != -1 && nextVisibleIndex != -1) {
+                //Index of the separator to make visible again.
                 int visibleSeparatorIndex = firstVisibleIndex + 1;
                 Separator visibleSeparator = (Separator) toolBarItems.get(visibleSeparatorIndex);
                 visibleSeparator.setVisible(true);
                 visibleSeparator.setPrefWidth(Control.USE_COMPUTED_SIZE);
                 firstVisibleIndex = nextVisibleIndex;
                 nextVisibleIndex = -1;
-                if (i == toolBarItems.size()) break;
+                //"I am necessary evil"
+                if (i == toolBarItems.size()) {
+                    break;
+                }
+                //Turn off the separator who's index you're currently on.
                 Separator invisibleSeparator = (Separator) toolBarItems.get(i);
                 invisibleSeparator.setVisible(false);
                 invisibleSeparator.setPrefWidth(0.0);
             }
             else {
-                if (i == toolBarItems.size()) break;
+                //"I am necessary evil"
+                if (i == toolBarItems.size()) {
+                    break;
+                }
+                //Find indexes of visible HBoxes
                 if (toolBarItems.get(i) instanceof HBox) {
                     if (toolBarItems.get(i).isVisible()) {
                         if (firstVisibleIndex == -1) {
@@ -291,6 +308,7 @@ public class ToolBarController {
                     }
                 }
                 else {
+                    //Turn off the separators
                     Separator invisibleSeparator = (Separator) toolBarItems.get(i);
                     invisibleSeparator.setVisible(false);
                     invisibleSeparator.setPrefWidth(0.0);
