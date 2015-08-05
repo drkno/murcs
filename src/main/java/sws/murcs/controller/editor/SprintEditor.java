@@ -204,7 +204,29 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     allocatableStories.remove(selectedStory);
                 });
             } catch (NotReadyException e) {
-                addFormError("Story must be ready before it is added to a sprint");
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you want to set Story"
+                        + selectedStory.getShortName()
+                        + " to be Ready so that it can be added to this sprint?");
+                popup.setTitleText("Change Story State");
+                popup.addYesNoButtons(func -> {
+                    try {
+                        selectedStory.setStoryState(Story.StoryState.Ready);
+                        getModel().addStory(selectedStory);
+                        Node skillNode = generateStoryNode(selectedStory);
+                        storiesContainer.getChildren().add(skillNode);
+                        storyNodeIndex.put(selectedStory, skillNode);
+                        Platform.runLater(() -> {
+                            storiesList.getSelectionModel().clearSelection();
+                            allocatableStories.remove(selectedStory);
+                        });
+                    } catch (NotReadyException e1) {
+                        ErrorReporter.get().reportError(e1, "Stuff turned to custard. Yum.");
+                    } finally {
+                        popup.close();
+                    }
+                });
+                popup.show();
             }
         }
 
