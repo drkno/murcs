@@ -8,11 +8,20 @@
   -fx-background-radius: 2px
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
 
+.split-menu-button
+  -fx-text-fill: $black-text
+  -fx-background-color: $button-color
+  -fx-background-radius: 2px
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+
+//.split-menu-button .arrow-button, .split-menu-button .label
+//  -fx-text-fill: $black-text
+//  -fx-background-color: $button-color
 
 .button:pressed
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 8, 0.0, 0, 3)
 
-.button:hover, .toggle-button:hover
+.button:hover, .toggle-button:hover, .split-menu-button:hover //Todo look at this DION!!!
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.5), 8, 0.0, 0, 3)
 
 .button:focused, .toggle-button:focused
