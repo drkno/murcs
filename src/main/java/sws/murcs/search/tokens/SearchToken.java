@@ -80,6 +80,9 @@ public class SearchToken extends Token {
 
     @Override
     public boolean matches(final String input) {
+        if (input == null) {
+            return false;
+        }
         Matcher matcher = searchRegex.matcher(input);
         return matcher.find();
     }
