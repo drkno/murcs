@@ -165,7 +165,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     }
 
     /**
-     * Adds the toolbar to the applicatoin window.
+     * Adds the toolbar to the application window.
      */
     private void addToolBar() {
         try {
