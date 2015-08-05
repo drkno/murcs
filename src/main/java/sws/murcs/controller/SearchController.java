@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
@@ -100,6 +101,9 @@ public class SearchController {
         noItemsLabel.addEventHandler(KeyEvent.KEY_PRESSED, keyPressed);
         foundItems.getSelectionModel().selectedItemProperty().addListener(this::handleSelectionChanged);
         searchText.getStyleClass().add("search-input-placeholder");
+        searchText.getStyleClass().add("no-shadow");
+        searchText.setStyle("-fx-control-inner-background: transparent");
+        searchText.setStyle("-fx-background-color: transparent");
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
@@ -130,14 +134,14 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
+                    getStyleClass().add("list-cell-background");
                     if (empty) {
                         setText(null);
                         setGraphic(null);
                     } else {
                         if (item == null) {
                             setText("null");
-                        }
-                        else {
+                        } else {
                             setText(item.toString());
                         }
                         setGraphic(null);
@@ -166,6 +170,7 @@ public class SearchController {
         if (searchText.isFocused()) {
             foundItems.requestFocus();
             foundItems.getSelectionModel().select(foundItems.getItems().size() - 1);
+            foundItems.scrollTo(foundItems.getItems().size() - 1);
         }
         else if (foundItems.isFocused()
                 && foundItems.getSelectionModel().getSelectedIndex() == 0) {
@@ -220,8 +225,6 @@ public class SearchController {
             return;
         }
 
-        foundItems.scrollTo(newValue);
-
         if (editorPane == null) {
             editorPane = new EditorPane(newValue.getModel());
             disableControlsAndUpdateButton();
@@ -230,7 +233,8 @@ public class SearchController {
             }
             previewPane.getChildren().add(editorPane.getView());
         } else if (editorPane.getModel().getClass() == newValue.getModel().getClass()) {
-            editorPane.setModel(newValue.getModel());
+            Platform.runLater(()->editorPane.setModel(newValue.getModel()));
+            //disableControlsAndUpdateButton();
         } else {
             previewPane.getChildren().remove(editorPane.getView());
             editorPane.dispose();
