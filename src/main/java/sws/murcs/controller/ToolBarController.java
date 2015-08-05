@@ -60,7 +60,7 @@ public class ToolBarController {
         openButton.getTooltip().setText("Open project (" + shortCutKey + "+O)");
         saveAsButton.getTooltip().setText("Save As (" + shortCutKey + "+Shift+S)");
         saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
-        sendFeedbackButton.getTooltip().setText("Send feedback to the developers");
+        sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
     }
 
