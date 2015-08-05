@@ -261,33 +261,40 @@ public class ToolBarController {
      */
     private void killThoseSeparators() {
         List<Node> toolBarItems = toolBar.getItems();
+        int firstVisibleIndex = -1;
+        int nextVisibleIndex = -1;
 
-        for (int i = 0; i < toolBarItems.size(); ++i) {
-            Node current = toolBarItems.get(i);
-
-            boolean isHBox = current instanceof HBox;
-            if (!isHBox) {
-                continue;
-            }
-
-            Separator separator;
-            if (i == toolBarItems.size() - 1) {
-                if (!current.isVisible()) {
-                    separator = (Separator) toolBarItems.get(i - 1);
-                    separator.setVisible(false);
-                    separator.setPrefWidth(0);
-                }
-                break;
-            }
-
-            separator = (Separator) toolBarItems.get(i + 1);
-            if (!current.isVisible()) {
-                separator.setVisible(false);
-                separator.setPrefWidth(0);
+        //If you wish to keep your brain intact ignore the following code and just accept that it works. If you don't
+        //care about your sanity or the state of your brain read on for a full look into the stupidity of James
+        for (int i = 0; i <= toolBarItems.size(); ++i) {
+            if (firstVisibleIndex != -1 && nextVisibleIndex != -1) {
+                int visibleSeparatorIndex = firstVisibleIndex + 1;
+                Separator visibleSeparator = (Separator) toolBarItems.get(visibleSeparatorIndex);
+                visibleSeparator.setVisible(true);
+                visibleSeparator.setPrefWidth(Control.USE_COMPUTED_SIZE);
+                firstVisibleIndex = nextVisibleIndex;
+                nextVisibleIndex = -1;
+                if (i == toolBarItems.size()) break;
+                Separator invisibleSeparator = (Separator) toolBarItems.get(i);
+                invisibleSeparator.setVisible(false);
+                invisibleSeparator.setPrefWidth(0.0);
             }
             else {
-                separator.setVisible(true);
-                separator.setPrefWidth(Control.USE_COMPUTED_SIZE);
+                if (i == toolBarItems.size()) break;
+                if (toolBarItems.get(i) instanceof HBox) {
+                    if (toolBarItems.get(i).isVisible()) {
+                        if (firstVisibleIndex == -1) {
+                            firstVisibleIndex = i;
+                        } else {
+                            nextVisibleIndex = i;
+                        }
+                    }
+                }
+                else {
+                    Separator invisibleSeparator = (Separator) toolBarItems.get(i);
+                    invisibleSeparator.setVisible(false);
+                    invisibleSeparator.setPrefWidth(0.0);
+                }
             }
         }
     }
