@@ -13,6 +13,16 @@ public class SearchResult<T extends Model> {
     private MatchStrength strength;
 
     public SearchResult(T matchedModel, String match) {
+        model = matchedModel;
+        this.match = match;
+    }
 
+    public T getModel() {
+        return model;
+    }
+
+    @Override
+    public final String toString() {
+        return model.getShortName();
     }
 }
