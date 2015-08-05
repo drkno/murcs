@@ -332,7 +332,14 @@ public class PopOver extends PopupControl {
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(evt -> {
-                super.hide();
+                try {
+                    super.hide();
+                }
+                catch (IllegalStateException e) {
+                    // caught and ignored to bypass a race condition.
+                    // should not be reported as the outcome will be the same
+                    // ie. the window will be closed
+                }
             });
             fadeOut.play();
         }
