@@ -1,5 +1,6 @@
 package sws.murcs.search;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,38 +10,42 @@ import sws.murcs.search.tokens.Token;
 import java.util.Collection;
 
 public class SearchThread<T extends Model> {
-    private ObservableList<SearchResult<T>> searchResults;
     private Thread searchThread;
     private boolean shouldSearch;
     private Token searchValidator;
+
     private Collection<T>[] collections;
+    private ObservableList<SearchResult> searchResults;
 
-    public SearchThread() {
-        searchResults = FXCollections.observableArrayList();
+    public SearchThread(final ObservableList<SearchResult> list, final Collection<T>... searchableCollections) {
+        searchResults = list;
+        collections = searchableCollections;
         shouldSearch = false;
-        searchThread = new Thread(this::performSearch);
     }
 
-    public ObservableList<SearchResult<T>> getSearchResults() {
-        return searchResults;
-    }
-
-    public final void start(final Token theSearchValidator, final Collection<T>... searchableCollections) {
+    public final void start(final Token theSearchValidator) {
         if (searchThread != null && searchThread.isAlive()) {
             stop();
         }
         searchValidator = theSearchValidator;
-        collections = searchableCollections;
         shouldSearch = true;
-        searchThread.start();
+        try {
+            searchThread = new Thread(this::performSearch);
+            searchThread.start();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public final void stop() {
         try {
-            shouldSearch = false;
-            searchThread.join();
-            searchValidator = null;
-            collections = null;
+            if (searchThread != null) {
+                shouldSearch = false;
+                searchThread.join();
+                searchValidator = null;
+            }
         } catch (InterruptedException e) {
             /*
                 Thrown cause Java. Should not be reported cause if an exception is thrown
@@ -51,12 +56,15 @@ public class SearchThread<T extends Model> {
     }
 
     private void performSearch() {
-        for (Collection<T> collection : collections) {
-            for (T model : collection) {
+        for (Collection<? extends Model> collection : collections) {
+            for (Model model : collection) {
                 if (searchValidator.matches(model.getShortName())
                         || searchValidator.matches(model.getLongName())
                         || searchValidator.matches(model.getDescription())) {
-                    //searchResults.add(new SearchResult<T>(model));
+                    Platform.runLater(() -> {
+                        searchResults.add(new SearchResult<>(model, ""));
+                    });
+
                 }
             }
         }
