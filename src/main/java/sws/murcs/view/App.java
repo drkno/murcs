@@ -152,8 +152,8 @@ public class App extends Application {
         Scene scene = new Scene(parent);
         scene.getStylesheets()
                 .add(getClass()
-                .getResource("/sws/murcs/styles/global.css")
-                .toExternalForm());
+                        .getResource("/sws/murcs/styles/global.css")
+                        .toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
