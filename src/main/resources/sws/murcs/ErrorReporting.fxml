@@ -14,32 +14,32 @@
 
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="javafx.scene.layout.AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
   <children>
-    <GridPane hgap="10.0" maxHeight="+Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="400.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
       <children>
         <ImageView fx:id="messageImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="TOP">
           <image>
             <!-- place holder -->
           </image>
         </ImageView>
-        <VBox maxHeight="+Infinity" maxWidth="+Infinity" prefWidth="298.0" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+        <VBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
           <children>
-            <Label fx:id="messageTitle" text="message" textAlignment="LEFT" wrapText="true">
+            <Label fx:id="messageTitle" alignment="TOP_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="message" textAlignment="LEFT" wrapText="true">
               <font>
                 <Font name="System Bold" size="13.0" />
               </font>
             </Label>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="250.0" style="-fx-background-color: transparent;" VBox.vgrow="SOMETIMES">
+                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: transparent;" VBox.vgrow="SOMETIMES">
                     <content>
-                      <AnchorPane style="-fx-background-color: transparent;">
+                      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: transparent;">
                            <children>
-                              <VBox prefHeight="200.0" prefWidth="100.0">
+                              <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
                                  <children>
-                              <Label fx:id="messageText" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="298.0" text="details" textAlignment="LEFT" wrapText="true" VBox.vgrow="ALWAYS">
+                              <Label fx:id="messageText" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" text="details" textAlignment="LEFT" wrapText="true" VBox.vgrow="ALWAYS">
                                 <font>
                                   <Font size="12.0" />
                                 </font>
                               </Label>
-                                    <TextArea fx:id="reportDetails" prefHeight="70.0" prefWidth="298.0" promptText="Describe the actions you performed to cause this problem." wrapText="true" VBox.vgrow="SOMETIMES" />
+                                    <TextArea fx:id="reportDetails" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" promptText="Describe the actions you performed to cause this problem." wrapText="true" VBox.vgrow="SOMETIMES" />
                                  </children>
                               </VBox>
                            </children>
@@ -48,26 +48,35 @@
                   </ScrollPane>
           </children>
         </VBox>
-        <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="295.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
           <children>
             <HBox fx:id="actionParent" alignment="CENTER">
               <HBox.margin>
                 <Insets />
               </HBox.margin>
                    <children>
-                      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefHeight="100.0" prefWidth="159.0" spacing="5.0" HBox.hgrow="ALWAYS" />
-                      <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="159.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS" />
+                      <HBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" spacing="5.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="70.0" text="Report" />
-                              <Button cancelButton="true" mnemonicParsing="false" onAction="#close" prefHeight="25.0" prefWidth="70.0" text="Cancel" />
+                              <Button fx:id="reportButton" contentDisplay="CENTER" defaultButton="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#close" text="Report">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding></Button>
+                              <Button alignment="CENTER_RIGHT" cancelButton="true" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#close" text="Cancel">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding></Button>
                            </children></HBox>
                    </children>
             </HBox>
           </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
         </HBox>
       </children>
       <columnConstraints>
-        <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" />
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="+Infinity" minWidth="-Infinity" />
       </columnConstraints>
       <padding>
@@ -75,7 +84,7 @@
       </padding>
       <rowConstraints>
         <RowConstraints maxHeight="+Infinity" minHeight="-Infinity" valignment="CENTER" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
+        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="ALWAYS" />
       </rowConstraints>
     </GridPane>
   </children>
