@@ -695,17 +695,24 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.getStyleClass().add("mdrd-button");
                 button.setOpacity(0.0);
                 button.setOnAction(e -> {
-                    GenericPopup popup = new GenericPopup();
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \""
-                            + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(() -> {
+                    if (!isCreationWindow) {
+                        GenericPopup popup = new GenericPopup();
+                        popup.setTitleText("Are you sure?");
+                        popup.setMessageText("Are you sure you wish to remove the story \""
+                                + story.getShortName() + "\" from this backlog?");
+                        popup.addYesNoButtons(() -> {
+                            getModel().removeStory(story);
+                            updateStoryTable();
+                            updateAvailableStories();
+                            popup.close();
+                        });
+                        popup.show();
+                    }
+                    else {
                         getModel().removeStory(story);
                         updateStoryTable();
                         updateAvailableStories();
-                        popup.close();
-                    });
-                    popup.show();
+                    }
                 });
                 getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
                 getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));

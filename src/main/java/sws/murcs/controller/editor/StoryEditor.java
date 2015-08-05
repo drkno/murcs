@@ -376,19 +376,28 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove the dependency "
-                    + newDependency.getShortName() + "?");
-            popup.setTitleText("Remove Dependency");
-            popup.addYesNoButtons(() -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Are you sure you want to remove the dependency "
+                        + newDependency.getShortName() + "?");
+                popup.setTitleText("Remove Dependency");
+                popup.addYesNoButtons(() -> {
+                    searchableComboBoxDecorator.add(newDependency);
+                    Node dependencyNode = dependenciesMap.get(newDependency);
+                    dependenciesContainer.getChildren().remove(dependencyNode);
+                    dependenciesMap.remove(newDependency);
+                    getModel().removeDependency(newDependency);
+                    popup.close();
+                });
+                popup.show();
+            }
+            else {
                 searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
                 dependenciesContainer.getChildren().remove(dependencyNode);
                 dependenciesMap.remove(newDependency);
                 getModel().removeDependency(newDependency);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();
@@ -611,15 +620,21 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                GenericPopup popup = new GenericPopup();
-                popup.setTitleText("Are you sure?");
-                popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
-                popup.addYesNoButtons(() -> {
+                if (!isCreationWindow) {
+                    GenericPopup popup = new GenericPopup();
+                    popup.setTitleText("Are you sure?");
+                    popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
+                    popup.addYesNoButtons(() -> {
+                        getModel().removeAcceptanceCondition(acceptanceCondition);
+                        updateAcceptanceCriteria();
+                        popup.close();
+                    });
+                    popup.show();
+                }
+                else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
-                    popup.close();
-                });
-                popup.show();
+                }
             });
             AnchorPane conditionCell = new AnchorPane();
             AnchorPane.setLeftAnchor(node, 0.0);

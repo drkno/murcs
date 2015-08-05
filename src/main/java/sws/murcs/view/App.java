@@ -202,7 +202,6 @@ public class App extends Application {
 
         stage = primaryStage;
         appController.show();
-
     }
 
     /**

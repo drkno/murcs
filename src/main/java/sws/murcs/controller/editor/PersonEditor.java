@@ -182,20 +182,29 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + skill.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Skill from Person");
-            popup.addYesNoButtons(() -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Are you sure you want to remove "
+                        + skill.getShortName() + " from "
+                        + getModel().getShortName() + "?");
+                popup.setTitleText("Remove Skill from Person");
+                popup.addYesNoButtons(() -> {
+                    allocatableSkills.add(skill);
+                    Node skillNode = skillNodeIndex.get(skill);
+                    allocatedSkillsContainer.getChildren().remove(skillNode);
+                    skillNodeIndex.remove(skill);
+                    getModel().removeSkill(skill);
+                    popup.close();
+                });
+                popup.show();
+            }
+            else {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);
                 skillNodeIndex.remove(skill);
                 getModel().removeSkill(skill);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();

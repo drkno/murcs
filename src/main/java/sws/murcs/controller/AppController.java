@@ -215,6 +215,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 () -> open(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
                 () -> generateReport(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
+                () -> ErrorReporter.get().reportManually());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
                 () -> addNewItem(ModelType.Project));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),

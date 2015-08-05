@@ -171,7 +171,6 @@ public class GenericPopup extends AnchorPane {
         popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
-        popupStage.setResizable(true);
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -179,6 +178,7 @@ public class GenericPopup extends AnchorPane {
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
         popupStage.sizeToScene();
+        popupStage.setResizable(false);
         setupWindow();
 
         if (exception != null) {

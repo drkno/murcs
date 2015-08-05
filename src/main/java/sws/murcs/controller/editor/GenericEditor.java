@@ -52,7 +52,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Details whether or not the window is a creator for a new model or an editor.
      */
-    private boolean isCreationWindow;
+    protected boolean isCreationWindow;
 
     /**
      * Stores if a save changes button exists, preventing a new button being created
