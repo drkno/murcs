@@ -2,9 +2,19 @@ package sws.murcs.controller;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helpers for Javafx.
@@ -71,5 +81,37 @@ public final class JavaFXHelpers {
                 Double.valueOf(Integer.valueOf(colourStr.substring(1, 3), 16)) / 255,
                 Double.valueOf(Integer.valueOf(colourStr.substring(3, 5), 16)) / 255,
                 Double.valueOf(Integer.valueOf(colourStr.substring(5, 7), 16)) / 255);
+    }
+
+    /**
+     * Finds and destroys the usefulness of controls.
+     * Note: this is inefficient (there isn't really an efficient way to do it without
+     * knowing about all controls beforehand) so should be used sparingly.
+     * This is done by hiding buttons and disabling controls where appropriate.
+     * @param currentNode the parent node to start from.
+     */
+    public static void findAndDestroyControls(final Parent currentNode) {
+        List<Node> nodeList = currentNode.getChildrenUnmodifiable();
+        for (int i = 0; i < nodeList.size(); i++) {
+            Node node = nodeList.get(i);
+            if (node instanceof Button) {
+                node.setVisible(false);
+            } else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
+                    || node instanceof ChoiceBox || node instanceof TableView || node instanceof ListView) {
+                node.setDisable(true);
+            } else if (node instanceof ScrollPane) {
+                Node content = ((ScrollPane) node).getContent();
+                if (content != null) {
+                    findAndDestroyControls((Parent) content);
+                }
+            } else if (node instanceof TitledPane) {
+                Node content = ((TitledPane) node).getContent();
+                if (content != null) {
+                    findAndDestroyControls((Parent) content);
+                }
+            }
+            findAndDestroyControls((Parent) node);
+            node.setFocusTraversable(false);
+        }
     }
 }
