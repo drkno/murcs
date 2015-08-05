@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 
 /**
@@ -64,10 +64,16 @@ public class SearchController {
     private EventHandler selectEvent;
 
     /**
+     * Handler to control searching.
+     */
+    private SearchHandler searchHandler;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
     private void initialize() {
+        searchHandler = new SearchHandler();
         Parent parent = searchText.getParent();
         parent.getStylesheets()
                 .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
@@ -102,6 +108,8 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((a, b, c) -> {
+            searchHandler.searchFor(searchText.getText());
+
             if (c.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
             } else {
@@ -143,10 +151,7 @@ public class SearchController {
             return cell;
         });
 
-        // fixme: remove this
-        PersistenceManager.getCurrent().getCurrentModel().getBacklogs().forEach(b -> {
-            foundItems.getItems().add(new SearchResult(b, ""));
-        });
+        foundItems.setItems(searchHandler.getResults());
     }
 
     /**
