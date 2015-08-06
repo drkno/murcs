@@ -96,9 +96,9 @@
             <SplitMenuButton fx:id="addButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonClick" prefHeight="30.0" prefWidth="50.0">
                 <graphic>
                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                            <Image url="@icons/new%2050x50.png" />
-                        </image>
+                     <image>
+                        <Image url="@icons/new.png" />
+                     </image>
                     </ImageView>
                 </graphic>
               <items>
