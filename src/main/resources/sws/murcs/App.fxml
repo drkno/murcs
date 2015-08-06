@@ -6,9 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
+<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
     <top>
-      <VBox fx:id="titleVBox" minHeight="-Infinity" minWidth="-Infinity">
+      <VBox fx:id="titleVBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0">
          <children>
               <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
                   <menus>
@@ -63,7 +63,7 @@
       </VBox>
     </top>
     <center>
-        <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="650.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" BorderPane.alignment="CENTER">
             <children>
                 <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
                     <children>
