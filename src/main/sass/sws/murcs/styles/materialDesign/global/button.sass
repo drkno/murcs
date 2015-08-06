@@ -1,6 +1,6 @@
 @import "../../globalStyles"
 
-.button, .toggle-button
+.button, .toggle-button, .split-menu-button
   -fx-text-fill: $black-text
   -fx-background-color: $button-color
   -fx-background-insets: 0
@@ -8,15 +8,15 @@
   -fx-background-radius: 2px
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
 
-.split-menu-button
+.split-menu-button .arrow-button
   -fx-text-fill: $black-text
   -fx-background-color: $button-color
   -fx-background-radius: 2px
-  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+  -fx-background-insets: 4
+  -fx-padding: 1em -0.5em 1em 0em
 
-//.split-menu-button .arrow-button, .split-menu-button .label
-//  -fx-text-fill: $black-text
-//  -fx-background-color: $button-color
+.split-menu-button .label
+  -fx-padding: 0.333333em 1.5em 0.333333em 0.667em
 
 .button:pressed
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 8, 0.0, 0, 3)
@@ -45,3 +45,33 @@
   -fx-background-color: $button-focus-color
   -fx-background-insets: 0, 1
 
+
+.split-menu-button.context-menu .menu-item
+  -fx-background-color: $list-cell-color
+  -fx-background-insets: 0
+  -fx-padding: 3 6
+  -fx-background-radius: 1px
+
+.split-menu-button .context-menu .menu-item .label
+  -fx-text-fill: $black-text
+
+.split-menu-button .context-menu .menu-item:focused .label
+  -fx-text-fill: $black-text
+
+.split-menu-button .context-menu .menu-item:selected .label
+  -fx-text-fill: $white-text
+
+.split-menu-button .context-menu .menu-item:hover .label
+  -fx-text-fill: $white-text
+
+.split-menu-button .context-menu .menu-item:focused
+  -fx-background-color: $list-cell-focused-color
+  -fx-background-insets: 0, 1
+
+.split-menu-button .context-menu .menu-item:selected
+  -fx-background-color: $list-cell-selected-color
+  -fx-background-insets: 0, 1
+
+.split-menu-button .context-menu .menu-item:hover
+  -fx-background-color: $list-cell-hover-color
+  -fx-background-insets: 0, 1
