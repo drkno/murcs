@@ -7,7 +7,7 @@ import sws.murcs.view.App;
 /**
  * A Wrapper class for linking stages and controllers together, so that they can be managed.
  */
-public class Window implements Manageable {
+public class Window {
 
     /**
      * The stage of the window.
@@ -53,14 +53,20 @@ public class Window implements Manageable {
         close(() -> { });
     }
 
-    @Override
+    /**
+     * Ensures that the window is closed properly.
+     * @param callback A function to call after the stage has closed.
+     */
     public final void close(final GenericCallback callback) {
         App.getWindowManager().removeWindow(this);
         stage.close();
         callback.call();
     }
 
-    @Override
+    /**
+     * Registers a window with the window manager.
+     * And ensures that the default on closed request is handled by the window manager.
+     */
     public final void register() {
         App.getWindowManager().addWindow(this);
         stage.setOnCloseRequest((event -> {
@@ -75,7 +81,9 @@ public class Window implements Manageable {
         App.getShortcutManager().addAllShortcutsToWindow(this);
     }
 
-    @Override
+    /**
+     * Shows a stage.
+     */
     public final void show() {
         stage.show();
     }
