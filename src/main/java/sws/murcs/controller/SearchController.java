@@ -90,6 +90,11 @@ public class SearchController {
                 case UP:
                     handleKeyUp(t);
                     break;
+                case ENTER:
+                    if (foundItems.getSelectionModel().getSelectedIndex() > 0) {
+                        selectEvent.handle(null);
+                    }
+                    break;
                 default: break;
             }
         };
@@ -233,7 +238,7 @@ public class SearchController {
             }
             previewPane.getChildren().add(editorPane.getView());
         } else if (editorPane.getModel().getClass() == newValue.getModel().getClass()) {
-            Platform.runLater(()->editorPane.setModel(newValue.getModel()));
+            editorPane.setModel(newValue.getModel());
             //disableControlsAndUpdateButton();
         } else {
             previewPane.getChildren().remove(editorPane.getView());
