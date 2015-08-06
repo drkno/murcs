@@ -1,0 +1,19 @@
+@import "../../globalStyles"
+
+.table-view .column-header .label, .table-view .column-header
+  -fx-background-color: $table-header-color
+
+.table-view .column-header .label:hover, .table-view .column-header:hover
+  -fx-background-color: $table-header-hover-color
+
+.table-view .row-selection:hover, .table-view .row-selection:focused, .table-row:selected , .table-row:focused, .table-row:hover,.table-row-cell:selected
+  -fx-background-color: $table-row-highlight-color
+  -fx-table-cell-border-color: $table-row-highlight-color
+  -fx-text-fill: black
+
+.table-view
+  -fx-background-color: $primary-100
+  -fx-background-radius: 1px
+  -fx-border-radius: 0
+  -fx-border-width: 0
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 6, 0.0, 0, 2)

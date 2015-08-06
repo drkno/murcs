@@ -123,7 +123,7 @@ public final class NavigationManager {
         if (head == null) {
             head = model;
         }
-        else if (addToStack && head != model && !toIgnore) {
+        else if (addToStack && !head.equals(model) && !toIgnore) {
             forwardStack.clear();
             backStack.push(head);
             head = model;
