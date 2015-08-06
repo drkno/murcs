@@ -8,6 +8,8 @@ import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObjectProperty;
+import sws.murcs.search.SearchPriority;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -25,6 +27,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * The short name of a model object.
      */
+    @Searchable(SearchPriority.High)
     @TrackableValue
     @XmlAttribute
     @XmlID
@@ -33,12 +36,14 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * The long name of a model object.
      */
+    @Searchable(SearchPriority.High)
     @TrackableValue
     private String longName;
 
     /**
      * The description of a model object.
      */
+    @Searchable(SearchPriority.High)
     @TrackableValue
     private String description;
 
