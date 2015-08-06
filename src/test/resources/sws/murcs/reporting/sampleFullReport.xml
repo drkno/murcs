@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.4</projectVersion>
-    <dateGenerated>2015-07-04</dateGenerated>
+    <projectVersion>0.0.5</projectVersion>
+    <dateGenerated>2015-08-04</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
         <projects>
             <project shortName="FITR">
@@ -24,8 +24,8 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
-                        <storyState>None</storyState>
                         <description>Revert to last saved state</description>
+                        <storyState>None</storyState>
                         <creator>Haydon</creator>
                         <dependencies/>
                         <estimate>Not Estimated</estimate>
@@ -45,8 +45,8 @@
         <unassignedStories>
             <story shortName="2">
                 <longName>Story Maintenance</longName>
-                <storyState>None</storyState>
                 <description>add stories to project</description>
+                <storyState>None</storyState>
                 <creator>Unallocated</creator>
                 <dependencies/>
                 <estimate>Not Estimated</estimate>
