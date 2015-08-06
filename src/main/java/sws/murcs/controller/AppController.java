@@ -7,10 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -66,6 +63,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
+
+    @FXML
+    private Menu toolBarMenu;
 
     /**
      * The side display which contains the display list. Also the top toolbar and menu container.
@@ -174,6 +174,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             titleVBox.getChildren().add(view);
             ToolBarController controller = loader.getController();
             controller.setLinkedController(this);
+            controller.setToolBarMenu(toolBarMenu);
             toolBarController = controller;
         }
         catch (Exception e) {
@@ -859,5 +860,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     @FXML
     public final void reportBug() {
         ErrorReporter.get().reportManually();
+    }
+
+    @FXML
+    private void toolBarToggle(ActionEvent event) {
+        toolBarController.toolBarToggle(event);
     }
 }

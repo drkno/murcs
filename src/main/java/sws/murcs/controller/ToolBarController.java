@@ -32,6 +32,11 @@ public class ToolBarController {
     @FXML
     private ToolBar toolBar;
 
+    @FXML
+    private ContextMenu visibilityContextMenu;
+
+    private Menu toolBarMenu = null;
+
     /**
      * The shortcut key to used based on the OS.
      */
@@ -72,6 +77,10 @@ public class ToolBarController {
         if (controller != null) {
             linkedController = controller;
         }
+    }
+
+    public final void setToolBarMenu(Menu menu) {
+        toolBarMenu = menu;
     }
 
     /**
@@ -232,14 +241,28 @@ public class ToolBarController {
      * @param event Clicking on a check menu item in the context menu for the toolbar.
      */
     @FXML
-    private void toolBarToggle(final ActionEvent event) {
+    protected void toolBarToggle(final ActionEvent event) {
         CheckMenuItem menuItem = (CheckMenuItem) event.getSource();
+        boolean isFromAppController = menuItem.getParentMenu() != null;
+        boolean isChecked = menuItem.isSelected();
         HBox associatedToolBar;
         switch (menuItem.getId()) {
-            case "navigation": associatedToolBar = navigationToolBar; break;
-            case "history": associatedToolBar = historyToolBar; break;
-            case "edit": associatedToolBar = editToolBar; break;
-            case "reporting": associatedToolBar = reportingToolBar; break;
+            case "navigation":
+                associatedToolBar = navigationToolBar;
+                updateCheckMenu("navigation", isFromAppController, isChecked);
+                break;
+            case "history":
+                associatedToolBar = historyToolBar;
+                updateCheckMenu("history", isFromAppController, isChecked);
+                break;
+            case "edit":
+                associatedToolBar = editToolBar;
+                updateCheckMenu("edit", isFromAppController, isChecked);
+                break;
+            case "reporting":
+                associatedToolBar = reportingToolBar;
+                updateCheckMenu("reporting", isFromAppController, isChecked);
+                break;
             default: throw new UnsupportedOperationException("EXPLOSION!!!!!!!!!(unsupported toolbar)");
         }
 
@@ -253,6 +276,29 @@ public class ToolBarController {
         }
 
         killThoseSeparators();
+    }
+
+    /**
+     * Updates the check menu
+     * @param id
+     * @param fromAppController
+     * @param checked
+     */
+    private void updateCheckMenu(String id, boolean fromAppController, boolean checked) {
+        if (!fromAppController) {
+            toolBarMenu.getItems()
+                    .stream()
+                    .filter(menuItem -> menuItem.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(menuItem1 -> ((CheckMenuItem)menuItem1).setSelected(checked));
+        }
+        else {
+            visibilityContextMenu.getItems()
+                    .stream()
+                    .filter(menuItem -> menuItem.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(menuItem1 -> ((CheckMenuItem)menuItem1).setSelected(checked));
+        }
     }
 
     /**

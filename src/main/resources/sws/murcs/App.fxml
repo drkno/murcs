@@ -47,6 +47,14 @@
                           <items>
                               <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
                               <CheckMenuItem fx:id="highlightToggle" mnemonicParsing="false" onAction="#toggleBacklogStories" selected="true" text="Highlight Stories" />
+                        <Menu fx:id="toolBarMenu" mnemonicParsing="false" text="Tool Bar">
+                           <items>
+                              <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
+                              <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
+                              <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
+                              <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Navigation Toolbar" />
+                           </items>
+                        </Menu>
                           </items>
                       </Menu>
                   </menus>

@@ -199,7 +199,7 @@
       </HBox>
   </items>
    <contextMenu>
-      <ContextMenu>
+      <ContextMenu fx:id="visibilityContextMenu">
         <items>
             <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Navigation Toolbar" />
             <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
