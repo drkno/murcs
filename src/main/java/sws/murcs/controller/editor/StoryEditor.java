@@ -8,16 +8,33 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.*;
+import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.Person;
+import sws.murcs.model.Story;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -99,8 +116,7 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-
-        updateStoryState();
+        updateEstimation();
 
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
@@ -145,6 +161,8 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
+
+        updateStoryState();
         super.clearErrors();
     }
 
@@ -189,9 +207,6 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the story state because otherwise we might have a ready story with no ACs
         updateStoryState();
-
-        //Update the estimation so we don't end up with an estimated story and no ACs
-        updateEstimation();
     }
 
     /**
@@ -594,6 +609,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.addYesNoButtons(p -> {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
+                    updateEstimation();
                     popup.close();
                 });
                 popup.show();

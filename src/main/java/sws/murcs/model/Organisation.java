@@ -2,7 +2,12 @@ package sws.murcs.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.DuplicateObjectException;
@@ -179,10 +184,12 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the sprints contained within the organisation
+     * Gets the sprints contained within the organisation.
      * @return The sprints
      */
-    public final ModelObservableArrayList<Sprint> getSprints() { return sprints;}
+    public final ModelObservableArrayList<Sprint> getSprints() {
+        return sprints;
+    }
 
     /**
      * Gets a stories.
@@ -534,7 +541,7 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Adds the sprint to the organisation
+     * Adds the sprint to the organisation.
      * @param sprint The sprint to add
      * @throws DuplicateObjectException if the sprint has already been added to the organisation
      */
@@ -548,7 +555,7 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Removes a sprint from the organisation and any associated
+     * Removes a sprint from the organisation and any associated.
      * @param sprint The sprint to remove from the organisation
      */
     private void removeSprint(final Sprint sprint) {

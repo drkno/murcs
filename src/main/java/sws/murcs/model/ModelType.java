@@ -42,7 +42,7 @@ public enum ModelType {
     Backlog(6, sws.murcs.model.Backlog.class),
 
     /**
-     * Represents the class Sprint
+     * Represents the class Sprint.
      */
     Sprint(7, sws.murcs.model.Sprint.class);
 

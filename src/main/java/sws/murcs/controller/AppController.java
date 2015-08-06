@@ -9,7 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -25,7 +29,17 @@ import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -34,7 +48,7 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
@@ -50,7 +64,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addSprint, addBacklog, showHide, revert, highlightToggle;
+            addTeam, addPerson, addSkill, addRelease, addStory, addSprint, addBacklog, showHide, revert,
+            highlightToggle;
 
     /**
      * The side display which contains the display list.

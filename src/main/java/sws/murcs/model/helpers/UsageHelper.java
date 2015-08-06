@@ -4,7 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import sws.murcs.model.*;
+
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 /**
@@ -137,7 +149,7 @@ public final class UsageHelper {
     }
 
     /**
-     * Gets a list of places that sprint is used
+     * Gets a list of places that sprint is used.
      * @param sprint The sprint to find usages for
      * @return The usages of the sprint
      */

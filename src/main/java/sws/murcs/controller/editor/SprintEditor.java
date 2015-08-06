@@ -1,11 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,8 +23,19 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Release;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The controller for editing sprints.
@@ -130,10 +135,21 @@ public class SprintEditor extends GenericEditor<Sprint> {
         endDatePicker.setValue(sprint.getEndDate());
 
         //Update the sprint stories
+        updateAllocatableStories();
+    }
+
+    /**
+     * Updates the list of allocatable stories in a sprint.
+     */
+    private void updateAllocatableStories() {
         allocatableStories.clear();
-        if (sprint.getBacklog() != null) {
-            allocatableStories.addAll(sprint.getBacklog().getAllStories());
-            sprint.getStories().stream().forEach(allocatableStories::remove);
+        if (getModel().getBacklog() != null) {
+            getModel().getBacklog().getAllStories().stream()
+                    .filter(story -> story.getAcceptanceCriteria().size() > 0
+                            && !story.getEstimate().equals(EstimateType.NOT_ESTIMATED))
+                    .forEach(allocatableStories::add);
+            // Remove all the stories already in backlog
+            getModel().getStories().stream().forEach(allocatableStories::remove);
         }
 
         storiesContainer.getChildren().clear();
@@ -180,18 +196,39 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Save the backlog
         if (isNullOrNotEqual(sprint.getBacklog(), backlogComboBox.getValue())) {
             if (backlogComboBox.getValue() != null) {
-                sprint.setBacklog(backlogComboBox.getValue());
-                storiesList.getItems().clear();
-                storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
-                allocatableStories.clear();
-                allocatableStories.addAll(sprint.getBacklog().getAllStories());
-                storyNodeIndex.clear();
+                if (storiesContainer.getChildren().size() > 0) {
+                    GenericPopup popup = new GenericPopup();
+                    popup.setMessageText("Do you really want to change the Sprint Backlog? "
+                            + "All added stories will be cleared");
+                    popup.setTitleText("Change Sprint Backlog");
+                    popup.addYesNoButtons(func -> {
+                        sprint.setBacklog(backlogComboBox.getValue());
+                        storiesList.getItems().clear();
+                        storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
+                        allocatableStories.clear();
+                        allocatableStories.addAll(sprint.getBacklog().getAllStories());
+                        storyNodeIndex.clear();
+                        updateAllocatableStories();
+                        popup.close();
+                    });
+                    popup.show();
+                }
+                else {
+                    sprint.setBacklog(backlogComboBox.getValue());
+                    storiesList.getItems().clear();
+                    storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
+                    allocatableStories.clear();
+                    allocatableStories.addAll(sprint.getBacklog().getAllStories());
+                    storyNodeIndex.clear();
+                    updateAllocatableStories();
+                }
             }
             else {
                 addFormError(backlogComboBox, "You must select a backlog for this sprint");
             }
         }
 
+        // Save the stories
         Story selectedStory = storiesList.getValue();
         if (selectedStory != null) {
             try {
@@ -220,9 +257,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
                             storiesList.getSelectionModel().clearSelection();
                             allocatableStories.remove(selectedStory);
                         });
-                    } catch (NotReadyException e1) {
+                    }
+                    catch (NotReadyException e1) {
                         ErrorReporter.get().reportError(e1, "Stuff turned to custard. Yum.");
-                    } finally {
+                    }
+                    finally {
                         popup.close();
                     }
                 });

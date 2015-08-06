@@ -4,7 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.NotReadyException;
@@ -130,7 +135,7 @@ public class Sprint extends Model {
     }
 
     /**
-     * Removes a story from the sprint
+     * Removes a story from the sprint.
      * @param story The story to remove from the sprint
      */
     public final void removeStory(final Story story) {
@@ -176,7 +181,9 @@ public class Sprint extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (!(object instanceof Sprint) || object == null) return false;
+        if (!(object instanceof Sprint) || object == null) {
+            return false;
+        }
         Sprint sprint = (Sprint) object;
         return sprint.getShortName() != null && sprint.getShortName().equals(getShortName());
     }
@@ -191,7 +198,7 @@ public class Sprint extends Model {
     }
 
     /**
-     * Validates the dates associated with the sprint
+     * Validates the dates associated with the sprint.
      * @param end The end date
      * @param start The start date
      * @param rel The release
