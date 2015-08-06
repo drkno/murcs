@@ -1,17 +1,22 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
@@ -29,6 +34,11 @@ import java.time.format.DateTimeFormatter;
  * Since there should only be one instance of this PopUp
  */
 public class ProjectEditor extends GenericEditor<Project> {
+    /**
+     * The labels inside the form.
+     */
+    @FXML
+    private Label shortNameLabel, longNameLabel, descriptionLabel;
 
     /**
      * The shortName, longName for a project.
@@ -98,6 +108,26 @@ public class ProjectEditor extends GenericEditor<Project> {
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
+        registerFormLabel(shortNameTextField, shortNameLabel);
+        registerFormLabel(longNameTextField, longNameLabel);
+        registerFormLabel(descriptionTextArea, descriptionLabel);
+
+        descriptionTextArea.setWrapText(true);
+        Platform.runLater(() -> {
+            ScrollPane scrollPane = (ScrollPane) descriptionTextArea.lookup(".scroll-pane");
+            if (scrollPane != null) {
+                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            }
+        });
+        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            Text text = new Text();
+            text.setFont(descriptionTextArea.getFont());
+            text.setWrappingWidth(descriptionTextArea.getWidth());
+            text.setText(newValue + ' ');
+            descriptionTextArea.setPrefRowCount((int) text.getLayoutBounds().getHeight() / 18);
+        });
+        descriptionTextArea.setPrefRowCount(1);
     }
 
     @Override
@@ -279,5 +309,23 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(null);
             }
         }
+    }
+
+    /**
+     * Stuff and things.
+     * @param node Node
+     * @param label Label
+     */
+    public final void registerFormLabel(final Node node, final Label label) {
+        node.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue) {
+                label.getStyleClass().remove("input-label");
+                label.getStyleClass().add("input-label-focused");
+            }
+            else {
+                label.getStyleClass().remove("input-label-focused");
+                label.getStyleClass().add("input-label");
+            }
+        });
     }
 }

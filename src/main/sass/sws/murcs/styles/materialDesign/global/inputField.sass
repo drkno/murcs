@@ -1,0 +1,44 @@
+@import "../../globalStyles"
+
+.text-field
+  -fx-border-width: 0 0 1 0
+  -fx-background-color: transparent
+  -fx-border-color: $primary-300
+  -fx-padding: 0 0 8 1
+
+.text-field:focused
+  -fx-border-width: 0 0 3 0
+  -fx-border-color: $secondary-500
+
+.text-area
+  -fx-border-width: 0 0 1 0
+  -fx-background-color: transparent
+  -fx-border-color: $primary-300
+  -fx-padding: 0 0 0 0
+
+.text-area .scroll-pane
+  -fx-background-color: transparent
+  -fx-border-width: 0
+  -fx-padding: 0 0 8 1
+
+.text-area .scroll-pane .viewport
+  -fx-background-color: transparent
+  -fx-padding: 0 0 0 0
+  -fx-border-width: 0
+
+.text-area .scroll-pane .content
+  -fx-background-color: transparent
+  -fx-border-width: 0
+  -fx-padding: 0 0 0 0
+
+.text-area:focused
+  -fx-border-width: 0 0 3 0
+  -fx-border-color: $secondary-500
+
+.input-label-focused
+  -fx-padding: 0 0 0 1
+  -fx-text-fill: $secondary-500
+
+.input-label
+  -fx-padding: 0 0 0 1
+  -fx-text-fill: $primary-500
