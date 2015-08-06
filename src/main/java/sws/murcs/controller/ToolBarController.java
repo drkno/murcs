@@ -206,6 +206,10 @@ public class ToolBarController {
         linkedController.remove(event);
     }
 
+    /**
+     * The function called when you click the remove button. It redirects it through the linkedController.
+     * @param event Clicking the search button in the toolbar.
+     */
     @FXML void searchButtonClick(final ActionEvent event) {
         linkedController.search(event);
     }

@@ -51,7 +51,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
@@ -870,7 +870,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         ErrorReporter.get().reportManually();
     }
 
-    public final void search(ActionEvent event) {
+    /**
+     * The function that is called to bring up the search window.
+     * @param event Clicking the search button on the toolbar.
+     */
+    public final void search(final ActionEvent event) {
         SearchView.get().show(borderPaneMain.getScene().getWindow());
     }
 

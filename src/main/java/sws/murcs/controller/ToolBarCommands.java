@@ -82,5 +82,9 @@ public interface ToolBarCommands {
      */
     void open(ActionEvent event);
 
+    /**
+     * The function to be called when you click the search button on the toolbar.
+     * @param event Clicking the search button on the toolbar.
+     */
     void search(ActionEvent event);
 }
