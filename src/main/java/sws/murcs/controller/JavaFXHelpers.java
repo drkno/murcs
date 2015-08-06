@@ -91,6 +91,10 @@ public final class JavaFXHelpers {
      * @param currentNode the parent node to start from.
      */
     public static void findAndDestroyControls(final Parent currentNode) {
+        if (currentNode == null) {
+            return;
+        }
+
         List<Node> nodeList = currentNode.getChildrenUnmodifiable();
         for (int i = 0; i < nodeList.size(); i++) {
             Node node = nodeList.get(i);
