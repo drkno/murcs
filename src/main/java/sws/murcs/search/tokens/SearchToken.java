@@ -1,5 +1,8 @@
 package sws.murcs.search.tokens;
 
+import sws.murcs.search.SearchResult;
+
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +10,11 @@ import java.util.regex.Pattern;
  * Represents a single piece of a search (e.g. "Foo")
  */
 public class SearchToken extends Token {
+
+    /**
+     * Maximum length of a search result as returned result text.
+     */
+    private static final int SEARCH_RESULT_MAX_LENGTH = 50;
 
     /**
      * New search tokens will be case insensitive?
@@ -29,7 +37,7 @@ public class SearchToken extends Token {
     private Pattern searchRegex;
 
     /**
-     * Creates a new search token with the specified query
+     * Creates a new search token with the specified query.
      * @param searchTerm The term to search for.
      */
     public SearchToken(final String searchTerm) {
@@ -79,11 +87,40 @@ public class SearchToken extends Token {
     }
 
     @Override
-    public boolean matches(final String input) {
+    public final SearchResult matches(final String input) {
         if (input == null) {
-            return false;
+            return null;
         }
         Matcher matcher = searchRegex.matcher(input);
-        return matcher.find();
+        if (matcher.find()) {
+            MatchResult result = matcher.toMatchResult();
+            String str = input;
+            int start = result.start();
+            int end = result.end();
+            if (end - start < SEARCH_RESULT_MAX_LENGTH) {
+                int difference = SEARCH_RESULT_MAX_LENGTH - (end - start);
+                if (start != 0 && end != str.length()) {
+                    difference /= 2;
+                    start -= difference;
+                    end += difference;
+                }
+                else if (start != 0) {
+                    start -= difference;
+                }
+                else if (end != str.length()) {
+                    end += difference;
+                }
+
+                if (start < 0) {
+                    start = 0;
+                }
+                if (end > str.length()) {
+                    end = str.length();
+                }
+                str = input.substring(start, end);
+            }
+            return new SearchResult(str);
+        }
+        return null;
     }
 }
