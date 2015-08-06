@@ -97,13 +97,11 @@ public class Window {
             App.getWindowManager().removeWindow(this);
         }));
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("fire");
-            System.out.println(this);
                 if (newValue) {
-                    System.out.println("accept focus");
-                    System.out.println(App.getWindowManager().getAllWindows());
-                    App.getWindowManager().bringToTop(this);
-                    System.out.println(App.getWindowManager().getAllWindows());
+                    App.getWindowManager().bringToTop(this, false);
+                }
+                if (oldValue) {
+                    App.getWindowManager().sendBackwards(this, 1, false);
                 }
             });
     }
@@ -126,10 +124,8 @@ public class Window {
      * Brings the parentWindow to the front.
      */
     public final void parentToFront() {
-        System.out.println("send parent to front");
         if (parentWindow != null) {
-            System.out.println("sending to front");
-            parentWindow.stage.toFront();
+            App.getWindowManager().bringToTop(parentWindow, true);
         }
     }
 }

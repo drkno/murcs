@@ -323,7 +323,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -471,7 +471,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -535,7 +535,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -672,7 +672,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
