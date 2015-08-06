@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import sws.murcs.model.Model;
 import sws.murcs.model.Organisation;
+import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
 
@@ -19,7 +20,7 @@ public class SearchHandler {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         results = FXCollections.observableArrayList();
         searchThreads = new SearchThread[] {
-                new SearchThread(results, organisation.getReleases()),
+                new SearchThread<Release>(results, organisation.getReleases()),
                 new SearchThread(results, organisation.getStories()),
                 new SearchThread(results, organisation.getProjects()),
                 new SearchThread(results, organisation.getBacklogs()),
@@ -29,22 +30,42 @@ public class SearchHandler {
         };
     }
 
-    public final void searchFor(final String text) {
+    /**
+     * Cancels any existing searches an begins a search for the provided query.
+     * This will result in any existing results being cleared from the provided
+     * results list.
+     * @param query the query to search for.
+     */
+    public final void searchFor(final String query) {
+        // abort current search
         for (SearchThread thread : searchThreads) {
             thread.stop();
         }
         results.clear();
-        if (text == null || text.trim().length() == 0) {
+
+        // parse query
+        Token token = Token.parse(query);
+
+        if (token.isEmpty()) {
+            // nothing to search for
             return;
         }
 
-        Token token = Token.parse(text);
+        // begin new search
         for (SearchThread thread : searchThreads) {
             thread.start(token);
         }
     }
 
-    public ObservableList<SearchResult> getResults() {
+    /**
+     * Gets all results currently found from the search.
+     * By default these results will be in order that they are found.
+     * NOTE: This list is mutable so that it can be manipulated if
+     * required for sort order or other purposes however will not
+     * affect the ongoing search if it is changed.
+     * @return results found from the current search.
+     */
+    public final ObservableList<SearchResult> getResults() {
         return results;
     }
 }

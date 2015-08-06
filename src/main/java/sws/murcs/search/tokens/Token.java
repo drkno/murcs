@@ -1,7 +1,18 @@
 package sws.murcs.search.tokens;
 
+import sws.murcs.search.SearchResult;
+
+/**
+ * Token that is used to check search criteria.
+ */
 public abstract class Token {
-    public abstract boolean matches(String query);
+
+    /**
+     * Checks for matches on a given string with the current search criteria.
+     * @param query string to use as a search target.
+     * @return null if no match found, or a SearchResult if a match was found.
+     */
+    public abstract SearchResult matches(final String query);
 
     public static final Token parse(final String input) {
         String searchQuery = input;
@@ -20,6 +31,11 @@ public abstract class Token {
             searchQuery = searchQuery.replaceAll("(^|(\\s+))!regex($|(\\s+))", "");
         }
 
+        searchQuery = searchQuery.trim();
+        if (searchQuery.isEmpty()) {
+            return new BlankToken();
+        }
+
         OrToken orToken = new OrToken();
         for (String or : searchQuery.split("\\|\\|")) {
             AndToken andToken = new AndToken();
@@ -29,5 +45,13 @@ public abstract class Token {
             orToken.addToken(andToken);
         }
         return orToken;
+    }
+
+    /**
+     * Determines if the token is empty (no search query).
+     * @return if the entered search query was empty.
+     */
+    public boolean isEmpty() {
+        return false;
     }
 }
