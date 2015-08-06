@@ -155,7 +155,7 @@ public final class ErrorReporter {
         }
 
         Platform.runLater(() -> {
-            ErrorReportPopup popup = new ErrorReportPopup();
+            ErrorReportPopup popup = ErrorReportPopup.newErrorReporter();
             popup.setType(dialogType);
             popup.setReportListener(description -> performReporting(thread, throwable, description, progDescription));
             popup.show();

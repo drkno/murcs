@@ -1,8 +1,11 @@
 package sws.murcs.debug.errorreporting;
 
+import com.sun.tools.javac.code.Attribute;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -19,19 +22,19 @@ import sws.murcs.view.App;
 /**
  * Popup for reporting errors/bugs.
  */
-public class ErrorReportPopup extends AnchorPane {
+public class ErrorReportPopup {
 
     /**
      * The main message text.
      */
     @FXML
-    private Label messageText;
+    private Label messageDetailLabel;
 
     /**
      * The title of the message.
      */
     @FXML
-    private Label messageTitle;
+    private Label messageTitleLabel;
 
     /**
      * The image that goes with the message.
@@ -40,16 +43,10 @@ public class ErrorReportPopup extends AnchorPane {
     private ImageView messageImage;
 
     /**
-     * The main content pane.
-     */
-    @FXML
-    private GridPane contentPane;
-
-    /**
      * Text area to contain report details.
      */
     @FXML
-    private TextArea reportDetails;
+    private TextArea detailTextArea;
 
     /**
      * Button used for reporting.
@@ -73,23 +70,12 @@ public class ErrorReportPopup extends AnchorPane {
      * which we want to then send data about back to the sws server.
      */
     public ErrorReportPopup() {
-        popupStage = new Stage();
+    }
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ErrorReporting.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
+    private void setStage(final Stage stage) {
+        popupStage = stage;
 
-        try {
-            loader.load();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Scene popupScene = new Scene(this);
-        popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
         popupStage.initOwner(App.getStage());
-        popupStage.setScene(popupScene);
         popupStage.setResizable(true);
         popupStage.initModality(Modality.NONE);
 
@@ -97,11 +83,44 @@ public class ErrorReportPopup extends AnchorPane {
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
+    }
 
+    @FXML
+    private void initialize() {
         reportButton.getStyleClass().add("button-default");
-
-
         setType(ErrorType.Automatic);
+    }
+
+    public static ErrorReportPopup newErrorReporter() {
+        Stage stage = new Stage();
+
+        FXMLLoader loader = new FXMLLoader(ErrorReportPopup.class.getResource("/sws/murcs/ErrorReporting.fxml"));
+        AnchorPane root;
+        try {
+            root = loader.load();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        ErrorReportPopup controller = loader.getController();
+        controller.setStage(stage);
+
+        Scene popupScene = new Scene(root);
+        stage.setScene(popupScene);
+        stage.sizeToScene();
+        stage.setMinHeight(root.getPrefHeight());
+        stage.setMinWidth(root.getPrefWidth());
+        stage.setHeight(root.getPrefHeight());
+        stage.setWidth(root.getPrefWidth());
+        popupScene.getStylesheets()
+                .add(ErrorReportPopup.class
+                        .getResource("/sws/murcs/styles/global.css")
+                        .toExternalForm());
+
+
+        return controller;
     }
 
     /**
@@ -114,7 +133,7 @@ public class ErrorReportPopup extends AnchorPane {
         window.register();
         window.addGlobalShortcutsToWindow();
         window.show();
-        Platform.runLater(messageTitle::requestFocus);
+        Platform.runLater(messageTitleLabel::requestFocus);
     }
 
     /**
@@ -124,7 +143,7 @@ public class ErrorReportPopup extends AnchorPane {
     public final void setReportListener(final ReportError report) {
         reportButton.setOnAction(a -> {
             window.close();
-            report.sendReport(reportDetails.getText());
+            report.sendReport(detailTextArea.getText());
         });
     }
 
@@ -166,7 +185,7 @@ public class ErrorReportPopup extends AnchorPane {
         if (message == null) {
             return;
         }
-        messageText.setText(message);
+        messageDetailLabel.setText(message);
     }
 
     /**
@@ -178,6 +197,6 @@ public class ErrorReportPopup extends AnchorPane {
         if (titleText == null) {
             return;
         }
-        messageTitle.setText(titleText);
+        messageTitleLabel.setText(titleText);
     }
 }
