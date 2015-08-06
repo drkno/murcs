@@ -4,8 +4,13 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 
 /**
@@ -32,9 +37,15 @@ public class ToolBarController {
     @FXML
     private ToolBar toolBar;
 
+    /**
+     * The context menu that is used for toggling visibility on sections of the toolbar.
+     */
     @FXML
     private ContextMenu visibilityContextMenu;
 
+    /**
+     * The toolbar on any parent controller that controls visibility for sections of the toolbar.
+     */
     private Menu toolBarMenu = null;
 
     /**
@@ -79,7 +90,11 @@ public class ToolBarController {
         }
     }
 
-    public final void setToolBarMenu(Menu menu) {
+    /**
+     * Sets up the tool bar menu that is linked to the toolbar (in app controller this is in the view menu).
+     * @param menu The menu that has links to the toolbar for showing and hiding sections.
+     */
+    public final void setToolBarMenu(final Menu menu) {
         toolBarMenu = menu;
     }
 
@@ -241,7 +256,7 @@ public class ToolBarController {
      * @param event Clicking on a check menu item in the context menu for the toolbar.
      */
     @FXML
-    protected void toolBarToggle(final ActionEvent event) {
+    protected final void toolBarToggle(final ActionEvent event) {
         CheckMenuItem menuItem = (CheckMenuItem) event.getSource();
         boolean isFromAppController = menuItem.getParentMenu() != null;
         boolean isChecked = menuItem.isSelected();
@@ -279,25 +294,30 @@ public class ToolBarController {
     }
 
     /**
-     * Updates the check menu
-     * @param id
-     * @param fromAppController
-     * @param checked
+     * Updates the check menu item that didn't fire off the event to toggle sections of the toolbar, so that they
+     * are both in sync with each other.
+     * @param id The id of the checkMenuItem that needs to be udpated.
+     * @param fromAppController Whether or not the event came from the app controller.
+     * @param checked Whether or not the menu item that fired the event is checked.
      */
-    private void updateCheckMenu(String id, boolean fromAppController, boolean checked) {
+    private void updateCheckMenu(final String id, final boolean fromAppController, final boolean checked) {
         if (!fromAppController) {
+            //This hopefully shouldn't be necessary, but I'll put it in here to try and future proof this.
+            if (toolBarMenu == null) {
+                return;
+            }
             toolBarMenu.getItems()
                     .stream()
                     .filter(menuItem -> menuItem.getId().equals(id))
                     .findFirst()
-                    .ifPresent(menuItem1 -> ((CheckMenuItem)menuItem1).setSelected(checked));
+                    .ifPresent(menuItem1 -> ((CheckMenuItem) menuItem1).setSelected(checked));
         }
         else {
             visibilityContextMenu.getItems()
                     .stream()
                     .filter(menuItem -> menuItem.getId().equals(id))
                     .findFirst()
-                    .ifPresent(menuItem1 -> ((CheckMenuItem)menuItem1).setSelected(checked));
+                    .ifPresent(menuItem1 -> ((CheckMenuItem) menuItem1).setSelected(checked));
         }
     }
 

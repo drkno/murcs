@@ -7,7 +7,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -64,6 +68,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
 
+    /**
+     * The menu that contains the check menu items for toggling sections of the toolbar.
+     */
     @FXML
     private Menu toolBarMenu;
 
@@ -862,8 +869,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         ErrorReporter.get().reportManually();
     }
 
+    /**
+     * Toggles a section of the toolbar based on the check menu item selected in the view menu.
+     * @param event Clicking on an option in the tool bar section of the view menu.
+     */
     @FXML
-    private void toolBarToggle(ActionEvent event) {
+    private void toolBarToggle(final ActionEvent event) {
         toolBarController.toolBarToggle(event);
     }
 }
