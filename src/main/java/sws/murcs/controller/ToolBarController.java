@@ -46,7 +46,7 @@ public class ToolBarController {
     /**
      * The toolbar on any parent controller that controls visibility for sections of the toolbar.
      */
-    private Menu toolBarMenu = null;
+    private Menu toolBarMenu;
 
     /**
      * The shortcut key to used based on the OS.
@@ -290,7 +290,7 @@ public class ToolBarController {
             associatedToolBar.setPrefWidth(0);
         }
 
-        killThoseSeparators();
+        updateVisibleSeparators();
     }
 
     /**
@@ -302,7 +302,8 @@ public class ToolBarController {
      */
     private void updateCheckMenu(final String id, final boolean fromAppController, final boolean checked) {
         if (!fromAppController) {
-            //This hopefully shouldn't be necessary, but I'll put it in here to try and future proof this.
+            //This is just in case you add a toolbar to a window that doesn't have a view menu that allows you
+            //to toggle sections of the toolbar on and off. In all other cases toolBarMenu should not be null.
             if (toolBarMenu == null) {
                 return;
             }
@@ -322,10 +323,9 @@ public class ToolBarController {
     }
 
     /**
-     * As the name implies it kills the separators between the sections of the toolbar depending on which ones are
-     * currently visible.
+     * Updates the separators that are visible depending on the tool bar sections that are visible.
      */
-    private void killThoseSeparators() {
+    private void updateVisibleSeparators() {
         List<Node> toolBarItems = toolBar.getItems();
         int firstVisibleIndex = -1;
         int nextVisibleIndex = -1;
@@ -337,7 +337,7 @@ public class ToolBarController {
         //visible HBoxs we turn on a separator between them and make the firstVisibleIndex the nextVisibleIndex, the
         //nextVisibleIndex -1 and carry on until we reach the end of the toolbar. Hope you had fun reading and
         //understanding that.
-        //Firstly not the amusingly uncommon for loop that uses the <= instead of <. This is because otherwise we don't
+        //Firstly note the amusingly uncommon for loop that uses the <= instead of <. This is because otherwise we don't
         //make the last separator visible after invisibling it.
         for (int i = 0; i <= toolBarItems.size(); ++i) {
             //If we've found two HBoxs that are visible then we'll go in here.

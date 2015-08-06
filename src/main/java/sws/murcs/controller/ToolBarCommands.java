@@ -39,8 +39,7 @@ public interface ToolBarCommands {
 
     /**
      * The function to be called when you click the add button on the toolbar.
-     * @param event Clicking either the add button on the toolbar or one of the menu items from the selection
-     *              box.
+     * @param event Clicking either the add button on the toolbar or one of the menu items from the selection box.
      *              NOTE: make sure this function deals with the different menu items in some way or form. (i.e. works
      *              out which item was selected - see AppController add() for more details).
      */
