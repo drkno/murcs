@@ -28,6 +28,11 @@ public class GenericPopup extends AnchorPane {
     private Window window;
 
     /**
+     * Optional parent controller.
+     */
+    private Window parentWindow;
+
+    /**
      * Enum for specifying which side of the dialog you want the button to appear on.
      */
     public enum Position {
@@ -116,21 +121,6 @@ public class GenericPopup extends AnchorPane {
     private boolean buttonsDefined;
 
     /**
-     * Default button width.
-     */
-    private final int defaultButtonWidth = 70;
-
-    /**
-     * Default button height.
-     */
-    private final int defaultButtonHeight = 25;
-
-    /**
-     * Default popUp height.
-     */
-    private final int defaultPopUpHeight = 150;
-
-    /**
      * Constructs a new Generic Popup. In order to use you need
      * to at least set the message and add at least 1 button
      * some examples of how to use this include:
@@ -147,7 +137,15 @@ public class GenericPopup extends AnchorPane {
      *
      */
     public GenericPopup() {
-        this(null);
+        this(null, null);
+    }
+
+    /**
+     * Constructs a generic pop up with a reference to the parent controller.
+     * @param pParentController The parent controller of the pop up
+     */
+    public GenericPopup(final Window pParentController) {
+        this(null, pParentController);
     }
 
     /**
@@ -155,6 +153,15 @@ public class GenericPopup extends AnchorPane {
      * @param exception The exception that you want to feed in to show the exception message.
      */
     public GenericPopup(final Exception exception) {
+        this(exception, null);
+    }
+
+    /**
+     * Constructs a dialog from an exception with a reference to a parent controller.
+     * @param exception The exception that you want to feed in to show the exception message.
+     * @param pParentWindow The parent controller of the pop up
+     */
+    public GenericPopup(final Exception exception, final Window pParentWindow) {
         popupStage = new Stage();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
@@ -179,6 +186,7 @@ public class GenericPopup extends AnchorPane {
         popupStage.getIcons().add(iconImage);
         popupStage.sizeToScene();
         popupStage.setResizable(false);
+        parentWindow = pParentWindow;
         setupWindow();
 
         if (exception != null) {
@@ -193,7 +201,7 @@ public class GenericPopup extends AnchorPane {
     private void setupWindow() {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initOwner(App.getStage());
-        window = new Window(popupStage, this);
+        window = new Window(popupStage, this, parentWindow);
         window.register();
     }
 
@@ -271,7 +279,7 @@ public class GenericPopup extends AnchorPane {
      * Closes the dialog window.
      */
     public final void close() {
-        window.close();
+        window.close(window::parentToFront);
     }
 
     /**

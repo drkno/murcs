@@ -33,6 +33,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
@@ -696,7 +697,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     if (!isCreationWindow) {
-                        GenericPopup popup = new GenericPopup();
+                        GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                         popup.setTitleText("Are you sure?");
                         popup.setMessageText("Are you sure you wish to remove the story \""
                                 + story.getShortName() + "\" from this backlog?");

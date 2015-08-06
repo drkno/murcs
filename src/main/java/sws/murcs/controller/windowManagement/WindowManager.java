@@ -30,9 +30,10 @@ public class WindowManager {
      * @param window The window to bring to the top
      */
     public final void bringToTop(final Window window) {
+        System.out.println("bring to top");
         windows.remove(window);
         windows.add(0, window);
-        window.stage.toFront();
+        //window.stage.toFront();
     }
 
     /**
@@ -107,6 +108,7 @@ public class WindowManager {
      * @param window The window to remove
      */
     public final void removeWindow(final Window window) {
+        System.out.println("removing window");
         windows.remove(window);
         reOrderWindows();
     }
@@ -116,6 +118,7 @@ public class WindowManager {
      * @param window new window to register.
      */
     public final void addWindow(final Window window) {
+        System.out.println("adding window");
         windows.add(0, window);
         window.stage.toFront();
     }
@@ -199,6 +202,7 @@ public class WindowManager {
      * Cleans up all open windows which are not the main controller.
      */
     public final void cleanUp() {
+        System.out.println("cleaning up");
         for (int i = 0; i < windows.size(); i++) {
             if (windows.get(i).getController().getClass() != AppController.class) {
                 windows.get(i).close();

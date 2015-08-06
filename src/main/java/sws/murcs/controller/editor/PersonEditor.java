@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import sws.murcs.controller.AppController;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
@@ -22,6 +23,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -183,7 +185,7 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup();
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                 popup.setMessageText("Are you sure you want to remove "
                         + skill.getShortName() + " from "
                         + getModel().getShortName() + "?");

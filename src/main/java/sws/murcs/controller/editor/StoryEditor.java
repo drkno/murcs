@@ -36,6 +36,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -377,7 +378,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup();
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
@@ -621,7 +622,7 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
                 if (!isCreationWindow) {
-                    GenericPopup popup = new GenericPopup();
+                    GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                     popup.setTitleText("Are you sure?");
                     popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                     popup.addYesNoButtons(() -> {

@@ -20,14 +20,30 @@ public class Window {
     protected Object controller;
 
     /**
+     * The owner of the parent of the controller.
+     */
+    protected Window parentWindow;
+
+    /**
      * Creates a new window containing a stage and a controller.
      * @param pStage The stage.
      * @param pController The controller.
      */
     public Window(final  Stage pStage, final Object pController) {
-        stage = pStage;
-        controller = pController;
+        this(pStage, pController, null);
     }
+
+     /**
+      * Creates a new window containing a stage and a controller.
+      * @param pStage The stage.
+      * @param pController The controller.
+      * @param pParentWindow The the parent of the windows controller.
+      */
+     public Window(final  Stage pStage, final Object pController, final Window pParentWindow) {
+         stage = pStage;
+         controller = pController;
+         parentWindow = pParentWindow;
+     }
 
 
     /**
@@ -44,6 +60,14 @@ public class Window {
      */
     public final Object getController() {
         return controller;
+    }
+
+    /**
+     * Gets the parent controller of the window.
+     * @return The parent controller.
+     */
+    public final Object getParentWindow() {
+        return parentWindow;
     }
 
     /**
@@ -72,6 +96,16 @@ public class Window {
         stage.setOnCloseRequest((event -> {
             App.getWindowManager().removeWindow(this);
         }));
+        stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("fire");
+            System.out.println(this);
+                if (newValue) {
+                    System.out.println("accept focus");
+                    System.out.println(App.getWindowManager().getAllWindows());
+                    App.getWindowManager().bringToTop(this);
+                    System.out.println(App.getWindowManager().getAllWindows());
+                }
+            });
     }
 
     /**
@@ -86,5 +120,16 @@ public class Window {
      */
     public final void show() {
         stage.show();
+    }
+
+    /**
+     * Brings the parentWindow to the front.
+     */
+    public final void parentToFront() {
+        System.out.println("send parent to front");
+        if (parentWindow != null) {
+            System.out.println("sending to front");
+            parentWindow.stage.toFront();
+        }
     }
 }

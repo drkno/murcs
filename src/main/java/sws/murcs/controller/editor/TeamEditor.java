@@ -28,6 +28,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -330,7 +331,7 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup();
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                 popup.setTitleText("Remove Team Member");
                 String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
                 if (getModel().getScrumMaster() != null && getModel().getScrumMaster().equals(person)) {

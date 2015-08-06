@@ -298,7 +298,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void fileQuitPress(final ActionEvent event) {
         borderPaneMain.requestFocus();
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -436,7 +436,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void newModel(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -486,18 +486,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Shows a failed save dialog.
-     */
-    private void showSaveFailedDialog() {
-        GenericPopup errorPopup = new GenericPopup();
-        String message = "Something went wrong saving";
-        errorPopup.setTitleText("Something went wrong");
-        errorPopup.setMessageText(message);
-        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, errorPopup::close);
-        errorPopup.show();
-    }
-
-    /**
      * Creates a new model and adds it to the program.
      * @exception Exception thrown if the undo redo manager fails to import the new model.
      */
@@ -518,7 +506,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void open(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -590,7 +578,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Old or corrupted project!");
             popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
                     + "Please use the version it was created with to open the file.");
@@ -648,7 +636,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Revert changes?");
             popup.setMessageText("Look like you are still working on something.\nChanges will be lost if you continue.");
             popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
@@ -838,7 +826,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         Collection<Model> usages = UsageHelper.findUsages(selectedItem);
-        GenericPopup popup = new GenericPopup();
+        GenericPopup popup = new GenericPopup(window);
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
@@ -969,5 +957,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             fileQuitPress(null);
         });
         setUpShortCuts();
+    }
+
+    /**
+     * Gets the window of the AppController.
+     * @return The window for AppController.
+     */
+    public final Window getWindow() {
+        return window;
     }
 }
