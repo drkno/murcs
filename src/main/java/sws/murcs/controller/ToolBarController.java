@@ -23,13 +23,13 @@ public class ToolBarController {
      */
     @FXML
     private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton,
-            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton;
+            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton, searchButton;
 
     /**
      * The toolbar sections for the toolbar.
      */
     @FXML
-    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar;
+    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar, searchToolBar;
 
     /**
      * The overall container for the toolbar.
@@ -78,6 +78,7 @@ public class ToolBarController {
         saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
         sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
+        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F)");
     }
 
     /**
@@ -210,7 +211,8 @@ public class ToolBarController {
      * The function called when you click the remove button. It redirects it through the linkedController.
      * @param event Clicking the search button in the toolbar.
      */
-    @FXML void searchButtonClick(final ActionEvent event) {
+    @FXML
+    private void searchButtonClick(final ActionEvent event) {
         linkedController.search(event);
     }
 
@@ -285,6 +287,10 @@ public class ToolBarController {
             case "reporting":
                 associatedToolBar = reportingToolBar;
                 updateCheckMenu("reporting", isFromAppController, isChecked);
+                break;
+            case "search":
+                associatedToolBar = searchToolBar;
+                updateCheckMenu("search", isFromAppController, isChecked);
                 break;
             default: throw new UnsupportedOperationException("EXPLOSION!!!!!!!!!(unsupported toolbar)");
         }
