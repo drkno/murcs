@@ -264,9 +264,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 () -> add(null));
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
                 () -> remove(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN),
+        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHORTCUT_DOWN),
                 () -> back(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
+        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHORTCUT_DOWN),
                 () -> forward(null));
 
         App.getStage().getScene().getAccelerators().putAll(accelerators);
@@ -343,7 +343,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow, true);
+                            Platform.runLater(() -> {
+                                App.getWindowManager().bringToTop(openWindow, true);
+                            });
                         });
             });
             popup.show();
@@ -524,7 +526,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event The event that caused the function to be called.
      */
     @FXML
-    public void open(final ActionEvent event) {
+    public final void open(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
@@ -655,7 +657,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event event arguments.
      */
     @FXML
-    public void revert(final ActionEvent event) {
+    public final void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Revert changes?");
