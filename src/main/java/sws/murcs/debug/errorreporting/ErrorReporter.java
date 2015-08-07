@@ -27,6 +27,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Handles sending error reports in to SWS when something
@@ -43,6 +44,11 @@ public final class ErrorReporter {
      * Current instance of this singleton.
      */
     private static ErrorReporter reporter;
+
+    /**
+     * An instance of the error reporter shown to the user.
+     */
+    private ErrorReportPopup popup;
 
     /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
@@ -155,10 +161,14 @@ public final class ErrorReporter {
         }
 
         Platform.runLater(() -> {
-            ErrorReportPopup popup = ErrorReportPopup.newErrorReporter();
-            popup.setType(dialogType);
-            popup.setReportListener(description -> performReporting(thread, throwable, description, progDescription));
-            popup.show();
+            popup = ErrorReportPopup.newErrorReporter();
+            if (popup != null) {
+                popup.setType(dialogType);
+                popup.setReportListener(description -> {
+                            performReporting(thread, throwable, description, progDescription);
+                        });
+                popup.show();
+            }
         });
     }
 
@@ -200,7 +210,7 @@ public final class ErrorReporter {
         reportFields.put("misc", miscData);
         reportFields.put("args", arguments);
         reportFields.put("exception", exceptionData);
-        reportFields.put("screenshots", getScreenshots());
+        reportFields.put("screenshot", getScreenshots());
         reportFields.put("progDescription", progDescription);
         reportFields.put("dateTime", LocalDate.now().toString() + " " + LocalTime.now().toString());
         reportFields.put("osName", System.getProperty("os.name"));
@@ -214,11 +224,20 @@ public final class ErrorReporter {
         StringBuilder builder = new StringBuilder(reportFields.size() * multiplier + 2);
         builder.append("{");
         for (Map.Entry<String, String> entry : reportFields.entrySet()) {
-            builder.append("\"");
-            builder.append(entry.getKey());
-            builder.append("\":\"");
-            builder.append(entry.getValue());
-            builder.append("\",");
+            if (Objects.equals(entry.getKey(), "screenshot")) {
+                builder.append("\"");
+                builder.append(entry.getKey());
+                builder.append("\":");
+                builder.append(entry.getValue());
+                builder.append(",");
+            }
+            else {
+                builder.append("\"");
+                builder.append(entry.getKey());
+                builder.append("\":\"");
+                builder.append(entry.getValue());
+                builder.append("\",");
+            }
         }
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
@@ -252,21 +271,24 @@ public final class ErrorReporter {
      */
     private String getScreenshots() {
         try {
-            Collection<String> images = new ArrayList<>();
-            for (Window window: App.getWindowManager().getAllWindows()) {
-                // Don't include an instance of the feedback window as a screenshot.
-                if (window.getController() != ErrorReportPopup.class) {
-                    Parent snapshotNode = window.getStage().getScene().getRoot();
-                    WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
-                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage, "png", outputStream);
-                    byte[] bytes = outputStream.toByteArray();
-                    String base64 = Base64.getEncoder().encodeToString(bytes);
-                    images.add("data:image/png;base64," + base64);
+            if (popup.submitScreenShots()) {
+                Collection<String> images = new ArrayList<>();
+                for (Window window : App.getWindowManager().getAllWindows()) {
+                    // Don't include an instance of the feedback window as a screenshot.
+                    if (window.getController() != ErrorReportPopup.class) {
+                        Parent snapshotNode = window.getStage().getScene().getRoot();
+                        WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
+                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        ImageIO.write(bufferedImage, "png", outputStream);
+                        byte[] bytes = outputStream.toByteArray();
+                        String base64 = Base64.getEncoder().encodeToString(bytes);
+                        images.add("data:image/png;base64," + base64);
+                    }
                 }
+                return convertArrayToJSONString(images);
             }
-            return convertArrayToJSONString(images);
+            return "[]";
         }
         catch (Exception e) {
             // JavaFX probably hasn't started up yet.

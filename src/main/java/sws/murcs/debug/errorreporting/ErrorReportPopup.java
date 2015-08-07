@@ -1,19 +1,16 @@
 package sws.murcs.debug.errorreporting;
 
-import com.sun.tools.javac.code.Attribute;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.windowManagement.Window;
@@ -25,16 +22,10 @@ import sws.murcs.view.App;
 public class ErrorReportPopup {
 
     /**
-     * The main message text.
+     * Several labels used in the feedback window.
      */
     @FXML
-    private Label messageDetailLabel;
-
-    /**
-     * The title of the message.
-     */
-    @FXML
-    private Label messageTitleLabel;
+    private Label messageTitleLabel, messageDetailLabel, screenShotWarningLabel;
 
     /**
      * The image that goes with the message.
@@ -49,10 +40,16 @@ public class ErrorReportPopup {
     private TextArea detailTextArea;
 
     /**
-     * Button used for reporting.
+     * Buttons for feedback window.
      */
     @FXML
-    private Button reportButton;
+    private Button reportButton, cancelButton;
+
+    /**
+     * Checkbox which indicates if the user wishes to send screenshots.
+     */
+    @FXML
+    private CheckBox screenShotCheckBox;
 
     /**
      * The stage for the popup.
@@ -72,6 +69,10 @@ public class ErrorReportPopup {
     public ErrorReportPopup() {
     }
 
+    /**
+     * Sets the stage and its properties.
+     * @param stage The stage to set.
+     */
     private void setStage(final Stage stage) {
         popupStage = stage;
 
@@ -85,12 +86,19 @@ public class ErrorReportPopup {
         popupStage.getIcons().add(iconImage);
     }
 
+    /**
+     * Initializes the controller.
+     */
     @FXML
     private void initialize() {
         reportButton.getStyleClass().add("button-default");
         setType(ErrorType.Automatic);
     }
 
+    /**
+     * Creates and new instance of the error reporter.
+     * @return An instance of the error reporter.
+     */
     public static ErrorReportPopup newErrorReporter() {
         Stage stage = new Stage();
 
@@ -161,19 +169,24 @@ public class ErrorReportPopup {
      */
     public final void setType(final ErrorType type) {
         switch (type) {
-            default:
             case Automatic:
                 setTitleText("Something went wrong.");
                 setMessageText("An unexpected problem occurred. If you wish to report this problem to get it fixed, "
                         + "type how it occurred below and click 'Report'. Otherwise click 'Cancel'.\n\nIf the "
                         + "crash allows you to continue working, it is advised you save your data and restart the "
                         + "application before continuing.");
+                setScreenShotWarningText("Note that screenshots may contain sensitive or confidential data!!\n"
+                       + "If possible please include them as this will help us debug the issue.\n"
+                       + "Please act responsibly.");
                 break;
             case Manual:
                 setTitleText("Feedback");
-                setMessageText("Noticed something isn't right? Describe it below.\n\nNote: we will automatically "
-                        + "receive a screenshot of what is currently displayed within the application for you.\n");
+                setMessageText("Noticed something isn't right? Describe it below.\n");
+                setScreenShotWarningText("Note that screenshots may contain sensitive or confidential data!!\n"
+                        + "If possible please include them as this will help us debug the issue.\n"
+                        + "Please act responsibly.");
                 break;
+            default:
         }
     }
 
@@ -198,5 +211,24 @@ public class ErrorReportPopup {
             return;
         }
         messageTitleLabel.setText(titleText);
+    }
+
+    /**
+     * Checks if the error report is meant to contain screenshots.
+     * @return if include screenshots.
+     */
+    public final boolean submitScreenShots() {
+        return screenShotCheckBox.isSelected();
+    }
+
+    /**
+     * Sets the screenShot warning label.
+     * @param screenShotWarningText The warning.
+     */
+    public final void setScreenShotWarningText(final String screenShotWarningText) {
+        if (screenShotWarningText == null) {
+            return;
+        }
+        screenShotWarningLabel.setText(screenShotWarningText);
     }
 }

@@ -547,6 +547,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
     /**
      * Prompts the user to open an organisation.
+     * @return If opening the file was successful.
      */
     private boolean openFile() {
         try {
@@ -638,7 +639,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Revert changes?");
-            popup.setMessageText("Look like you are still working on something.\nChanges will be lost if you continue.");
+            popup.setMessageText("Look like you are still working on something"
+                    + "\nChanges will be lost if you continue.");
             popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.revert(0);

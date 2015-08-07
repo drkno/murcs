@@ -82,9 +82,9 @@ public class Window {
      * @param callback A function to call after the stage has closed.
      */
     public final void close(final GenericCallback callback) {
-        App.getWindowManager().removeWindow(this);
         stage.close();
         callback.call();
+        App.getWindowManager().removeWindow(this);
     }
 
     /**
