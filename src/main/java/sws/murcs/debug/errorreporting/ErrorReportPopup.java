@@ -3,6 +3,7 @@ package sws.murcs.debug.errorreporting;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -11,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.windowManagement.Window;
@@ -99,6 +101,7 @@ public class ErrorReportPopup {
      * Creates and new instance of the error reporter.
      * @return An instance of the error reporter.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public static ErrorReportPopup newErrorReporter() {
         Stage stage = new Stage();
 
@@ -117,11 +120,10 @@ public class ErrorReportPopup {
 
         Scene popupScene = new Scene(root);
         stage.setScene(popupScene);
-        stage.sizeToScene();
         stage.setMinHeight(root.getPrefHeight());
         stage.setMinWidth(root.getPrefWidth());
-        stage.setHeight(root.getPrefHeight());
-        stage.setWidth(root.getPrefWidth());
+        stage.setHeight(500);
+        stage.setWidth(600);
         popupScene.getStylesheets()
                 .add(ErrorReportPopup.class
                         .getResource("/sws/murcs/styles/global.css")
