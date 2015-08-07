@@ -161,13 +161,19 @@ public final class ErrorReporter {
         }
 
         Platform.runLater(() -> {
-            popup = ErrorReportPopup.newErrorReporter();
-            if (popup != null) {
-                popup.setType(dialogType);
-                popup.setReportListener(description -> {
-                            performReporting(thread, throwable, description, progDescription);
-                        });
-                popup.show();
+            try {
+                popup = ErrorReportPopup.newErrorReporter();
+                if (popup != null) {
+                    popup.setType(dialogType);
+                    popup.setReportListener(description -> {
+                        performReporting(thread, throwable, description, progDescription);
+                    });
+                    popup.show();
+                }
+            }
+            catch (Exception e) {
+                performReporting(thread, throwable,
+                    "User could not enter description. Exception killed the reporting window too.", progDescription);
             }
         });
     }

@@ -18,6 +18,14 @@
           <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
         </rowConstraints>
          <children>
+            <GridPane fx:id="contentPane" minHeight="-Infinity" minWidth="-Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints vgrow="ALWAYS" />
+              </rowConstraints>
+            </GridPane>
             <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                <children>
                   <Button fx:id="createButton" alignment="CENTER" defaultButton="true" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" GridPane.rowIndex="1">
@@ -38,14 +46,6 @@
                   </Button>
                </children>
             </HBox>
-            <GridPane fx:id="contentPane" minHeight="-Infinity" minWidth="-Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="SOMETIMES">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints vgrow="ALWAYS" />
-              </rowConstraints>
-            </GridPane>
          </children>
       </GridPane>
    </children>
