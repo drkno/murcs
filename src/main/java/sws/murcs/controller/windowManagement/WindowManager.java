@@ -178,7 +178,7 @@ public class WindowManager {
             windows.add(newPosition, window);
         }
         else {
-            windows.add(windows.size() - 1, window);
+            windows.add(windows.size(), window);
         }
         if (moveWindow) {
             reOrderWindows();
