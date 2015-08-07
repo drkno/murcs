@@ -89,6 +89,7 @@ public class Story extends Model {
      */
     public Story() {
         acceptanceCriteria = new ArrayList<>();
+        tasks = new ArrayList<>();
         estimate = EstimateType.NOT_ESTIMATED;
         dependencies = new LinkedHashSet<>();
         storyState = StoryState.None;

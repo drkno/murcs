@@ -124,6 +124,9 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
+        for (Task task : getModel().getTasks()) {
+            injectTaskEditor(task, false);
+        }
 
         updateStoryState();
 
@@ -515,18 +518,16 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Is called when you click the 'Create Task' button and inserts a new
-     * task fxml into the task container.
-     * @param event The event that caused the function to be called
+     * Injects a task editor tied to the given task
+     * @param task The task to display
+     * @param creationBox Whether or not this is a creation box
      */
-    @FXML
-    private void createTaskClick(final ActionEvent event) {
-        Task taskToDisplay = new Task();
+    private void injectTaskEditor(final Task task, final boolean creationBox) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         try {
             Parent view = loader.load();
             TaskEditor controller = loader.getController();
-            controller.configure(taskToDisplay, true, this::addTask);
+            controller.configure(task, creationBox, view, this);
             taskContainer.getChildren().add(view);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
@@ -534,11 +535,40 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
+     * Is called when you click the 'Create Task' button and inserts a new
+     * task fxml into the task container.
+     * @param event The event that caused the function to be called
+     */
+    @FXML
+    private void createTaskClick(final ActionEvent event) {
+        Task task = new Task();
+        injectTaskEditor(task, true);
+    }
+
+    /**
      * Adds a task to this story.
      * @param task The task to add
      */
-    private void addTask(final Task task) {
+    protected final void addTask(final Task task) {
         getModel().addTask(task);
+    }
+
+    /**
+     * Removes a task from this story.
+     * @param task The task to remove
+     */
+    protected final void removeTask(final Task task) {
+        if (getModel().getTasks().contains(task)) {
+            getModel().removeTask(task);
+        }
+    }
+
+    /**
+     * Removes the editor of a task.
+     * @param view The parent node of the task editor
+     */
+    protected final void removeTaskEditor(final Parent view) {
+        taskContainer.getChildren().remove(view);
     }
 
     /**
