@@ -6,6 +6,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
@@ -72,6 +74,20 @@ public class MaterialDesignRippleEffect {
     private Region region;
 
     /**
+     * Centers the ripple on the coordinates of the click.
+     */
+    private boolean centerOnClick = true;
+
+    /**
+     * Sets if the ripple effect should come from the click event or the center of the node
+     * Defaults to click event.
+     * @param pCenterOnClick If the ripple effect comes from the click event.
+     */
+    public final void setCenterOnClick(final boolean pCenterOnClick) {
+        centerOnClick = pCenterOnClick;
+    }
+
+    /**
      * Sets the duration of the ripple effect.
      * Overrides the default of 250 milliseconds.
      * @param milliseconds The new duration.
@@ -97,6 +113,7 @@ public class MaterialDesignRippleEffect {
      */
     public final void setRadius(final Double pRadius) {
         radius = pRadius;
+        circleRipple.setRadius(radius);
     }
 
     /**
@@ -104,6 +121,7 @@ public class MaterialDesignRippleEffect {
      * @param colour The colour of the ripple.
      */
     public final void setRippleColour(final Color colour) {
+        rippleColour = colour;
         circleRipple.setFill(colour);
     }
 
@@ -113,7 +131,9 @@ public class MaterialDesignRippleEffect {
      */
     public MaterialDesignRippleEffect(final Region pRegion) {
         region = pRegion;
-        circleRipple = new Circle(radius, rippleColour);
+        circleRipple = new Circle();
+        circleRipple.setFill(rippleColour);
+        circleRipple.setRadius(radius);
     }
 
     /**
@@ -149,8 +169,16 @@ public class MaterialDesignRippleEffect {
             parallelTransition.stop();
             parallelTransition.getOnFinished().handle(null);
 
-            circleRipple.setCenterX(event.getX());
-            circleRipple.setCenterY(event.getY());
+            if (centerOnClick) {
+                circleRipple.setCenterX(event.getX());
+                circleRipple.setCenterY(event.getY());
+            }
+            else {
+                Double x = (region.getBoundsInLocal().getMaxX() + region.getBoundsInLocal().getMinX()) / 2;
+                Double y = (region.getBoundsInLocal().getMaxY() + region.getBoundsInLocal().getMinY()) / 2;
+                circleRipple.setCenterX(x);
+                circleRipple.setCenterY(y);
+            }
 
             // Recalculate ripple size if size of button from last time was changed
             if (region.getWidth() != lastRippleWidth || region.getHeight() != lastRippleHeight) {
@@ -160,14 +188,16 @@ public class MaterialDesignRippleEffect {
                 rippleClip.setWidth(lastRippleWidth);
                 rippleClip.setHeight(lastRippleHeight);
 
-                try {
-                    rippleClip.setArcHeight(region.getBackground().getFills().get(0).getRadii()
-                            .getTopLeftHorizontalRadius());
-                    rippleClip.setArcWidth(region.getBackground().getFills().get(0).getRadii()
-                            .getTopLeftHorizontalRadius());
-                    circleRipple.setClip(rippleClip);
-                } catch (Exception e) {
-                    ErrorReporter.get().reportError(e, "Unable to set ripple of material design button");
+                if (region.getBackground() != null) {
+                    try {
+                        rippleClip.setArcHeight(region.getBackground().getFills().get(0).getRadii()
+                                .getTopLeftHorizontalRadius());
+                        rippleClip.setArcWidth(region.getBackground().getFills().get(0).getRadii()
+                                .getTopLeftHorizontalRadius());
+                        circleRipple.setClip(rippleClip);
+                    } catch (Exception e) {
+                        ErrorReporter.get().reportError(e, "Unable to set ripple of material design button");
+                    }
                 }
 
                 // Getting 45% of longest button's length, because we want edge of ripple effect always visible

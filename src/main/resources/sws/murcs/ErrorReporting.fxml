@@ -54,11 +54,11 @@
                      <padding>
                         <Insets bottom="10.0" />
                      </padding></Label>
-                  <CheckBox fx:id="screenShotCheckBox" mnemonicParsing="false" selected="true" text="Include Screenshots?" GridPane.rowIndex="2">
+                  <Label fx:id="screenshotLabel" mnemonicParsing="false" text="Include Screenshots?" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </GridPane.margin>
-                  </CheckBox>
+                  </Label>
                   <Label fx:id="screenShotWarningLabel" wrapText="true" GridPane.rowIndex="3">
                      <padding>
                         <Insets bottom="10.0" />
