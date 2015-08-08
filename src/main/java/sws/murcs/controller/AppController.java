@@ -44,6 +44,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+import sws.murcs.view.SearchView;
 
 import java.io.File;
 import java.util.Collection;
@@ -53,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
@@ -839,7 +840,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    public final void remove(final ActionEvent event) {
+    public void remove(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
@@ -968,6 +969,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     @FXML
     public final void reportBug() {
         ErrorReporter.get().reportManually();
+    }
+
+    /**
+     * The function that is called to bring up the search window.
+     * @param event Clicking the search button on the toolbar.
+     */
+    public final void search(final ActionEvent event) {
+        SearchView.get().show(borderPaneMain.getScene().getWindow());
     }
 
     /**

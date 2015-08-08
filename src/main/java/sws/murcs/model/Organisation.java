@@ -9,6 +9,7 @@ import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.observable.ModelObservableArrayList;
+import sws.murcs.search.Searchable;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -29,48 +30,56 @@ public class Organisation extends TrackableObject implements Serializable {
     /**
      * The list of projects currently loaded in the application.
      */
+    @Searchable
     @TrackableValue
     private final List<Project> projects;
 
     /**
      * The list of all the releases in the current application.
      */
+    @Searchable
     @TrackableValue
     private final List<Release> releases;
 
     /**
      * The list of all the work allocations in the application.
      */
+    @Searchable
     @TrackableValue
     private final List<WorkAllocation> allocations;
 
     /**
      * The list of teams within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final List<Team> teams;
 
     /**
      * The list of people within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final List<Person> people;
 
     /**
      * The list of skills that people can have within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final List<Skill> skills;
 
     /**
      * The list of backlogs within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final List<Backlog> backlogs;
 
     /**
      * The list of stories contained within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final List<Story> stories;
 
