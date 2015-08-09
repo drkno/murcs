@@ -124,9 +124,6 @@ public class StoryEditor extends GenericEditor<Story> {
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-        for (Task task : getModel().getTasks()) {
-            injectTaskEditor(task, false);
-        }
 
         updateStoryState();
 
@@ -153,7 +150,12 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        //Enable or disable whether you can change the creator
+        taskContainer.getChildren().clear();
+        for (Task task : getModel().getTasks()) {
+            injectTaskEditor(task, false);
+        }
+
+        // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
@@ -288,6 +290,7 @@ public class StoryEditor extends GenericEditor<Story> {
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
+        taskContainer.getChildren().clear();
         super.dispose();
     }
 
@@ -518,7 +521,7 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Injects a task editor tied to the given task
+     * Injects a task editor tied to the given task.
      * @param task The task to display
      * @param creationBox Whether or not this is a creation box
      */
@@ -535,8 +538,8 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
-     * Is called when you click the 'Create Task' button and inserts a new
-     * task fxml into the task container.
+     * Is called when you click the 'Create Task' button and inserts a new task
+     * fxml into the task container.
      * @param event The event that caused the function to be called
      */
     @FXML

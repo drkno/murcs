@@ -38,11 +38,6 @@ public class TaskEditor {
     private StoryEditor storyEditor;
 
     /**
-     * Whether or not the editor is minimised or not.
-     */
-    private boolean minimised;
-
-    /**
      * The anchor pane that contains the entire editor.
      */
     @FXML
@@ -90,12 +85,16 @@ public class TaskEditor {
      */
     @FXML
     private void initialize() {
+        ChangeListener changeListener = (observable, oldValue, newValue) -> {
+            if (newValue != null && newValue != oldValue) {
+                saveChanges();
+            }
+        };
+
         minimizedStateChoiceBox.getItems().clear();
         maximizedStateChoiceBox.getItems().clear();
         minimizedStateChoiceBox.getItems().addAll(TaskState.values());
         maximizedStateChoiceBox.getItems().addAll(TaskState.values());
-
-        ChangeListener changeListener = (observable, oldValue, newValue) -> update();
 
         minimizedShortNameTextField.focusedProperty().addListener(changeListener);
         maximizedShortNameTextField.focusedProperty().addListener(changeListener);
@@ -111,7 +110,7 @@ public class TaskEditor {
      * Updates the relevant fields.
      */
     @FXML
-    private void update() {
+    private void saveChanges() {
 
         // Check short name on minimized name field
         String name = minimizedShortNameTextField.getText();
@@ -188,7 +187,6 @@ public class TaskEditor {
         parent = view;
         storyEditor = containingStoryEditor;
         if (isCreationBox) {
-            minimised = false;
             maximiseButtonClicked(null);
             createButton.setVisible(true);
             minimiseButton.setDisable(true);
@@ -196,7 +194,6 @@ public class TaskEditor {
             maximizedStateChoiceBox.getSelectionModel().select(0);
         }
         else {
-            minimised = true;
             minimizedShortNameTextField.setText(newTask.getShortName());
             maximizedShortNameTextField.setText(newTask.getShortName());
             minimizedEstimateTextField.setText(String.valueOf(newTask.getEstimate()));
