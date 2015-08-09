@@ -270,9 +270,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 () -> add(null));
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
                 () -> remove(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHORTCUT_DOWN),
+        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
                 () -> back(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHORTCUT_DOWN),
+        accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
                 () -> forward(null));
 
         App.getStage().getScene().getAccelerators().putAll(accelerators);
