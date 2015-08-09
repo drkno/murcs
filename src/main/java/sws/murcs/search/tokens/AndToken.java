@@ -39,7 +39,7 @@ public class AndToken extends Token {
                 first = searchResult;
             }
             if (searchResult == null) {
-                break;
+                return null;
             }
         }
         return first;
