@@ -1,26 +1,42 @@
 package sws.murcs.controller;
 
+import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Controller for search UI.
  */
 public class SearchController {
+
+    /**
+     * Icon for search.
+     */
+    @FXML
+    private ImageView searchIcon;
 
     /**
      * TextField to contain search query.
@@ -70,10 +86,20 @@ public class SearchController {
     private SearchHandler searchHandler;
 
     /**
+     * Thread to render previewing from.
+     */
+    private Thread previewRenderThread;
+
+    @FXML
+    private GridPane resultsPane, searchPane;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
     private void initialize() {
+        previewRenderThread = new Thread(this::renderPreview);
+        previewRenderThread.start();
         searchHandler = new SearchHandler();
         Parent parent = searchText.getParent();
         parent.getStylesheets()
@@ -94,6 +120,10 @@ public class SearchController {
                     if (foundItems.getSelectionModel().getSelectedIndex() > 0) {
                         selectEvent.handle(null);
                     }
+                    else if (foundItems.getItems().size() == 1) {
+                        foundItems.getSelectionModel().select(0);
+                        selectEvent.handle(null);
+                    }
                     break;
                 default: break;
             }
@@ -105,10 +135,7 @@ public class SearchController {
         previewPane.addEventHandler(KeyEvent.KEY_PRESSED, keyPressed);
         noItemsLabel.addEventHandler(KeyEvent.KEY_PRESSED, keyPressed);
         foundItems.getSelectionModel().selectedItemProperty().addListener(this::handleSelectionChanged);
-        searchText.getStyleClass().add("search-input-placeholder");
-        searchText.getStyleClass().add("no-shadow");
-        searchText.setStyle("-fx-control-inner-background: transparent");
-        searchText.setStyle("-fx-background-color: transparent");
+        searchText.getStyleClass().add("search-input");
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
@@ -121,15 +148,23 @@ public class SearchController {
 
             if (c.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
-            } else {
+            }
+            else {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
 
+
+
+        foundItems.itemsProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("");
+        });
         foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                noItemsLabel.setText("No Items Found");
+                //noItemsLabel.setText("No Items Found");
+                searchPane.getChildren().remove(resultsPane);
             } else {
+                searchPane.getChildren().add(1, resultsPane);
                 noItemsLabel.setText("Hover over item to preview");
             }
         });
@@ -143,10 +178,12 @@ public class SearchController {
                     if (empty) {
                         setText(null);
                         setGraphic(null);
-                    } else {
+                    }
+                    else {
                         if (item == null) {
                             setText("null");
-                        } else {
+                        }
+                        else {
                             setText(item.toString());
                         }
                         setGraphic(null);
@@ -230,25 +267,8 @@ public class SearchController {
             return;
         }
 
-        if (editorPane == null) {
-            editorPane = new EditorPane(newValue.getModel());
-            disableControlsAndUpdateButton();
-            if (previewPane.getChildren().size() > 0) {
-                previewPane.getChildren().clear();
-            }
-            previewPane.getChildren().add(editorPane.getView());
-        } else if (editorPane.getModel().getClass() == newValue.getModel().getClass()) {
-            editorPane.setModel(newValue.getModel());
-            //disableControlsAndUpdateButton();
-        } else {
-            previewPane.getChildren().remove(editorPane.getView());
-            editorPane.dispose();
-            editorPane = new EditorPane(newValue.getModel());
-            disableControlsAndUpdateButton();
-            if (previewPane.getChildren().size() > 0) {
-                previewPane.getChildren().clear();
-            }
-            previewPane.getChildren().add(editorPane.getView());
+        synchronized (previewRenderThread) {
+            previewRenderThread.notify();
         }
     }
 
@@ -268,6 +288,67 @@ public class SearchController {
     public final void selectText() {
         searchText.requestFocus();
         searchText.selectAll();
+    }
+
+    /**
+     * Background worker method to render previews in.
+     */
+    private void renderPreview() {
+        final int disableDelay = 250;
+
+        ImageView imageView = new ImageView();
+        Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
+        imageView.setImage(spinner);
+
+        while (true) {
+            try {
+                synchronized (previewRenderThread) {
+                    previewRenderThread.wait();
+                }
+
+                while (editorPane == null || !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
+                    Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
+
+                    if (editorPane == null || previewPane.getChildren().get(0).equals(editorPane.getView())) {
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        Platform.runLater(() -> {
+                            previewPane.getChildren().clear();
+                            previewPane.getChildren().add(imageView);
+                            GridPane.setHalignment(imageView, HPos.CENTER);
+                            latch.countDown();
+                        });
+                        latch.await();
+                    }
+
+                    if (editorPane == null) {
+                        editorPane = new EditorPane(newValue);
+                    }
+                    else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                        editorPane.setModel(newValue);
+                    }
+                    else {
+                        editorPane.dispose();
+                        editorPane = new EditorPane(newValue);
+                    }
+                    Thread.sleep(disableDelay);
+                    disableControlsAndUpdateButton();
+                }
+
+                final CountDownLatch latch = new CountDownLatch(1);
+                Platform.runLater(() -> {
+                    previewPane.getChildren().clear();
+                    previewPane.getChildren().add(editorPane.getView());
+                    latch.countDown();
+                });
+                latch.await();
+            }
+            catch (Exception e) {
+                Platform.runLater(() -> {
+                    ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
+                });
+                return;
+            }
+        }
     }
 
     /**
