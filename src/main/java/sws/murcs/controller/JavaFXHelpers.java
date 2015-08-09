@@ -98,17 +98,20 @@ public final class JavaFXHelpers {
         List<Node> nodeList = currentNode.getChildrenUnmodifiable();
         for (int i = 0; i < nodeList.size(); i++) {
             Node node = nodeList.get(i);
-            if (node instanceof Button) {
+            if (Button.class.isAssignableFrom(node.getClass())) {
                 node.setVisible(false);
-            } else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
+            }
+            else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
                     || node instanceof ChoiceBox || node instanceof TableView || node instanceof ListView) {
                 node.setDisable(true);
-            } else if (node instanceof ScrollPane) {
+            }
+            else if (node instanceof ScrollPane) {
                 Node content = ((ScrollPane) node).getContent();
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
                 }
-            } else if (node instanceof TitledPane) {
+            }
+            else if (node instanceof TitledPane) {
                 Node content = ((TitledPane) node).getContent();
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
