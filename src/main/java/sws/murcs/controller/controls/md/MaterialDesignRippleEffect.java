@@ -6,8 +6,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.SequentialTransition;
 import javafx.animation.Timeline;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
@@ -66,7 +64,17 @@ public class MaterialDesignRippleEffect {
     /**
      * the colour of the ripple.
      */
-    private Color rippleColour = new Color(0, 0, 0, rippleOpacity);
+    private Color rippleColour;
+
+    /**
+     * The secondary colour for the ripple.
+     */
+    private Color secondaryColour;
+
+    /**
+     * The standard colour for the ripple.
+     */
+    private Color standardColour = new Color(0, 0, 0, rippleOpacity);
 
     /**
      * The region to inject the ripple effect into.
@@ -77,6 +85,16 @@ public class MaterialDesignRippleEffect {
      * Centers the ripple on the coordinates of the click.
      */
     private boolean centerOnClick = true;
+
+    /**
+     * If the ripple colour should alternate between standard and secondary colour.
+     */
+    private boolean alternatesColour = false;
+
+    /**
+     * Sets if the secondary colour is the active colour.
+     */
+    private boolean secondaryColourIsActive = false;
 
     /**
      * Sets if the ripple effect should come from the click event or the center of the node
@@ -117,12 +135,64 @@ public class MaterialDesignRippleEffect {
     }
 
     /**
-     * Sets the ripple colour.
+     * Sets the standard ripple colour.
      * @param colour The colour of the ripple.
      */
-    public final void setRippleColour(final Color colour) {
-        rippleColour = colour;
-        circleRipple.setFill(colour);
+    public final void setStandardColour(final Color colour) {
+        standardColour = colour;
+    }
+
+    /**
+     * Sets the alternative ripple colour.
+     * @param colour The colour of the ripple.
+     */
+    public final void setSecondaryColour(final Color colour) {
+        secondaryColour = colour;
+    }
+
+    /**
+     * Sets the standard ripple colour.
+     * And forces an update of the ripple colour.
+     * @param colour The colour of the ripple.
+     * @param forceUpdate If the ripple colour should be updated now.
+     */
+    public final void setStandardColour(final Color colour, final boolean forceUpdate) {
+        standardColour = colour;
+        if (forceUpdate) {
+            rippleColour = standardColour;
+        }
+        updateColour();
+    }
+
+    /**
+     * Sets the secondary colour.
+     * And forces an update of the ripple colour.
+     * @param colour The new secondary colour.
+     * @param forceUpdate If the ripple colour should be updated now.
+     */
+    public final void setSecondaryColour(final Color colour, final boolean forceUpdate) {
+        secondaryColour = colour;
+        if (forceUpdate) {
+            rippleColour = secondaryColour;
+        }
+        updateColour();
+    }
+
+    /**
+     * Alternates the ripple color between standard and alternative colours.
+     * @param pAlternatesColour If the ripple colour should alternate.
+     */
+    public final void setAlternatesColour(final boolean pAlternatesColour) {
+        alternatesColour = pAlternatesColour;
+    }
+
+    /**
+     * Makes the alternate colour active.
+     * @param pAlternateColourIsActive if the alternate colour is active.
+     */
+    public final void setSecondaryColourIsActive(final boolean pAlternateColourIsActive) {
+        secondaryColourIsActive = pAlternateColourIsActive;
+        alternateColours();
     }
 
     /**
@@ -132,7 +202,8 @@ public class MaterialDesignRippleEffect {
     public MaterialDesignRippleEffect(final Region pRegion) {
         region = pRegion;
         circleRipple = new Circle();
-        circleRipple.setFill(rippleColour);
+        rippleColour = standardColour;
+        updateColour();
         circleRipple.setRadius(radius);
     }
 
@@ -168,6 +239,10 @@ public class MaterialDesignRippleEffect {
         region.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             parallelTransition.stop();
             parallelTransition.getOnFinished().handle(null);
+
+            if (alternatesColour) {
+                alternateColours();
+            }
 
             if (centerOnClick) {
                 circleRipple.setCenterX(event.getX());
@@ -213,5 +288,27 @@ public class MaterialDesignRippleEffect {
             parallelTransition.playFromStart();
         });
         return circleRipple;
+    }
+
+    /**
+     * Alternates the ripple colour.
+     */
+    private void alternateColours() {
+        if (secondaryColourIsActive) {
+            rippleColour = standardColour;
+            secondaryColourIsActive = false;
+        }
+        else {
+            rippleColour = secondaryColour;
+            secondaryColourIsActive = true;
+        }
+        updateColour();
+    }
+
+    /**
+     * Updates the colour of the ripple effect.
+     */
+    private void updateColour() {
+        circleRipple.setFill(rippleColour);
     }
 }

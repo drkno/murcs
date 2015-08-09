@@ -1,22 +1,23 @@
 package sws.murcs.debug.errorreporting;
 
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.controls.md.MaterialDesignCheckBox;
 import sws.murcs.controller.windowManagement.Window;
-import sws.murcs.view.App;
 
 /**
  * Popup for reporting errors/bugs.
@@ -27,7 +28,7 @@ public class ErrorReportPopup {
      * Several labels used in the feedback window.
      */
     @FXML
-    private Label messageTitleLabel, messageDetailLabel, screenShotWarningLabel;
+    private Label messageTitleLabel, messageDetailLabel, screenShotWarningLabel, screenshotLabel;
 
     /**
      * The image that goes with the message.
@@ -48,12 +49,6 @@ public class ErrorReportPopup {
     private Button reportButton, cancelButton;
 
     /**
-     * Checkbox which indicates if the user wishes to send screenshots.
-     */
-    @FXML
-    private CheckBox screenShotCheckBox;
-
-    /**
      * The stage for the popup.
      */
     private Stage popupStage;
@@ -62,6 +57,25 @@ public class ErrorReportPopup {
      * The window for the error reporter.
      */
     private Window window;
+
+    /**
+     * Checkbox for adding screenshots to submission.
+     */
+    private MaterialDesignCheckBox checkBox;
+
+    /**
+     * The root of the error reporter popUp.
+     */
+    @FXML
+    private AnchorPane root;
+
+    /**
+     * Gets the outerNode of the error reporter popUp.
+     * @return The outer most Node.
+     */
+    protected final Node getNode() {
+        return root;
+    }
 
     /**
      * Creates a new ErrorReportPopup.
@@ -77,8 +91,6 @@ public class ErrorReportPopup {
      */
     private void setStage(final Stage stage) {
         popupStage = stage;
-
-        popupStage.initOwner(App.getStage());
         popupStage.setResizable(true);
         popupStage.initModality(Modality.NONE);
 
@@ -129,7 +141,6 @@ public class ErrorReportPopup {
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
 
-
         return controller;
     }
 
@@ -138,12 +149,31 @@ public class ErrorReportPopup {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
+        swapForMDElements();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this);
         window.register();
         window.addGlobalShortcutsToWindow();
         window.show();
         Platform.runLater(messageTitleLabel::requestFocus);
+    }
+
+    /**
+     * Adds a material design checkBox to the form.
+     */
+    private void swapForMDElements() {
+        checkBox = new MaterialDesignCheckBox();
+        checkBox.setSelected(true);
+        screenshotLabel.setGraphic(checkBox);
+        screenshotLabel.setContentDisplay(ContentDisplay.LEFT);
+        screenshotLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent event) {
+                checkBox.fireEvent(event);
+                checkBox.fire();
+                event.consume();
+            }
+        });
     }
 
     /**
@@ -220,7 +250,7 @@ public class ErrorReportPopup {
      * @return if include screenshots.
      */
     public final boolean submitScreenShots() {
-        return screenShotCheckBox.isSelected();
+        return checkBox.isSelected();
     }
 
     /**

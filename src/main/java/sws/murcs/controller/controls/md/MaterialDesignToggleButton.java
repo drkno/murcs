@@ -37,6 +37,6 @@ public class MaterialDesignToggleButton extends ToggleButton {
      * @param colour the new ripple colour.
      */
     public final void setRippleColour(final Color colour) {
-        rippleEffect.setRippleColour(colour);
+        rippleEffect.setSecondaryColour(colour, true);
     }
 }

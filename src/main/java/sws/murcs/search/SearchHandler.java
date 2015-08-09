@@ -1,16 +1,11 @@
 package sws.murcs.search;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import sws.murcs.model.Model;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
-
-import java.util.Collection;
-import java.util.Set;
 
 public class SearchHandler {
     private SearchThread[] searchThreads;

@@ -75,12 +75,22 @@ public final class JavaFXHelpers {
      * @param colourStr The hex value to convert
      * @return A Color
      */
-    @SuppressWarnings("checkstyle:magicnumber")
     public static Color hex2RGB(final String colourStr) {
+        return hex2RGB(colourStr, 1);
+    }
+
+    /**
+     * Converts a hex colour into an Color type.
+     * @param colourStr The hex value to convert
+     * @param opacity The opacity of the colour.
+     * @return A Color
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    public static Color hex2RGB(final String colourStr, final double opacity) {
         return Color.color(
                 Double.valueOf(Integer.valueOf(colourStr.substring(1, 3), 16)) / 255,
                 Double.valueOf(Integer.valueOf(colourStr.substring(3, 5), 16)) / 255,
-                Double.valueOf(Integer.valueOf(colourStr.substring(5, 7), 16)) / 255);
+                Double.valueOf(Integer.valueOf(colourStr.substring(5, 7), 16)) / 255, opacity);
     }
 
     /**
