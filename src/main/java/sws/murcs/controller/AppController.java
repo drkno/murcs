@@ -42,6 +42,7 @@ import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
+import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
@@ -238,6 +239,10 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 () -> generateReport(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
                 () -> ErrorReporter.get().reportManually());
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
                 () -> addNewItem(ModelType.Project));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
@@ -1009,5 +1014,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     public final Window getWindow() {
         return window;
+    }
+
+    /**
+     * Shows the about window.
+     * @param actionEvent event arguments.
+     */
+    @FXML
+    private void showAbout(final ActionEvent actionEvent) {
+        AboutView aboutWindow = new AboutView(window);
+        aboutWindow.show();
     }
 }

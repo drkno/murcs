@@ -354,7 +354,6 @@ public final class ErrorReporter {
         }
         jsonArray = jsonArray.substring(0, jsonArray.length() - 1);
         jsonArray += "]";
-        System.out.println(jsonArray);
         return jsonArray;
     }
 

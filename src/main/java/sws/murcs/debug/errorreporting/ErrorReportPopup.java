@@ -92,7 +92,6 @@ public class ErrorReportPopup {
     private void setStage(final Stage stage) {
         popupStage = stage;
         popupStage.setResizable(true);
-        popupStage.initModality(Modality.NONE);
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));

@@ -79,7 +79,7 @@ public class ToolBarController {
         saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
         sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
-        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F)");
+        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F Or " + shortCutKey + "+Space)");
     }
 
     /**
