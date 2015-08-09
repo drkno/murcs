@@ -6,14 +6,17 @@ import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -27,6 +30,7 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Handles sending error reports in to SWS when something
@@ -45,6 +49,36 @@ public final class ErrorReporter {
     private static ErrorReporter reporter;
 
     /**
+     * An instance of the error reporter shown to the user.
+     */
+    private ErrorReportPopup popup;
+
+    /**
+     * The submission thread for submitting the report.
+     */
+    private Thread submissionThread;
+
+    /**
+     * The thread which the error was reported on.
+     */
+    private Thread thread;
+
+    /**
+     * The throwable which was given to the error report.
+     */
+    private Throwable throwable;
+
+    /**
+     * The description the user inputs with the error report.
+     */
+    private String userDescription;
+
+    /**
+     * The description that the program provides.
+     */
+    private String progDescription;
+
+    /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
      * @param args the arguments the program was started with.
      */
@@ -59,6 +93,9 @@ public final class ErrorReporter {
      * @return the current ErrorReporter instance.
      */
     public static ErrorReporter get() {
+        if (reporter == null) {
+            setup(new String[]{});
+        }
         return reporter;
     }
 
@@ -127,50 +164,66 @@ public final class ErrorReporter {
 
     /**
      * Callback for the uncaught exception handler.
-     * @param thread thread error occurred on.
+     * @param pThread thread error occurred on.
      * @param e error that occurred.
      */
-    private void reportException(final Thread thread, final Throwable e) {
-        report(thread, e, "![UNHANDLED]", true, ErrorType.Automatic);
+    private void reportException(final Thread pThread, final Throwable e) {
+        report(pThread, e, "![UNHANDLED]", true, ErrorType.Automatic);
     }
 
     /**
      * Reports an exception and gathers information from the user where possible.
-     * @param thread thread error occurred on.
-     * @param throwable the error that occurred.
-     * @param progDescription the description of the problem provided by the program.
+     * @param pThread thread error occurred on.
+     * @param pThrowable the error that occurred.
+     * @param pProgDescription the description of the problem provided by the program.
      * @param showDialog whether to show a dialog.
      * @param dialogType type of dialog to display.
      */
-    private void report(final Thread thread, final Throwable throwable, final String progDescription,
+    private void report(final Thread pThread, final Throwable pThrowable, final String pProgDescription,
                         final boolean showDialog, final ErrorType dialogType) {
-        if (throwable != null && printStackTraces) {
-            System.err.println(progDescription);
-            throwable.printStackTrace();
+        if (pThrowable != null && printStackTraces) {
+            System.err.println(pProgDescription);
+            pThrowable.printStackTrace();
         }
 
         if (!showDialog) {
-            performReporting(thread, throwable, null, progDescription);
+            performReporting(pThread, pThrowable, null, pProgDescription);
             return;
         }
 
         Platform.runLater(() -> {
-            ErrorReportPopup popup = new ErrorReportPopup();
-            popup.setType(dialogType);
-            popup.setReportListener(description -> performReporting(thread, throwable, description, progDescription));
-            popup.show();
+            try {
+                popup = ErrorReportPopup.newErrorReporter();
+                if (popup != null) {
+                    popup.setType(dialogType);
+                    popup.setReportListener(description -> {
+                        performReporting(pThread, pThrowable, description, pProgDescription);
+                    });
+                    popup.show();
+                }
+            }
+            catch (Exception e) {
+                performReporting(pThread, pThrowable,
+                    "User could not enter description. Exception killed the reporting window too.", pProgDescription);
+            }
         });
     }
 
     /**
      * Generates a report and sends it to the sws servers.
-     * @param thread thread the error occurred on.
-     * @param throwable the exception that caused the error.
-     * @param userDescription the description the user provided.
-     * @param progDescription the description the program provided.
+     * @param pThread thread the error occurred on.
+     * @param pThrowable the exception that caused the error.
+     * @param pUserDescription the description the user provided.
+     * @param pProgDescription the description the program provided.
      */
-    private void performReporting(final Thread thread, final Throwable throwable,
-                                  final String userDescription, final String progDescription) {
+    private void performReporting(final Thread pThread, final Throwable pThrowable,
+                                  final String pUserDescription, final String pProgDescription) {
+//        PopOver popOver = new PopOver(null);
+//        popOver.show(popup.getNode());
+        thread = pThread;
+        throwable = pThrowable;
+        userDescription = pUserDescription;
+        progDescription = pProgDescription;
         String stackTrace = throwableToString(throwable);
         String threadInfo = thread.toString();
         String report = buildReport(userDescription, progDescription, stackTrace, threadInfo);
@@ -179,19 +232,19 @@ public final class ErrorReporter {
 
     /**
      * Creates a report based on the provided data from the user.
-     * @param userDescription description of the problem provided by the user.
-     * @param progDescription description of the problem provided by the program.
+     * @param pUserDescription description of the problem provided by the user.
+     * @param pProgDescription description of the problem provided by the program.
      * @param exceptionData the data from the exception that caused the error.
      * @param miscData other data that might be helpful.
      * @return a URL encoded string report.
      */
-    private String buildReport(final String userDescription, final String progDescription,
+    private String buildReport(final String pUserDescription, final String pProgDescription,
                                final String exceptionData, final String miscData) {
         final int multiplier = 5;
         Map<String, String> reportFields = new HashMap<>();
 
         try {
-            reportFields.put("userDescription", URLEncoder.encode(userDescription, "UTF-8"));
+            reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             // encoding is hard coded so can never happen.
             e.printStackTrace();
@@ -200,8 +253,8 @@ public final class ErrorReporter {
         reportFields.put("misc", miscData);
         reportFields.put("args", arguments);
         reportFields.put("exception", exceptionData);
-        reportFields.put("screenshots", getScreenshots());
-        reportFields.put("progDescription", progDescription);
+        reportFields.put("screenshot", getScreenshots());
+        reportFields.put("progDescription", pProgDescription);
         reportFields.put("dateTime", LocalDate.now().toString() + " " + LocalTime.now().toString());
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
@@ -214,11 +267,20 @@ public final class ErrorReporter {
         StringBuilder builder = new StringBuilder(reportFields.size() * multiplier + 2);
         builder.append("{");
         for (Map.Entry<String, String> entry : reportFields.entrySet()) {
-            builder.append("\"");
-            builder.append(entry.getKey());
-            builder.append("\":\"");
-            builder.append(entry.getValue());
-            builder.append("\",");
+            if (Objects.equals(entry.getKey(), "screenshot")) {
+                builder.append("\"");
+                builder.append(entry.getKey());
+                builder.append("\":");
+                builder.append(entry.getValue());
+                builder.append(",");
+            }
+            else {
+                builder.append("\"");
+                builder.append(entry.getKey());
+                builder.append("\":\"");
+                builder.append(entry.getValue());
+                builder.append("\",");
+            }
         }
         builder.deleteCharAt(builder.length() - 1);
         builder.append("}");
@@ -252,24 +314,30 @@ public final class ErrorReporter {
      */
     private String getScreenshots() {
         try {
-            Collection<String> images = new ArrayList<>();
-            for (Window window: App.getWindowManager().getAllWindows()) {
-                // Don't include an instance of the feedback window as a screenshot.
-                if (window.getController() != ErrorReportPopup.class) {
-                    Parent snapshotNode = window.getStage().getScene().getRoot();
-                    WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
-                    BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage, "png", outputStream);
-                    byte[] bytes = outputStream.toByteArray();
-                    String base64 = Base64.getEncoder().encodeToString(bytes);
-                    images.add("data:image/png;base64," + base64);
+            if (popup.submitScreenShots() && App.getWindowManager().getAllWindows().size() > 0) {
+                Collection<String> images = new ArrayList<>();
+                for (Window window : App.getWindowManager().getAllWindows()) {
+                    // Don't include an instance of the feedback window as a screenshot.
+                    if (window.getController() != ErrorReportPopup.class) {
+                        Parent snapshotNode = window.getStage().getScene().getRoot();
+                        WritableImage image = snapshotNode.snapshot(new SnapshotParameters(), null);
+                        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        ImageIO.write(bufferedImage, "png", outputStream);
+                        byte[] bytes = outputStream.toByteArray();
+                        String base64 = Base64.getEncoder().encodeToString(bytes);
+                        images.add("data:image/png;base64," + base64);
+                    }
+                }
+                if (images.size() > 0) {
+                    return convertArrayToJSONString(images);
                 }
             }
-            return convertArrayToJSONString(images);
+            return "[]";
         }
         catch (Exception e) {
             // JavaFX probably hasn't started up yet.
+            e.printStackTrace();
             return "";
         }
     }
@@ -309,10 +377,19 @@ public final class ErrorReporter {
             wr.close();
 
             if (con.getResponseCode() != successfulCode) {
+
+               BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+                String response = "";
+                String nachricht;
+                while ((nachricht = br.readLine()) != null) {
+                    response += nachricht;
+                }
+                System.out.println(response);
                 throw new Exception("Transmission failed.");
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Could not submit error report.");
         }
     }

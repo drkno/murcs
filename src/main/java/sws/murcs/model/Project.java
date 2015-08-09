@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -14,14 +15,9 @@ import java.util.List;
 public class Project extends Model {
 
     /**
-     * The description of the project.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The releases associated with the project.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
@@ -30,28 +26,12 @@ public class Project extends Model {
     /**
      * The backlogs for a project.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")
     @XmlIDREF
     private List<Backlog> backlogs = new ArrayList<>();
-
-    /**
-     * Gets a description of the project.
-     * @return a description of the project
-     */
-    public final String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * Sets the description of the current project.
-     * @param newDescription The description of the project
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
-        commit("edit project");
-    }
 
     /**
      * Gets a list of releases associated with the project.

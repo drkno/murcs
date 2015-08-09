@@ -1,0 +1,25 @@
+@import "../../globalStyles"
+
+.check-box
+  -fx-label-padding: 0
+  -fx-text-fill: $black-text
+
+.check-box > .box
+  -fx-background-color: $button-color
+  -fx-background-insets: 0
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+  -fx-border-color: $primary-500
+  -fx-border-width: 0.1em
+  -fx-border-radius: 0.2em
+
+.check-box:selected .box
+  -fx-background-color: $secondary-500
+
+.check-box > .box:pressed
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 8, 0.0, 0, 3)
+
+.check-box > .box:hover
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.5), 8, 0.0, 0, 3)
+
+.check-box:selected .mark
+  -fx-background-color: $white

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.3</projectVersion>
-    <dateGenerated>2015-05-21</dateGenerated>
+    <projectVersion>0.0.5</projectVersion>
+    <dateGenerated>2015-08-04</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelBacklog">
         <backlogs>
             <backlog shortName="This is the backlog">
@@ -11,8 +11,8 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
-                        <storyState>None</storyState>
                         <description>Revert to last saved state</description>
+                        <storyState>None</storyState>
                         <creator>Haydon</creator>
                         <dependencies/>
                         <estimate>Not Estimated</estimate>

@@ -5,9 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -40,8 +42,10 @@ import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
+import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+import sws.murcs.view.SearchView;
 
 import java.io.File;
 import java.util.Collection;
@@ -51,10 +55,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
 
     /**
      * The Menu bar for the application.
@@ -70,10 +74,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
 
     /**
-     * The side display which contains the display list.
+     * The menu that contains the check menu items for toggling sections of the toolbar.
      */
     @FXML
-    private VBox vBoxSideDisplay;
+    private Menu toolBarMenu;
+
+    /**
+     * The side display which contains the display list. Also the top toolbar and menu container.
+     */
+    @FXML
+    private VBox vBoxSideDisplay, titleVBox;
 
     /**
      * The main display of the window which contains the display
@@ -103,18 +113,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private ListView displayList;
 
     /**
-     * The button used to remove models from the display list.
-     */
-    @FXML
-    private Button removeButton;
-
-    /**
-     * The back and forward buttons.
-     */
-    @FXML
-    private Button backButton, forwardButton;
-
-    /**
      * The content pane contains the information about the
      * currently selected model item.
      */
@@ -137,11 +135,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private Window window;
 
     /**
+     * The controller for the toolbar in the window.
+     */
+    private ToolBarController toolBarController;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
     @FXML
     public final void initialize() {
+        addToolBar();
         NavigationManager.setAppController(this);
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
@@ -173,6 +177,24 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
+     * Adds the toolbar to the application window.
+     */
+    private void addToolBar() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            Parent view = loader.load();
+            titleVBox.getChildren().add(view);
+            ToolBarController controller = loader.getController();
+            controller.setLinkedController(this);
+            controller.setToolBarMenu(toolBarMenu);
+            toolBarController = controller;
+        }
+        catch (Exception e) {
+            ErrorReporter.get().reportErrorSecretly(e, "Unable to create editor");
+        }
+    }
+
+    /**
      * Updates the currently selected item in the display list.
      * @param newValue The new value
      * @param oldValue The old value
@@ -187,7 +209,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         NavigationManager.navigateTo((Model) newValue);
-        updateBackForwardButtons();
+        toolBarController.updateBackForwardButtons();
 
         if (oldValue == null) {
             displayList.scrollTo(newValue);
@@ -215,6 +237,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 () -> open(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
                 () -> generateReport(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
+                () -> ErrorReporter.get().reportManually());
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
                 () -> addNewItem(ModelType.Project));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
@@ -233,19 +261,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         //Local shortcuts.
         Map<KeyCombination, Runnable> accelerators = new HashMap<>();
         accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
-                () -> undoMenuItemClicked(null));
+                () -> undo(null));
         accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
-                () -> redoMenuItemClicked(null));
+                () -> redo(null));
         accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
                 () -> toggleItemListView(null));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
-                () -> addClicked(null));
+                () -> add(null));
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
-                () -> removeClicked(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN),
-                () -> backClicked(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN),
-                () -> forwardClicked(null));
+                () -> remove(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+                () -> back(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+                () -> forward(null));
 
         App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
@@ -296,7 +324,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private void fileQuitPress(final ActionEvent event) {
         borderPaneMain.requestFocus();
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -321,7 +349,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            Platform.runLater(() -> {
+                                App.getWindowManager().bringToTop(openWindow, true);
+                            });
                         });
             });
             popup.show();
@@ -367,7 +397,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean save(final ActionEvent event) {
+    public final boolean save(final ActionEvent event) {
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
@@ -390,7 +420,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean saveAs(final ActionEvent event) {
+    public final boolean saveAs(final ActionEvent event) {
         return saveAs(event, true);
     }
 
@@ -434,7 +464,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     @FXML
     private void newModel(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -469,7 +499,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -481,18 +511,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                 ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
             }
         }
-    }
-
-    /**
-     * Shows a failed save dialog.
-     */
-    private void showSaveFailedDialog() {
-        GenericPopup errorPopup = new GenericPopup();
-        String message = "Something went wrong saving";
-        errorPopup.setTitleText("Something went wrong");
-        errorPopup.setMessageText(message);
-        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, errorPopup::close);
-        errorPopup.show();
     }
 
     /**
@@ -514,9 +532,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void open(final ActionEvent event) {
+    public final void open(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
             popup.setMessageText("Do you want to,");
@@ -545,7 +563,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -557,6 +575,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
     /**
      * Prompts the user to open an organisation.
+     * @return If opening the file was successful.
      */
     private boolean openFile() {
         try {
@@ -588,7 +607,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Old or corrupted project!");
             popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
                     + "Please use the version it was created with to open the file.");
@@ -602,7 +621,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the report to be generated
      */
     @FXML
-    private void generateReport(final ActionEvent event) {
+    public final void generateReport(final ActionEvent event) {
         ReportGeneratorView reportGenerator = new ReportGeneratorView();
         reportGenerator.show();
     }
@@ -612,7 +631,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void undoMenuItemClicked(final ActionEvent event) {
+    public final void undo(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
         }
@@ -628,7 +647,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void redoMenuItemClicked(final ActionEvent event) {
+    public final void redo(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
         }
@@ -644,11 +663,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void revert(final ActionEvent event) {
+    public final void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Revert changes?");
-            popup.setMessageText("Look like you are still working on something.\nChanges will be lost if you continue.");
+            popup.setMessageText("Look like you are still working on something"
+                    + "\nChanges will be lost if you continue.");
             popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.revert(0);
@@ -682,7 +702,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
                         .stream()
                         .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
                         .forEach(openWindow -> {
-                            App.getWindowManager().bringToTop(openWindow);
+                            App.getWindowManager().bringToTop(openWindow, true);
                         });
             });
             popup.show();
@@ -697,24 +717,34 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             revert.setDisable(true);
+            toolBarController.updateRevertButton(true);
+            String undoPrompt = "Undo...";
             undoMenuItem.setDisable(true);
-            undoMenuItem.setText("Undo...");
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(true, undoPrompt);
             App.removeTitleStar();
         }
         else {
             revert.setDisable(false);
+            toolBarController.updateRevertButton(false);
+            String undoPrompt = "Undo " + UndoRedoManager.getRevertMessage();
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(false, undoPrompt);
             App.addTitleStar();
         }
 
         if (!UndoRedoManager.canRemake()) {
             redoMenuItem.setDisable(true);
-            redoMenuItem.setText("Redo...");
+            String redoPrompt = "Redo...";
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(true, redoPrompt);
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
+            String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(false, redoPrompt);
         }
 
         switch (change) {
@@ -722,7 +752,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Remake:
             case Revert:
                 NavigationManager.clearHistory();
-                updateBackForwardButtons();
+                toolBarController.updateBackForwardButtons();
                 break;
             default: break;
         }
@@ -733,7 +763,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event of the add button being called
      */
     @FXML
-    private void addClicked(final ActionEvent event) {
+    public final void add(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -815,7 +845,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    private void removeClicked(final ActionEvent event) {
+    public final void remove(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
@@ -836,7 +866,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         Collection<Model> usages = UsageHelper.findUsages(selectedItem);
-        GenericPopup popup = new GenericPopup();
+        GenericPopup popup = new GenericPopup(window);
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
@@ -854,7 +884,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            updateBackForwardButtons();
+            toolBarController.updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
         popup.show();
@@ -889,7 +919,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         // The remove button should be greyed out
         // if no item is selected or built in skills (PO or SM) are selected
-        removeButton.setDisable(parameter == null
+        toolBarController.removeButtonDisabled(parameter == null
                 || parameter instanceof Skill
                 && (((Skill) parameter).getShortName().equals("PO")
                 || ((Skill) parameter).getShortName().equals("SM")));
@@ -913,19 +943,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Toggles the state of the back and forward buttons if they disabled or enabled.
-     */
-    private void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
-    }
-
-    /**
      * Navigates back.
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void backClicked(final ActionEvent event) {
+    public final void back(final ActionEvent event) {
         if (!NavigationManager.canGoBack()) {
             return;
         }
@@ -938,7 +960,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void forwardClicked(final ActionEvent event) {
+    public final void forward(final ActionEvent event) {
         if (!NavigationManager.canGoForward()) {
             return;
         }
@@ -950,8 +972,25 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Reports a bug to the developers.
      */
     @FXML
-    private void reportBug() {
+    public final void reportBug() {
         ErrorReporter.get().reportManually();
+    }
+
+    /**
+     * The function that is called to bring up the search window.
+     * @param event Clicking the search button on the toolbar.
+     */
+    public final void search(final ActionEvent event) {
+        SearchView.get().show(borderPaneMain.getScene().getWindow());
+    }
+
+    /**
+     * Toggles a section of the toolbar based on the check menu item selected in the view menu.
+     * @param event Clicking on an option in the tool bar section of the view menu.
+     */
+    @FXML
+    private void toolBarToggle(final ActionEvent event) {
+        toolBarController.toolBarToggle(event);
     }
 
     /**
@@ -967,5 +1006,23 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             fileQuitPress(null);
         });
         setUpShortCuts();
+    }
+
+    /**
+     * Gets the window of the AppController.
+     * @return The window for AppController.
+     */
+    public final Window getWindow() {
+        return window;
+    }
+
+    /**
+     * Shows the about window.
+     * @param actionEvent event arguments.
+     */
+    @FXML
+    private void showAbout(final ActionEvent actionEvent) {
+        AboutView aboutWindow = new AboutView(window);
+        aboutWindow.show();
     }
 }

@@ -28,66 +28,86 @@ public class WindowManager {
     /**
      * Brings the window on top of all other windows.
      * @param window The window to bring to the top
+     * @param moveWindow Moves the window on top of other windows.
      */
-    public final void bringToTop(final Window window) {
-        windows.set(0, window);
-        window.stage.toFront();
+    public final void bringToTop(final Window window, final boolean moveWindow) {
+        windows.remove(window);
+        windows.add(0, window);
+        if (moveWindow) {
+            window.stage.toFront();
+        }
     }
 
     /**
      * Sends a window to behind all other windows.
      * @param window The window to move to the back
+     * @param moveWindow Moves the window behind all other windows.
      */
-    public final void sendToBottom(final Window window) {
+    public final void sendToBottom(final Window window, final boolean moveWindow) {
         int newIndex = windows.size() - 1;
-        windows.set(newIndex, window);
-        window.stage.toBack();
+        windows.remove(window);
+        windows.add(newIndex, window);
+        if (moveWindow) {
+            window.stage.toBack();
+        }
     }
 
     /**
      * Sends a window one position back.
      * @param window The window to move.
+     * @param moveWindow Moves the window relative to other windows.
      */
-    public final void sendBackwards(final Window window) {
-        sendBackwards(window, 1);
+    public final void sendBackwards(final Window window, final boolean moveWindow) {
+        sendBackwards(window, 1, moveWindow);
     }
 
     /**
      * Sends a window back a given number of positions.
      * @param window The window to move.
      * @param howFar The number of positions to move the window.
+     * @param moveWindow Moves the window relative to other windows.
      */
-    public final void sendBackwards(final Window window, final int howFar) {
-        if (windows.indexOf(window) + howFar > windows.size()) {
-            windows.set(windows.size() - 1, window);
+    public final void sendBackwards(final Window window, final int howFar, final boolean moveWindow) {
+        int windowIndex = windows.indexOf(window);
+        windows.remove(window);
+        if (windowIndex + howFar > windows.size()) {
+            windows.add(windows.size(), window);
         }
         else {
-            windows.set(windows.indexOf(window) + howFar, window);
+            windows.add(windowIndex + howFar, window);
         }
-        reOrderWindows();
+        if (moveWindow) {
+            reOrderWindows();
+        }
     }
 
     /**
      * Sends the window forward one position.
      * @param window The window to move.
+     * @param moveWindow Moves the window relative to other windows.
      */
-    public final void sendForwards(final Window window) {
-        sendForwards(window, 1);
+    public final void sendForwards(final Window window, final boolean moveWindow) {
+        sendForwards(window, 1, moveWindow);
     }
 
     /**
      * Sends a window forward a given number of positions.
      * @param window The window to move.
      * @param howFar The number of positions to move the window.
+     * @param moveWindow Moves the window relative to other windows.
      */
-    public final void sendForwards(final Window window, final int howFar) {
-        if (windows.indexOf(window) - howFar < 0) {
-            windows.set(0, window);
+    public final void sendForwards(final Window window, final int howFar, final boolean moveWindow) {
+        int windowIndex = windows.indexOf(window);
+        windows.remove(window);
+        if (windowIndex - howFar < 0) {
+            windows.add(0, window);
         }
         else {
-            windows.set(windows.indexOf(window) - howFar, window);
+            windows.add(windowIndex - howFar, window);
         }
-        reOrderWindows();
+        if (moveWindow) {
+            reOrderWindows();
+        }
     }
 
     /**
@@ -104,7 +124,6 @@ public class WindowManager {
      */
     public final void removeWindow(final Window window) {
         windows.remove(window);
-        window.stage.hide();
     }
 
     /**
@@ -122,7 +141,7 @@ public class WindowManager {
      */
     public final void addWindowToBack(final Window window) {
         windows.add(windows.size(), window);
-        window.stage.toBack();
+        reOrderWindows();
     }
 
     /**
@@ -132,7 +151,7 @@ public class WindowManager {
      */
     public final void addWindowWithPos(final Window window, final int pos) {
         windows.add(window);
-        setWindowPosition(window, pos);
+        setWindowPosition(window, pos, true);
     }
 
     /**
@@ -148,18 +167,22 @@ public class WindowManager {
      * Sets the position of a window.
      * @param window The window to change the position of.
      * @param newPosition The new position to set the window to.
+     * @param moveWindow Moves the window relative to other windows.
      */
-    public final void setWindowPosition(final Window window, final int newPosition) {
+    public final void setWindowPosition(final Window window, final int newPosition, final boolean moveWindow) {
+        windows.remove(window);
         if (newPosition <= 0) {
-            windows.set(0, window);
+            windows.add(0, window);
         }
         else if (newPosition < windows.size()) {
-            windows.set(newPosition, window);
+            windows.add(newPosition, window);
         }
         else {
-            windows.set(windows.size() - 1, window);
+            windows.add(windows.size(), window);
         }
-        reOrderWindows();
+        if (moveWindow) {
+            reOrderWindows();
+        }
     }
 
     /**
@@ -167,8 +190,8 @@ public class WindowManager {
      * With the first index of the list being the window shown at the top.
      */
     private void reOrderWindows() {
-        for (Window window: windows) {
-            window.stage.toBack();
+        for (int i = windows.size() - 1; i > -1; i--) {
+            windows.get(i).getStage().toFront();
         }
     }
 

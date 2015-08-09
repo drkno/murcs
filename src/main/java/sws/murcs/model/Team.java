@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,14 +22,9 @@ import java.util.List;
 public class Team extends Model {
 
     /**
-     * The description of the team.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * A list of members in the team.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
@@ -38,6 +34,7 @@ public class Team extends Model {
     /**
      * The scrum master of the team.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person scrumMaster;
@@ -45,6 +42,7 @@ public class Team extends Model {
     /**
      * The product owner of the team.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person productOwner;
@@ -57,23 +55,6 @@ public class Team extends Model {
      */
     public final List<Person> getMembers() {
         return this.members;
-    }
-
-    /**
-     * A description of the team.
-     * @return the description
-     */
-    public final String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * Sets the description of the team.
-     * @param newDescription the new description
-     */
-    public final void setDescription(final String newDescription) {
-        this.description = newDescription;
-        commit("edit team");
     }
 
     /**

@@ -4,6 +4,7 @@ import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,6 +46,7 @@ public class Story extends Model {
      * Indicates the current state of the story
      * (e.g. ready, not ready, in progress)
      */
+    @Searchable
     @TrackableValue
     private StoryState storyState;
 
@@ -53,19 +55,15 @@ public class Story extends Model {
      * story can be marked as done. This has been made a list
      * (as opposed to a Collection) as order is important.
      */
+    @Searchable
     @TrackableValue
     private List<AcceptanceCondition> acceptanceCriteria;
-
-    /**
-     * A description of the story.
-     */
-    @TrackableValue
-    private String description;
 
     /**
      * The person who created this story. This should not be changed after
      * initial creation.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person creator;
@@ -73,6 +71,7 @@ public class Story extends Model {
     /**
      * Stories that must be complete before this story can be worked on.
      */
+    @Searchable
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependence")
     @XmlIDREF
@@ -201,23 +200,6 @@ public class Story extends Model {
             return;
         }
         storyState = newState;
-        commit("edit story");
-    }
-
-    /**
-     * Gets a description for the current story.
-     * @return The description.
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description of the story.
-     * @param newDescription The new description.
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
         commit("edit story");
     }
 

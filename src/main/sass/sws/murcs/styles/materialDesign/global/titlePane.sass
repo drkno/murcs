@@ -1,0 +1,19 @@
+@import "../../globalStyles"
+
+.titled-pane
+  -fx-border-radius: 0px
+
+.titled-pane:focused
+  -fx-focus-color: transparent
+
+.titled-pane > .title
+  -fx-background-color: $titled-pane-title-color
+  -fx-border-radius: 0
+  -fx-background-radius: 0
+  -fx-bacground-insets: 0
+
+.titled-pane:hover > .title
+  -fx-background-color: $titled-pane-title-hover-color
+
+.titled-pane > *.content
+  -fx-background-color: $titled-pane-content-color

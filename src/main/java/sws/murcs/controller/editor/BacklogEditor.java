@@ -20,6 +20,7 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
@@ -33,6 +34,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;
@@ -529,6 +531,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         protected void updateItem(final Integer priority, final boolean empty) {
             super.updateItem(priority, empty);
+            setTooltip(new Tooltip());
             this.setAlignment(Pos.CENTER);
             setColorTab(highlighted.getValue());
             getStyleClass().add("default-tablecell");
@@ -570,12 +573,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
+                    getTooltip().setText("The story depends on another story with a lower priority than itself");
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
+                    getTooltip().setText("The story is ready");
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
+                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
+                            + " as ready");
                 }
             }
         }
@@ -695,17 +702,24 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.getStyleClass().add("mdrd-button");
                 button.setOpacity(0.0);
                 button.setOnAction(e -> {
-                    GenericPopup popup = new GenericPopup();
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \""
-                            + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(() -> {
+                    if (!isCreationWindow) {
+                        GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                        popup.setTitleText("Are you sure?");
+                        popup.setMessageText("Are you sure you wish to remove the story \""
+                                + story.getShortName() + "\" from this backlog?");
+                        popup.addYesNoButtons(() -> {
+                            getModel().removeStory(story);
+                            updateStoryTable();
+                            updateAvailableStories();
+                            popup.close();
+                        });
+                        popup.show();
+                    }
+                    else {
                         getModel().removeStory(story);
                         updateStoryTable();
                         updateAvailableStories();
-                        popup.close();
-                    });
-                    popup.show();
+                    }
                 });
                 getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
                 getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));

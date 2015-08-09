@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -20,24 +21,28 @@ public class WorkAllocation implements Serializable, Comparable<WorkAllocation> 
     /**
      * The project that belongs to this work allocation.
      */
+    @Searchable
     @XmlIDREF
     private final Project project;
 
     /**
      * The team that relates to this work allocation.
      */
+    @Searchable
     @XmlIDREF
     private final Team team;
 
     /**
      * The start date of the work allocation.
      */
+    @Searchable
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate startDate;
 
     /**
      * The end date of the work allocation.
      */
+    @Searchable
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private final LocalDate endDate;
 
