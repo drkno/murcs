@@ -313,7 +313,10 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
-            getModel().setEstimate((String) estimateChoiceBox.getValue());
+            String estimate = (String) estimateChoiceBox.getValue();
+            if (!getModel().getEstimate().equals(estimate)) {
+                getModel().setEstimate(estimate);
+            }
             // Updates the story state as this gets changed if you set the estimate to Not Estimated
             storyStateChoiceBox.setValue(getModel().getStoryState());
         }
@@ -362,7 +365,10 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         if (!hasErrors && state != null) {
-            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+            Story.StoryState newState = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+            if (!newState.equals(getModel().getStoryState())) {
+                getModel().setStoryState(newState);
+            }
         }
     }
 

@@ -19,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.WindowEvent;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -100,6 +101,7 @@ public class SearchController {
     private void initialize() {
         previewRenderThread = new Thread(this::renderPreview);
         previewRenderThread.start();
+
         searchHandler = new SearchHandler();
         Parent parent = searchText.getParent();
         parent.getStylesheets()
@@ -254,19 +256,6 @@ public class SearchController {
      */
     private void handleSelectionChanged(final ObservableValue<? extends SearchResult> observable,
                                         final SearchResult oldValue, final SearchResult newValue) {
-        if (newValue == null) {
-            if (editorPane != null) {
-                previewPane.getChildren().clear();
-                editorPane.dispose();
-                editorPane = null;
-            }
-
-            if (!previewPane.getChildren().contains(noItemsLabel)) {
-                previewPane.getChildren().add(noItemsLabel);
-            }
-            return;
-        }
-
         synchronized (previewRenderThread) {
             previewRenderThread.notify();
         }
@@ -279,6 +268,16 @@ public class SearchController {
      */
     public final void setPopOver(final PopOver popOver) {
         popOverWindow = popOver;
+
+        popOverWindow.onHiddenProperty().addListener((observable, oldValue, newValue) -> {
+            synchronized (previewRenderThread) {
+                previewRenderThread.notify();
+            }
+        });
+
+        popOverWindow.onShownProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
     }
 
     /**
@@ -304,6 +303,10 @@ public class SearchController {
             try {
                 synchronized (previewRenderThread) {
                     previewRenderThread.wait();
+                }
+
+                if (!popOverWindow.isShowing()) {
+                    return;
                 }
 
                 while (editorPane == null || !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
