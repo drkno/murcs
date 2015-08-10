@@ -1,3 +1,4 @@
+@Manual
 @ReleaseMaintenance
 Feature: Release Maintenance
 
