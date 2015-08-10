@@ -1,23 +1,27 @@
 @import "globalStyles"
 
-.search-input-placeholder
+.search-input, .search-input:hover, .search-input:focused,
+.search-input:armed, .search-input:selected, .search-input:armed,
+.search-input:expanded, .search-input:filled, .search-input:collapsed
+  -fx-text-fill: darkgray
   -fx-prompt-text-fill: darkgray
   -fx-prompt-effect: none
-  -fx-text-box-border: transparent
-  -fx-focus-color: transparent
-  -fx-background-color: -fx-control-inner-background
-  -fx-background-insets: 0
-  -fx-effect: none
-
-.search-input-placeholder:hover
-  -fx-prompt-text-fill: darkgray
-  -fx-prompt-effect: none
-  -fx-text-box-border: transparent
-  -fx-focus-color: transparent
-  -fx-background-color: -fx-control-inner-background
-  -fx-background-insets: 0
-  -fx-effect: none
-
-.list-cell-background
+  -fx-control-inner-background: transparent
   -fx-background-color: transparent
+  -fx-background-insets: 0
+  -fx-text-box-border: transparent
+  -fx-focus-color: transparent
+  -fx-effect: none
+  -fx-border-color: transparent
+  -fx-border-width: 0
+  -fx-background-radius: 0, 0
+  -fx-faint-focus-color: transparent
 
+.search-input:focused,
+.search-input:armed, .search-input:selected, .search-input:armed,
+.search-input:expanded, .search-input:filled, .search-input:collapsed
+  -fx-prompt-text-fill: black
+
+.search-list
+  -fx-background-color: transparent
+  -fx-text-fill: transparent

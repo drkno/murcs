@@ -8,7 +8,7 @@ public class TokenTest {
     @Test
     public void blankStringTest() {
         Token rootToken = Token.parse("");
-        Assert.assertNotNull("There is no spoon.", rootToken.matches("lorem ipsem"));
+        Assert.assertNull("There is no spoon.", rootToken.matches("lorem ipsem"));
     }
 
     @Test

@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * An object representing the "&&" connection
+ * An object representing the "&amp;&amp;" connection
  * in a search.
  */
 public class AndToken extends Token {
@@ -39,7 +39,7 @@ public class AndToken extends Token {
                 first = searchResult;
             }
             if (searchResult == null) {
-                break;
+                return null;
             }
         }
         return first;
