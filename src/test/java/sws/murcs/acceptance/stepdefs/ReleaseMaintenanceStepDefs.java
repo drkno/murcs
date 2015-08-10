@@ -7,12 +7,16 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -133,7 +137,13 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.getCurrent().getCurrentModel().add(release);
+        Platform.runLater(() -> {
+            try {
+                PersistenceManager.getCurrent().getCurrentModel().add(release);
+            } catch (CustomException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @When("^I edit the values of the release$")
