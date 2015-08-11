@@ -34,6 +34,7 @@ import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -415,9 +416,17 @@ public class StoryEditor extends GenericEditor<Story> {
             nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
             pane.add(nameLink, 0, 0);
         }
-        String depth = "(" + Integer.toString(DependenciesHelper.dependenciesDepth(newDependency)) + " deep) ";
-        Text depthText = new Text(depth);
-        pane.add(depthText, 1, 0);
+        DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
+        String text = "(" + Integer.toString(treeInfo.getCount());
+        if (treeInfo.getCount() == 1) {
+            text += " story, ";
+        }
+        else {
+            text += " stories, ";
+        }
+        text += Integer.toString(treeInfo.getMaxDepth()) + " deep) ";
+        Text infoText = new Text(text);
+        pane.add(infoText, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
