@@ -80,7 +80,7 @@ public final class DependenciesHelper {
     public static DependencyTreeInfo dependenciesTreeInformation(final Story startNode) {
         Map<Story, Integer> visitedDepth = new HashMap<>();
         int depth = determineDepth(startNode, visitedDepth) + 1;
-        return new DependencyTreeInfo(depth, visitedDepth.size());
+        return new DependencyTreeInfo(depth, visitedDepth.size(), startNode.getDependencies().size());
     }
 
     /**

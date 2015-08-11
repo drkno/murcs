@@ -1,10 +1,13 @@
 package sws.murcs.controller.editor;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -16,13 +19,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
@@ -250,6 +255,9 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     @Override
     public final void initialize() {
+        dependenciesContainer.getStylesheets().add(
+                getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
+
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue) {
                 saveChanges();
@@ -394,21 +402,20 @@ public class StoryEditor extends GenericEditor<Story> {
 
         GridPane pane = new GridPane();
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
+        column1.setHgrow(Priority.SOMETIMES);
 
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
+        column2.setHgrow(Priority.ALWAYS);
 
         ColumnConstraints column3 = new ColumnConstraints();
-        column3.setHgrow(Priority.SOMETIMES);
+        column3.setHgrow(Priority.NEVER);
 
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
         pane.getColumnConstraints().add(column3);
 
         if (getIsCreationWindow()) {
-            Text nameText = new Text(newDependency.toString());
+            Label nameText = new Label(newDependency.toString());
             pane.add(nameText, 0, 0);
         }
         else {
@@ -417,20 +424,75 @@ public class StoryEditor extends GenericEditor<Story> {
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
-        String text = "(" + Integer.toString(treeInfo.getCount());
-        if (treeInfo.getCount() == 1) {
-            text += " story, ";
-        }
-        else {
-            text += " stories, ";
-        }
-        text += Integer.toString(treeInfo.getMaxDepth()) + " deep) ";
-        Text infoText = new Text(text);
-        pane.add(infoText, 1, 0);
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        ObservableList<Node> children = hBox.getChildren();
+        children.add(new Label("["));
+        Label storiesLabel = new Label(Integer.toString(treeInfo.getCount()));
+        storiesLabel.setTooltip(
+                new Tooltip("The number of stories that this story depends on in total (including itself)."));
+        storiesLabel.getStyleClass().add("story-depends-on");
+        children.add(storiesLabel);
+        HBox.setHgrow(storiesLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label immediateLabel = new Label(Integer.toString(treeInfo.getImmediateDepth()));
+        immediateLabel.setTooltip(new Tooltip("The number of stories this story immediately depends on."));
+        immediateLabel.getStyleClass().add("story-depends-direct");
+        children.add(immediateLabel);
+        HBox.setHgrow(immediateLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label deepLabel = new Label(Integer.toString(treeInfo.getMaxDepth()));
+        deepLabel.setTooltip(new Tooltip("The maximum number of stories this story transitively depends on."));
+        deepLabel.getStyleClass().add("story-depends-deep");
+        children.add(deepLabel);
+        HBox.setHgrow(deepLabel, Priority.ALWAYS);
+        children.add(new Label("] "));
+
+        hBox.setOnMouseEntered(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount())
+                        + " stories", immediateLabel, Integer.toString(treeInfo.getImmediateDepth()) + " direct",
+                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " deep"));
+
+        hBox.setOnMouseExited(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount()),
+                immediateLabel, Integer.toString(treeInfo.getImmediateDepth()),
+                deepLabel, Integer.toString(treeInfo.getMaxDepth())));
+
+        pane.add(hBox, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
+    }
+
+    /**
+     * Performs a transition to new text on the dependencies detail text.
+     * @param itemsContainer container of the details labels.
+     * @param storiesLabel the label to set to storiesText.
+     * @param storiesText the new text for storiesLabel.
+     * @param immediateLabel the label to set to immediateText.
+     * @param immediateText the new text for immediateLabel.
+     * @param deepLabel the label to set to deepText.
+     * @param deepText the new text for deepLabel.
+     */
+    private void transitionText(final Node itemsContainer, final Label storiesLabel, final String storiesText,
+                                final Label immediateLabel, final String immediateText,
+                                final Label deepLabel, final String deepText) {
+        final Duration transitionTime = Duration.seconds(0.15);
+        FadeTransition fadeOut = new FadeTransition(transitionTime, itemsContainer);
+        fadeOut.setFromValue(itemsContainer.getOpacity());
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(evt -> {
+            storiesLabel.setText(storiesText);
+            immediateLabel.setText(immediateText);
+            deepLabel.setText(deepText);
+            fadeOut.setFromValue(itemsContainer.getOpacity());
+            fadeOut.setToValue(1);
+            fadeOut.setOnFinished(null);
+            fadeOut.play();
+        });
+        fadeOut.play();
     }
 
     /**

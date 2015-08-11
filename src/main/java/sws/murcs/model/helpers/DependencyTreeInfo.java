@@ -15,13 +15,20 @@ public class DependencyTreeInfo {
     private final int count;
 
     /**
+     * Layer 1 depth of the tree.
+     */
+    private final int immediateCount;
+
+    /**
      * Creates a new object to store information about a dependency tree.
      * @param maximumTreeDepth maximum depth of the dependency tree.
      * @param storiesCount number of stories in the dependency tree.
+     * @param immediateDepth the depth at layer 1.
      */
-    protected DependencyTreeInfo(final int maximumTreeDepth, final int storiesCount) {
+    protected DependencyTreeInfo(final int maximumTreeDepth, final int storiesCount, final int immediateDepth) {
         maxDepth = maximumTreeDepth;
         count = storiesCount;
+        immediateCount = immediateDepth;
     }
 
     /**
@@ -38,5 +45,13 @@ public class DependencyTreeInfo {
      */
     public final int getCount() {
         return count;
+    }
+
+    /**
+     * Gets the depth one layer deep.
+     * @return the immediate depth.
+     */
+    public final int getImmediateDepth() {
+        return immediateCount;
     }
 }
