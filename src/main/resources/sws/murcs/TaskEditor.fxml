@@ -7,12 +7,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="editor" minHeight="-Infinity" prefHeight="50.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TaskEditor">
+<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="50.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TaskEditor">
     <children>
-      <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" />
-          <ColumnConstraints hgrow="SOMETIMES" />
+          <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="260.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" />
         </columnConstraints>
         <rowConstraints>
@@ -33,11 +33,11 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <HBox fx:id="minimisedHBox" alignment="CENTER" spacing="10.0" GridPane.columnIndex="1">
+            <HBox fx:id="minimisedHBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
-                  <TextField fx:id="nameTextField" promptText="Name" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="estimateTextField" prefWidth="60.0" promptText="Estimate" />
-                  <ChoiceBox fx:id="stateChoiceBox" prefWidth="100.0" />
+                  <TextField fx:id="nameTextField" minWidth="-Infinity" prefWidth="50.0" promptText="Name" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="estimateTextField" minWidth="60.0" prefWidth="70.0" promptText="Estimate" />
+                  <ChoiceBox fx:id="stateChoiceBox" minWidth="80.0" prefWidth="100.0" />
                </children>
                <GridPane.margin>
                   <Insets />
@@ -52,7 +52,7 @@
                   <String fx:value="mdrd-button" />
                </styleClass>
             </Button>
-            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="150.0" promptText="Description" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <Button fx:id="createButton" alignment="BOTTOM_LEFT" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">

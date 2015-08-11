@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="editor" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.StoryEditor">
+<AnchorPane fx:id="editor" minWidth="-Infinity" prefWidth="420.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.StoryEditor">
     <children>
         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -186,7 +186,7 @@
                                                     <content>
                                                         <GridPane>
                                                             <columnConstraints>
-                                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                                             </columnConstraints>
                                                             <rowConstraints>
                                                                 <RowConstraints vgrow="ALWAYS" />
