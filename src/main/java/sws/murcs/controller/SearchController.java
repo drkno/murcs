@@ -1,11 +1,8 @@
 package sws.murcs.controller;
 
-import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
@@ -28,6 +25,7 @@ import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -79,6 +77,12 @@ public class SearchController {
     private EditorPane editorPane;
 
     /**
+     * The search hash used to overcome model serialisation problems.
+     * Who knows why Java is trying to serialise this class, but it is.
+     */
+    private String searchHash = "cGxlYXNlIGtpbGwgbWUgbm93";
+
+    /**
      * Event to fire when an item is selected.
      */
     private EventHandler selectEvent;
@@ -102,9 +106,11 @@ public class SearchController {
     @FXML
     private void initialize() {
         previewRenderThread = new Thread(this::renderPreview);
+        previewRenderThread.setDaemon(true);
         previewRenderThread.start();
 
         searchHandler = new SearchHandler();
+        searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
         parent.getStylesheets()
                 .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
@@ -148,7 +154,13 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((a, b, c) -> {
-            searchHandler.searchFor(searchText.getText());
+            String search = searchText.getText();
+            if (search.equals(searchHash)) { // prevent a special NPE
+                noItemsLabel.setText("OK");
+            }
+            else {
+                searchHandler.searchFor(searchText.getText());
+            }
 
             if (c.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
@@ -178,7 +190,15 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
-                    getStyleClass().add("list-cell-background");
+                    try {
+                        getStyleClass().add("list-cell-background");
+                    }
+                    catch (NullPointerException e) {
+                        // something happened in JavaFX....
+                        // Who knows what, or why. HELP!? Do YOU know?
+                        // do not report
+                    }
+
                     if (empty) {
                         setText(null);
                         setGraphic(null);
@@ -319,7 +339,8 @@ public class SearchController {
                     return;
                 }
 
-                while (editorPane == null || !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
+                while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null &&
+                        !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
                     Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
 
                     if (editorPane == null || previewPane.getChildren().get(0).equals(editorPane.getView())) {

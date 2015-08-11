@@ -5,6 +5,7 @@ import sws.murcs.search.SearchResult;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Represents a single piece of a search (e.g. "Foo")
@@ -53,7 +54,14 @@ public class SearchToken extends Token {
         if (caseInsensitive) {
             flags |= Pattern.CASE_INSENSITIVE;
         }
-        searchRegex = Pattern.compile(regexExp, flags);
+
+        try {
+            searchRegex = Pattern.compile(regexExp, flags);
+        }
+        catch (PatternSyntaxException e) {
+            // the user is in the process of constructing a regex expression
+            searchRegex = Pattern.compile("$^");
+        }
     }
 
     /**
