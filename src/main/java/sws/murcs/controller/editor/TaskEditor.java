@@ -131,17 +131,18 @@ public class TaskEditor {
      */
     @FXML
     private void saveChanges() {
+        storyEditor.clearErrors("tasks");
 
         // Check name
         String name = nameTextField.getText();
-        if (!Objects.equals(name, task.getName())) {
-            if (!nameExists(name) && !name.isEmpty()) {
+        if (name != null && !nameExists(name) && !name.isEmpty()) {
+            if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
             }
-            else {
-                nameTextField.setText(task.getName());
-                //TODO: Display an error
-            }
+        }
+        else {
+            nameTextField.setText(task.getName());
+            storyEditor.addFormError("tasks", nameTextField, "Task names must be unique and have at least one character!");
         }
 
         // Check estimate
@@ -154,7 +155,7 @@ public class TaskEditor {
             }
             catch (NumberFormatException e) {
                 estimateTextField.setText(Float.toString(task.getEstimate()));
-                storyEditor.addFormError(estimateTextField, "Estimate must be a number!");
+                storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
             }
         }
 
@@ -177,7 +178,7 @@ public class TaskEditor {
      * @return Whether a task already exists with that name
      */
     private boolean nameExists(final String name) {
-        return storyEditor.getModel().getTasks().stream().anyMatch(t -> t.getName().equals(name));
+        return storyEditor.getModel().getTasks().stream().anyMatch(t -> t.getName().equals(name) && !t.equals(task));
     }
 
     /**
