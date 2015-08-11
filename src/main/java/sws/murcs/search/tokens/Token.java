@@ -14,7 +14,12 @@ public abstract class Token {
      */
     public abstract SearchResult matches(final String query);
 
-    public static final Token parse(final String input) {
+    /**
+     * Pareses input into a Token that can be used for search queries.
+     * @param input the input string to be parsed.
+     * @return a token to be used for searching, or null if no Token can be created.
+     */
+    public static Token parse(final String input) {
         String searchQuery = input;
 
         // check if we want case sensitivity
