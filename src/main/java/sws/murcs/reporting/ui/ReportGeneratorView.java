@@ -54,7 +54,7 @@ public class ReportGeneratorView {
             // Give the stage a name and icon
             stage.setTitle("Generate Report");
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
 
             stage.initModality(Modality.NONE);

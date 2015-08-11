@@ -181,7 +181,7 @@ public class GenericPopup extends AnchorPane {
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
         popupStage.sizeToScene();

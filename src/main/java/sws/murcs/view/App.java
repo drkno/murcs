@@ -193,7 +193,7 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         primaryStage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window

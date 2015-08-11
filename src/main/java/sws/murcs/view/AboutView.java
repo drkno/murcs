@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import sws.murcs.controller.AboutController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.reporting.ui.ReportGeneratorController;
 
 /**
  * The About window view.
@@ -45,7 +44,7 @@ public class AboutView {
 
             // Set up the stage
             Stage stage = new Stage();
-            stage.setResizable(false);
+            stage.setResizable(true);
             controller.setupController(stage, parentWindow);
             if (root == null) {
                 return;
@@ -59,7 +58,7 @@ public class AboutView {
             // Give the stage a name and icon
             stage.setTitle("About");
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
             stage.setScene(scene);
 
