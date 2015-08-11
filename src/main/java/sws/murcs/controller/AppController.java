@@ -1025,4 +1025,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         AboutView aboutWindow = new AboutView(window);
         aboutWindow.show();
     }
+
+    /**
+     * Gets the toolBar controller.
+     * @return The toolBar controller.
+     */
+    public final ToolBarController getToolBarController() {
+        return toolBarController;
+    }
 }

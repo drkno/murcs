@@ -2,20 +2,25 @@ package sws.murcs.debug.errorreporting;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -30,6 +35,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handles sending error reports in to SWS when something
@@ -76,6 +84,11 @@ public final class ErrorReporter {
      * The description that the program provides.
      */
     private String progDescription;
+
+    /**
+     * The pop over for displaying helpful messages.
+     */
+    private PopOver popOver;
 
     /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
@@ -209,6 +222,28 @@ public final class ErrorReporter {
     }
 
     /**
+     * Sets up the popover.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private void setupPopOver() {
+        popOver = new PopOver(new Label("testing"));
+        popOver.show(App.getAppController().getToolBarController().getToolBar());
+        VBox loader = new VBox();
+
+        ImageView imageView = new ImageView();
+        Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
+        imageView.setImage(spinner);
+        loader.getChildren().add(imageView);
+
+        Label helpfulMessage = new Label("Sending report");
+        loader.getChildren().add(helpfulMessage);
+
+        loader.setAlignment(Pos.CENTER);
+        loader.setPadding(new Insets(10));
+        popOver.contentNodeProperty().setValue(loader);
+    }
+
+    /**
      * Generates a report and sends it to the sws servers.
      * @param pThread thread the error occurred on.
      * @param pThrowable the exception that caused the error.
@@ -217,8 +252,8 @@ public final class ErrorReporter {
      */
     private void performReporting(final Thread pThread, final Throwable pThrowable,
                                   final String pUserDescription, final String pProgDescription) {
-//        PopOver popOver = new PopOver(null);
-//        popOver.show(popup.getNode());
+        setupPopOver();
+
         thread = pThread;
         throwable = pThrowable;
         userDescription = pUserDescription;
@@ -360,36 +395,43 @@ public final class ErrorReporter {
      * Send the error report to the server.
      * @param report report to send.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void sendReport(final String report) {
         final int successfulCode = 200;
+        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.schedule(() -> {
+            try {
+                URL obj = new URL(BUG_REPORT_URL);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setRequestMethod("POST");
+                con.setRequestProperty("User-Agent", "SWS Error Reporter");
+                con.setRequestProperty("Content-Type", "application/json");
+                con.setDoOutput(true);
+                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                wr.writeBytes(report);
+                wr.flush();
+                wr.close();
 
-        try {
-            URL obj = new URL(BUG_REPORT_URL);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty("User-Agent", "SWS Error Reporter");
-            con.setRequestProperty("Content-Type", "application/json");
-            con.setDoOutput(true);
-            DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-            wr.writeBytes(report);
-            wr.flush();
-            wr.close();
-
-            if (con.getResponseCode() != successfulCode) {
-
-               BufferedReader br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-                String response = "";
-                String nachricht;
-                while ((nachricht = br.readLine()) != null) {
-                    response += nachricht;
+                if (con.getResponseCode() != successfulCode) {
+                    throw new Exception("Transmission failed.");
                 }
-                System.out.println(response);
-                throw new Exception("Transmission failed.");
+                Label helpfulMessage = new Label("Report sent :)");
+                helpfulMessage.setPadding(new Insets(10));
+                Platform.runLater(() -> {
+                    popOver.contentNodeProperty().setValue(helpfulMessage);
+                    popOver.hidePopOverAfterGivenTime(3, 0.5);
+                });
+            } catch (Exception e) {
+                Label helpfulMessage = new Label("Sending of report failed :(\n"
+                        + "email the developers perhaps the server is down\n"
+                        + "s302g1@canterbury.ac.nz");
+                helpfulMessage.setPadding(new Insets(10));
+                Platform.runLater(() -> {
+                            popOver.contentNodeProperty().setValue(helpfulMessage);
+                            popOver.hidePopOverAfterGivenTime(5, 0.75);
+                        });
+                System.err.println("Could not submit error report.");
             }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Could not submit error report.");
-        }
+        }, 3, TimeUnit.SECONDS);
     }
 }

@@ -63,7 +63,7 @@ public class ToolBarController {
      * Initialises the toolbar by setting up appropriate tooltips.
      */
     @FXML
-    @SuppressWarnings("checkstyle:avoidInlineConditionals")
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     private void initialize() {
         shortCutKey  = System.getProperty("os.name").toLowerCase().contains("mac") ? "Command" : "Ctrl";
         setUpToolTips();
@@ -396,5 +396,13 @@ public class ToolBarController {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the tool bar node.
+     * @return The toolBar.
+     */
+    public final ToolBar getToolBar() {
+        return toolBar;
     }
 }

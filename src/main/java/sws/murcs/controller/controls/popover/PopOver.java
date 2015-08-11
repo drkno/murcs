@@ -21,6 +21,11 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import static java.util.Objects.requireNonNull;
 import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
@@ -341,11 +346,15 @@ public class PopOver extends PopupControl {
         hide();
     }
 
-    @Override
-    public final void hide() {
+    /**
+     * Hides the popOver.
+     * Transitions it to hidden over a given amount of time.
+     * @param seconds Amount of time to fade the popover to hidden.
+     */
+    public final void hide(final double seconds) {
         if (isShowing()) {
             Node skinNode = getSkin().getNode();
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(seconds), skinNode);
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(evt -> {
@@ -360,6 +369,29 @@ public class PopOver extends PopupControl {
             });
             fadeOut.play();
         }
+    }
+
+    @Override
+    public final void hide() {
+        hide(fadeDuration);
+    }
+
+    /**
+     * Hides a popOver after a given amount of time.
+     * @param delay delay before hiding
+     * @param pFadeDuration duration of fade time for the pop over.
+     */
+    public final void hidePopOverAfterGivenTime(final int delay, final double pFadeDuration) {
+        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.schedule(() -> hide(pFadeDuration), delay, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Hides a popOver after a given amount of time.
+     * @param delay delay before hiding
+     */
+    public final void hidePopOverAfterGivenTime(final int delay) {
+        hidePopOverAfterGivenTime(delay, fadeDuration);
     }
 
     /**
