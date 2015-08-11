@@ -31,6 +31,7 @@ import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -553,7 +554,12 @@ public class StoryEditor extends GenericEditor<Story> {
      * @param task The task to add
      */
     protected final void addTask(final Task task) {
-        getModel().addTask(task);
+        try {
+            getModel().addTask(task);
+        }
+        catch (DuplicateObjectException e) {
+            addFormError(taskContainer, e.getMessage());
+        }
     }
 
     /**

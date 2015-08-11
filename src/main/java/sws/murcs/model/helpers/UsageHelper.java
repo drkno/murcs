@@ -1,6 +1,17 @@
 package sws.murcs.model.helpers;
 
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
@@ -54,8 +65,6 @@ public final class UsageHelper {
                 return findUsages((Story) model);
             case Backlog:
                 return findUsages((Backlog) model);
-            case Task:
-                return findUsages((Task) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
@@ -197,7 +206,6 @@ public final class UsageHelper {
             case Release: list = (List<T>) currentModel.getReleases(); break;
             case Story: list = (List<T>) currentModel.getStories(); break;
             case Backlog: list = (List<T>) currentModel.getBacklogs(); break;
-            case Task: list = new ArrayList<T>(); break;
             default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
         }
         T foundModel = list.stream()

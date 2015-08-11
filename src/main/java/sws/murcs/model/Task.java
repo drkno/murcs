@@ -1,11 +1,29 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 
 /**
  * A class for keeping track of a Task within a story.
  */
-public class Task extends Model {
+public class Task extends TrackableObject {
+
+    /**
+     * A prime number used in the hash code.
+     */
+    private final int hashCodePrime = 43;
+
+    /**
+     * The name associated with this Task.
+     */
+    @TrackableValue
+    private String name;
+
+    /**
+     * The description of this Task.
+     */
+    @TrackableValue
+    private String description;
 
     /**
      * The estimate in hours for the time it will take to complete the task.
@@ -20,6 +38,40 @@ public class Task extends Model {
     private TaskState state;
 
     /**
+     * Gets this tasks name.
+     * @return The name of this task
+     */
+    public final String getName() {
+        return name;
+    }
+
+    /**
+     * Sets a new name to this task.
+     * @param newName The new name
+     */
+    public final void setName(final String newName) {
+        name = newName;
+        commit("edit Task");
+    }
+
+    /**
+     * Gets the description of this Task.
+     * @return The description of this Task
+     */
+    public final String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets the newDescription of this Task.
+     * @param newDescription The new newDescription
+     */
+    public final void setDescription(final String newDescription) {
+        description = newDescription;
+        commit("edit Task");
+    }
+
+    /**
      * Gets the current state of the task.
      * @return The current state.
      */
@@ -32,7 +84,8 @@ public class Task extends Model {
      * @param newState The state that it's being changed to.
      */
     public final void setState(final TaskState newState) {
-        this.state = newState;
+        state = newState;
+        commit("edit Task");
     }
 
     /**
@@ -48,7 +101,8 @@ public class Task extends Model {
      * @param newEstimate The new estimate for the task.
      */
     public final void setEstimate(final float newEstimate) {
-        this.estimate = newEstimate;
+        estimate = newEstimate;
+        commit("edit Task");
     }
 
     @Override
@@ -56,8 +110,8 @@ public class Task extends Model {
         if (object == null || !(object instanceof Task)) {
             return false;
         }
-        String shortName = getShortName();
-        String shortNameO = ((Task) object).getShortName();
+        String shortName = getName();
+        String shortNameO = ((Task) object).getName();
         if (shortName == null || shortNameO == null) {
             return shortName == shortNameO;
         }
@@ -67,9 +121,9 @@ public class Task extends Model {
     @Override
     public final int hashCode() {
         int c = 0;
-        if (getShortName() != null) {
-            c = getShortName().hashCode();
+        if (getName() != null) {
+            c = getName().hashCode();
         }
-        return getHashCodePrime() + c;
+        return hashCodePrime + c;
     }
 }

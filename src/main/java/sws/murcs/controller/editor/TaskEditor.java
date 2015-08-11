@@ -4,10 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -38,6 +35,11 @@ public class TaskEditor {
     private StoryEditor storyEditor;
 
     /**
+     * Whether or not the box is maximised.
+     */
+    private boolean descriptionVisible;
+
+    /**
      * The anchor pane that contains the entire editor.
      */
     @FXML
@@ -47,38 +49,31 @@ public class TaskEditor {
      * The minimise editor, delete task and create buttons.
      */
     @FXML
-    private Button minimiseButton, createButton;
+    private Button toggleButton, createButton;
 
     /**
      * The state choice boxes.
      */
     @FXML
-    private ChoiceBox minimizedStateChoiceBox, maximizedStateChoiceBox;
+    private ChoiceBox stateChoiceBox;
 
     /**
-     * The GridPane which contains the maximised details about the task.
+     * The separator between tasks.
      */
     @FXML
-    private GridPane maximisedGrid;
-
-    /**
-     * The HBox which contains the minimised details about the task.
-     */
-    @FXML
-    private HBox minimisedHBox;
+    private Separator separator;
 
     /**
      * The description text area.
      */
     @FXML
-    private TextArea maximizedDescriptionTextArea;
+    private TextArea descriptionTextArea;
 
     /**
-     * The name text field.
+     * The name and estimate text fields.
      */
     @FXML
-    private TextField minimizedShortNameTextField, maximizedShortNameTextField, minimizedEstimateTextField,
-            maximizedEstimateTextField;
+    private TextField nameTextField, estimateTextField;
 
     /**
      * Sets up the form with all its event handlers and things.
@@ -91,88 +86,16 @@ public class TaskEditor {
             }
         };
 
-        minimizedStateChoiceBox.getItems().clear();
-        maximizedStateChoiceBox.getItems().clear();
-        minimizedStateChoiceBox.getItems().addAll(TaskState.values());
-        maximizedStateChoiceBox.getItems().addAll(TaskState.values());
+        stateChoiceBox.getItems().clear();
+        stateChoiceBox.getItems().addAll(TaskState.values());
 
-        minimizedShortNameTextField.focusedProperty().addListener(changeListener);
-        maximizedShortNameTextField.focusedProperty().addListener(changeListener);
-        minimizedEstimateTextField.focusedProperty().addListener(changeListener);
-        maximizedEstimateTextField.focusedProperty().addListener(changeListener);
-        minimizedStateChoiceBox.focusedProperty().addListener(changeListener);
-        maximizedStateChoiceBox.focusedProperty().addListener(changeListener);
-        maximizedDescriptionTextArea.focusedProperty().addListener(changeListener);
-    }
-
-    /**
-     * Called whenever an element of the task is edited.
-     * Updates the relevant fields.
-     */
-    @FXML
-    private void saveChanges() {
-
-        // Check short name on minimized name field
-        String name = minimizedShortNameTextField.getText();
-        if (!Objects.equals(name, task.getShortName())) {
-            try {
-                task.setShortName(name);
-                maximizedShortNameTextField.setText(name);
-            }
-            catch (Exception e) {
-                //this.poundFistsOnKeyboard();
-            }
-        }
-
-        // Check short name on maximized name field
-        name = maximizedShortNameTextField.getText();
-        if (!Objects.equals(name, task.getShortName())) {
-            try {
-                task.setShortName(name);
-                minimizedShortNameTextField.setText(name);
-            }
-            catch (Exception e) {
-                //this.poundFistsOnKeyboard();
-            }
-        }
-
-        // Check estimate on minimized estimate field
-        if (!minimizedEstimateTextField.getText().isEmpty()) {
-            Float estimate = Float.parseFloat(minimizedEstimateTextField.getText());
-            if (estimate != task.getEstimate()) {
-                task.setEstimate(estimate);
-                maximizedEstimateTextField.setText(estimate.toString());
-            }
-        }
-
-        // Check estimate on maximized estimate field
-        if (!maximizedEstimateTextField.getText().isEmpty()) {
-            Float estimate = Float.parseFloat(maximizedEstimateTextField.getText());
-            if (estimate != task.getEstimate()) {
-                task.setEstimate(estimate);
-                minimizedEstimateTextField.setText(estimate.toString());
-            }
-        }
-
-        // Check state on minimized state picker
-        TaskState state = (TaskState) minimizedStateChoiceBox.getSelectionModel().getSelectedItem();
-        if (state != task.getState()) {
-            task.setState(state);
-            maximizedStateChoiceBox.getSelectionModel().select(state);
-        }
-
-        // Check state on maximized state picker
-        state = (TaskState) maximizedStateChoiceBox.getSelectionModel().getSelectedItem();
-        if (state != task.getState()) {
-            task.setState(state);
-            minimizedStateChoiceBox.getSelectionModel().select(state);
-        }
-
-        // Check description on maximized description field
-        String description = maximizedDescriptionTextArea.getText();
-        if (!Objects.equals(description, task.getLongName())) {
-            task.setLongName(description);
-        }
+        nameTextField.focusedProperty().addListener(changeListener);
+        nameTextField.focusedProperty().addListener(changeListener);
+        estimateTextField.focusedProperty().addListener(changeListener);
+        estimateTextField.focusedProperty().addListener(changeListener);
+        stateChoiceBox.focusedProperty().addListener(changeListener);
+        stateChoiceBox.focusedProperty().addListener(changeListener);
+        descriptionTextArea.focusedProperty().addListener(changeListener);
     }
 
     /**
@@ -186,44 +109,75 @@ public class TaskEditor {
         task = newTask;
         parent = view;
         storyEditor = containingStoryEditor;
+        descriptionVisible = false;
         if (isCreationBox) {
-            maximiseButtonClicked(null);
+            toggleButtonClicked(null);
+            editor.setPrefHeight(240.0);
             createButton.setVisible(true);
-            minimiseButton.setDisable(true);
-            minimizedStateChoiceBox.getSelectionModel().select(0);
-            maximizedStateChoiceBox.getSelectionModel().select(0);
+            toggleButton.setDisable(true);
+            separator.setVisible(false);
+            stateChoiceBox.getSelectionModel().select(0);
         }
         else {
-            minimizedShortNameTextField.setText(newTask.getShortName());
-            maximizedShortNameTextField.setText(newTask.getShortName());
-            minimizedEstimateTextField.setText(String.valueOf(newTask.getEstimate()));
-            maximizedEstimateTextField.setText(String.valueOf(newTask.getEstimate()));
-            minimizedStateChoiceBox.getSelectionModel().select(newTask.getState());
-            maximizedStateChoiceBox.getSelectionModel().select(newTask.getState());
-            maximizedDescriptionTextArea.setText(newTask.getLongName());
+            nameTextField.setText(newTask.getName());
+            estimateTextField.setText(String.valueOf(newTask.getEstimate()));
+            stateChoiceBox.getSelectionModel().select(newTask.getState());
+            descriptionTextArea.setText(newTask.getDescription());
         }
     }
 
     /**
-     * The function that is called to maximise the task editor.
-     * @param event The event that maximises the task editor.
+     * Called whenever an element of the task is edited and saves the changes.
      */
     @FXML
-    private void maximiseButtonClicked(final ActionEvent event) {
-        editor.setPrefHeight(240.0);
-        minimisedHBox.setVisible(false);
-        maximisedGrid.setVisible(true);
+    private void saveChanges() {
+
+        // Check name
+        String name = nameTextField.getText();
+        if (!Objects.equals(name, task.getName())) {
+            if (!nameExists(name) && !name.isEmpty()) {
+                task.setName(name);
+            }
+            else {
+                nameTextField.setText(task.getName());
+                //TODO: Display an error
+            }
+        }
+
+        // Check estimate
+        if (!estimateTextField.getText().isEmpty()) {
+            try {
+                Float estimate = Float.parseFloat(estimateTextField.getText());
+                if (estimate != task.getEstimate()) {
+                    task.setEstimate(estimate);
+                }
+            }
+            catch (NumberFormatException e) {
+                estimateTextField.setText(Float.toString(task.getEstimate()));
+                storyEditor.addFormError(estimateTextField, "Estimate must be a number!");
+            }
+        }
+
+        // Check state
+        TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
+        if (state != task.getState()) {
+            task.setState(state);
+        }
+
+        // Check description on maximized description field
+        String description = descriptionTextArea.getText();
+        if (!Objects.equals(description, task.getDescription())) {
+            task.setDescription(description);
+        }
     }
 
     /**
-     * The function that minimises the task editor.
-     * @param event The event that minimises the task editor.
+     * Checks whether a task with a specified name already exists.
+     * @param name The name to check for
+     * @return Whether a task already exists with that name
      */
-    @FXML
-    private void minimiseButtonClicked(final ActionEvent event) {
-        editor.setPrefHeight(50.0);
-        minimisedHBox.setVisible(true);
-        maximisedGrid.setVisible(false);
+    private boolean nameExists(final String name) {
+        return storyEditor.getModel().getTasks().stream().anyMatch(t -> t.getName().equals(name));
     }
 
     /**
@@ -234,33 +188,48 @@ public class TaskEditor {
     private void createButtonClicked(final ActionEvent event) {
         boolean acceptable = true;
 
-        try {
-            String name = maximizedShortNameTextField.getText();
-            task.setShortName(name);
+        String name = nameTextField.getText();
+        if (!nameExists(name) && name != null && !name.isEmpty()) {
+            task.setName(name);
         }
-        catch (CustomException e) {
+        else {
             acceptable = false;
         }
 
-        String description = maximizedDescriptionTextArea.getText();
-        task.setLongName(description);
-
         try {
-            float estimate = Float.parseFloat(maximizedEstimateTextField.getText());
+            float estimate = Float.parseFloat(estimateTextField.getText());
             task.setEstimate(estimate);
         }
         catch (NumberFormatException e) {
             acceptable = false;
         }
 
-        TaskState state = (TaskState) maximizedStateChoiceBox.getSelectionModel().getSelectedItem();
-        task.setState(state);
-
-        // TODO: Ensure this if statement actually makes sense
-        if (acceptable && state != null) {
+        if (acceptable) {
             createButton.setVisible(false);
-            minimiseButton.setDisable(false);
+            toggleButton.setDisable(false);
             storyEditor.addTask(task);
+            toggleButtonClicked(null);
+            separator.setVisible(true);
+        }
+    }
+
+    /**
+     * The function that is called toggle the state of the editor.
+     * @param event The event that maximises/minimises the task editor
+     */
+    @FXML
+    private void toggleButtonClicked(final ActionEvent event) {
+        if (descriptionVisible) {
+            descriptionTextArea.setVisible(false);
+            editor.setPrefHeight(50.0);
+            toggleButton.setText("+");
+            descriptionVisible = false;
+        }
+        else {
+            descriptionTextArea.setVisible(true);
+            editor.setPrefHeight(210.0);
+            toggleButton.setText("-");
+            descriptionVisible = true;
         }
     }
 

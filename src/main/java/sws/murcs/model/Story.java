@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
@@ -273,12 +274,16 @@ public class Story extends Model {
     /**
      * Adds a new task to the list of tasks the story has.
      * @param newTask The new task to add
+     * @throws DuplicateObjectException If there's a duplicate....
      */
-    public final void addTask(final Task newTask) {
+    public final void addTask(final Task newTask) throws DuplicateObjectException {
         if (!tasks.contains(newTask)) {
             tasks.add(newTask);
+            UndoRedoManager.add(newTask);
+        } else {
+            throw new DuplicateObjectException("You can't add two of the same task to a story!");
         }
-        //Todo don't know what to do otherwise currently (need to discuss)
+        commit("edit story");
     }
 
     /**
@@ -288,6 +293,7 @@ public class Story extends Model {
     public final void removeTask(final Task task) {
         if (tasks.contains(task)) {
             tasks.remove(task);
+            UndoRedoManager.remove(task);
         }
     }
 
