@@ -94,6 +94,9 @@ public class SearchController {
      */
     private Thread previewRenderThread;
 
+    /**
+     * Panes to display data in within the search window.
+     */
     @FXML
     private GridPane resultsPane, searchPane;
 
@@ -328,8 +331,8 @@ public class SearchController {
                     return;
                 }
 
-                while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null &&
-                        !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
+                while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null
+                        && !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
                     Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
 
                     if (editorPane == null || previewPane.getChildren().get(0).equals(editorPane.getView())) {

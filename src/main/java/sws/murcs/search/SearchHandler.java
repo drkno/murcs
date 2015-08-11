@@ -1,21 +1,31 @@
 package sws.murcs.search;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import sws.murcs.model.Model;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
 
-import java.util.Collection;
-import java.util.Set;
-
+/**
+ * Object to handle the performing of searches.
+ * This includes creating and handling search threads and
+ * collating search results into a single useful collection
+ */
 public class SearchHandler {
+    /**
+     * Threads on which to perform searching.
+     */
     private SearchThread[] searchThreads;
+
+    /**
+     * Results found from the search.
+     */
     private ObservableList<SearchResult> results;
 
+    /**
+     * Creates a new search handler.
+     */
     public SearchHandler() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         results = FXCollections.observableArrayList();
