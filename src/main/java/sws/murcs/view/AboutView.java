@@ -35,7 +35,7 @@ public class AboutView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(ReportGeneratorController
+            FXMLLoader loader = new FXMLLoader(AboutController
                     .class
                     .getResource("/sws/murcs/About.fxml"));
             Parent root = loader.load();
@@ -61,6 +61,7 @@ public class AboutView {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
             stage.getIcons().add(iconImage);
+            stage.setScene(scene);
 
             stage.initOwner(App.getStage());
             stage.initModality(Modality.APPLICATION_MODAL);
