@@ -227,6 +227,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
      */
+    @SuppressWarnings("checkstyle:designforextension")
     public void dispose() {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
