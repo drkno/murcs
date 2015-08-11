@@ -784,6 +784,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     }
 
     @Override
+    @SuppressWarnings("checkstyle:finalparameters")
     public final void selectItem(Model parameter) {
         ModelType type;
         ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
