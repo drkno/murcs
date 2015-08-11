@@ -6,6 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -317,9 +319,17 @@ public class SearchController {
     private void renderPreview() {
         final int disableDelay = 250;
 
+        VBox loader = new VBox();
+
         ImageView imageView = new ImageView();
         Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
         imageView.setImage(spinner);
+        loader.getChildren().add(imageView);
+
+        Label helpfulMessage = new Label("*CLUNK* /whir/");
+        loader.getChildren().add(helpfulMessage);
+
+        loader.setAlignment(Pos.CENTER);
 
         while (true) {
             try {
@@ -339,8 +349,8 @@ public class SearchController {
                         final CountDownLatch latch = new CountDownLatch(1);
                         Platform.runLater(() -> {
                             previewPane.getChildren().clear();
-                            previewPane.getChildren().add(imageView);
-                            GridPane.setHalignment(imageView, HPos.CENTER);
+                            previewPane.getChildren().add(loader);
+                            GridPane.setHalignment(loader, HPos.CENTER);
                             latch.countDown();
                         });
                         latch.await();
