@@ -332,7 +332,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 popup.close();
                 App.getWindowManager().cleanUp();
                 Platform.exit();
-            });
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
@@ -353,7 +353,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                                 App.getWindowManager().bringToTop(openWindow, true);
                             });
                         });
-            });
+            }, "dont-panic");
             popup.show();
         }
         else {

@@ -17,6 +17,8 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
+import java.util.*;
+
 /**
  * Generic popup creator and controller.
  */
@@ -203,7 +205,6 @@ public class GenericPopup extends AnchorPane {
         window.register();
     }
 
-
     /**
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
      * (either the left hand side or the right hand side) and the function to call when it is clicked
@@ -213,16 +214,18 @@ public class GenericPopup extends AnchorPane {
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
+     * @param cssStyleClasses css styles for the button
      */
     public final void addButton(final String buttonText,
                                 final Position position,
                                 final Action action,
-                                final GenericCallback func) {
+                                final GenericCallback func,
+                                final String cssStyleClasses) {
         Button button = new Button(buttonText);
-        //button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.call());
+        List<String> styles = Arrays.asList(cssStyleClasses.split(","));
 
         switch (action) {
             case DEFAULT:
@@ -239,6 +242,10 @@ public class GenericPopup extends AnchorPane {
                 break;
         }
 
+        for (String style : styles) {
+            button.getStyleClass().add(style.trim());
+        }
+
         switch (position) {
             case LEFT:
                 hBoxLeft.getChildren().add(button);
@@ -251,6 +258,23 @@ public class GenericPopup extends AnchorPane {
         }
 
         buttonsDefined = true;
+    }
+
+    /**
+     * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
+     * (either the left hand side or the right hand side) and the function to call when it is clicked
+     * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left
+     * the first one added will be the one closest to the left hand side, so keep that in mind.
+     * @param buttonText The text on the button.
+     * @param position The positioning of the button.
+     * @param func The function to call when the button is clicked.
+     * @param action Default action for button
+     */
+    public final void addButton(final String buttonText,
+                                final Position position,
+                                final Action action,
+                                final GenericCallback func) {
+        addButton(buttonText, position, action, func, "");
     }
 
     /**

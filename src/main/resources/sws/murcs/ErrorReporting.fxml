@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.debug.errorreporting.ErrorReportPopup">
+<AnchorPane fx:id="root" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.debug.errorreporting.ErrorReportPopup">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -23,7 +23,7 @@
             <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                <children>
                   <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#close" text="Cancel" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="Report"/>
+                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="Report" />
                </children>
                <GridPane.margin>
                   <Insets right="10.0" />
@@ -49,9 +49,9 @@
                         <Insets bottom="10.0" />
                      </padding>
                   </Label>
-                  <TextArea fx:id="detailTextArea" prefWidth="300.0" prefHeight="25" wrapText="true" GridPane.rowIndex="4" />
-                  <Label fx:id="messageDetailLabel" text="Detail" wrapText="true" GridPane.rowIndex="1"/>
-                  <Label fx:id="screenshotLabel" mnemonicParsing="false" text="Include Screenshots?" GridPane.rowIndex="2"/>
+                  <TextArea fx:id="detailTextArea" prefHeight="25" prefWidth="300.0" wrapText="true" GridPane.rowIndex="4" />
+                  <Label fx:id="messageDetailLabel" text="Detail" wrapText="true" GridPane.rowIndex="1" />
+                  <Label fx:id="screenshotLabel" mnemonicParsing="false" text="Include Screenshots?" GridPane.rowIndex="2" />
                   <Label fx:id="screenShotWarningLabel" wrapText="true" GridPane.rowIndex="3">
                      <padding>
                         <Insets bottom="10.0" />
