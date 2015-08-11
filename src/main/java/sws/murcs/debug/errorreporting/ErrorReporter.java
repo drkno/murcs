@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
@@ -233,9 +234,12 @@ public final class ErrorReporter {
         ImageView imageView = new ImageView();
         Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
         imageView.setImage(spinner);
+        imageView.setFitHeight(40);
+        imageView.setFitWidth(40);
         loader.getChildren().add(imageView);
 
         Label helpfulMessage = new Label("Sending report");
+        helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#9e9e9e"));
         loader.getChildren().add(helpfulMessage);
 
         loader.setAlignment(Pos.CENTER);
@@ -417,21 +421,33 @@ public final class ErrorReporter {
                 }
                 Label helpfulMessage = new Label("Report sent :)");
                 helpfulMessage.setPadding(new Insets(10));
+                helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#4caf50"));
                 Platform.runLater(() -> {
                     popOver.contentNodeProperty().setValue(helpfulMessage);
-                    popOver.hidePopOverAfterGivenTime(3, 0.5);
+                    hidePopOverAfterGivenTime(3, 0.5);
                 });
             } catch (Exception e) {
                 Label helpfulMessage = new Label("Sending of report failed :(\n"
                         + "email the developers perhaps the server is down\n"
                         + "s302g1@canterbury.ac.nz");
+                helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#f44336"));
                 helpfulMessage.setPadding(new Insets(10));
                 Platform.runLater(() -> {
                             popOver.contentNodeProperty().setValue(helpfulMessage);
-                            popOver.hidePopOverAfterGivenTime(5, 0.75);
+                            hidePopOverAfterGivenTime(5, 0.75);
                         });
                 System.err.println("Could not submit error report.");
             }
         }, 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Hides a popOver after a given amount of time.
+     * @param delay delay before hiding
+     * @param pFadeDuration duration of fade time for the pop over.
+     */
+    private void hidePopOverAfterGivenTime(final int delay, final double pFadeDuration) {
+        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+        exec.schedule(() -> popOver.hide(pFadeDuration), delay, TimeUnit.SECONDS);
     }
 }

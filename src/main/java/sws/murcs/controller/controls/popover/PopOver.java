@@ -377,24 +377,6 @@ public class PopOver extends PopupControl {
     }
 
     /**
-     * Hides a popOver after a given amount of time.
-     * @param delay delay before hiding
-     * @param pFadeDuration duration of fade time for the pop over.
-     */
-    public final void hidePopOverAfterGivenTime(final int delay, final double pFadeDuration) {
-        final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-        exec.schedule(() -> hide(pFadeDuration), delay, TimeUnit.SECONDS);
-    }
-
-    /**
-     * Hides a popOver after a given amount of time.
-     * @param delay delay before hiding
-     */
-    public final void hidePopOverAfterGivenTime(final int delay) {
-        hidePopOverAfterGivenTime(delay, fadeDuration);
-    }
-
-    /**
      * Moves the window to the appropriate location given the previous setup.
      */
     private void adjustWindowLocation() {
