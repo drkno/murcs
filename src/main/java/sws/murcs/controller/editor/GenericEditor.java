@@ -131,7 +131,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             errorMessagePopover.autoHideProperty().setValue(false);
 
             errorMessagePopoverListener = (observable, oldValue, newValue) -> {
-                if (!newValue) {
+                if (!newValue && observable != null && errorMessagePopoverListener != null) {
                     observable.removeListener(errorMessagePopoverListener);
                     errorMessagePopover.hide();
                 }

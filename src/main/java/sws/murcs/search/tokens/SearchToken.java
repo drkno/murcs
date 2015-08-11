@@ -60,7 +60,7 @@ public class SearchToken extends Token {
         }
         catch (PatternSyntaxException e) {
             // the user is in the process of constructing a regex expression
-            searchRegex = Pattern.compile("^$");
+            searchRegex = Pattern.compile("$^");
         }
     }
 
