@@ -184,8 +184,6 @@ public class GenericPopup extends AnchorPane {
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
-        popupStage.sizeToScene();
-        popupStage.setResizable(false);
         parentWindow = pParentWindow;
         setupWindow();
 
@@ -260,15 +258,8 @@ public class GenericPopup extends AnchorPane {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        if (messageTitle.getText().equals("Title")) {
-            contentPane.getRowConstraints().get(0).setMinHeight(0);
-            contentPane.getRowConstraints().get(0).setMaxHeight(0);
-
-            messageImage.setVisible(false);
-            messageTitle.setVisible(false);
-            //popupStage.setHeight(defaultPopUpHeight);
-        }
-
+        popupStage.sizeToScene();
+        popupStage.setResizable(false);
         if (!buttonsDefined) {
             addOkButton(this::close);
         }
