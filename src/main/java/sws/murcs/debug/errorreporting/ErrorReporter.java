@@ -228,6 +228,9 @@ public final class ErrorReporter {
     @SuppressWarnings("checkstyle:magicnumber")
     private void setupPopOver() {
         popOver = new PopOver(new Label("testing"));
+        popOver.detachableProperty().set(true);
+        popOver.detachedProperty().set(true);
+        popOver.detachedCloseButtonProperty().set(false);
         popOver.show(App.getAppController().getToolBarController().getToolBar());
         VBox loader = new VBox();
 

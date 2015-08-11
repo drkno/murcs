@@ -22,10 +22,6 @@ import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import static java.util.Objects.requireNonNull;
 import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
@@ -89,6 +85,11 @@ public class PopOver extends PopupControl {
      * Property for if the window is detached.
      */
     private BooleanProperty detached;
+
+    /**
+     * Property for toggling the window close button.
+     */
+    private BooleanProperty detachedCloseButton;
 
     /**
      * Property for the size of an arrow.
@@ -497,6 +498,19 @@ public class PopOver extends PopupControl {
             detached = new SimpleBooleanProperty(this, "detached", false);
         }
         return detached;
+    }
+
+    /**
+     * Stores if the PopOver window when detached from its owner will have a close button.
+     * Defaults to true.
+     * Note: value is meaningless if detachableProperty() is not true.
+     * @return the detached close button property.
+     */
+    public final BooleanProperty detachedCloseButtonProperty() {
+        if (detachedCloseButton == null) {
+            detachedCloseButton = new SimpleBooleanProperty(this, "detachedCloseButton", true);
+        }
+        return detachedCloseButton;
     }
 
     /**
