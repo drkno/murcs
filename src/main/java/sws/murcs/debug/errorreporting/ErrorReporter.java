@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.image.WritableImage;
 import sws.murcs.controller.NavigationManager;
-import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;

@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Organisation;
-import sws.murcs.model.persistence.PersistenceManager;
 
 /**
  * About window controller.
@@ -82,7 +81,8 @@ public class AboutController {
         stage = pStage;
         parentWindow = pParentWindow;
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/Murcs_logo_transparent_background.png")));
+        Image iconImage = new Image(classLoader
+                .getResourceAsStream(("sws/murcs/logo/Murcs_logo_transparent_background.png")));
         logoImage.setImage(iconImage);
         versionNumber.setText("Version: " + Organisation.getVersion());
         stage.setMinHeight(rem * 17);
