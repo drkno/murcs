@@ -8,7 +8,7 @@ public class TokenTest {
     @Test
     public void blankStringTest() {
         Token rootToken = Token.parse("");
-        Assert.assertNotNull("There is no spoon.", rootToken.matches("lorem ipsem"));
+        Assert.assertNull("There is no spoon.", rootToken.matches("lorem ipsem"));
     }
 
     @Test
@@ -101,5 +101,12 @@ public class TokenTest {
         Token rootToken = Token.parse("!regex .*");
         Assert.assertNotNull("Using regex failed.", rootToken.matches("this is a test string"));
         Assert.assertNotNull("Using regex failed.", rootToken.matches("blah blah blah (I found the spoon!)"));
+    }
+
+    @Test
+    public void partialRegexTest() {
+        Token rootToken = Token.parse("!regex [0-");
+        Assert.assertNull("Broken regex was searched.", rootToken.matches("I found something"));
+        Assert.assertNull("Broken regex was searched.", rootToken.matches("Blah"));
     }
 }

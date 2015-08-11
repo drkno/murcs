@@ -1,0 +1,25 @@
+@import "../../globalStyles"
+
+.menu-bar
+  -fx-background-color: $primary-100
+
+.menu-bar:hover > .label, .menu-bar:selected  > .label, .menu-bar:focused  > .label
+  -fx-text-fill: $white-text
+
+.menu:hover, .menu:selected, .menu:focused
+  -fx-background-color: $secondary-500
+
+.menu:hover> .label, .menu:selected > .label, .menu:focused  > .label
+  -fx-text-fill: $white-text
+
+.menu:hover > .right-container > .arrow, .menu:selected > .right-container > .arrow, .menu:focused > .right-container > .arrow
+  -fx-background-color: $white-text
+
+.menu-item:hover, .menu-item:selected, .menu-item:focused
+  -fx-background-color: $secondary-500
+
+.menu-item:hover .label, .menu-item:selected .label, .menu-item:focused .label
+  -fx-text-fill: $white-text
+
+.check-menu-item:checked:hover > .left-container > .check, .check-menu-item:checked:selected > .left-container > .check, .check-menu-item:checked:focused > .left-container > .check
+  -fx-background-color: $white-text

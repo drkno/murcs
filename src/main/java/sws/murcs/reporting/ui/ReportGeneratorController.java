@@ -16,11 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
@@ -382,8 +382,8 @@ public class ReportGeneratorController {
                 if (file != null) {
                     file.delete();
                 }
-                GenericPopup popup = new GenericPopup(e);
-                popup.show();
+                ErrorReporter.get().reportError(e,
+                        "Something went wrong creating a report, probably to do with saving the file");
             }
         }
     }

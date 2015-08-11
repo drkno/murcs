@@ -349,7 +349,7 @@ public class TeamEditor extends GenericEditor<Team> {
                     getModel().removeMember(person);
                     updatePOSM();
                     popup.close();
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             }
             else {

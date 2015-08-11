@@ -332,7 +332,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 popup.close();
                 App.getWindowManager().cleanUp();
                 Platform.exit();
-            });
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
@@ -353,7 +353,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                                 App.getWindowManager().bringToTop(openWindow, true);
                             });
                         });
-            });
+            }, "dont-panic");
             popup.show();
         }
         else {
@@ -477,7 +477,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 } catch (Exception e) {
                     ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
                 }
-            });
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
@@ -501,7 +501,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            });
+            }, "dont-panic");
             popup.show();
         }
         else {
@@ -544,7 +544,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                     // Close all windows which are not the main app.
                     App.getWindowManager().cleanUp();
                 }
-            });
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
@@ -565,7 +565,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            });
+            }, "dont-panic");
             popup.show();
         }
         else {
@@ -679,7 +679,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 } catch (Exception e) {
                     ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
                 }
-            });
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
@@ -704,7 +704,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            });
+            }, "dont-panic");
             popup.show();
         }
     }
@@ -885,8 +885,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             toolBarController.updateBackForwardButtons();
-        });
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
+        }, "danger-will-robinson");
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "dont-panic");
         popup.show();
     }
 
@@ -1024,5 +1024,13 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private void showAbout(final ActionEvent actionEvent) {
         AboutView aboutWindow = new AboutView(window);
         aboutWindow.show();
+    }
+
+    /**
+     * Gets the toolBar controller.
+     * @return The toolBar controller.
+     */
+    public final ToolBarController getToolBarController() {
+        return toolBarController;
     }
 }

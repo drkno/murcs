@@ -146,7 +146,7 @@ public class CreatorWindowView {
             // Give the stage a name and icon
             stage.setTitle("Create " + type);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
 
             // Set modality of the stage on top of the App

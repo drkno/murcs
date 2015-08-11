@@ -236,7 +236,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
-        });
+        }, "danger-will-robinson", "dont-panic");
         alert.show();
     }
 

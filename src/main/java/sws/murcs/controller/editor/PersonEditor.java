@@ -196,7 +196,7 @@ public class PersonEditor extends GenericEditor<Person> {
                     skillNodeIndex.remove(skill);
                     getModel().removeSkill(skill);
                     popup.close();
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             }
             else {
@@ -216,8 +216,7 @@ public class PersonEditor extends GenericEditor<Person> {
         ColumnConstraints column2 = new ColumnConstraints();
         column2.setHgrow(Priority.SOMETIMES);
 
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
+        pane.getColumnConstraints().addAll(column1, column2);
 
         if (getIsCreationWindow()) {
             Text nameText = new Text(skill.toString());
@@ -225,6 +224,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(skill.toString());
+            nameLink.setMinWidth(0.0);
             nameLink.setOnAction(a -> NavigationManager.navigateTo(skill));
             pane.add(nameLink, 0, 0);
         }

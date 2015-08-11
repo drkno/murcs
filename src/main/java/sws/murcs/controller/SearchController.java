@@ -1,25 +1,42 @@
 package sws.murcs.controller;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+
+import java.util.Base64;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Controller for search UI.
  */
 public class SearchController {
+
+    /**
+     * Icon for search.
+     */
+    @FXML
+    private ImageView searchIcon;
 
     /**
      * TextField to contain search query.
@@ -59,6 +76,12 @@ public class SearchController {
     private EditorPane editorPane;
 
     /**
+     * The search hash used to overcome model serialisation problems.
+     * Who knows why Java is trying to serialise this class, but it is.
+     */
+    private String searchHash = "cGxlYXNlIGtpbGwgbWUgbm93";
+
+    /**
      * Event to fire when an item is selected.
      */
     private EventHandler selectEvent;
@@ -69,11 +92,27 @@ public class SearchController {
     private SearchHandler searchHandler;
 
     /**
+     * Thread to render previewing from.
+     */
+    private Thread previewRenderThread;
+
+    /**
+     * Panes to display data in within the search window.
+     */
+    @FXML
+    private GridPane resultsPane, searchPane;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
     private void initialize() {
+        previewRenderThread = new Thread(this::renderPreview);
+        previewRenderThread.setDaemon(true);
+        previewRenderThread.start();
+
         searchHandler = new SearchHandler();
+        searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
         parent.getStylesheets()
                 .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
@@ -93,6 +132,10 @@ public class SearchController {
                     if (foundItems.getSelectionModel().getSelectedIndex() > 0) {
                         selectEvent.handle(null);
                     }
+                    else if (foundItems.getItems().size() == 1) {
+                        foundItems.getSelectionModel().select(0);
+                        selectEvent.handle(null);
+                    }
                     break;
                 default: break;
             }
@@ -104,10 +147,7 @@ public class SearchController {
         previewPane.addEventHandler(KeyEvent.KEY_PRESSED, keyPressed);
         noItemsLabel.addEventHandler(KeyEvent.KEY_PRESSED, keyPressed);
         foundItems.getSelectionModel().selectedItemProperty().addListener(this::handleSelectionChanged);
-        searchText.getStyleClass().add("search-input-placeholder");
-        searchText.getStyleClass().add("no-shadow");
-        searchText.setStyle("-fx-control-inner-background: transparent");
-        searchText.setStyle("-fx-background-color: transparent");
+        searchText.getStyleClass().add("search-input");
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
@@ -116,19 +156,33 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((a, b, c) -> {
-            searchHandler.searchFor(searchText.getText());
+            String search = searchText.getText();
+            if (search.equals(searchHash)) { // prevent a special NPE
+                noItemsLabel.setText("OK");
+            }
+            else {
+                searchHandler.searchFor(searchText.getText());
+            }
 
             if (c.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
-            } else {
+            }
+            else {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
 
+
+
+        foundItems.itemsProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("");
+        });
         foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                noItemsLabel.setText("No Items Found");
+                //noItemsLabel.setText("No Items Found");
+                searchPane.getChildren().remove(resultsPane);
             } else {
+                searchPane.getChildren().add(1, resultsPane);
                 noItemsLabel.setText("Hover over item to preview");
             }
         });
@@ -138,14 +192,24 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
-                    getStyleClass().add("list-cell-background");
+                    try {
+                        getStyleClass().add("list-cell-background");
+                    }
+                    catch (NullPointerException e) {
+                        // something happened in JavaFX....
+                        // Who knows what, or why. HELP!? Do YOU know?
+                        // do not report
+                    }
+
                     if (empty) {
                         setText(null);
                         setGraphic(null);
-                    } else {
+                    }
+                    else {
                         if (item == null) {
                             setText("null");
-                        } else {
+                        }
+                        else {
                             setText(item.toString());
                         }
                         setGraphic(null);
@@ -216,38 +280,8 @@ public class SearchController {
      */
     private void handleSelectionChanged(final ObservableValue<? extends SearchResult> observable,
                                         final SearchResult oldValue, final SearchResult newValue) {
-        if (newValue == null) {
-            if (editorPane != null) {
-                previewPane.getChildren().clear();
-                editorPane.dispose();
-                editorPane = null;
-            }
-
-            if (!previewPane.getChildren().contains(noItemsLabel)) {
-                previewPane.getChildren().add(noItemsLabel);
-            }
-            return;
-        }
-
-        if (editorPane == null) {
-            editorPane = new EditorPane(newValue.getModel());
-            disableControlsAndUpdateButton();
-            if (previewPane.getChildren().size() > 0) {
-                previewPane.getChildren().clear();
-            }
-            previewPane.getChildren().add(editorPane.getView());
-        } else if (editorPane.getModel().getClass() == newValue.getModel().getClass()) {
-            editorPane.setModel(newValue.getModel());
-            //disableControlsAndUpdateButton();
-        } else {
-            previewPane.getChildren().remove(editorPane.getView());
-            editorPane.dispose();
-            editorPane = new EditorPane(newValue.getModel());
-            disableControlsAndUpdateButton();
-            if (previewPane.getChildren().size() > 0) {
-                previewPane.getChildren().clear();
-            }
-            previewPane.getChildren().add(editorPane.getView());
+        synchronized (previewRenderThread) {
+            previewRenderThread.notify();
         }
     }
 
@@ -258,6 +292,16 @@ public class SearchController {
      */
     public final void setPopOver(final PopOver popOver) {
         popOverWindow = popOver;
+
+        popOverWindow.onHiddenProperty().addListener((observable, oldValue, newValue) -> {
+            synchronized (previewRenderThread) {
+                previewRenderThread.notify();
+            }
+        });
+
+        popOverWindow.onShownProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
     }
 
     /**
@@ -267,6 +311,80 @@ public class SearchController {
     public final void selectText() {
         searchText.requestFocus();
         searchText.selectAll();
+    }
+
+    /**
+     * Background worker method to render previews in.
+     */
+    private void renderPreview() {
+        final int disableDelay = 250;
+
+        VBox loader = new VBox();
+
+        ImageView imageView = new ImageView();
+        Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
+        imageView.setImage(spinner);
+        loader.getChildren().add(imageView);
+
+        Label helpfulMessage = new Label("*CLUNK* /whir/");
+        loader.getChildren().add(helpfulMessage);
+
+        loader.setAlignment(Pos.CENTER);
+
+        while (true) {
+            try {
+                synchronized (previewRenderThread) {
+                    previewRenderThread.wait();
+                }
+
+                if (!popOverWindow.isShowing()) {
+                    return;
+                }
+
+                while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null
+                        && !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
+                    Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
+
+                    if (editorPane == null || previewPane.getChildren().get(0).equals(editorPane.getView())) {
+                        final CountDownLatch latch = new CountDownLatch(1);
+                        Platform.runLater(() -> {
+                            previewPane.getChildren().clear();
+                            previewPane.getChildren().add(loader);
+                            GridPane.setHalignment(loader, HPos.CENTER);
+                            latch.countDown();
+                        });
+                        latch.await();
+                    }
+
+                    if (editorPane == null) {
+                        editorPane = new EditorPane(newValue);
+                    }
+                    else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                        editorPane.setModel(newValue);
+                    }
+                    else {
+                        editorPane.dispose();
+                        editorPane = new EditorPane(newValue);
+                    }
+                    Thread.sleep(disableDelay);
+                    disableControlsAndUpdateButton();
+                }
+
+                final CountDownLatch latch = new CountDownLatch(1);
+                Platform.runLater(() -> {
+                    previewPane.getChildren().clear();
+                    previewPane.getChildren().add(editorPane.getView());
+                    latch.countDown();
+                });
+                latch.await();
+            }
+            catch (Exception e) {
+                Platform.runLater(() -> {
+                    ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
+                });
+                return;
+            }
+        }
     }
 
     /**

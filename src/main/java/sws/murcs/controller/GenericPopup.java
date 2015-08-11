@@ -17,6 +17,9 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Generic popup creator and controller.
  */
@@ -181,11 +184,9 @@ public class GenericPopup extends AnchorPane {
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
-        popupStage.sizeToScene();
-        popupStage.setResizable(false);
         parentWindow = pParentWindow;
         setupWindow();
 
@@ -205,7 +206,6 @@ public class GenericPopup extends AnchorPane {
         window.register();
     }
 
-
     /**
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
      * (either the left hand side or the right hand side) and the function to call when it is clicked
@@ -215,16 +215,18 @@ public class GenericPopup extends AnchorPane {
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
+     * @param cssStyleClasses css styles for the button
      */
     public final void addButton(final String buttonText,
                                 final Position position,
                                 final Action action,
-                                final GenericCallback func) {
+                                final GenericCallback func,
+                                final String cssStyleClasses) {
         Button button = new Button(buttonText);
-        //button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.call());
+        List<String> styles = Arrays.asList(cssStyleClasses.split(","));
 
         switch (action) {
             case DEFAULT:
@@ -239,6 +241,10 @@ public class GenericPopup extends AnchorPane {
                 break;
             default:
                 break;
+        }
+
+        for (String style : styles) {
+            button.getStyleClass().add(style.trim());
         }
 
         switch (position) {
@@ -256,19 +262,29 @@ public class GenericPopup extends AnchorPane {
     }
 
     /**
+     * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
+     * (either the left hand side or the right hand side) and the function to call when it is clicked
+     * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left
+     * the first one added will be the one closest to the left hand side, so keep that in mind.
+     * @param buttonText The text on the button.
+     * @param position The positioning of the button.
+     * @param func The function to call when the button is clicked.
+     * @param action Default action for button
+     */
+    public final void addButton(final String buttonText,
+                                final Position position,
+                                final Action action,
+                                final GenericCallback func) {
+        addButton(buttonText, position, action, func, "");
+    }
+
+    /**
      * Shows the dialog, this should be the last thing you call after setting up your dialog.
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        if (messageTitle.getText().equals("Title")) {
-            contentPane.getRowConstraints().get(0).setMinHeight(0);
-            contentPane.getRowConstraints().get(0).setMaxHeight(0);
-
-            messageImage.setVisible(false);
-            messageTitle.setVisible(false);
-            //popupStage.setHeight(defaultPopUpHeight);
-        }
-
+        popupStage.sizeToScene();
+        popupStage.setResizable(false);
         if (!buttonsDefined) {
             addOkButton(this::close);
         }
@@ -341,6 +357,20 @@ public class GenericPopup extends AnchorPane {
         addYesNoButtons(yesFunction, this::close);
     }
 
+
+    /**
+     * Adds default Yes No Buttons. You specify what is supposed to happen for the Yes button and the No button
+     * remains it's default (closes the dialog).
+     * @param yesFunction The function you want to call on the yes button being clicked.
+     * @param yesStyles Style classes for Yes button
+     * @param noStyles Style classes for No button
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addYesNoButtons(yesFunction, this::close, yesStyles, noStyles);
+    }
+
     /**
      * Adds default OK Cancel Buttons.
      * you specify the functions for both the ok and cancel buttons when clicked.
@@ -359,8 +389,23 @@ public class GenericPopup extends AnchorPane {
      * @param noFunction The function you want to call on no button click.
      */
     public final void addYesNoButtons(final GenericCallback yesFunction, final GenericCallback noFunction) {
-        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction);
-        addButton("No", Position.RIGHT, Action.CANCEL, noFunction);
+        addYesNoButtons(yesFunction, noFunction, "", "");
+    }
+
+    /**
+     * Adds default Yes No Buttons.
+     * You specify the functions for both the yes and no buttons when clicked.
+     * @param yesFunction The function you want to call on yes button click.
+     * @param noFunction The function you want to call on no button click.
+     * @param yesStyles Style classes for the yes button.
+     * @param noStyles Style classes for the no button.
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final GenericCallback noFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
+        addButton("No", Position.RIGHT, Action.CANCEL, noFunction, noStyles);
     }
 
     /**
