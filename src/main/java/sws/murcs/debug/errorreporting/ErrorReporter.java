@@ -6,10 +6,13 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.NavigationManager;
@@ -430,13 +433,21 @@ public final class ErrorReporter {
                     hidePopOverAfterGivenTime(3, 0.5);
                 });
             } catch (Exception e) {
+                VBox errorMessage = new VBox();
                 Label helpfulMessage = new Label("Sending of report failed :(\n"
-                        + "email the developers perhaps the server is down\n"
-                        + "s302g1@canterbury.ac.nz");
+                        + "Email the developers, perhaps the server is down");
                 helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#f44336"));
+                errorMessage.getChildren().add(helpfulMessage);
+
+                Hyperlink link = new Hyperlink("mailto:s302g1@canterbury.ac.nz");
+                link.getStyleClass().add("zero-border");
+                errorMessage.getChildren().add(link);
+
+                errorMessage.setAlignment(Pos.CENTER);
+                errorMessage.setPadding(new Insets(10));
                 helpfulMessage.setPadding(new Insets(10));
                 Platform.runLater(() -> {
-                            popOver.contentNodeProperty().setValue(helpfulMessage);
+                            popOver.contentNodeProperty().setValue(errorMessage);
                             hidePopOverAfterGivenTime(5, 0.75);
                         });
                 System.err.println("Could not submit error report.");
