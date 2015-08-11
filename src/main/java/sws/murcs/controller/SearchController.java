@@ -6,6 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,12 +17,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -73,6 +76,12 @@ public class SearchController {
     private EditorPane editorPane;
 
     /**
+     * The search hash used to overcome model serialisation problems.
+     * Who knows why Java is trying to serialise this class, but it is.
+     */
+    private String searchHash = "cGxlYXNlIGtpbGwgbWUgbm93";
+
+    /**
      * Event to fire when an item is selected.
      */
     private EventHandler selectEvent;
@@ -87,6 +96,9 @@ public class SearchController {
      */
     private Thread previewRenderThread;
 
+    /**
+     * Panes to display data in within the search window.
+     */
     @FXML
     private GridPane resultsPane, searchPane;
 
@@ -96,9 +108,11 @@ public class SearchController {
     @FXML
     private void initialize() {
         previewRenderThread = new Thread(this::renderPreview);
+        previewRenderThread.setDaemon(true);
         previewRenderThread.start();
 
         searchHandler = new SearchHandler();
+        searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
         parent.getStylesheets()
                 .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
@@ -142,7 +156,13 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((a, b, c) -> {
-            searchHandler.searchFor(searchText.getText());
+            String search = searchText.getText();
+            if (search.equals(searchHash)) { // prevent a special NPE
+                noItemsLabel.setText("OK");
+            }
+            else {
+                searchHandler.searchFor(searchText.getText());
+            }
 
             if (c.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
@@ -172,7 +192,15 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
-                    getStyleClass().add("list-cell-background");
+                    try {
+                        getStyleClass().add("list-cell-background");
+                    }
+                    catch (NullPointerException e) {
+                        // something happened in JavaFX....
+                        // Who knows what, or why. HELP!? Do YOU know?
+                        // do not report
+                    }
+
                     if (empty) {
                         setText(null);
                         setGraphic(null);
@@ -291,9 +319,17 @@ public class SearchController {
     private void renderPreview() {
         final int disableDelay = 250;
 
+        VBox loader = new VBox();
+
         ImageView imageView = new ImageView();
         Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
         imageView.setImage(spinner);
+        loader.getChildren().add(imageView);
+
+        Label helpfulMessage = new Label("*CLUNK* /whir/");
+        loader.getChildren().add(helpfulMessage);
+
+        loader.setAlignment(Pos.CENTER);
 
         while (true) {
             try {
@@ -305,15 +341,16 @@ public class SearchController {
                     return;
                 }
 
-                while (editorPane == null || !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
+                while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null
+                        && !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
                     Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
 
                     if (editorPane == null || previewPane.getChildren().get(0).equals(editorPane.getView())) {
                         final CountDownLatch latch = new CountDownLatch(1);
                         Platform.runLater(() -> {
                             previewPane.getChildren().clear();
-                            previewPane.getChildren().add(imageView);
-                            GridPane.setHalignment(imageView, HPos.CENTER);
+                            previewPane.getChildren().add(loader);
+                            GridPane.setHalignment(loader, HPos.CENTER);
                             latch.countDown();
                         });
                         latch.await();

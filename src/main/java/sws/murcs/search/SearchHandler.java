@@ -7,10 +7,25 @@ import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
 
+/**
+ * Object to handle the performing of searches.
+ * This includes creating and handling search threads and
+ * collating search results into a single useful collection
+ */
 public class SearchHandler {
+    /**
+     * Threads on which to perform searching.
+     */
     private SearchThread[] searchThreads;
+
+    /**
+     * Results found from the search.
+     */
     private ObservableList<SearchResult> results;
 
+    /**
+     * Creates a new search handler.
+     */
     public SearchHandler() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         results = FXCollections.observableArrayList();

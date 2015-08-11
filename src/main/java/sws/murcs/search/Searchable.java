@@ -13,7 +13,6 @@ import java.lang.annotation.Target;
 public @interface Searchable {
     /**
      * Priority to search this field with.
-     * @return The search priority.
      */
     SearchPriority value() default SearchPriority.Medium;
 }

@@ -1,6 +1,7 @@
 package sws.murcs.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -137,11 +138,14 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) != '*') {
-            title = '*' + title;
-            stage.setTitle(title);
-        }
+        // for off thread rendering
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) != '*') {
+                title = '*' + title;
+                stage.setTitle(title);
+            }
+        });
     }
 
     /**
@@ -152,11 +156,13 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) == '*') {
-            title = title.substring(1);
-            stage.setTitle(title);
-        }
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) == '*') {
+                title = title.substring(1);
+                stage.setTitle(title);
+            }
+        });
     }
 
     /***

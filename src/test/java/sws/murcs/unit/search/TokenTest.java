@@ -102,4 +102,11 @@ public class TokenTest {
         Assert.assertNotNull("Using regex failed.", rootToken.matches("this is a test string"));
         Assert.assertNotNull("Using regex failed.", rootToken.matches("blah blah blah (I found the spoon!)"));
     }
+
+    @Test
+    public void partialRegexTest() {
+        Token rootToken = Token.parse("!regex [0-");
+        Assert.assertNull("Broken regex was searched.", rootToken.matches("I found something"));
+        Assert.assertNull("Broken regex was searched.", rootToken.matches("Blah"));
+    }
 }
