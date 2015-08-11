@@ -12,6 +12,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.paint.Color;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public final class JavaFXHelpers {
      * @return The children of the parent
      */
     public static ArrayList<Node> getAllChildNodes(final Parent parent) {
-        ArrayList<Node> nodes = new ArrayList<Node>();
+        ArrayList<Node> nodes = new ArrayList<>();
         addAllDescendants(parent, nodes);
         return nodes;
     }
@@ -95,14 +96,16 @@ public final class JavaFXHelpers {
             return;
         }
 
-        List<Node> nodeList = currentNode.getChildrenUnmodifiable();
-        for (int i = 0; i < nodeList.size(); i++) {
-            Node node = nodeList.get(i);
-            if (Button.class.isAssignableFrom(node.getClass())) {
-                node.setVisible(false);
+        currentNode.getChildrenUnmodifiable().forEach(node -> {
+            if (Button.class.isAssignableFrom(node.getClass()) || node instanceof MaterialDesignButton) {
+                node.setDisable(true);
+            }
+            else if (node instanceof Hyperlink) {
+                node.setDisable(true);
             }
             else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
-                    || node instanceof ChoiceBox || node instanceof TableView || node instanceof ListView) {
+                    || node instanceof ChoiceBox || node instanceof ListView || node instanceof TableView
+                    || node instanceof DatePicker || node instanceof CheckBox || node instanceof RadioButton) {
                 node.setDisable(true);
             }
             else if (node instanceof ScrollPane) {
@@ -124,6 +127,6 @@ public final class JavaFXHelpers {
             }
 
             findAndDestroyControls((Parent) node);
-        }
+        });
     }
 }
