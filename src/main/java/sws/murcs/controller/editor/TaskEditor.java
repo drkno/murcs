@@ -114,7 +114,7 @@ public class TaskEditor {
             toggleButtonClicked(null);
             editor.setPrefHeight(240.0);
             createButton.setVisible(true);
-            toggleButton.setDisable(true);
+            toggleButton.setVisible(false);
             separator.setVisible(false);
             stateChoiceBox.getSelectionModel().select(0);
         }
@@ -146,7 +146,6 @@ public class TaskEditor {
         }
 
         // Check estimate
-        if (!estimateTextField.getText().isEmpty()) {
             try {
                 Float estimate = Float.parseFloat(estimateTextField.getText());
                 if (estimate != task.getEstimate()) {
@@ -154,10 +153,9 @@ public class TaskEditor {
                 }
             }
             catch (NumberFormatException e) {
-                estimateTextField.setText(Float.toString(task.getEstimate()));
                 storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
             }
-        }
+
 
         // Check state
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
@@ -207,7 +205,7 @@ public class TaskEditor {
 
         if (acceptable) {
             createButton.setVisible(false);
-            toggleButton.setDisable(false);
+            toggleButton.setVisible(true);
             storyEditor.addTask(task);
             toggleButtonClicked(null);
             separator.setVisible(true);
