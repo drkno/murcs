@@ -395,7 +395,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     dependenciesMap.remove(newDependency);
                     getModel().removeDependency(newDependency);
                     popup.close();
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             }
             else {
@@ -635,7 +635,7 @@ public class StoryEditor extends GenericEditor<Story> {
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
                         popup.close();
-                    });
+                    }, "danger-will-robinson", "dont-panic");
                     popup.show();
                 }
                 else {

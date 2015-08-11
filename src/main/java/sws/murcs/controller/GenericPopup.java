@@ -17,7 +17,8 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Generic popup creator and controller.
@@ -356,6 +357,20 @@ public class GenericPopup extends AnchorPane {
         addYesNoButtons(yesFunction, this::close);
     }
 
+
+    /**
+     * Adds default Yes No Buttons. You specify what is supposed to happen for the Yes button and the No button
+     * remains it's default (closes the dialog).
+     * @param yesFunction The function you want to call on the yes button being clicked.
+     * @param yesStyles Style classes for Yes button
+     * @param noStyles Style classes for No button
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addYesNoButtons(yesFunction, this::close, yesStyles, noStyles);
+    }
+
     /**
      * Adds default OK Cancel Buttons.
      * you specify the functions for both the ok and cancel buttons when clicked.
@@ -374,8 +389,23 @@ public class GenericPopup extends AnchorPane {
      * @param noFunction The function you want to call on no button click.
      */
     public final void addYesNoButtons(final GenericCallback yesFunction, final GenericCallback noFunction) {
-        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction);
-        addButton("No", Position.RIGHT, Action.CANCEL, noFunction);
+        addYesNoButtons(yesFunction, noFunction, "", "");
+    }
+
+    /**
+     * Adds default Yes No Buttons.
+     * You specify the functions for both the yes and no buttons when clicked.
+     * @param yesFunction The function you want to call on yes button click.
+     * @param noFunction The function you want to call on no button click.
+     * @param yesStyles Style classes for the yes button.
+     * @param noStyles Style classes for the no button.
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final GenericCallback noFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
+        addButton("No", Position.RIGHT, Action.CANCEL, noFunction, noStyles);
     }
 
     /**
