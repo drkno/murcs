@@ -11,8 +11,8 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
-                        <storyState>None</storyState>
                         <description>Revert to last saved state</description>
+                        <storyState>None</storyState>
                         <creator>Haydon</creator>
                         <dependencies/>
                         <estimate>Not Estimated</estimate>

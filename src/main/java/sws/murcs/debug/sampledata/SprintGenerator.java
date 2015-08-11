@@ -1,7 +1,14 @@
 package sws.murcs.debug.sampledata;
 
+import sws.murcs.model.Sprint;
+
 /**
- * Created by daniel on 7/08/15.
+ * Generates random Sprints with stories.
  */
-public class SprintGenerator {
+public class SprintGenerator implements Generator<Sprint> {
+
+    @Override
+    public final Sprint generate() {
+        return null;
+    }
 }

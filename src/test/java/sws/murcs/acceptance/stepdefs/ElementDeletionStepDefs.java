@@ -9,10 +9,12 @@ import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -96,6 +98,15 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 model.add(backlog);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+
+        // Mac OSX Workaround for testing ONLY!
+        interact(() -> {
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MenuBar menuBar = (MenuBar) JavaFXHelpers.getByID(primaryStage.getScene().getRoot(), "menuBar");
+                menuBar.useSystemMenuBarProperty().set(false);
             }
         });
     }

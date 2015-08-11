@@ -8,11 +8,14 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -31,10 +34,9 @@ public class ShowHideStepDefs extends ApplicationTest {
     @Before("@ShowHide")
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(false);
+        fx = new FxRobot();
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
-        fx = new FxRobot();
-        launch(App.class);
 
         interact(() -> {
             try {
@@ -45,6 +47,15 @@ public class ShowHideStepDefs extends ApplicationTest {
             }
             catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+
+        // Mac OSX Workaround for testing ONLY!
+        interact(() -> {
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MenuBar menuBar = (MenuBar) JavaFXHelpers.getByID(primaryStage.getScene().getRoot(), "menuBar");
+                menuBar.useSystemMenuBarProperty().set(false);
             }
         });
     }
