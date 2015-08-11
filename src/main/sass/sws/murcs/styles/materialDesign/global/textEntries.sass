@@ -1,0 +1,19 @@
+@import "../../globalStyles"
+
+.text-area, .text-field
+  -fx-background-color: $white
+  -fx-text-color: $black
+  -fx-border-insets: -1px
+  -fx-background-radius: 0px
+
+.text-area:focused, .text-field:focused
+  -fx-border-color: $primary-300
+  -fx-focus-color: transparent
+  -fx-faint-focus-color: transparent
+  -fx-text-box-border: transparent
+  -fx-background-insets: 0px
+  -box-shadow: inset 0px 1px 0px 0px transparent
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 6, 0.0, 0, 2)
+
+.text-field:hover, .text-area:hover
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 6, 0.0, 0, 2)

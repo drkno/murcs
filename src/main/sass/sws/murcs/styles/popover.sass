@@ -1,0 +1,26 @@
+@import "globalStyles"
+
+.popover
+  -fx-background-color: transparent
+
+.popover > .border
+  -fx-stroke: linear-gradient(to bottom, rgba(0,0,0, .3), rgba(0, 0, 0, .7))
+  -fx-stroke-width: 0.5
+  -fx-fill: $popover-background-fill-colour
+  -fx-effect: dropshadow(gaussian, $popover-blur-shadow-colour, 10.0, 0.5, 2.0, 2.0)
+
+.popover > .content > .title > .text
+  -fx-padding: 6.0 6.0 0.0 6.0
+  -fx-text-fill: rgba(120, 120, 120, .8)
+  -fx-font-weight: bold
+
+.popover > .content > .title > .icon
+  -fx-padding: 6.0 0.0 0.0 10.0
+
+.popover > .content > .title > .icon > .graphics > .circle
+  -fx-fill: $popover-close-fill-colour
+  -fx-effect: innershadow(gaussian, $popover-blur-shadow-colour, 3, 0.5, 1.0, 1.0)
+
+.popover > .content > .title > .icon > .graphics > .line
+  -fx-stroke: $popover-close-line-colour
+  -fx-stroke-width: 2

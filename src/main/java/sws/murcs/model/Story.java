@@ -213,23 +213,6 @@ public class Story extends Model {
     }
 
     /**
-     * Gets a description for the current story.
-     * @return The description.
-     */
-    public final String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the description of the story.
-     * @param newDescription The new description.
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
-        commit("edit story");
-    }
-
-    /**
      * Gets the creator of this story.
      * @return The creator
      */

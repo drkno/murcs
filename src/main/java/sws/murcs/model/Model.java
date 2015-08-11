@@ -37,6 +37,12 @@ public abstract class Model extends TrackableObject implements Serializable {
     private String longName;
 
     /**
+     * The description of a model object.
+     */
+    @TrackableValue
+    private String description;
+
+    /**
      * Listenable property for the short name.
      */
     private transient ModelObjectProperty<String> shortNameProperty;
@@ -126,5 +132,22 @@ public abstract class Model extends TrackableObject implements Serializable {
     @Override
     public final String toString() {
         return getShortName();
+    }
+
+    /**
+     * Get the description of a model object.
+     * @return the description
+     */
+    public final String getDescription() {
+        return description;
+    }
+
+    /**
+     * Set the description of a model object.
+     * @param pDescription the description
+     */
+    public final void setDescription(final String pDescription) {
+        this.description = pDescription;
+        commit("edit " + getClass().getSimpleName().toLowerCase());
     }
 }

@@ -14,12 +14,6 @@ import java.util.List;
 public class Project extends Model {
 
     /**
-     * The description of the project.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The releases associated with the project.
      */
     @TrackableValue
@@ -35,23 +29,6 @@ public class Project extends Model {
     @XmlElement(name = "backlog")
     @XmlIDREF
     private List<Backlog> backlogs = new ArrayList<>();
-
-    /**
-     * Gets a description of the project.
-     * @return a description of the project
-     */
-    public final String getDescription() {
-        return this.description;
-    }
-
-    /**
-     * Sets the description of the current project.
-     * @param newDescription The description of the project
-     */
-    public final void setDescription(final String newDescription) {
-        description = newDescription;
-        commit("edit project");
-    }
 
     /**
      * Gets a list of releases associated with the project.
