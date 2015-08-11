@@ -5,8 +5,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -172,8 +175,6 @@ public class SearchController {
             }
         });
 
-
-
         foundItems.itemsProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("");
         });
@@ -187,41 +188,56 @@ public class SearchController {
             }
         });
 
-        foundItems.setCellFactory(param -> {
-            ListCell<SearchResult> cell = new ListCell<SearchResult>() {
-                @Override
-                public void updateItem(final SearchResult item, final boolean empty) {
-                    super.updateItem(item, empty);
-                    try {
-                        getStyleClass().add("list-cell-background");
-                    }
-                    catch (NullPointerException e) {
-                        // something happened in JavaFX....
-                        // Who knows what, or why. HELP!? Do YOU know?
-                        // do not report
-                    }
+        try {
+            FXMLLoader loader = new FXMLLoader();
 
-                    if (empty) {
-                        setText(null);
-                        setGraphic(null);
-                    }
-                    else {
-                        if (item == null) {
+            foundItems.setCellFactory(param -> {
+                ListCell<SearchResult> cell = new ListCell<SearchResult>() {
+                    @Override
+                    public void updateItem(final SearchResult item, final boolean empty) {
+                        super.updateItem(item, empty);
+                        try {
+                            getStyleClass().add("list-cell-background");
+                        } catch (NullPointerException e) {
+                            // something happened in JavaFX....
+                            // Who knows what, or why. HELP!? Do YOU know?
+                            // do not report
+                        }
+
+                        if (empty) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                        /*if (item == null) {
                             setText("null");
                         }
                         else {
                             setText(item.toString());
                         }
-                        setGraphic(null);
+                        setGraphic(null);*/
+                            try {
+                                Node n = loader.load(getClass().getResource("/sws/murcs/SearchResult.fxml"));
+                                setGraphic(n);
+                            } catch (Exception e) {
+
+                            }
+
+                        }
                     }
-                }
-            };
+                };
 
-            cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
-            cell.setOnMouseClicked(selectEvent);
+                cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
+                cell.setOnMouseClicked(selectEvent);
 
-            return cell;
-        });
+                return cell;
+            });
+        }
+        catch (Exception e) {
+
+        }
+
+
+
 
         foundItems.setItems(searchHandler.getResults());
     }
@@ -292,16 +308,6 @@ public class SearchController {
      */
     public final void setPopOver(final PopOver popOver) {
         popOverWindow = popOver;
-
-        popOverWindow.onHiddenProperty().addListener((observable, oldValue, newValue) -> {
-            synchronized (previewRenderThread) {
-                previewRenderThread.notify();
-            }
-        });
-
-        popOverWindow.onShownProperty().addListener((observable, oldValue, newValue) -> {
-
-        });
     }
 
     /**
@@ -327,7 +333,9 @@ public class SearchController {
         loader.getChildren().add(imageView);
 
         Label helpfulMessage = new Label("*CLUNK* /whir/");
+        helpfulMessage.setStyle("-fx-fill: darkgray");
         loader.getChildren().add(helpfulMessage);
+        VBox.setMargin(helpfulMessage, new Insets(5));
 
         loader.setAlignment(Pos.CENTER);
 
