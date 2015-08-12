@@ -218,8 +218,7 @@ public class StoryGenerator implements Generator<Story> {
     @Override
     public final Story generate() {
         String name = storyNames[GenerationHelper.random(storyNames.length)];
-        String description = descriptions[GenerationHelper.random(descriptions.length)];
-
+        String description = NameGenerator.randomDescription();
         Person creator;
         if (personsPool == null || personsPool.isEmpty()) {
             creator = personGenerator.generate();

@@ -9,6 +9,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
@@ -84,6 +85,11 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private final BacklogGenerator backlogGenerator;
 
     /**
+     * The sprint generator.
+     */
+    private final SprintGenerator sprintGenerator;
+
+    /**
      * The stress level.
      */
     private Stress stress;
@@ -126,6 +132,8 @@ public class OrganisationGenerator implements Generator<Organisation> {
         backlogGenerator.setStoryGenerator(storyGenerator);
 
         workAllocationGenerator = new WorkAllocationGenerator();
+
+        sprintGenerator = new SprintGenerator();
     }
 
     /**
@@ -272,6 +280,16 @@ public class OrganisationGenerator implements Generator<Organisation> {
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
 
+            sprintGenerator.setReleasePool(releases);
+            sprintGenerator.setBacklogPool(backlogs);
+            sprintGenerator.setTeamPool(teams);
+            min = getMin(stress, SprintGenerator.LOW_STRESS_MIN, SprintGenerator.MEDIUM_STRESS_MIN,
+                    SprintGenerator.HIGH_STRESS_MIN);
+            max = getMin(stress, SprintGenerator.LOW_STRESS_MAX, SprintGenerator.MEDIUM_STRESS_MAX,
+                    SprintGenerator.HIGH_STRESS_MAX);
+            List<Sprint> sprints = generateItems(sprintGenerator, min, max).stream()
+                    .map(m -> (Sprint) m).collect(Collectors.toList());
+
             model.addCollection(skills);
             model.addCollection(people);
             model.addCollection(teams);
@@ -280,6 +298,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             model.addCollection(stories);
             model.addCollection(backlogs);
             model.addAllocations(allocations);
+            model.addCollection(sprints);
 
             lastWasError = false;
             return model;

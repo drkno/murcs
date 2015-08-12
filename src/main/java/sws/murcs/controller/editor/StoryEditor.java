@@ -1,9 +1,13 @@
 package sws.murcs.controller.editor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -33,7 +37,9 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.UsageHelper;
@@ -111,12 +117,13 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void loadObject() {
+        ChangeListener changeListener = getChangeListener();
+        setChangeListener(null);
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-        updateEstimation();
 
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
@@ -160,10 +167,11 @@ public class StoryEditor extends GenericEditor<Story> {
         if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
+        updateEstimation();
         updateAcceptanceCriteria();
-
         updateStoryState();
         super.clearErrors();
+        setChangeListener(changeListener);
     }
 
     /**
@@ -293,6 +301,14 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
+        if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
+            // Updates the story state as this gets changed if you set the estimate to Not Estimated
+            getModel().setEstimate((String) estimateChoiceBox.getValue());
+            if (getModel().getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
+                storyStateChoiceBox.setValue(getModel().getStoryState());
+            }
+        }
+
         updateStoryState();
 
         if (getIsCreationWindow()) {
@@ -302,12 +318,6 @@ public class StoryEditor extends GenericEditor<Story> {
             } else {
                 addFormError(creatorChoiceBox, "Creator cannot be empty");
             }
-        }
-
-        if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
-            getModel().setEstimate((String) estimateChoiceBox.getValue());
-            // Updates the story state as this gets changed if you set the estimate to Not Estimated
-            storyStateChoiceBox.setValue(getModel().getStoryState());
         }
 
         Story selectedStory = dependenciesDropDown.getValue();
@@ -351,6 +361,36 @@ public class StoryEditor extends GenericEditor<Story> {
                 addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
                 hasErrors = true;
             }
+        }
+
+        if (state == Story.StoryState.None) {
+            if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(this.getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                String[] sprintNames = sprintsWithStory.stream()
+                        .map(m -> m.toString())
+                        .collect(Collectors.toList())
+                        .toArray(new String[0]);
+                if (sprintsWithStory.size() > 0 && estimateChoiceBox.getValue() == Story.StoryState.None) {
+                    GenericPopup popup = new GenericPopup();
+                    popup.setMessageText("Are you sure set "
+                            + getModel().toString()
+                            + String.format(" to state %s", state)
+                            + "The following sprints"
+                            + String.join("\n", sprintNames));
+                    popup.setTitleText("Change Story State");
+                    popup.addYesNoButtons(func -> {
+                        sprintsWithStory.forEach(sprint -> sprint.removeStory(this.getModel()));
+                        getModel().setEstimate((String) estimateChoiceBox.getValue());
+                        storyStateChoiceBox.setValue(getModel().getStoryState());
+                        popup.close();
+                    });
+                    popup.show();
+                }
+            }
+
         }
 
         if (!hasErrors && state != null) {

@@ -207,7 +207,7 @@ public class Sprint extends Model {
     private void validateDates(final LocalDate start, final LocalDate end, final Release rel)
             throws InvalidParameterException {
         if (end != null && start != null && end.isBefore(start)) {
-            throw new InvalidParameterException("Start date should not be before end date");
+            throw new InvalidParameterException("Start date should be before end date");
         }
 
         if (end != null && rel != null && end.isAfter(rel.getReleaseDate())) {
