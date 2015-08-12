@@ -121,8 +121,7 @@ public class SearchController {
         searchHandler = new SearchHandler();
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
-        parent.getStylesheets()
-                .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
+
 
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
@@ -224,12 +223,10 @@ public class SearchController {
                                 ObservableList<Node> children = box.getChildren();
 
                                 Label label = new Label(item.matched());
-                                label.setTextFill(Color.RED);
+                                label.getStyleClass().add("search-result");
                                 Label selectionBefore = new Label(item.selectionBefore());
                                 Label selectionAfter = new Label(item.selectionAfter());
                                 Label context = new Label(item.getModelType() + ": " + item.getFieldName());
-//                                context.setStyle("-fx-text-fill: blue");
-//                                context.setStyle("-fx-font-size: 10");
                                 context.getStyleClass().add("search-result-context");
 
                                 children.add(selectionBefore);

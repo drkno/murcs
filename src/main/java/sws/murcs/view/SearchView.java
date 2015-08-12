@@ -45,6 +45,7 @@ public final class SearchView {
                 popOver.detachableProperty().setValue(true);
                 popOver.detachedProperty().setValue(true);
                 popOver.hideOnEscapeProperty().setValue(true);
+
                 instance = new SearchView(popOver, controller);
             }
             catch (IOException e) {
@@ -74,6 +75,8 @@ public final class SearchView {
      */
     public void show(final Window attachedWindow) {
         popOver.show(attachedWindow);
+        ((Parent) popOver.getSkin().getNode()).getStylesheets()
+                .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         controller.selectText();
     }
 }
