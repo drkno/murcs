@@ -3,6 +3,7 @@ package sws.murcs.controller;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,7 +21,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -82,7 +86,7 @@ public class SearchController {
      * The search hash used to overcome model serialisation problems.
      * Who knows why Java is trying to serialise this class, but it is.
      */
-    private String searchHash = "cGxlYXNlIGtpbGwgbWUgbm93";
+    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2VyIHRvIGxpZmUgdGhlIHVuaXZlcnNlIGFuZCBldmVyeXRoaW5n";
 
     /**
      * Event to fire when an item is selected.
@@ -161,7 +165,7 @@ public class SearchController {
         searchText.textProperty().addListener((a, b, c) -> {
             String search = searchText.getText();
             if (search.equals(searchHash)) { // prevent a special NPE
-                noItemsLabel.setText("OK");
+                noItemsLabel.setText("42");
             }
             else {
                 searchHandler.searchFor(searchText.getText());
@@ -216,8 +220,32 @@ public class SearchController {
                         }
                         setGraphic(null);*/
                             try {
-                                Node n = loader.load(getClass().getResource("/sws/murcs/SearchResult.fxml"));
-                                setGraphic(n);
+                                HBox box = new HBox();
+                                ObservableList<Node> children = box.getChildren();
+
+                                Label label = new Label(item.matched());
+                                label.setTextFill(Color.RED);
+                                Label selectionBefore = new Label(item.selectionBefore());
+                                Label selectionAfter = new Label(item.selectionAfter());
+                                Label context = new Label(item.getModelType() + ": " + item.getFieldName());
+//                                context.setStyle("-fx-text-fill: blue");
+//                                context.setStyle("-fx-font-size: 10");
+                                context.getStyleClass().add("search-result-context");
+
+                                children.add(selectionBefore);
+                                children.add(label);
+                                children.add(selectionAfter);
+
+
+
+                                VBox vbox = new VBox();
+                                vbox.getChildren().add(context);
+                                VBox.setVgrow(context, Priority.ALWAYS);
+                                vbox.setFillWidth(true);
+                                vbox.getChildren().add(box);
+                                VBox.setVgrow(box, Priority.ALWAYS);
+
+                                setGraphic(vbox);
                             } catch (Exception e) {
 
                             }

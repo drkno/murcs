@@ -169,14 +169,23 @@ public class SearchThread<T> {
                     if (val == null) {
                         continue;
                     }
-                    String s = val.toString();
-                    SearchResult result = searchValidator.matches(s);
-                    if (result != null) {
-                        result.setModel((Model) model);
-                        Platform.runLater(() -> {
-                            searchResults.add(result);
-                        });
-                        break;
+                    String s = "";
+                    if (val instanceof Collection) {
+                        boolean shouldBreak = false;
+                        for (Object object : (Collection) val) {
+                            if (find((Model) model, f, object)) {
+                                shouldBreak = true;
+                                break;
+                            }
+                        }
+                        if (shouldBreak) {
+                            break;
+                        }
+                    }
+                    else {
+                        if (find((Model) model, f, val)) {
+                            break;
+                        }
                     }
                 }
                 catch (IllegalAccessException e) {
@@ -185,5 +194,21 @@ public class SearchThread<T> {
                 }
             }
         }
+    }
+
+    private boolean find(final Model model, final Field f, final Object o) {
+        String s = o.toString();
+        SearchResult result = searchValidator.matches(s);
+        if (result != null) {
+            String fieldName = f.getAnnotation(Searchable.class).fieldName();
+            if (fieldName.equals("")) {
+                fieldName = f.getName();
+            }
+
+            result.setModel(model, fieldName);
+            Platform.runLater(() -> searchResults.add(result));
+            return true;
+        }
+        return false;
     }
 }

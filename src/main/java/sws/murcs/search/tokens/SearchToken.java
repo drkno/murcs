@@ -15,7 +15,7 @@ public class SearchToken extends Token {
     /**
      * Maximum length of a search result as returned result text.
      */
-    private static final int SEARCH_RESULT_MAX_LENGTH = 50;
+    private static final int SEARCH_RESULT_MAX_LENGTH = 45;
 
     /**
      * New search tokens will be case insensitive?
@@ -102,32 +102,34 @@ public class SearchToken extends Token {
         Matcher matcher = searchRegex.matcher(input);
         if (matcher.find()) {
             MatchResult result = matcher.toMatchResult();
-            String str = input;
             int start = result.start();
             int end = result.end();
+            String before = "", after = "", match = input.substring(start, end);
             if (end - start < SEARCH_RESULT_MAX_LENGTH) {
-                int difference = SEARCH_RESULT_MAX_LENGTH - (end - start);
-                if (start != 0 && end != str.length()) {
+                int newStart = start, newEnd = end;
+                int difference = SEARCH_RESULT_MAX_LENGTH - (newEnd - newStart);
+                if (newStart != 0 && newEnd != input.length()) {
                     difference /= 2;
-                    start -= difference;
-                    end += difference;
+                    newStart -= difference;
+                    newEnd += difference;
                 }
-                else if (start != 0) {
-                    start -= difference;
+                else if (newStart != 0) {
+                    newStart -= difference;
                 }
-                else if (end != str.length()) {
-                    end += difference;
+                else if (end != input.length()) {
+                    newEnd += difference;
                 }
 
-                if (start < 0) {
-                    start = 0;
+                if (newStart < 0) {
+                    newStart = 0;
                 }
-                if (end > str.length()) {
-                    end = str.length();
+                if (newEnd > input.length()) {
+                    newEnd = input.length();
                 }
-                str = input.substring(start, end);
+                before = input.substring(newStart, start);
+                after = input.substring(end, newEnd);
             }
-            return new SearchResult(str);
+            return new SearchResult(match, before, after);
         }
         return null;
     }
