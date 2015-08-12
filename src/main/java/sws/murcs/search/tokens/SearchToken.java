@@ -86,9 +86,12 @@ public class SearchToken extends Token {
      * @return the regular expression equivalent.
      */
     private String wildcardToRegex(final String wildcardExpression) {
+        // escape expression
         String regex = SPECIAL_REGEX_CHARS.matcher(wildcardExpression).replaceAll("\\\\$0");
+        // convert * to .*
         regex = regex.replaceAll("(?<=(^|[^\\\\]))(\\\\)(\\*)", ".*");
         regex = regex.replaceAll("(\\\\){2}(\\*)", "\\*");
+        // convert ? to .
         regex = regex.replaceAll("(?<=(^|[^\\\\]))(\\\\)(\\?)", ".");
         regex = regex.replaceAll("(\\\\){2}(\\?)", "\\?");
         return regex;

@@ -6,7 +6,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,7 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -122,7 +121,7 @@ public class SearchController {
         searchHandler = new SearchHandler();
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
-        
+
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
                 case ESCAPE:
@@ -161,7 +160,7 @@ public class SearchController {
             popOverWindow.hide();
         };
 
-        searchText.textProperty().addListener((a, b, c) -> {
+        searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             String search = searchText.getText();
             if (search.equals(searchHash)) { // prevent a special NPE
                 noItemsLabel.setText("42");
@@ -170,7 +169,7 @@ public class SearchController {
                 searchHandler.searchFor(searchText.getText());
             }
 
-            if (c.length() == 0) {
+            if (newValue.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
             }
             else {
@@ -178,9 +177,6 @@ public class SearchController {
             }
         });
 
-        foundItems.itemsProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("");
-        });
         foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
                 searchPane.getChildren().remove(resultsPane);
@@ -190,77 +186,67 @@ public class SearchController {
             }
         });
 
-        try {
-            foundItems.setCellFactory(param -> {
-                ListCell<SearchResult> cell = new ListCell<SearchResult>() {
-                    @Override
-                    public void updateItem(final SearchResult item, final boolean empty) {
-                        super.updateItem(item, empty);
-                        try {
-                            getStyleClass().add("list-cell-background");
-                        } catch (NullPointerException e) {
-                            // something happened in JavaFX....
-                            // Who knows what, or why. HELP!? Do YOU know?
-                            // do not report
-                        }
-
-                        if (empty || item == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            try {
-                                HBox box = new HBox();
-                                ObservableList<Node> children = box.getChildren();
-                                
-                                Label context = new Label(item.getModelType() + ": " + item.getFieldName());
-                                context.getStyleClass().add("search-result-context");
-
-                                Label selectionBefore = new Label(item.selectionBefore());
-                                children.add(selectionBefore);
-
-                                List<String> matches = item.getMatches();
-                                for (int i = 0; i < matches.size(); i++) {
-                                    Label matchLabel = new Label(matches.get(i));
-                                    if (i % 2 == 0) {
-                                        matchLabel.getStyleClass().add("search-result");
-                                    }
-                                    children.add(matchLabel);
-                                }
-
-                                Label selectionAfter = new Label(item.selectionAfter());
-                                children.add(selectionAfter);
-
-
-                                VBox vbox = new VBox();
-                                vbox.getChildren().add(context);
-                                VBox.setVgrow(context, Priority.ALWAYS);
-                                vbox.setFillWidth(true);
-                                vbox.getChildren().add(box);
-                                VBox.setVgrow(box, Priority.ALWAYS);
-
-                                setGraphic(vbox);
-                            } catch (Exception e) {
-
-                            }
-
-                        }
-                    }
-                };
-
-                cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
-                cell.setOnMouseClicked(selectEvent);
-
-                return cell;
-            });
-        }
-        catch (Exception e) {
-
-        }
-
-
-
-
+        foundItems.setCellFactory(createItemsCellFactory());
         foundItems.setItems(searchHandler.getResults());
+    }
+
+    /**
+     * Creates a new CellFactory for SearchResult ListCells.
+     * @return a new CellFactory.
+     */
+    private Callback<ListView<SearchResult>, ListCell<SearchResult>> createItemsCellFactory() {
+        return param -> {
+            ListCell<SearchResult> cell = new ListCell<SearchResult>() {
+                @Override
+                public void updateItem(final SearchResult item, final boolean empty) {
+                    super.updateItem(item, empty);
+                    Platform.runLater(() -> {
+                        // This is to get around JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
+                        getStyleClass().add("list-cell-background");
+                    });
+
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        HBox box = new HBox();
+                        ObservableList<Node> children = box.getChildren();
+
+                        Label context = new Label(item.getModelType() + ": " + item.getFieldName());
+                        context.getStyleClass().add("search-result-context");
+
+                        Label selectionBefore = new Label(item.selectionBefore());
+                        children.add(selectionBefore);
+
+                        List<String> matches = item.getMatches();
+                        for (int i = 0; i < matches.size(); i++) {
+                            Label matchLabel = new Label(matches.get(i));
+                            if (i % 2 == 0) {
+                                matchLabel.getStyleClass().add("search-result");
+                            }
+                            children.add(matchLabel);
+                        }
+
+                        Label selectionAfter = new Label(item.selectionAfter());
+                        children.add(selectionAfter);
+
+
+                        VBox vbox = new VBox();
+                        vbox.getChildren().add(context);
+                        VBox.setVgrow(context, Priority.ALWAYS);
+                        vbox.setFillWidth(true);
+                        vbox.getChildren().add(box);
+                        VBox.setVgrow(box, Priority.ALWAYS);
+                        setGraphic(vbox);
+                    }
+                }
+            };
+
+            cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
+            cell.setOnMouseClicked(selectEvent);
+
+            return cell;
+        };
     }
 
     /**
@@ -345,6 +331,7 @@ public class SearchController {
      */
     private void renderPreview() {
         final int disableDelay = 250;
+        final int helpfulMessageMargin = 5;
 
         VBox loader = new VBox();
 
@@ -354,10 +341,9 @@ public class SearchController {
         loader.getChildren().add(imageView);
 
         Label helpfulMessage = new Label("*CLUNK* /whir/");
-        helpfulMessage.setStyle("-fx-fill: darkgray");
+        helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
-        VBox.setMargin(helpfulMessage, new Insets(5));
-
+        VBox.setMargin(helpfulMessage, new Insets(helpfulMessageMargin));
         loader.setAlignment(Pos.CENTER);
 
         while (true) {
@@ -395,6 +381,7 @@ public class SearchController {
                         editorPane.dispose();
                         editorPane = new EditorPane(newValue);
                     }
+                    editorPane.getView().getStyleClass().add("search-preview");
                     Thread.sleep(disableDelay);
                     disableControlsAndUpdateButton();
                 }
@@ -408,9 +395,8 @@ public class SearchController {
                 latch.await();
             }
             catch (Exception e) {
-                Platform.runLater(() -> {
-                    ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
-                });
+                Platform.runLater(() ->
+                        ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview."));
                 return;
             }
         }
@@ -427,7 +413,9 @@ public class SearchController {
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
         Button saveButton = editorPane.getController().getSaveChangesButton();
+        saveButton.getStyleClass().add("button-default");
         saveButton.setVisible(true);
+        saveButton.setDisable(false);
         saveButton.setText("Open In Window");
         saveButton.setOnAction(selectEvent);
     }

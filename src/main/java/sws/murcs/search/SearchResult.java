@@ -68,8 +68,8 @@ public class SearchResult {
      */
     public final void setModel(final Model theModel, final String theFieldName) {
         model = theModel;
-        modelType = model.getClass().getSimpleName();
-        fieldName = theFieldName;
+        modelType = toTitleCase(model.getClass().getSimpleName());
+        fieldName = toTitleCase(theFieldName);
     }
 
     /**
@@ -183,5 +183,19 @@ public class SearchResult {
 
         matches = newMatches;
         matchIndexes = newIndexes;
+    }
+
+    /**
+     * Converts programmatic case to "Title Case".
+     * @param input camelCaseString or ObjectNameString.
+     * @return Title Case String.
+     */
+    private String toTitleCase(final String input) {
+        String result =
+                input.replaceAll("(?<=[A-Z])(?=[A-Z][a-z])|(?<=[^A-Z])(?=[A-Z])|(?<=[A-Za-z])(?=[^A-Za-z])", " ");
+        if (Character.isLowerCase(result.charAt(0)) && input.length() > 1) {
+            result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
+        }
+        return result;
     }
 }
