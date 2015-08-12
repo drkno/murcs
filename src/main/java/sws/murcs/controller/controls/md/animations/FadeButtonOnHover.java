@@ -32,7 +32,7 @@ public class FadeButtonOnHover {
     /**
      * Delay before fading in milliseconds.
      */
-    private double delay = 500;
+    private double delay = 250;
 
     /**
      * If the starting fade should be delayed.
