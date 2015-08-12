@@ -13,7 +13,12 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -199,7 +204,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
 
     /**
      * Ensures that a section exists on a form (if it doesn't it
-     * will be added to the sections list)
+     * will be added to the sections list).
      * @param sectionName The name of the section
      */
     private void ensureSectionExists(final String sectionName) {
