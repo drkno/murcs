@@ -122,9 +122,7 @@ public class SearchController {
         searchHandler = new SearchHandler();
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
-        parent.getStylesheets()
-                .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
-
+        
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
                 case ESCAPE:
@@ -213,7 +211,7 @@ public class SearchController {
                             try {
                                 HBox box = new HBox();
                                 ObservableList<Node> children = box.getChildren();
-
+                                
                                 Label context = new Label(item.getModelType() + ": " + item.getFieldName());
                                 context.getStyleClass().add("search-result-context");
 
@@ -224,7 +222,7 @@ public class SearchController {
                                 for (int i = 0; i < matches.size(); i++) {
                                     Label matchLabel = new Label(matches.get(i));
                                     if (i % 2 == 0) {
-                                        matchLabel.setTextFill(Color.RED);
+                                        matchLabel.getStyleClass().add("search-result");
                                     }
                                     children.add(matchLabel);
                                 }
