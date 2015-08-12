@@ -77,6 +77,21 @@ public class TaskEditor {
     private TextField nameTextField, estimateTextField;
 
     /**
+     * The height of the window during creation.
+     */
+    private static final double CREATION_HEIGHT = 240.0;
+
+    /**
+     * The height of the window when it is collapsed.
+     */
+    private static final double COLLAPSED_HEIGHT = 50.0;
+
+    /**
+     * The height of the window when it is expanded.
+     */
+    private static final double EXPANDED_HEIGHT = 210.0;
+
+    /**
      * Sets up the form with all its event handlers and things.
      */
     @FXML
@@ -106,14 +121,17 @@ public class TaskEditor {
      * @param view The storyEditor node from the FXML
      * @param containingStoryEditor The storyEditor node from the fxml
      */
-    public final void configure(final Task newTask, final boolean isCreationBox, final Parent view, final StoryEditor containingStoryEditor) {
+    public final void configure(final Task newTask,
+                                final boolean isCreationBox,
+                                final Parent view,
+                                final StoryEditor containingStoryEditor) {
         task = newTask;
         parent = view;
         storyEditor = containingStoryEditor;
         descriptionVisible = false;
         if (isCreationBox) {
             toggleButtonClicked(null);
-            editor.setPrefHeight(240.0);
+            editor.setPrefHeight(CREATION_HEIGHT);
             createButton.setVisible(true);
             toggleButton.setVisible(false);
             separator.setVisible(false);
@@ -143,7 +161,8 @@ public class TaskEditor {
         }
         else {
             nameTextField.setText(task.getName());
-            storyEditor.addFormError("tasks", nameTextField, "Task names must be unique and have at least one character!");
+            storyEditor.addFormError("tasks", nameTextField,
+                    "Task names must be unique and have at least one character!");
         }
 
         // Check estimate
@@ -195,7 +214,8 @@ public class TaskEditor {
         }
         else {
             acceptable = false;
-            storyEditor.addFormError("tasks", nameTextField, "Task names must be unique and have at least one character!");
+            storyEditor.addFormError("tasks", nameTextField,
+                    "Task names must be unique and have at least one character!");
         }
 
         try {
@@ -224,13 +244,13 @@ public class TaskEditor {
     private void toggleButtonClicked(final ActionEvent event) {
         if (descriptionVisible) {
             descriptionTextArea.setVisible(false);
-            editor.setPrefHeight(50.0);
+            editor.setPrefHeight(COLLAPSED_HEIGHT);
             toggleButton.setText("+");
             descriptionVisible = false;
         }
         else {
             descriptionTextArea.setVisible(true);
-            editor.setPrefHeight(210.0);
+            editor.setPrefHeight(EXPANDED_HEIGHT);
             toggleButton.setText("-");
             descriptionVisible = true;
         }
