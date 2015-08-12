@@ -32,6 +32,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
@@ -462,6 +463,8 @@ public class StoryEditor extends GenericEditor<Story> {
         pane.add(hBox, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
 
         return pane;
     }
@@ -692,6 +695,8 @@ public class StoryEditor extends GenericEditor<Story> {
                 });
                 popup.show();
             });
+            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+            fadeButtonOnHover.setupEffect();
             AnchorPane conditionCell = new AnchorPane();
             AnchorPane.setLeftAnchor(node, 0.0);
             if (isEdit) {

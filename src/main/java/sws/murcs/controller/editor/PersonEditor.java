@@ -14,9 +14,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
@@ -221,6 +223,8 @@ public class PersonEditor extends GenericEditor<Person> {
         pane.add(removeButton, 1, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         return pane;
     }
 }
