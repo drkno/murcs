@@ -107,6 +107,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     @Override

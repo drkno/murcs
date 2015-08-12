@@ -380,10 +380,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**

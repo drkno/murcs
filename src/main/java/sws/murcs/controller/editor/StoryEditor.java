@@ -172,10 +172,13 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**

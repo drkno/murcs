@@ -14,7 +14,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
@@ -113,6 +112,9 @@ public class PersonEditor extends GenericEditor<Person> {
         setIsCreationWindow(modelShortName == null);
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
+        }
+        else {
+            shortNameTextField.requestFocus();
         }
     }
 

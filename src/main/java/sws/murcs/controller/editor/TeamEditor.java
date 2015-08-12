@@ -140,6 +140,9 @@ public class TeamEditor extends GenericEditor<Team> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     @Override
