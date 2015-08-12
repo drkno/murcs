@@ -563,7 +563,7 @@ public class TaskGenerator implements Generator<Task> {
             "puncture",
             "punish",
             "push",
-            "question ",
+            "question",
             "queue ",
             "race",
             "radiate",
