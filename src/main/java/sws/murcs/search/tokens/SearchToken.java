@@ -13,11 +13,6 @@ import java.util.regex.PatternSyntaxException;
 public class SearchToken extends Token {
 
     /**
-     * Maximum length of a search result as returned result text.
-     */
-    private static final int SEARCH_RESULT_MAX_LENGTH = 45;
-
-    /**
      * New search tokens will be case insensitive?
      */
     private static boolean caseInsensitive = true;
@@ -107,32 +102,7 @@ public class SearchToken extends Token {
             MatchResult result = matcher.toMatchResult();
             int start = result.start();
             int end = result.end();
-            String before = "", after = "", match = input.substring(start, end);
-            if (end - start < SEARCH_RESULT_MAX_LENGTH) {
-                int newStart = start, newEnd = end;
-                int difference = SEARCH_RESULT_MAX_LENGTH - (newEnd - newStart);
-                if (newStart != 0 && newEnd != input.length()) {
-                    difference /= 2;
-                    newStart -= difference;
-                    newEnd += difference;
-                }
-                else if (newStart != 0) {
-                    newStart -= difference;
-                }
-                else if (end != input.length()) {
-                    newEnd += difference;
-                }
-
-                if (newStart < 0) {
-                    newStart = 0;
-                }
-                if (newEnd > input.length()) {
-                    newEnd = input.length();
-                }
-                before = input.substring(newStart, start);
-                after = input.substring(end, newEnd);
-            }
-            return new SearchResult(match, start, before, after);
+            return new SearchResult(start, end, input);
         }
         return null;
     }
