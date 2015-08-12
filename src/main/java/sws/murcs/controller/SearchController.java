@@ -32,6 +32,7 @@ import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -184,7 +185,6 @@ public class SearchController {
         });
         foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                //noItemsLabel.setText("No Items Found");
                 searchPane.getChildren().remove(resultsPane);
             } else {
                 searchPane.getChildren().add(1, resultsPane);
@@ -193,8 +193,6 @@ public class SearchController {
         });
 
         try {
-            FXMLLoader loader = new FXMLLoader();
-
             foundItems.setCellFactory(param -> {
                 ListCell<SearchResult> cell = new ListCell<SearchResult>() {
                     @Override
@@ -208,34 +206,31 @@ public class SearchController {
                             // do not report
                         }
 
-                        if (empty) {
+                        if (empty || item == null) {
                             setText(null);
                             setGraphic(null);
                         } else {
-                        /*if (item == null) {
-                            setText("null");
-                        }
-                        else {
-                            setText(item.toString());
-                        }
-                        setGraphic(null);*/
                             try {
                                 HBox box = new HBox();
                                 ObservableList<Node> children = box.getChildren();
 
-                                Label label = new Label(item.matched());
-                                label.setTextFill(Color.RED);
-                                Label selectionBefore = new Label(item.selectionBefore());
-                                Label selectionAfter = new Label(item.selectionAfter());
                                 Label context = new Label(item.getModelType() + ": " + item.getFieldName());
-//                                context.setStyle("-fx-text-fill: blue");
-//                                context.setStyle("-fx-font-size: 10");
                                 context.getStyleClass().add("search-result-context");
 
+                                Label selectionBefore = new Label(item.selectionBefore());
                                 children.add(selectionBefore);
-                                children.add(label);
-                                children.add(selectionAfter);
 
+                                List<String> matches = item.getMatches();
+                                for (int i = 0; i < matches.size(); i++) {
+                                    Label matchLabel = new Label(matches.get(i));
+                                    if (i % 2 == 0) {
+                                        matchLabel.setTextFill(Color.RED);
+                                    }
+                                    children.add(matchLabel);
+                                }
+
+                                Label selectionAfter = new Label(item.selectionAfter());
+                                children.add(selectionAfter);
 
 
                                 VBox vbox = new VBox();

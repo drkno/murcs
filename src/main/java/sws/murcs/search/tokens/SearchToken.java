@@ -129,7 +129,7 @@ public class SearchToken extends Token {
                 before = input.substring(newStart, start);
                 after = input.substring(end, newEnd);
             }
-            return new SearchResult(match, before, after);
+            return new SearchResult(match, start, before, after);
         }
         return null;
     }
