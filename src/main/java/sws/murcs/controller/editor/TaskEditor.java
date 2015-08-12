@@ -4,11 +4,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
@@ -185,6 +186,7 @@ public class TaskEditor {
      */
     @FXML
     private void createButtonClicked(final ActionEvent event) {
+        storyEditor.clearErrors("tasks");
         boolean acceptable = true;
 
         String name = nameTextField.getText();
