@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -66,7 +65,19 @@ public class StoryEditor extends GenericEditor<Story> {
      * A choice box for the creator and the estimate choice box and a choice box for changing the story state.
      */
     @FXML
-    private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
+    private ChoiceBox<Person> creatorChoiceBox;
+
+    /**
+     * .
+     */
+    @FXML
+    private ChoiceBox<String> estimateChoiceBox;
+
+    /**
+     * .
+     */
+    @FXML
+    private ChoiceBox<Story.StoryState> storyStateChoiceBox;
 
     /**
      * Drop down with dependencies that can be added to this story.
@@ -117,17 +128,23 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void loadObject() {
-        ChangeListener changeListener = getChangeListener();
-        setChangeListener(null);
+        Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
+                .stream()
+                .filter(model -> model instanceof Backlog)
+                .findFirst()
+                .orElse(null);
+
+        estimateChoiceBox.getItems().clear();
+        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+        if (backlog != null) {
+            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+        }
+
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-
-        //Add all the story states to the choice box
-        storyStateChoiceBox.getItems().clear();
-        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -171,7 +188,6 @@ public class StoryEditor extends GenericEditor<Story> {
         updateAcceptanceCriteria();
         updateStoryState();
         super.clearErrors();
-        setChangeListener(changeListener);
     }
 
     /**
@@ -185,15 +201,12 @@ public class StoryEditor extends GenericEditor<Story> {
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
         if (backlog == null  || getModel().getAcceptanceCriteria().size() == 0) {
             estimateChoiceBox.getSelectionModel().select(0);
             estimateChoiceBox.setDisable(true);
         }
         else {
             estimateChoiceBox.setDisable(false);
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
     }
@@ -267,6 +280,10 @@ public class StoryEditor extends GenericEditor<Story> {
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         conditionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getCondition()));
+
+        //Add all the story states to the choice box
+        storyStateChoiceBox.getItems().clear();
+        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
     }
 
     @Override
@@ -301,12 +318,14 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
-        if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
+        if (estimateChoiceBox.getValue() != null
+                && isNotEqual(getModel().getEstimate(), estimateChoiceBox.getValue())) {
             // Updates the story state as this gets changed if you set the estimate to Not Estimated
-            getModel().setEstimate((String) estimateChoiceBox.getValue());
-            if (getModel().getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
-                storyStateChoiceBox.setValue(getModel().getStoryState());
+            if (estimateChoiceBox.getValue().equals(EstimateType.NOT_ESTIMATED)) {
+                getModel().setStoryState(Story.StoryState.None);
+                storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
             }
+            getModel().setEstimate(estimateChoiceBox.getValue());
         }
 
         updateStoryState();
@@ -344,7 +363,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * displays an error if it isn't.
      */
     private void updateStoryState() {
-        Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+        Story.StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
         boolean hasErrors = false;
 
@@ -362,8 +381,8 @@ public class StoryEditor extends GenericEditor<Story> {
                 hasErrors = true;
             }
         }
-
-        if (state == Story.StoryState.None) {
+        else if (state == Story.StoryState.None) {
+            hasErrors = true;
             if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
                 List<Sprint> sprintsWithStory = UsageHelper.findUsages(this.getModel()).stream()
                         .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
@@ -373,28 +392,28 @@ public class StoryEditor extends GenericEditor<Story> {
                         .map(m -> m.toString())
                         .collect(Collectors.toList())
                         .toArray(new String[0]);
-                if (sprintsWithStory.size() > 0 && estimateChoiceBox.getValue() == Story.StoryState.None) {
+                if (sprintsWithStory.size() > 0) {
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
                     GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Are you sure set "
+                    popup.setMessageText("Do you really want to set the State of "
                             + getModel().toString()
-                            + String.format(" to state %s", state)
-                            + "The following sprints"
-                            + String.join("\n", sprintNames));
+                            + String.format(" to %s?\n\n", state)
+                            + "The following Sprints will be affected:\n\t"
+                            + String.join("\n\t", sprintNames));
                     popup.setTitleText("Change Story State");
                     popup.addYesNoButtons(func -> {
                         sprintsWithStory.forEach(sprint -> sprint.removeStory(this.getModel()));
-                        getModel().setEstimate((String) estimateChoiceBox.getValue());
-                        storyStateChoiceBox.setValue(getModel().getStoryState());
+                        getModel().setStoryState(Story.StoryState.None);
+                        storyStateChoiceBox.setValue(Story.StoryState.None);
                         popup.close();
                     });
                     popup.show();
                 }
             }
-
         }
 
         if (!hasErrors && state != null) {
-            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+            getModel().setStoryState(storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 

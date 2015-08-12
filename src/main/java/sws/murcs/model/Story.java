@@ -229,13 +229,13 @@ public class Story extends Model {
      * @param newEstimate The estimate.
      */
     public final void setEstimate(final String newEstimate) {
-        if (newEstimate == estimate) {
+        if (newEstimate.equals(estimate)) {
             return;
         }
-        // If you change the estimate type to not estimated, then None is the only valid story state
-        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
-            storyState = StoryState.None;
-        }
+//        // If you change the estimate type to not estimated, then None is the only valid story state
+//        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+//            storyState = StoryState.None;
+//        }
         estimate = newEstimate;
         commit("edit story");
     }

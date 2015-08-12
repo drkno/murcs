@@ -107,7 +107,7 @@ public class BacklogGenerator implements Generator<Backlog> {
      * @param stories The story pool
      */
     public final void setStoryPool(final List<Story> stories) {
-        storyPool = stories;
+        storyPool = new ArrayList<>(stories);
     }
 
     /**
@@ -183,7 +183,6 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         int size = stories.size();
         int prioritised = size / 2;
-        stories.forEach(s -> s.setEstimate(EstimateType.NOT_ESTIMATED));
 
         try {
             for (int i = 0; i < prioritised; i++) {
