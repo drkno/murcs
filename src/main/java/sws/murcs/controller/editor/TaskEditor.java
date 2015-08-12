@@ -176,7 +176,6 @@ public class TaskEditor {
                 storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
             }
 
-
         // Check state
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
         if (state != task.getState()) {
