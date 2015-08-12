@@ -11,8 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.NavigationManager;
@@ -20,8 +18,8 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
-
 import javax.imageio.ImageIO;
+import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -439,7 +437,16 @@ public final class ErrorReporter {
                 helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#f44336"));
                 errorMessage.getChildren().add(helpfulMessage);
 
-                Hyperlink link = new Hyperlink("mailto:s302g1@canterbury.ac.nz");
+                Hyperlink link = new Hyperlink("s302g1@cosc.canterbury.ac.nz");
+                link.setOnAction(event -> {
+                    try {
+                        Desktop.getDesktop().browse(new URL("mailto:s302g1@cosc.canterbury.ac.nz").toURI());
+                    }
+                    catch (Exception a) {
+                        // the error reporter cant send, an exception was thrown within it and to
+                        // top it all off we cant open a url. things are bad...
+                    }
+                });
                 link.getStyleClass().add("zero-border");
                 errorMessage.getChildren().add(link);
 
@@ -447,9 +454,9 @@ public final class ErrorReporter {
                 errorMessage.setPadding(new Insets(10));
                 helpfulMessage.setPadding(new Insets(10));
                 Platform.runLater(() -> {
-                            popOver.contentNodeProperty().setValue(errorMessage);
-                            hidePopOverAfterGivenTime(5, 0.75);
-                        });
+                    popOver.contentNodeProperty().setValue(errorMessage);
+                    hidePopOverAfterGivenTime(5, 0.75);
+                });
                 System.err.println("Could not submit error report.");
             }
         }, 3, TimeUnit.SECONDS);
