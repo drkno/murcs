@@ -10,6 +10,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
@@ -34,6 +35,11 @@ public class TaskEditor {
      * The StoryEditor that this TaskEditror is contained within.
      */
     private StoryEditor storyEditor;
+
+    /**
+     * Whether this is a creation box or not.
+     */
+    private boolean creationBox;
 
     /**
      * Whether or not the box is maximised.
@@ -129,6 +135,7 @@ public class TaskEditor {
         parent = view;
         storyEditor = containingStoryEditor;
         descriptionVisible = false;
+        creationBox = isCreationBox;
         if (isCreationBox) {
             toggleButtonClicked(null);
             editor.setPrefHeight(CREATION_HEIGHT);
@@ -227,6 +234,7 @@ public class TaskEditor {
         }
 
         if (acceptable) {
+            creationBox = false;
             createButton.setVisible(false);
             toggleButton.setVisible(true);
             storyEditor.addTask(task);
@@ -261,7 +269,20 @@ public class TaskEditor {
      */
     @FXML
     private void deleteButtonClicked(final ActionEvent event) {
-        storyEditor.removeTask(task);
-        storyEditor.removeTaskEditor(parent);
+        if (creationBox) {
+            storyEditor.removeTask(task);
+            storyEditor.removeTaskEditor(parent);
+            return;
+        }
+        
+        GenericPopup popup = new GenericPopup();
+        popup.setTitleText("Really?");
+        popup.setMessageText("Are you sure you wish to remove this task?");
+        popup.addYesNoButtons(p -> {
+            storyEditor.removeTask(task);
+            storyEditor.removeTaskEditor(parent);
+            popup.close();
+        });
+        popup.show();
     }
 }
