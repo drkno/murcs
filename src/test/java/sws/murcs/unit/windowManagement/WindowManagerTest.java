@@ -1,4 +1,4 @@
-package sws.murcs.controller.windowManagement;
+package sws.murcs.unit.windowManagement;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.stage.Stage;
@@ -12,6 +12,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.controller.windowManagement.WindowManager;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
