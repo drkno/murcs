@@ -145,7 +145,7 @@ public class App extends Application {
 
         // Loads the primary fxml and sets appController as its controller
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/sws/murcs/App.fxml"));
+        loader.setLocation(getClass().getResource("/sws/murcs/ModelView.fxml"));
         Parent parent = loader.load();
         appController = loader.getController();
 
