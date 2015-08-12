@@ -193,6 +193,7 @@ public class TaskEditor {
         }
         else {
             acceptable = false;
+            storyEditor.addFormError("tasks", nameTextField, "Task names must be unique and have at least one character!");
         }
 
         try {
@@ -201,6 +202,7 @@ public class TaskEditor {
         }
         catch (NumberFormatException e) {
             acceptable = false;
+            storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
         }
 
         if (acceptable) {
