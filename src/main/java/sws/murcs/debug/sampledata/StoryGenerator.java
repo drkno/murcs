@@ -9,6 +9,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -251,13 +252,13 @@ public class StoryGenerator implements Generator<Story> {
             story.addAcceptanceCondition(condition);
         }
 
-        List<Task> tasks = generateTasks();
+        Collection<Task> tasks = generateTasks();
         for (Task task : tasks) {
             try {
                 story.addTask(task);
             }
             catch (CustomException e) {
-                //This should be suppressed as we don't overly care
+                //Should never happen
             }
         }
 
@@ -265,10 +266,10 @@ public class StoryGenerator implements Generator<Story> {
     }
 
     /**
-     * Generates a random list of tasks.
-     * @return A random list of tasks.
+     * Generates a random collection of tasks.
+     * @return A random collection of tasks.
      */
-    private List<Task> generateTasks() {
+    private Collection<Task> generateTasks() {
         List<Task> tasks = new ArrayList<>();
 
         int count = GenerationHelper.random(TaskGenerator.LOW_STRESS_MIN, TaskGenerator.HIGH_STRESS_MAX);

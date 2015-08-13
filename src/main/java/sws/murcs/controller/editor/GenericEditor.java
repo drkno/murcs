@@ -122,6 +122,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             loadObject();
         }
     }
+
     /**
      * Highlights errors on the form.
      */

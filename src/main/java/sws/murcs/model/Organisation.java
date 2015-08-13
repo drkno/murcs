@@ -186,18 +186,6 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets all tasks.
-     * @return The tasks
-     */
-    public final List<Task> getTasks() {
-        List<Task> tasks = new ArrayList<>();
-        for (Story story : stories) {
-            tasks.addAll(story.getTasks());
-        }
-        return tasks;
-    }
-
-    /**
      * Adds a new project.
      * @param project The new project.
      * @throws DuplicateObjectException if the project already exists.

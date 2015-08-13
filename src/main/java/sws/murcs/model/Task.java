@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
+import java.util.Objects;
+
 /**
  * A class for keeping track of a Task within a story.
  */
@@ -114,15 +116,15 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Task)) {
+        if (!(object instanceof Task)) {
             return false;
         }
         String shortName = getName();
         String shortNameO = ((Task) object).getName();
         if (shortName == null || shortNameO == null) {
-            return shortName == shortNameO;
+            return Objects.equals(shortName, shortNameO);
         }
-        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+        return shortName.equalsIgnoreCase(shortNameO.toLowerCase());
     }
 
     @Override

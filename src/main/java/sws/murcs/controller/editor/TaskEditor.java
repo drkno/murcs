@@ -173,15 +173,15 @@ public class TaskEditor {
         }
 
         // Check estimate
-            try {
-                Float estimate = Float.parseFloat(estimateTextField.getText());
-                if (estimate != task.getEstimate()) {
-                    task.setEstimate(estimate);
-                }
+        try {
+            Float estimate = Float.parseFloat(estimateTextField.getText());
+            if (estimate != task.getEstimate()) {
+                task.setEstimate(estimate);
             }
-            catch (NumberFormatException e) {
-                storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
-            }
+        }
+        catch (NumberFormatException e) {
+            storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+        }
 
         // Check state
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
@@ -274,7 +274,7 @@ public class TaskEditor {
             storyEditor.removeTaskEditor(parent);
             return;
         }
-        
+
         GenericPopup popup = new GenericPopup();
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
