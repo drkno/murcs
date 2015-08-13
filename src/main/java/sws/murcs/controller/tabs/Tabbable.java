@@ -10,7 +10,7 @@ import sws.murcs.controller.windowManagement.Window;
  * Indicates the object can be
  * used as a tab
  */
-public interface Tabbable{
+public interface Tabbable extends Navigable, ModelManagable{
     public void setToolBarController(ToolBarController toolBarController);
 
     public String getTitle();

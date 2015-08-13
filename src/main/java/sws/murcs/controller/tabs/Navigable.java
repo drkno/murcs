@@ -1,5 +1,7 @@
 package sws.murcs.controller.tabs;
 
+import sws.murcs.model.Model;
+
 /**
  * An interface that provides methods for going back and
  * forward

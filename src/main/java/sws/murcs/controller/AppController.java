@@ -47,7 +47,7 @@ import java.util.List;
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
-        Navigable, Tabbable, ModelManagable {
+        Tabbable {
     /**
      * The main display of the window which contains the display
      * list and the content pane.
@@ -193,44 +193,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         displayList.getSelectionModel().select(0);
     }
 
-    /**
-     * Adds a new item from a given model type.
-     * @param modelType The type to get the class from.
-     */
-    private void addNewItem(final ModelType modelType) {
-        Class<? extends Model> clazz = ModelType.getTypeFromModel(modelType);
-        createNewItem(clazz);
-    }
-
-    /**
-     * Creates a new model from a class instance.
-     * @param clazz the class to create the model instance from.
-     */
-    private void createNewItem(final Class<? extends Model> clazz) {
-        if (clazz != null) {
-            try {
-                creatorWindow = new CreatorWindowView(clazz.newInstance(),
-                        model -> {
-                            selectItem(model);
-                            if (creatorWindow != null) {
-                                creatorWindow.dispose();
-                                creatorWindow = null;
-                            }
-                        },
-                        func -> {
-                            if (creatorWindow != null) {
-                                creatorWindow.dispose();
-                                creatorWindow = null;
-                            }
-                        });
-                creatorWindow.show();
-            }
-            catch (InstantiationException | IllegalAccessException e) {
-                ErrorReporter.get().reportError(e, "Initialising a creation window failed");
-            }
-        }
-    }
-
     @Override
     public final void create() {
         create(displayChoiceBox.getValue());
@@ -238,8 +200,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
 
     @Override
     public final void create(ModelType type) {
-        Class clazz = ModelType.getTypeFromModel(type);
-        createNewItem(clazz);
+        MainController.showCreateWindow(type, this::selectItem);
     }
 
     /**

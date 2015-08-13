@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.controller.tabs.Tabbable;
+import sws.murcs.controller.tabs.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -36,7 +38,7 @@ import sws.murcs.view.SearchView;
 /**
  * A controller for the base pane.
  */
-public class MainController implements UndoRedoChangeListener{
+public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     /**
      * The Menu bar for the application.
      */
@@ -79,9 +81,9 @@ public class MainController implements UndoRedoChangeListener{
     private ToolBarController toolBarController;
 
     /**
-     * The current navigable for the window
+     * The current tab controller
      */
-    private Navigable currentNavigable;
+    private Tabbable currentTabbable;
 
     /**
      * Stores and instance of the main app window.
@@ -107,7 +109,7 @@ public class MainController implements UndoRedoChangeListener{
                 toolBarController.setLinkedController(null);
                 return;
             }
-            currentNavigable = tabbable;
+            currentTabbable = tabbable;
         });
 
         undoRedoNotification(ChangeState.Commit);
@@ -161,31 +163,32 @@ public class MainController implements UndoRedoChangeListener{
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Project));
+                () -> create(ModelType.Project));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Team));
+                () -> create(ModelType.Team));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Person));
+                () -> create(ModelType.Person));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Skill));
+                () -> create(ModelType.Skill));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Release));
+                () -> create(ModelType.Release));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Backlog));
+                () -> create(ModelType.Backlog));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
-                () -> addNewItem(ModelType.Story));
+                () -> create(ModelType.Story));
 
         //Local shortcuts.
-        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
+        /*Map<KeyCombination, Runnable> accelerators = new HashMap<>();
         accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
                 () -> undo(null));
         accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
                 () -> redo(null));
+
         //TODO Work out routing for menu items
-        /*accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
-                () -> toggleItemListView(null));*/
+        accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+                () -> toggleItemListView(null));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
-                () -> add(null));
+                () -> currentTabbable.create());
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
                 () -> remove(null));
         accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
@@ -193,7 +196,7 @@ public class MainController implements UndoRedoChangeListener{
         accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
                 () -> forward(null));
 
-        App.getStage().getScene().getAccelerators().putAll(accelerators);
+        App.getStage().getScene().getAccelerators().putAll(accelerators);*/
     }
 
     /**
@@ -699,8 +702,34 @@ public class MainController implements UndoRedoChangeListener{
         return false;
     }
 
-    @Override
-    public void selectItem(Model parameter) {
+    /**
+     * Shows a new create model window
+     * @param type The type of class to create
+     */
+    public static void showCreateWindow(ModelType type, Consumer<Model> success) {
+        Class<? extends Model> clazz = ModelType.getTypeFromModel(type);
 
+        try {
+            final CreatorWindowView creatorWindow = new CreatorWindowView(clazz.newInstance(), null, null);
+            creatorWindow.setCreateAction(model -> {
+                if (success != null) {
+                    success.accept(model);
+                }
+
+                if (creatorWindow != null) {
+                    creatorWindow.dispose();
+                }
+            });
+            creatorWindow.setCancelAction(
+                    func -> {
+                        if (creatorWindow != null) {
+                            creatorWindow.dispose();
+                        }
+                    });
+            creatorWindow.show();
+        }
+        catch (InstantiationException | IllegalAccessException e) {
+            ErrorReporter.get().reportError(e, "Initialising a creation window failed");
+        }
     }
 }

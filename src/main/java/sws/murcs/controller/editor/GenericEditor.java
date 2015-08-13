@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -25,6 +26,11 @@ import java.util.Map;
  * @param <T> The type of the editor (linked to the model)
  */
 public abstract class GenericEditor<T> implements UndoRedoChangeListener {
+    /**
+     * A method of routing navigation events to the controller that owns
+     * this editor
+     */
+    private Navigable navigable;
 
     /**
      * The type of model the editor is being used for.
@@ -327,5 +333,21 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final Button getSaveChangesButton() {
         return saveButton;
+    }
+
+    /**
+     * Gets the navigable for this controller.
+     * @return The navigable
+     */
+    public Navigable getNavigable() {
+        return navigable;
+    }
+
+    /**
+     * Sets the navigable for this controller.
+     * @param navigable The navigable.
+     */
+    public void setNavigable(Navigable navigable) {
+        this.navigable = navigable;
     }
 }
