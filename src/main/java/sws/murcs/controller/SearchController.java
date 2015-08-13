@@ -23,7 +23,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import sws.murcs.controller.controls.popover.PopOver;
@@ -31,11 +30,9 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
-import sws.murcs.search.tokens.BangCommand;
 import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -45,8 +42,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SearchController {
 
-    protected GridPane commandsPane;
-    protected TilePane commandsTitlePane;
     /**
      * Icon for search.
      */
@@ -116,6 +111,8 @@ public class SearchController {
      */
     @FXML
     private GridPane resultsPane, searchPane;
+    private Parent searchCommandsPane;
+    private boolean searchCommandButtonActive = false;
 
     /**
      * Called when the form is instantiated.
@@ -203,33 +200,38 @@ public class SearchController {
         foundItems.setItems(searchHandler.getResults());
 
         searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        injectSearchCommands();
     }
 
     private void showSearchCommandsPopOver() {
-        SearchCommandsView searchCommandsView = new SearchCommandsView();
-        searchCommandsView.setup(this, searchIcon);
+        if (searchCommandButtonActive) {
+            SearchCommandsView searchCommandsView = new SearchCommandsView();
+            searchCommandsView.setup(this, searchIcon);
+        }
     }
 
     private void showSearchList() {
         if (!resultsPane.managedProperty().isBound()) {
             resultsPane.managedProperty().bind(resultsPane.visibleProperty());
         }
-        if (!commandsPane.managedProperty().isBound()) {
-            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        if (!searchCommandsPane.managedProperty().isBound()) {
+            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
         }
         resultsPane.setVisible(true);
-        commandsPane.setVisible(false);
+        searchCommandsPane.setVisible(false);
+        searchCommandButtonActive = true;
     }
 
     private void hideSearchList() {
         if (!resultsPane.managedProperty().isBound()) {
             resultsPane.managedProperty().bind(resultsPane.visibleProperty());
         }
-        if (!commandsPane.managedProperty().isBound()) {
-            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        if (!searchCommandsPane.managedProperty().isBound()) {
+            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
         }
         resultsPane.setVisible(false);
-        commandsPane.setVisible(true);
+        searchCommandsPane.setVisible(true);
+        searchCommandButtonActive = false;
     }
 
     /**
@@ -479,12 +481,12 @@ public class SearchController {
     private void injectSearchCommands() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
         try {
-                Parent view = loader.load();
-                SearchCommandsController controller = loader.getController();
-                controller.setup(this);
-                searchPane.getChildren().add(view);
+            searchCommandsPane = loader.load();
+            SearchCommandsController controller = loader.getController();
+            controller.setup(this);
+            searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
-                ErrorReporter.get().reportError(e, "Unable to create search commands");
+            ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
     }
 }
