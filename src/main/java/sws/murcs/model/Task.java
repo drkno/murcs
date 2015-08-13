@@ -3,9 +3,15 @@ package sws.murcs.model;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A class for keeping track of a Task within a story.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Task extends TrackableObject {
 
     /**

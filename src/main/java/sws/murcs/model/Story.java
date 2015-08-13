@@ -55,12 +55,16 @@ public class Story extends Model {
      * (as opposed to a Collection) as order is important.
      */
     @TrackableValue
+    @XmlElementWrapper(name = "acceptanceCriteria")
+    @XmlElement(name = "acceptanceCriterion")
     private List<AcceptanceCondition> acceptanceCriteria;
 
     /**
      * The list of tasks associated with this story.
      */
     @TrackableValue
+    @XmlElementWrapper(name = "tasks")
+    @XmlElement(name = "task")
     private List<Task> tasks;
 
     /**

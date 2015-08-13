@@ -26,7 +26,13 @@ import java.util.stream.Collectors;
 /**
  * Contains a static method for generating the xml status report from the organisation.
  */
-public abstract class ReportGenerator {
+public final class ReportGenerator {
+
+    /**
+     * Private default constructor as this is a helper class.
+     */
+    private ReportGenerator() {
+    }
 
     /**
      * Generates an xml report to file from a organisation.
