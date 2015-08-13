@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.view.App;
 
 /**
  * Sets up the report generator view.
@@ -55,15 +54,14 @@ public class ReportGeneratorView {
             // Give the stage a name and icon
             stage.setTitle("Generate Report");
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
 
-            // Set modality of the stage on top of the App
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(App.getStage());
+            stage.initModality(Modality.NONE);
 
-            stage.show();
             stage.sizeToScene();
+            controller.setUpWindow();
+            controller.show();
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the report generator window");

@@ -1,6 +1,7 @@
 package sws.murcs.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -8,6 +9,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.AppController;
+import sws.murcs.controller.windowManagement.ShortcutManager;
+import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
@@ -61,6 +64,32 @@ public class App extends Application {
     private static AppController appController;
 
     /**
+     * The manager for all windows.
+     */
+    private static WindowManager windowManager;
+
+    /**
+     * The manager for global shortcuts.
+     */
+    private static ShortcutManager shortcutManager;
+
+    /**
+     * Gets the shortcut manager.
+     * @return The shortcut manager.
+     */
+    public static ShortcutManager getShortcutManager() {
+        return shortcutManager;
+    }
+
+    /**
+     * Gets the window manager.
+     * @return The window manager
+     */
+    public static WindowManager getWindowManager() {
+        return windowManager;
+    }
+
+    /**
      * Gets the app controller that was created.
      * @return The App Controller
      */
@@ -109,11 +138,14 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) != '*') {
-            title = '*' + title;
-            stage.setTitle(title);
-        }
+        // for off thread rendering
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) != '*') {
+                title = '*' + title;
+                stage.setTitle(title);
+            }
+        });
     }
 
     /**
@@ -124,11 +156,13 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) == '*') {
-            title = title.substring(1);
-            stage.setTitle(title);
-        }
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) == '*') {
+                title = title.substring(1);
+                stage.setTitle(title);
+            }
+        });
     }
 
     /***
@@ -141,6 +175,14 @@ public class App extends Application {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
+        }
+
+        if (windowManager == null) {
+            windowManager = new WindowManager();
+        }
+
+        if (shortcutManager == null) {
+            shortcutManager = new ShortcutManager();
         }
 
         // Loads the primary fxml and sets appController as its controller
@@ -156,24 +198,23 @@ public class App extends Application {
                 .toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
-        primaryStage.setOnCloseRequest(App::notifyListeners);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         primaryStage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
         primaryStage.setMinWidth(minimumApplicationWidth);
         primaryStage.setMinHeight(minimumApplicationHeight);
 
-        primaryStage.show();
         stage = primaryStage;
+        appController.show();
     }
 
     /**
      * Call quit on all of the event listeners.
      * @param e Window event to consume to avoid the application quitting prematurely
      */
-    private static void notifyListeners(final WindowEvent e) {
+    public static void notifyListeners(final WindowEvent e) {
         listeners.forEach(l -> l.quit(e));
     }
 

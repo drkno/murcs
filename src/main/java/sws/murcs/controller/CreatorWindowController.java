@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Model;
@@ -31,6 +32,11 @@ public class CreatorWindowController {
      */
     @FXML
     private Button createButton, cancelButton;
+
+    /**
+     * Stores and instance of the window, which contains an instance of this class and the stage.
+     */
+    private Window window;
 
     /**
      * The command to be issued on okay being clicked.
@@ -113,8 +119,7 @@ public class CreatorWindowController {
         if (cancelClicked != null) {
             cancelClicked.accept(null);
         }
-        stage.close();
-        dispose();
+        window.close(this::dispose);
     }
 
     /**
@@ -140,13 +145,11 @@ public class CreatorWindowController {
                 }
                 PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
-            }
-            catch (CustomException e) {
+            } catch (CustomException e) {
                 ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }
-        stage.close();
-        dispose();
+        window.close(this::dispose);
     }
 
     /**
@@ -162,5 +165,21 @@ public class CreatorWindowController {
         editorPane = null;
         model = null;
         stage = null;
+    }
+
+    /**
+     * Shows the creation window.
+     */
+    public final void show() {
+        window.show();
+    }
+
+    /**
+     * Creates a window that can be managed.
+     */
+    public final void setupWindow() {
+        window = new Window(stage, this);
+        window.register();
+        window.addGlobalShortcutsToWindow();
     }
 }

@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -16,6 +17,7 @@ public class Project extends Model {
     /**
      * The releases associated with the project.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
@@ -24,6 +26,7 @@ public class Project extends Model {
     /**
      * The backlogs for a project.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")

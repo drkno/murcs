@@ -232,11 +232,11 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\" from \""
                 + allocation.getProject()
                 + "\"?");
-        alert.addYesNoButtons(a -> {
+        alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
-        });
+        }, "danger-will-robinson", "dont-panic");
         alert.show();
     }
 

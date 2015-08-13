@@ -4,6 +4,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,6 +28,7 @@ public class Backlog extends Model {
     /**
      * The PO who is assigned to the backlog.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person assignedPO;
@@ -34,6 +36,7 @@ public class Backlog extends Model {
     /**
      * The list of prioritised stories that are in this backlog.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "prioritisedStories")
     @XmlElement(name = "story")
@@ -42,12 +45,14 @@ public class Backlog extends Model {
     /**
      * The list of unprioritised stories within this backlog.
      */
+    @Searchable
     @TrackableValue
     private List<Story> unprioritisedStories;
 
     /**
      * The type of estimation used for this backlog. Defaults to Fibonacci
      */
+    @Searchable
     @TrackableValue
     private EstimateType estimateType;
 

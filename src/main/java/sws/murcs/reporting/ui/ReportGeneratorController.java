@@ -16,10 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
+import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
@@ -105,6 +106,11 @@ public class ReportGeneratorController {
      * Group containing toggle buttons.
      */
     private ToggleGroup toggleGroup;
+
+    /**
+     * The window for the report generator.
+     */
+    private Window window;
 
     /**
      * Empty Constructor for fxml creation.
@@ -347,7 +353,7 @@ public class ReportGeneratorController {
      */
     @FXML
     private void cancelButtonClicked(final ActionEvent event) {
-        stage.close();
+        window.close();
     }
 
     /**
@@ -370,14 +376,14 @@ public class ReportGeneratorController {
                 if (file != null) {
                     generateReport(file);
                     PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                    stage.close();
+                    window.close();
                 }
             } catch (Exception e) {
                 if (file != null) {
                     file.delete();
                 }
-                GenericPopup popup = new GenericPopup(e);
-                popup.show();
+                ErrorReporter.get().reportError(e,
+                        "Something went wrong creating a report, probably to do with saving the file");
             }
         }
     }
@@ -452,5 +458,21 @@ public class ReportGeneratorController {
         else {
             return true;
         }
+    }
+
+    /**
+     * Shows the creation window.
+     */
+    public final void show() {
+        window.show();
+    }
+
+    /**
+     * Creates a window that can be managed.
+     */
+    public final void setUpWindow() {
+        window = new Window(stage, this);
+        window.register();
+        window.addGlobalShortcutsToWindow();
     }
 }

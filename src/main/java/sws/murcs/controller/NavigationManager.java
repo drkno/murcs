@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.model.Model;
 
 import java.util.ArrayDeque;
@@ -8,14 +9,7 @@ import java.util.Deque;
 /**
  * A class for helping with navigation.
  */
-public final class NavigationManager {
-
-    /**
-     * Default empty constructor as this is a helper class and should never be created.
-     */
-    private NavigationManager() {
-    }
-
+public final class NavigationManager implements Navigable {
     /**
      * Limit on the size of the stacks.
      */
@@ -24,41 +18,41 @@ public final class NavigationManager {
     /**
      * The app controller.
      */
-    private static AppController appController;
+    private AppController appController;
 
     /**
      * Whether the navigation manager should ignore changes.
      */
-    private static boolean toIgnore;
+    private boolean toIgnore;
 
     /**
      * Sets the app controller.
      * @param controller the controller.
      */
-    public static void setAppController(final AppController controller) {
+    public void setAppController(final AppController controller) {
         appController = controller;
     }
 
     /**
      * The forward stack used in hyperlinking.
      */
-    private static Deque<Model> forwardStack = new ArrayDeque<>();
+    private Deque<Model> forwardStack = new ArrayDeque<>();
 
     /**
      * The back stack used in hyperlinking.
      */
-    private static Deque<Model> backStack = new ArrayDeque<>();
+    private Deque<Model> backStack = new ArrayDeque<>();
 
     /**
      * The current head of the back and forwards stacks.
      */
-    private static Model head;
+    private Model head;
 
     /**
      * Determines whether or not it is possible to go forward.
      * @return If it is possible to go forward.
      */
-    public static boolean canGoForward() {
+    public boolean canGoForward() {
         return !forwardStack.isEmpty();
     }
 
@@ -66,14 +60,16 @@ public final class NavigationManager {
      * Determines whether or not it is possible to go back.
      * @return If it is possible to go back.
      */
-    public static boolean canGoBack() {
+    @Override
+    public boolean canGoBack() {
         return !backStack.isEmpty();
     }
 
     /**
      * Traverses forward in the back forward history.
      */
-    public static void goForward() {
+    @Override
+    public void goForward() {
         if (toIgnore) {
             return;
         }
@@ -90,7 +86,8 @@ public final class NavigationManager {
     /**
      * Traverses backward in the back forward history.
      */
-    public static void goBackward() {
+    @Override
+    public void goBack() {
         if (toIgnore) {
             return;
         }
@@ -109,7 +106,7 @@ public final class NavigationManager {
      * The public method for navigating to a model. (This always tracks the history).
      * @param model The model navigating to.
      */
-    public static void navigateTo(final Model model) {
+    public void navigateTo(final Model model) {
         navigateTo(model, true);
     }
 
@@ -118,7 +115,7 @@ public final class NavigationManager {
      * @param model The model navigating to
      * @param addToStack Whether or not to add the model to the history stack
      */
-    private static void navigateTo(final Model model, final boolean addToStack) {
+    private void navigateTo(final Model model, final boolean addToStack) {
 
         if (head == null) {
             head = model;
@@ -141,7 +138,7 @@ public final class NavigationManager {
     /**
      * Clears all the history (the back, the forward and head).
      */
-    public static void clearHistory() {
+    public void clearHistory() {
         backStack.clear();
         forwardStack.clear();
         head = null;
@@ -151,7 +148,7 @@ public final class NavigationManager {
      * Sets whether to ignore history.
      * @param ignore Whether to ignore history.
      */
-    public static void setIgnore(final boolean ignore) {
+    public void setIgnore(final boolean ignore) {
         toIgnore = ignore;
     }
 }

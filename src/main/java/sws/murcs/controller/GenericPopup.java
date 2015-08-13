@@ -12,15 +12,28 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
-import java.util.function.Consumer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Generic popup creator and controller.
  */
 public class GenericPopup extends AnchorPane {
+
+    /**
+     * This window of the popup.
+     */
+    private Window window;
+
+    /**
+     * Optional parent controller.
+     */
+    private Window parentWindow;
 
     /**
      * Enum for specifying which side of the dialog you want the button to appear on.
@@ -111,21 +124,6 @@ public class GenericPopup extends AnchorPane {
     private boolean buttonsDefined;
 
     /**
-     * Default button width.
-     */
-    private final int defaultButtonWidth = 70;
-
-    /**
-     * Default button height.
-     */
-    private final int defaultButtonHeight = 25;
-
-    /**
-     * Default popUp height.
-     */
-    private final int defaultPopUpHeight = 150;
-
-    /**
      * Constructs a new Generic Popup. In order to use you need
      * to at least set the message and add at least 1 button
      * some examples of how to use this include:
@@ -142,7 +140,15 @@ public class GenericPopup extends AnchorPane {
      *
      */
     public GenericPopup() {
-        this(null);
+        this(null, null);
+    }
+
+    /**
+     * Constructs a generic pop up with a reference to the parent controller.
+     * @param pParentController The parent controller of the pop up
+     */
+    public GenericPopup(final Window pParentController) {
+        this(null, pParentController);
     }
 
     /**
@@ -150,6 +156,15 @@ public class GenericPopup extends AnchorPane {
      * @param exception The exception that you want to feed in to show the exception message.
      */
     public GenericPopup(final Exception exception) {
+        this(exception, null);
+    }
+
+    /**
+     * Constructs a dialog from an exception with a reference to a parent controller.
+     * @param exception The exception that you want to feed in to show the exception message.
+     * @param pParentWindow The parent controller of the pop up
+     */
+    public GenericPopup(final Exception exception, final Window pParentWindow) {
         popupStage = new Stage();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
@@ -166,20 +181,30 @@ public class GenericPopup extends AnchorPane {
         popupStage.initOwner(App.getStage());
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
-        popupStage.setResizable(false);
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         messageImage.setImage(iconImage);
         popupStage.getIcons().add(iconImage);
+        parentWindow = pParentWindow;
+        setupWindow();
 
         if (exception != null) {
             setMessageText(exception.getMessage());
-            addOkButton(m -> close());
+            addOkButton(this::close);
         }
     }
 
+    /**
+     * Sets up a window for the popup.
+     */
+    private void setupWindow() {
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(App.getStage());
+        window = new Window(popupStage, this, parentWindow);
+        window.register();
+    }
 
     /**
      * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
@@ -190,15 +215,18 @@ public class GenericPopup extends AnchorPane {
      * @param position The positioning of the button.
      * @param func The function to call when the button is clicked.
      * @param action Default action for button
+     * @param cssStyleClasses css styles for the button
      */
     public final void addButton(final String buttonText,
                                 final Position position,
                                 final Action action,
-                                final Consumer func) {
+                                final GenericCallback func,
+                                final String cssStyleClasses) {
         Button button = new Button(buttonText);
-        button.setPrefSize(defaultButtonWidth, defaultButtonHeight);
+        button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
-        button.setOnAction((a) -> func.accept(null));
+        button.setOnAction((a) -> func.call());
+        List<String> styles = Arrays.asList(cssStyleClasses.split(","));
 
         switch (action) {
             case DEFAULT:
@@ -213,6 +241,10 @@ public class GenericPopup extends AnchorPane {
                 break;
             default:
                 break;
+        }
+
+        for (String style : styles) {
+            button.getStyleClass().add(style.trim());
         }
 
         switch (position) {
@@ -230,36 +262,40 @@ public class GenericPopup extends AnchorPane {
     }
 
     /**
+     * Adds a new button to the dialog. You must specify the text to go on the button, it's location on the dialog
+     * (either the left hand side or the right hand side) and the function to call when it is clicked
+     * NOTE: Buttons stack on the left and right sides, therefore if you add two buttons on the left
+     * the first one added will be the one closest to the left hand side, so keep that in mind.
+     * @param buttonText The text on the button.
+     * @param position The positioning of the button.
+     * @param func The function to call when the button is clicked.
+     * @param action Default action for button
+     */
+    public final void addButton(final String buttonText,
+                                final Position position,
+                                final Action action,
+                                final GenericCallback func) {
+        addButton(buttonText, position, action, func, "");
+    }
+
+    /**
      * Shows the dialog, this should be the last thing you call after setting up your dialog.
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        if (messageTitle.getText().equals("Title")) {
-            contentPane.getRowConstraints().get(0).setMinHeight(0);
-            contentPane.getRowConstraints().get(0).setMaxHeight(0);
-
-            messageImage.setVisible(false);
-            messageTitle.setVisible(false);
-            popupStage.setHeight(defaultPopUpHeight);
-        }
-
+        popupStage.sizeToScene();
+        popupStage.setResizable(false);
         if (!buttonsDefined) {
-            addOkButton(m -> close());
+            addOkButton(this::close);
         }
-
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.initOwner(App.getStage());
-
-        popupStage.show();
+        window.show();
     }
 
     /**
-     * Closes the dialog.
-     * Note: You may want to set up one of your buttons to call this, although if you use the addOkCancelButtons()
-     * with only one lambda expression then the cancel button is automatically set to call this.
+     * Closes the dialog window.
      */
     public final void close() {
-        popupStage.close();
+        window.close(window::parentToFront);
     }
 
     /**
@@ -308,8 +344,8 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog)
      * @param okFunction The function you want to call on the ok button being clicked.
      */
-    public final void addOkCancelButtons(final Consumer okFunction) {
-        addOkCancelButtons(okFunction, m -> close());
+    public final void addOkCancelButtons(final GenericCallback okFunction) {
+        addOkCancelButtons(okFunction, this::close);
     }
 
     /**
@@ -317,8 +353,22 @@ public class GenericPopup extends AnchorPane {
      * remains it's default (closes the dialog).
      * @param yesFunction The function you want to call on the yes button being clicked.
      */
-    public final void addYesNoButtons(final Consumer yesFunction) {
-        addYesNoButtons(yesFunction, m -> close());
+    public final void addYesNoButtons(final GenericCallback yesFunction) {
+        addYesNoButtons(yesFunction, this::close);
+    }
+
+
+    /**
+     * Adds default Yes No Buttons. You specify what is supposed to happen for the Yes button and the No button
+     * remains it's default (closes the dialog).
+     * @param yesFunction The function you want to call on the yes button being clicked.
+     * @param yesStyles Style classes for Yes button
+     * @param noStyles Style classes for No button
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addYesNoButtons(yesFunction, this::close, yesStyles, noStyles);
     }
 
     /**
@@ -327,7 +377,7 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction The function you want to call on ok button click
      * @param cancelFunction The function you want to call on cancel button click
      */
-    public final void addOkCancelButtons(final Consumer okFunction, final Consumer cancelFunction) {
+    public final void addOkCancelButtons(final GenericCallback okFunction, final GenericCallback cancelFunction) {
         addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
@@ -338,16 +388,31 @@ public class GenericPopup extends AnchorPane {
      * @param yesFunction The function you want to call on yes button click.
      * @param noFunction The function you want to call on no button click.
      */
-    public final void addYesNoButtons(final Consumer yesFunction, final Consumer noFunction) {
-        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction);
-        addButton("No", Position.RIGHT, Action.CANCEL, noFunction);
+    public final void addYesNoButtons(final GenericCallback yesFunction, final GenericCallback noFunction) {
+        addYesNoButtons(yesFunction, noFunction, "", "");
+    }
+
+    /**
+     * Adds default Yes No Buttons.
+     * You specify the functions for both the yes and no buttons when clicked.
+     * @param yesFunction The function you want to call on yes button click.
+     * @param noFunction The function you want to call on no button click.
+     * @param yesStyles Style classes for the yes button.
+     * @param noStyles Style classes for the no button.
+     */
+    public final void addYesNoButtons(final GenericCallback yesFunction,
+                                      final GenericCallback noFunction,
+                                      final String yesStyles,
+                                      final String noStyles) {
+        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
+        addButton("No", Position.RIGHT, Action.CANCEL, noFunction, noStyles);
     }
 
     /**
      * Adds the default OK button with a specified function to call on it being clicked.
      * @param okFunction Function to call on ok button being clicked.
      */
-    public final void addOkButton(final Consumer okFunction) {
+    public final void addOkButton(final GenericCallback okFunction) {
         addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

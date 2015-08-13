@@ -12,6 +12,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
+import sws.murcs.controller.tabs.Navigable;
 
 /**
  * Controller for the toolbar.
@@ -23,13 +24,13 @@ public class ToolBarController {
      */
     @FXML
     private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton,
-            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton;
+            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton, searchButton;
 
     /**
      * The toolbar sections for the toolbar.
      */
     @FXML
-    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar;
+    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar, searchToolBar;
 
     /**
      * The overall container for the toolbar.
@@ -60,6 +61,14 @@ public class ToolBarController {
     private ToolBarCommands linkedController;
 
     /**
+     * The navigation controller that navigation commands are routed through
+     */
+    private Navigable navigable;
+
+    public ToolBarController() {
+    }
+
+    /**
      * Initialises the toolbar by setting up appropriate tooltips.
      */
     @FXML
@@ -79,6 +88,7 @@ public class ToolBarController {
         saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
         sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
+        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F Or " + shortCutKey + "+Space)");
     }
 
     /**
@@ -105,7 +115,8 @@ public class ToolBarController {
      */
     @FXML
     private void backButtonClick(final ActionEvent event) {
-        linkedController.back(event);
+        navigable.goBack();
+        updateBackForwardButtons();
     }
 
     /**
@@ -114,7 +125,8 @@ public class ToolBarController {
      */
     @FXML
     private void forwardButtonClick(final ActionEvent event) {
-        linkedController.forward(event);
+        navigable.goForward();
+        updateBackForwardButtons();
     }
 
     /**
@@ -208,11 +220,20 @@ public class ToolBarController {
     }
 
     /**
+     * The function called when you click the remove button. It redirects it through the linkedController.
+     * @param event Clicking the search button in the toolbar.
+     */
+    @FXML
+    private void searchButtonClick(final ActionEvent event) {
+        linkedController.search(event);
+    }
+
+    /**
      * Toggles the state of the back and forward buttons if they disabled or enabled.
      */
     public final void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
+        backButton.setDisable(!navigable.canGoBack());
+        forwardButton.setDisable(!navigable.canGoForward());
     }
 
     /**
@@ -278,6 +299,10 @@ public class ToolBarController {
             case "reporting":
                 associatedToolBar = reportingToolBar;
                 updateCheckMenu("reporting", isFromAppController, isChecked);
+                break;
+            case "search":
+                associatedToolBar = searchToolBar;
+                updateCheckMenu("search", isFromAppController, isChecked);
                 break;
             default: throw new UnsupportedOperationException("EXPLOSION!!!!!!!!!(unsupported toolbar)");
         }
@@ -382,5 +407,29 @@ public class ToolBarController {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the tool bar node.
+     * @return The toolBar.
+     */
+    public final ToolBar getToolBar() {
+        return toolBar;
+    }
+
+    /**
+     * The navigable that the toolbar controls
+     * @return The navigable
+     */
+    public Navigable getNavigable() {
+        return navigable;
+    }
+
+    /**
+     * Sets the navigable that the toolbar controls
+     * @param navigable The new navigable
+     */
+    public void setNavigable(Navigable navigable) {
+        this.navigable = navigable;
     }
 }

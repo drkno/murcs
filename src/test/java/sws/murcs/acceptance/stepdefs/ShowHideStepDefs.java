@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.*;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -60,12 +61,12 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @When("^I click the View menu$")
     public void When_I_click_the_View_menu() throws Throwable {
-        fx.moveTo("#viewMenu").clickOn("#viewMenu");
+        fx.clickOn("View");
     }
 
     @And("^I click the Show/Hide Item list button$")
     public void And_I_click_the_Show_Hide_Item_list_button() throws Throwable {
-        fx.moveTo("#viewShowHide").clickOn("#viewShowHide");
+        fx.clickOn("Show/Hide Item List");
     }
 
     @Given("^the side panel is hidden$")

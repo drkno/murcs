@@ -4,6 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
@@ -28,7 +29,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * The type of model the editor is being used for.
      */
-    private T model;
+    protected T model;
 
     /**
      * The label for showing error messages.
@@ -55,7 +56,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Details whether or not the window is a creator for a new model or an editor.
      */
-    private boolean isCreationWindow;
+    protected boolean isCreationWindow;
 
     /**
      * Stores if a save changes button exists, preventing a new button being created
@@ -130,7 +131,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             errorMessagePopover.autoHideProperty().setValue(false);
 
             errorMessagePopoverListener = (observable, oldValue, newValue) -> {
-                if (!newValue) {
+                if (!newValue && observable != null && errorMessagePopoverListener != null) {
                     observable.removeListener(errorMessagePopoverListener);
                     errorMessagePopover.hide();
                 }
@@ -318,5 +319,13 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
         bottomBar.getChildren().add(saveButton);
         HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+    }
+
+    /**
+     * Gets the save changes button so that it can be externally manipulated.
+     * @return the save changes button.
+     */
+    public final Button getSaveChangesButton() {
+        return saveButton;
     }
 }

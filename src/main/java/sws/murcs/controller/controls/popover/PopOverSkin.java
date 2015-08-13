@@ -158,7 +158,9 @@ public class PopOverSkin implements Skin<PopOver> {
         content.getStyleClass().add("content"); //$NON-NLS-1$
 
         if (thePopOver.detachedProperty().get()) {
-            content.setTop(titlePane);
+            if (thePopOver.detachedCloseButtonProperty().get()) {
+                content.setTop(titlePane);
+            }
             thePopOver.getStyleClass().add(DETACHED_STYLE_CLASS);
             content.getStyleClass().add(DETACHED_STYLE_CLASS);
         }
