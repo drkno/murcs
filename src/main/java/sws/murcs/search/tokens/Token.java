@@ -29,7 +29,13 @@ public abstract class Token {
         new BangCommand("team", "te", "Searches teams.", )*/
     };
 
-    //private static boolean
+    /**
+     * Gets the special tokens that can be used while searching.
+     * @return the special tokens.
+     */
+    public static BangCommand[] getSpecialTokens() {
+        return specialTokens;
+    }
 
     /**
      * Checks for matches on a given string with the current search criteria.
@@ -49,7 +55,6 @@ public abstract class Token {
         // setup special tokens
         for (BangCommand specialToken : specialTokens) {
             String[] commands = specialToken.getCommands();
-            System.out.println(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
             boolean enabled = searchQuery.matches(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
             specialToken.setValue(enabled);
             if (enabled) {
