@@ -1,6 +1,5 @@
 package sws.murcs.controller;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -432,16 +431,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     }
 
     @FXML
-    private void create(final ActionEvent event) throws InvalidArgumentException {
-        if (!(event.getSource() instanceof MenuItem)){
-            throw new InvalidArgumentException(new String[]{"event"});
+    private void create(final ActionEvent event) throws UnsupportedOperationException {
+        if (!(event.getSource() instanceof MenuItem)) {
+            throw new UnsupportedOperationException("event");
         }
 
-        MenuItem source = (MenuItem)event.getSource();
+        MenuItem source = (MenuItem) event.getSource();
         ModelType type = ModelType.parseString(source.getId());
 
         //If we couldn't parse from the id, try the menutext
-        if (type == null){
+        if (type == null) {
             type = ModelType.parseString(source.getText());
         }
 
