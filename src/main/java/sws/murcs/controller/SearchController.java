@@ -149,6 +149,11 @@ public class SearchController {
     private SequentialTransition fadeOutCommandsPane;
 
     /**
+     * Keep the commands popover open.
+     */
+    private boolean commandsPopOverStayOpen;
+
+    /**
      * The duration of the fade time.
      */
     @SuppressWarnings("checkstyle:magicnumber")
@@ -257,13 +262,14 @@ public class SearchController {
         foundItems.setItems(sortedSearchResults);
 
         searchIcon.hoverProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.booleanValue()) {
+            if (newValue) {
                 showSearchCommandsPopOver();
-            }
-            else {
+                commandsPopOverStayOpen = false;
+            } else if (!commandsPopOverStayOpen) {
                 hideSearchCommandsPopOver();
             }
         });
+        searchIcon.setOnMouseClicked(event -> commandsPopOverStayOpen = !commandsPopOverStayOpen);
         Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
