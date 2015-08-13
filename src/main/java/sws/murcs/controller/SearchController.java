@@ -22,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import sws.murcs.controller.controls.popover.PopOver;
@@ -29,9 +30,12 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+import sws.murcs.search.tokens.BangCommand;
 
 import java.util.Base64;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -39,6 +43,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SearchController {
 
+    public GridPane commandsPane;
+    public TilePane commandsTitlePane;
     /**
      * Icon for search.
      */
@@ -162,10 +168,15 @@ public class SearchController {
 
         searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             String search = searchText.getText();
-            if (search.equals(searchHash)) { // prevent a special NPE
+            if (Objects.equals(search, "")) {
+                hideSearchList();
+            }
+            else if (search.equals(searchHash)) { // prevent a special NPE
+                showSearchList();
                 noItemsLabel.setText("42");
             }
             else {
+                showSearchList();
                 searchHandler.searchFor(searchText.getText());
             }
 
@@ -188,6 +199,28 @@ public class SearchController {
 
         foundItems.setCellFactory(createItemsCellFactory());
         foundItems.setItems(searchHandler.getResults());
+    }
+
+    private void showSearchList() {
+        if (!resultsPane.managedProperty().isBound()) {
+            resultsPane.managedProperty().bind(resultsPane.visibleProperty());
+        }
+        if (!commandsPane.managedProperty().isBound()) {
+            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        }
+        resultsPane.setVisible(true);
+        commandsPane.setVisible(false);
+    }
+
+    private void hideSearchList() {
+        if (!resultsPane.managedProperty().isBound()) {
+            resultsPane.managedProperty().bind(resultsPane.visibleProperty());
+        }
+        if (!commandsPane.managedProperty().isBound()) {
+            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        }
+        resultsPane.setVisible(false);
+        commandsPane.setVisible(true);
     }
 
     /**
@@ -429,5 +462,29 @@ public class SearchController {
         saveButton.setDisable(false);
         saveButton.setText("Open In Window");
         saveButton.setOnAction(selectEvent);
+    }
+
+    private void loadCommands(final Collection<BangCommand> commands) {
+        commands.stream().forEach(c -> {
+            Label commandLabel = new Label();
+            String longSyntax = c.getCommands()[0];
+            String shortSyntax = c.getCommands()[1];
+            commandLabel.setText(longSyntax + " or " + shortSyntax + "\n" + c.getDescription());
+            setupAutoFill(commandLabel, longSyntax);
+            commandsTitlePane.getChildren().add(commandLabel);
+        });
+    }
+
+    private void setupAutoFill(final Label commandLabel, final String command) {
+        commandLabel.setOnMousePressed(event -> {
+            if (searchText.getText() != null) {
+                searchText.setText(command + " " + searchText.getText());
+            }
+            searchText.setText(command);
+        });
+    }
+
+    private void commandsControl() {
+
     }
 }
