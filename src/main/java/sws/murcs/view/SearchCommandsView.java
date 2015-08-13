@@ -40,7 +40,7 @@ public class SearchCommandsView {
             popOver = new PopOver(view);
             popOver.show(hanger);
             popOver.detachedProperty().setValue(true);
-            popOver.arrowLocationProperty().setValue(ArrowLocation.LEFT_BOTTOM);
+            popOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_TOP);
             ((Parent) popOver.getSkin().getNode()).getStylesheets()
                     .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         } catch (Exception e) {
