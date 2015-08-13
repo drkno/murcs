@@ -19,6 +19,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.controller.tabs.Tabbable;
 import sws.murcs.controller.tabs.ToolBarCommands;
@@ -104,6 +105,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
+            //If all the tabs have been closed, close the window
+            if (selected == null) {
+                //TODO ((Stage)mainTabPane.getScene().getWindow()).close();
+                return;
+            }
+
             Tabbable tabbable = tabs
                     .stream()
                     .filter(t -> selected.getContent().equals(t.getRoot())).findFirst()
@@ -125,6 +132,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
         undoRedoNotification(ChangeState.Commit);
         setUpShortCuts();
 
+        addModelViewTab();
         addModelViewTab();
     }
 
@@ -239,6 +247,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             tabs.add(controller);
 
             Tab tabNode = new Tab(controller.getTitle());
+            tabNode.setClosable(true);
             tabNode.setContent(controller.getRoot());
 
             tabNode.setOnClosed(e -> tabs.remove(controller));
