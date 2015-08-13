@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -25,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -113,6 +115,12 @@ public class SearchController {
     private GridPane resultsPane, searchPane;
     private Parent searchCommandsPane;
     private boolean searchCommandButtonActive = false;
+    private FadeTransition fadeInResultsPane;
+    private FadeTransition fadeOutResultsPane;
+    private FadeTransition fadeInCommandsPane;
+    private FadeTransition fadeOutCommandsPane;
+    private Duration fadeDuration = Duration.millis(500);
+    private boolean emptySearch = true;
 
     /**
      * Called when the form is instantiated.
@@ -169,13 +177,20 @@ public class SearchController {
             String search = searchText.getText();
             if (Objects.equals(search, "")) {
                 hideSearchList();
+                emptySearch = true;
             }
             else if (search.equals(searchHash)) { // prevent a special NPE
-                showSearchList();
+                if (emptySearch) {
+                    showSearchList();
+                    emptySearch = false;
+                }
                 noItemsLabel.setText("42");
             }
             else {
-                showSearchList();
+                if (emptySearch) {
+                    showSearchList();
+                    emptySearch = false;
+                }
                 searchHandler.searchFor(searchText.getText());
             }
 
@@ -201,6 +216,28 @@ public class SearchController {
 
         searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
         injectSearchCommands();
+
+        resultsPane.setOpacity(0);
+
+        fadeInResultsPane = new FadeTransition(fadeDuration, resultsPane);
+        fadeInResultsPane.setAutoReverse(false);
+        fadeInResultsPane.setFromValue(0);
+        fadeInResultsPane.setToValue(1);
+
+        fadeInCommandsPane = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeInCommandsPane.setAutoReverse(false);
+        fadeInCommandsPane.setFromValue(0);
+        fadeInCommandsPane.setToValue(1);
+
+        fadeOutResultsPane = new FadeTransition(fadeDuration, resultsPane);
+        fadeOutResultsPane.setAutoReverse(false);
+        fadeOutResultsPane.setFromValue(1);
+        fadeOutResultsPane.setToValue(0);
+
+        fadeOutCommandsPane = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeOutCommandsPane.setAutoReverse(false);
+        fadeOutCommandsPane.setFromValue(1);
+        fadeOutCommandsPane.setToValue(0);
     }
 
     private void showSearchCommandsPopOver() {
@@ -211,26 +248,14 @@ public class SearchController {
     }
 
     private void showSearchList() {
-        if (!resultsPane.managedProperty().isBound()) {
-            resultsPane.managedProperty().bind(resultsPane.visibleProperty());
-        }
-        if (!searchCommandsPane.managedProperty().isBound()) {
-            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
-        }
-        resultsPane.setVisible(true);
-        searchCommandsPane.setVisible(false);
+        fadeInResultsPane.play();
+        fadeOutCommandsPane.play();
         searchCommandButtonActive = true;
     }
 
     private void hideSearchList() {
-        if (!resultsPane.managedProperty().isBound()) {
-            resultsPane.managedProperty().bind(resultsPane.visibleProperty());
-        }
-        if (!searchCommandsPane.managedProperty().isBound()) {
-            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
-        }
-        resultsPane.setVisible(false);
-        searchCommandsPane.setVisible(true);
+        fadeOutResultsPane.play();
+        fadeInCommandsPane.play();
         searchCommandButtonActive = false;
     }
 
