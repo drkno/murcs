@@ -17,9 +17,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
+import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
 import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.controller.tabs.Tabbable;
 import sws.murcs.controller.tabs.ToolBarCommands;
@@ -41,6 +45,12 @@ import sws.murcs.view.SearchView;
  * A controller for the base pane.
  */
 public class MainController implements UndoRedoChangeListener, ToolBarCommands{
+    /**
+     * The main border pane for the application
+     */
+    @FXML
+    private BorderPane borderPaneMain;
+
     /**
      * The Menu bar for the application.
      */
@@ -67,9 +77,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     private VBox vBoxSideDisplay, titleVBox;
 
     /**
-     * The main tab pane (where everything goes)
+     * The main tab pane (where everything goes). We have to build
+     * this, as it's a third party library.
      */
-    @FXML
     private TabPane mainTabPane;
 
     /**
@@ -102,6 +112,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
         }
+
+        Pane containerPane = DndTabPaneFactory.createDefaultDnDPane(DndTabPaneFactory.FeedbackType.MARKER, null);
+        mainTabPane = (DndTabPane)containerPane.getChildren().get(0);
+        mainTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        mainTabPane.setPrefWidth(200);
+        mainTabPane.setPrefHeight(200);
+
+        borderPaneMain.setCenter(containerPane);
+
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
@@ -255,7 +274,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
             mainTabPane.getTabs().add(tabNode);
             mainTabPane.getSelectionModel().select(tabNode);
-            
+
             return controller;
         } catch (IOException e) {
             e.printStackTrace();
