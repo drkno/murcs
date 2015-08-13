@@ -160,6 +160,11 @@ public class SearchController {
     private boolean emptySearch = true;
 
     /**
+     * Popover view to show search commands.
+     */
+    private SearchCommandsView searchCommandsView;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
@@ -251,7 +256,14 @@ public class SearchController {
                 = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
         foundItems.setItems(sortedSearchResults);
 
-        searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        searchIcon.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.booleanValue()) {
+                showSearchCommandsPopOver();
+            }
+            else {
+                hideSearchCommandsPopOver();
+            }
+        });
         Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
@@ -291,8 +303,19 @@ public class SearchController {
      */
     private void showSearchCommandsPopOver() {
         if (searchCommandButtonActive) {
-            SearchCommandsView searchCommandsView = new SearchCommandsView();
-            searchCommandsView.setup(this, popOverWindow);
+            if (searchCommandsView == null) {
+                searchCommandsView = new SearchCommandsView();
+            }
+            searchCommandsView.setup(this, searchIcon);
+        }
+    }
+
+    /**
+     * Hides the search commands view if it is currently shown.
+     */
+    private void hideSearchCommandsPopOver() {
+        if (searchCommandsView != null) {
+            searchCommandsView.hide();
         }
     }
 
