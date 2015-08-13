@@ -8,26 +8,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane fx:id="commandsPane" GridPane.rowIndex="0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.SearchCommandsController">
+<GridPane fx:id="commandsPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" GridPane.rowIndex="0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.SearchCommandsController">
     <children>
-        <AnchorPane GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <children>
-                <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-300.0" AnchorPane.topAnchor="0.0">
-                    <children>
-                        <TilePane fx:id="commandsTitlePane" prefColumns="2" prefRows="6" tileAlignment="TOP_LEFT" />
-                    </children>
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                    </rowConstraints>
-                </GridPane>
-            </children>
-        </AnchorPane>
+            <TilePane fx:id="commandsTitlePane" orientation="VERTICAL" prefColumns="2" prefRows="6" tileAlignment="TOP_LEFT" />
     </children>
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="400.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />

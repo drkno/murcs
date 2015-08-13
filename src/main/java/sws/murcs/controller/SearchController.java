@@ -292,7 +292,7 @@ public class SearchController {
     private void showSearchCommandsPopOver() {
         if (searchCommandButtonActive) {
             SearchCommandsView searchCommandsView = new SearchCommandsView();
-            searchCommandsView.setup(this, searchIcon);
+            searchCommandsView.setup(this, popOverWindow);
         }
     }
 
@@ -570,6 +570,7 @@ public class SearchController {
             searchCommandsPane = loader.load();
             SearchCommandsController controller = loader.getController();
             controller.setup(this);
+            searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create search commands");
