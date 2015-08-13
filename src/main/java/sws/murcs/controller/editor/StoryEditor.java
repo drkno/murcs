@@ -63,19 +63,19 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator and the estimate choice box and a choice box for changing the story state.
+     * A choice box for the creator.
      */
     @FXML
     private ChoiceBox<Person> creatorChoiceBox;
 
     /**
-     * .
+     * A choice box for the estimation of a story.
      */
     @FXML
     private ChoiceBox<String> estimateChoiceBox;
 
     /**
-     * .
+     * A choice box for changing the story state.
      */
     @FXML
     private ChoiceBox<Story.StoryState> storyStateChoiceBox;

@@ -9,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
@@ -16,6 +18,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
@@ -33,6 +37,8 @@ import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +109,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
     public final void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         Sprint sprint = getModel();
+        //Update the start date picker
+        startDatePicker.setValue(sprint.getStartDate());
+
+        //Update the end date picker
+        endDatePicker.setValue(sprint.getEndDate());
 
         //Fill the short name field
         shortNameTextField.setText(sprint.getShortName());
@@ -127,12 +138,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
         teamComboBox.getItems().clear();
         teamComboBox.getItems().addAll(organisation.getTeams());
         teamComboBox.setValue(sprint.getTeam());
-
-        //Update the start date picker
-        startDatePicker.setValue(sprint.getStartDate());
-
-        //Update the end date picker
-        endDatePicker.setValue(sprint.getEndDate());
 
         //Update the sprint stories
         updateAllocatableStories();
@@ -363,6 +368,39 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         startDatePicker.focusedProperty().addListener(getChangeListener());
         endDatePicker.focusedProperty().addListener(getChangeListener());
+        releaseComboBox.setConverter(new StringConverter<Release>() {
+            @Override
+            public String toString(final Release object) {
+                if (object != null) {
+                    return String.format("%s (%s)", object.toString(),
+                            object.getReleaseDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)));
+                }
+                return null;
+            }
+
+            @Override
+            public Release fromString(final String string) {
+                return null;
+            }
+        });
+        releaseComboBox.setCellFactory(new Callback<ListView<Release>, ListCell<Release>>() {
+            public ListCell<Release> call(final ListView<Release> param) {
+                final ListCell<Release> cell = new ListCell<Release>() {
+                    @Override
+                    public void updateItem(final Release item, final boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(String.format("%s (%s)", item.toString(),
+                                    item.getReleaseDate()
+                                            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT))));
+                        } else {
+                            setText(null);
+                        }
+                    }
+                };
+                return cell;
+            }
+        });
     }
 
     /**
