@@ -18,7 +18,7 @@ public final class NavigationManager implements Navigable {
     /**
      * The app controller.
      */
-    private AppController appController;
+    private ModelViewController modelViewController;
 
     /**
      * Whether the navigation manager should ignore changes.
@@ -29,8 +29,8 @@ public final class NavigationManager implements Navigable {
      * Sets the app controller.
      * @param controller the controller.
      */
-    public void setAppController(final AppController controller) {
-        appController = controller;
+    public void setModelViewController(final ModelViewController controller) {
+        modelViewController = controller;
     }
 
     /**
@@ -130,8 +130,8 @@ public final class NavigationManager implements Navigable {
             }
         }
 
-        if (appController != null) {
-            appController.selectItem(model);
+        if (modelViewController != null) {
+            modelViewController.selectItem(model);
         }
     }
 

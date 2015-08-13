@@ -3,8 +3,10 @@ package sws.murcs.view;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Window;
+import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
 import java.io.IOException;
@@ -75,5 +77,13 @@ public final class SearchView {
     public void show(final Window attachedWindow) {
         popOver.show(attachedWindow);
         controller.selectText();
+    }
+
+    /**
+     * Sets the navigation manager on the search view.
+     * @param navigationManager The navigation manager
+     */
+    public void setNavigationManager(final Navigable navigationManager) {
+        controller.setNavigationManager(navigationManager);
     }
 }

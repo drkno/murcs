@@ -7,31 +7,20 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.editor.BacklogEditor;
-import sws.murcs.controller.tabs.ModelManagable;
-import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.controller.tabs.Tabbable;
-import sws.murcs.controller.tabs.ToolBarCommands;
 import sws.murcs.controller.windowManagement.Window;
-import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -46,7 +35,7 @@ import java.util.List;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
+public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeListener,
         Tabbable {
     /**
      * The main display of the window which contains the display
@@ -109,7 +98,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     @FXML
     public final void initialize() {
         navigationManager = new NavigationManager();
-        navigationManager.setAppController(this);
+        navigationManager.setModelViewController(this);
 
         for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);

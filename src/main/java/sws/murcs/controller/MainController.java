@@ -278,6 +278,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
      * @param event Clicking the search button on the toolbar.
      */
     public final void search(final ActionEvent event) {
+        SearchView.get().setNavigationManager(currentTabbable);
         SearchView.get().show(mainTabPane.getScene().getWindow());
     }
 
