@@ -1,27 +1,53 @@
 @import "globalStyles"
 
-.search-input, .search-input:hover, .search-input:focused,
-.search-input:armed, .search-input:selected, .search-input:armed,
-.search-input:expanded, .search-input:filled, .search-input:collapsed
-  -fx-text-fill: darkgray
+.text-field, .text-field:focused, .text-field:filled, .text-field:hover
+  -fx-text-fill: black
   -fx-prompt-text-fill: darkgray
-  -fx-prompt-effect: none
-  -fx-control-inner-background: transparent
-  -fx-background-color: transparent
-  -fx-background-insets: 0
-  -fx-text-box-border: transparent
   -fx-focus-color: transparent
+  -fx-control-inner-background: transparent
+  -fx-faint-focus-color: transparent
+  -fx-background-color: transparent
   -fx-effect: none
+  -fx-border: none
   -fx-border-color: transparent
   -fx-border-width: 0
-  -fx-background-radius: 0, 0
-  -fx-faint-focus-color: transparent
+  -fx-background-insets: 0
+  -fx-background-radius: 0
+  -box-shadow: none
 
-.search-input:focused,
-.search-input:armed, .search-input:selected, .search-input:armed,
-.search-input:expanded, .search-input:filled, .search-input:collapsed
-  -fx-prompt-text-fill: black
+.search-list .list-view .list-cell, .search-list .list-cell, .search-list .list-view
+  -fx-background-color: transparent
 
 .search-list
   -fx-background-color: transparent
   -fx-text-fill: transparent
+
+.search-result-context
+  -fx-text-fill: $secondary-500
+  -fx-font-size: 10
+
+.search-result
+  -fx-text-fill: $error-red
+
+.search-preview-message
+  -fx-text-fill: $primary-500
+
+.search-preview
+  -fx-background-color: transparent
+
+.text-field:disabled, .text-area:disabled, .combo-box:disabled, .choice-box:disabled, .table-view:disabled
+  -fx-border-width: 1px
+  -fx-border-color: $primary-500
+
+.text-field:disabled, .hyperlink:disabled, .check-box:disabled,
+.control-disabled, .control-disabled .list-cell:disabled, .control-disabled .content, .control-disabled .scroll-pane:disabled,
+.choice-box:disabled, .choice-box:disabled .arrow, .choice-box:disabled .arrow-button, .choice-box:disabled .text-field,
+.combo-box:disabled .arrow, .combo-box:disabled .arrow-button, .combo-box:disabled .text-field, .choice-box .context-menu .menu-item
+  -fx-background-color: transparent
+  -fx-opacity: 1.0
+  -fx-text-fill: $black
+  -fx-effect: none
+
+.search-command
+  -fx-text-fill: $primary-500
+  -fx-font-size: 1.3em

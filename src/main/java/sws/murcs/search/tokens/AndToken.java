@@ -35,11 +35,15 @@ public class AndToken extends Token {
         SearchResult first = null;
         for (Token token : tokenCollection) {
             SearchResult searchResult = token.matches(query);
+            if (searchResult == null) {
+                return null;
+            }
+
             if (first == null) {
                 first = searchResult;
             }
-            if (searchResult == null) {
-                return null;
+            else {
+                first.addMatch(searchResult, query);
             }
         }
         return first;

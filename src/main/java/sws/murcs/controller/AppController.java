@@ -1034,4 +1034,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     public final ToolBarController getToolBarController() {
         return toolBarController;
     }
+
+    /**
+     * Gets the current type that is displayed within the display list.
+     * @return the current type.
+     */
+    public final ModelType getCurrentType() {
+        return ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
+    }
 }

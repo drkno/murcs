@@ -27,7 +27,7 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * The short name of a model object.
      */
-    @Searchable(SearchPriority.High)
+    @Searchable(SearchPriority.Ultra)
     @TrackableValue
     @XmlAttribute
     @XmlID

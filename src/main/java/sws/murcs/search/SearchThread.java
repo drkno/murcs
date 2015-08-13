@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.search.tokens.Token;
 
 import java.lang.reflect.Field;
@@ -47,6 +48,11 @@ public class SearchThread<T> {
     private ObservableList<SearchResult> searchResults;
 
     /**
+     * Fields that will be searched in pass zero.
+     */
+    private Collection<Field> passZeroFields;
+
+    /**
      * Fields that will be searched in pass one.
      */
     private Collection<Field> passOneFields;
@@ -62,17 +68,26 @@ public class SearchThread<T> {
     private Collection<Field> passThreeFields;
 
     /**
+     * The type of model that this thread searches.
+     */
+    private ModelType searchType;
+
+    /**
      * Creates a new search thread which manages the searching of a particular collection.
      * @param list observable list to store search results in.
+     * @param modelType the type of model that this thread searches.
      * @param searchableCollection collection to search for matches.
      */
-    public SearchThread(final ObservableList<SearchResult> list, final Collection<T> searchableCollection) {
+    public SearchThread(final ObservableList<SearchResult> list, final ModelType modelType,
+                        final Collection<T> searchableCollection) {
         searchResults = list;
         collection = searchableCollection;
         shouldSearch = false;
+        passZeroFields = new ArrayList<>();
         passOneFields = new ArrayList<>();
         passTwoFields = new ArrayList<>();
         passThreeFields = new ArrayList<>();
+        searchType = modelType;
     }
 
     /**
@@ -87,6 +102,9 @@ public class SearchThread<T> {
                     if (field.isAnnotationPresent(Searchable.class)) {
                         Searchable searchable = field.getAnnotation(Searchable.class);
                         switch (searchable.value()) {
+                            case Ultra:
+                                passZeroFields.add(field);
+                                break;
                             case High:
                                 passOneFields.add(field);
                                 break;
@@ -144,8 +162,18 @@ public class SearchThread<T> {
      * three search phases.
      */
     private void performSearch() {
+        searchFields(passZeroFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.Ultra)) {
+            return;
+        }
         searchFields(passOneFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.High)) {
+            return;
+        }
         searchFields(passTwoFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.Medium)) {
+            return;
+        }
         searchFields(passThreeFields);
     }
 
@@ -169,14 +197,22 @@ public class SearchThread<T> {
                     if (val == null) {
                         continue;
                     }
-                    String s = val.toString();
-                    SearchResult result = searchValidator.matches(s);
-                    if (result != null) {
-                        result.setModel((Model) model);
-                        Platform.runLater(() -> {
-                            searchResults.add(result);
-                        });
-                        break;
+                    if (val instanceof Collection) {
+                        boolean shouldBreak = false;
+                        for (Object object : (Collection) val) {
+                            if (find((Model) model, f, object)) {
+                                shouldBreak = true;
+                                break;
+                            }
+                        }
+                        if (shouldBreak) {
+                            break;
+                        }
+                    }
+                    else {
+                        if (find((Model) model, f, val)) {
+                            break;
+                        }
                     }
                 }
                 catch (IllegalAccessException e) {
@@ -185,5 +221,37 @@ public class SearchThread<T> {
                 }
             }
         }
+    }
+
+    /**
+     * Searches a model for a match.
+     * @param model the model to search.
+     * @param f the field to search.
+     * @param o the object to search.
+     * @return if a match was found.
+     */
+    private boolean find(final Model model, final Field f, final Object o) {
+        String s = o.toString();
+        SearchResult result = searchValidator.matches(s);
+        if (result != null) {
+            Searchable searchable = f.getAnnotation(Searchable.class);
+            String fieldName = searchable.fieldName();
+            if (fieldName.equals("")) {
+                fieldName = f.getName();
+            }
+
+            result.setModel(model, fieldName, searchable.value());
+            Platform.runLater(() -> searchResults.add(result));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the type of model that this thread is searching.
+     * @return the type of model.
+     */
+    public final ModelType getSearchType() {
+        return searchType;
     }
 }

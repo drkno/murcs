@@ -6,15 +6,32 @@ package sws.murcs.search;
  */
 public enum SearchPriority {
     /**
-     * High search priority. Will be found in first pass.
+     * Ultra search priority. Will be found in the first pass.
      */
-    High,
+    Ultra(0),
     /**
-     * Medium search priority. Will be found in second pass.
+     * High search priority. Will be found in second pass.
      */
-    Medium,
+    High(1),
     /**
-     * Low search priority. Will be found in third pass.
+     * Medium search priority. Will be found in third pass.
      */
-    Low
+    Medium(2),
+    /**
+     * Low search priority. Will be found in fourth pass.
+     */
+    Low(3);
+
+    /**
+     * Priority of the search item.
+     */
+    private int searchPriority;
+
+    /**
+     * Sets up the search priority so it can be reliably compared.
+     * @param priority priority of the search item.
+     */
+    SearchPriority(final int priority) {
+        searchPriority = priority;
+    }
 }

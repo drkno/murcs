@@ -1,8 +1,13 @@
 package sws.murcs.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,18 +21,26 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+import javafx.util.Duration;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -45,7 +58,7 @@ public class SearchController {
      * TextField to contain search query.
      */
     @FXML
-    private TextField searchText;
+    protected TextField searchText;
 
     /**
      * ListView to display results.
@@ -82,7 +95,7 @@ public class SearchController {
      * The search hash used to overcome model serialisation problems.
      * Who knows why Java is trying to serialise this class, but it is.
      */
-    private String searchHash = "cGxlYXNlIGtpbGwgbWUgbm93";
+    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2VyIHRvIGxpZmUgdGhlIHVuaXZlcnNlIGFuZCBldmVyeXRoaW5n";
 
     /**
      * Event to fire when an item is selected.
@@ -106,6 +119,47 @@ public class SearchController {
     private GridPane resultsPane, searchPane;
 
     /**
+     * The seach commands pane which embeds in the search popover.
+     */
+    private Parent searchCommandsPane;
+
+    /**
+     * A flag if the search command button is active.
+     */
+    private boolean searchCommandButtonActive = false;
+
+    /**
+     * The transition for fading the results pane into view.
+     */
+    private SequentialTransition fadeInResultsPane;
+
+    /**
+     * The transition for fading the results pane out of view.
+     */
+    private SequentialTransition fadeOutResultsPane;
+
+    /**
+     * The transition for fading the commands pane into view.
+     */
+    private SequentialTransition fadeInCommandsPane;
+
+    /**
+     * The transition for fading the commands pane out of view.
+     */
+    private SequentialTransition fadeOutCommandsPane;
+
+    /**
+     * The duration of the fade time.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private Duration fadeDuration = Duration.millis(500);
+
+    /**
+     * Flag if the search text field is empty.
+     */
+    private boolean emptySearch = true;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
@@ -117,8 +171,6 @@ public class SearchController {
         searchHandler = new SearchHandler();
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
-        parent.getStylesheets()
-                .add(getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
 
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
@@ -158,29 +210,34 @@ public class SearchController {
             popOverWindow.hide();
         };
 
-        searchText.textProperty().addListener((a, b, c) -> {
+        searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             String search = searchText.getText();
-            if (search.equals(searchHash)) { // prevent a special NPE
-                noItemsLabel.setText("OK");
-            }
-            else {
+            if (Objects.equals(search, "")) {
+                hideSearchList();
+                emptySearch = true;
+            } else if (search.equals(searchHash)) { // prevent a special NPE
+                if (emptySearch) {
+                    showSearchList();
+                    emptySearch = false;
+                }
+                noItemsLabel.setText("42");
+            } else {
+                if (emptySearch) {
+                    showSearchList();
+                    emptySearch = false;
+                }
                 searchHandler.searchFor(searchText.getText());
             }
 
-            if (c.length() == 0) {
+            if (newValue.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
-            }
-            else {
+            } else {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
 
-        foundItems.itemsProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("");
-        });
         foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                //noItemsLabel.setText("No Items Found");
                 searchPane.getChildren().remove(resultsPane);
             } else {
                 searchPane.getChildren().add(1, resultsPane);
@@ -188,58 +245,138 @@ public class SearchController {
             }
         });
 
-        try {
-            FXMLLoader loader = new FXMLLoader();
+        foundItems.setCellFactory(createItemsCellFactory());
 
-            foundItems.setCellFactory(param -> {
-                ListCell<SearchResult> cell = new ListCell<SearchResult>() {
-                    @Override
-                    public void updateItem(final SearchResult item, final boolean empty) {
-                        super.updateItem(item, empty);
-                        try {
-                            getStyleClass().add("list-cell-background");
-                        } catch (NullPointerException e) {
-                            // something happened in JavaFX....
-                            // Who knows what, or why. HELP!? Do YOU know?
-                            // do not report
-                        }
+        SortedList<SearchResult> sortedSearchResults
+                = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
+        foundItems.setItems(sortedSearchResults);
 
-                        if (empty) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                        /*if (item == null) {
-                            setText("null");
-                        }
-                        else {
-                            setText(item.toString());
-                        }
-                        setGraphic(null);*/
-                            try {
-                                Node n = loader.load(getClass().getResource("/sws/murcs/SearchResult.fxml"));
-                                setGraphic(n);
-                            } catch (Exception e) {
+        searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
+        injectSearchCommands();
 
+        resultsPane.setOpacity(0);
+
+        FadeTransition fadeInResults = new FadeTransition(fadeDuration, resultsPane);
+        fadeInResults.setAutoReverse(false);
+        fadeInResults.setFromValue(0);
+        fadeInResults.setToValue(1);
+
+        FadeTransition fadeInCommands = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeInCommands.setAutoReverse(false);
+        fadeInCommands.setFromValue(0);
+        fadeInCommands.setToValue(1);
+
+        FadeTransition fadeOutResults = new FadeTransition(fadeDuration, resultsPane);
+        fadeOutResults.setAutoReverse(false);
+        fadeOutResults.setFromValue(1);
+        fadeOutResults.setToValue(0);
+
+        FadeTransition fadeOutCommands = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeOutCommands.setAutoReverse(false);
+        fadeOutCommands.setFromValue(1);
+        fadeOutCommands.setToValue(0);
+
+        @SuppressWarnings("checkstyle:magicnumber")
+        PauseTransition pauseTransition = new PauseTransition(Duration.millis(200));
+
+        fadeInResultsPane = new SequentialTransition(fadeInResults, pauseTransition);
+        fadeInCommandsPane = new SequentialTransition(fadeInCommands, pauseTransition);
+        fadeOutResultsPane = new SequentialTransition(fadeOutResults, pauseTransition);
+        fadeOutCommandsPane = new SequentialTransition(fadeOutCommands, pauseTransition);
+    }
+
+    /**
+     * Creates a new search commands view.
+     */
+    private void showSearchCommandsPopOver() {
+        if (searchCommandButtonActive) {
+            SearchCommandsView searchCommandsView = new SearchCommandsView();
+            searchCommandsView.setup(this, searchIcon);
+        }
+    }
+
+    /**
+     * Transitions the search commands out of view.
+     * And moves the results pane into view.
+     */
+    private void showSearchList() {
+        fadeInResultsPane.play();
+        fadeOutCommandsPane.play();
+        fadeInResultsPane.setOnFinished(event -> resultsPane.setVisible(true));
+        fadeOutCommandsPane.setOnFinished(event -> searchCommandsPane.setVisible(false));
+        searchCommandButtonActive = true;
+    }
+
+    /**
+     * Transitions the search commands into view.
+     * And moves the results pane out of view.
+     */
+    private void hideSearchList() {
+        fadeOutResultsPane.play();
+        fadeInCommandsPane.play();
+        fadeOutResultsPane.setOnFinished(event -> resultsPane.setVisible(false));
+        fadeInCommandsPane.setOnFinished(event -> searchCommandsPane.setVisible(true));
+        searchCommandButtonActive = false;
+    }
+
+    /**
+     * Creates a new CellFactory for SearchResult ListCells.
+     * @return a new CellFactory.
+     */
+    private Callback<ListView<SearchResult>, ListCell<SearchResult>> createItemsCellFactory() {
+        return param -> {
+            ListCell<SearchResult> cell = new ListCell<SearchResult>() {
+                @Override
+                public void updateItem(final SearchResult item, final boolean empty) {
+                    super.updateItem(item, empty);
+                    Platform.runLater(() -> {
+                        // This is to get around JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
+                        getStyleClass().add("list-cell-background");
+                    });
+
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        HBox box = new HBox();
+                        ObservableList<Node> children = box.getChildren();
+
+                        Label context = new Label(item.getModelType() + ": " + item.getFieldName());
+                        context.getStyleClass().add("search-result-context");
+
+                        Label selectionBefore = new Label(item.selectionBefore());
+                        children.add(selectionBefore);
+
+                        List<String> matches = item.getMatches();
+                        for (int i = 0; i < matches.size(); i++) {
+                            Label matchLabel = new Label(matches.get(i));
+                            if (i % 2 == 0) {
+                                matchLabel.getStyleClass().add("search-result");
                             }
-
+                            children.add(matchLabel);
                         }
+
+                        Label selectionAfter = new Label(item.selectionAfter());
+                        children.add(selectionAfter);
+
+
+                        VBox vbox = new VBox();
+                        vbox.getChildren().add(context);
+                        VBox.setVgrow(context, Priority.ALWAYS);
+                        vbox.setFillWidth(true);
+                        vbox.getChildren().add(box);
+                        VBox.setVgrow(box, Priority.ALWAYS);
+                        setGraphic(vbox);
                     }
-                };
+                }
+            };
 
-                cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
-                cell.setOnMouseClicked(selectEvent);
+            cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
+            cell.setOnMouseClicked(selectEvent);
 
-                return cell;
-            });
-        }
-        catch (Exception e) {
-
-        }
-
-
-
-
-        foundItems.setItems(searchHandler.getResults());
+            return cell;
+        };
     }
 
     /**
@@ -296,6 +433,12 @@ public class SearchController {
      */
     private void handleSelectionChanged(final ObservableValue<? extends SearchResult> observable,
                                         final SearchResult oldValue, final SearchResult newValue) {
+        if (newValue == null) {
+            previewPane.getChildren().clear();
+            previewPane.getChildren().add(noItemsLabel);
+            return;
+        }
+
         synchronized (previewRenderThread) {
             previewRenderThread.notify();
         }
@@ -324,6 +467,7 @@ public class SearchController {
      */
     private void renderPreview() {
         final int disableDelay = 250;
+        final int helpfulMessageMargin = 5;
 
         VBox loader = new VBox();
 
@@ -333,10 +477,9 @@ public class SearchController {
         loader.getChildren().add(imageView);
 
         Label helpfulMessage = new Label("*CLUNK* /whir/");
-        helpfulMessage.setStyle("-fx-fill: darkgray");
+        helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
-        VBox.setMargin(helpfulMessage, new Insets(5));
-
+        VBox.setMargin(helpfulMessage, new Insets(helpfulMessageMargin));
         loader.setAlignment(Pos.CENTER);
 
         while (true) {
@@ -374,6 +517,7 @@ public class SearchController {
                         editorPane.dispose();
                         editorPane = new EditorPane(newValue);
                     }
+                    editorPane.getView().getStyleClass().add("search-preview");
                     Thread.sleep(disableDelay);
                     disableControlsAndUpdateButton();
                 }
@@ -381,15 +525,19 @@ public class SearchController {
                 final CountDownLatch latch = new CountDownLatch(1);
                 Platform.runLater(() -> {
                     previewPane.getChildren().clear();
-                    previewPane.getChildren().add(editorPane.getView());
+                    if (foundItems.getSelectionModel().getSelectedItem() == null) {
+                        previewPane.getChildren().add(noItemsLabel);
+                    }
+                    else {
+                        previewPane.getChildren().add(editorPane.getView());
+                    }
                     latch.countDown();
                 });
                 latch.await();
             }
             catch (Exception e) {
-                Platform.runLater(() -> {
-                    ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
-                });
+                Platform.runLater(() ->
+                        ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview."));
                 return;
             }
         }
@@ -406,8 +554,25 @@ public class SearchController {
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
         Button saveButton = editorPane.getController().getSaveChangesButton();
+        saveButton.getStyleClass().add("button-default");
         saveButton.setVisible(true);
+        saveButton.setDisable(false);
         saveButton.setText("Open In Window");
         saveButton.setOnAction(selectEvent);
+    }
+
+    /**
+     * Injects a task editor tied to the given task.
+     */
+    private void injectSearchCommands() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        try {
+            searchCommandsPane = loader.load();
+            SearchCommandsController controller = loader.getController();
+            controller.setup(this);
+            searchPane.add(searchCommandsPane, 0, 1);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create search commands");
+        }
     }
 }
