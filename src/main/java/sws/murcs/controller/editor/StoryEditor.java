@@ -36,6 +36,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Sprint;
@@ -321,11 +322,40 @@ public class StoryEditor extends GenericEditor<Story> {
         if (estimateChoiceBox.getValue() != null
                 && isNotEqual(getModel().getEstimate(), estimateChoiceBox.getValue())) {
             // Updates the story state as this gets changed if you set the estimate to Not Estimated
-            if (estimateChoiceBox.getValue().equals(EstimateType.NOT_ESTIMATED)) {
-                getModel().setStoryState(Story.StoryState.None);
-                storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
+            if (estimateChoiceBox.getValue().equals(EstimateType.NOT_ESTIMATED)
+                    && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                storyStateChoiceBox.setValue(getModel().getStoryState());
+                String estimate = getModel().getEstimate();
+                estimateChoiceBox.setValue(estimate);
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the Estimate of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n", EstimateType.NOT_ESTIMATED)
+                        + "This will set the Story State to None.\n\n"
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(func -> {
+                    getModel().setEstimate(EstimateType.NOT_ESTIMATED);
+                    estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    getModel().setStoryState(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    popup.close();
+                });
+                popup.show();
+            } else {
+                getModel().setEstimate(estimateChoiceBox.getValue());
             }
-            getModel().setEstimate(estimateChoiceBox.getValue());
         }
 
         updateStoryState();
@@ -382,33 +412,32 @@ public class StoryEditor extends GenericEditor<Story> {
             }
         }
         else if (state == Story.StoryState.None) {
-            hasErrors = true;
+            hasErrors = true; // So that the story state is not set.
             if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
-                List<Sprint> sprintsWithStory = UsageHelper.findUsages(this.getModel()).stream()
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
                         .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                         .map(m -> (Sprint) m)
                         .collect(Collectors.toList());
-                String[] sprintNames = sprintsWithStory.stream()
-                        .map(m -> m.toString())
-                        .collect(Collectors.toList())
-                        .toArray(new String[0]);
-                if (sprintsWithStory.size() > 0) {
-                    storyStateChoiceBox.setValue(getModel().getStoryState());
-                    GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Do you really want to set the State of "
-                            + getModel().toString()
-                            + String.format(" to %s?\n\n", state)
-                            + "The following Sprints will be affected:\n\t"
-                            + String.join("\n\t", sprintNames));
-                    popup.setTitleText("Change Story State");
-                    popup.addYesNoButtons(func -> {
-                        sprintsWithStory.forEach(sprint -> sprint.removeStory(this.getModel()));
-                        getModel().setStoryState(Story.StoryState.None);
-                        storyStateChoiceBox.setValue(Story.StoryState.None);
-                        popup.close();
-                    });
-                    popup.show();
-                }
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                storyStateChoiceBox.setValue(getModel().getStoryState());
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the State of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n\n", state)
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(func -> {
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    getModel().setStoryState(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    popup.close();
+                });
+                popup.show();
             }
         }
 
@@ -431,6 +460,7 @@ public class StoryEditor extends GenericEditor<Story> {
             popup.setMessageText("Are you sure you want to remove the dependency "
                     + newDependency.getShortName() + "?");
             popup.setTitleText("Remove Dependency");
+            popup.setWindowTitle("Are you sure?");
             popup.addYesNoButtons(func -> {
                 searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
@@ -662,16 +692,43 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                GenericPopup popup = new GenericPopup();
-                popup.setTitleText("Are you sure?");
-                popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
-                popup.addYesNoButtons(p -> {
+                if (UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
+                        && getModel().getAcceptanceCriteria().size() <= 1) {
+                    List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                            .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                            .map(m -> (Sprint) m)
+                            .collect(Collectors.toList());
+                    List<String> collect = sprintsWithStory.stream()
+                            .map(Model::toString)
+                            .collect(Collectors.toList());
+                    String[] sprintNames = collect.toArray(new String[collect.size()]);
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
+                    GenericPopup popup = new GenericPopup();
+                    popup.setMessageText("Do you really want to remove the last Acceptance Criteria from "
+                            + getModel().toString()
+                            + " ?\n"
+                            + "This will set the Story Estimate to Not Estimated and the Story State to None.\n\n"
+                            + "The following Sprints will be affected:\n\t"
+                            + String.join("\n\t", sprintNames));
+                    popup.setTitleText("Change Story State");
+                    popup.setWindowTitle("Are you sure?");
+                    popup.addYesNoButtons(func -> {
+                        getModel().setEstimate(EstimateType.NOT_ESTIMATED);
+                        estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
+                        sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                        getModel().removeAcceptanceCondition(acceptanceCondition);
+                        updateAcceptanceCriteria();
+                        updateEstimation();
+                        storyStateChoiceBox.setValue(Story.StoryState.None);
+                        getModel().setStoryState(Story.StoryState.None);
+                        popup.close();
+                    });
+                    popup.show();
+                } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
                     updateEstimation();
-                    popup.close();
-                });
-                popup.show();
+                }
             });
             AnchorPane conditionCell = new AnchorPane();
             AnchorPane.setLeftAnchor(node, 0.0);
