@@ -211,7 +211,9 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             estimateChoiceBox.setDisable(false);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
     }
