@@ -250,8 +250,8 @@ public class Story extends Model {
         if (newEstimate == estimate) {
             return;
         }
-        // If you change the estimate type to not estimated, then None is the only valid story state
-        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+        // If you change the estimate type to not estimated or infinite, then None is the only valid story state
+        if (newEstimate.equals(EstimateType.NOT_ESTIMATED) || newEstimate.equals(EstimateType.INFINITE)) {
             storyState = StoryState.None;
         }
         estimate = newEstimate;
