@@ -41,7 +41,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <GridPane fx:id="resultsPane" visible="false" GridPane.rowIndex="1">
+            <GridPane fx:id="resultsPane" GridPane.rowIndex="1">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
