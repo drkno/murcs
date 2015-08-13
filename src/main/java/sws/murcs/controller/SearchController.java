@@ -6,6 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,7 +23,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import sws.murcs.controller.controls.popover.PopOver;
@@ -30,10 +30,9 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
-import sws.murcs.search.tokens.BangCommand;
+import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -43,8 +42,6 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SearchController {
 
-    public GridPane commandsPane;
-    public TilePane commandsTitlePane;
     /**
      * Icon for search.
      */
@@ -55,7 +52,7 @@ public class SearchController {
      * TextField to contain search query.
      */
     @FXML
-    private TextField searchText;
+    protected TextField searchText;
 
     /**
      * ListView to display results.
@@ -114,6 +111,8 @@ public class SearchController {
      */
     @FXML
     private GridPane resultsPane, searchPane;
+    private Parent searchCommandsPane;
+    private boolean searchCommandButtonActive = false;
 
     /**
      * Called when the form is instantiated.
@@ -199,28 +198,40 @@ public class SearchController {
 
         foundItems.setCellFactory(createItemsCellFactory());
         foundItems.setItems(searchHandler.getResults());
+
+        searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        injectSearchCommands();
+    }
+
+    private void showSearchCommandsPopOver() {
+        if (searchCommandButtonActive) {
+            SearchCommandsView searchCommandsView = new SearchCommandsView();
+            searchCommandsView.setup(this, searchIcon);
+        }
     }
 
     private void showSearchList() {
         if (!resultsPane.managedProperty().isBound()) {
             resultsPane.managedProperty().bind(resultsPane.visibleProperty());
         }
-        if (!commandsPane.managedProperty().isBound()) {
-            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        if (!searchCommandsPane.managedProperty().isBound()) {
+            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
         }
         resultsPane.setVisible(true);
-        commandsPane.setVisible(false);
+        searchCommandsPane.setVisible(false);
+        searchCommandButtonActive = true;
     }
 
     private void hideSearchList() {
         if (!resultsPane.managedProperty().isBound()) {
             resultsPane.managedProperty().bind(resultsPane.visibleProperty());
         }
-        if (!commandsPane.managedProperty().isBound()) {
-            commandsPane.managedProperty().bind(commandsPane.visibleProperty());
+        if (!searchCommandsPane.managedProperty().isBound()) {
+            searchCommandsPane.managedProperty().bind(searchCommandsPane.visibleProperty());
         }
         resultsPane.setVisible(false);
-        commandsPane.setVisible(true);
+        searchCommandsPane.setVisible(true);
+        searchCommandButtonActive = false;
     }
 
     /**
@@ -464,27 +475,18 @@ public class SearchController {
         saveButton.setOnAction(selectEvent);
     }
 
-    private void loadCommands(final Collection<BangCommand> commands) {
-        commands.stream().forEach(c -> {
-            Label commandLabel = new Label();
-            String longSyntax = c.getCommands()[0];
-            String shortSyntax = c.getCommands()[1];
-            commandLabel.setText(longSyntax + " or " + shortSyntax + "\n" + c.getDescription());
-            setupAutoFill(commandLabel, longSyntax);
-            commandsTitlePane.getChildren().add(commandLabel);
-        });
-    }
-
-    private void setupAutoFill(final Label commandLabel, final String command) {
-        commandLabel.setOnMousePressed(event -> {
-            if (searchText.getText() != null) {
-                searchText.setText(command + " " + searchText.getText());
-            }
-            searchText.setText(command);
-        });
-    }
-
-    private void commandsControl() {
-
+    /**
+     * Injects a task editor tied to the given task.
+     */
+    private void injectSearchCommands() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        try {
+            searchCommandsPane = loader.load();
+            SearchCommandsController controller = loader.getController();
+            controller.setup(this);
+            searchPane.add(searchCommandsPane, 0, 1);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create search commands");
+        }
     }
 }
