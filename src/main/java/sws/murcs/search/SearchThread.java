@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.search.tokens.Token;
 
 import java.lang.reflect.Field;
@@ -67,11 +68,18 @@ public class SearchThread<T> {
     private Collection<Field> passThreeFields;
 
     /**
+     * The type of model that this thread searches.
+     */
+    private ModelType searchType;
+
+    /**
      * Creates a new search thread which manages the searching of a particular collection.
      * @param list observable list to store search results in.
+     * @param modelType the type of model that this thread searches.
      * @param searchableCollection collection to search for matches.
      */
-    public SearchThread(final ObservableList<SearchResult> list, final Collection<T> searchableCollection) {
+    public SearchThread(final ObservableList<SearchResult> list, final ModelType modelType,
+                        final Collection<T> searchableCollection) {
         searchResults = list;
         collection = searchableCollection;
         shouldSearch = false;
@@ -79,6 +87,7 @@ public class SearchThread<T> {
         passOneFields = new ArrayList<>();
         passTwoFields = new ArrayList<>();
         passThreeFields = new ArrayList<>();
+        searchType = modelType;
     }
 
     /**
@@ -235,5 +244,13 @@ public class SearchThread<T> {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Gets the type of model that this thread is searching.
+     * @return the type of model.
+     */
+    public final ModelType getSearchType() {
+        return searchType;
     }
 }

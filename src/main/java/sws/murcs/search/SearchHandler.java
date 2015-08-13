@@ -2,6 +2,7 @@ package sws.murcs.search;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
@@ -31,13 +32,13 @@ public  class SearchHandler {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         results = FXCollections.observableArrayList();
         searchThreads = new SearchThread[] {
-                new SearchThread<>(results, organisation.getBacklogs()),
-                new SearchThread<>(results, organisation.getPeople()),
-                new SearchThread<>(results, organisation.getProjects()),
-                new SearchThread<>(results, organisation.getReleases()),
-                new SearchThread<>(results, organisation.getSkills()),
-                new SearchThread<>(results, organisation.getStories()),
-                new SearchThread<>(results, organisation.getTeams())
+                new SearchThread<>(results, ModelType.Backlog, organisation.getBacklogs()),
+                new SearchThread<>(results, ModelType.Person, organisation.getPeople()),
+                new SearchThread<>(results, ModelType.Project, organisation.getProjects()),
+                new SearchThread<>(results, ModelType.Release, organisation.getReleases()),
+                new SearchThread<>(results, ModelType.Skill, organisation.getSkills()),
+                new SearchThread<>(results, ModelType.Story, organisation.getStories()),
+                new SearchThread<>(results, ModelType.Team, organisation.getTeams())
         };
     }
 
@@ -63,12 +64,12 @@ public  class SearchHandler {
         }
 
         // begin new search
-        Collection<Integer> types = Token.getSearchTypes();
-        for (int i = 0; i < searchThreads.length; i++) {
-            if (types.size() != 0 && !types.contains(i)) {
+        Collection<ModelType> types = Token.getSearchTypes();
+        for (SearchThread thread : searchThreads) {
+            if (types.size() != 0 && !types.contains(thread.getSearchType())) {
                 continue;
             }
-            searchThreads[i].start(token);
+            thread.start(token);
         }
     }
 
