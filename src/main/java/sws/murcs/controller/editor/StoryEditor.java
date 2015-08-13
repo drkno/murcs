@@ -6,9 +6,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -32,13 +34,16 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
@@ -78,9 +83,10 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Container that dependencies are added to when they are added.
+     * Also the container for the tasks.
      */
     @FXML
-    private VBox dependenciesContainer;
+    private VBox dependenciesContainer, taskContainer;
 
     /**
      * A map of dependencies and their respective nodes.
@@ -152,7 +158,12 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        //Enable or disable whether you can change the creator
+        taskContainer.getChildren().clear();
+        for (Task task : getModel().getTasks()) {
+            injectTaskEditor(task, false);
+        }
+
+        // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
@@ -293,6 +304,7 @@ public class StoryEditor extends GenericEditor<Story> {
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
+        taskContainer.getChildren().clear();
         super.dispose();
     }
 
@@ -584,6 +596,65 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the ACs in the table
         updateAcceptanceCriteria();
+    }
+
+    /**
+     * Injects a task editor tied to the given task.
+     * @param task The task to display
+     * @param creationBox Whether or not this is a creation box
+     */
+    private void injectTaskEditor(final Task task, final boolean creationBox) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        try {
+            Parent view = loader.load();
+            TaskEditor controller = loader.getController();
+            controller.configure(task, creationBox, view, this);
+            taskContainer.getChildren().add(view);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create new task");
+        }
+    }
+
+    /**
+     * Is called when you click the 'Create Task' button and inserts a new task
+     * fxml into the task container.
+     * @param event The event that caused the function to be called
+     */
+    @FXML
+    private void createTaskClick(final ActionEvent event) {
+        Task task = new Task();
+        injectTaskEditor(task, true);
+    }
+
+    /**
+     * Adds a task to this story.
+     * @param task The task to add
+     */
+    protected final void addTask(final Task task) {
+        try {
+            getModel().addTask(task);
+        }
+        catch (DuplicateObjectException e) {
+            addFormError(taskContainer, e.getMessage());
+        }
+    }
+
+    /**
+     * Removes a task from this story.
+     * @param task The task to remove
+     */
+    protected final void removeTask(final Task task) {
+        if (getModel().getTasks().contains(task)) {
+            getModel().removeTask(task);
+        }
+    }
+
+    /**
+     * Removes the editor of a task.
+     * @param view The parent node of the task editor
+     */
+    protected final void removeTaskEditor(final Parent view) {
+        taskContainer.getChildren().remove(view);
     }
 
     /**

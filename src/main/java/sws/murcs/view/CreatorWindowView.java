@@ -119,9 +119,9 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
-            stage.setResizable(false);
             controller.setStage(stage);
             if (root == null) {
+                stage.setResizable(false);
                 return;
             }
             Scene scene = new Scene(root);
@@ -143,6 +143,7 @@ public class CreatorWindowView {
 
             stage.show();
             stage.sizeToScene();
+            stage.setResizable(false);
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");
