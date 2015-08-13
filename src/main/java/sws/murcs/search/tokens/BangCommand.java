@@ -29,7 +29,7 @@ public class BangCommand {
      */
     public BangCommand(final String longCommand, final String shortCommand,
                        final String theDescription, final SpecialTokenEvent event) {
-        commands = new String[] {longCommand, shortCommand};
+        commands = new String[] {"!" + longCommand, "!" + shortCommand};
         description = theDescription;
         setEvent = event;
     }

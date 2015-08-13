@@ -10,6 +10,11 @@ import java.util.*;
 public class SearchResult {
 
     /**
+     * Maximum length of a search result as returned result text.
+     */
+    private static final int SEARCH_RESULT_MAX_LENGTH = 45;
+
+    /**
      * Model object that this search result points to.
      */
     private Model model;
@@ -46,19 +51,16 @@ public class SearchResult {
 
     /**
      * Creates a new object that represents a search result.
-     * @param theMatch initial matched text.
-     * @param startIndex the index that this match started at.
-     * @param theContextBefore data that occurred immediately before the match.
-     * @param theContextAfter data that occurred immediately after the match.
+     * @param startIndex index of the beginning of the match.
+     * @param endIndex index of the end of the match.
+     * @param input the text that the match was found in.
      */
-    public SearchResult(final String theMatch, final int startIndex,
-                        final String theContextBefore, final String theContextAfter) {
+    public SearchResult(final int startIndex, final int endIndex, final String input) {
         matches = new ArrayList<>();
-        matches.add(theMatch);
         matchIndexes = new ArrayList<>();
+        matches.add(input.substring(startIndex, endIndex));
         matchIndexes.add(startIndex);
-        contextAfter = theContextAfter;
-        contextBefore = theContextBefore;
+        fromQuery(startIndex, endIndex, input);
     }
 
     /**
@@ -158,7 +160,7 @@ public class SearchResult {
         List<String> newMatches = new ArrayList<>();
         List<Integer> newIndexes = new ArrayList<>();
 
-        int currIndex = 0;
+        int currIndex;
         for (int i = 0; i < entries.size(); i++) {
             int index = entries.get(i).getKey();
             currIndex = index;
@@ -183,6 +185,9 @@ public class SearchResult {
 
         matches = newMatches;
         matchIndexes = newIndexes;
+
+        int lastIndex = matchIndexes.get(matchIndexes.size() - 1) + matches.get(matches.size() - 1).length();
+        fromQuery(matchIndexes.get(0), lastIndex, query);
     }
 
     /**
@@ -197,5 +202,48 @@ public class SearchResult {
             result = Character.toUpperCase(result.charAt(0)) + result.substring(1);
         }
         return result;
+    }
+
+    /**
+     * Gets data from an input match for this search result.
+     * @param start start index of the match.
+     * @param end end index of the match.
+     * @param input input that match occurred in.
+     */
+    private void fromQuery(final int start, final int end, final String input) {
+        contextBefore = "";
+        contextAfter = "";
+        if (end - start < SEARCH_RESULT_MAX_LENGTH) {
+            int newStart = start, newEnd = end;
+            int difference = SEARCH_RESULT_MAX_LENGTH - (newEnd - newStart);
+            if (newStart != 0 && newEnd != input.length()) {
+                difference /= 2;
+                newStart -= difference;
+                newEnd += difference;
+            }
+            else if (newStart != 0) {
+                newStart -= difference;
+            }
+            else if (end != input.length()) {
+                newEnd += difference;
+            }
+
+            if (newStart < 0) {
+                newEnd += 0 - newStart;
+                newStart = 0;
+            }
+            if (newEnd > input.length()) {
+                int diff = newEnd - input.length();
+                if (newStart - diff < 0) {
+                    newStart = 0;
+                }
+                else {
+                    newStart -= diff;
+                }
+                newEnd = input.length();
+            }
+            contextBefore = input.substring(newStart, start);
+            contextAfter = input.substring(end, newEnd);
+        }
     }
 }
