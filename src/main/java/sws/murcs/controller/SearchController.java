@@ -1,6 +1,8 @@
 package sws.murcs.controller;
 
 import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -115,10 +117,10 @@ public class SearchController {
     private GridPane resultsPane, searchPane;
     private Parent searchCommandsPane;
     private boolean searchCommandButtonActive = false;
-    private FadeTransition fadeInResultsPane;
-    private FadeTransition fadeOutResultsPane;
-    private FadeTransition fadeInCommandsPane;
-    private FadeTransition fadeOutCommandsPane;
+    private SequentialTransition fadeInResultsPane;
+    private SequentialTransition fadeOutResultsPane;
+    private SequentialTransition fadeInCommandsPane;
+    private SequentialTransition fadeOutCommandsPane;
     private Duration fadeDuration = Duration.millis(500);
     private boolean emptySearch = true;
 
@@ -219,25 +221,32 @@ public class SearchController {
 
         resultsPane.setOpacity(0);
 
-        fadeInResultsPane = new FadeTransition(fadeDuration, resultsPane);
-        fadeInResultsPane.setAutoReverse(false);
-        fadeInResultsPane.setFromValue(0);
-        fadeInResultsPane.setToValue(1);
+        FadeTransition fadeInResults = new FadeTransition(fadeDuration, resultsPane);
+        fadeInResults.setAutoReverse(false);
+        fadeInResults.setFromValue(0);
+        fadeInResults.setToValue(1);
 
-        fadeInCommandsPane = new FadeTransition(fadeDuration, searchCommandsPane);
-        fadeInCommandsPane.setAutoReverse(false);
-        fadeInCommandsPane.setFromValue(0);
-        fadeInCommandsPane.setToValue(1);
+        FadeTransition fadeInCommands = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeInCommands.setAutoReverse(false);
+        fadeInCommands.setFromValue(0);
+        fadeInCommands.setToValue(1);
 
-        fadeOutResultsPane = new FadeTransition(fadeDuration, resultsPane);
-        fadeOutResultsPane.setAutoReverse(false);
-        fadeOutResultsPane.setFromValue(1);
-        fadeOutResultsPane.setToValue(0);
+        FadeTransition fadeOutResults = new FadeTransition(fadeDuration, resultsPane);
+        fadeOutResults.setAutoReverse(false);
+        fadeOutResults.setFromValue(1);
+        fadeOutResults.setToValue(0);
 
-        fadeOutCommandsPane = new FadeTransition(fadeDuration, searchCommandsPane);
-        fadeOutCommandsPane.setAutoReverse(false);
-        fadeOutCommandsPane.setFromValue(1);
-        fadeOutCommandsPane.setToValue(0);
+        FadeTransition fadeOutCommands = new FadeTransition(fadeDuration, searchCommandsPane);
+        fadeOutCommands.setAutoReverse(false);
+        fadeOutCommands.setFromValue(1);
+        fadeOutCommands.setToValue(0);
+
+        PauseTransition pauseTransition = new PauseTransition(Duration.millis(200));
+
+        fadeInResultsPane = new SequentialTransition(fadeInResults, pauseTransition);
+        fadeInCommandsPane = new SequentialTransition(fadeInCommands, pauseTransition);
+        fadeOutResultsPane = new SequentialTransition(fadeOutResults, pauseTransition);
+        fadeOutCommandsPane = new SequentialTransition(fadeOutCommands, pauseTransition);
     }
 
     private void showSearchCommandsPopOver() {
@@ -250,12 +259,16 @@ public class SearchController {
     private void showSearchList() {
         fadeInResultsPane.play();
         fadeOutCommandsPane.play();
+        fadeInResultsPane.setOnFinished(event -> resultsPane.setVisible(true));
+        fadeOutCommandsPane.setOnFinished(event -> searchCommandsPane.setVisible(false));
         searchCommandButtonActive = true;
     }
 
     private void hideSearchList() {
         fadeOutResultsPane.play();
         fadeInCommandsPane.play();
+        fadeOutResultsPane.setOnFinished(event -> resultsPane.setVisible(false));
+        fadeInCommandsPane.setOnFinished(event -> searchCommandsPane.setVisible(true));
         searchCommandButtonActive = false;
     }
 
