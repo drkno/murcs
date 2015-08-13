@@ -1,10 +1,11 @@
 package sws.murcs.search.tokens;
 
+import sws.murcs.search.SearchPriority;
 import sws.murcs.search.SearchResult;
-import java.util.AbstractMap.SimpleEntry;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map.Entry;
+import java.util.Collections;
 
 /**
  * Token that is used to check search criteria.
@@ -12,22 +13,55 @@ import java.util.Map.Entry;
 public abstract class Token {
 
     /**
+     * Should only search display names.
+     */
+    private static boolean displayNamesOnly;
+
+    /**
+     * Collection of the types that should be searched.
+     */
+    private static Collection<Integer> searchTypes;
+
+    /**
      * Collection of special tokens to be used when setting up the compiler.
      */
     private static BangCommand[] specialTokens = new BangCommand[] {
         new BangCommand("regex", "reg", "Enables regular expressions.", SearchToken::setIsRegex),
         new BangCommand("case", "cas", "Enables case sensitivity.", SearchToken::setIsCaseSensitive),
-        /*new BangCommand("current", "curr", "Searches the current display list.", ),
-        new BangCommand("name", "nam", "Searches using display names only.", ),
-
-        new BangCommand("backlog", "ba", "Searches backlogs.", ),
-        new BangCommand("person", "pe", "Searches people.", ),
-        new BangCommand("project", "pr", "Searches projects.", ),
-        new BangCommand("release", "re", "Searches releases.", ),
-        new BangCommand("skill", "sk", "Searches skills.", ),
-        new BangCommand("story", "st", "Searches stories.", ),
-        new BangCommand("team", "te", "Searches teams.", )*/
+        //new BangCommand("current", "curr", "Searches the current display list.", ),
+        new BangCommand("name", "nam", "Searches using display names only.", v -> displayNamesOnly = v),
+        new BangCommand("backlog", "ba", "Searches backlogs.", v -> { if (v) searchTypes.add(0); }),
+        new BangCommand("people", "pe", "Searches people.", v -> { if (v) searchTypes.add(1); }),
+        new BangCommand("project", "pr", "Searches projects.", v -> { if (v) searchTypes.add(2); }),
+        new BangCommand("release", "re", "Searches releases.", v -> { if (v) searchTypes.add(3); }),
+        new BangCommand("skill", "sk", "Searches skills.", v -> { if (v) searchTypes.add(4); }),
+        new BangCommand("story", "st", "Searches stories.", v -> { if (v) searchTypes.add(5); }),
+        new BangCommand("team", "te", "Searches teams.", v -> { if (v) searchTypes.add(6); })
     };
+
+    /**
+     * Gets the maximum search priority that should be searched.
+     * @return the search priority.
+     */
+    public static SearchPriority getMaxSearchPriority() {
+        return displayNamesOnly ? SearchPriority.Ultra : SearchPriority.Low;
+    }
+
+    /**
+     * Gets the types that should be searched.
+     * @return a list of indexes of the types that should be searched.
+     * These are as follows:
+     *  0. Backlog
+     *  1. People
+     *  2. Project
+     *  3. Release
+     *  4. Skill
+     *  5. Story
+     *  6. Team
+     */
+    public static Collection<Integer> getSearchTypes() {
+        return Collections.unmodifiableCollection(searchTypes);
+    }
 
     /**
      * Gets the special tokens that can be used while searching.
@@ -50,6 +84,7 @@ public abstract class Token {
      * @return a token to be used for searching, or null if no Token can be created.
      */
     public static Token parse(final String input) {
+        searchTypes = new ArrayList<>();
         String searchQuery = input;
 
         // setup special tokens

@@ -47,6 +47,11 @@ public class SearchThread<T> {
     private ObservableList<SearchResult> searchResults;
 
     /**
+     * Fields that will be searched in pass zero.
+     */
+    private Collection<Field> passZeroFields;
+
+    /**
      * Fields that will be searched in pass one.
      */
     private Collection<Field> passOneFields;
@@ -70,6 +75,7 @@ public class SearchThread<T> {
         searchResults = list;
         collection = searchableCollection;
         shouldSearch = false;
+        passZeroFields = new ArrayList<>();
         passOneFields = new ArrayList<>();
         passTwoFields = new ArrayList<>();
         passThreeFields = new ArrayList<>();
@@ -87,6 +93,9 @@ public class SearchThread<T> {
                     if (field.isAnnotationPresent(Searchable.class)) {
                         Searchable searchable = field.getAnnotation(Searchable.class);
                         switch (searchable.value()) {
+                            case Ultra:
+                                passZeroFields.add(field);
+                                break;
                             case High:
                                 passOneFields.add(field);
                                 break;
@@ -144,8 +153,18 @@ public class SearchThread<T> {
      * three search phases.
      */
     private void performSearch() {
+        searchFields(passZeroFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.Ultra)) {
+            return;
+        }
         searchFields(passOneFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.High)) {
+            return;
+        }
         searchFields(passTwoFields);
+        if (Token.getMaxSearchPriority().equals(SearchPriority.Medium)) {
+            return;
+        }
         searchFields(passThreeFields);
     }
 
@@ -169,7 +188,6 @@ public class SearchThread<T> {
                     if (val == null) {
                         continue;
                     }
-                    String s = "";
                     if (val instanceof Collection) {
                         boolean shouldBreak = false;
                         for (Object object : (Collection) val) {
@@ -196,6 +214,13 @@ public class SearchThread<T> {
         }
     }
 
+    /**
+     * Searches a model for a match.
+     * @param model the model to search.
+     * @param f the field to search.
+     * @param o the object to search.
+     * @return if a match was found.
+     */
     private boolean find(final Model model, final Field f, final Object o) {
         String s = o.toString();
         SearchResult result = searchValidator.matches(s);

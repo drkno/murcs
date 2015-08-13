@@ -6,6 +6,8 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
 
+import java.util.Collection;
+
 /**
  * Object to handle the performing of searches.
  * This includes creating and handling search threads and
@@ -29,13 +31,13 @@ public  class SearchHandler {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         results = FXCollections.observableArrayList();
         searchThreads = new SearchThread[] {
-                new SearchThread<>(results, organisation.getReleases()),
-                new SearchThread<>(results, organisation.getStories()),
-                new SearchThread<>(results, organisation.getProjects()),
                 new SearchThread<>(results, organisation.getBacklogs()),
+                new SearchThread<>(results, organisation.getPeople()),
+                new SearchThread<>(results, organisation.getProjects()),
+                new SearchThread<>(results, organisation.getReleases()),
                 new SearchThread<>(results, organisation.getSkills()),
-                new SearchThread<>(results, organisation.getTeams()),
-                new SearchThread<>(results, organisation.getPeople())
+                new SearchThread<>(results, organisation.getStories()),
+                new SearchThread<>(results, organisation.getTeams())
         };
     }
 
@@ -61,8 +63,12 @@ public  class SearchHandler {
         }
 
         // begin new search
-        for (SearchThread thread : searchThreads) {
-            thread.start(token);
+        Collection<Integer> types = Token.getSearchTypes();
+        for (int i = 0; i < searchThreads.length; i++) {
+            if (types.size() != 0 && !types.contains(i)) {
+                continue;
+            }
+            searchThreads[i].start(token);
         }
     }
 
