@@ -187,7 +187,7 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a stories.
+     * Gets all stories.
      * @return The stories
      */
     public final List<Story> getStories() {

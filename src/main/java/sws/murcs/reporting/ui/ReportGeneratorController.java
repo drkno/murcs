@@ -264,31 +264,33 @@ public class ReportGeneratorController {
      */
     private void changeManagementSelection() {
         ModelType type = managementTypeComboBox.getSelectionModel().getSelectedItem();
-        managementList.getItems().clear();
-        List<Model> values = new ArrayList<>();
-        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        if (type != null) {
+            managementList.getItems().clear();
+            List<Model> values = new ArrayList<>();
+            Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
-        switch (type) {
-            case Project:
-                values.addAll(organisation.getProjects());
-                managementList.setVisible(true);
-                break;
-            case Team:
-                values.addAll(organisation.getTeams());
-                managementList.setVisible(true);
-                break;
-            case Person:
-                values.addAll(organisation.getPeople());
-                managementList.setVisible(true);
-                break;
-            default:
-                managementList.setVisible(false);
-                throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+            switch (type) {
+                case Project:
+                    values.addAll(organisation.getProjects());
+                    managementList.setVisible(true);
+                    break;
+                case Team:
+                    values.addAll(organisation.getTeams());
+                    managementList.setVisible(true);
+                    break;
+                case Person:
+                    values.addAll(organisation.getPeople());
+                    managementList.setVisible(true);
+                    break;
+                default:
+                    managementList.setVisible(false);
+                    throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+            }
+            Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
+                    .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
+            managementList.getItems().setAll(values);
+            stage.sizeToScene();
         }
-        Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
-                .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
-        managementList.getItems().setAll(values);
-        stage.sizeToScene();
     }
 
     /**
@@ -296,24 +298,26 @@ public class ReportGeneratorController {
      */
     private void changeWorkflowSelection() {
         ModelType type = workflowTypeComboBox.getSelectionModel().getSelectedItem();
-        workflowList.getItems().clear();
-        List<Model> values = new ArrayList<>();
-        Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        if (type != null) {
+            workflowList.getItems().clear();
+            List<Model> values = new ArrayList<>();
+            Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
-        switch (type) {
-            case Backlog:
-                values.addAll(organisation.getBacklogs());
-                workflowList.setVisible(true);
-                break;
-            case Story:
-                values.addAll(organisation.getStories());
-                workflowList.setVisible(true);
-                break;
-            default:
-                workflowList.setVisible(false);
-                throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+            switch (type) {
+                case Backlog:
+                    values.addAll(organisation.getBacklogs());
+                    workflowList.setVisible(true);
+                    break;
+                case Story:
+                    values.addAll(organisation.getStories());
+                    workflowList.setVisible(true);
+                    break;
+                default:
+                    workflowList.setVisible(false);
+                    throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+            }
+            workflowList.getItems().setAll(values);
         }
-        workflowList.getItems().setAll(values);
     }
 
     /**
@@ -327,11 +331,13 @@ public class ReportGeneratorController {
         else if (selected == management) {
             hideAllContent();
             managementContent.setVisible(true);
+            changeManagementSelection();
 
         }
         else if (selected == workflow) {
             hideAllContent();
             workflowContent.setVisible(true);
+            changeWorkflowSelection();
         }
         clearErrors();
         stage.sizeToScene();

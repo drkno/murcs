@@ -1,11 +1,16 @@
 package sws.murcs.controller.editor;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -16,24 +21,31 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
@@ -72,9 +84,10 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Container that dependencies are added to when they are added.
+     * Also the container for the tasks.
      */
     @FXML
-    private VBox dependenciesContainer;
+    private VBox dependenciesContainer, taskContainer;
 
     /**
      * A map of dependencies and their respective nodes.
@@ -146,7 +159,12 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        //Enable or disable whether you can change the creator
+        taskContainer.getChildren().clear();
+        for (Task task : getModel().getTasks()) {
+            injectTaskEditor(task, false);
+        }
+
+        // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
@@ -166,10 +184,13 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**
@@ -250,6 +271,9 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     @Override
     public final void initialize() {
+        dependenciesContainer.getStylesheets().add(
+                getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
+
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue) {
                 saveChanges();
@@ -281,6 +305,7 @@ public class StoryEditor extends GenericEditor<Story> {
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
+        taskContainer.getChildren().clear();
         super.dispose();
     }
 
@@ -409,21 +434,20 @@ public class StoryEditor extends GenericEditor<Story> {
 
         GridPane pane = new GridPane();
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
+        column1.setHgrow(Priority.SOMETIMES);
 
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
+        column2.setHgrow(Priority.ALWAYS);
 
         ColumnConstraints column3 = new ColumnConstraints();
-        column3.setHgrow(Priority.SOMETIMES);
+        column3.setHgrow(Priority.NEVER);
 
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
         pane.getColumnConstraints().add(column3);
 
         if (getIsCreationWindow()) {
-            Text nameText = new Text(newDependency.toString());
+            Label nameText = new Label(newDependency.toString());
             pane.add(nameText, 0, 0);
         }
         else {
@@ -431,13 +455,78 @@ public class StoryEditor extends GenericEditor<Story> {
             nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
             pane.add(nameLink, 0, 0);
         }
-        String depth = "(" + Integer.toString(DependenciesHelper.dependenciesDepth(newDependency)) + " deep) ";
-        Text depthText = new Text(depth);
-        pane.add(depthText, 1, 0);
+        DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        ObservableList<Node> children = hBox.getChildren();
+        children.add(new Label("["));
+        Label storiesLabel = new Label(Integer.toString(treeInfo.getCount()));
+        storiesLabel.setTooltip(
+                new Tooltip("The number of stories that this story depends on in total (including itself)."));
+        storiesLabel.getStyleClass().add("story-depends-on");
+        children.add(storiesLabel);
+        HBox.setHgrow(storiesLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label immediateLabel = new Label(Integer.toString(treeInfo.getImmediateDepth()));
+        immediateLabel.setTooltip(new Tooltip("The number of stories this story immediately depends on."));
+        immediateLabel.getStyleClass().add("story-depends-direct");
+        children.add(immediateLabel);
+        HBox.setHgrow(immediateLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label deepLabel = new Label(Integer.toString(treeInfo.getMaxDepth()));
+        deepLabel.setTooltip(new Tooltip("The maximum number of stories this story transitively depends on."));
+        deepLabel.getStyleClass().add("story-depends-deep");
+        children.add(deepLabel);
+        HBox.setHgrow(deepLabel, Priority.ALWAYS);
+        children.add(new Label("] "));
+
+        hBox.setOnMouseEntered(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount())
+                        + " stories", immediateLabel, Integer.toString(treeInfo.getImmediateDepth()) + " direct",
+                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " deep"));
+
+        hBox.setOnMouseExited(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount()),
+                immediateLabel, Integer.toString(treeInfo.getImmediateDepth()),
+                deepLabel, Integer.toString(treeInfo.getMaxDepth())));
+
+        pane.add(hBox, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
 
         return pane;
+    }
+
+    /**
+     * Performs a transition to new text on the dependencies detail text.
+     * @param itemsContainer container of the details labels.
+     * @param storiesLabel the label to set to storiesText.
+     * @param storiesText the new text for storiesLabel.
+     * @param immediateLabel the label to set to immediateText.
+     * @param immediateText the new text for immediateLabel.
+     * @param deepLabel the label to set to deepText.
+     * @param deepText the new text for deepLabel.
+     */
+    private void transitionText(final Node itemsContainer, final Label storiesLabel, final String storiesText,
+                                final Label immediateLabel, final String immediateText,
+                                final Label deepLabel, final String deepText) {
+        final Duration transitionTime = Duration.seconds(0.15);
+        FadeTransition fadeOut = new FadeTransition(transitionTime, itemsContainer);
+        fadeOut.setFromValue(itemsContainer.getOpacity());
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(evt -> {
+            storiesLabel.setText(storiesText);
+            immediateLabel.setText(immediateText);
+            deepLabel.setText(deepText);
+            fadeOut.setFromValue(itemsContainer.getOpacity());
+            fadeOut.setToValue(1);
+            fadeOut.setOnFinished(null);
+            fadeOut.play();
+        });
+        fadeOut.play();
     }
 
     /**
@@ -523,6 +612,65 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the ACs in the table
         updateAcceptanceCriteria();
+    }
+
+    /**
+     * Injects a task editor tied to the given task.
+     * @param task The task to display
+     * @param creationBox Whether or not this is a creation box
+     */
+    private void injectTaskEditor(final Task task, final boolean creationBox) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        try {
+            Parent view = loader.load();
+            TaskEditor controller = loader.getController();
+            controller.configure(task, creationBox, view, this);
+            taskContainer.getChildren().add(view);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create new task");
+        }
+    }
+
+    /**
+     * Is called when you click the 'Create Task' button and inserts a new task
+     * fxml into the task container.
+     * @param event The event that caused the function to be called
+     */
+    @FXML
+    private void createTaskClick(final ActionEvent event) {
+        Task task = new Task();
+        injectTaskEditor(task, true);
+    }
+
+    /**
+     * Adds a task to this story.
+     * @param task The task to add
+     */
+    protected final void addTask(final Task task) {
+        try {
+            getModel().addTask(task);
+        }
+        catch (DuplicateObjectException e) {
+            addFormError(taskContainer, e.getMessage());
+        }
+    }
+
+    /**
+     * Removes a task from this story.
+     * @param task The task to remove
+     */
+    protected final void removeTask(final Task task) {
+        if (getModel().getTasks().contains(task)) {
+            getModel().removeTask(task);
+        }
+    }
+
+    /**
+     * Removes the editor of a task.
+     * @param view The parent node of the task editor
+     */
+    protected final void removeTaskEditor(final Parent view) {
+        taskContainer.getChildren().remove(view);
     }
 
     /**
@@ -643,6 +791,8 @@ public class StoryEditor extends GenericEditor<Story> {
                     updateAcceptanceCriteria();
                 }
             });
+            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+            fadeButtonOnHover.setupEffect();
             AnchorPane conditionCell = new AnchorPane();
             AnchorPane.setLeftAnchor(node, 0.0);
             if (isEdit) {
