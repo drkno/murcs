@@ -49,7 +49,6 @@ public abstract class Token {
         // setup special tokens
         for (BangCommand specialToken : specialTokens) {
             String[] commands = specialToken.getCommands();
-            System.out.println(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
             boolean enabled = searchQuery.matches(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
             specialToken.setValue(enabled);
             if (enabled) {

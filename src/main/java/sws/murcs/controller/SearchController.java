@@ -303,6 +303,12 @@ public class SearchController {
      */
     private void handleSelectionChanged(final ObservableValue<? extends SearchResult> observable,
                                         final SearchResult oldValue, final SearchResult newValue) {
+        if (newValue == null) {
+            previewPane.getChildren().clear();
+            previewPane.getChildren().add(noItemsLabel);
+            return;
+        }
+
         synchronized (previewRenderThread) {
             previewRenderThread.notify();
         }
@@ -389,7 +395,12 @@ public class SearchController {
                 final CountDownLatch latch = new CountDownLatch(1);
                 Platform.runLater(() -> {
                     previewPane.getChildren().clear();
-                    previewPane.getChildren().add(editorPane.getView());
+                    if (foundItems.getSelectionModel().getSelectedItem() == null) {
+                        previewPane.getChildren().add(noItemsLabel);
+                    }
+                    else {
+                        previewPane.getChildren().add(editorPane.getView());
+                    }
                     latch.countDown();
                 });
                 latch.await();

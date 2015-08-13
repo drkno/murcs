@@ -42,7 +42,9 @@ public class FilePersistenceLoaderTest {
         files = new ArrayList<>();
         random = new Random();
         UndoRedoManager.setDisabled(true);
-        PersistenceManager.getCurrent().setCurrentModel(null);
+        if (PersistenceManager.getCurrent() != null) {
+            PersistenceManager.getCurrent().setCurrentModel(null);
+        }
     }
 
     @After
