@@ -6,6 +6,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,6 +32,7 @@ import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 import sws.murcs.search.tokens.BangCommand;
+import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
 import java.util.Collection;
@@ -43,8 +45,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public class SearchController {
 
-    public GridPane commandsPane;
-    public TilePane commandsTitlePane;
+    protected GridPane commandsPane;
+    protected TilePane commandsTitlePane;
     /**
      * Icon for search.
      */
@@ -55,7 +57,7 @@ public class SearchController {
      * TextField to contain search query.
      */
     @FXML
-    private TextField searchText;
+    protected TextField searchText;
 
     /**
      * ListView to display results.
@@ -199,6 +201,13 @@ public class SearchController {
 
         foundItems.setCellFactory(createItemsCellFactory());
         foundItems.setItems(searchHandler.getResults());
+
+        searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+    }
+
+    private void showSearchCommandsPopOver() {
+        SearchCommandsView searchCommandsView = new SearchCommandsView();
+        searchCommandsView.setup(this, searchIcon);
     }
 
     private void showSearchList() {
@@ -453,27 +462,18 @@ public class SearchController {
         saveButton.setOnAction(selectEvent);
     }
 
-    private void loadCommands(final Collection<BangCommand> commands) {
-        commands.stream().forEach(c -> {
-            Label commandLabel = new Label();
-            String longSyntax = c.getCommands()[0];
-            String shortSyntax = c.getCommands()[1];
-            commandLabel.setText(longSyntax + " or " + shortSyntax + "\n" + c.getDescription());
-            setupAutoFill(commandLabel, longSyntax);
-            commandsTitlePane.getChildren().add(commandLabel);
-        });
-    }
-
-    private void setupAutoFill(final Label commandLabel, final String command) {
-        commandLabel.setOnMousePressed(event -> {
-            if (searchText.getText() != null) {
-                searchText.setText(command + " " + searchText.getText());
-            }
-            searchText.setText(command);
-        });
-    }
-
-    private void commandsControl() {
-
+    /**
+     * Injects a task editor tied to the given task.
+     */
+    private void injectSearchCommands() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        try {
+                Parent view = loader.load();
+                SearchCommandsController controller = loader.getController();
+                controller.setup(this);
+                searchPane.getChildren().add(view);
+        } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Unable to create search commands");
+        }
     }
 }
