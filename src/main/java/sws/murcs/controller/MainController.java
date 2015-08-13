@@ -19,8 +19,8 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
-import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
+import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane1;
+import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory1;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
 import sws.murcs.controller.tabs.Tabbable;
 import sws.murcs.controller.tabs.ToolBarCommands;
@@ -110,7 +110,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             menuBar.useSystemMenuBarProperty().set(true);
         }
 
-        mainTabPane = new DnDTabPane();
+        mainTabPane = new DnDTabPane1();
 
         mainTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         mainTabPane.setPrefWidth(200);
@@ -118,7 +118,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
         DnDTabPaneSkin skin = new DnDTabPaneSkin(mainTabPane);
         StackPane containerPane = new StackPane(mainTabPane);
-        DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
+        DnDTabPaneFactory1.setup(DnDTabPaneFactory1.FeedbackType.MARKER, containerPane, skin);
         skin.addDropListener((event, tab) -> {
             Point2D mousePos = new Point2D(event.getScreenX(), event.getScreenY());
             javafx.stage.Window window = borderPaneMain.getScene().getWindow();
