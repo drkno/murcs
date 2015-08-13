@@ -129,7 +129,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * The controller for the toolbar in the window.
      */
     private ToolBarController toolBarController;
-    private ModelType currentType;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -893,6 +892,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      * @return the current type.
      */
     public final ModelType getCurrentType() {
-        return currentType;
+        return ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
     }
 }

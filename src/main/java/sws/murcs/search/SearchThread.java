@@ -234,12 +234,13 @@ public class SearchThread<T> {
         String s = o.toString();
         SearchResult result = searchValidator.matches(s);
         if (result != null) {
-            String fieldName = f.getAnnotation(Searchable.class).fieldName();
+            Searchable searchable = f.getAnnotation(Searchable.class);
+            String fieldName = searchable.fieldName();
             if (fieldName.equals("")) {
                 fieldName = f.getName();
             }
 
-            result.setModel(model, fieldName);
+            result.setModel(model, fieldName, searchable.value());
             Platform.runLater(() -> searchResults.add(result));
             return true;
         }
