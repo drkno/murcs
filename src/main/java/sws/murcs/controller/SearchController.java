@@ -116,13 +116,46 @@ public class SearchController {
      */
     @FXML
     private GridPane resultsPane, searchPane;
+
+    /**
+     * The seach commands pane which embeds in the search popover.
+     */
     private Parent searchCommandsPane;
+
+    /**
+     * A flag if the search command button is active.
+     */
     private boolean searchCommandButtonActive = false;
+
+    /**
+     * The transition for fading the results pane into view.
+     */
     private SequentialTransition fadeInResultsPane;
+
+    /**
+     * The transition for fading the results pane out of view.
+     */
     private SequentialTransition fadeOutResultsPane;
+
+    /**
+     * The transition for fading the commands pane into view.
+     */
     private SequentialTransition fadeInCommandsPane;
+
+    /**
+     * The transition for fading the commands pane out of view.
+     */
     private SequentialTransition fadeOutCommandsPane;
+
+    /**
+     * The duration of the fade time.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Duration fadeDuration = Duration.millis(500);
+
+    /**
+     * Flag if the search text field is empty.
+     */
     private boolean emptySearch = true;
 
     /**
@@ -241,6 +274,7 @@ public class SearchController {
         fadeOutCommands.setFromValue(1);
         fadeOutCommands.setToValue(0);
 
+        @SuppressWarnings("checkstyle:magicnumber")
         PauseTransition pauseTransition = new PauseTransition(Duration.millis(200));
 
         fadeInResultsPane = new SequentialTransition(fadeInResults, pauseTransition);
@@ -249,6 +283,9 @@ public class SearchController {
         fadeOutCommandsPane = new SequentialTransition(fadeOutCommands, pauseTransition);
     }
 
+    /**
+     * Creates a new search commands view.
+     */
     private void showSearchCommandsPopOver() {
         if (searchCommandButtonActive) {
             SearchCommandsView searchCommandsView = new SearchCommandsView();
@@ -256,6 +293,10 @@ public class SearchController {
         }
     }
 
+    /**
+     * Transitions the search commands out of view.
+     * And moves the results pane into view.
+     */
     private void showSearchList() {
         fadeInResultsPane.play();
         fadeOutCommandsPane.play();
@@ -264,6 +305,10 @@ public class SearchController {
         searchCommandButtonActive = true;
     }
 
+    /**
+     * Transitions the search commands into view.
+     * And moves the results pane out of view.
+     */
     private void hideSearchList() {
         fadeOutResultsPane.play();
         fadeInCommandsPane.play();

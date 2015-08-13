@@ -10,13 +10,25 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
 /**
- * Created by Dion on 13/08/2015.
+ * Search commands view for the pop over.
  */
 public class SearchCommandsView {
 
+    /**
+     * The instance of the pop over.
+     */
     private PopOver popOver;
+
+    /**
+     * The node which the pop over hangs from.
+     */
     private Node hanger;
 
+    /**
+     * Setups the view and initializes the controller.
+     * @param searchController The search controller which is required for the search commands controller.
+     * @param pHanger The hanger which the popover hangs from.
+     */
     public final void setup(final SearchController searchController, final Node pHanger) {
         hanger = pHanger;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
