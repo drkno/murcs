@@ -75,7 +75,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     /**
      * An observable list of work allocations.
      */
-    private ObservableList<WorkAllocation> observableAllocations;
+    private ObservableList<WorkAllocation> observableAllocations = FXCollections.observableArrayList();
 
     @FXML
     @Override

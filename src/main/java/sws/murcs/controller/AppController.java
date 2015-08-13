@@ -149,7 +149,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         }
 
         navigationManager.navigateTo((Model) newValue);
-        toolBarController.updateBackForwardButtons();
+        if (toolBarController != null) {
+            toolBarController.updateBackForwardButtons();
+        }
 
         if (oldValue == null) {
             displayList.scrollTo(newValue);
@@ -309,12 +311,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             }
         }
 
-        // The remove button should be greyed out
-        // if no item is selected or built in skills (PO or SM) are selected
-        toolBarController.removeButtonDisabled(parameter == null
-                || parameter instanceof Skill
-                && (((Skill) parameter).getShortName().equals("PO")
-                || ((Skill) parameter).getShortName().equals("SM")));
+        if (toolBarController != null) {
+            // The remove button should be greyed out
+            // if no item is selected or built in skills (PO or SM) are selected
+            toolBarController.removeButtonDisabled(parameter == null
+                    || parameter instanceof Skill
+                    && (((Skill) parameter).getShortName().equals("PO")
+                    || ((Skill) parameter).getShortName().equals("SM")));
+        }
 
         if (editorPane == null) {
             editorPane = new EditorPane(parameter);
@@ -398,16 +402,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
 
     @Override
     public void undoRedoNotification(ChangeState param) {
-        //When something has been updated we may have items added/removed from
-        //the display list, so we should update it.
-        updateList();
-
         switch (param) {
             case Forget:
             case Remake:
+                updateList();
+                break;
             case Revert:
                 navigationManager.clearHistory();
                 toolBarController.updateBackForwardButtons();
+                updateList();
                 break;
             default: break;
         }

@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,18 +104,28 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
-            Tabbable tabbable = tabs.stream().filter(t -> selected.equals(t.getRoot())).findFirst().orElse(null);
+            Tabbable tabbable = tabs
+                    .stream()
+                    .filter(t -> selected.getContent().equals(t.getRoot())).findFirst()
+                    .orElse(null);
 
             if (tabbable == null) {
-                toolBarController.setLinkedController(null);
                 return;
             }
+
+            toolBarController.setNavigable(tabbable);
+            toolBarController.setModelManagable(tabbable);
+
             currentTabbable = tabbable;
         });
 
-        undoRedoNotification(ChangeState.Commit);
         loadToolbar();
+        toolBarController.setLinkedController(this);
+
+        undoRedoNotification(ChangeState.Commit);
         setUpShortCuts();
+
+        addModelViewTab();
     }
 
     /**
@@ -137,7 +148,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
     /**
      * Gets the toolbar controller for this pane.
-     * @return The toolbarcontroller.
+     * @return The ToolBarController.
      */
     public ToolBarController getToolBarController() {
         return toolBarController;
@@ -211,7 +222,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
      * Adds a model view tab to the main pane
      */
     public void addModelViewTab() {
-        addTab("sws/murcs/ModelView.fxml");
+        addTab("/sws/murcs/ModelView.fxml");
     }
 
     /**
@@ -220,7 +231,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
      */
     public void addTab(String fxmlPath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
             Tabbable controller = loader.getController();
@@ -331,6 +342,23 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             fileQuitPress(null);
         });
         setUpShortCuts();
+    }
+
+    @FXML
+    private void create(final ActionEvent event) throws InvalidArgumentException {
+        if (!(event.getSource() instanceof MenuItem)){
+            throw new InvalidArgumentException(new String[]{"event"});
+        }
+
+        MenuItem source = (MenuItem)event.getSource();
+        ModelType type = ModelType.parseString(source.getId());
+
+        //If we couldn't parse from the id, try the menutext
+        if (type == null){
+            type = ModelType.parseString(source.getText());
+        }
+
+        showCreateWindow(type);
     }
 
     /**
