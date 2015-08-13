@@ -178,11 +178,23 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets a stories.
+     * Gets all stories.
      * @return The stories
      */
     public final List<Story> getStories() {
         return stories;
+    }
+
+    /**
+     * Gets all tasks.
+     * @return The tasks
+     */
+    public final List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<>();
+        for (Story story : stories) {
+            tasks.addAll(story.getTasks());
+        }
+        return tasks;
     }
 
     /**
