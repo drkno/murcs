@@ -246,7 +246,8 @@ public class SearchController {
 
         foundItems.setCellFactory(createItemsCellFactory());
 
-        SortedList<SearchResult> sortedSearchResults = new SortedList<>(searchHandler.getResults());
+        SortedList<SearchResult> sortedSearchResults
+                = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
         foundItems.setItems(sortedSearchResults);
 
         searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());

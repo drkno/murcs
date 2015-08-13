@@ -4,13 +4,14 @@ import sws.murcs.model.Model;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Object that represents a SearchResult.
  */
-public class SearchResult implements Comparable<SearchResult> {
+public class SearchResult {
 
     /**
      * Maximum length of a search result as returned result text.
@@ -266,31 +267,34 @@ public class SearchResult implements Comparable<SearchResult> {
     }
 
     /**
-     * Compares this search result and produces an integer representing
-     * the ordering that should be maintained between them.
+     * Gets a comparator that compares search results and produces
+     * an integer representing the ordering that should be maintained
+     * between them.
      * A negative number indicates this result comes before the other
      * in any sorting, zero indicates this result comes at the same place
      * as another in any sorting and a positive number indicates this
      * result comes after the other other in a list.
-     * @param other other item to compare this one to.
      * @return a integer based sort ordering.
      */
-    public final int compareTo(final SearchResult other) {
-        assert other != null;
-        int sp = priority.compareTo(other.getPriority());
-        // fallback 1: maximum % of string match
-        if (sp == 0) {
-            sp = Integer.compare(contextAfter.length() + contextBefore.length(),
-                    other.contextAfter.length() + other.contextBefore.length());
-        }
-        // fallback 2: maximum # of matches
-        if (sp == 0) {
-            sp = Integer.compare(matches.size(), other.matches.size());
-        }
-        // fallback 3: string comparison
-        if (sp == 0) {
-            sp = toString().compareToIgnoreCase(other.toString());
-        }
-        return sp;
+    public static Comparator<SearchResult> getComparator() {
+        return (sr1, sr2) -> {
+            assert sr1 != null;
+            assert sr2 != null;
+            int sp = sr1.priority.compareTo(sr2.priority);
+            // fallback 1: maximum % of string match
+            if (sp == 0) {
+                sp = Integer.compare(sr1.contextAfter.length() + sr1.contextBefore.length(),
+                        sr2.contextAfter.length() + sr2.contextBefore.length());
+            }
+            // fallback 2: maximum # of matches
+            if (sp == 0) {
+                sp = Integer.compare(sr1.matches.size(), sr2.matches.size());
+            }
+            // fallback 3: string comparison
+            if (sp == 0) {
+                sp = sr1.toString().compareToIgnoreCase(sr2.toString());
+            }
+            return sp;
+        };
     }
 }
