@@ -50,6 +50,11 @@ public class SearchResult {
     private String fieldName;
 
     /**
+     * The priority with which this result was found.
+     */
+    private SearchPriority priority;
+
+    /**
      * Creates a new object that represents a search result.
      * @param startIndex index of the beginning of the match.
      * @param endIndex index of the end of the match.
@@ -67,11 +72,13 @@ public class SearchResult {
      * Sets the model that this search result is associated with.
      * @param theModel the model to associate this result with.
      * @param theFieldName the name of the field that the match occurred on.
+     * @param searchPriority the priority of the search for this item/
      */
-    public final void setModel(final Model theModel, final String theFieldName) {
+    public final void setModel(final Model theModel, final String theFieldName, final SearchPriority searchPriority) {
         model = theModel;
         modelType = toTitleCase(model.getClass().getSimpleName());
         fieldName = toTitleCase(theFieldName);
+        priority = searchPriority;
     }
 
     /**
@@ -128,6 +135,14 @@ public class SearchResult {
      */
     public final List<String> getMatches() {
         return Collections.unmodifiableList(matches);
+    }
+
+    /**
+     * Gets the priority that this result was found with.
+     * @return the search priority.
+     */
+    public final SearchPriority getPriorityProperty() {
+        return priority;
     }
 
     /**
