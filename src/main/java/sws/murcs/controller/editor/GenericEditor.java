@@ -11,6 +11,7 @@ import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import sws.murcs.view.App;
 
 /**
  * A generic class for making editing easier.
@@ -30,7 +32,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * A method of routing navigation events to the controller that owns
      * this editor
      */
-    private Navigable navigable;
+    private Navigable navigationManager;
 
     /**
      * The type of model the editor is being used for.
@@ -336,18 +338,33 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     }
 
     /**
-     * Gets the navigable for this controller.
-     * @return The navigable
+     * Gets the navigationManager for this controller.
+     * @return The navigationManager
      */
-    public Navigable getNavigable() {
-        return navigable;
+    public Navigable getNavigationManager() {
+        return navigationManager;
     }
 
     /**
-     * Sets the navigable for this controller.
-     * @param navigable The navigable.
+     * Sets the navigationManager for this controller.
+     * @param navigationManager The navigationManager.
      */
-    public void setNavigable(Navigable navigable) {
-        this.navigable = navigable;
+    public void setNavigationManager(Navigable navigationManager) {
+        this.navigationManager = navigationManager;
+    }
+
+    /**
+     * Gets Dion's window from a node. This method is O(N) (where N is the number of windows
+     * you have open). This method will return null if it can't find a Window.
+     * @param node The node to try and find the window for.
+     * @return The Window that is used in the WindowManager.
+     */
+    protected Window getWindowFromNode(Node node) {
+        return App.getWindowManager()
+                .getAllWindows()
+                .stream()
+                .filter(w -> w.getStage() == node.getScene().getWindow())
+                .findFirst()
+                .orElse(null);
     }
 }

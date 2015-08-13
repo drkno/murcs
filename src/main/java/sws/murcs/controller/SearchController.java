@@ -22,6 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
@@ -106,6 +107,13 @@ public class SearchController {
     private GridPane resultsPane, searchPane;
 
     /**
+     * The navigation manager for the active tab. I'm not sure if this is
+     * expected behaviour (try and select the item in the active tab). Alternatives
+     * might be to open in a new tab.
+     */
+    private Navigable navigationManager;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
@@ -154,7 +162,7 @@ public class SearchController {
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
-            NavigationManager.navigateTo(foundItems.getSelectionModel().getSelectedItem().getModel());
+            navigationManager.navigateTo(foundItems.getSelectionModel().getSelectedItem().getModel());
             popOverWindow.hide();
         };
 
@@ -409,5 +417,21 @@ public class SearchController {
         saveButton.setVisible(true);
         saveButton.setText("Open In Window");
         saveButton.setOnAction(selectEvent);
+    }
+
+    /**
+     * Gets the navigation manager used by the search window
+     * @return The navigation manager
+     */
+    public Navigable getNavigationManager() {
+        return navigationManager;
+    }
+
+    /**
+     * Sets the navigation manager for the Search UI
+     * @param navigationManager The new navigation manager.
+     */
+    public void setNavigationManager(Navigable navigationManager) {
+        this.navigationManager = navigationManager;
     }
 }

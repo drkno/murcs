@@ -232,7 +232,7 @@ public final class ErrorReporter {
         popOver.detachableProperty().set(true);
         popOver.detachedProperty().set(true);
         popOver.detachedCloseButtonProperty().set(false);
-        popOver.show(App.getAppController().getToolBarController().getToolBar());
+        popOver.show(App.getMainController().getToolBarController().getToolBar());
         VBox loader = new VBox();
 
         ImageView imageView = new ImageView();
@@ -301,8 +301,9 @@ public final class ErrorReporter {
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
         reportFields.put("javaVersion", System.getProperty("java.version"));
-        reportFields.put("navForwardPossible", Boolean.toString(NavigationManager.canGoForward()));
-        reportFields.put("navBackwardPossible", Boolean.toString(NavigationManager.canGoBack()));
+        //TODO work out how the commented code should work in the new system.
+        //reportFields.put("navForwardPossible", Boolean.toString(NavigationManager.canGoForward()));
+        //reportFields.put("navBackwardPossible", Boolean.toString(NavigationManager.canGoBack()));
         reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
         reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
 

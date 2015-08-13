@@ -17,8 +17,6 @@ import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.AppController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -30,7 +28,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -72,7 +69,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
-                registeredStages.add(App.getAppController().getWindow());
+                registeredStages.add(App.getMainController().getWindow());
             } catch (Exception e) {
                 e.printStackTrace();
             }

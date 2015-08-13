@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sws.murcs.controller.AppController;
+import sws.murcs.controller.MainController;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -59,9 +59,9 @@ public class App extends Application {
     private static final int SUBSTRINGLENGTH = 3;
 
     /**
-     * The current app controller.
+     * The current main controller.
      */
-    private static AppController appController;
+    private static MainController mainController;
 
     /**
      * The manager for all windows.
@@ -93,8 +93,8 @@ public class App extends Application {
      * Gets the app controller that was created.
      * @return The App Controller
      */
-    public static AppController getAppController() {
-        return appController;
+    public static MainController getMainController() {
+        return mainController;
     }
 
     /**
@@ -185,17 +185,17 @@ public class App extends Application {
             shortcutManager = new ShortcutManager();
         }
 
-        // Loads the primary fxml and sets appController as its controller
+        // Loads the primary fxml and sets mainController as its controller
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/sws/murcs/ModelView.fxml"));
+        loader.setLocation(getClass().getResource("/sws/murcs/MainView.fxml"));
         Parent parent = loader.load();
-        appController = loader.getController();
+        mainController = loader.getController();
 
         Scene scene = new Scene(parent);
         scene.getStylesheets()
                 .add(getClass()
-                .getResource("/sws/murcs/styles/global.css")
-                .toExternalForm());
+                        .getResource("/sws/murcs/styles/global.css")
+                        .toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -207,7 +207,7 @@ public class App extends Application {
         primaryStage.setMinHeight(minimumApplicationHeight);
 
         stage = primaryStage;
-        appController.show();
+        mainController.show();
     }
 
     /**

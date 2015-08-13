@@ -331,7 +331,7 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setTitleText("Remove Team Member");
                 String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
                 if (getModel().getScrumMaster() != null && getModel().getScrumMaster().equals(person)) {
@@ -379,7 +379,7 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(person.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(person));
+            nameLink.setOnAction(a -> getNavigationManager().navigateTo(person));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

@@ -136,6 +136,14 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     }
 
     /**
+     * Gets the toolbar controller for this pane.
+     * @return The toolbarcontroller.
+     */
+    public ToolBarController getToolBarController() {
+        return toolBarController;
+    }
+
+    /**
      * Sets up the keyboard shortcuts for the application.
      */
     private void setUpShortCuts() {
@@ -163,19 +171,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Project));
+                () -> showCreateWindow(ModelType.Project));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Team));
+                () -> showCreateWindow(ModelType.Team));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Person));
+                () -> showCreateWindow(ModelType.Person));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Skill));
+                () -> showCreateWindow(ModelType.Skill));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Release));
+                () -> showCreateWindow(ModelType.Release));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Backlog));
+                () -> showCreateWindow(ModelType.Backlog));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
-                () -> create(ModelType.Story));
+                () -> showCreateWindow(ModelType.Story));
 
         //Local shortcuts.
         /*Map<KeyCombination, Runnable> accelerators = new HashMap<>();
@@ -200,6 +208,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     }
 
     /**
+     * Adds a model view tab to the main pane
+     */
+    public void addModelViewTab() {
+        addTab("sws/murcs/ModelView.fxml");
+    }
+
+    /**
      * Adds a tab to the pane.
      * @param fxmlPath
      */
@@ -215,10 +230,28 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             Tab tabNode = new Tab(controller.getTitle());
             tabNode.setContent(controller.getRoot());
 
+            tabNode.setOnClosed(e -> tabs.remove(controller));
+
             mainTabPane.getTabs().add(tabNode);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Removes all tabs.
+     */
+    public void clearTabs() {
+        mainTabPane.getTabs().clear();
+        tabs.clear();
+    }
+
+    /**
+     * Resets the tabs, adding a new model view tab.
+     */
+    public void reset() {
+        clearTabs();
+        addModelViewTab();
     }
 
     /**
@@ -274,16 +307,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(false, redoPrompt);
-        }
-
-        switch (change) {
-            case Forget:
-            case Remake:
-            case Revert:
-                NavigationManager.clearHistory();
-                toolBarController.updateBackForwardButtons();
-                break;
-            default: break;
         }
     }
 
@@ -375,9 +398,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
         Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.importModel(model);
-        NavigationManager.clearHistory();
-        updateList();
-        editorPane = null;
+
+        //We need to reset.
+        reset();
     }
 
     /**
@@ -445,14 +468,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
                     throw new Exception("Project was not opened.");
                 }
                 PersistenceManager.getCurrent().setCurrentModel(model);
-                updateList();
                 UndoRedoManager.forget(true);
                 UndoRedoManager.importModel(model);
 
-                //This is a workaround for making sure you can go back when you open a new project
-                //This happens because forget clears the navigation history
-                displayList.getSelectionModel().clearSelection();
-                displayList.getSelectionModel().select(0);
+                reset();
                 return true;
             }
             else {
@@ -594,7 +613,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
                     popup.close();
                     // Close all windows which are not the main app.
                     App.getWindowManager().cleanUp();
-                    selectItem(null);
+                    reset();
                 } catch (Exception e) {
                     ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
                 }
@@ -608,7 +627,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
                             popup.close();
                             // Close all windows which are not the main app.
                             App.getWindowManager().cleanUp();
-                            selectItem(null);
+                            reset();
                         } catch (Exception e) {
                             ErrorReporter.get().reportError(e, "Something went wrong saving the organisation");
                         }
@@ -705,6 +724,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     /**
      * Shows a new create model window
      * @param type The type of class to create
+     */
+    public static void showCreateWindow(ModelType type) {
+        showCreateWindow(type, null);
+    }
+
+    /**
+     * Shows a new create model window
+     * @param type The type of class to create
+     * @param success The callback that should fire upon success
      */
     public static void showCreateWindow(ModelType type, Consumer<Model> success) {
         Class<? extends Model> clazz = ModelType.getTypeFromModel(type);

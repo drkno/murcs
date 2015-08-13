@@ -255,7 +255,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             }
             else {
                 Hyperlink text = new Hyperlink(team.toString());
-                text.setOnAction(param -> NavigationManager.navigateTo(team));
+                text.setOnAction(param -> getNavigationManager().navigateTo(team));
                 setGraphic(text);
             }
         }

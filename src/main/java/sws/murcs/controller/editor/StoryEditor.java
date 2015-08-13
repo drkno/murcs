@@ -393,7 +393,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
@@ -436,7 +436,7 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            nameLink.setOnAction(a -> getNavigationManager().navigateTo(newDependency));
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
@@ -699,7 +699,7 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
                 if (!isCreationWindow) {
-                    GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                    GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                     popup.setTitleText("Are you sure?");
                     popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                     popup.addYesNoButtons(() -> {

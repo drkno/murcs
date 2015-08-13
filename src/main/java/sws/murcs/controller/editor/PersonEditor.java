@@ -184,7 +184,7 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setMessageText("Are you sure you want to remove "
                         + skill.getShortName() + " from "
                         + getModel().getShortName() + "?");
@@ -225,7 +225,7 @@ public class PersonEditor extends GenericEditor<Person> {
         else {
             Hyperlink nameLink = new Hyperlink(skill.toString());
             nameLink.setMinWidth(0.0);
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(skill));
+            nameLink.setOnAction(a -> getNavigationManager().navigateTo(skill));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

@@ -693,7 +693,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(name);
                 } else {
                     Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                    nameLink.setOnAction(a -> getNavigationManager().navigateTo(story));
                     container.getChildren().add(nameLink);
                 }
 
@@ -703,7 +703,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     if (!isCreationWindow) {
-                        GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                        GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                         popup.setTitleText("Are you sure?");
                         popup.setMessageText("Are you sure you wish to remove the story \""
                                 + story.getShortName() + "\" from this backlog?");

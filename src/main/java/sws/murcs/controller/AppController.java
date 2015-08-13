@@ -378,6 +378,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         return navigationManager.canGoBack();
     }
 
+    @Override
+    public void navigateTo(Model model) {
+        selectItem(model);
+    }
+
     /**
      * Navigates forward.
      */
@@ -396,6 +401,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         //When something has been updated we may have items added/removed from
         //the display list, so we should update it.
         updateList();
+
+        switch (param) {
+            case Forget:
+            case Remake:
+            case Revert:
+                navigationManager.clearHistory();
+                toolBarController.updateBackForwardButtons();
+                break;
+            default: break;
+        }
     }
 
     public void setToolBarController(ToolBarController toolBarController) {
