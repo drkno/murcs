@@ -3,10 +3,12 @@ package sws.murcs.controller;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -92,6 +94,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private NavigationManager navigationManager;
 
     /**
+     * The controller in charge of this one.
+     */
+    private MainController mainController;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
@@ -110,6 +117,15 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 .addListener((observer, oldValue, newValue) -> updateList());
 
         displayChoiceBox.getSelectionModel().select(0);
+
+        //If the person control clicked, open in a new tab
+        displayList.setOnMouseClicked(event -> {
+            if (event.isControlDown()) {
+                ModelViewController controller = mainController.addModelViewTab();
+                controller.selectItem((Model)displayList.getSelectionModel().getSelectedItem());
+            }
+        });
+
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
                 if (editorPane != null && newValue != null) {
@@ -405,7 +421,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         }
     }
 
+    @Override
     public void setToolBarController(ToolBarController toolBarController) {
         this.toolBarController = toolBarController;
+    }
+
+    @Override
+    public void registerMainController(MainController controller) {
+        mainController = controller;
     }
 }

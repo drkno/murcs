@@ -229,20 +229,21 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
     /**
      * Adds a model view tab to the main pane
      */
-    public void addModelViewTab() {
-        addTab("/sws/murcs/ModelView.fxml");
+    public ModelViewController addModelViewTab() {
+        return (ModelViewController)addTab("/sws/murcs/ModelView.fxml");
     }
 
     /**
      * Adds a tab to the pane.
      * @param fxmlPath
      */
-    public void addTab(String fxmlPath) {
+    public Tabbable addTab(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
             Tabbable controller = loader.getController();
+            controller.registerMainController(this);
             controller.setToolBarController(toolBarController);
             tabs.add(controller);
 
@@ -253,9 +254,14 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             tabNode.setOnClosed(e -> tabs.remove(controller));
 
             mainTabPane.getTabs().add(tabNode);
+            mainTabPane.getSelectionModel().select(tabNode);
+            
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
     /**

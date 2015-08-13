@@ -3,6 +3,7 @@ package sws.murcs.controller.tabs;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import sws.murcs.controller.MainController;
 import sws.murcs.controller.ToolBarController;
 import sws.murcs.controller.windowManagement.Window;
 
@@ -11,6 +12,8 @@ import sws.murcs.controller.windowManagement.Window;
  * used as a tab
  */
 public interface Tabbable extends Navigable, ModelManagable{
+    public void registerMainController(MainController controller);
+
     public void setToolBarController(ToolBarController toolBarController);
 
     public String getTitle();
