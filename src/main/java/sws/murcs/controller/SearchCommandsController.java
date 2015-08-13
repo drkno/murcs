@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.TilePane;
 import sws.murcs.search.tokens.BangCommand;
@@ -71,6 +72,7 @@ public class SearchCommandsController {
             commandLabel.setText(longSyntax + " or " + shortSyntax + "\n" + c.getDescription());
             commandLabel.setPadding(new Insets(10));
             commandLabel.getStyleClass().add("search-command");
+            commandLabel.setTooltip(new Tooltip("Click me :)"));
             setupAutoFill(commandLabel, longSyntax);
             commandsTitlePane.getChildren().add(commandLabel);
         });

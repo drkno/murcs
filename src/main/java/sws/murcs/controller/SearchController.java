@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -251,6 +252,7 @@ public class SearchController {
         foundItems.setItems(sortedSearchResults);
 
         searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
         resultsPane.setOpacity(0);
