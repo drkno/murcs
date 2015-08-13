@@ -268,7 +268,8 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 () -> toggleItemListView(null));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN),
                 () -> add(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS,
+                        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
                 () -> add(null));
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE, KeyCombination.SHORTCUT_DOWN),
                 () -> remove(null));

@@ -284,7 +284,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     managementList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
             Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
                     .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
@@ -314,7 +315,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     workflowList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
             workflowList.getItems().setAll(values);
         }

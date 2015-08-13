@@ -19,7 +19,6 @@ public @interface Searchable {
 
     /**
      * Field name to identify this field as.
-     * @return the field name, or empty string if not set.
      */
     String fieldName() default "";
 }
