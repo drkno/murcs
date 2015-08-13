@@ -129,9 +129,10 @@ public class Sprint extends Model {
         if (story.getStoryState() != Story.StoryState.Ready) {
             throw new NotReadyException();
         }
-        stories.add(story);
-
-        commit("edit sprint");
+        if (!stories.contains(story)) {
+            stories.add(story);
+            commit("edit sprint");
+        }
     }
 
     /**

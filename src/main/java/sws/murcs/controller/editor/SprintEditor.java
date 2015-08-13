@@ -368,6 +368,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         startDatePicker.focusedProperty().addListener(getChangeListener());
         endDatePicker.focusedProperty().addListener(getChangeListener());
+        // Setup release ComboBox so that it includes dates in release
         releaseComboBox.setConverter(new StringConverter<Release>() {
             @Override
             public String toString(final Release object) {

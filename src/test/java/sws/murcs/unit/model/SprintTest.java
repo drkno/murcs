@@ -7,11 +7,15 @@ import org.junit.Test;
 import sws.murcs.debug.sampledata.ReleaseGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests the sprint class lol
@@ -94,5 +98,31 @@ public class SprintTest {
     public void testInvalidEndDate2() throws InvalidParameterException {
         LocalDate end = sprint.getAssociatedRelease().getReleaseDate().plus(10, ChronoUnit.DAYS);
         sprint.setEndDate(end);
+    }
+
+    @Test(expected = NotReadyException.class)
+    public void testAddStoryNotReady() throws NotReadyException {
+        Story story = new Story();
+        story.setStoryState(Story.StoryState.None);
+        sprint.addStory(story);
+    }
+
+    @Test
+    public void testAddStoryReady() throws NotReadyException {
+        Story story = new Story();
+        story.setStoryState(Story.StoryState.Ready);
+        sprint.addStory(story);
+        // Check that you cannot add the same story twice.
+        sprint.addStory(story);
+        assertTrue(sprint.getStories().size() == 1);
+    }
+
+    @Test
+    public void testRemoveStory() throws NotReadyException {
+        Story story = new Story();
+        story.setStoryState(Story.StoryState.Ready);
+        sprint.addStory(story);
+        sprint.removeStory(story);
+        assertTrue(sprint.getStories().isEmpty());
     }
 }
