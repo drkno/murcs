@@ -1,11 +1,35 @@
 package sws.murcs.search.tokens;
 
 import sws.murcs.search.SearchResult;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map.Entry;
 
 /**
  * Token that is used to check search criteria.
  */
 public abstract class Token {
+
+    /**
+     * Collection of special tokens to be used when setting up the compiler.
+     */
+    private static BangCommand[] specialTokens = new BangCommand[] {
+        new BangCommand("regex", "reg", "Enables regular expressions.", SearchToken::setIsRegex),
+        new BangCommand("case", "cas", "Enables case sensitivity.", SearchToken::setIsCaseSensitive),
+        /*new BangCommand("current", "curr", "Searches the current display list.", ),
+        new BangCommand("name", "nam", "Searches using display names only.", ),
+
+        new BangCommand("backlog", "ba", "Searches backlogs.", ),
+        new BangCommand("person", "pe", "Searches people.", ),
+        new BangCommand("project", "pr", "Searches projects.", ),
+        new BangCommand("release", "re", "Searches releases.", ),
+        new BangCommand("skill", "sk", "Searches skills.", ),
+        new BangCommand("story", "st", "Searches stories.", ),
+        new BangCommand("team", "te", "Searches teams.", )*/
+    };
+
+    //private static boolean
 
     /**
      * Checks for matches on a given string with the current search criteria.
@@ -22,18 +46,16 @@ public abstract class Token {
     public static Token parse(final String input) {
         String searchQuery = input;
 
-        // check if we want case sensitivity
-        boolean caseSensitive = searchQuery.matches(".*(^|\\s+)!case($|\\s+).*");
-        SearchToken.setIsCaseSensitive(caseSensitive);
-        if (caseSensitive) {
-            searchQuery = searchQuery.replaceAll("(^|\\s+)!case($|\\s+)", "");
-        }
-
-        // check if we want to force regex
-        boolean regex = searchQuery.matches(".*(^|\\s+)!regex($|\\s+).*");
-        SearchToken.setIsRegex(regex);
-        if (regex) {
-            searchQuery = searchQuery.replaceAll("(^|(\\s+))!regex($|(\\s+))", "");
+        // setup special tokens
+        for (BangCommand specialToken : specialTokens) {
+            String[] commands = specialToken.getCommands();
+            System.out.println(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
+            boolean enabled = searchQuery.matches(".*(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+).*");
+            specialToken.setValue(enabled);
+            if (enabled) {
+                searchQuery
+                        = searchQuery.replaceAll("(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+)", "");
+            }
         }
 
         searchQuery = searchQuery.trim();
