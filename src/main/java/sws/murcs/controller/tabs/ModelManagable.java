@@ -8,11 +8,21 @@ import sws.murcs.model.ModelType;
  */
 public interface ModelManagable {
     /**
-     * Creates a new model object of the specified type.
+     * Routes a command telling the controller that
+     * it should create a new model of a specified type.
      * @param modelType The model type to create
      */
     public void create(ModelType modelType);
-    
+
+    /**
+     * Routes a command indicating that the controller
+     * should create a new model object of its choice.
+     */
     public void create();
+
+    /**
+     * Routes a command telling the controller that
+     * it should remove a model object.
+     */
     public void remove();
 }

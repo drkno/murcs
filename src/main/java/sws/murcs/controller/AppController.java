@@ -12,7 +12,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.editor.BacklogEditor;
+import sws.murcs.controller.tabs.ModelManagable;
+import sws.murcs.controller.tabs.Navigable;
 import sws.murcs.controller.tabs.Tabbable;
+import sws.murcs.controller.tabs.ToolBarCommands;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
@@ -43,7 +46,8 @@ import java.util.List;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, Tabbable, ToolBarCommands {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
+        Navigable, Tabbable, ModelManagable {
     /**
      * The main display of the window which contains the display
      * list and the content pane.
@@ -227,58 +231,15 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         }
     }
 
-    /**
-     * Function that is called when a new model is created from the plus button.
-     * @param event The event of the add button being called
-     */
-    @FXML
-    public final void add(final ActionEvent event) {
-        Class<? extends Model> clazz = null;
-        if (event != null && event.getSource() instanceof MenuItem) {
-            //If pressing a menu item to add a person, team or skill
-            String id = ((MenuItem) event.getSource()).getId();
-            switch (id) {
-                case "addProject":
-                    clazz = Project.class;
-                    break;
-                case "addPerson":
-                    clazz = Person.class;
-                    break;
-                case "addTeam":
-                    clazz = Team.class;
-                    break;
-                case "addSkill":
-                    clazz = Skill.class;
-                    break;
-                case "addRelease":
-                    clazz = Release.class;
-                    break;
-                case "addBacklog":
-                    clazz = Backlog.class;
-                    break;
-                case "addStory":
-                    clazz = Story.class;
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Adding has not been implemented.");
-            }
-        }
-        else {
-            //If pressing the add button at the bottom of the display list
-            ModelType type = ModelType.getModelType(displayChoiceBox.getValue());
-            clazz = ModelType.getTypeFromModel(type);
-        }
+    @Override
+    public final void create() {
+        create(displayChoiceBox.getValue());
+    }
+
+    @Override
+    public final void create(ModelType type) {
+        Class clazz = ModelType.getTypeFromModel(type);
         createNewItem(clazz);
-    }
-
-    @Override
-    public void back(ActionEvent event) {
-        navigationManager.goBack();
-    }
-
-    @Override
-    public void forward(ActionEvent event) {
-        navigationManager.goForward();
     }
 
     /**
@@ -305,10 +266,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
 
     /**
      * Function that is called when you want to delete a model.
-     * @param event Event that sends you to the remove clicked function
      */
-    @FXML
-    public final void remove(final ActionEvent event) {
+    @Override
+    public final void remove() {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
@@ -374,9 +334,9 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         else {
             type = ModelType.getModelType(parameter);
             if (type != selectedType) {
-                NavigationManager.setIgnore(true);
+                navigationManager.setIgnore(true);
                 displayChoiceBox.getSelectionModel().select(ModelType.getSelectionType(type));
-                NavigationManager.setIgnore(false);
+                navigationManager.setIgnore(false);
             }
             if (parameter != displayList.getSelectionModel().getSelectedItem()) {
                 displayList.getSelectionModel().select(parameter);
@@ -413,15 +373,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         }
     }
 
-    /**
-     * Gets the toolBar controller.
-     * @return The toolBar controller.
-     */
-    @Override
-    public ToolBarController getToolBar() {
-        return toolBarController;
-    }
-
     @Override
     public String getTitle() {
         //TODO implement the observable pattern and
@@ -448,21 +399,22 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     public final void goBack() {
-        if (!NavigationManager.canGoBack()) {
+        if (!navigationManager.canGoBack()) {
             return;
         }
         displayList.getSelectionModel().clearSelection();
-        NavigationManager.goBack();
+        navigationManager.goBack();
+        toolBarController.updateBackForwardButtons();
     }
 
     @Override
     public boolean canGoForward() {
-        return NavigationManager.canGoForward();
+        return navigationManager.canGoForward();
     }
 
     @Override
     public boolean canGoBack() {
-        return NavigationManager.canGoBack();
+        return navigationManager.canGoBack();
     }
 
     /**
@@ -470,11 +422,12 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     public final void goForward() {
-        if (!NavigationManager.canGoForward()) {
+        if (!navigationManager.canGoForward()) {
             return;
         }
         displayList.getSelectionModel().clearSelection();
-        NavigationManager.goForward();
+        navigationManager.goForward();
+        toolBarController.updateBackForwardButtons();
     }
 
     @Override

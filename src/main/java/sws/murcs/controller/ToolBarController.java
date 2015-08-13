@@ -4,15 +4,12 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Control;
-import javafx.scene.control.Menu;
-import javafx.scene.control.Separator;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import sws.murcs.controller.tabs.ModelManagable;
 import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.tabs.ToolBarCommands;
+import sws.murcs.model.*;
 
 /**
  * Controller for the toolbar.
@@ -61,9 +58,14 @@ public class ToolBarController {
     private ToolBarCommands linkedController;
 
     /**
-     * The navigation controller that navigation commands are routed through
+     * The navigation controller that navigation commands are routed through.
      */
     private Navigable navigable;
+
+    /**
+     * The controller responsible for managing model objects.
+     */
+    private ModelManagable modelManagable;
 
     public ToolBarController() {
     }
@@ -162,7 +164,39 @@ public class ToolBarController {
      */
     @FXML
     private void addButtonClick(final ActionEvent event) {
-        linkedController.add(event);
+        ModelType type = null;
+        if (event != null && event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addProject":
+                    type = ModelType.Project;
+                    break;
+                case "addPerson":
+                    type = ModelType.Person;
+                    break;
+                case "addTeam":
+                    type = ModelType.Team;
+                    break;
+                case "addSkill":
+                    type = ModelType.Skill;
+                    break;
+                case "addRelease":
+                    type = ModelType.Release;
+                    break;
+                case "addBacklog":
+                    type = ModelType.Backlog;
+                    break;
+                case "addStory":
+                    type = ModelType.Story;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
+            }
+        }
+
+        if (type == null) modelManagable.create();
+        else modelManagable.create(type);
     }
 
     /**
@@ -216,7 +250,7 @@ public class ToolBarController {
      */
     @FXML
     private void removeButtonClick(final ActionEvent event) {
-        linkedController.remove(event);
+        modelManagable.remove();
     }
 
     /**
@@ -265,7 +299,7 @@ public class ToolBarController {
     }
 
     /**
-     * Sets wether or not the remove button is disabled or not.
+     * Sets whether or not the remove button is disabled or not.
      * @param disabled Whether or not it is disabled.
      */
     public final void removeButtonDisabled(final boolean disabled) {
@@ -431,5 +465,23 @@ public class ToolBarController {
      */
     public void setNavigable(Navigable navigable) {
         this.navigable = navigable;
+    }
+
+    /**
+     * Gets the controller that is responsible for
+     * managing model commands.
+     * @return The manager
+     */
+    public ModelManagable getModelManagable() {
+        return modelManagable;
+    }
+
+    /**
+     * Sets the controller that will recieve create/remove commands
+     * from the tool bar.
+     * @param modelManagable The controller responsible
+     */
+    public void setModelManagable(ModelManagable modelManagable) {
+        this.modelManagable = modelManagable;
     }
 }
