@@ -12,11 +12,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
@@ -171,7 +173,31 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
      * @param tab The tab
      */
     private void createWindow(DragEvent event, Tab tab) {
-        System.out.println("Moved to new window?");
+        Tabbable tabbable = tabs
+                .stream()
+                .filter(t -> tab.getContent().equals(t.getRoot())).findFirst()
+                .orElse(null);
+
+        mainTabPane.getTabs().remove(tab);
+
+        Stage stage = new Stage();
+        stage.setTitle(tabbable.getTitle().getValue());
+        tabbable.getTitle().addListener((observable, oldValue, newValue) -> stage.setTitle(newValue));
+
+        AnchorPane root = new AnchorPane();
+        root.getChildren().add(tabbable.getRoot());
+        AnchorPane.setTopAnchor(tabbable.getRoot(), 0.0);
+        AnchorPane.setLeftAnchor(tabbable.getRoot(), 0.0);
+        AnchorPane.setBottomAnchor(tabbable.getRoot(), 0.0);
+        AnchorPane.setRightAnchor(tabbable.getRoot(), 0.0);
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        Window window = new Window(stage, tabbable);
+        App.getWindowManager().addWindow(window);
+
+        stage.show();
     }
 
     /**

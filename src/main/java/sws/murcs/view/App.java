@@ -1,5 +1,6 @@
 package sws.murcs.view;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -172,6 +173,14 @@ public class App extends Application {
      */
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        createWindow(primaryStage);
+    }
+
+    /**
+     * Creates a new MainWindow
+     * @param stage The stage to load the window onto
+     */
+    public void createWindow(Stage stage) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
@@ -188,7 +197,13 @@ public class App extends Application {
         // Loads the primary fxml and sets mainController as its controller
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/sws/murcs/MainView.fxml"));
-        Parent parent = loader.load();
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            //We should never hit this, if we managed to start the application
+            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
+        }
         mainController = loader.getController();
 
         Scene scene = new Scene(parent);
@@ -196,17 +211,17 @@ public class App extends Application {
                 .add(getClass()
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(defaultWindowTitle);
+        stage.setScene(scene);
+        stage.setTitle(defaultWindowTitle);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
-        primaryStage.getIcons().add(iconImage);
+        stage.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
-        primaryStage.setMinWidth(minimumApplicationWidth);
-        primaryStage.setMinHeight(minimumApplicationHeight);
+        stage.setMinWidth(minimumApplicationWidth);
+        stage.setMinHeight(minimumApplicationHeight);
 
-        stage = primaryStage;
+        App.stage = stage;
         mainController.show();
     }
 
