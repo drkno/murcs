@@ -5,26 +5,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import org.eclipse.fx.ui.controls.tabpane.DndTabPane;
-import org.eclipse.fx.ui.controls.tabpane.DndTabPaneFactory;
-import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
+import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
+import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
 import sws.murcs.controller.tabs.Tabbable;
 import sws.murcs.controller.tabs.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
@@ -113,11 +108,26 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             menuBar.useSystemMenuBarProperty().set(true);
         }
 
-        Pane containerPane = DndTabPaneFactory.createDefaultDnDPane(DndTabPaneFactory.FeedbackType.MARKER, null);
-        mainTabPane = (DndTabPane)containerPane.getChildren().get(0);
+        mainTabPane = new DnDTabPane();
+
         mainTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
         mainTabPane.setPrefWidth(200);
         mainTabPane.setPrefHeight(200);
+
+        DnDTabPaneSkin skin = new DnDTabPaneSkin(mainTabPane);
+        StackPane containerPane = new StackPane(mainTabPane);
+        DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
+        skin.addDropListener((event, tab) -> {
+            Point2D mousePos = new Point2D(event.getScreenX(), event.getScreenY());
+            javafx.stage.Window window = borderPaneMain.getScene().getWindow();
+            Rectangle bounds = new Rectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+
+            if (!bounds.contains(mousePos)) {
+                createWindow(event, tab);
+            } else return;
+        });
+
+        mainTabPane.setSkin(skin);
 
         borderPaneMain.setCenter(containerPane);
 
@@ -153,6 +163,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
 
         addModelViewTab();
         addModelViewTab();
+    }
+
+    /**
+     * Creates a new window, at the specified position
+     * @param event The mouse event
+     * @param tab The tab
+     */
+    private void createWindow(DragEvent event, Tab tab) {
+        System.out.println("Moved to new window?");
     }
 
     /**
@@ -266,9 +285,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
             controller.setToolBarController(toolBarController);
             tabs.add(controller);
 
-            Tab tabNode = new Tab(controller.getTitle());
+            Tab tabNode = new Tab();
             tabNode.setClosable(true);
             tabNode.setContent(controller.getRoot());
+
+            Label tabLabel = new Label(controller.getTitle().getValue());
+            tabLabel.setMinWidth(30);
+            tabLabel.setPrefWidth(100);
+            tabLabel.setMaxWidth(100);
+            controller.getTitle().addListener((observable, oldValue, newValue) -> tabLabel.setText(newValue));
+            tabNode.setGraphic(tabLabel);
 
             tabNode.setOnClosed(e -> tabs.remove(controller));
 

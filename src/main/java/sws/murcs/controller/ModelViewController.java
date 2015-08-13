@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -99,6 +100,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private MainController mainController;
 
     /**
+     * The title property for the pane
+     */
+    private SimpleStringProperty titleProperty = new SimpleStringProperty("Model View");
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
@@ -130,6 +136,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             if (oldValue != newValue) {
                 if (editorPane != null && newValue != null) {
                     editorPane.getController().saveChanges();
+                    titleProperty.set(((Model)newValue).getShortName());
                 }
                 updateDisplayListSelection(newValue, oldValue);
             }
@@ -344,10 +351,10 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public String getTitle() {
+    public SimpleStringProperty getTitle() {
         //TODO implement the observable pattern and
         //fire events when we change this
-        return "Model View";
+        return titleProperty;
     }
 
     /**
@@ -357,11 +364,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     @Override
     public final Parent getRoot() {
         return hBoxMainDisplay;
-    }
-
-    @Override
-    public Object getController() {
-        return null;
     }
 
     /**
