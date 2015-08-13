@@ -22,10 +22,10 @@ import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
  *
  * Factory to create a tab pane who support DnD
  */
-public final class DnDTabPaneFactory1 {
+public final class DnDTabPaneFactory {
 	private static MarkerFeedback CURRENT_FEEDBACK;
 
-	private DnDTabPaneFactory1() {
+	private DnDTabPaneFactory() {
 
 	}
 
@@ -36,8 +36,8 @@ public final class DnDTabPaneFactory1 {
 	 *            the setup instance for the pane
 	 * @return the tab pane
 	 */
-	public static DnDTabPane1 createDndTabPane(Consumer<DragSetup> setup) {
-		return new DnDTabPane1() {
+	public static DnDTabPane createDndTabPane(Consumer<DragSetup> setup) {
+		return new DnDTabPane() {
 			@Override
 			protected javafx.scene.control.Skin<?> createDefaultSkin() {
 				DnDTabPaneSkin skin = new DnDTabPaneSkin(this);
@@ -58,7 +58,7 @@ public final class DnDTabPaneFactory1 {
 	 */
 	public static Pane createDefaultDnDPane(FeedbackType feedbackType, Consumer<TabPane> setup) {
 		StackPane pane = new StackPane();
-		DnDTabPane1 tabPane = new DnDTabPane1() {
+		DnDTabPane tabPane = new DnDTabPane() {
 			@Override
 			protected javafx.scene.control.Skin<?> createDefaultSkin() {
 				DnDTabPaneSkin skin = new DnDTabPaneSkin(this);
@@ -109,13 +109,13 @@ public final class DnDTabPaneFactory1 {
 	 *            the setup
 	 */
 	public static void setup(FeedbackType type, Pane layoutNode, DragSetup setup) {
-		setup.setStartFunction((t) -> Boolean.valueOf(!t.isDisabled() && ((DnDTabPane1) t.getTabPane()).isDraggingEnabled()));
+		setup.setStartFunction((t) -> Boolean.valueOf(!t.isDisabled() && ((DnDTabPane) t.getTabPane()).isDraggingEnabled()));
 		setup.setFeedbackConsumer((d) -> handleFeedback(type, layoutNode, d));
-		setup.setDropConsumer(DnDTabPaneFactory1::handleDropped);
-		setup.setDragFinishedConsumer(DnDTabPaneFactory1::handleFinished);
+		setup.setDropConsumer(DnDTabPaneFactory::handleDropped);
+		setup.setDragFinishedConsumer(DnDTabPaneFactory::handleFinished);
 	}
 	
-	private static void fireTabDraggedEvent(DnDTabPane1 tabPane, Tab draggedTab, int fromIndex, int toIndex) {
+	private static void fireTabDraggedEvent(DnDTabPane tabPane, Tab draggedTab, int fromIndex, int toIndex) {
 		tabPane.fireTabDragged(draggedTab, fromIndex, toIndex);
 	}
 	
@@ -134,7 +134,7 @@ public final class DnDTabPaneFactory1 {
 			targetPane.getTabs().add(idx, data.draggedTab);
 		}
 		
-		fireTabDraggedEvent((DnDTabPane1) targetPane, data.draggedTab, oldIndex, targetPane.getTabs().indexOf(data.draggedTab));
+		fireTabDraggedEvent((DnDTabPane) targetPane, data.draggedTab, oldIndex, targetPane.getTabs().indexOf(data.draggedTab));
 				
 		data.draggedTab.getTabPane().getSelectionModel().select(data.draggedTab);
 	}

@@ -30,7 +30,7 @@ import javafx.scene.paint.Color;
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import sws.murcs.controller.controls.tabs.tabpane.DropListener;
 
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory1.*;
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.*;
 
 /**
  * A lightly modified version of the class found here:
@@ -43,7 +43,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	/**
 	 * Custom data format for move data
 	 */
-	public static final DataFormat TAB_MOVE = new DataFormat("DnDTabPane1:tabMove"); //$NON-NLS-1$
+	public static final DataFormat TAB_MOVE = new DataFormat("DnDTabPane:tabMove"); //$NON-NLS-1$
 
 	private Object noneEnum;
 	private StyleableProperty<Object> openAnimation;

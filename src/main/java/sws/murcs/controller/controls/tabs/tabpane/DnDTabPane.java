@@ -14,14 +14,14 @@ import javafx.scene.control.TabPane;
  *
  * A simple extension of the {@link TabPane} that allows to disable dragging.
  */
-public class DnDTabPane1 extends TabPane {
+public class DnDTabPane extends TabPane {
 	private BooleanProperty draggingEnabled = new SimpleBooleanProperty(true);
 	private ObjectProperty<EventHandler<TabDraggedEvent>> onTabDragged = new SimpleObjectProperty<>(null);
 	
 	/**
-	 * Creates a new instance of {@link DnDTabPane1}.
+	 * Creates a new instance of {@link DnDTabPane}.
 	 */
-	public DnDTabPane1() {
+	public DnDTabPane() {
 		super();
 	}
 	
