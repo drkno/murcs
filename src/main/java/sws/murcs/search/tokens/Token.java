@@ -29,7 +29,13 @@ public abstract class Token {
         new BangCommand("team", "te", "Searches teams.", )*/
     };
 
-    //private static boolean
+    /**
+     * Gets the special tokens that can be used while searching.
+     * @return the special tokens.
+     */
+    public static BangCommand[] getSpecialTokens() {
+        return specialTokens;
+    }
 
     /**
      * Checks for matches on a given string with the current search criteria.
