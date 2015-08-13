@@ -7,6 +7,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -180,15 +181,13 @@ public class SearchController {
             if (Objects.equals(search, "")) {
                 hideSearchList();
                 emptySearch = true;
-            }
-            else if (search.equals(searchHash)) { // prevent a special NPE
+            } else if (search.equals(searchHash)) { // prevent a special NPE
                 if (emptySearch) {
                     showSearchList();
                     emptySearch = false;
                 }
                 noItemsLabel.setText("42");
-            }
-            else {
+            } else {
                 if (emptySearch) {
                     showSearchList();
                     emptySearch = false;
@@ -198,8 +197,7 @@ public class SearchController {
 
             if (newValue.length() == 0) {
                 searchText.getStyleClass().add("search-input-placeholder");
-            }
-            else {
+            } else {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
@@ -214,7 +212,9 @@ public class SearchController {
         });
 
         foundItems.setCellFactory(createItemsCellFactory());
-        foundItems.setItems(searchHandler.getResults());
+
+        SortedList<SearchResult> sortedSearchResults = new SortedList<>(searchHandler.getResults());
+        foundItems.setItems(sortedSearchResults);
 
         searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
         injectSearchCommands();

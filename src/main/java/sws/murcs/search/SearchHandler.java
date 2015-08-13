@@ -1,15 +1,12 @@
 package sws.murcs.search;
 
-import com.sun.javafx.collections.ObservableListWrapper;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.search.tokens.Token;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -33,10 +30,7 @@ public  class SearchHandler {
      */
     public SearchHandler() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
-        //results = FXCollections.observableArrayList();
-        results = new ObservableListWrapper<SearchResult>(new ArrayList<>(), param -> {
-            return new Observable[]{new SimpleObjectProperty<>(param.getPriorityProperty())};
-        });
+        results = FXCollections.observableArrayList();
         searchThreads = new SearchThread[] {
                 new SearchThread<>(results, ModelType.Backlog, organisation.getBacklogs()),
                 new SearchThread<>(results, ModelType.Person, organisation.getPeople()),

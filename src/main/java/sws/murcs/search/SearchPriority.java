@@ -8,17 +8,30 @@ public enum SearchPriority {
     /**
      * Ultra search priority. Will be found in the first pass.
      */
-    Ultra,
+    Ultra(0),
     /**
      * High search priority. Will be found in second pass.
      */
-    High,
+    High(1),
     /**
      * Medium search priority. Will be found in third pass.
      */
-    Medium,
+    Medium(2),
     /**
      * Low search priority. Will be found in fourth pass.
      */
-    Low
+    Low(3);
+
+    /**
+     * Priority of the search item.
+     */
+    private int searchPriority;
+
+    /**
+     * Sets up the search priority so it can be reliably compared.
+     * @param priority priority of the search item.
+     */
+    SearchPriority(final int priority) {
+        searchPriority = priority;
+    }
 }
