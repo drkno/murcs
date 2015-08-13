@@ -1,7 +1,6 @@
 package sws.murcs.view;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.stage.Window;
 import sws.murcs.controller.SearchCommandsController;
@@ -32,7 +31,7 @@ public class SearchCommandsView {
      */
     public final void setup(final SearchController searchController, final Window pHanger) {
         hanger = pHanger;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands1.fxml"));
         try {
             Parent view = loader.load();
             SearchCommandsController controller = loader.getController();

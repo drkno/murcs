@@ -565,7 +565,7 @@ public class SearchController {
      * Injects a task editor tied to the given task.
      */
     private void injectSearchCommands() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands1.fxml"));
         try {
             searchCommandsPane = loader.load();
             SearchCommandsController controller = loader.getController();
