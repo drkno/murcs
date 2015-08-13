@@ -6,8 +6,10 @@ import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -193,6 +195,11 @@ public class StoryGenerator implements Generator<Story> {
     private PersonGenerator personGenerator;
 
     /**
+     * A task generator for use in generating tasks.
+     */
+    private TaskGenerator taskGenerator;
+
+    /**
      * Creates a new story generator.
      */
     public StoryGenerator() {
@@ -205,6 +212,7 @@ public class StoryGenerator implements Generator<Story> {
      */
     public StoryGenerator(final PersonGenerator generator) {
         this.personGenerator = generator;
+        this.taskGenerator = new TaskGenerator();
     }
 
     /**
@@ -244,7 +252,32 @@ public class StoryGenerator implements Generator<Story> {
             story.addAcceptanceCondition(condition);
         }
 
+        Collection<Task> tasks = generateTasks();
+        for (Task task : tasks) {
+            try {
+                story.addTask(task);
+            }
+            catch (CustomException e) {
+                //Should never happen
+            }
+        }
+
         return story;
+    }
+
+    /**
+     * Generates a random collection of tasks.
+     * @return A random collection of tasks.
+     */
+    private Collection<Task> generateTasks() {
+        List<Task> tasks = new ArrayList<>();
+
+        int count = GenerationHelper.random(TaskGenerator.LOW_STRESS_MIN, TaskGenerator.HIGH_STRESS_MAX);
+        for (int i = 0; i < count; i++) {
+            Task newTask = taskGenerator.generate();
+            tasks.add(newTask);
+        }
+        return tasks;
     }
 
     /**

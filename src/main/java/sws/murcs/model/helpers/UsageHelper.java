@@ -9,6 +9,7 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -159,6 +160,23 @@ public final class UsageHelper {
         Stream storiesStream = currentModel.getStories().stream()
                 .filter(storys -> storys.getDependencies().contains(story));
         return (List<Model>) Stream.concat(backlogStream, storiesStream).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets a list of all the places that a task has been used.
+     * @param task The task to find the usages for
+     * @return The usages of the story
+     */
+    private static List<Model> findUsages(final Task task) {
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        for (Story story : currentModel.getStories()) {
+            if (story.getTasks().contains(task)) {
+                List<Model> list = new ArrayList<>();
+                list.add(story);
+                return list;
+            }
+        }
+        return null;
     }
 
     /**

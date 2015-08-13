@@ -45,6 +45,9 @@ public class FilePersistenceLoaderTest {
         if (PersistenceManager.getCurrent() != null) {
             PersistenceManager.getCurrent().setCurrentModel(null);
         }
+        else {
+            PersistenceManager.setCurrent(new PersistenceManager(loader));
+        }
     }
 
     @After
