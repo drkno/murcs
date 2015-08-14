@@ -73,6 +73,11 @@ public class SearchThread<T> {
     private ModelType searchType;
 
     /**
+     * The iteration of this search.
+     */
+    private long searchIteration;
+
+    /**
      * Creates a new search thread which manages the searching of a particular collection.
      * @param list observable list to store search results in.
      * @param modelType the type of model that this thread searches.
@@ -88,6 +93,7 @@ public class SearchThread<T> {
         passTwoFields = new ArrayList<>();
         passThreeFields = new ArrayList<>();
         searchType = modelType;
+        searchIteration = 0;
     }
 
     /**
@@ -135,7 +141,6 @@ public class SearchThread<T> {
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Could not start a search thread.");
         }
-
     }
 
     /**
@@ -144,11 +149,13 @@ public class SearchThread<T> {
     public final void stop() {
         try {
             if (searchThread != null) {
+                searchIteration++;
                 shouldSearch = false;
                 searchThread.join();
                 searchValidator = null;
             }
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             /*
                 Thrown cause Java. Should not be reported cause if an exception is thrown
                 what we wanted to happen was achieved anyway just under less than normal
@@ -241,7 +248,13 @@ public class SearchThread<T> {
             }
 
             result.setModel(model, fieldName, searchable.value());
-            Platform.runLater(() -> searchResults.add(result));
+            final long iteration = searchIteration;
+            Platform.runLater(() -> {
+                if (iteration == searchIteration) {
+                    searchResults.add(result);
+                }
+            });
+
             return true;
         }
         return false;
