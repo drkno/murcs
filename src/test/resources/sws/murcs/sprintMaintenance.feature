@@ -90,5 +90,3 @@ Feature: Sprint Maintenance
     And I supply an end date after the release date
     Then an error message will be displayed
     And the Sprint will not be created
-
-
