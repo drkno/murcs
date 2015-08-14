@@ -16,7 +16,7 @@
                 <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
-                <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fitToHeight="true" fitToWidth="true" prefViewportHeight="287.0" prefViewportWidth="220.0">
+                <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fitToHeight="true" fitToWidth="true" prefViewportHeight="287.0" prefViewportWidth="220.0" styleClass="edge-to-edge">
                     <content>
                         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <columnConstraints>
@@ -90,7 +90,7 @@
                         </GridPane>
                     </content>
                 </ScrollPane>
-                <ScrollPane GridPane.rowIndex="1" fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0">
+                <ScrollPane GridPane.rowIndex="1" fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" styleClass="edge-to-edge">
                     <content>
                         <GridPane>
                             <children>
