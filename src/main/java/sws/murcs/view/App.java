@@ -1,15 +1,12 @@
 package sws.murcs.view;
 
-import java.awt.*;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.MainController;
@@ -30,12 +27,13 @@ import java.util.List;
 /**
  * The main app class.
  */
+@SuppressWarnings("ALL")
 public class App extends Application {
 
     /**
      * Default window title to use.
      */
-    private static final String defaultWindowTitle = "- Untitled -";
+    private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
 
     /**
      * The main stage of the application.
@@ -50,12 +48,12 @@ public class App extends Application {
     /**
      * The minimum height of the application.
      */
-    private static final int minimumApplicationHeight = 700;
+    private static final int MINIMUM_APPLICATION_HEIGHT = 700;
 
     /**
      * The minimum width of the application.
      */
-    private static final int minimumApplicationWidth = 900;
+    private static final int MINIMUM_APPLICATION_WIDTH = 900;
 
     /**
      * The subString length to search over, when parsing debugging mode.
@@ -172,10 +170,10 @@ public class App extends Application {
     }
 
     /**
-     * Creates a new MainWindow
-     * @param stage The stage to load the window onto
+     * Creates a new MainWindow.
+     * @param window The stage to load the window onto
      */
-    public static void createWindow(Stage stage) {
+    public static void createWindow(final Stage window) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
@@ -206,17 +204,17 @@ public class App extends Application {
                 .add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
-        stage.setScene(scene);
-        stage.setTitle(defaultWindowTitle);
+        window.setScene(scene);
+        window.setTitle(DEFAULT_WINDOW_TITLE);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
-        stage.getIcons().add(iconImage);
+        window.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
-        stage.setMinWidth(minimumApplicationWidth);
-        stage.setMinHeight(minimumApplicationHeight);
+        window.setMinWidth(MINIMUM_APPLICATION_WIDTH);
+        window.setMinHeight(MINIMUM_APPLICATION_HEIGHT);
 
-        App.stage = stage;
+        App.stage = window;
         mainController.show();
     }
 

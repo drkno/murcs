@@ -24,7 +24,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -34,7 +33,6 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.Collection;
 import java.util.List;

@@ -20,23 +20,28 @@ import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
  * A modified version of the class found in this repository
  * https://github.com/sibvisions/javafx.DndTabPane
  *
- * Factory to create a tab pane who support DnD
+ * Factory to create a tab pane who support DnD.
  */
 public final class DnDTabPaneFactory {
-	private static MarkerFeedback CURRENT_FEEDBACK;
+    /**
+     * A static instance of the feedback marker.
+     */
+	private static MarkerFeedback currentFeedback;
 
+    /**
+     * Private constructor, as this is a Factory
+     * and should never be directly instantiated.
+     */
 	private DnDTabPaneFactory() {
 
 	}
 
 	/**
-	 * Create a tab pane and set the drag strategy
-	 * 
-	 * @param setup
-	 *            the setup instance for the pane
+	 * Create a tab pane and set the drag strategy.
+	 * @param setup the setup instance for the pane
 	 * @return the tab pane
 	 */
-	public static DnDTabPane createDndTabPane(Consumer<DragSetup> setup) {
+	public static DnDTabPane createDndTabPane(final Consumer<DragSetup> setup) {
 		return new DnDTabPane() {
 			@Override
 			protected javafx.scene.control.Skin<?> createDefaultSkin() {
@@ -48,15 +53,14 @@ public final class DnDTabPaneFactory {
 	}
 
 	/**
-	 * Create a tab pane with a default setup for drag feedback
-	 * 
+	 * Create a tab pane with a default setup for drag feedback.
 	 * @param feedbackType
 	 *            the feedback type
 	 * @param setup
 	 *            consumer to set up the tab pane
 	 * @return a pane containing the TabPane
 	 */
-	public static Pane createDefaultDnDPane(FeedbackType feedbackType, Consumer<TabPane> setup) {
+	public static Pane createDefaultDnDPane(final FeedbackType feedbackType, final Consumer<TabPane> setup) {
 		StackPane pane = new StackPane();
 		DnDTabPane tabPane = new DnDTabPane() {
 			@Override
@@ -67,40 +71,37 @@ public final class DnDTabPaneFactory {
 				return skin;
 			}
 		};
-		
+
 		if (setup != null) {
 			setup.accept(tabPane);
 		}
-		
+
 		pane.getChildren().add(tabPane);
 		return pane;
 	}
 
 	/**
-	 * Extract the tab content
-	 * 
+	 * Extract the tab content.
 	 * @param e
 	 *            the event
 	 * @return the content
 	 */
-	public static boolean hasDnDContent(DragEvent e) {
+	public static boolean hasDnDContent(final DragEvent e) {
 		return e.getDragboard().hasContent(DnDTabPaneSkin.TAB_MOVE);
 	}
-	
+
 	/**
-	 * Extract the content
-	 * 
+	 * Extract the content.
 	 * @param e
 	 *            the event
 	 * @return the return value
 	 */
-	public static String getDnDContent(DragEvent e) {
+	public static String getDnDContent(final DragEvent e) {
 		return (String) e.getDragboard().getContent(DnDTabPaneSkin.TAB_MOVE);
 	}
 
 	/**
-	 * Setup insert marker
-	 * 
+	 * Setup insert marker.
 	 * @param type
 	 *            the feedback type.
 	 * @param layoutNode
@@ -108,18 +109,31 @@ public final class DnDTabPaneFactory {
 	 * @param setup
 	 *            the setup
 	 */
-	public static void setup(FeedbackType type, Pane layoutNode, DragSetup setup) {
-		setup.setStartFunction((t) -> Boolean.valueOf(!t.isDisabled() && ((DnDTabPane) t.getTabPane()).isDraggingEnabled()));
+	public static void setup(final FeedbackType type, final Pane layoutNode, final DragSetup setup) {
+		setup.setStartFunction((t) ->
+                Boolean.valueOf(!t.isDisabled() && ((DnDTabPane) t.getTabPane()).isDraggingEnabled()));
 		setup.setFeedbackConsumer((d) -> handleFeedback(type, layoutNode, d));
 		setup.setDropConsumer(DnDTabPaneFactory::handleDropped);
 		setup.setDragFinishedConsumer(DnDTabPaneFactory::handleFinished);
 	}
-	
-	private static void fireTabDraggedEvent(DnDTabPane tabPane, Tab draggedTab, int fromIndex, int toIndex) {
+
+    /**
+     * Fires the tab dragged event.
+     * @param tabPane The tab pane
+     * @param draggedTab The tab being dragged
+     * @param fromIndex The position the tab is being dragged from
+     * @param toIndex The index the tab is being dragged to
+     */
+	private static void fireTabDraggedEvent(final DnDTabPane tabPane, final Tab draggedTab,
+                                            final int fromIndex, final int toIndex) {
 		tabPane.fireTabDragged(draggedTab, fromIndex, toIndex);
 	}
-	
-	private static void handleDropped(DroppedData data) {
+
+    /**
+     * Handles the tab being dropped.
+     * @param data The information about a drop
+     */
+	private static void handleDropped(final DroppedData data) {
 		TabPane targetPane = data.targetTab.getTabPane();
 		int oldIndex = data.draggedTab.getTabPane().getTabs().indexOf(data.draggedTab);
 		data.draggedTab.getTabPane().getTabs().remove(data.draggedTab);
@@ -133,41 +147,61 @@ public final class DnDTabPaneFactory {
 		} else {
 			targetPane.getTabs().add(idx, data.draggedTab);
 		}
-		
-		fireTabDraggedEvent((DnDTabPane) targetPane, data.draggedTab, oldIndex, targetPane.getTabs().indexOf(data.draggedTab));
-				
+
+		fireTabDraggedEvent((DnDTabPane) targetPane, data.draggedTab, oldIndex,
+                targetPane.getTabs().indexOf(data.draggedTab));
+
 		data.draggedTab.getTabPane().getSelectionModel().select(data.draggedTab);
 	}
 
-	private static void handleFeedback(FeedbackType type, Pane layoutNode, FeedbackData data) {
+    /**
+     * Handles the feedback marker for the user.
+     * @param type The type of feedback
+     * @param layoutNode The container of the tabpane
+     * @param data The feedback data
+     */
+	private static void handleFeedback(final FeedbackType type, final Pane layoutNode, final FeedbackData data) {
 		if (data.dropType == DropType.NONE) {
 			cleanup();
 			return;
 		}
 
-		MarkerFeedback f = CURRENT_FEEDBACK;
+		MarkerFeedback f = currentFeedback;
 		if (f == null || !f.data.equals(data)) {
 			cleanup();
 			if (type == FeedbackType.MARKER) {
-				CURRENT_FEEDBACK = handleMarker(layoutNode, data);
+				currentFeedback = handleMarker(layoutNode, data);
 			} else {
-				CURRENT_FEEDBACK = handleOutline(layoutNode, data);
+				currentFeedback = handleOutline(layoutNode, data);
 			}
 		}
 	}
 
-	private static void handleFinished(Tab tab) {
+    /**
+     * Cleans up when finished dragging the tab.
+     * @param tab The tab
+     */
+	private static void handleFinished(final Tab tab) {
 		cleanup();
 	}
 
+    /**
+     * Cleans up after a drag event.
+     */
 	static void cleanup() {
-		if (CURRENT_FEEDBACK != null) {
-			CURRENT_FEEDBACK.hide();
-			CURRENT_FEEDBACK = null;
+		if (currentFeedback != null) {
+			currentFeedback.hide();
+			currentFeedback = null;
 		}
 	}
 
-	private static MarkerFeedback handleMarker(Pane layoutNode, FeedbackData data) {
+    /**
+     * Handles the feedback marker for a drag event.
+     * @param layoutNode The container of the tab pane
+     * @param data The feedback data
+     * @return The marker
+     */
+	private static MarkerFeedback handleMarker(final Pane layoutNode, final FeedbackData data) {
 		PositionMarker marker = null;
 		for (Node n : layoutNode.getChildren()) {
 			if (n instanceof PositionMarker) {
@@ -187,15 +221,20 @@ public final class DnDTabPaneFactory {
 		double h = marker.getBoundsInLocal().getHeight();
 
 		double ratio = data.bounds.getHeight() / h;
-		ratio += 0.1;
-		marker.setScaleX(ratio);
+
+        //noinspection CheckStyle-IDEA
+        ratio += 0.1;
+        marker.setScaleX(ratio);
 		marker.setScaleY(ratio);
 
 		double wDiff = w / 2;
 		double hDiff = (h - h * ratio) / 2;
 
 		if (data.dropType == DropType.AFTER) {
-			marker.relocate(data.bounds.getMinX() + data.bounds.getWidth() - wDiff, data.bounds.getMinY() - hDiff);
+			marker.relocate(data.bounds.getMinX()
+                    + data.bounds.getWidth()
+                    - wDiff, data.bounds.getMinY()
+                    - hDiff);
 		} else {
 			marker.relocate(data.bounds.getMinX() - wDiff, data.bounds.getMinY() - hDiff);
 		}
@@ -211,7 +250,13 @@ public final class DnDTabPaneFactory {
 		};
 	}
 
-	private static MarkerFeedback handleOutline(Pane layoutNode, FeedbackData data) {
+    /**
+     * Handles the outline marker feedback.
+     * @param layoutNode The container node
+     * @param data The feedback data
+     * @return The feedback marker
+     */
+	private static MarkerFeedback handleOutline(final Pane layoutNode, final FeedbackData data) {
 		TabOutlineMarker marker = null;
 
 		for (Node n : layoutNode.getChildren()) {
@@ -221,12 +266,22 @@ public final class DnDTabPaneFactory {
 		}
 
 		if (marker == null) {
-			marker = new TabOutlineMarker(layoutNode.getBoundsInLocal(), new BoundingBox(data.bounds.getMinX(), data.bounds.getMinY(), data.bounds.getWidth(), data.bounds.getHeight()), data.dropType == DropType.BEFORE);
+			marker = new TabOutlineMarker(layoutNode.getBoundsInLocal(),
+                    new BoundingBox(data.bounds.getMinX(),
+                            data.bounds.getMinY(),
+                            data.bounds.getWidth(),
+                            data.bounds.getHeight()),
+                    data.dropType == DropType.BEFORE);
 			marker.setManaged(false);
 			marker.setMouseTransparent(true);
 			layoutNode.getChildren().add(marker);
 		} else {
-			marker.updateBounds(layoutNode.getBoundsInLocal(), new BoundingBox(data.bounds.getMinX(), data.bounds.getMinY(), data.bounds.getWidth(), data.bounds.getHeight()), data.dropType == DropType.BEFORE);
+			marker.updateBounds(layoutNode.getBoundsInLocal(),
+                    new BoundingBox(data.bounds.getMinX(),
+                            data.bounds.getMinY(),
+                            data.bounds.getWidth(),
+                            data.bounds.getHeight()),
+                    data.dropType == DropType.BEFORE);
 			marker.setVisible(true);
 		}
 
@@ -241,72 +296,84 @@ public final class DnDTabPaneFactory {
 		};
 	}
 
+    /**
+     * A class representing marker feedback.
+     */
 	private abstract static class MarkerFeedback {
+        /**
+         * The feedback data.
+         */
 		public final FeedbackData data;
 
-		public MarkerFeedback(FeedbackData data) {
+        /**
+         * Creates a new marker from some feedback data.
+         * @param data The data
+         */
+		public MarkerFeedback(final FeedbackData data) {
 			this.data = data;
 		}
 
+        /**
+         * Hides the feedback marker.
+         */
 		public abstract void hide();
 	}
 
 	/**
-	 * The drop type
+	 * The drop type.
 	 */
 	public enum DropType {
 		/**
-		 * No dropping
+		 * No dropping.
 		 */
 		NONE,
 		/**
-		 * Dropped before a reference tab
+		 * Dropped before a reference tab.
 		 */
 		BEFORE,
 		/**
-		 * Dropped after a reference tab
+		 * Dropped after a reference tab.
 		 */
 		AFTER
 	}
 
 	/**
-	 * The feedback type to use
+	 * The feedback type to use.
 	 */
 	public enum FeedbackType {
 		/**
-		 * Show a marker
+		 * Show a marker.
 		 */
 		MARKER,
 		/**
-		 * Show an outline
+		 * Show an outline.
 		 */
 		OUTLINE
 	}
 
 	/**
-	 * Data to create a feedback
+	 * Data to create a feedback.
 	 */
 	public static class FeedbackData {
 		/**
-		 * The tab dragged
+		 * The tab dragged.
 		 */
 		public final Tab draggedTab;
 		/**
-		 * The reference tab
+		 * The reference tab.
 		 */
 		public final Tab targetTab;
 		/**
-		 * The bounds of the reference tab
+		 * The bounds of the reference tab.
 		 */
 		public final Bounds bounds;
 		/**
-		 * The drop type
+		 * The drop type.
 		 */
 		public final DropType dropType;
 
 		/**
-		 * Create a feedback data
-		 * 
+		 * Create a feedback data.
 		 * @param draggedTab
 		 *            the dragged tab
 		 * @param targetTab
@@ -316,7 +383,10 @@ public final class DnDTabPaneFactory {
 		 * @param dropType
 		 *            the drop type
 		 */
-		public FeedbackData(Tab draggedTab, Tab targetTab, Bounds bounds, DropType dropType) {
+		public FeedbackData(final Tab draggedTab,
+                            final Tab targetTab,
+                            final Bounds bounds,
+                            final DropType dropType) {
 			this.draggedTab = draggedTab;
 			this.targetTab = targetTab;
 			this.bounds = bounds;
@@ -324,7 +394,7 @@ public final class DnDTabPaneFactory {
 		}
 
 		@Override
-		public int hashCode() {
+		public final int hashCode() {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((this.bounds == null) ? 0 : this.bounds.hashCode());
@@ -335,7 +405,7 @@ public final class DnDTabPaneFactory {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public final boolean equals(final Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
@@ -363,25 +433,24 @@ public final class DnDTabPaneFactory {
 	}
 
 	/**
-	 * The drop data
+	 * The drop data.
 	 */
 	public static class DroppedData {
 		/**
-		 * The dragged tab
+		 * The dragged tab.
 		 */
 		public final Tab draggedTab;
 		/**
-		 * The reference tab
+		 * The reference tab.
 		 */
 		public final Tab targetTab;
 		/**
-		 * The drop type
+		 * The drop type.
 		 */
 		public final DropType dropType;
 
 		/**
-		 * Create drop data
-		 * 
+		 * Create drop data.
 		 * @param draggedTab
 		 *            the dragged tab
 		 * @param targetTab
@@ -389,7 +458,7 @@ public final class DnDTabPaneFactory {
 		 * @param dropType
 		 *            the drop type
 		 */
-		public DroppedData(Tab draggedTab, Tab targetTab, DropType dropType) {
+		public DroppedData(final Tab draggedTab, final Tab targetTab, final DropType dropType) {
 			this.draggedTab = draggedTab;
 			this.targetTab = targetTab;
 			this.dropType = dropType;
@@ -397,28 +466,25 @@ public final class DnDTabPaneFactory {
 	}
 
 	/**
-	 * Setup of the drag and drop
+	 * Setup of the drag and drop.
 	 */
 	public interface DragSetup {
 		/**
-		 * Function to handle the starting of the the drag
-		 * 
+		 * Function to handle the starting of the the drag.
 		 * @param startFunction
 		 *            the function
 		 */
 		public void setStartFunction(Function<Tab, Boolean> startFunction);
 
 		/**
-		 * Consumer called to handle the finishing of the drag process
-		 * 
+		 * Consumer called to handle the finishing of the drag process.
 		 * @param dragFinishedConsumer
 		 *            the consumer
 		 */
 		public void setDragFinishedConsumer(Consumer<Tab> dragFinishedConsumer);
 
 		/**
-		 * Consumer called to present drag feedback
-		 * 
+		 * Consumer called to present drag feedback.
 		 * @param feedbackConsumer
 		 *            the consumer to call
 		 */
@@ -426,7 +492,6 @@ public final class DnDTabPaneFactory {
 
 		/**
 		 * Consumer called when the drop has to be handled
-		 * 
 		 * @param dropConsumer
 		 *            the consumer
 		 */
@@ -434,7 +499,6 @@ public final class DnDTabPaneFactory {
 
 		/**
 		 * Function to translate the tab content into clipboard content
-		 * 
 		 * @param clipboardDataFunction
 		 *            the function
 		 */
