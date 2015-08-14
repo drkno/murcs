@@ -124,6 +124,14 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         choiceBoxAddTeam.getItems().setAll(organisation.getTeams());
         observableAllocations.setAll(organisation.getProjectsAllocations(getModel()));
+
+        setIsCreationWindow(modelShortName == null);
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     @Override

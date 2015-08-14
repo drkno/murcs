@@ -23,10 +23,12 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -377,6 +379,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAvailableStories();
         updateStoryTable();
         super.clearErrors();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**
@@ -524,6 +532,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         protected void updateItem(final Integer priority, final boolean empty) {
             super.updateItem(priority, empty);
+            setTooltip(new Tooltip());
             this.setAlignment(Pos.CENTER);
             setColorTab(highlighted.getValue());
             getStyleClass().add("default-tablecell");
@@ -565,12 +574,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
+                    getTooltip().setText("The story depends on another story with a lower priority than itself");
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
+                    getTooltip().setText("The story is ready");
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
+                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
+                            + " as ready");
                 }
             }
         }
@@ -688,7 +701,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 Button button = new Button("X");
                 button.getStyleClass().add("mdr-button");
                 button.getStyleClass().add("mdrd-button");
-                button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     GenericPopup popup = new GenericPopup();
                     popup.setTitleText("Are you sure?");
@@ -702,8 +714,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     });
                     popup.show();
                 });
-                getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
-                getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
+                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+                fadeButtonOnHover.setupEffect();
                 AnchorPane.setRightAnchor(button, 0.0);
                 container.getChildren().add(button);
 

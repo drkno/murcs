@@ -145,12 +145,22 @@ public class ReportGeneratorTest {
         story.setLongName("Revert");
         story.setDescription("Revert to last saved state");
         story.setCreator(person3);
+        AcceptanceCondition condition = new AcceptanceCondition();
+        condition.setCondition("This is a condition");
+        story.addAcceptanceCondition(condition);
+        Task task = new Task();
+        task.setName("Become one with the universe");
+        task.setState(TaskState.Blocked);
+        task.setEstimate(100);
+        task.setDescription("Attempt to absorb the universe, this problably won't work");
+        story.addTask(task);
 
         Story story2 = new Story();
         story2.setShortName("2");
         story2.setLongName("Story Maintenance");
         story2.setDescription("add stories to project");
         story2.setCreator(person4);
+        story.addDependency(story2);
 
         //Backlog
         backlog = new Backlog();

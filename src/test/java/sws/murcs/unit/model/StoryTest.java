@@ -4,10 +4,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 
 import static org.junit.Assert.*;
 
@@ -35,7 +37,7 @@ public class StoryTest {
         story3 = null;
     }
 
-    @Test (expected = Exception.class)
+    @Test(expected = Exception.class)
     public void setShortNameTest1() throws Exception{
         story.setShortName(null);
     }
@@ -81,8 +83,11 @@ public class StoryTest {
     public void testResetEstimationResetsState() {
         story.setEstimate("Foo");
         story.setStoryState(Story.StoryState.Ready);
-
         story.setEstimate(EstimateType.NOT_ESTIMATED);
+        assertEquals("Story state should have reset to 'None'", Story.StoryState.None, story.getStoryState());
+
+        story.setStoryState(Story.StoryState.Ready);
+        story.setEstimate(EstimateType.INFINITE);
         assertEquals("Story state should have reset to 'None'", Story.StoryState.None, story.getStoryState());
     }
 
@@ -216,5 +221,12 @@ public class StoryTest {
         assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story2));
         story.removeDependency(story3);
         assertFalse("Story was not removed when it should have been.", story.getDependencies().contains(story3));
+    }
+
+    @Test(expected = DuplicateObjectException.class)
+    public void duplicatedTaskTest() throws Exception {
+        Task task = new Task();
+        story.addTask(task);
+        story.addTask(task);
     }
 }

@@ -11,16 +11,25 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
+
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
 public abstract class GenericEditor<T> implements UndoRedoChangeListener {
+    /**
+     * The name for the default section of the form.
+     */
+    private final String defaultSectionName = "default";
 
     /**
      * The type of model the editor is being used for.
@@ -63,13 +72,22 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * All the invalid sections in the form.
      */
-    private Collection<Node> invalidNodes = new ArrayList<>();
+    private Map<String, Collection<Map.Entry<Node, String>>> invalidNodes = new HashMap<>();
 
     /**
-     * A helpful error message telling you about all that's wrong
-     * in the world.
+     * Padding to use within the error message popover.
      */
-    private String errorMessage = "";
+    private final Insets errorMessagePopoverPadding = new Insets(0, 15, 0, 15);
+
+    /**
+     * Error message PopOver.
+     */
+    private PopOver errorMessagePopover;
+
+    /**
+     * Listener for focus on error fields.
+     */
+    private ChangeListener<Boolean> errorMessagePopoverListener;
 
     /**
      * A generic editor for editing models.
@@ -112,25 +130,91 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Highlights errors on the form.
      */
     private void showErrors() {
-        for (Node node : invalidNodes) {
-            if (!node.getStyleClass().contains("error")) {
-                node.getStyleClass().add("error");
-            }
+        showErrors(defaultSectionName);
+    }
+
+    /**
+     * Highlights errors on the form.
+     * @param sectionName The name of the section to show the errors on
+     */
+    private void showErrors(final String sectionName) {
+        ensureSectionExists(sectionName);
+
+        if (errorMessagePopover == null) {
+            Label errorLabel = new Label();
+            errorLabel.setPadding(errorMessagePopoverPadding);
+            errorMessagePopover = new PopOver(errorLabel);
+            errorMessagePopover.detachableProperty().setValue(false);
+            errorMessagePopover.autoHideProperty().setValue(false);
+
+            errorMessagePopoverListener = (observable, oldValue, newValue) -> {
+                if (!newValue && observable != null) {
+                    observable.removeListener(errorMessagePopoverListener);
+                    errorMessagePopover.hide();
+                }
+            };
         }
-        labelErrorMessage.setText(errorMessage);
+
+        String errorMessage = "";
+        Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
+        for (Map.Entry<Node, String> entry : invalidInSection) {
+            if (!entry.getKey().getStyleClass().contains("error")) {
+                entry.getKey().getStyleClass().add("error");
+
+                if (entry.getKey().isFocused()) {
+                    Label errorLabel = (Label) errorMessagePopover.contentNodeProperty().get();
+                    errorLabel.setText(entry.getValue());
+                    errorMessagePopover.show(entry.getKey());
+                    entry.getKey().focusedProperty().addListener(errorMessagePopoverListener);
+                }
+            }
+            errorMessage += entry.getValue() + "\n";
+        }
+        if (errorMessage.length() > 2) {
+            labelErrorMessage.setText(errorMessage.substring(0, errorMessage.length() - 1));
+        }
+    }
+
+    /**
+     * Clears the errors on the default section.
+     */
+    public final void clearErrors() {
+        clearErrors(defaultSectionName);
     }
 
     /**
      * Clears the errors on the form.
+     * @param sectionName The name of the section to clear the errors on
      */
-    public final void clearErrors() {
-        for (Node node : invalidNodes) {
-            node.getStyleClass().removeAll(Collections.singleton("error"));
-        }
-        errorMessage = "";
-        invalidNodes.clear();
+    public final void clearErrors(final String sectionName) {
+        ensureSectionExists(sectionName);
 
-        labelErrorMessage.setText(errorMessage);
+        boolean hideError = true;
+        Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
+
+        for (Map.Entry<Node, String> entry : invalidInSection) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+            if (entry.getKey().isFocused()) {
+                hideError = false;
+            }
+        }
+        invalidInSection.clear();
+        if (hideError && errorMessagePopover != null) {
+            errorMessagePopover.hide();
+        }
+        labelErrorMessage.setText("");
+    }
+
+    /**
+     * Ensures that a section exists on a form (if it doesn't it
+     * will be added to the sections list).
+     * @param sectionName The name of the section
+     */
+    private void ensureSectionExists(final String sectionName) {
+        if (!invalidNodes.containsKey(sectionName)) {
+            invalidNodes.put(sectionName, new ArrayList<>());
+        }
     }
 
     /**
@@ -161,21 +245,34 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Adds an error to the form and highlights the node that caused it.
      * @param invalidNode The node that has the problem
      * @param helpfulMessage A helpful message describing the problem.
+     * @throws UnsupportedOperationException when an unhelpful error message is provided or
+     * when no node is provided to work with.
      */
-    protected final void addFormError(final Node invalidNode, final String helpfulMessage) {
-        if (invalidNode != null) {
-            invalidNodes.add(invalidNode);
+    public final void addFormError(final Node invalidNode, final String helpfulMessage) {
+        addFormError(defaultSectionName, invalidNode, helpfulMessage);
+    }
+
+    /**
+     * Adds an error to the form and highlights the node that caused it.
+     * @param invalidNode The node that has the problem
+     * @param helpfulMessage A helpful message describing the problem.
+     * @param sectionName The name of the section to add the error to.
+     * @throws UnsupportedOperationException when an unhelpful error message is provided or
+     * when no node is provided to work with.
+     */
+    protected final void addFormError(final String sectionName, final Node invalidNode, final String helpfulMessage) {
+        ensureSectionExists(sectionName);
+
+        if (invalidNode == null) {
+            throw new UnsupportedOperationException("A node must be provided.");
         }
 
         if (helpfulMessage == null || helpfulMessage.isEmpty()) {
-            return;
+            throw new UnsupportedOperationException("An error message must be provided.");
         }
-
-        if (errorMessage.length() > 0) {
-            errorMessage += "\n";
-        }
-        errorMessage += helpfulMessage;
-        showErrors();
+        Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
+        invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
+        showErrors(sectionName);
     }
 
     /**
@@ -186,11 +283,15 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
      */
+    @SuppressWarnings("checkstyle:designforextension")
     public void dispose() {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
         clearErrors();
+        // don't dispose of errorMessagePopover, as it is a window in its own right
+        // it needs to decide if that is appropriate by itself
+        errorMessagePopoverListener = null;
         saveButton = null;
     }
 
@@ -222,7 +323,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets whether or not this editor is a creation window.
      * @param newIsCreationWindow The new value for whether or not this is a creation window
      */
-    private void setIsCreationWindow(final boolean newIsCreationWindow) {
+    public final void setIsCreationWindow(final boolean newIsCreationWindow) {
         isCreationWindow = newIsCreationWindow;
     }
 
@@ -262,7 +363,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    private void setupSaveChangesButton() {
+    public final void setupSaveChangesButton() {
         if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }

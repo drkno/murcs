@@ -9,9 +9,11 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -51,7 +53,7 @@ import sws.murcs.view.CreatorWindowView;
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
-public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener {
+public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
 
     /**
      * The Menu bar for the application.
@@ -68,10 +70,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             highlightToggle;
 
     /**
-     * The side display which contains the display list.
+     * The menu that contains the check menu items for toggling sections of the toolbar.
      */
     @FXML
-    private VBox vBoxSideDisplay;
+    private Menu toolBarMenu;
+
+    /**
+     * The side display which contains the display list. Also the top toolbar and menu container.
+     */
+    @FXML
+    private VBox vBoxSideDisplay, titleVBox;
 
     /**
      * The main display of the window which contains the display
@@ -101,18 +109,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private ListView displayList;
 
     /**
-     * The button used to remove models from the display list.
-     */
-    @FXML
-    private Button removeButton;
-
-    /**
-     * The back and forward buttons.
-     */
-    @FXML
-    private Button backButton, forwardButton;
-
-    /**
      * The content pane contains the information about the
      * currently selected model item.
      */
@@ -130,11 +126,17 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     private CreatorWindowView creatorWindow;
 
     /**
+     * The controller for the toolbar in the window.
+     */
+    private ToolBarController toolBarController;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
     @FXML
     public final void initialize() {
+        addToolBar();
         NavigationManager.setAppController(this);
         App.addListener(e -> {
             e.consume();
@@ -171,6 +173,24 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
+     * Adds the toolbar to the application window.
+     */
+    private void addToolBar() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            Parent view = loader.load();
+            titleVBox.getChildren().add(view);
+            ToolBarController controller = loader.getController();
+            controller.setLinkedController(this);
+            controller.setToolBarMenu(toolBarMenu);
+            toolBarController = controller;
+        }
+        catch (Exception e) {
+            ErrorReporter.get().reportErrorSecretly(e, "Unable to create editor");
+        }
+    }
+
+    /**
      * Updates the currently selected item in the display list.
      * @param newValue The new value
      * @param oldValue The old value
@@ -185,7 +205,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
         }
 
         NavigationManager.navigateTo((Model) newValue);
-        updateBackForwardButtons();
+        toolBarController.updateBackForwardButtons();
 
         if (oldValue == null) {
             displayList.scrollTo(newValue);
@@ -228,16 +248,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      */
     private void handleKey(final KeyEvent event) {
         if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
-            addClicked(null);
+            add(null);
         }
         if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
-            removeClicked(null);
+            remove(null);
         }
         if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
-            backClicked(null);
+            back(null);
         }
         if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
-            forwardClicked(null);
+            forward(null);
         }
     }
 
@@ -345,7 +365,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean save(final ActionEvent event) {
+    public final boolean save(final ActionEvent event) {
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
@@ -369,7 +389,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @return If the project successfully saved.
      */
     @FXML
-    private boolean saveAs(final ActionEvent event) {
+    public final boolean saveAs(final ActionEvent event) {
         return saveAs(event, true);
     }
 
@@ -484,7 +504,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void open(final ActionEvent event) {
+    public final void open(final ActionEvent event) {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
@@ -523,7 +543,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the report to be generated
      */
     @FXML
-    private void generateReport(final ActionEvent event) {
+    public final void generateReport(final ActionEvent event) {
         ReportGeneratorView reportGenerator = new ReportGeneratorView();
         reportGenerator.show();
     }
@@ -533,7 +553,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void undoMenuItemClicked(final ActionEvent event) {
+    public final void undo(final ActionEvent event) {
         try {
             UndoRedoManager.revert();
         }
@@ -549,7 +569,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void redoMenuItemClicked(final ActionEvent event) {
+    public final void redo(final ActionEvent event) {
         try {
             UndoRedoManager.remake();
         }
@@ -565,7 +585,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event event arguments.
      */
     @FXML
-    private void revert(final ActionEvent event) {
+    public final void revert(final ActionEvent event) {
         if (UndoRedoManager.canRevert()) {
             GenericPopup popup = new GenericPopup();
             popup.setTitleText("Do you wish to revert changes?");
@@ -609,24 +629,34 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     public final void undoRedoNotification(final ChangeState change) {
         if (!UndoRedoManager.canRevert()) {
             revert.setDisable(true);
+            toolBarController.updateRevertButton(true);
+            String undoPrompt = "Undo...";
             undoMenuItem.setDisable(true);
-            undoMenuItem.setText("Undo...");
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(true, undoPrompt);
             App.removeTitleStar();
         }
         else {
             revert.setDisable(false);
+            toolBarController.updateRevertButton(false);
+            String undoPrompt = "Undo " + UndoRedoManager.getRevertMessage();
             undoMenuItem.setDisable(false);
-            undoMenuItem.setText("Undo " + UndoRedoManager.getRevertMessage());
+            undoMenuItem.setText(undoPrompt);
+            toolBarController.updateUndoButton(false, undoPrompt);
             App.addTitleStar();
         }
 
         if (!UndoRedoManager.canRemake()) {
             redoMenuItem.setDisable(true);
-            redoMenuItem.setText("Redo...");
+            String redoPrompt = "Redo...";
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(true, redoPrompt);
         }
         else {
             redoMenuItem.setDisable(false);
-            redoMenuItem.setText("Redo " + UndoRedoManager.getRemakeMessage());
+            String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
+            redoMenuItem.setText(redoPrompt);
+            toolBarController.updateRedoButton(false, redoPrompt);
         }
 
         switch (change) {
@@ -634,7 +664,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             case Remake:
             case Revert:
                 NavigationManager.clearHistory();
-                updateBackForwardButtons();
+                toolBarController.updateBackForwardButtons();
                 break;
             default: break;
         }
@@ -645,7 +675,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event of the add button being called
      */
     @FXML
-    private void addClicked(final ActionEvent event) {
+    public final void add(final ActionEvent event) {
         Class<? extends Model> clazz = null;
         if (event != null && event.getSource() instanceof MenuItem) {
             //If pressing a menu item to add a person, team or skill
@@ -714,7 +744,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event Event that sends you to the remove clicked function
      */
     @FXML
-    private void removeClicked(final ActionEvent event) {
+    public final void remove(final ActionEvent event) {
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         if (model == null) {
             return;
@@ -753,13 +783,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
             NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
-            updateBackForwardButtons();
+            toolBarController.updateBackForwardButtons();
         });
         popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
         popup.show();
     }
 
     @Override
+    @SuppressWarnings("checkstyle:finalparameters")
     public final void selectItem(Model parameter) {
         ModelType type;
         ModelType selectedType = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
@@ -788,7 +819,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
 
         // The remove button should be greyed out
         // if no item is selected or built in skills (PO or SM) are selected
-        removeButton.setDisable(parameter == null
+        toolBarController.removeButtonDisabled(parameter == null
                 || parameter instanceof Skill
                 && (((Skill) parameter).getShortName().equals("PO")
                 || ((Skill) parameter).getShortName().equals("SM")));
@@ -812,19 +843,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
     }
 
     /**
-     * Toggles the state of the back and forward buttons if they disabled or enabled.
-     */
-    private void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
-    }
-
-    /**
      * Navigates back.
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void backClicked(final ActionEvent event) {
+    public final void back(final ActionEvent event) {
         if (!NavigationManager.canGoBack()) {
             return;
         }
@@ -837,7 +860,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * @param event The event that caused the function to be called.
      */
     @FXML
-    private void forwardClicked(final ActionEvent event) {
+    public final void forward(final ActionEvent event) {
         if (!NavigationManager.canGoForward()) {
             return;
         }
@@ -849,7 +872,16 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener 
      * Reports a bug to the developers.
      */
     @FXML
-    private void reportBug() {
+    public final void reportBug() {
         ErrorReporter.get().reportManually();
+    }
+
+    /**
+     * Toggles a section of the toolbar based on the check menu item selected in the view menu.
+     * @param event Clicking on an option in the tool bar section of the view menu.
+     */
+    @FXML
+    private void toolBarToggle(final ActionEvent event) {
+        toolBarController.toolBarToggle(event);
     }
 }

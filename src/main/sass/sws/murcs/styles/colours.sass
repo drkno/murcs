@@ -1,5 +1,7 @@
 @import "sass-material-colors/sass/sass-material-colors"
 
+$highlight-color: #B3E5FC
+
 $primary-100: material-color('grey', '100')
 $primary-300: material-color('grey', '300')
 $primary-500: material-color('grey', '500')
@@ -27,6 +29,11 @@ $list-cell-selected-color: material-color('grey', '300')
 $list-cell-focused-color: material-color('grey', '200')
 $list-cell-hover-color: material-color('grey', '400')
 
+$table-header-color: material-color('grey', '400')
+$table-header-hover-color: material-color('grey', '500')
+$table-background-color: material-color('white')
+$table-row-highlight-color: material-color('grey', '300')
+
 $combo-box-color: material-color('grey', '100')
 $combo-box-color-disabled: material-color('grey', '300')
 $combo-box-color-focused: material-color('grey', '200')
@@ -37,13 +44,29 @@ $choice-box-color-focused: material-color('grey', '200')
 $choice-box-color-hover: material-color('grey', '200')
 $choice-box-color-disabled: material-color('grey', '300')
 
+$titled-pane-content-color: material-color('grey', '100')
+$titled-pane-title-color: material-color('grey', '200')
+$titled-pane-title-hover-color: material-color('grey', '300')
+
 $button-color: material-color('grey', '100')
 $button-focus-color: material-color('grey', '200')
 
 $delete-red: material-color('red', '500')
+$expand-color: material-color('blue', '500')
 
 $backlog-story-state-default:transparent -fx-box-border transparent transparent
 $backlog-story-state-red: transparent -fx-box-border transparent material-color('red', '500')
 $backlog-story-state-orange: transparent -fx-box-border transparent material-color('orange', '500')
 $backlog-story-state-green: transparent -fx-box-border transparent material-color('green', '500')
 
+/* opacify() doesn't appear to be working correctly for white and black
+  when the opacity values are very close to an actual colour value. */
+$popover-background-fill-colour: rgba(255, 255, 255, 0.95)
+$popover-close-line-colour: material-color('white', '500')
+$popover-close-fill-colour: material-color('grey', '500')
+$popover-blur-shadow-colour: rgba(0, 0, 0, 0.2)
+$popover-border-effect-colour: rgba(0, 0, 0, 0.95)
+
+$dependencies-first-colour: material-color('deep-purple', '600')
+$dependencies-second-colour: material-color('indigo', 'a400')
+$dependencies-third-colour: material-color('blue', '600')

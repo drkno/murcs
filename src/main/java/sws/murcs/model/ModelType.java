@@ -84,6 +84,7 @@ public enum ModelType {
      * 4: Release
      * 5: Story
      * 6: Backlog
+     * 7: Task
      * @param type The type of model object.
      * @return The index for selection
      */

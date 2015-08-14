@@ -159,8 +159,9 @@ public class OrganisationReleaseTest {
         List<Model> usages = UsageHelper.findUsages(releases.get(0));
 
         Assert.assertNotNull("The returned usages was null.", usages);
-        // TODO: Releases are not in use anywhere.
-        Assert.assertEquals("Usages were found for a release.", 0, usages.size());
-        Assert.assertFalse("Item should not be in use.", UsageHelper.inUse(releases.get(0)));
+        int actualUsages = (int) model.getSprints().stream()
+                .filter(sprint -> sprint.getAssociatedRelease().equals(releases.get(0)))
+                .count();
+        Assert.assertEquals("Usages were found for a release.", actualUsages, usages.size());
     }
 }

@@ -101,6 +101,9 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     @Override

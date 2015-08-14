@@ -151,7 +151,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (getModel().getBacklog() != null) {
             getModel().getBacklog().getAllStories().stream()
                     .filter(story -> story.getAcceptanceCriteria().size() > 0
-                            && !story.getEstimate().equals(EstimateType.NOT_ESTIMATED))
+                            && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
+                            || story.getEstimate().equals(EstimateType.INFINITE)))
                     .forEach(allocatableStories::add);
             // Remove all the stories already in backlog
             getModel().getStories().stream().forEach(allocatableStories::remove);

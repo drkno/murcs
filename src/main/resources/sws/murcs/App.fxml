@@ -1,55 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="borderPaneMain" prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
+
+<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
     <top>
-        <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
-            <menus>
-                <Menu id="fileMenu" mnemonicParsing="false" text="File">
-                    <items>
-                        <Menu id="newMenu" mnemonicParsing="false" text="New">
-                            <items>
-                                <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel" text="Organisation" />
-                                <SeparatorMenuItem />
-                                <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addClicked" text="Project" />
-                                <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addClicked" text="Team" />
-                                <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addClicked" text="Person" />
-                                <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addClicked" text="Skill" />
-                                <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addClicked" text="Release" />
-                                <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addClicked" text="Backlog" />
-                                <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addClicked" text="Story" />
-                        <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#addClicked" text="Sprint" />
-                            </items>
+      <VBox fx:id="titleVBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0">
+         <children>
+              <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
+                  <menus>
+                      <Menu id="fileMenu" mnemonicParsing="false" text="File">
+                          <items>
+                              <Menu id="newMenu" mnemonicParsing="false" text="New">
+                                  <items>
+                                      <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel" text="Organisation" />
+                                      <SeparatorMenuItem />
+                                      <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#add" text="Project" />
+                                      <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#add" text="Team" />
+                                      <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#add" text="Person" />
+                                      <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#add" text="Skill" />
+                                      <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#add" text="Release" />
+                                      <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#add" text="Backlog" />
+                                      <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#add" text="Story" />
+                                      <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#add" text="Sprint" />
+                                  </items>
+                              </Menu>
+                              <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />
+                              <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save" />
+                              <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
+                              <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
+                              <MenuItem mnemonicParsing="false" onAction="#reportBug" text="Feedback" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
+                          </items>
+                      </Menu>
+                      <Menu id="editMenu" mnemonicParsing="false" text="Edit">
+                          <items>
+                              <MenuItem fx:id="revert" mnemonicParsing="false" onAction="#revert" text="Revert" />
+                              <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undo" text="Undo" />
+                              <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redo" text="Redo" />
+                          </items>
+                      </Menu>
+                      <Menu id="viewMenu" mnemonicParsing="false" text="View">
+                          <items>
+                              <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                              <CheckMenuItem fx:id="highlightToggle" mnemonicParsing="false" onAction="#toggleBacklogStories" selected="true" text="Highlight Stories" />
+                        <Menu fx:id="toolBarMenu" mnemonicParsing="false" text="Tool Bar">
+                           <items>
+                               <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Navigation Toolbar" />
+                               <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
+                               <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
+                              <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
+                           </items>
                         </Menu>
-                        <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />
-                        <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save" />
-                        <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
-                        <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
-                        <MenuItem mnemonicParsing="false" onAction="#reportBug" text="Feedback" />
-                        <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
-                    </items>
-                </Menu>
-                <Menu id="editMenu" mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem fx:id="revert" mnemonicParsing="false" onAction="#revert" text="Revert" />
-                        <MenuItem fx:id="undoMenuItem" mnemonicParsing="false" onAction="#undoMenuItemClicked" text="Undo" />
-                        <MenuItem fx:id="redoMenuItem" mnemonicParsing="false" onAction="#redoMenuItemClicked" text="Redo" />
-                    </items>
-                </Menu>
-                <Menu id="viewMenu" mnemonicParsing="false" text="View">
-                    <items>
-                        <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
-                        <CheckMenuItem fx:id="highlightToggle" mnemonicParsing="false" onAction="#toggleBacklogStories" selected="true" text="Highlight Stories" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
+                          </items>
+                      </Menu>
+                  </menus>
+              </MenuBar>
+         </children>
+      </VBox>
     </top>
     <center>
-        <HBox fx:id="hBoxMainDisplay" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" BorderPane.alignment="CENTER">
             <children>
                 <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
                     <children>
@@ -59,43 +74,6 @@
                             </children>
                         </AnchorPane>
                         <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                        <GridPane>
-                            <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
-                            <children>
-                                <HBox alignment="TOP_RIGHT" spacing="10.0" GridPane.columnIndex="1" VBox.vgrow="SOMETIMES">
-                                    <children>
-                                        <Button fx:id="addButton" mnemonicParsing="false" onAction="#addClicked" styleClass="mdr-button" text="+" />
-                                        <Button fx:id="removeButton" disable="true" mnemonicParsing="false" onAction="#removeClicked" styleClass="mdr-button" text="X">
-                                            <HBox.margin>
-                                                <Insets />
-                                            </HBox.margin>
-                                        </Button>
-                                    </children>
-                                    <VBox.margin>
-                                        <Insets bottom="5.0" left="5.0" top="5.0" />
-                                    </VBox.margin>
-                                </HBox>
-                                <HBox spacing="10.0">
-                                    <children>
-                                        <Button fx:id="backButton" disable="true" mnemonicParsing="false" onAction="#backClicked" styleClass="mdr-button" text="&lt;" />
-                                        <Button fx:id="forwardButton" disable="true" mnemonicParsing="false" onAction="#forwardClicked" styleClass="mdr-button" text="&gt;">
-                                            <HBox.margin>
-                                                <Insets right="50.0" />
-                                            </HBox.margin>
-                                        </Button>
-                                    </children>
-                                </HBox>
-                            </children>
-                            <VBox.margin>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                            </VBox.margin>
-                        </GridPane>
                     </children>
                 </VBox>
                 <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
