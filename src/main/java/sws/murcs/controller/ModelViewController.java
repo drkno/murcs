@@ -120,7 +120,10 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         displayChoiceBox
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener((observer, oldValue, newValue) -> updateList());
+                .addListener((observer, oldValue, newValue) -> {
+                    updateList();
+                    titleProperty.set(((Model)displayList.getSelectionModel().getSelectedItem()).getShortName());
+                });
 
         displayChoiceBox.getSelectionModel().select(0);
 
