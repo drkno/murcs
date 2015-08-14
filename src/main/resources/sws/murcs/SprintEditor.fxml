@@ -139,15 +139,15 @@
                         </VBox>
                         <VBox GridPane.rowIndex="8">
                            <children>
-                              <TitledPane animated="false" expanded="false" text="Stories">
+                              <TitledPane expanded="false" animated="false" text="Stories">
                                 <content>
                                   <AnchorPane prefHeight="180.0" prefWidth="200.0">
                                        <children>
                                           <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <ScrollPane fitToWidth="true" minHeight="100.0" prefViewportHeight="125.0" prefViewportWidth="180.0">
+                                                <ScrollPane fitToHeight="true" fitToWidth="true" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" minHeight="100">
                                                    <content>
-                                                      <VBox fx:id="storiesContainer" fillWidth="true" VBox.vgrow="ALWAYS" />
+                                                      <VBox fx:id="storiesContainer" fillWidth="true" mouseTransparent="false" VBox.vgrow="ALWAYS"/>
                                                    </content>
                                                 </ScrollPane>
                                                 <AnchorPane>
