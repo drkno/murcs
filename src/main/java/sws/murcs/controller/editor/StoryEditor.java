@@ -29,12 +29,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.AcceptanceCondition;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
@@ -118,11 +113,16 @@ public class StoryEditor extends GenericEditor<Story> {
     private FXMLLoader taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
     private Thread thread;
-
+    
     private boolean stop;
 
     @Override
     public final void loadObject() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            thread.interrupt();
+        }
+        stop = false;
         String modelShortName = getModel().getShortName();
         setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
@@ -159,27 +159,34 @@ public class StoryEditor extends GenericEditor<Story> {
         taskContainer.getChildren().clear();
         StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            Story model = getModel();
             private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
             @Override
             protected Void call() throws Exception {
-                for (Task task : getModel().getTasks()) {
+                for (Task task : model.getTasks()) {
                     if (stop) break;
                     try {
-                        taskLoader.setRoot(null);
+                        threadTaskLoader.setRoot(null);
                         TaskEditor controller = new TaskEditor();
-                        taskLoader.setController(controller);
-                        Parent view = taskLoader.load();
+                        threadTaskLoader.setController(controller);
+                        Parent view = threadTaskLoader.load();
                         controller.configure(task, false, view, foo);
                         CountDownLatch countDownLatch = new CountDownLatch(1);
                         Platform.runLater(() -> {
-                            if (stop) return;
+                            if (stop) {
+                                countDownLatch.countDown();
+                                return;
+                            };
                             taskContainer.getChildren().add(view);
                             countDownLatch.countDown();
                         });
                         countDownLatch.await();
-                    } catch (Exception e) {
-                        //ErrorReporter.get().reportError(e, "Unable to create new task");
+                    } catch (InterruptedException e) {
+                        //
+                    }
+                    catch (Exception e) {
+                        ErrorReporter.get().reportError(e, "Unable to create new task");
                     }
                 }
                 return null;
