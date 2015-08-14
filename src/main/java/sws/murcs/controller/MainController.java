@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +14,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
@@ -120,13 +125,17 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         StackPane containerPane = new StackPane(mainTabPane);
         DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
         skin.addDropListener((event, tab) -> {
-            Point2D mousePos = new Point2D(event.getScreenX(), event.getScreenY());
-            javafx.stage.Window window = borderPaneMain.getScene().getWindow();
-            Rectangle bounds = new Rectangle(window.getX(), window.getY(), window.getWidth(), window.getHeight());
+            //If the event has already been accepted, we don't want to move the tab to a new window.
+            if (event.isAccepted()) {
+                return;
+            }
 
-            if (!bounds.contains(mousePos)) {
-                createWindow(event, tab);
-            } else return;
+            PointerInfo info = MouseInfo.getPointerInfo();
+            Point awtPoint = info.getLocation();
+
+            Point2D mousePos = new Point2D(awtPoint.getX(), awtPoint.getY());
+
+            createWindow(mousePos, tab);
         });
 
         mainTabPane.setSkin(skin);
@@ -157,6 +166,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         loadToolbar();
         toolBarController.setLinkedController(this);
+        toolBarController.setNavigable(this);
 
         undoRedoNotification(ChangeState.Commit);
         setUpShortCuts();
@@ -170,7 +180,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param event The mouse event
      * @param tab The tab
      */
-    private void createWindow(DragEvent event, Tab tab) {
+    private void createWindow(Point2D mousePos, Tab tab) {
         Tabbable tabbable = tabs
                 .stream()
                 .filter(t -> tab.getContent().equals(t.getRoot())).findFirst()
@@ -196,6 +206,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         App.getWindowManager().addWindow(window);
 
         stage.show();
+        stage.setX(mousePos.getX());
+        stage.setY(mousePos.getY());
     }
 
     /**

@@ -142,6 +142,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				DRAGGED_TAB = t;
 				Node node = (Node) event.getSource();
 				Dragboard db = node.startDragAndDrop(TransferMode.MOVE);
+				node.setOnDragDone(e -> fireDropListeners(e, t));
 
 				WritableImage snapShot = node.snapshot(new SnapshotParameters(), null);
 				PixelReader reader = snapShot.getPixelReader();
@@ -168,6 +169,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 					h++;
 				}
 
+				//TODO make a cooler screen shot
 				db.setDragView(image, image.getWidth(), image.getHeight() * -1);
 
 				ClipboardContent content = new ClipboardContent();
@@ -355,10 +357,6 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			return;
 		}
 
-		for (DropListener listener : dropListeners) {
-			listener.dropped(event, tab);
-		}
-
 		efx_dragFinished(tab);
 	}
 
@@ -367,6 +365,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	private List<DropListener> dropListeners = new ArrayList<>();
 	private Consumer<FeedbackData> feedbackConsumer;
 	private Consumer<DroppedData> dropConsumer;
+	private Consumer<DragEvent> doneConsumer;
 	private Function<Tab, String> clipboardDataFunction;
 
 	@Override
@@ -415,6 +414,17 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	 */
 	public void clearDropListeners() {
 		dropListeners.clear();
+	}
+
+	/**
+	 * Fires all the drop listeners
+	 * @param event The drag event
+	 * @param dropped The dropped tab
+	 */
+	private void fireDropListeners(DragEvent event, Tab dropped) {
+		for (DropListener listener : dropListeners) {
+			listener.dropped(event, dropped);
+		}
 	}
 
 	private boolean efx_canStartDrag(Tab tab) {
