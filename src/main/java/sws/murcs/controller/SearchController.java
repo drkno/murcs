@@ -149,6 +149,11 @@ public class SearchController {
     private SequentialTransition fadeOutCommandsPane;
 
     /**
+     * Keep the commands popover open.
+     */
+    private boolean commandsPopOverStayOpen;
+
+    /**
      * The duration of the fade time.
      */
     @SuppressWarnings("checkstyle:magicnumber")
@@ -158,6 +163,11 @@ public class SearchController {
      * Flag if the search text field is empty.
      */
     private boolean emptySearch = true;
+
+    /**
+     * Popover view to show search commands.
+     */
+    private SearchCommandsView searchCommandsView;
 
     /**
      * Called when the form is instantiated.
@@ -251,7 +261,15 @@ public class SearchController {
                 = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
         foundItems.setItems(sortedSearchResults);
 
-        searchIcon.setOnMousePressed(event -> showSearchCommandsPopOver());
+        searchIcon.hoverProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                showSearchCommandsPopOver();
+                commandsPopOverStayOpen = false;
+            } else if (!commandsPopOverStayOpen) {
+                hideSearchCommandsPopOver();
+            }
+        });
+        searchIcon.setOnMouseClicked(event -> commandsPopOverStayOpen = !commandsPopOverStayOpen);
         Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
@@ -291,8 +309,19 @@ public class SearchController {
      */
     private void showSearchCommandsPopOver() {
         if (searchCommandButtonActive) {
-            SearchCommandsView searchCommandsView = new SearchCommandsView();
+            if (searchCommandsView == null) {
+                searchCommandsView = new SearchCommandsView();
+            }
             searchCommandsView.setup(this, searchIcon);
+        }
+    }
+
+    /**
+     * Hides the search commands view if it is currently shown.
+     */
+    private void hideSearchCommandsPopOver() {
+        if (searchCommandsView != null) {
+            searchCommandsView.hide();
         }
     }
 
@@ -570,6 +599,7 @@ public class SearchController {
             searchCommandsPane = loader.load();
             SearchCommandsController controller = loader.getController();
             controller.setup(this);
+            searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create search commands");

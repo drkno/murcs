@@ -106,7 +106,7 @@ public abstract class Token {
             specialToken.setValue(enabled);
             if (enabled) {
                 searchQuery
-                        = searchQuery.replaceAll("(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+)", "");
+                        = searchQuery.replaceAll("(^|\\s+)((" + commands[0] + ")|(" + commands[1] + "))($|\\s+)", " ");
             }
         }
 

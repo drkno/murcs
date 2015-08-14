@@ -1,7 +1,7 @@
 @import "globalStyles"
 
 .text-field, .text-field:focused, .text-field:filled, .text-field:hover
-  -fx-text-fill: black
+  -fx-text-fill: $black
   -fx-prompt-text-fill: darkgray
   -fx-focus-color: transparent
   -fx-control-inner-background: transparent
@@ -48,6 +48,6 @@
   -fx-text-fill: $black
   -fx-effect: none
 
-.search-command
+.search-command, .search-command .label
   -fx-text-fill: $primary-500
-  -fx-font-size: 1.3em
+  -fx-font-size: 1.1em

@@ -30,6 +30,13 @@ public class SearchCommandsView {
      * @param pHanger The hanger which the popover hangs from.
      */
     public final void setup(final SearchController searchController, final Node pHanger) {
+        if (popOver != null) {
+            if (!popOver.isShowing()) {
+                popOver.show(pHanger);
+            }
+            return;
+        }
+
         hanger = pHanger;
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
         try {
@@ -37,13 +44,22 @@ public class SearchCommandsView {
             SearchCommandsController controller = loader.getController();
             controller.setup(searchController);
             popOver = new PopOver(view);
-            popOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            popOver.arrowLocationProperty().setValue(ArrowLocation.TOP_LEFT);
+            popOver.detachableProperty().setValue(false);
             popOver.show(hanger);
             ((Parent) popOver.getSkin().getNode()).getStylesheets()
                     .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create search commands popOver");
         }
+    }
 
+    /**
+     * Hides the popover if it is currently being shown.
+     */
+    public final void hide() {
+        if (popOver != null) {
+            popOver.hide();
+        }
     }
 }
