@@ -7,28 +7,20 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.LoadException;
+import javafx.geometry.*;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -50,6 +42,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * An editor for the story model.
@@ -122,6 +115,12 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private TextField addConditionTextField;
 
+    private FXMLLoader taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+
+    private Thread thread;
+
+    private boolean stop;
+
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
@@ -158,9 +157,19 @@ public class StoryEditor extends GenericEditor<Story> {
         });
 
         taskContainer.getChildren().clear();
-        for (Task task : getModel().getTasks()) {
-            injectTaskEditor(task, false);
-        }
+        javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                for (Task task : getModel().getTasks()) {
+                    if (stop) break;
+                    injectTaskEditor(task, false);
+                }
+                return null;
+            }
+        };
+        thread = new Thread(taskThread);
+        thread.setDaemon(true);
+        thread.start();
 
         // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
@@ -291,6 +300,15 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void dispose() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                //We don't care about this. Don't report this as all we really want to do is stop the thread.
+                //We don't care if it has a hissy fit while killing it.
+            }
+        }
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -598,12 +616,21 @@ public class StoryEditor extends GenericEditor<Story> {
      * @param creationBox Whether or not this is a creation box
      */
     private void injectTaskEditor(final Task task, final boolean creationBox) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         try {
-            Parent view = loader.load();
-            TaskEditor controller = loader.getController();
+            taskLoader.setRoot(null);
+            TaskEditor controller = new TaskEditor();
+            taskLoader.setController(controller);
+            if (taskLoader == null) return;
+            Parent view = taskLoader.load();
             controller.configure(task, creationBox, view, this);
-            taskContainer.getChildren().add(view);
+            CountDownLatch countDownLatch = new CountDownLatch(1);
+            Platform.runLater(() -> {
+                taskContainer.getChildren().add(view);
+                countDownLatch.countDown();
+            });
+            countDownLatch.await();
+        } catch (LoadException e) {
+            // lol
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
@@ -658,7 +685,7 @@ public class StoryEditor extends GenericEditor<Story> {
         /**
          * The editable acceptance condition description text field.
          */
-        TextField textField = new TextField();
+        TextArea textField = new TextArea();
         /**
          * The acceptance condition description text field.
          */
@@ -743,9 +770,28 @@ public class StoryEditor extends GenericEditor<Story> {
         private Node createCell(final Boolean isEdit) {
             Node node;
             if (isEdit) {
+                textField.setWrapText(true);
+                Platform.runLater(() -> {
+                    ScrollPane scrollPane = (ScrollPane) textField.lookup(".scroll-pane");
+                    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                });
+                textField.textProperty().addListener((observable, oldValue, newValue) -> {
+                    Text text = new Text();
+                    text.setFont(textField.getFont());
+                    text.setWrappingWidth(textField.getWidth());
+                    text.setText(newValue + ' ');
+                    textField.setPrefRowCount((int) text.getLayoutBounds().getHeight() / 15);
+                });
+                textField.setPrefRowCount(1);
                 node = textField;
             }
             else {
+                textLabel.setWrapText(true);
+//                Text text = new Text();
+//                text.setFont(textLabel.getFont());
+//                text.setWrappingWidth(conditionColumn.getWidth() - 30);
+//                text.setText(textLabel.getText());
+//                textLabel.setPrefHeight(text.getLayoutBounds().getHeight());
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
@@ -763,13 +809,19 @@ public class StoryEditor extends GenericEditor<Story> {
                 });
                 popup.show();
             });
-            AnchorPane conditionCell = new AnchorPane();
-            AnchorPane.setLeftAnchor(node, 0.0);
-            if (isEdit) {
-                AnchorPane.setRightAnchor(node, 30.0);
-            }
-            AnchorPane.setRightAnchor(button, 0.0);
-            conditionCell.getChildren().addAll(node, button);
+//            AnchorPane conditionCell = new AnchorPane();
+//            HBox hBox = new HBox();
+//            hBox.getChildren().add(node);
+//            AnchorPane.setLeftAnchor(hBox, 0.0);
+//            AnchorPane.setRightAnchor(hBox, 30.0);
+//            AnchorPane.setRightAnchor(button, 0.0);
+//            conditionCell.getChildren().addAll(node, button);
+            GridPane conditionCell = new GridPane();
+            conditionCell.add(node, 0, 0);
+            conditionCell.add(button, 1, 0);
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.LEFT, true));
+            conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER, HPos.CENTER, true));
+            conditionCell.getRowConstraints().add(0, new RowConstraints(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
             return conditionCell;
         }
     }
