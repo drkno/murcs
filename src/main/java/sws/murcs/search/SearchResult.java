@@ -16,7 +16,7 @@ public class SearchResult {
     /**
      * Maximum length of a search result as returned result text.
      */
-    private static final int SEARCH_RESULT_MAX_LENGTH = 45;
+    private static final int SEARCH_RESULT_MAX_LENGTH = 35;
 
     /**
      * Model object that this search result points to.
