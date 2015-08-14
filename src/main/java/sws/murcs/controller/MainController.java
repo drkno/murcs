@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -21,7 +19,6 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
@@ -105,6 +102,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private Window window;
 
+    /**
+     * Initializes the form
+     */
     @FXML
     public final void initialize() {
         App.addListener(e -> {
@@ -147,7 +147,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
             //If all the tabs have been closed, close the window
             if (selected == null) {
-                ((Stage)mainTabPane.getScene().getWindow()).close();
+                ((Stage) mainTabPane.getScene().getWindow()).close();
                 return;
             }
 
