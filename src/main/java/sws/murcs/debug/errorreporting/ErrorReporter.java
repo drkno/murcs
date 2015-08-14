@@ -232,7 +232,9 @@ public final class ErrorReporter {
         popOver.detachableProperty().set(true);
         popOver.detachedProperty().set(true);
         popOver.detachedCloseButtonProperty().set(false);
-        popOver.show(App.getMainController().getToolBarController().getToolBar());
+
+        //TODO Find out a way of working around this.
+        //popOver.show(App.getMainController().getToolBarController().getToolBar());
         VBox loader = new VBox();
 
         ImageView imageView = new ImageView();

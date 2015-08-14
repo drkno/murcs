@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -85,9 +86,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private TabPane mainTabPane;
 
     /**
-     * A map of all the tabbable objects in tabs.
+     * A collection of all the tabbable objects in all tabs in all windows.
      */
-    private Collection<Tabbable> tabs = new ArrayList<>();
+    private static Collection<Tabbable> tabs = new ArrayList<>();
 
     /**
      * The current controller for the toolbar.
@@ -142,19 +143,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         borderPaneMain.setCenter(containerPane);
 
-
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
             //If all the tabs have been closed, close the window
             if (selected == null) {
-                //TODO ((Stage)mainTabPane.getScene().getWindow()).close();
+                ((Stage)mainTabPane.getScene().getWindow()).close();
                 return;
             }
 
-            Tabbable tabbable = tabs
-                    .stream()
-                    .filter(t -> selected.getContent().equals(t.getRoot())).findFirst()
-                    .orElse(null);
+            Tabbable tabbable = getTabbable(selected);
 
             if (tabbable == null) {
                 return;
@@ -176,21 +173,29 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Creates a new window, at the specified position
-     * @param event The mouse event
+     * Attempts to find the tabbable associated with a tab
      * @param tab The tab
+     * @return The tabbable (null if not found).
      */
-    private void createWindow(Point2D mousePos, Tab tab) {
-        Tabbable tabbable = tabs
+    private Tabbable getTabbable(Tab tab) {
+        return tabs
                 .stream()
                 .filter(t -> tab.getContent().equals(t.getRoot())).findFirst()
                 .orElse(null);
+    }
 
+    /**
+     * Creates a new window, at the specified position
+     * @param mousePos The mouse position
+     * @param tab The tab
+     */
+    private void createWindow(Point2D mousePos, Tab tab) {
+        Tabbable tabbable = getTabbable(tab);
         mainTabPane.getTabs().remove(tab);
 
         Stage stage = new Stage();
         stage.setTitle(tabbable.getTitle().getValue());
-        tabbable.getTitle().addListener((observable, oldValue, newValue) -> stage.setTitle(newValue));
+        /*tabbable.getTitle().addListener((observable, oldValue, newValue) -> stage.setTitle(newValue));
 
         AnchorPane root = new AnchorPane();
         root.getChildren().add(tabbable.getRoot());
@@ -200,7 +205,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         AnchorPane.setRightAnchor(tabbable.getRoot(), 0.0);
 
         Scene scene = new Scene(root);
-        stage.setScene(scene);
+        stage.setScene(scene);*/
+        App.createWindow(stage);
 
         Window window = new Window(stage, tabbable);
         App.getWindowManager().addWindow(window);
@@ -323,6 +329,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             Tab tabNode = new Tab();
             tabNode.setClosable(true);
+            tabNode.setOnClosed(e -> {
+                Tab t = (Tab)e.getSource();
+                Tabbable tabbable = getTabbable(t);
+                tabs.remove(tabbable);
+            });
+
             tabNode.setContent(controller.getRoot());
 
             Label tabLabel = new Label(controller.getTitle().getValue());

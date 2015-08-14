@@ -35,7 +35,7 @@ public class App extends Application {
     /**
      * Default window title to use.
      */
-    private final String defaultWindowTitle = "- Untitled -";
+    private static final String defaultWindowTitle = "- Untitled -";
 
     /**
      * The main stage of the application.
@@ -50,12 +50,12 @@ public class App extends Application {
     /**
      * The minimum height of the application.
      */
-    private final int minimumApplicationHeight = 700;
+    private static final int minimumApplicationHeight = 700;
 
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 900;
+    private static final int minimumApplicationWidth = 900;
 
     /**
      * The subString length to search over, when parsing debugging mode.
@@ -91,14 +91,6 @@ public class App extends Application {
      */
     public static WindowManager getWindowManager() {
         return windowManager;
-    }
-
-    /**
-     * Gets the app controller that was created.
-     * @return The App Controller
-     */
-    public static MainController getMainController() {
-        return mainController;
     }
 
     /**
@@ -183,7 +175,7 @@ public class App extends Application {
      * Creates a new MainWindow
      * @param stage The stage to load the window onto
      */
-    public void createWindow(Stage stage) {
+    public static void createWindow(Stage stage) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
@@ -199,7 +191,7 @@ public class App extends Application {
 
         // Loads the primary fxml and sets mainController as its controller
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/sws/murcs/MainView.fxml"));
+        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
         Parent parent = null;
         try {
             parent = loader.load();
@@ -211,7 +203,7 @@ public class App extends Application {
 
         Scene scene = new Scene(parent);
         scene.getStylesheets()
-                .add(getClass()
+                .add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
         stage.setScene(scene);
