@@ -1,6 +1,6 @@
 package sws.murcs.controller;
 
-import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.model.Model;
 
 import java.util.ArrayDeque;

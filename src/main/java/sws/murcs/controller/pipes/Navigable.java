@@ -1,4 +1,4 @@
-package sws.murcs.controller.tabs;
+package sws.murcs.controller.pipes;
 
 import sws.murcs.model.Model;
 

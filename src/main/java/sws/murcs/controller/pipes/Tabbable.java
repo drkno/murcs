@@ -1,12 +1,9 @@
-package sws.murcs.controller.tabs;
+package sws.murcs.controller.pipes;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.ToolBarController;
-import sws.murcs.controller.windowManagement.Window;
 
 /**
  * Indicates the object can be

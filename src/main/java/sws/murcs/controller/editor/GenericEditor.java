@@ -10,7 +10,7 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;

@@ -22,7 +22,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;

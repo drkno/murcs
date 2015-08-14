@@ -3,10 +3,9 @@ package sws.murcs.view;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Window;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.controller.tabs.Navigable;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
 import java.io.IOException;

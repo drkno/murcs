@@ -6,9 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import sws.murcs.controller.tabs.ModelManagable;
-import sws.murcs.controller.tabs.Navigable;
-import sws.murcs.controller.tabs.ToolBarCommands;
+import sws.murcs.controller.pipes.ModelManagable;
+import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.model.*;
 
 /**
