@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
@@ -40,7 +41,7 @@ import sws.murcs.view.SearchView;
 /**
  * A controller for the base pane.
  */
-public class MainController implements UndoRedoChangeListener, ToolBarCommands{
+public class MainController implements UndoRedoChangeListener, ToolBarCommands, Navigable{
     /**
      * The main border pane for the application
      */
@@ -150,9 +151,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
                 return;
             }
 
-            toolBarController.setNavigable(tabbable);
             toolBarController.setModelManagable(tabbable);
-
             currentTabbable = tabbable;
         });
 
@@ -363,7 +362,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
      * @param event Clicking the search button on the toolbar.
      */
     public final void search(final ActionEvent event) {
-        SearchView.get().setNavigationManager(currentTabbable);
+        SearchView.get().setNavigationManager(this);
         SearchView.get().show(mainTabPane.getScene().getWindow());
     }
 
@@ -873,5 +872,30 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands{
         catch (InstantiationException | IllegalAccessException e) {
             ErrorReporter.get().reportError(e, "Initialising a creation window failed");
         }
+    }
+
+    @Override
+    public void goForward() {
+        currentTabbable.goForward();
+    }
+
+    @Override
+    public void goBack() {
+        currentTabbable.goBack();
+    }
+
+    @Override
+    public boolean canGoForward() {
+        return currentTabbable.canGoForward();
+    }
+
+    @Override
+    public boolean canGoBack() {
+        return currentTabbable.canGoBack();
+    }
+
+    @Override
+    public void navigateTo(Model model) {
+        currentTabbable.navigateTo(model);
     }
 }
