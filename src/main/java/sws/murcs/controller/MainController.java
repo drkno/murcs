@@ -310,14 +310,14 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * Adds a model view tab to the main pane
      */
     public ModelViewController addModelViewTab() {
-        return (ModelViewController)addTab("/sws/murcs/ModelView.fxml");
+        return (ModelViewController) addTab("/sws/murcs/ModelView.fxml");
     }
 
     /**
      * Adds a tab to the pane.
      * @param fxmlPath
      */
-    public Tabbable addTab(String fxmlPath) {
+    public Tabbable addTab(final String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
@@ -453,6 +453,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         setUpShortCuts();
     }
 
+    /**
+     * Beings piping a "Create" event.
+     * @param event The event that brought us here
+     * @throws UnsupportedOperationException If the create operation requested is not supported.
+     */
     @FXML
     private void create(final ActionEvent event) throws UnsupportedOperationException {
         if (!(event.getSource() instanceof MenuItem)) {
