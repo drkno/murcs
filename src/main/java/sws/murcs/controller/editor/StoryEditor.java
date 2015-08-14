@@ -157,12 +157,30 @@ public class StoryEditor extends GenericEditor<Story> {
         });
 
         taskContainer.getChildren().clear();
+        StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+
             @Override
             protected Void call() throws Exception {
                 for (Task task : getModel().getTasks()) {
                     if (stop) break;
-                    injectTaskEditor(task, false);
+                    try {
+                        taskLoader.setRoot(null);
+                        TaskEditor controller = new TaskEditor();
+                        taskLoader.setController(controller);
+                        Parent view = taskLoader.load();
+                        controller.configure(task, false, view, foo);
+                        CountDownLatch countDownLatch = new CountDownLatch(1);
+                        Platform.runLater(() -> {
+                            if (stop) return;
+                            taskContainer.getChildren().add(view);
+                            countDownLatch.countDown();
+                        });
+                        countDownLatch.await();
+                    } catch (Exception e) {
+                        //ErrorReporter.get().reportError(e, "Unable to create new task");
+                    }
                 }
                 return null;
             }
@@ -629,8 +647,6 @@ public class StoryEditor extends GenericEditor<Story> {
                 countDownLatch.countDown();
             });
             countDownLatch.await();
-        } catch (LoadException e) {
-            // lol
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
