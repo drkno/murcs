@@ -10,6 +10,7 @@ import sws.murcs.search.tokens.Token;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Thread handler object to manage searching for model object on a thread.
@@ -94,6 +95,14 @@ public class SearchThread<T> {
         passThreeFields = new ArrayList<>();
         searchType = modelType;
         searchIteration = 0;
+        try {
+            searchThread = new Thread(this::performSearch);
+            searchThread.setDaemon(true);
+            searchThread.start();
+        }
+        catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Could not spawn a search thread.");
+        }
     }
 
     /**
@@ -135,53 +144,62 @@ public class SearchThread<T> {
         searchValidator = theSearchValidator;
         shouldSearch = true;
         try {
-            searchThread = new Thread(this::performSearch);
-            searchThread.start();
+            synchronized (this) {
+                this.notify();
+            }
         }
         catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Could not start a search thread.");
+            ErrorReporter.get().reportError(e, "Could not notify search thread.");
         }
     }
 
     /**
      * Aborts the search currently occurring on this thread.
+     * Not guaranteed to have completed by the time the method returns,
+     * instead is guaranteed to ensure any new results found from previous
+     * search will not future ones *after this method terminates*.
      */
     public final void stop() {
-        try {
-            if (searchThread != null) {
-                searchIteration++;
-                shouldSearch = false;
-                searchThread.join();
-                searchValidator = null;
-            }
-        }
-        catch (InterruptedException e) {
-            /*
-                Thrown cause Java. Should not be reported cause if an exception is thrown
-                what we wanted to happen was achieved anyway just under less than normal
-                circumstances.
-             */
+        if (searchThread != null) {
+            searchIteration++;
+            shouldSearch = false;
+            searchValidator = null;
         }
     }
 
     /**
      * Main search that performs object specific searching in
      * three search phases.
+     * This method will not terminate. This is by design because spawning threads is
+     * very very slow, so instead it waits for a notification on 'this' to start
+     * searching again. This will reduce the overhead of spawning a new thread
+     * every single time a new character is typed for search.
      */
     private void performSearch() {
-        searchFields(passZeroFields);
-        if (Token.getMaxSearchPriority().equals(SearchPriority.Ultra)) {
-            return;
+        while (true) {
+            synchronized (this) {
+                try {
+                    this.wait();
+                }
+                catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Waiting on a search thread failed.");
+                }
+            }
+
+            searchFields(passZeroFields);
+            if (Token.getMaxSearchPriority().equals(SearchPriority.Ultra) || !shouldSearch) {
+                continue;
+            }
+            searchFields(passOneFields);
+            if (Token.getMaxSearchPriority().equals(SearchPriority.High) || !shouldSearch) {
+                continue;
+            }
+            searchFields(passTwoFields);
+            if (Token.getMaxSearchPriority().equals(SearchPriority.Medium) || !shouldSearch) {
+                continue;
+            }
+            searchFields(passThreeFields);
         }
-        searchFields(passOneFields);
-        if (Token.getMaxSearchPriority().equals(SearchPriority.High)) {
-            return;
-        }
-        searchFields(passTwoFields);
-        if (Token.getMaxSearchPriority().equals(SearchPriority.Medium)) {
-            return;
-        }
-        searchFields(passThreeFields);
     }
 
     /**
@@ -240,24 +258,26 @@ public class SearchThread<T> {
     private boolean find(final Model model, final Field f, final Object o) {
         String s = o.toString();
         SearchResult result = searchValidator.matches(s);
-        if (result != null) {
-            Searchable searchable = f.getAnnotation(Searchable.class);
-            String fieldName = searchable.fieldName();
-            if (fieldName.equals("")) {
-                fieldName = f.getName();
-            }
-
-            result.setModel(model, fieldName, searchable.value());
-            final long iteration = searchIteration;
-            Platform.runLater(() -> {
-                if (iteration == searchIteration) {
-                    searchResults.add(result);
-                }
-            });
-
-            return true;
+        if (result == null) {
+            return false;
         }
-        return false;
+
+        Searchable searchable = f.getAnnotation(Searchable.class);
+        String fieldName = searchable.fieldName();
+        if (fieldName.equals("")) {
+            fieldName = f.getName();
+        }
+
+        result.setModel(model, fieldName, searchable.value());
+        final long iteration = searchIteration;
+        int insertIndex = ~Collections.binarySearch(searchResults, result, SearchResult.getComparator());
+        Platform.runLater(() -> {
+            if (iteration == searchIteration || insertIndex < 0) {
+                searchResults.add(result);
+            }
+        });
+
+        return true;
     }
 
     /**
