@@ -1,13 +1,12 @@
 package sws.murcs.controller;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -177,8 +176,9 @@ public class SearchController {
         previewRenderThread = new Thread(this::renderPreview);
         previewRenderThread.setDaemon(true);
         previewRenderThread.start();
-
         searchHandler = new SearchHandler();
+        foundItems.setCellFactory(createItemsCellFactory());
+        foundItems.setItems(searchHandler.getResults());
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
 
@@ -221,6 +221,7 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+            final String placeholderLabel = "42";
             String search = searchText.getText();
             if (Objects.equals(search, "")) {
                 hideSearchList();
@@ -230,7 +231,7 @@ public class SearchController {
                     showSearchList();
                     emptySearch = false;
                 }
-                noItemsLabel.setText("42");
+                noItemsLabel.setText(placeholderLabel);
             } else {
                 if (emptySearch) {
                     showSearchList();
@@ -245,21 +246,6 @@ public class SearchController {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
-
-        foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
-            if (c.getList().size() == 0) {
-                searchPane.getChildren().remove(resultsPane);
-            } else {
-                searchPane.getChildren().add(1, resultsPane);
-                noItemsLabel.setText("Hover over item to preview");
-            }
-        });
-
-        foundItems.setCellFactory(createItemsCellFactory());
-
-        SortedList<SearchResult> sortedSearchResults
-                = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
-        foundItems.setItems(sortedSearchResults);
 
         searchIcon.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -359,36 +345,17 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
-                    Platform.runLater(() -> {
-                        // This is to get around JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
-                        getStyleClass().add("list-cell-background");
-                    });
-
                     if (empty || item == null) {
                         setText(null);
                         setGraphic(null);
                     } else {
                         HBox box = new HBox();
                         ObservableList<Node> children = box.getChildren();
-
                         Label context = new Label(item.getModelType() + ": " + item.getFieldName());
-                        context.getStyleClass().add("search-result-context");
+
 
                         Label selectionBefore = new Label(item.selectionBefore());
                         children.add(selectionBefore);
-
-                        List<String> matches = item.getMatches();
-                        for (int i = 0; i < matches.size(); i++) {
-                            Label matchLabel = new Label(matches.get(i));
-                            if (i % 2 == 0) {
-                                matchLabel.getStyleClass().add("search-result");
-                            }
-                            children.add(matchLabel);
-                        }
-
-                        Label selectionAfter = new Label(item.selectionAfter());
-                        children.add(selectionAfter);
-
 
                         VBox vbox = new VBox();
                         vbox.getChildren().add(context);
@@ -396,7 +363,21 @@ public class SearchController {
                         vbox.setFillWidth(true);
                         vbox.getChildren().add(box);
                         VBox.setVgrow(box, Priority.ALWAYS);
-                        setGraphic(vbox);
+
+                        synchronized (StyleManager.getInstance()) {
+                            List<String> matches = item.getMatches();
+                            for (int i = 0; i < matches.size(); i++) {
+                                Label matchLabel = new Label(matches.get(i));
+                                if (i % 2 == 0) {
+                                    matchLabel.getStyleClass().add("search-result");
+                                }
+                                children.add(matchLabel);
+                            }
+                            context.getStyleClass().add("search-result-context");
+                            Label selectionAfter = new Label(item.selectionAfter());
+                            children.add(selectionAfter);
+                            setGraphic(vbox);
+                        }
                     }
                 }
             };
@@ -521,6 +502,7 @@ public class SearchController {
                     return;
                 }
 
+                Model lastValue = null;
                 while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null
                         && !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
                     Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
@@ -536,19 +518,30 @@ public class SearchController {
                         latch.await();
                     }
 
-                    if (editorPane == null) {
-                        editorPane = new EditorPane(newValue);
+                    // Welcome to JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
+                    if (editorPane != null) {
+                        Thread.sleep(disableDelay);
+                        if (!newValue.equals(lastValue)) {
+                            lastValue = newValue;
+                            continue;
+                        }
                     }
-                    else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                        editorPane.setModel(newValue);
+
+                    synchronized (StyleManager.getInstance()) {
+                        if (editorPane == null) {
+                            editorPane = new EditorPane(newValue);
+                        } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+
+                            editorPane.setModel(newValue);
+                        }
+                        else {
+                            editorPane.dispose();
+                            editorPane = new EditorPane(newValue);
+                        }
+                        editorPane.getView().getStyleClass().add("search-preview");
+                        Thread.sleep(disableDelay);
+                        disableControlsAndUpdateButton();
                     }
-                    else {
-                        editorPane.dispose();
-                        editorPane = new EditorPane(newValue);
-                    }
-                    editorPane.getView().getStyleClass().add("search-preview");
-                    Thread.sleep(disableDelay);
-                    disableControlsAndUpdateButton();
                 }
 
                 final CountDownLatch latch = new CountDownLatch(1);
@@ -564,10 +557,8 @@ public class SearchController {
                 });
                 latch.await();
             }
-            catch (Exception e) {
-                Platform.runLater(() ->
-                        ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview."));
-                return;
+            catch (Throwable e) {
+                ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
     }
