@@ -169,6 +169,11 @@ public class SearchController {
     private SearchCommandsView searchCommandsView;
 
     /**
+     * Should delay the loading because scroll can occur.
+     */
+    private boolean shouldDelay;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
@@ -226,16 +231,21 @@ public class SearchController {
             if (Objects.equals(search, "")) {
                 hideSearchList();
                 emptySearch = true;
-            } else if (search.equals(searchHash)) { // prevent a special NPE
+            }
+            else {
                 if (emptySearch) {
                     showSearchList();
                     emptySearch = false;
                 }
-                noItemsLabel.setText(placeholderLabel);
-            } else {
-                if (emptySearch) {
-                    showSearchList();
-                    emptySearch = false;
+                // prevent a special NPE
+                if (search.equals(searchHash)) {
+                    noItemsLabel.setText(placeholderLabel);
+                }
+                else if (foundItems.getItems().size() == 0) {
+                    noItemsLabel.setText("No Items Found");
+                }
+                else {
+                    noItemsLabel.setText("Hover over an item to preview.");
                 }
                 searchHandler.searchFor(searchText.getText());
             }
@@ -353,7 +363,6 @@ public class SearchController {
                         ObservableList<Node> children = box.getChildren();
                         Label context = new Label(item.getModelType() + ": " + item.getFieldName());
 
-
                         Label selectionBefore = new Label(item.selectionBefore());
                         children.add(selectionBefore);
 
@@ -382,7 +391,11 @@ public class SearchController {
                 }
             };
 
-            cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
+            cell.setOnMouseEntered(event -> {
+                shouldDelay = true;
+                param.getSelectionModel().select(cell.getIndex());
+            });
+            cell.setOnMouseExited(event -> shouldDelay = false);
             cell.setOnMouseClicked(selectEvent);
 
             return cell;
@@ -519,7 +532,7 @@ public class SearchController {
                     }
 
                     // Welcome to JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
-                    if (editorPane != null) {
+                    if (editorPane != null && shouldDelay) {
                         Thread.sleep(disableDelay);
                         if (!newValue.equals(lastValue)) {
                             lastValue = newValue;
