@@ -65,16 +65,11 @@ public class Story extends Model {
     /**
      * The list of tasks associated with this story.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "tasks")
     @XmlElement(name = "task")
     private List<Task> tasks;
-
-    /**
-     * A description of the story.
-     */
-    @TrackableValue
-    private String description;
 
     /**
      * The person who created this story. This should not be changed after
