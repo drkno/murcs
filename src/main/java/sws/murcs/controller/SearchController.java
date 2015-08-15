@@ -6,6 +6,7 @@ import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -94,7 +95,7 @@ public class SearchController {
      * The search hash used to overcome model serialisation problems.
      * Who knows why Java is trying to serialise this class, but it is.
      */
-    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2VyIHRvIGxpZmUgdGhlIHVuaXZlcnNlIGFuZCBldmVyeXRoaW5n";
+    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2Vy";
 
     /**
      * Event to fire when an item is selected.
@@ -183,9 +184,18 @@ public class SearchController {
         previewRenderThread.start();
         searchHandler = new SearchHandler();
         foundItems.setCellFactory(createItemsCellFactory());
-        foundItems.setItems(searchHandler.getResults());
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
+        ObservableList<SearchResult> results = searchHandler.getResults();
+        results.addListener((ListChangeListener<SearchResult>) c -> {
+            if (c.getList().size() == 0) {
+                noItemsLabel.setText("No Items Found");
+            }
+            else {
+                noItemsLabel.setText("Hover over an item to preview.");
+            }
+        });
+        foundItems.setItems(results);
 
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
@@ -240,12 +250,6 @@ public class SearchController {
                 // prevent a special NPE
                 if (search.equals(searchHash)) {
                     noItemsLabel.setText(placeholderLabel);
-                }
-                else if (foundItems.getItems().size() == 0) {
-                    noItemsLabel.setText("No Items Found");
-                }
-                else {
-                    noItemsLabel.setText("Hover over an item to preview.");
                 }
                 searchHandler.searchFor(searchText.getText());
             }
