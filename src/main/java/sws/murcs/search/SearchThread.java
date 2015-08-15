@@ -1,7 +1,6 @@
 package sws.murcs.search;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -10,7 +9,6 @@ import sws.murcs.search.tokens.Token;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Thread handler object to manage searching for model object on a thread.
@@ -46,7 +44,7 @@ public class SearchThread<T> {
     /**
      * Observable list to store the search results in.
      */
-    private ObservableList<SearchResult> searchResults;
+    private Collection<SearchResult> searchResults;
 
     /**
      * Fields that will be searched in pass zero.
@@ -84,7 +82,7 @@ public class SearchThread<T> {
      * @param modelType the type of model that this thread searches.
      * @param searchableCollection collection to search for matches.
      */
-    public SearchThread(final ObservableList<SearchResult> list, final ModelType modelType,
+    public SearchThread(final Collection<SearchResult> list, final ModelType modelType,
                         final Collection<T> searchableCollection) {
         searchResults = list;
         collection = searchableCollection;
@@ -170,10 +168,16 @@ public class SearchThread<T> {
     /**
      * Main search that performs object specific searching in
      * three search phases.
-     * This method will not terminate. This is by design because spawning threads is
-     * very very slow, so instead it waits for a notification on 'this' to start
-     * searching again. This will reduce the overhead of spawning a new thread
-     * every single time a new character is typed for search.
+     *
+     * IMPORTANT DESIGN DECISIONS:
+     *  -   This method will not terminate. This is by design because spawning threads is
+     *      very very slow, so instead it waits for a notification on 'this' to start
+     *      searching again. This will reduce the overhead of spawning a new thread
+     *      every single time a new character is typed for search.
+     *  -   Rather than adding search results individually they are added in groups. This
+     *      is because sorting has a very large overhead and in the JavaFX SortedList
+     *      must occur on the GUI thread (I know, don't ask). By adding in groups we
+     *      reduce the number of times this occurs.
      */
     private void performSearch() {
         while (true) {
@@ -186,27 +190,56 @@ public class SearchThread<T> {
                 }
             }
 
-            searchFields(passZeroFields);
+            Collection<SearchResult> passZeroResults = new ArrayList<>();
+            searchFields(passZeroFields, passZeroResults);
+            long iteration = searchIteration;
+            Platform.runLater(() -> {
+                if (iteration == searchIteration) {
+                    searchResults.addAll(passZeroResults);
+                }
+            });
             if (Token.getMaxSearchPriority().equals(SearchPriority.Ultra) || !shouldSearch) {
                 continue;
             }
-            searchFields(passOneFields);
+
+            Collection<SearchResult> passOneResults = new ArrayList<>();
+            searchFields(passOneFields, passOneResults);
+            Platform.runLater(() -> {
+                if (iteration == searchIteration) {
+                    searchResults.addAll(passOneResults);
+                }
+            });
             if (Token.getMaxSearchPriority().equals(SearchPriority.High) || !shouldSearch) {
                 continue;
             }
-            searchFields(passTwoFields);
+
+            Collection<SearchResult> passTwoResults = new ArrayList<>();
+            searchFields(passTwoFields, passTwoResults);
+            Platform.runLater(() -> {
+                if (iteration == searchIteration) {
+                    searchResults.addAll(passTwoResults);
+                }
+            });
             if (Token.getMaxSearchPriority().equals(SearchPriority.Medium) || !shouldSearch) {
                 continue;
             }
-            searchFields(passThreeFields);
+
+            Collection<SearchResult> passThreeResults = new ArrayList<>();
+            searchFields(passThreeFields, passThreeResults);
+            Platform.runLater(() -> {
+                if (iteration == searchIteration) {
+                    searchResults.addAll(passThreeResults);
+                }
+            });
         }
     }
 
     /**
      * Searches the current collection using a set of provided fields.
      * @param passFields fields to search within the collection objects.
+     * @param results results collection to add found result too.
      */
-    private void searchFields(final Collection<Field> passFields) {
+    private void searchFields(final Collection<Field> passFields, final Collection<SearchResult> results) {
         for (T model : collection) {
             for (Field f : passFields) {
                 if (!shouldSearch) {
@@ -225,7 +258,7 @@ public class SearchThread<T> {
                     if (val instanceof Collection) {
                         boolean shouldBreak = false;
                         for (Object object : (Collection) val) {
-                            if (find((Model) model, f, object)) {
+                            if (find((Model) model, f, object, results)) {
                                 shouldBreak = true;
                                 break;
                             }
@@ -235,7 +268,7 @@ public class SearchThread<T> {
                         }
                     }
                     else {
-                        if (find((Model) model, f, val)) {
+                        if (find((Model) model, f, val, results)) {
                             break;
                         }
                     }
@@ -253,9 +286,10 @@ public class SearchThread<T> {
      * @param model the model to search.
      * @param f the field to search.
      * @param o the object to search.
+     * @param r the results collection to add found results to.
      * @return if a match was found.
      */
-    private boolean find(final Model model, final Field f, final Object o) {
+    private boolean find(final Model model, final Field f, final Object o, final Collection<SearchResult> r) {
         String s = o.toString();
         SearchResult result = searchValidator.matches(s);
         if (result == null) {
@@ -269,14 +303,7 @@ public class SearchThread<T> {
         }
 
         result.setModel(model, fieldName, searchable.value());
-        final long iteration = searchIteration;
-        int insertIndex = ~Collections.binarySearch(searchResults, result, SearchResult.getComparator());
-        Platform.runLater(() -> {
-            if (iteration == searchIteration || insertIndex < 0) {
-                searchResults.add(result);
-            }
-        });
-
+        r.add(result);
         return true;
     }
 

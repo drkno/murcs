@@ -2,6 +2,7 @@ package sws.murcs.search;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -82,6 +83,6 @@ public  class SearchHandler {
      * @return results found from the current search.
      */
     public final ObservableList<SearchResult> getResults() {
-        return results;
+        return new SortedList<>(results, SearchResult.getComparator());
     }
 }
