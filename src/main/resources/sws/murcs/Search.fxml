@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import java.lang.*?>
 <?import javafx.scene.image.*?>
@@ -42,6 +43,9 @@
                      </cursor>
                   </ImageView>
                </children>
+               <GridPane.margin>
+                  <Insets bottom="10.0" />
+               </GridPane.margin>
             </GridPane>
             <GridPane fx:id="resultsPane" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
               <columnConstraints>
