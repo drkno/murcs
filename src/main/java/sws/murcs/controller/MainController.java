@@ -107,10 +107,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     public final void initialize() {
-        App.addListener(e -> {
-            e.consume();
-            fileQuitPress(null);
-        });
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
