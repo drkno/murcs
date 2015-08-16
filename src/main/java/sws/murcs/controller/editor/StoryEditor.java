@@ -4,7 +4,6 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -54,7 +53,6 @@ import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * An editor for the story model.
@@ -736,7 +734,7 @@ public class StoryEditor extends GenericEditor<Story> {
         /**
          * The editable acceptance condition description text field.
          */
-        TextArea textField = new TextArea();
+        TextArea textArea = new TextArea();
         /**
          * The acceptance condition description text field.
          */
@@ -753,7 +751,7 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 clearErrors();
                 setGraphic(createCell(true));
-                textField.requestFocus();
+                textArea.requestFocus();
             }
         }
 
@@ -765,12 +763,12 @@ public class StoryEditor extends GenericEditor<Story> {
                     AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                     acceptanceCondition.setCondition(newValue);
                     textLabel.setText(acceptanceCondition.getCondition());
-                    textField.setText(acceptanceCondition.getCondition());
+                    textArea.setText(acceptanceCondition.getCondition());
                     setGraphic(createCell(false));
                     clearErrors();
                 } catch (CustomException e) {
                     clearErrors();
-                    addFormError(textField, e.getMessage());
+                    addFormError(textArea, e.getMessage());
                 }
 
             }
@@ -782,7 +780,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 super.cancelEdit();
                 AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                 textLabel.setText(acceptanceCondition.getCondition());
-                textField.setText(acceptanceCondition.getCondition());
+                textArea.setText(acceptanceCondition.getCondition());
                 setGraphic(createCell(false));
             }
         }
@@ -790,7 +788,7 @@ public class StoryEditor extends GenericEditor<Story> {
         @Override
         protected void updateItem(final String newCondition, final boolean empty) {
             super.updateItem(newCondition, empty);
-            textField.setText(newCondition);
+            textArea.setText(newCondition);
             textLabel.setText(newCondition);
 
             if (newCondition == null || empty) {
@@ -810,12 +808,12 @@ public class StoryEditor extends GenericEditor<Story> {
             });
             selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
-                    commitEdit(textField.getText());
+                    commitEdit(textArea.getText());
                 }
             });
-            textField.setOnKeyPressed(t -> {
+            textArea.setOnKeyPressed(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    commitEdit(textField.getText().trim());
+                    commitEdit(textArea.getText().trim());
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -832,9 +830,9 @@ public class StoryEditor extends GenericEditor<Story> {
         private Node createCell(final Boolean isEdit) {
             Node node;
             if (isEdit) {
-                textField.setWrapText(true);
+                textArea.setWrapText(true);
                 Platform.runLater(() -> {
-                    ScrollPane scrollPane = (ScrollPane) textField.lookup(".scroll-pane");
+                    ScrollPane scrollPane = (ScrollPane) textArea.lookup(".scroll-pane");
                     scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                     scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                 });
@@ -842,30 +840,30 @@ public class StoryEditor extends GenericEditor<Story> {
                 if (listener == null) {
                     listener = (observable, oldValue, newValue) -> {
                         Text text = new Text("Test Height");
-                        text.setFont(textField.getFont());
-                        text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
                         Double height = text.getLayoutBounds().getHeight();
                         text.setText(newValue);
-                        textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                     };
-                    textField.textProperty().addListener(listener);
+                    textArea.textProperty().addListener(listener);
                     widthProperty().addListener((observable, oldValue, newValue) -> {
                         Text text = new Text("Test Height");
-                        text.setFont(textField.getFont());
-                        text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
                         Double height = text.getLayoutBounds().getHeight();
-                        text.setText(textField.getText());
-                        textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                        text.setText(textArea.getText());
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                     });
                 }
                 Text text = new Text("Test Height");
-                text.setFont(textField.getFont());
-                text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                text.setFont(textArea.getFont());
+                text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
                 Double height = text.getLayoutBounds().getHeight();
-                textField.setText(textField.getText().trim());
-                text.setText(textField.getText());
-                textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
-                node = textField;
+                textArea.setText(textArea.getText().trim());
+                text.setText(textArea.getText());
+                textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                node = textArea;
             }
             else {
                 textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
