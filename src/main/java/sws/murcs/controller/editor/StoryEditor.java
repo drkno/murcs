@@ -839,10 +839,10 @@ public class StoryEditor extends GenericEditor<Story> {
 
                 if (listener == null) {
                     listener = (observable, oldValue, newValue) -> {
-                        Text text = new Text("Test Height");
+                        Text text = new Text("Test Height"); // this is necessary to get the height of one row of text
                         text.setFont(textArea.getFont());
                         text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
-                        Double height = text.getLayoutBounds().getHeight();
+                        Double height = text.getLayoutBounds().getHeight(); // the height of one row of text
                         text.setText(newValue);
                         textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                     };
@@ -866,7 +866,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 node = textArea;
             }
             else {
-                textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
+                textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0); // 30 - width of button, 14 - get rid of padding
                 widthProperty().addListener((observable, oldValue, newValue) -> {
                     textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
                 });
@@ -897,7 +897,6 @@ public class StoryEditor extends GenericEditor<Story> {
             conditionCell.setAlignment(Pos.CENTER);
             conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER,
                     HPos.CENTER, true));
-//
             return conditionCell;
         }
     }
