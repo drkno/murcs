@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -30,7 +30,6 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -739,7 +738,12 @@ public class StoryEditor extends GenericEditor<Story> {
         /**
          * The acceptance condition description text field.
          */
-        Label textLabel = new Label();
+        Text textLabel = new Text();
+
+        /**
+         * The listener on the text field.
+         */
+        ChangeListener<String> listener;
 
         @Override
         public void startEdit() {
@@ -757,8 +761,9 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 try {
                     AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
-                    acceptanceCondition.setCondition(textField.getText());
+                    acceptanceCondition.setCondition(newValue);
                     textLabel.setText(acceptanceCondition.getCondition());
+                    textField.setText(acceptanceCondition.getCondition());
                     setGraphic(createCell(false));
                     clearErrors();
                 } catch (CustomException e) {
@@ -775,6 +780,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 super.cancelEdit();
                 AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                 textLabel.setText(acceptanceCondition.getCondition());
+                textField.setText(textLabel.getText());
                 setGraphic(createCell(false));
             }
         }
@@ -795,15 +801,19 @@ public class StoryEditor extends GenericEditor<Story> {
                 setGraphic(createCell(false));
             }
 
-            textLabel.setOnMousePressed(event -> startEdit());
-            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    startEdit();
+                }
+            });
+            selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue) {
                     commitEdit(textField.getText());
                 }
             });
             textField.setOnKeyReleased(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    commitEdit(textField.getText());
+                    commitEdit(textField.getText().trim());
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -824,25 +834,30 @@ public class StoryEditor extends GenericEditor<Story> {
                 Platform.runLater(() -> {
                     ScrollPane scrollPane = (ScrollPane) textField.lookup(".scroll-pane");
                     scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                    scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                 });
-                textField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    Text text = new Text();
-                    text.setFont(textField.getFont());
-                    text.setWrappingWidth(conditionColumn.getWidth() - 50);
-                    text.setText(newValue + ' ');
-                    textField.setPrefRowCount((int) text.getLayoutBounds().getHeight() / 15);
-                });
-                textField.setPrefRowCount(1);
+                if (listener == null) {
+                    listener = (observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height");
+                        text.setFont(textField.getFont());
+                        text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight();
+                        text.setText(newValue);
+                        System.out.println((Math.ceil(text.getLayoutBounds().getHeight() / height)));
+                        textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    };
+                    textField.textProperty().addListener(listener);
+                }
+                Text text = new Text("Test Height");
+                text.setFont(textField.getFont());
+                text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                Double height = text.getLayoutBounds().getHeight();
+                text.setText(textField.getText());
+                textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                 node = textField;
             }
             else {
-                textLabel.setWrapText(true);
-                Text text = new Text();
-                text.setFont(textLabel.getFont());
-                text.setWrappingWidth(conditionColumn.getWidth() - 100);
-                text.setText(textLabel.getText());
-                text.autosize();
-                textLabel.setMaxHeight(text.getLayoutBounds().getHeight());
+                textLabel.setWrappingWidth(this.getWidth() - 30.0 - 14.0);
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
@@ -863,12 +878,14 @@ public class StoryEditor extends GenericEditor<Story> {
             GridPane conditionCell = new GridPane();
             conditionCell.add(node, 0, 0);
             conditionCell.add(button, 1, 0);
-            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(10, 300, USE_COMPUTED_SIZE,
-                    Priority.ALWAYS, HPos.LEFT, true));
+            conditionCell.setMinHeight(30.0);
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(USE_COMPUTED_SIZE,
+                    USE_COMPUTED_SIZE, USE_COMPUTED_SIZE,
+                    Priority.SOMETIMES, HPos.LEFT, true));
+            conditionCell.setAlignment(Pos.CENTER);
             conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER,
                     HPos.CENTER, true));
-            conditionCell.getRowConstraints().add(0, new RowConstraints(10, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE,
-                    Priority.ALWAYS, VPos.TOP, true));
+//
             return conditionCell;
         }
     }
