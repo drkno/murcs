@@ -149,6 +149,8 @@ public class StoryEditor extends GenericEditor<Story> {
                 thread.join();
             } catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Failed to stop the loading tasks thread.");
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError();
             }
         }
         stop = false;
@@ -810,7 +812,7 @@ public class StoryEditor extends GenericEditor<Story> {
             }
 
             setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2) {
+                if (event.getClickCount() == 2) { // makes sure it is a double click event to start editing
                     startEdit();
                 }
             });
