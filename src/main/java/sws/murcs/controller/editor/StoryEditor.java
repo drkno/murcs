@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,6 +54,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * An editor for the story model.
@@ -780,7 +782,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 super.cancelEdit();
                 AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                 textLabel.setText(acceptanceCondition.getCondition());
-                textField.setText(textLabel.getText());
+                textField.setText(acceptanceCondition.getCondition());
                 setGraphic(createCell(false));
             }
         }
@@ -811,7 +813,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     commitEdit(textField.getText());
                 }
             });
-            textField.setOnKeyReleased(t -> {
+            textField.setOnKeyPressed(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
                     commitEdit(textField.getText().trim());
                 }
@@ -836,6 +838,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                     scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
                 });
+
                 if (listener == null) {
                     listener = (observable, oldValue, newValue) -> {
                         Text text = new Text("Test Height");
@@ -843,21 +846,32 @@ public class StoryEditor extends GenericEditor<Story> {
                         text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
                         Double height = text.getLayoutBounds().getHeight();
                         text.setText(newValue);
-                        System.out.println((Math.ceil(text.getLayoutBounds().getHeight() / height)));
                         textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                     };
                     textField.textProperty().addListener(listener);
+                    widthProperty().addListener((observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height");
+                        text.setFont(textField.getFont());
+                        text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight();
+                        text.setText(textField.getText());
+                        textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    });
                 }
                 Text text = new Text("Test Height");
                 text.setFont(textField.getFont());
                 text.setWrappingWidth(textField.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
                 Double height = text.getLayoutBounds().getHeight();
+                textField.setText(textField.getText().trim());
                 text.setText(textField.getText());
                 textField.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                 node = textField;
             }
             else {
-                textLabel.setWrappingWidth(this.getWidth() - 30.0 - 14.0);
+                textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
+                widthProperty().addListener((observable, oldValue, newValue) -> {
+                    textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
+                });
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
