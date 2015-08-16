@@ -31,6 +31,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
@@ -590,8 +591,9 @@ public class SearchController {
         JavaFXHelpers.findAndDestroyControls(view);
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
-        Button saveButton = editorPane.getController().getSaveChangesButton();
+        MaterialDesignButton saveButton = (MaterialDesignButton) editorPane.getController().getSaveChangesButton();
         saveButton.getStyleClass().add("button-default");
+        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
         saveButton.setVisible(true);
         saveButton.setDisable(false);
         saveButton.setText("Open In Window");
