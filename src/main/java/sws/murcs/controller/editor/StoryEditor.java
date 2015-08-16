@@ -147,10 +147,8 @@ public class StoryEditor extends GenericEditor<Story> {
             stop = true;
             try {
                 thread.join();
-            } catch (Exception e) {
-                ErrorReporter.get().reportError(e, "Failed to stop the loading tasks thread.");
             } catch (Throwable t) {
-                ErrorReporter.get().reportError();
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
             }
         }
         stop = false;
@@ -362,8 +360,8 @@ public class StoryEditor extends GenericEditor<Story> {
             stop = true;
             try {
                 thread.join();
-            } catch (Exception e) {
-                ErrorReporter.get().reportError(e, "Failed to stop the thread loading tasks.");
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the thread loading tasks.");
             }
         }
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
