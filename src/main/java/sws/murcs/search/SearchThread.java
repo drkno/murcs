@@ -139,7 +139,9 @@ public class SearchThread<T> {
         if (searchThread != null && searchThread.isAlive()) {
             stop();
         }
-        searchValidator = theSearchValidator;
+        synchronized (this) {
+            searchValidator = theSearchValidator;
+        }
         shouldSearch = true;
         try {
             synchronized (this) {
@@ -291,7 +293,13 @@ public class SearchThread<T> {
      */
     private boolean find(final Model model, final Field f, final Object o, final Collection<SearchResult> r) {
         String s = o.toString();
-        SearchResult result = searchValidator.matches(s);
+        SearchResult result = null;
+        synchronized (this) {
+            if (searchValidator != null) {
+                result = searchValidator.matches(s);
+            }
+        }
+
         if (result == null) {
             return false;
         }
