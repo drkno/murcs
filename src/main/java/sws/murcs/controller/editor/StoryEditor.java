@@ -113,14 +113,18 @@ public class StoryEditor extends GenericEditor<Story> {
     private FXMLLoader taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
     private Thread thread;
-    
+
     private boolean stop;
 
     @Override
     public final void loadObject() {
         if (thread != null && thread.isAlive()) {
             stop = true;
-            thread.interrupt();
+            try {
+                thread.join();
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Failed to stop the loading tasks thread.");
+            }
         }
         stop = false;
         String modelShortName = getModel().getShortName();
@@ -167,23 +171,18 @@ public class StoryEditor extends GenericEditor<Story> {
                 for (Task task : model.getTasks()) {
                     if (stop) break;
                     try {
+                        //Do not try and make this call injectTask as it doesn't work, I've tried.
                         threadTaskLoader.setRoot(null);
                         TaskEditor controller = new TaskEditor();
                         threadTaskLoader.setController(controller);
                         Parent view = threadTaskLoader.load();
                         controller.configure(task, false, view, foo);
-                        CountDownLatch countDownLatch = new CountDownLatch(1);
                         Platform.runLater(() -> {
-                            if (stop) {
-                                countDownLatch.countDown();
+                            if (!getModel().equals(model)) {
                                 return;
-                            };
+                            }
                             taskContainer.getChildren().add(view);
-                            countDownLatch.countDown();
                         });
-                        countDownLatch.await();
-                    } catch (InterruptedException e) {
-                        //
                     }
                     catch (Exception e) {
                         ErrorReporter.get().reportError(e, "Unable to create new task");
@@ -329,9 +328,8 @@ public class StoryEditor extends GenericEditor<Story> {
             stop = true;
             try {
                 thread.join();
-            } catch (InterruptedException e) {
-                //We don't care about this. Don't report this as all we really want to do is stop the thread.
-                //We don't care if it has a hissy fit while killing it.
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Failed to stop the thread loading tasks.");
             }
         }
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
@@ -832,13 +830,6 @@ public class StoryEditor extends GenericEditor<Story> {
                 });
                 popup.show();
             });
-//            AnchorPane conditionCell = new AnchorPane();
-//            HBox hBox = new HBox();
-//            hBox.getChildren().add(node);
-//            AnchorPane.setLeftAnchor(hBox, 0.0);
-//            AnchorPane.setRightAnchor(hBox, 30.0);
-//            AnchorPane.setRightAnchor(button, 0.0);
-//            conditionCell.getChildren().addAll(node, button);
             GridPane conditionCell = new GridPane();
             conditionCell.add(node, 0, 0);
             conditionCell.add(button, 1, 0);
