@@ -838,6 +838,7 @@ public class TaskGenerator implements Generator<Task> {
     /**
      * Sets up the list of names used for task names.
      */
+    @SuppressWarnings("CheckStyle")
     private void setUpNameList() {
         List<String> names = new ArrayList<>();
         String verb;

@@ -7,19 +7,31 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.LoadException;
-import javafx.geometry.*;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
@@ -29,7 +41,12 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.*;
+import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.Person;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
@@ -37,7 +54,6 @@ import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * An editor for the story model.
@@ -110,10 +126,19 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private TextField addConditionTextField;
 
-    private FXMLLoader taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+    /**
+     * The FXMLLoader used to create new tasks.
+     */
+    private FXMLLoader taskLoader;
 
+    /**
+     * The thread used to create tasks that already exist in the story.
+     */
     private Thread thread;
 
+    /**
+     * Whether or not the thread creating task GUIs should stop.
+     */
     private boolean stop;
 
     @Override
@@ -169,7 +194,9 @@ public class StoryEditor extends GenericEditor<Story> {
             @Override
             protected Void call() throws Exception {
                 for (Task task : model.getTasks()) {
-                    if (stop) break;
+                    if (stop) {
+                        break;
+                    }
                     try {
                         //Do not try and make this call injectTask as it doesn't work, I've tried.
                         threadTaskLoader.setRoot(null);
@@ -664,6 +691,9 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
+        if (taskLoader == null) {
+            taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        }
         injectTaskEditor(task, true);
     }
 
@@ -809,7 +839,6 @@ public class StoryEditor extends GenericEditor<Story> {
                 textLabel.setWrapText(true);
                 Text text = new Text();
                 text.setFont(textLabel.getFont());
-                System.out.println(conditionColumn.getWidth());
                 text.setWrappingWidth(conditionColumn.getWidth() - 100);
                 text.setText(textLabel.getText());
                 text.autosize();
@@ -834,9 +863,12 @@ public class StoryEditor extends GenericEditor<Story> {
             GridPane conditionCell = new GridPane();
             conditionCell.add(node, 0, 0);
             conditionCell.add(button, 1, 0);
-            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(10, 300, USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.LEFT, true));
-            conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER, HPos.CENTER, true));
-            conditionCell.getRowConstraints().add(0, new RowConstraints(10, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(10, 300, USE_COMPUTED_SIZE,
+                    Priority.ALWAYS, HPos.LEFT, true));
+            conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER,
+                    HPos.CENTER, true));
+            conditionCell.getRowConstraints().add(0, new RowConstraints(10, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE,
+                    Priority.ALWAYS, VPos.TOP, true));
             return conditionCell;
         }
     }
