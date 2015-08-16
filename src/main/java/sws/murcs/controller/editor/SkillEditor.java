@@ -71,6 +71,9 @@ public class SkillEditor extends GenericEditor<Skill> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     @Override

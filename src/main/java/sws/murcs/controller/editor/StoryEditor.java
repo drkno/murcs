@@ -38,6 +38,7 @@ import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
@@ -187,7 +188,7 @@ public class StoryEditor extends GenericEditor<Story> {
         taskContainer.getChildren().clear();
         StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
-            Story model = getModel();
+            private Story model = getModel();
             private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
             @Override
@@ -241,10 +242,13 @@ public class StoryEditor extends GenericEditor<Story> {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
         updateAcceptanceCriteria();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**
@@ -266,7 +270,9 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             estimateChoiceBox.setDisable(false);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
     }
@@ -541,6 +547,8 @@ public class StoryEditor extends GenericEditor<Story> {
         pane.add(hBox, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
 
         return pane;
     }
@@ -734,11 +742,11 @@ public class StoryEditor extends GenericEditor<Story> {
         /**
          * The editable acceptance condition description text field.
          */
-        TextArea textArea = new TextArea();
+        private TextArea textArea = new TextArea();
         /**
          * The acceptance condition description text field.
          */
-        Text textLabel = new Text();
+        private Text textLabel = new Text();
 
         /**
          * The listener on the text field.
@@ -855,6 +863,11 @@ public class StoryEditor extends GenericEditor<Story> {
                         text.setText(textArea.getText());
                         textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
                     });
+                    textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (!newValue) {
+                            commitEdit(textArea.getText());
+                        }
+                    });
                 }
                 Text text = new Text("Test Height");
                 text.setFont(textArea.getFont());
@@ -887,6 +900,8 @@ public class StoryEditor extends GenericEditor<Story> {
                 });
                 popup.show();
             });
+            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+            fadeButtonOnHover.setupEffect();
             GridPane conditionCell = new GridPane();
             conditionCell.add(node, 0, 0);
             conditionCell.add(button, 1, 0);
