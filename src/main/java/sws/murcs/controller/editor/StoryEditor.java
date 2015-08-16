@@ -643,15 +643,14 @@ public class StoryEditor extends GenericEditor<Story> {
             taskLoader.setRoot(null);
             TaskEditor controller = new TaskEditor();
             taskLoader.setController(controller);
-            if (taskLoader == null) return;
+            if (taskLoader == null) {
+                return;
+            }
             Parent view = taskLoader.load();
             controller.configure(task, creationBox, view, this);
-            CountDownLatch countDownLatch = new CountDownLatch(1);
             Platform.runLater(() -> {
                 taskContainer.getChildren().add(view);
-                countDownLatch.countDown();
             });
-            countDownLatch.await();
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
@@ -799,7 +798,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 textField.textProperty().addListener((observable, oldValue, newValue) -> {
                     Text text = new Text();
                     text.setFont(textField.getFont());
-                    text.setWrappingWidth(textField.getWidth());
+                    text.setWrappingWidth(conditionColumn.getWidth() - 50);
                     text.setText(newValue + ' ');
                     textField.setPrefRowCount((int) text.getLayoutBounds().getHeight() / 15);
                 });
@@ -808,11 +807,13 @@ public class StoryEditor extends GenericEditor<Story> {
             }
             else {
                 textLabel.setWrapText(true);
-//                Text text = new Text();
-//                text.setFont(textLabel.getFont());
-//                text.setWrappingWidth(conditionColumn.getWidth() - 30);
-//                text.setText(textLabel.getText());
-//                textLabel.setPrefHeight(text.getLayoutBounds().getHeight());
+                Text text = new Text();
+                text.setFont(textLabel.getFont());
+                System.out.println(conditionColumn.getWidth());
+                text.setWrappingWidth(conditionColumn.getWidth() - 100);
+                text.setText(textLabel.getText());
+                text.autosize();
+                textLabel.setMaxHeight(text.getLayoutBounds().getHeight());
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
@@ -833,9 +834,9 @@ public class StoryEditor extends GenericEditor<Story> {
             GridPane conditionCell = new GridPane();
             conditionCell.add(node, 0, 0);
             conditionCell.add(button, 1, 0);
-            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.LEFT, true));
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(10, 300, USE_COMPUTED_SIZE, Priority.ALWAYS, HPos.LEFT, true));
             conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER, HPos.CENTER, true));
-            conditionCell.getRowConstraints().add(0, new RowConstraints(USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
+            conditionCell.getRowConstraints().add(0, new RowConstraints(10, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE, Priority.ALWAYS, VPos.TOP, true));
             return conditionCell;
         }
     }
