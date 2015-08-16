@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -46,7 +47,7 @@ import sws.murcs.view.SearchView;
  */
 public class MainController implements UndoRedoChangeListener, ToolBarCommands, Navigable{
     /**
-     * The main border pane for the application
+     * The main border pane for the application.
      */
     @FXML
     private BorderPane borderPaneMain;
@@ -103,7 +104,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private Window window;
 
     /**
-     * Initializes the form
+     * Initializes the form.
      */
     @FXML
     public final void initialize() {
@@ -112,38 +113,17 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             menuBar.useSystemMenuBarProperty().set(true);
         }
 
-        mainTabPane = new DnDTabPane();
-
-        mainTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
-        mainTabPane.setPrefWidth(200);
-        mainTabPane.setPrefHeight(200);
-
-        DnDTabPaneSkin skin = new DnDTabPaneSkin(mainTabPane);
-        StackPane containerPane = new StackPane(mainTabPane);
-        DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
-        skin.addDropListener((event, tab) -> {
-            //If the event has already been accepted, we don't want to move the tab to a new window.
-            if (event.isAccepted()) {
-                return;
-            }
-
-            PointerInfo info = MouseInfo.getPointerInfo();
-            Point awtPoint = info.getLocation();
-
-            Point2D mousePos = new Point2D(awtPoint.getX(), awtPoint.getY());
-
-            createWindow(mousePos, tab);
-        });
-
-        mainTabPane.setSkin(skin);
-
+        Pane containerPane = buildDnDTabPane();
         borderPaneMain.setCenter(containerPane);
+
+        //Get the tab pane and set it to our main pane.
+        mainTabPane = (DnDTabPane) containerPane.getChildren().get(0);
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
             Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
-            //If all the tabs have been closed, close the window
+            //If all the tabs have been closed, add a new model tab (we should never have none)
             if (selected == null) {
-                ((Stage) mainTabPane.getScene().getWindow()).close();
+                addModelViewTab();
                 return;
             }
 
@@ -169,11 +149,43 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
+     * Builds a new DnDTabPane and returns it's container
+     * @return The container of the DnDTabPane
+     */
+    private Pane buildDnDTabPane() {
+        DnDTabPane tabPane = new DnDTabPane();
+
+        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.ALL_TABS);
+        tabPane.setPrefWidth(200);
+        tabPane.setPrefHeight(200);
+
+        DnDTabPaneSkin skin = new DnDTabPaneSkin(tabPane);
+        StackPane containerPane = new StackPane(tabPane);
+        DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
+        skin.addDropListener((event, tab) -> {
+            //If the event has already been accepted, we don't want to move the tab to a new window.
+            if (event.isAccepted()) {
+                return;
+            }
+
+            PointerInfo info = MouseInfo.getPointerInfo();
+            Point awtPoint = info.getLocation();
+
+            Point2D mousePos = new Point2D(awtPoint.getX(), awtPoint.getY());
+
+            createWindow(mousePos, tab);
+        });
+
+        tabPane.setSkin(skin);
+        return containerPane;
+    }
+
+    /**
      * Attempts to find the tabbable associated with a tab
      * @param tab The tab
      * @return The tabbable (null if not found).
      */
-    private Tabbable getTabbable(Tab tab) {
+    private Tabbable getTabbable(final Tab tab) {
         return tabs
                 .stream()
                 .filter(t -> tab.getContent().equals(t.getRoot())).findFirst()
@@ -185,31 +197,37 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param mousePos The mouse position
      * @param tab The tab
      */
-    private void createWindow(Point2D mousePos, Tab tab) {
+    private void createWindow(final Point2D mousePos, final Tab tab) {
         Tabbable tabbable = getTabbable(tab);
         mainTabPane.getTabs().remove(tab);
 
         Stage stage = new Stage();
         stage.setTitle(tabbable.getTitle().getValue());
-        /*tabbable.getTitle().addListener((observable, oldValue, newValue) -> stage.setTitle(newValue));
+        tabbable.getTitle().addListener((observable, oldValue, newValue) -> stage.setTitle(newValue));
 
-        AnchorPane root = new AnchorPane();
-        root.getChildren().add(tabbable.getRoot());
-        AnchorPane.setTopAnchor(tabbable.getRoot(), 0.0);
-        AnchorPane.setLeftAnchor(tabbable.getRoot(), 0.0);
-        AnchorPane.setBottomAnchor(tabbable.getRoot(), 0.0);
-        AnchorPane.setRightAnchor(tabbable.getRoot(), 0.0);
+        Pane containerPane = buildDnDTabPane();
+        DnDTabPane tabPane = (DnDTabPane) containerPane.getChildren().get(0);
+        tabPane.getTabs().add(tab);
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                stage.close();
+            }
+        });
+
+        BorderPane root = new BorderPane();
+        root.setMinWidth(borderPaneMain.getPrefWidth());
+        root.setMinHeight(borderPaneMain.getPrefHeight());
+        root.setCenter(containerPane);
 
         Scene scene = new Scene(root);
-        stage.setScene(scene);*/
-        App.createWindow(stage);
-
-        Window window = new Window(stage, tabbable);
-        App.getWindowManager().addWindow(window);
+        stage.setScene(scene);
 
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());
+        stage.setMinWidth(borderPaneMain.getPrefWidth());
+        stage.setMinHeight(borderPaneMain.getPrefHeight());
     }
 
     /**
@@ -303,7 +321,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Adds a model view tab to the main pane
+     * Adds a model view tab to the main pane.
      */
     public ModelViewController addModelViewTab() {
         return (ModelViewController) addTab("/sws/murcs/ModelView.fxml");
@@ -311,7 +329,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
     /**
      * Adds a tab to the pane.
-     * @param fxmlPath
+     * @param fxmlPath The path for the fxml to load
      */
     public Tabbable addTab(final String fxmlPath) {
         try {
@@ -860,19 +878,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Shows a new create model window
+     * Shows a new create model window.
      * @param type The type of class to create
      */
-    public static void showCreateWindow(ModelType type) {
+    public static void showCreateWindow(final ModelType type) {
         showCreateWindow(type, null);
     }
 
     /**
-     * Shows a new create model window
+     * Shows a new create model window.
      * @param type The type of class to create
      * @param success The callback that should fire upon success
      */
-    public static void showCreateWindow(ModelType type, Consumer<Model> success) {
+    public static void showCreateWindow(final ModelType type, final Consumer<Model> success) {
         Class<? extends Model> clazz = ModelType.getTypeFromModel(type);
 
         try {
@@ -920,7 +938,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     @Override
-    public void navigateTo(Model model) {
+    public void navigateTo(final Model model) {
         currentTabbable.navigateTo(model);
     }
 }
