@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -33,8 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
- * window is controlled here.
+ * Model View controller. Controls the main tabs.
  */
 public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeListener,
         Tabbable {
@@ -120,16 +120,18 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 .selectedItemProperty()
                 .addListener((observer, oldValue, newValue) -> {
                     updateList();
-                    titleProperty.set(((Model) displayList.getSelectionModel().getSelectedItem()).getShortName());
+                    updateTitle();
                 });
 
         displayChoiceBox.getSelectionModel().select(0);
 
         //If the person control clicked, open in a new tab
-        displayList.setOnMouseClicked(event -> {
+        displayList.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.isControlDown()) {
                 ModelViewController controller = mainController.addModelViewTab();
                 controller.selectItem((Model) displayList.getSelectionModel().getSelectedItem());
+                goBack();
+                event.consume();
             }
         });
 
@@ -137,7 +139,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             if (oldValue != newValue) {
                 if (editorPane != null && newValue != null) {
                     editorPane.getController().saveChanges();
-                    titleProperty.set(((Model) newValue).getShortName());
+                    updateTitle();
                 }
                 updateDisplayListSelection(newValue, oldValue);
             }
@@ -145,6 +147,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         UndoRedoManager.addChangeListener(this);
         updateList();
+    }
+
+    /**
+     * Updates the title property
+     */
+    private void updateTitle(){
+        titleProperty.set(((Model) displayList.getSelectionModel().getSelectedItem()).getShortName());
     }
 
     /**
@@ -372,6 +381,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         displayList.getSelectionModel().clearSelection();
         navigationManager.goBack();
         toolBarController.updateBackForwardButtons();
+        updateTitle();
     }
 
     @Override
@@ -385,7 +395,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public void navigateTo(Model model) {
+    public void navigateTo(final Model model) {
         selectItem(model);
     }
 
@@ -400,6 +410,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         displayList.getSelectionModel().clearSelection();
         navigationManager.goForward();
         toolBarController.updateBackForwardButtons();
+        updateTitle();
     }
 
     @Override
