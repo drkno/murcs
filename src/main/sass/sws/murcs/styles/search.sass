@@ -52,6 +52,12 @@
   -fx-text-fill: $black
   -fx-effect: none
 
+.date-picker:disabled .arrow-button, .date-picker:disabled .arrow-button .arrow
+  -fx-padding: 0
+
+.date-picker:disabled .date-picker-display-node
+  -fx-background-insets: 1 1 1 1
+
 .search-command, .search-command .label
   -fx-text-fill: $primary-500
   -fx-font-size: 1.1em

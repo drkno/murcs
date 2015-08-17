@@ -102,24 +102,20 @@ public final class JavaFXHelpers {
         currentNode.getChildrenUnmodifiable().forEach(node -> {
             if (Button.class.isAssignableFrom(node.getClass()) || node instanceof MaterialDesignButton) {
                 node.setVisible(false);
-            }
-            else if (node instanceof Hyperlink) {
+            } else if (node instanceof Hyperlink) {
                 node.setDisable(true);
                 node.getStyleClass().add("control-disabled");
-            }
-            else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
+            } else if (node instanceof TextField || node instanceof ComboBox || node instanceof TextArea
                     || node instanceof ChoiceBox || node instanceof ListView || node instanceof TableView
                     || node instanceof DatePicker || node instanceof CheckBox || node instanceof RadioButton) {
                 node.setDisable(true);
                 node.getStyleClass().add("control-disabled");
-            }
-            else if (node instanceof ScrollPane) {
+            } else if (node instanceof ScrollPane) {
                 Node content = ((ScrollPane) node).getContent();
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
                 }
-            }
-            else if (node instanceof TitledPane) {
+            } else if (node instanceof TitledPane) {
                 Node content = ((TitledPane) node).getContent();
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
