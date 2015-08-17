@@ -6,6 +6,7 @@ package sws.murcs.search.tokens;
  * with !regex to enable regex.
  */
 public interface SpecialTokenEvent {
+
     /**
      * Sets the value of the special token.
      * @param newValue enable or disable the feature of this token.
