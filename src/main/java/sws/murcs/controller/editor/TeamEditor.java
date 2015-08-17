@@ -143,6 +143,7 @@ public class TeamEditor extends GenericEditor<Team> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

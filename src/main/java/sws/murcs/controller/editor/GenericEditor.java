@@ -4,6 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
@@ -63,6 +64,11 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     private boolean isCreationWindow;
 
     /**
+     * Whether or not the editor is loaded.
+     */
+    protected boolean isLoaded;
+
+    /**
      * Stores if a save changes button exists, preventing a new button being created
      * if one has already been created.
      */
@@ -101,6 +107,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final void setModel(final Object pModel) {
         if (pModel != null) {
+            isLoaded = false;
             model = (T) pModel;
         }
     }
@@ -145,7 +152,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             errorMessagePopover.autoHideProperty().setValue(false);
 
             errorMessagePopoverListener = (observable, oldValue, newValue) -> {
-                if (!newValue && observable != null) {
+                if (!newValue && observable != null && errorMessagePopoverListener != null) {
                     observable.removeListener(errorMessagePopoverListener);
                     errorMessagePopover.hide();
                 }
@@ -371,5 +378,17 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
         bottomBar.getChildren().add(saveButton);
         HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+    }
+
+    /**
+     * Gets the save changes button so that it can be externally manipulated.
+     * @return the save changes button.
+     */
+    public final Button getSaveChangesButton() {
+        return saveButton;
+    }
+
+    public final boolean isLoaded() {
+        return isLoaded;
     }
 }

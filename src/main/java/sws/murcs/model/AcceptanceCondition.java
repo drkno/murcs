@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -20,6 +21,7 @@ public class AcceptanceCondition extends TrackableObject implements Serializable
     /**
      * The text representing the condition.
      */
+    @Searchable
     @TrackableValue
     private String condition;
 
@@ -43,5 +45,10 @@ public class AcceptanceCondition extends TrackableObject implements Serializable
         }
         condition = newCondition;
         commit("edit condition");
+    }
+
+    @Override
+    public final String toString() {
+        return getCondition();
     }
 }

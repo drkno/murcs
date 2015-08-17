@@ -387,6 +387,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     /**

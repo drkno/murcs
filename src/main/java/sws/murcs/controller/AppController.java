@@ -43,6 +43,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+import sws.murcs.view.SearchView;
 
 import java.io.File;
 import java.util.Collection;
@@ -50,7 +51,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Main app class controller. This controls all the main window functionality, so anything that isn't in a seperate
+ * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
  * window is controlled here.
  */
 public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener, ToolBarCommands {
@@ -871,11 +872,27 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     }
 
     /**
+     * The function that is called to bring up the search window.
+     * @param event Clicking the search button on the toolbar.
+     */
+    public final void search(final ActionEvent event) {
+        SearchView.get().show(borderPaneMain.getScene().getWindow());
+    }
+
+    /**
      * Toggles a section of the toolbar based on the check menu item selected in the view menu.
      * @param event Clicking on an option in the tool bar section of the view menu.
      */
     @FXML
     private void toolBarToggle(final ActionEvent event) {
         toolBarController.toolBarToggle(event);
+    }
+
+    /**
+     * Gets the current type that is displayed within the display list.
+     * @return the current type.
+     */
+    public final ModelType getCurrentType() {
+        return ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
     }
 }

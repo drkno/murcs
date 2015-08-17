@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -19,6 +20,7 @@ public class Release extends Model {
     /**
      * The date the release is due.
      */
+    @Searchable
     @TrackableValue
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate releaseDate = LocalDate.now();

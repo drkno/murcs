@@ -24,6 +24,7 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
+                        <description>Revert to last saved state</description>
                         <storyState>None</storyState>
                         <acceptanceCriteria>
                             <acceptanceCriterion>
@@ -60,6 +61,7 @@
         <unassignedStories>
             <story shortName="2">
                 <longName>Story Maintenance</longName>
+                <description>add stories to project</description>
                 <storyState>None</storyState>
                 <acceptanceCriteria/>
                 <tasks/>

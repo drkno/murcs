@@ -56,6 +56,9 @@ public final class ErrorReporter {
      * @return the current ErrorReporter instance.
      */
     public static ErrorReporter get() {
+        if (reporter == null) {
+            setup(new String[]{});
+        }
         return reporter;
     }
 

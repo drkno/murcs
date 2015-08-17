@@ -249,9 +249,26 @@ public class PopOver extends PopupControl {
 
     @Override
     public final void show(final Window owner) {
-        super.show(owner);
-        ownerWindow = owner;
-        ownerWindow.setOnHiding(ownerWindowCloseListener);
+        if (getSkin() != null) {
+            Node skinNode = getSkin().getNode();
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
+            fadeOut.setFromValue(skinNode.getOpacity());
+            fadeOut.setToValue(1);
+            fadeOut.setOnFinished(evt -> {
+                if (!isShowing()) {
+                    owner.setOnHiding(null);
+                    super.show(owner);
+                    ownerWindow = owner;
+                    ownerWindow.setOnHiding(ownerWindowCloseListener);
+                }
+            });
+            fadeOut.play();
+        }
+        else {
+            super.show(owner);
+            ownerWindow = owner;
+            ownerWindow.setOnHiding(ownerWindowCloseListener);
+        }
     }
 
     @Override
@@ -332,7 +349,14 @@ public class PopOver extends PopupControl {
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(evt -> {
-                super.hide();
+                try {
+                    super.hide();
+                }
+                catch (IllegalStateException e) {
+                    // caught and ignored to bypass a race condition.
+                    // should not be reported as the outcome will be the same
+                    // ie. the window will be closed
+                }
             });
             fadeOut.play();
         }
