@@ -217,6 +217,11 @@ public class StoryEditor extends GenericEditor<Story> {
                 }
                 return null;
             }
+
+            @Override
+            protected void succeeded() {
+                isLoaded = true;
+            }
         };
         thread = new Thread(taskThread);
         thread.setDaemon(true);

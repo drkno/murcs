@@ -116,6 +116,7 @@ public class PersonEditor extends GenericEditor<Person> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

@@ -563,7 +563,9 @@ public class SearchController {
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
 
-                        Thread.sleep(disableDelay);
+                        while(!editorPane.getController().isLoaded()) {
+                            Thread.sleep(disableDelay);
+                        }
                         disableControlsAndUpdateButton();
                     }
                 }
