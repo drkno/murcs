@@ -16,7 +16,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -210,7 +209,7 @@ public class SearchController {
                     handleKeyUp(t);
                     break;
                 case ENTER:
-                    if (foundItems.getSelectionModel().getSelectedIndex() > 0) {
+                    if (foundItems.getSelectionModel().getSelectedIndex() >= 0) {
                         selectEvent.handle(null);
                     }
                     else if (foundItems.getItems().size() == 1) {
@@ -218,7 +217,8 @@ public class SearchController {
                         selectEvent.handle(null);
                     }
                     break;
-                default: break;
+                default:
+                    break;
             }
         };
 
