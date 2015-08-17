@@ -10,6 +10,7 @@ import java.util.LinkedList;
  * in a search.
  */
 public class AndToken extends Token {
+
     /**
      * A collection of tokens to and together.
      */
