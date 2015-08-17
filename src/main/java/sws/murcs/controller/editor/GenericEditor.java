@@ -64,6 +64,11 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     protected boolean isCreationWindow;
 
     /**
+     * Whether or not the editor is loaded.
+     */
+    protected boolean isLoaded;
+
+    /**
      * Stores if a save changes button exists, preventing a new button being created
      * if one has already been created.
      */
@@ -102,6 +107,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final void setModel(final Object pModel) {
         if (pModel != null) {
+            isLoaded = false;
             model = (T) pModel;
         }
     }
@@ -380,5 +386,9 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final Button getSaveChangesButton() {
         return saveButton;
+    }
+
+    public final boolean isLoaded() {
+        return isLoaded;
     }
 }

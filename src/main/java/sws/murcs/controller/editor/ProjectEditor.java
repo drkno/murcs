@@ -133,6 +133,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

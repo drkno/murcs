@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -7,7 +8,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +16,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -29,13 +28,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+import sws.murcs.view.App;
 import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
@@ -95,7 +97,7 @@ public class SearchController {
      * The search hash used to overcome model serialisation problems.
      * Who knows why Java is trying to serialise this class, but it is.
      */
-    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2VyIHRvIGxpZmUgdGhlIHVuaXZlcnNlIGFuZCBldmVyeXRoaW5n";
+    private String searchHash = "d2hhdCBpcyB0aGUgYW5zd2Vy";
 
     /**
      * Event to fire when an item is selected.
@@ -170,6 +172,11 @@ public class SearchController {
     private SearchCommandsView searchCommandsView;
 
     /**
+     * Should delay the loading because scroll can occur.
+     */
+    private boolean shouldDelay;
+
+    /**
      * Called when the form is instantiated.
      */
     @FXML
@@ -177,10 +184,20 @@ public class SearchController {
         previewRenderThread = new Thread(this::renderPreview);
         previewRenderThread.setDaemon(true);
         previewRenderThread.start();
-
         searchHandler = new SearchHandler();
+        foundItems.setCellFactory(createItemsCellFactory());
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
+        ObservableList<SearchResult> results = searchHandler.getResults();
+        results.addListener((ListChangeListener<SearchResult>) c -> {
+            if (c.getList().size() == 0) {
+                noItemsLabel.setText("No Items Found");
+            }
+            else {
+                noItemsLabel.setText("Hover over an item to preview.");
+            }
+        });
+        foundItems.setItems(results);
 
         EventHandler<KeyEvent> keyPressed = t -> {
             switch (t.getCode()) {
@@ -194,7 +211,7 @@ public class SearchController {
                     handleKeyUp(t);
                     break;
                 case ENTER:
-                    if (foundItems.getSelectionModel().getSelectedIndex() > 0) {
+                    if (foundItems.getSelectionModel().getSelectedIndex() >= 0) {
                         selectEvent.handle(null);
                     }
                     else if (foundItems.getItems().size() == 1) {
@@ -202,7 +219,8 @@ public class SearchController {
                         selectEvent.handle(null);
                     }
                     break;
-                default: break;
+                default:
+                    break;
             }
         };
 
@@ -221,20 +239,20 @@ public class SearchController {
         };
 
         searchText.textProperty().addListener((observable, oldValue, newValue) -> {
+            final String placeholderLabel = "42";
             String search = searchText.getText();
             if (Objects.equals(search, "")) {
                 hideSearchList();
                 emptySearch = true;
-            } else if (search.equals(searchHash)) { // prevent a special NPE
+            }
+            else {
                 if (emptySearch) {
                     showSearchList();
                     emptySearch = false;
                 }
-                noItemsLabel.setText("42");
-            } else {
-                if (emptySearch) {
-                    showSearchList();
-                    emptySearch = false;
+                // prevent a special NPE
+                if (search.equals(searchHash)) {
+                    noItemsLabel.setText(placeholderLabel);
                 }
                 searchHandler.searchFor(searchText.getText());
             }
@@ -245,21 +263,6 @@ public class SearchController {
                 searchText.getStyleClass().remove("search-input-placeholder");
             }
         });
-
-        foundItems.getItems().addListener((ListChangeListener<SearchResult>) c -> {
-            if (c.getList().size() == 0) {
-                searchPane.getChildren().remove(resultsPane);
-            } else {
-                searchPane.getChildren().add(1, resultsPane);
-                noItemsLabel.setText("Hover over item to preview");
-            }
-        });
-
-        foundItems.setCellFactory(createItemsCellFactory());
-
-        SortedList<SearchResult> sortedSearchResults
-                = new SortedList<>(searchHandler.getResults(), SearchResult.getComparator());
-        foundItems.setItems(sortedSearchResults);
 
         searchIcon.hoverProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -359,36 +362,16 @@ public class SearchController {
                 @Override
                 public void updateItem(final SearchResult item, final boolean empty) {
                     super.updateItem(item, empty);
-                    Platform.runLater(() -> {
-                        // This is to get around JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
-                        getStyleClass().add("list-cell-background");
-                    });
-
                     if (empty || item == null) {
                         setText(null);
                         setGraphic(null);
                     } else {
                         HBox box = new HBox();
                         ObservableList<Node> children = box.getChildren();
-
                         Label context = new Label(item.getModelType() + ": " + item.getFieldName());
-                        context.getStyleClass().add("search-result-context");
 
                         Label selectionBefore = new Label(item.selectionBefore());
                         children.add(selectionBefore);
-
-                        List<String> matches = item.getMatches();
-                        for (int i = 0; i < matches.size(); i++) {
-                            Label matchLabel = new Label(matches.get(i));
-                            if (i % 2 == 0) {
-                                matchLabel.getStyleClass().add("search-result");
-                            }
-                            children.add(matchLabel);
-                        }
-
-                        Label selectionAfter = new Label(item.selectionAfter());
-                        children.add(selectionAfter);
-
 
                         VBox vbox = new VBox();
                         vbox.getChildren().add(context);
@@ -396,12 +379,30 @@ public class SearchController {
                         vbox.setFillWidth(true);
                         vbox.getChildren().add(box);
                         VBox.setVgrow(box, Priority.ALWAYS);
-                        setGraphic(vbox);
+
+                        synchronized (StyleManager.getInstance()) {
+                            List<String> matches = item.getMatches();
+                            for (int i = 0; i < matches.size(); i++) {
+                                Label matchLabel = new Label(matches.get(i));
+                                if (i % 2 == 0) {
+                                    matchLabel.getStyleClass().add("search-result");
+                                }
+                                children.add(matchLabel);
+                            }
+                            context.getStyleClass().add("search-result-context");
+                            Label selectionAfter = new Label(item.selectionAfter());
+                            children.add(selectionAfter);
+                            setGraphic(vbox);
+                        }
                     }
                 }
             };
 
-            cell.setOnMouseEntered(event -> param.getSelectionModel().select(cell.getIndex()));
+            cell.setOnMouseEntered(event -> {
+                shouldDelay = true;
+                param.getSelectionModel().select(cell.getIndex());
+            });
+            cell.setOnMouseExited(event -> shouldDelay = false);
             cell.setOnMouseClicked(selectEvent);
 
             return cell;
@@ -505,7 +506,11 @@ public class SearchController {
         imageView.setImage(spinner);
         loader.getChildren().add(imageView);
 
-        Label helpfulMessage = new Label("*CLUNK* /whir/");
+        @SuppressWarnings("CheckStyle")
+        Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
+                ? "Please update to at least Java 8u40 for speed\n*CLUNK*.........\n "
+                + "/wwwwhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
+        helpfulMessage.setTextAlignment(TextAlignment.CENTER);
         helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
         VBox.setMargin(helpfulMessage, new Insets(helpfulMessageMargin));
@@ -521,6 +526,7 @@ public class SearchController {
                     return;
                 }
 
+                Model lastValue = null;
                 while (editorPane == null || foundItems.getSelectionModel().getSelectedItem() != null
                         && !editorPane.getModel().equals(foundItems.getSelectionModel().getSelectedItem().getModel())) {
                     Model newValue = foundItems.getSelectionModel().getSelectedItem().getModel();
@@ -536,19 +542,32 @@ public class SearchController {
                         latch.await();
                     }
 
-                    if (editorPane == null) {
-                        editorPane = new EditorPane(newValue);
+                    // Welcome to JavaFX bug https://bugs.openjdk.java.net/browse/JDK-8097541
+                    if (editorPane != null && shouldDelay) {
+                        Thread.sleep(disableDelay);
+                        if (!newValue.equals(lastValue)) {
+                            lastValue = newValue;
+                            continue;
+                        }
                     }
-                    else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                        editorPane.setModel(newValue);
+
+                    synchronized (StyleManager.getInstance()) {
+                        if (editorPane == null) {
+                            editorPane = new EditorPane(newValue);
+                        } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                            editorPane.setModel(newValue);
+                        }
+                        else {
+                            editorPane.dispose();
+                            editorPane = new EditorPane(newValue);
+                        }
+                        editorPane.getView().getStyleClass().add("search-preview");
+
+                        while(!editorPane.getController().isLoaded()) {
+                            Thread.sleep(disableDelay);
+                        }
+                        disableControlsAndUpdateButton();
                     }
-                    else {
-                        editorPane.dispose();
-                        editorPane = new EditorPane(newValue);
-                    }
-                    editorPane.getView().getStyleClass().add("search-preview");
-                    Thread.sleep(disableDelay);
-                    disableControlsAndUpdateButton();
                 }
 
                 final CountDownLatch latch = new CountDownLatch(1);
@@ -564,10 +583,8 @@ public class SearchController {
                 });
                 latch.await();
             }
-            catch (Exception e) {
-                Platform.runLater(() ->
-                        ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview."));
-                return;
+            catch (Throwable e) {
+                ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
     }
@@ -582,8 +599,9 @@ public class SearchController {
         JavaFXHelpers.findAndDestroyControls(view);
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
-        Button saveButton = editorPane.getController().getSaveChangesButton();
+        MaterialDesignButton saveButton = (MaterialDesignButton) editorPane.getController().getSaveChangesButton();
         saveButton.getStyleClass().add("button-default");
+        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
         saveButton.setVisible(true);
         saveButton.setDisable(false);
         saveButton.setText("Open In Window");

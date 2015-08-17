@@ -5,18 +5,22 @@ package sws.murcs.search;
  * the search pass it will be found in.
  */
 public enum SearchPriority {
+
     /**
      * Ultra search priority. Will be found in the first pass.
      */
     Ultra(0),
+
     /**
      * High search priority. Will be found in second pass.
      */
     High(1),
+
     /**
      * Medium search priority. Will be found in third pass.
      */
     Medium(2),
+
     /**
      * Low search priority. Will be found in fourth pass.
      */

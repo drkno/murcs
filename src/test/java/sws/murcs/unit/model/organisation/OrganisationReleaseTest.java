@@ -36,6 +36,8 @@ public class OrganisationReleaseTest {
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
+
     }
 
     /**

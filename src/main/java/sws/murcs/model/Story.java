@@ -65,16 +65,11 @@ public class Story extends Model {
     /**
      * The list of tasks associated with this story.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "tasks")
     @XmlElement(name = "task")
     private List<Task> tasks;
-
-    /**
-     * A description of the story.
-     */
-    @TrackableValue
-    private String description;
 
     /**
      * The person who created this story. This should not be changed after
@@ -255,8 +250,8 @@ public class Story extends Model {
         if (newEstimate == estimate) {
             return;
         }
-        // If you change the estimate type to not estimated, then None is the only valid story state
-        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+        // If you change the estimate type to not estimated or infinite, then None is the only valid story state
+        if (newEstimate.equals(EstimateType.NOT_ESTIMATED) || newEstimate.equals(EstimateType.INFINITE)) {
             storyState = StoryState.None;
         }
         estimate = newEstimate;

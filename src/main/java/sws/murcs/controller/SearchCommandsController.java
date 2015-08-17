@@ -60,24 +60,25 @@ public class SearchCommandsController {
      */
     public final void setup(final SearchController pSearchController) {
         searchController = pSearchController;
-        loadCommands(Token.getSpecialTokens());
+        loadCommands();
     }
 
     /**
      * Loads each command into the title pane.
-     * @param commandsArray The commands to load
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private void loadCommands(final BangCommand[] commandsArray) {
-        Collection<BangCommand> commands = Arrays.asList(commandsArray);
+    private void loadCommands() {
+        Collection<BangCommand> commands = Arrays.asList(Token.getSpecialTokens());
         commands.stream().forEach(c -> {
             String longSyntax = c.getCommands()[0];
             String shortSyntax = c.getCommands()[1];
             Hyperlink commandLink1 = new Hyperlink(longSyntax);
+            commandLink1.getStyleClass().add("zero-border");
             commandLink1.setTooltip(new Tooltip("Click me :)"));
             setupAutoFill(commandLink1, longSyntax);
             Label orLabel = new Label(" or ");
             Hyperlink commandLink2 = new Hyperlink(shortSyntax);
+            commandLink2.getStyleClass().add("zero-border");
             commandLink2.setTooltip(new Tooltip("Click me :)"));
             setupAutoFill(commandLink2, longSyntax);
             HBox hBox1 = new HBox();
@@ -98,7 +99,7 @@ public class SearchCommandsController {
     }
 
     /**
-     * If the label is click on it auto fills the search box with the command.
+     * If the label is clicked on it auto fills the search box with the command.
      * @param commandNode The command node.
      * @param command The command to fill the search box with.
      */

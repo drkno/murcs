@@ -42,6 +42,7 @@ public class OrganisationWorkAllocationTest {
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
     }
 
     /**

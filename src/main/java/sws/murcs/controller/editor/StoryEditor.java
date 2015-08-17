@@ -3,10 +3,12 @@ package sws.murcs.controller.editor;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,6 +18,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,12 +26,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
@@ -124,8 +127,32 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private TextField addConditionTextField;
 
+    /**
+     * The FXMLLoader used to create new tasks.
+     */
+    private FXMLLoader taskLoader;
+
+    /**
+     * The thread used to create tasks that already exist in the story.
+     */
+    private Thread thread;
+
+    /**
+     * Whether or not the thread creating task GUIs should stop.
+     */
+    private boolean stop;
+
     @Override
     public final void loadObject() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+            }
+        }
+        stop = false;
         String modelShortName = getModel().getShortName();
         setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
@@ -160,9 +187,46 @@ public class StoryEditor extends GenericEditor<Story> {
         });
 
         taskContainer.getChildren().clear();
-        for (Task task : getModel().getTasks()) {
-            injectTaskEditor(task, false);
-        }
+        StoryEditor foo = this;
+        javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            private Story model = getModel();
+            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+
+            @Override
+            protected Void call() throws Exception {
+                for (Task task : model.getTasks()) {
+                    if (stop) {
+                        break;
+                    }
+                    try {
+                        //Do not try and make this call injectTask as it doesn't work, I've tried.
+                        threadTaskLoader.setRoot(null);
+                        TaskEditor controller = new TaskEditor();
+                        threadTaskLoader.setController(controller);
+                        Parent view = threadTaskLoader.load();
+                        controller.configure(task, false, view, foo);
+                        Platform.runLater(() -> {
+                            if (!getModel().equals(model)) {
+                                return;
+                            }
+                            taskContainer.getChildren().add(view);
+                        });
+                    }
+                    catch (Exception e) {
+                        ErrorReporter.get().reportError(e, "Unable to create new task");
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                isLoaded = true;
+            }
+        };
+        thread = new Thread(taskThread);
+        thread.setDaemon(true);
+        thread.start();
 
         // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
@@ -212,7 +276,9 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             estimateChoiceBox.setDisable(false);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
             estimateChoiceBox.getSelectionModel().select(currentEstimation);
         }
     }
@@ -296,6 +362,14 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void dispose() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the thread loading tasks.");
+            }
+        }
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -620,12 +694,18 @@ public class StoryEditor extends GenericEditor<Story> {
      * @param creationBox Whether or not this is a creation box
      */
     private void injectTaskEditor(final Task task, final boolean creationBox) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         try {
-            Parent view = loader.load();
-            TaskEditor controller = loader.getController();
+            taskLoader.setRoot(null);
+            TaskEditor controller = new TaskEditor();
+            taskLoader.setController(controller);
+            if (taskLoader == null) {
+                return;
+            }
+            Parent view = taskLoader.load();
             controller.configure(task, creationBox, view, this);
-            taskContainer.getChildren().add(view);
+            Platform.runLater(() -> {
+                taskContainer.getChildren().add(view);
+            });
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create new task");
         }
@@ -639,6 +719,9 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
+        if (taskLoader == null) {
+            taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        }
         injectTaskEditor(task, true);
     }
 
@@ -680,11 +763,16 @@ public class StoryEditor extends GenericEditor<Story> {
         /**
          * The editable acceptance condition description text field.
          */
-        TextField textField = new TextField();
+        private TextArea textArea = new TextArea();
         /**
          * The acceptance condition description text field.
          */
-        Label textLabel = new Label();
+        private Text textLabel = new Text();
+
+        /**
+         * The listener on the text field.
+         */
+        ChangeListener<String> listener;
 
         @Override
         public void startEdit() {
@@ -692,7 +780,7 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 clearErrors();
                 setGraphic(createCell(true));
-                textField.requestFocus();
+                textArea.requestFocus();
             }
         }
 
@@ -702,13 +790,14 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 try {
                     AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
-                    acceptanceCondition.setCondition(textField.getText());
+                    acceptanceCondition.setCondition(newValue);
                     textLabel.setText(acceptanceCondition.getCondition());
+                    textArea.setText(acceptanceCondition.getCondition());
                     setGraphic(createCell(false));
                     clearErrors();
                 } catch (CustomException e) {
                     clearErrors();
-                    addFormError(textField, e.getMessage());
+                    addFormError(textArea, e.getMessage());
                 }
 
             }
@@ -720,6 +809,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 super.cancelEdit();
                 AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                 textLabel.setText(acceptanceCondition.getCondition());
+                textArea.setText(acceptanceCondition.getCondition());
                 setGraphic(createCell(false));
             }
         }
@@ -727,7 +817,7 @@ public class StoryEditor extends GenericEditor<Story> {
         @Override
         protected void updateItem(final String newCondition, final boolean empty) {
             super.updateItem(newCondition, empty);
-            textField.setText(newCondition);
+            textArea.setText(newCondition);
             textLabel.setText(newCondition);
 
             if (newCondition == null || empty) {
@@ -740,15 +830,19 @@ public class StoryEditor extends GenericEditor<Story> {
                 setGraphic(createCell(false));
             }
 
-            textLabel.setOnMousePressed(event -> startEdit());
-            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue) {
-                    commitEdit(textField.getText());
+            setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) { // makes sure it is a double click event to start editing
+                    startEdit();
                 }
             });
-            textField.setOnKeyReleased(t -> {
+            selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    commitEdit(textArea.getText());
+                }
+            });
+            textArea.setOnKeyPressed(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    commitEdit(textField.getText());
+                    commitEdit(textArea.getText().trim());
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -765,9 +859,51 @@ public class StoryEditor extends GenericEditor<Story> {
         private Node createCell(final Boolean isEdit) {
             Node node;
             if (isEdit) {
-                node = textField;
+                textArea.setWrapText(true);
+                Platform.runLater(() -> {
+                    ScrollPane scrollPane = (ScrollPane) textArea.lookup(".scroll-pane");
+                    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                    scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                });
+
+                if (listener == null) {
+                    listener = (observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height"); // this is necessary to get the height of one row of text
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight(); // the height of one row of text
+                        text.setText(newValue);
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    };
+                    textArea.textProperty().addListener(listener);
+                    widthProperty().addListener((observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height");
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight();
+                        text.setText(textArea.getText());
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    });
+                    textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (!newValue) {
+                            commitEdit(textArea.getText());
+                        }
+                    });
+                }
+                Text text = new Text("Test Height");
+                text.setFont(textArea.getFont());
+                text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                Double height = text.getLayoutBounds().getHeight();
+                textArea.setText(textArea.getText().trim());
+                text.setText(textArea.getText());
+                textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                node = textArea;
             }
             else {
+                textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0); // 30 - width of button, 14 - get rid of padding
+                widthProperty().addListener((observable, oldValue, newValue) -> {
+                    textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
+                });
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
@@ -793,13 +929,16 @@ public class StoryEditor extends GenericEditor<Story> {
             });
             FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
             fadeButtonOnHover.setupEffect();
-            AnchorPane conditionCell = new AnchorPane();
-            AnchorPane.setLeftAnchor(node, 0.0);
-            if (isEdit) {
-                AnchorPane.setRightAnchor(node, 30.0);
-            }
-            AnchorPane.setRightAnchor(button, 0.0);
-            conditionCell.getChildren().addAll(node, button);
+            GridPane conditionCell = new GridPane();
+            conditionCell.add(node, 0, 0);
+            conditionCell.add(button, 1, 0);
+            conditionCell.setMinHeight(30.0);
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(USE_COMPUTED_SIZE,
+                    USE_COMPUTED_SIZE, USE_COMPUTED_SIZE,
+                    Priority.SOMETIMES, HPos.LEFT, true));
+            conditionCell.setAlignment(Pos.CENTER);
+            conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER,
+                    HPos.CENTER, true));
             return conditionCell;
         }
     }

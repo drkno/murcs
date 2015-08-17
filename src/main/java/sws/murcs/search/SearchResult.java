@@ -16,7 +16,7 @@ public class SearchResult {
     /**
      * Maximum length of a search result as returned result text.
      */
-    private static final int SEARCH_RESULT_MAX_LENGTH = 45;
+    private static final int SEARCH_RESULT_MAX_LENGTH = 35;
 
     /**
      * Model object that this search result points to.
@@ -267,6 +267,30 @@ public class SearchResult {
     }
 
     /**
+     * Comparator that compares two SearchResults.
+     */
+    private static final Comparator<SearchResult> COMPARATOR = (sr1, sr2) -> {
+        assert sr1 != null;
+        assert sr2 != null;
+        @SuppressWarnings("checkstyle:javadocvariable")
+        int sp = sr1.priority.compareTo(sr2.priority);
+        // fallback 1: maximum % of string match
+        if (sp == 0) {
+            sp = Integer.compare(sr1.contextAfter.length() + sr1.contextBefore.length(),
+                    sr2.contextAfter.length() + sr2.contextBefore.length());
+        }
+        // fallback 2: maximum # of matches
+        if (sp == 0) {
+            sp = Integer.compare(sr1.matches.size(), sr2.matches.size());
+        }
+        // fallback 3: string comparison
+        if (sp == 0) {
+            sp = sr1.toString().compareToIgnoreCase(sr2.toString());
+        }
+        return sp;
+    };
+
+    /**
      * Gets a comparator that compares search results and produces
      * an integer representing the ordering that should be maintained
      * between them.
@@ -277,24 +301,6 @@ public class SearchResult {
      * @return a integer based sort ordering.
      */
     public static Comparator<SearchResult> getComparator() {
-        return (sr1, sr2) -> {
-            assert sr1 != null;
-            assert sr2 != null;
-            int sp = sr1.priority.compareTo(sr2.priority);
-            // fallback 1: maximum % of string match
-            if (sp == 0) {
-                sp = Integer.compare(sr1.contextAfter.length() + sr1.contextBefore.length(),
-                        sr2.contextAfter.length() + sr2.contextBefore.length());
-            }
-            // fallback 2: maximum # of matches
-            if (sp == 0) {
-                sp = Integer.compare(sr1.matches.size(), sr2.matches.size());
-            }
-            // fallback 3: string comparison
-            if (sp == 0) {
-                sp = sr1.toString().compareToIgnoreCase(sr2.toString());
-            }
-            return sp;
-        };
+        return COMPARATOR;
     }
 }

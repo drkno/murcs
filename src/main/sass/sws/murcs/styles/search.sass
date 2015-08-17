@@ -1,4 +1,5 @@
 @import "globalStyles"
+@import "materialDesign/global/hyperlink"
 
 .text-field, .text-field:focused, .text-field:filled, .text-field:hover
   -fx-text-fill: $black
@@ -14,6 +15,9 @@
   -fx-background-insets: 0
   -fx-background-radius: 0
   -box-shadow: none
+
+.label, .label:selected, .label:hover, .label:selected
+  -fx-text-fill: $black
 
 .search-list .list-view .list-cell, .search-list .list-cell, .search-list .list-view
   -fx-background-color: transparent
@@ -47,6 +51,12 @@
   -fx-opacity: 1.0
   -fx-text-fill: $black
   -fx-effect: none
+
+.date-picker:disabled .arrow-button, .date-picker:disabled .arrow-button .arrow
+  -fx-padding: 0
+
+.date-picker:disabled .date-picker-display-node
+  -fx-background-insets: 1 1 1 1
 
 .search-command, .search-command .label
   -fx-text-fill: $primary-500
