@@ -1,4 +1,4 @@
-@ShowHide
+@Manual
 Feature: Show or hide the side panel list
 
   Scenario: Show side panel list
