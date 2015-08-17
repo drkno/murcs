@@ -11,7 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import sws.murcs.controller.JavaFXHelpers;
 
-
 /**
  * Creates a material design checkbox.
  */

@@ -156,13 +156,10 @@ public class ErrorReportPopup {
         checkBox.setSelected(true);
         screenshotLabel.setGraphic(checkBox);
         screenshotLabel.setContentDisplay(ContentDisplay.LEFT);
-        screenshotLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                checkBox.fireEvent(event);
-                checkBox.fire();
-                event.consume();
-            }
+        screenshotLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            checkBox.fireEvent(event);
+            checkBox.fire();
+            event.consume();
         });
     }
 
@@ -209,6 +206,7 @@ public class ErrorReportPopup {
                         + "Please act responsibly.");
                 break;
             default:
+                break;
         }
     }
 

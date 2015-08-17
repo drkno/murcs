@@ -3,7 +3,6 @@ package sws.murcs.controller.windowManagement;
 import javafx.scene.input.KeyCombination;
 import sws.murcs.listeners.GenericCallback;
 
-
 /**
  * A instance of a shortcut which contains a key combination and a callback function.
  */
@@ -28,12 +27,8 @@ public class Shortcut implements Comparable<Shortcut> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     public final int compareTo(final Shortcut s) {
-        if (this.shortcutKeys == s.shortcutKeys) {
-            return 0;
-        }
-        else {
-            return -1;
-        }
+        return this.shortcutKeys == s.shortcutKeys ? 0 : -1;
     }
 }

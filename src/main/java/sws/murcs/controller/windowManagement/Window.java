@@ -45,7 +45,6 @@ public class Window {
          parentWindow = pParentWindow;
      }
 
-
     /**
      * Gets the stage of the window.
      * @return The stage.
@@ -122,6 +121,7 @@ public class Window {
 
     /**
      * Brings the parentWindow to the front.
+     * Requires that the parent window is set.
      */
     public final void parentToFront() {
         if (parentWindow != null) {

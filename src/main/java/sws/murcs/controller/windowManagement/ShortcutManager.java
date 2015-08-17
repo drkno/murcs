@@ -13,16 +13,17 @@ import java.util.TreeSet;
  * Used for tracking global shortcuts.
  */
 public class ShortcutManager {
+
     /**
      * A Map storing shortcuts to functions.
      */
-    ObservableSet<Shortcut> accelerators;
+    private ObservableSet<Shortcut> accelerators;
 
     /**
      * Initialises the shortcut manager.
      */
     public ShortcutManager() {
-        accelerators  = FXCollections.observableSet(new TreeSet<>());
+        accelerators = FXCollections.observableSet(new TreeSet<>());
         accelerators.addListener((SetChangeListener<Shortcut>) change -> {
             if (change.wasRemoved()) {
                 for (Window windows : App.getWindowManager().getAllWindows()) {
