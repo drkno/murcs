@@ -6,6 +6,7 @@ import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.reporting.header.ReportHeader;
@@ -13,6 +14,7 @@ import sws.murcs.reporting.header.ReportHeaderAll;
 import sws.murcs.reporting.header.ReportHeaderBacklog;
 import sws.murcs.reporting.header.ReportHeaderPerson;
 import sws.murcs.reporting.header.ReportHeaderProject;
+import sws.murcs.reporting.header.ReportHeaderSprint;
 import sws.murcs.reporting.header.ReportHeaderStory;
 import sws.murcs.reporting.header.ReportHeaderTeam;
 
@@ -94,6 +96,13 @@ public final class ReportGenerator {
                         .collect(Collectors.toList());
                 generateStories(stories, file);
                 break;
+            case Sprint:
+                List<Sprint> sprints = model
+                        .stream()
+                        .map(e -> (Sprint) e)
+                        .collect(Collectors.toList());
+                generateSprints(sprints, file);
+                break;
             default:
                 throw new UnsupportedOperationException(
                         "Report generation for this model type is yet to be implemented");
@@ -171,6 +180,22 @@ public final class ReportGenerator {
      */
     private static void generateStories(final List<Story> stories, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderStory(stories);
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.marshal(reportModel, file);
+    }
+
+    /**
+     * Generates an xml report to file from stories.
+     * @param sprints the stories from which to create the report
+     * @param file the file to output the report
+     * @throws JAXBException Exceptions from JAXB
+     */
+    private static void generateSprints(final List<Sprint> sprints, final File file) throws JAXBException {
+        ReportHeader reportModel = new ReportHeaderSprint(sprints);
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ReportHeader.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();

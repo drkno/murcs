@@ -6,6 +6,7 @@ import sws.murcs.magic.tracking.TrackableValue;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 import java.util.Objects;
@@ -20,6 +21,7 @@ public class Task extends TrackableObject implements Serializable {
     /**
      * A prime number used in the hash code.
      */
+    @XmlTransient
     private final int hashCodePrime = 43;
 
     /**

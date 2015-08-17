@@ -17,7 +17,8 @@ import java.time.LocalDate;
         ReportHeaderProject.class,
         ReportHeaderTeam.class,
         ReportHeaderBacklog.class,
-        ReportHeaderStory.class})
+        ReportHeaderStory.class,
+        ReportHeaderSprint.class})
 public abstract class ReportHeader {
 
     /**

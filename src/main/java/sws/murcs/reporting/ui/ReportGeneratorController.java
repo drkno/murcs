@@ -1,5 +1,10 @@
 package sws.murcs.reporting.ui;
 
+import com.oracle.jrockit.jfr.Producer;
+import com.sun.tools.javac.code.Attribute;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -16,13 +21,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 import sws.murcs.view.App;
@@ -31,7 +37,11 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Controller for the report generator.
@@ -228,7 +238,8 @@ public class ReportGeneratorController {
     private void setupWorkflowContent() {
         workflowTypeComboBox.getItems().addAll(
                 ModelType.Backlog,
-                ModelType.Story
+                ModelType.Story,
+                ModelType.Sprint
         );
         workflowTypeComboBox
                 .getSelectionModel()
@@ -259,21 +270,21 @@ public class ReportGeneratorController {
     private void changeManagementSelection() {
         ModelType type = managementTypeComboBox.getSelectionModel().getSelectedItem();
         if (type != null) {
-            managementList.getItems().clear();
-            List<Model> values = new ArrayList<>();
+            ObservableList<Model> values = new ModelObservableArrayList<>();
+            workflowList.setItems(values);
             Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
             switch (type) {
                 case Project:
-                    values.addAll(organisation.getProjects());
+                    values = checkListType(organisation::getProjects);
                     managementList.setVisible(true);
                     break;
                 case Team:
-                    values.addAll(organisation.getTeams());
+                    values = checkListType(organisation::getTeams);
                     managementList.setVisible(true);
                     break;
                 case Person:
-                    values.addAll(organisation.getPeople());
+                    values = checkListType(organisation::getPeople);
                     managementList.setVisible(true);
                     break;
                 default:
@@ -281,10 +292,6 @@ public class ReportGeneratorController {
                     throw new UnsupportedOperationException("Reporting on this model type "
                             + "has not yet been implemented.");
             }
-            Collections.sort(values, (Model m1, Model m2) -> m1.getShortName()
-                    .toLowerCase().compareTo(m2.getShortName().toLowerCase()));
-            managementList.getItems().setAll(values);
-            stage.sizeToScene();
         }
     }
 
@@ -294,17 +301,21 @@ public class ReportGeneratorController {
     private void changeWorkflowSelection() {
         ModelType type = workflowTypeComboBox.getSelectionModel().getSelectedItem();
         if (type != null) {
-            workflowList.getItems().clear();
-            List<Model> values = new ArrayList<>();
+            ObservableList<Model> values = new ModelObservableArrayList<>();
+            workflowList.setItems(values);
             Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
             switch (type) {
                 case Backlog:
-                    values.addAll(organisation.getBacklogs());
+                    values.addAll(checkListType(organisation::getBacklogs));
                     workflowList.setVisible(true);
                     break;
                 case Story:
-                    values.addAll(organisation.getStories());
+                    values.addAll(checkListType(organisation::getStories));
+                    workflowList.setVisible(true);
+                    break;
+                case Sprint:
+                    values.addAll(checkListType(organisation::getSprints));
                     workflowList.setVisible(true);
                     break;
                 default:
@@ -312,7 +323,21 @@ public class ReportGeneratorController {
                     throw new UnsupportedOperationException("Reporting on this model type "
                             + "has not yet been implemented.");
             }
-            workflowList.getItems().setAll(values);
+        }
+    }
+
+    /**
+     * Checks that a list is of the correct type for the reporter to update.
+     * @param values The call to the organisation to get the list of things.
+     * @return A sorted list of model objects.
+     */
+    private SortedList<Model> checkListType(final Supplier values) {
+        if (values.get() instanceof ObservableList) {
+            ObservableList<? extends Model> arrList = (ObservableList<Model>) values.get();
+            return new SortedList<>(arrList, (Comparator<? super Model>) arrList);
+        }
+        else {
+            throw new UnsupportedOperationException("List ordering not specified");
         }
     }
 
@@ -384,8 +409,7 @@ public class ReportGeneratorController {
                 if (file != null) {
                     file.delete();
                 }
-                GenericPopup popup = new GenericPopup(e);
-                popup.show();
+                ErrorReporter.get().reportError(e, "Failed to generate report");
             }
         }
     }

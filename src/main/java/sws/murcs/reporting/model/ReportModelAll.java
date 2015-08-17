@@ -5,6 +5,7 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
@@ -39,6 +40,13 @@ public class ReportModelAll extends ReportModel {
     @XmlElementWrapper(name = "backlogs")
     @XmlElement(name = "backlog")
     private List<Backlog> backlogs;
+
+    /**
+     * The backlogs in the report.
+     */
+    @XmlElementWrapper(name = "sprints")
+    @XmlElement(name = "sprint")
+    private List<Sprint> sprints;
 
     /**
      * The work allocations in the report.
@@ -99,6 +107,7 @@ public class ReportModelAll extends ReportModel {
         projects = new ArrayList<>(organisation.getProjects());
         workAllocations = new ArrayList<>(organisation.getAllocations());
         backlogs = new ArrayList<>(organisation.getBacklogs());
+        sprints = new ArrayList<>(organisation.getSprints());
         listUnassignedStories = new ArrayList<>(organisation.getUnassignedStories());
         listUnassignedTeams = new ArrayList<>(organisation.getUnassignedTeams());
         listUnassignedPeople = new ArrayList<>(organisation.getUnassignedPeople());
