@@ -508,8 +508,8 @@ public class SearchController {
 
         @SuppressWarnings("CheckStyle")
         Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
-                ? "Please update to Java 8u40\n*CLUNK*.........\n "
-                + "/wwwwwwwwwwwwwwwwwwwwwwwwwwwhhhhhhhhhiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
+                ? "Please update to at least Java 8u40 for speed\n*CLUNK*.........\n "
+                + "/wwwwhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
         helpfulMessage.setTextAlignment(TextAlignment.CENTER);
         helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
