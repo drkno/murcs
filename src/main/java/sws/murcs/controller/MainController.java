@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -25,6 +27,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
+import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.pipes.ToolBarCommands;
@@ -63,7 +66,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, showHide, revert, highlightToggle;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle;
+
+    /**
+     * The menu item for hiding the sidebar
+     */
+    @FXML
+    private CheckMenuItem showHide;
 
     /**
      * The menu that contains the check menu items for toggling sections of the toolbar.
@@ -128,6 +137,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             }
 
             Tabbable tabbable = getTabbable(selected);
+            showHide.setSelected(tabbable.sideBarVisible());
+            showHide.setDisable(!tabbable.canToggleSideBar());
 
             if (tabbable == null) {
                 return;
@@ -142,7 +153,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         toolBarController.setNavigable(this);
 
         undoRedoNotification(ChangeState.Commit);
-        setUpShortCuts();
 
         addModelViewTab();
         addModelViewTab();
@@ -259,7 +269,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     /**
      * Sets up the keyboard shortcuts for the application.
      */
-    private void setUpShortCuts() {
+    private void setupShortcuts() {
         //Menu item shortcuts
         // You should use SHORTCUT_DOWN as it uses the COMMAND key for Mac and the CTRL key for Windows
         ShortcutManager shortcutManager = App.getShortcutManager();
@@ -299,7 +309,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> showCreateWindow(ModelType.Story));
 
         //Local shortcuts.
-        /*Map<KeyCombination, Runnable> accelerators = new HashMap<>();
+        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
         accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
                 () -> undo(null));
         accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
@@ -307,17 +317,17 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         //TODO Work out routing for menu items
         accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
-                () -> toggleItemListView(null));
+                () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
                 () -> currentTabbable.create());
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
-                () -> remove(null));
+                () -> currentTabbable.remove());
         accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> back(null));
+                () -> goBack());
         accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> forward(null));
+                () -> goForward());
 
-        App.getStage().getScene().getAccelerators().putAll(accelerators);*/
+        App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
 
     /**
@@ -396,6 +406,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
+     * Switches the state of the story highlighting.
+     * @param event The event that is fired when the Highlight Stories menu item is clicked
+     */
+    @FXML
+    private void toggleBacklogStories(final ActionEvent event) {
+        BacklogEditor.toggleHighlightState();
+    }
+
+    /**
      * The function that is called to bring up the search window.
      * @param event Clicking the search button on the toolbar.
      */
@@ -464,7 +483,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             e.consume();
             fileQuitPress(null);
         });
-        setUpShortCuts();
+        setupShortcuts();
     }
 
     /**
@@ -718,6 +737,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     private void toolBarToggle(final ActionEvent event) {
         toolBarController.toolBarToggle(event);
+    }
+
+    /**
+     * Toggles a the side bar list
+     * @param event The event information
+     */
+    @FXML
+    private void toggleItemListView(final ActionEvent event) {
+        CheckMenuItem source = (CheckMenuItem) event.getSource();
+        currentTabbable.toggleSideBar(source.isSelected());
     }
 
     /**

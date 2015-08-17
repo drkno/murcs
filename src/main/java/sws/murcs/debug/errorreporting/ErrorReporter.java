@@ -1,5 +1,6 @@
 package sws.murcs.debug.errorreporting;
 
+import java.util.*;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -13,9 +14,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.JavaFXHelpers;
+import sws.murcs.controller.MainController;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 import javax.imageio.ImageIO;
@@ -31,12 +34,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -233,8 +230,18 @@ public final class ErrorReporter {
         popOver.detachedProperty().set(true);
         popOver.detachedCloseButtonProperty().set(false);
 
-        //TODO Find out a way of working around this.
-        //popOver.show(App.getMainController().getToolBarController().getToolBar());
+        //Get the top most main controller window.
+        Collection<Window> windows = App.getWindowManager().getAllWindows();
+        Window window = null;
+        for (Window w : windows) {
+            if (w.getController().getClass() == MainController.class) {
+                window = w;
+                break;
+            }
+        }
+
+        MainController controller = (MainController) window.getController();
+        popOver.show(controller.getToolBarController().getToolBar());
         VBox loader = new VBox();
 
         ImageView imageView = new ImageView();
@@ -303,9 +310,6 @@ public final class ErrorReporter {
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
         reportFields.put("javaVersion", System.getProperty("java.version"));
-        //TODO work out how the commented code should work in the new system.
-        //reportFields.put("navForwardPossible", Boolean.toString(NavigationManager.canGoForward()));
-        //reportFields.put("navBackwardPossible", Boolean.toString(NavigationManager.canGoBack()));
         reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
         reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
 

@@ -116,7 +116,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
-        highlighted.setValue(!highlighted.getValue());
+        toggleHighlightState(!highlighted.getValue());
+    }
+
+    /**
+     * Sets the state of story highlighting.
+     * @param highlights The highlight state.
+     */
+    public static void toggleHighlightState(final boolean highlights) {
+        highlighted.setValue(highlights);
     }
 
     /**

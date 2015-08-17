@@ -166,6 +166,8 @@ public class App extends Application {
      */
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        primaryStage.setTitle(DEFAULT_WINDOW_TITLE);
+        setStage(primaryStage);
         createWindow(primaryStage);
     }
 
@@ -214,7 +216,6 @@ public class App extends Application {
         window.setMinWidth(MINIMUM_APPLICATION_WIDTH);
         window.setMinHeight(MINIMUM_APPLICATION_HEIGHT);
 
-        App.stage = window;
         mainController.show();
     }
 

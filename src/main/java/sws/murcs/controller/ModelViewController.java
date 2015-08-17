@@ -120,7 +120,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 .selectedItemProperty()
                 .addListener((observer, oldValue, newValue) -> {
                     updateList();
-                    titleProperty.set(((Model)displayList.getSelectionModel().getSelectedItem()).getShortName());
+                    titleProperty.set(((Model) displayList.getSelectionModel().getSelectedItem()).getShortName());
                 });
 
         displayChoiceBox.getSelectionModel().select(0);
@@ -129,7 +129,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         displayList.setOnMouseClicked(event -> {
             if (event.isControlDown()) {
                 ModelViewController controller = mainController.addModelViewTab();
-                controller.selectItem((Model)displayList.getSelectionModel().getSelectedItem());
+                controller.selectItem((Model) displayList.getSelectionModel().getSelectedItem());
             }
         });
 
@@ -137,7 +137,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             if (oldValue != newValue) {
                 if (editorPane != null && newValue != null) {
                     editorPane.getController().saveChanges();
-                    titleProperty.set(((Model)newValue).getShortName());
+                    titleProperty.set(((Model) newValue).getShortName());
                 }
                 updateDisplayListSelection(newValue, oldValue);
             }
@@ -214,31 +214,9 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public final void create(ModelType type) {
+    public final void create(final ModelType type) {
         MainController.showCreateWindow(type, this::selectItem);
     }
-
-    /**
-     * Toggles the view of the display list box at the side.
-     * @param event The event that triggers the function
-     */
-    @FXML
-    private void toggleItemListView(final ActionEvent event) {
-        if (!vBoxSideDisplay.managedProperty().isBound()) {
-            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
-        }
-        vBoxSideDisplay.setVisible(!vBoxSideDisplay.isVisible());
-    }
-
-    /**
-     * Switches the state of the story highlighting.
-     * @param event The event that is fired when the Highlight Stories menu item is clicked
-     */
-    @FXML
-    private void toggleBacklogStories(final ActionEvent event) {
-        BacklogEditor.toggleHighlightState();
-    }
-
 
     /**
      * Function that is called when you want to delete a model.
@@ -353,8 +331,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
     @Override
     public SimpleStringProperty getTitle() {
-        //TODO implement the observable pattern and
-        //fire events when we change this
         return titleProperty;
     }
 
@@ -365,6 +341,24 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     @Override
     public final Parent getRoot() {
         return hBoxMainDisplay;
+    }
+
+    @Override
+    public void toggleSideBar(final boolean sidebar) {
+        if (!vBoxSideDisplay.managedProperty().isBound()) {
+            vBoxSideDisplay.managedProperty().bind(vBoxSideDisplay.visibleProperty());
+        }
+        vBoxSideDisplay.setVisible(sidebar);
+    }
+
+    @Override
+    public boolean sideBarVisible() {
+        return vBoxSideDisplay.visibleProperty().getValue();
+    }
+
+    @Override
+    public boolean canToggleSideBar() {
+        return true;
     }
 
     /**
@@ -409,7 +403,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public void undoRedoNotification(ChangeState param) {
+    public void undoRedoNotification(final ChangeState param) {
         switch (param) {
             case Forget:
             case Remake:
@@ -425,12 +419,12 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public void setToolBarController(ToolBarController toolBarController) {
+    public void setToolBarController(final ToolBarController toolBarController) {
         this.toolBarController = toolBarController;
     }
 
     @Override
-    public void registerMainController(MainController controller) {
+    public void registerMainController(final MainController controller) {
         mainController = controller;
     }
 }

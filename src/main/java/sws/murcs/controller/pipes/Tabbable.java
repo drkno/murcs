@@ -14,23 +14,41 @@ public interface Tabbable extends Navigable, ModelManagable{
      * Registers a MainController as the controller in charge of the Tabbable.
      * @param controller The new controller
      */
-    public void registerMainController(MainController controller);
+    void registerMainController(MainController controller);
 
     /**
      * Sets the toolbar controller associated with the tabbable.
-     * @param toolBarController
+     * @param toolBarController The toolbar controller
      */
-    public void setToolBarController(ToolBarController toolBarController);
+    void setToolBarController(ToolBarController toolBarController);
 
     /**
      * A string property representing the title of the tab.
      * @return The title
      */
-    public SimpleStringProperty getTitle();
+    SimpleStringProperty getTitle();
 
     /**
      * The root node for the tab.
      * @return The root node
      */
-    public Parent getRoot();
+    Parent getRoot();
+
+    /**
+     * Used to toggle the sidebar.
+     * @param sidebar Whether the sidebar should be shown
+     */
+    void toggleSideBar(boolean sidebar);
+
+    /**
+     * Indicates whether the sidebar is currently visible
+     * @return Whether the side bar is visible
+     */
+    boolean sideBarVisible();
+
+    /**
+     * Indicates whether the sidebar can be toggled.
+     * @return Whether the sidebar can be toggled.
+     */
+    boolean canToggleSideBar();
 }
