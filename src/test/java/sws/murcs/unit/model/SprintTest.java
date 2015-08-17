@@ -3,18 +3,19 @@ package sws.murcs.unit.model;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.ReleaseGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,6 +23,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class SprintTest {
     private Sprint sprint;
+
+    @BeforeClass
+    public static void beforeClass() {
+        UndoRedoManager.setDisabled(true);
+    }
 
     @Before
     public void setup() throws Exception{
@@ -66,9 +72,10 @@ public class SprintTest {
         assertEquals("Team should be team", team, sprint.getTeam());
     }
 
-    @Test
+    @Test()
     public void testModifyRelease() throws InvalidParameterException {
         Release release = (new ReleaseGenerator()).generate();
+        release.setReleaseDate(sprint.getEndDate().plus(10, ChronoUnit.DAYS));
         sprint.setAssociatedRelease(release);
 
         assertEquals("Release should be release", release, sprint.getAssociatedRelease());
