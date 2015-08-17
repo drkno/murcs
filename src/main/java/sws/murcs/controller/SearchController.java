@@ -29,6 +29,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
@@ -37,6 +38,7 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
+import sws.murcs.view.App;
 import sws.murcs.view.SearchCommandsView;
 
 import java.util.Base64;
@@ -504,7 +506,11 @@ public class SearchController {
         imageView.setImage(spinner);
         loader.getChildren().add(imageView);
 
-        Label helpfulMessage = new Label("*CLUNK* /whir/");
+        @SuppressWarnings("CheckStyle")
+        Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
+                ? "Please update to Java 8u40\n*CLUNK*.........\n "
+                + "/wwwwwwwwwwwwwwwwwwwwwwwwwwwhhhhhhhhhiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
+        helpfulMessage.setTextAlignment(TextAlignment.CENTER);
         helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
         VBox.setMargin(helpfulMessage, new Insets(helpfulMessageMargin));
@@ -549,7 +555,6 @@ public class SearchController {
                         if (editorPane == null) {
                             editorPane = new EditorPane(newValue);
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-
                             editorPane.setModel(newValue);
                         }
                         else {
@@ -557,6 +562,7 @@ public class SearchController {
                             editorPane = new EditorPane(newValue);
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
+
                         Thread.sleep(disableDelay);
                         disableControlsAndUpdateButton();
                     }
