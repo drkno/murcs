@@ -48,7 +48,7 @@ import sws.murcs.view.SearchView;
 /**
  * A controller for the base pane.
  */
-public class MainController implements UndoRedoChangeListener, ToolBarCommands, Navigable{
+public class MainController implements UndoRedoChangeListener, ToolBarCommands, Navigable {
     /**
      * The main border pane for the application.
      */
@@ -231,6 +231,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         root.setCenter(containerPane);
 
         Scene scene = new Scene(root);
+        scene.getStylesheets()
+                .add(App.class
+                        .getResource("/sws/murcs/styles/global.css")
+                        .toExternalForm());
         stage.setScene(scene);
 
         stage.show();
