@@ -93,6 +93,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private TabPane mainTabPane;
 
     /**
+     * A tab which represents the Add tab button.
+     */
+    private Tab addTab;
+
+    /**
      * A collection of all the tabbable objects in all tabs in all windows.
      */
     private static Collection<Tabbable> tabs = new ArrayList<>();
@@ -127,16 +132,23 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         //Get the tab pane and set it to our main pane.
         mainTabPane = (DnDTabPane) containerPane.getChildren().get(0);
+        addTab = new Tab("+");
+        addTab.setClosable(false);
+        mainTabPane.getTabs().add(addTab);
 
-        mainTabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
-            Tab selected = mainTabPane.getSelectionModel().getSelectedItem();
+        mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             //If all the tabs have been closed, add a new model tab (we should never have none)
-            if (selected == null) {
+            if (newValue == null) {
                 addModelViewTab();
                 return;
             }
 
-            Tabbable tabbable = getTabbable(selected);
+            if (newValue == addTab) {
+                Tabbable newTab = addModelViewTab();
+                return;
+            }
+
+            Tabbable tabbable = getTabbable(newValue);
             showHide.setSelected(tabbable.sideBarVisible());
             showHide.setDisable(!tabbable.canToggleSideBar());
 
@@ -154,7 +166,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         undoRedoNotification(ChangeState.Commit);
 
-        addModelViewTab();
         addModelViewTab();
     }
 
