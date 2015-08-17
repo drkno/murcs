@@ -388,6 +388,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         return saveButton;
     }
 
+    /**
+     * Is the editor loaded.
+     * @return if the editor is loaded.
+     */
     public final boolean isLoaded() {
         return isLoaded;
     }

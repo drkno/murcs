@@ -2,7 +2,6 @@ package sws.murcs.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.LoadException;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -72,6 +71,7 @@ public class EditorPane {
     /**
      * Creates the editor pane.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void create() {
         Map<ModelType, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelType.Project, "ProjectEditor.fxml");
@@ -129,6 +129,7 @@ public class EditorPane {
      * Changes the model.
      * @param pModel the new model
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void setModel(final Model pModel) {
         if (pModel != null) {
             model = pModel;
