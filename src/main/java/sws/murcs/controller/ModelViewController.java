@@ -1,18 +1,15 @@
 package sws.murcs.controller;
 
-import com.sun.javafx.scene.control.skin.LabeledText;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
@@ -144,10 +141,10 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             if (oldValue != newValue) {
                 if (editorPane != null && newValue != null) {
                     editorPane.getController().saveChanges();
-                    updateTitle();
                 }
                 updateDisplayListSelection(newValue, oldValue);
             }
+            updateTitle();
         });
 
         UndoRedoManager.addChangeListener(this);
@@ -158,7 +155,12 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
      * Updates the title property
      */
     private void updateTitle(){
-        titleProperty.set(((Model) displayList.getSelectionModel().getSelectedItem()).getShortName());
+        Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
+        if (selectedItem == null) {
+            return;
+        }
+
+        titleProperty.set(selectedItem.getShortName());
     }
 
     /**
