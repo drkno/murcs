@@ -248,6 +248,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .toExternalForm());
         stage.setScene(scene);
 
+        //Add shortcuts
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.W, KeyCodeCombination.SHORTCUT_DOWN),
+                () -> tabPane.getTabs().remove(tabPane.getSelectionModel().getSelectedItem()));
+        scene.getAccelerators().put(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN),
+                () -> addModelViewTab(tabPane));
+
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());
@@ -341,6 +347,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> goBack());
         accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
                 () -> goForward());
+        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
+                () -> mainTabPane.getTabs().remove(mainTabPane.getSelectionModel().getSelectedItem()));
+        accelerators.put(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
+                () -> addModelViewTab(mainTabPane));
 
         App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
