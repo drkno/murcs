@@ -83,6 +83,8 @@ public class App extends Application {
         return shortcutManager;
     }
 
+    public static MainController getMainController() { return mainController;  }
+
     /**
      * Gets the window manager.
      * @return The window manager
@@ -168,14 +170,14 @@ public class App extends Application {
     public final void start(final Stage primaryStage) throws Exception {
         primaryStage.setTitle(DEFAULT_WINDOW_TITLE);
         setStage(primaryStage);
-        createWindow(primaryStage);
+        mainController = createWindow(primaryStage);
     }
 
     /**
      * Creates a new MainWindow.
      * @param window The stage to load the window onto
      */
-    public static void createWindow(final Stage window) {
+    public static MainController createWindow(final Stage window) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
@@ -199,7 +201,7 @@ public class App extends Application {
             //We should never hit this, if we managed to start the application
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
         }
-        mainController = loader.getController();
+        MainController controller = loader.getController();
 
         Scene scene = new Scene(parent);
         scene.getStylesheets()
@@ -216,7 +218,8 @@ public class App extends Application {
         window.setMinWidth(MINIMUM_APPLICATION_WIDTH);
         window.setMinHeight(MINIMUM_APPLICATION_HEIGHT);
 
-        mainController.show();
+        controller.show();
+        return controller;
     }
 
     /**

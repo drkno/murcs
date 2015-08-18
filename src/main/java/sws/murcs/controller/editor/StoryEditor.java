@@ -21,6 +21,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -436,7 +437,13 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> getNavigationManager().navigateTo(newDependency));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(newDependency);
+                } else {
+                    getNavigationManager().navigateTo(newDependency);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);

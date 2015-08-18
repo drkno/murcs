@@ -69,7 +69,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle;
 
     /**
-     * The menu item for hiding the sidebar
+     * The menu item for hiding the sidebar.
      */
     @FXML
     private CheckMenuItem showHide;
@@ -91,11 +91,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * this, as it's a third party library.
      */
     private TabPane mainTabPane;
-
-    /**
-     * A tab which represents the Add tab button.
-     */
-    private Tab addTab;
 
     /**
      * A collection of all the tabbable objects in all tabs in all windows.
@@ -132,19 +127,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         //Get the tab pane and set it to our main pane.
         mainTabPane = (DnDTabPane) containerPane.getChildren().get(0);
-        addTab = new Tab("+");
-        addTab.setClosable(false);
-        mainTabPane.getTabs().add(addTab);
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             //If all the tabs have been closed, add a new model tab (we should never have none)
             if (newValue == null) {
-                addModelViewTab();
-                return;
-            }
-
-            if (newValue == addTab) {
-                Tabbable newTab = addModelViewTab();
+                addModelViewTab(mainTabPane);
                 return;
             }
 
@@ -166,7 +153,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         undoRedoNotification(ChangeState.Commit);
 
-        addModelViewTab();
+        addModelViewTab(mainTabPane);
     }
 
     /**
@@ -347,16 +334,18 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
     /**
      * Adds a model view tab to the main pane.
+     * @param tabPane The pane to add the tab to
      */
-    public ModelViewController addModelViewTab() {
-        return (ModelViewController) addTab("/sws/murcs/ModelView.fxml");
+    public ModelViewController addModelViewTab(final TabPane tabPane) {
+        return (ModelViewController) addTab("/sws/murcs/ModelView.fxml", tabPane);
     }
 
     /**
      * Adds a tab to the pane.
      * @param fxmlPath The path for the fxml to load
+     * @param tabPane The tabpane to add the tab to
      */
-    public Tabbable addTab(final String fxmlPath) {
+    public Tabbable addTab(final String fxmlPath, final TabPane tabPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
@@ -375,6 +364,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             });
 
             tabNode.setContent(controller.getRoot());
+            controller.setTab(tabNode);
 
             Label tabLabel = new Label(controller.getTitle().getValue());
             tabLabel.setMinWidth(30);
@@ -385,8 +375,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             tabNode.setOnClosed(e -> tabs.remove(controller));
 
-            mainTabPane.getTabs().add(tabNode);
-            mainTabPane.getSelectionModel().select(tabNode);
+            tabPane.getTabs().add(tabNode);
+            tabPane.getSelectionModel().select(tabNode);
 
             return controller;
         } catch (IOException e) {
@@ -409,7 +399,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     public void reset() {
         clearTabs();
-        addModelViewTab();
+        addModelViewTab(mainTabPane);
     }
 
     /**
@@ -984,5 +974,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @Override
     public void navigateTo(final Model model) {
         currentTabbable.navigateTo(model);
+    }
+
+    @Override
+    public void navigateToNewTab(final Model model) {
+
     }
 }

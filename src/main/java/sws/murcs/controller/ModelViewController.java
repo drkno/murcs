@@ -1,16 +1,19 @@
 package sws.murcs.controller;
 
+import com.sun.javafx.scene.control.skin.LabeledText;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
+import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.listeners.ViewUpdate;
@@ -96,9 +99,14 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private MainController mainController;
 
     /**
-     * The title property for the pane
+     * The title property for the pane.
      */
     private SimpleStringProperty titleProperty = new SimpleStringProperty("Model View");
+
+    /**
+     * The tab that view exists within.
+     */
+    private Tab containingTab;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -122,13 +130,12 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 });
 
         displayChoiceBox.getSelectionModel().select(0);
+        displayList.setCellFactory(param -> new DisplayListCell());
 
         //If the person control clicked, open in a new tab
-        displayList.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if (event.isControlDown()) {
-                ModelViewController controller = mainController.addModelViewTab();
-                controller.selectItem((Model) displayList.getSelectionModel().getSelectedItem());
-                goBack();
+        displayList.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (event.isControlDown() && DisplayListCell.getHoveringOver() != null) {
+                navigateToNewTab(DisplayListCell.getHoveringOver());
                 event.consume();
             }
         });
@@ -319,7 +326,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         }
 
         if (editorPane == null) {
-            editorPane = new EditorPane(parameter);
+            editorPane = new EditorPane(parameter, this);
             contentPane.getChildren().clear();
             contentPane.getChildren().add(editorPane.getView());
         }
@@ -330,7 +337,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             else {
                 editorPane.dispose();
                 contentPane.getChildren().clear();
-                editorPane = new EditorPane(parameter);
+                editorPane = new EditorPane(parameter, this);
                 contentPane.getChildren().add(editorPane.getView());
             }
         }
@@ -397,6 +404,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         selectItem(model);
     }
 
+    @Override
+    public void navigateToNewTab(final Model model) {
+        navigationManager.navigateToNewTab(model);
+    }
+
     /**
      * Navigates forward.
      */
@@ -430,6 +442,16 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     @Override
     public void setToolBarController(final ToolBarController toolBarController) {
         this.toolBarController = toolBarController;
+    }
+
+    @Override
+    public void setTab(final Tab tab) {
+        this.containingTab = tab;
+    }
+
+    @Override
+    public Tab getTab() {
+        return this.containingTab;
     }
 
     @Override

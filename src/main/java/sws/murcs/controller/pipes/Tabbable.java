@@ -2,6 +2,7 @@ package sws.murcs.controller.pipes;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
+import javafx.scene.control.Tab;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.ToolBarController;
 
@@ -10,6 +11,18 @@ import sws.murcs.controller.ToolBarController;
  * used as a tab.
  */
 public interface Tabbable extends Navigable, ModelManagable{
+    /**
+     * Sets the tab that this tabbable exists within.
+     * @param tab The tab
+     */
+    void setTab(Tab tab);
+
+    /**
+     * Gets the tab that the tabbable exists within.
+     * @return The tab
+     */
+    Tab getTab();
+
     /**
      * Registers a MainController as the controller in charge of the Tabbable.
      * @param controller The new controller

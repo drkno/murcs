@@ -12,8 +12,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -254,9 +254,15 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(team.toString());
             }
             else {
-                Hyperlink text = new Hyperlink(team.toString());
-                text.setOnAction(param -> getNavigationManager().navigateTo(team));
-                setGraphic(text);
+                Hyperlink nameLink = new Hyperlink(team.toString());
+                nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                    if (e.isControlDown()) {
+                        getNavigationManager().navigateToNewTab(team);
+                    } else {
+                        getNavigationManager().navigateTo(team);
+                    }
+                });
+                setGraphic(nameLink);
             }
         }
     }

@@ -349,7 +349,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets the navigationManager for this controller.
      * @param navigationManager The navigationManager.
      */
-    public void setNavigationManager(Navigable navigationManager) {
+    public void setNavigationManager(final Navigable navigationManager) {
         this.navigationManager = navigationManager;
     }
 
@@ -359,7 +359,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * @param node The node to try and find the window for.
      * @return The Window that is used in the WindowManager.
      */
-    protected Window getWindowFromNode(Node node) {
+    protected Window getWindowFromNode(final Node node) {
         return App.getWindowManager()
                 .getAllWindows()
                 .stream()

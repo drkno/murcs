@@ -212,10 +212,9 @@ public final class ErrorReporter {
                     });
                     popup.show();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 performReporting(pThread, pThrowable,
-                    "User could not enter description. Exception killed the reporting window too.", pProgDescription);
+                        "User could not enter description. Exception killed the reporting window too.", pProgDescription);
             }
         });
     }
@@ -231,17 +230,13 @@ public final class ErrorReporter {
         popOver.detachedCloseButtonProperty().set(false);
 
         //Get the top most main controller window.
-        Collection<Window> windows = App.getWindowManager().getAllWindows();
-        Window window = null;
-        for (Window w : windows) {
-            if (w.getController().getClass() == MainController.class) {
-                window = w;
-                break;
-            }
+        MainController controller = App.getMainController();
+
+        //Possible if the app crashes on opening.
+        if (controller != null) {
+            popOver.show(controller.getToolBarController().getToolBar());
         }
 
-        MainController controller = (MainController) window.getController();
-        popOver.show(controller.getToolBarController().getToolBar());
         VBox loader = new VBox();
 
         ImageView imageView = new ImageView();

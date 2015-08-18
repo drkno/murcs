@@ -30,6 +30,7 @@ import sws.murcs.search.SearchResult;
 
 import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
+import sws.murcs.view.App;
 
 /**
  * Controller for search UI.
@@ -373,14 +374,14 @@ public class SearchController {
                     }
 
                     if (editorPane == null) {
-                        editorPane = new EditorPane(newValue);
+                        editorPane = new EditorPane(newValue, App.getMainController());
                     }
                     else if (editorPane.getModel().getClass() == newValue.getClass()) {
                         editorPane.setModel(newValue);
                     }
                     else {
                         editorPane.dispose();
-                        editorPane = new EditorPane(newValue);
+                        editorPane = new EditorPane(newValue, App.getMainController());
                     }
                     Thread.sleep(disableDelay);
                     disableControlsAndUpdateButton();

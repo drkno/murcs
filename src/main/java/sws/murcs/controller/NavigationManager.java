@@ -5,6 +5,7 @@ import sws.murcs.model.Model;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import sws.murcs.view.App;
 
 /**
  * A class for helping with navigation.
@@ -108,6 +109,13 @@ public final class NavigationManager implements Navigable {
      */
     public void navigateTo(final Model model) {
         navigateTo(model, true);
+    }
+
+    @Override
+    public void navigateToNewTab(final Model model) {
+        ModelViewController controller = App.getMainController()
+                .addModelViewTab(modelViewController.getTab().getTabPane());
+        controller.navigateTo(model);
     }
 
     /**

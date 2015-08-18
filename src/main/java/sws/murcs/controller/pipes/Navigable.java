@@ -33,4 +33,11 @@ public interface Navigable {
      * @param model The item to navigate to.
      */
     void navigateTo(Model model);
+
+    /**
+     * Routes a message to the controller telling it to
+     * navigate to a model item in a new tab.
+     * @param model The model item to select
+     */
+    void navigateToNewTab(Model model);
 }

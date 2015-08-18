@@ -22,8 +22,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.ModelViewController;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -37,6 +39,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import sws.murcs.view.App;
 
 /**
  * Controller for the model creator popup window.
@@ -699,7 +702,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(name);
                 } else {
                     Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.setOnAction(a -> getNavigationManager().navigateTo(story));
+                    nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                        if (e.isControlDown()) {
+                            getNavigationManager().navigateToNewTab(story);
+                        } else {
+                            getNavigationManager().navigateTo(story);
+                        }
+                    });
                     container.getChildren().add(nameLink);
                 }
 

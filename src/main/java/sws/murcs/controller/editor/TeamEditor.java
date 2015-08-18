@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -379,7 +380,13 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(person.toString());
-            nameLink.setOnAction(a -> getNavigationManager().navigateTo(person));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
