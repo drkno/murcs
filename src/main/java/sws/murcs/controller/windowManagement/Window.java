@@ -83,8 +83,8 @@ public class Window {
      */
     public final void close(final GenericCallback callback) {
         stage.close();
-        callback.call();
         App.getWindowManager().removeWindow(this);
+        callback.call();
     }
 
     /**
