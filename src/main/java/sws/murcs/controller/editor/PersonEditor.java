@@ -23,6 +23,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -187,20 +188,29 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + skill.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Skill from Person");
-            popup.addYesNoButtons(func -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                popup.setMessageText("Are you sure you want to remove "
+                        + skill.getShortName() + " from "
+                        + getModel().getShortName() + "?");
+                popup.setTitleText("Remove Skill from Person");
+                popup.addYesNoButtons(() -> {
+                    allocatableSkills.add(skill);
+                    Node skillNode = skillNodeIndex.get(skill);
+                    allocatedSkillsContainer.getChildren().remove(skillNode);
+                    skillNodeIndex.remove(skill);
+                    getModel().removeSkill(skill);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+            else {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);
                 skillNodeIndex.remove(skill);
                 getModel().removeSkill(skill);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();

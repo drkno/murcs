@@ -495,6 +495,7 @@ public class SearchController {
     /**
      * Background worker method to render previews in.
      */
+    @SuppressWarnings({"checkstyle:magicnumber", "checkstyle:avoidinlineconditionals"})
     private void renderPreview() {
         final int disableDelay = 250;
         final int helpfulMessageMargin = 5;
@@ -505,8 +506,6 @@ public class SearchController {
         Image spinner = new Image(getClass().getResourceAsStream("/sws/murcs/spinner.gif"));
         imageView.setImage(spinner);
         loader.getChildren().add(imageView);
-
-        @SuppressWarnings("CheckStyle")
         Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
                 ? "Please update to at least Java 8u40 for speed\n*CLUNK*.........\n "
                 + "/wwwwhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
@@ -563,7 +562,7 @@ public class SearchController {
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
 
-                        while(!editorPane.getController().isLoaded()) {
+                        while (!editorPane.getController().isLoaded()) {
                             Thread.sleep(disableDelay);
                         }
                         disableControlsAndUpdateButton();

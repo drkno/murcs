@@ -1,4 +1,4 @@
-package sws.murcs.reporting.ui;
+package sws.murcs.view;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -6,17 +6,26 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.AboutController;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
 /**
- * Sets up the report generator view.
+ * The About window view.
  */
-public class ReportGeneratorView {
+public class AboutView {
+
+    /**
+     * The parent window.
+     */
+    private Window parentWindow;
 
     /**
      * Sets up a report generator window.
+     * @param pParentWindow The parent window.
      */
-    public ReportGeneratorView() {
+    public AboutView(final Window pParentWindow) {
+        parentWindow = pParentWindow;
     }
 
     /**
@@ -25,18 +34,18 @@ public class ReportGeneratorView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(ReportGeneratorController
+            FXMLLoader loader = new FXMLLoader(AboutController
                     .class
-                    .getResource("/sws/murcs/reporting/ReportGenerator.fxml"));
+                    .getResource("/sws/murcs/About.fxml"));
             Parent root = loader.load();
 
             // Set up the controller and give it the necessary parameters
-            ReportGeneratorController controller = loader.getController();
+            AboutController controller = loader.getController();
 
             // Set up the stage
             Stage stage = new Stage();
-            stage.setResizable(false);
-            controller.setStage(stage);
+            stage.setResizable(true);
+            controller.setupController(stage, parentWindow);
             if (root == null) {
                 return;
             }
@@ -45,26 +54,23 @@ public class ReportGeneratorView {
                     .add(getClass()
                             .getResource("/sws/murcs/styles/global.css")
                             .toExternalForm());
-            scene.getStylesheets()
-                    .add(getClass()
-                            .getResource("/sws/murcs/styles/materialDesign/reporting/reporting.css")
-                            .toExternalForm());
-            stage.setScene(scene);
 
             // Give the stage a name and icon
-            stage.setTitle("Generate Report");
+            stage.setTitle("About");
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
+            stage.setScene(scene);
 
-            stage.initModality(Modality.NONE);
+            stage.initOwner(App.getStage());
+            stage.initModality(Modality.APPLICATION_MODAL);
 
             stage.sizeToScene();
             controller.setUpWindow();
             controller.show();
         }
         catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Something went wrong loading the report generator window");
+            ErrorReporter.get().reportError(e, "Something went wrong loading the about window");
         }
     }
 }

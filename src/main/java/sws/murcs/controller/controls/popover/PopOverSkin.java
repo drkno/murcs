@@ -129,6 +129,7 @@ public class PopOverSkin implements Skin<PopOver> {
      * Creates a new PopOver skin for a PopOver control.
      * @param thePopOver control to make the skin for.
      */
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     public PopOverSkin(final PopOver thePopOver) {
         popOver = thePopOver;
         stackPane = thePopOver.getRoot();
@@ -136,11 +137,8 @@ public class PopOverSkin implements Skin<PopOver> {
         Bindings.bindContent(stackPane.getStyleClass(), thePopOver.getStyleClass());
         stackPane.minWidthProperty().bind(
                 Bindings.add(Bindings.multiply(2, thePopOver.arrowSizeProperty()),
-                        Bindings.add(
-                                Bindings.multiply(2,
-                                        thePopOver.cornerRadiusProperty()),
-                                Bindings.multiply(2,
-                                        thePopOver.arrowIndentProperty()))));
+                        Bindings.add(Bindings.multiply(2, thePopOver.cornerRadiusProperty()),
+                                Bindings.multiply(2, thePopOver.arrowIndentProperty()))));
 
         stackPane.minHeightProperty().bind(stackPane.minWidthProperty());
         final int closeIconIndent = 10;
@@ -150,7 +148,6 @@ public class PopOverSkin implements Skin<PopOver> {
         closeIcon.setContentDisplay(GRAPHIC_ONLY);
         closeIcon.visibleProperty().bind(thePopOver.detachedProperty());
         closeIcon.getStyleClass().add("icon"); //$NON-NLS-1$
-        //noinspection CheckStyle
         closeIcon.setAlignment(System.getProperty("os.name").contains("OS X") ? CENTER_LEFT : CENTER_RIGHT);
         closeIcon.getGraphic().setOnMouseClicked(evt -> thePopOver.hide());
         titlePane = new StackPane();
@@ -162,7 +159,9 @@ public class PopOverSkin implements Skin<PopOver> {
         content.getStyleClass().add("content"); //$NON-NLS-1$
 
         if (thePopOver.detachedProperty().get()) {
-            content.setTop(titlePane);
+            if (thePopOver.detachedCloseButtonProperty().get()) {
+                content.setTop(titlePane);
+            }
             thePopOver.getStyleClass().add(DETACHED_STYLE_CLASS);
             content.getStyleClass().add(DETACHED_STYLE_CLASS);
         }

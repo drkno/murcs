@@ -15,7 +15,6 @@
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
 
 .split-menu-button > .label
-  //-fx-padding: 0.333333em 1.5em 0.333333em 0.667em
   -fx-background-color: $button-color
 
 .split-menu-button .arrow-button
@@ -42,7 +41,6 @@
 .create-save-button:focused, .button-default:focused
   -fx-background-color: $secondary-300
   -fx-background-insets: 0, 1
-
 
 .button-cancel
   -fx-background-color: $button-color
@@ -81,4 +79,20 @@
 
 .split-menu-button .context-menu .menu-item:hover
   -fx-background-color: $list-cell-hover-color
+  -fx-background-insets: 0, 1
+
+.danger-will-robinson
+  -fx-background-color: $delete-red
+  -fx-text-fill: $white-text
+
+.danger-will-robinson:focused
+  -fx-background-color: $delete-red-focused
+  -fx-background-insets: 0, 1
+
+.dont-panic
+  -fx-background-color: $safe-green
+  -fx-text-fill: $white-text
+
+.dont-panic:focused
+  -fx-background-color: $safe-green-focused
   -fx-background-insets: 0, 1

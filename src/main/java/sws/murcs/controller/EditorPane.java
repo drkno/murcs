@@ -2,7 +2,6 @@ package sws.murcs.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.LoadException;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -33,6 +32,11 @@ public class EditorPane {
      * The editor pane view.
      */
     private Parent view;
+
+    /**
+     * Better supported Java version.
+     */
+    private final int betterJavaVersion = 40;
 
     /**
      * Creates a new Editor pane, and sets the model.
@@ -87,7 +91,8 @@ public class EditorPane {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             // This is due to problems between java 8u25 and java 8u40
-            if (App.JAVA_UPDATE_VERSION < 40 && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
+            if (App.JAVA_UPDATE_VERSION < betterJavaVersion
+                    && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
                 CountDownLatch latch = new CountDownLatch(1);
                 Platform.runLater(() -> {
                     try {
@@ -136,7 +141,8 @@ public class EditorPane {
             // This is because "Java sucks" - Dion
             // "You guys are dicks" - Dion, Daniel, Jay
             // It's a bug somewhere in between java 8u25 and 8u40
-            if (App.JAVA_UPDATE_VERSION < 40 && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
+            if (App.JAVA_UPDATE_VERSION < betterJavaVersion
+                    && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
                 CountDownLatch latch = new CountDownLatch(1);
                 Platform.runLater(() -> {
                     controller.loadObject();

@@ -31,7 +31,6 @@
                               <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="Save" />
                               <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="Save As" />
                               <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="Generate Report" />
-                              <MenuItem mnemonicParsing="false" onAction="#reportBug" text="Feedback" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="Quit" />
                           </items>
@@ -58,6 +57,12 @@
                         </Menu>
                           </items>
                       </Menu>
+                      <Menu id="aboutMenu" mnemonicParsing="false" text="Help">
+                          <items>
+                              <MenuItem mnemonicParsing="false" onAction="#reportBug" text="Submit Feedback"/>
+                              <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About"/>
+                          </items>
+                      </Menu>
                   </menus>
               </MenuBar>
          </children>
@@ -66,7 +71,7 @@
     <center>
         <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" BorderPane.alignment="CENTER">
             <children>
-                <VBox fx:id="vBoxSideDisplay" HBox.hgrow="NEVER">
+                <VBox fx:id="vBoxSideDisplay" id="vBoxSideDisplay" HBox.hgrow="NEVER">
                     <children>
                         <AnchorPane>
                             <children>

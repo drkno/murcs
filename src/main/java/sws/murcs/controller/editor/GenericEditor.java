@@ -34,7 +34,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * The type of model the editor is being used for.
      */
-    private T model;
+    protected T model;
 
     /**
      * The label for showing error messages.
@@ -61,7 +61,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Details whether or not the window is a creator for a new model or an editor.
      */
-    private boolean isCreationWindow;
+    protected boolean isCreationWindow;
 
     /**
      * Whether or not the editor is loaded.
@@ -388,6 +388,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         return saveButton;
     }
 
+    /**
+     * Is the editor loaded.
+     * @return if the editor is loaded.
+     */
     public final boolean isLoaded() {
         return isLoaded;
     }
