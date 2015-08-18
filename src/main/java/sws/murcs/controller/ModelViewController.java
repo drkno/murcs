@@ -152,9 +152,9 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     /**
-     * Updates the title property
+     * Updates the title property.
      */
-    private void updateTitle(){
+    private void updateTitle() {
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;

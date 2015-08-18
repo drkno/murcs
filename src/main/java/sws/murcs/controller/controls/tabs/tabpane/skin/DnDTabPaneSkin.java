@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import java.util.function.Predicate;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
@@ -137,6 +138,9 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			Field f_tab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
 			f_tab.setAccessible(true);
 			Tab t = (Tab) f_tab.get(event.getSource());
+            if (!validateDrag(t)) {
+                return;
+            }
 
 			if (t != null && efx_canStartDrag(t)) {
 				DRAGGED_TAB = t;
@@ -363,6 +367,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	private Function<Tab, Boolean> startFunction;
 	private Consumer<Tab> dragFinishedConsumer;
 	private List<DropListener> dropListeners = new ArrayList<>();
+	private List<Predicate<Tab>> dragFilters = new ArrayList<>();
 	private Consumer<FeedbackData> feedbackConsumer;
 	private Consumer<DroppedData> dropConsumer;
 	private Consumer<DragEvent> doneConsumer;
@@ -393,11 +398,36 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		this.dropConsumer = dropConsumer;
 	}
 
+    /**
+     * Adds a drag filter. If any filter returns falst the tab will not be dragged.
+     * @param filter The filter.
+     */
+    public void addDragFilter(final Predicate<Tab> filter) {
+        dragFilters.add(filter);
+    }
+
+    /**
+     * Removes a drag filter.
+     * @param filter The filter
+     */
+    public void removeDragFilter(final Predicate<Tab> filter) {
+        dragFilters.remove(filter);
+    }
+
+    /**
+     * Ensures that a tab can be dragged.
+     * @param tab The tab to drag
+     * @return Whether the tab can be dragged.
+     */
+    private boolean validateDrag(final Tab tab) {
+        return dragFilters.stream().allMatch(p -> p.test(tab));
+    }
+
 	/**
 	 * Adds a drop listener to the list of listeners that will be fired when a tab is dropped.
 	 * @param dropListener The drop listener to add.
 	 */
-	public void addDropListener(DropListener dropListener) {
+	public void addDropListener(final DropListener dropListener) {
 		dropListeners.add(dropListener);
 	}
 
@@ -405,7 +435,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	 * Removes a drop listener.
 	 * @param dropListener The drop listener to remove
 	 */
-	public void removeDropListener(DropListener dropListener) {
+	public void removeDropListener(final DropListener dropListener) {
 		dropListeners.remove(dropListener);
 	}
 
@@ -421,7 +451,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	 * @param event The drag event
 	 * @param dropped The dropped tab
 	 */
-	private void fireDropListeners(DragEvent event, Tab dropped) {
+	private void fireDropListeners(final DragEvent event, final Tab dropped) {
 		for (DropListener listener : dropListeners) {
 			listener.dropped(event, dropped);
 		}

@@ -359,14 +359,17 @@ public final class DnDTabPaneFactory {
 		 * The tab dragged.
 		 */
 		public final Tab draggedTab;
+
 		/**
 		 * The reference tab.
 		 */
 		public final Tab targetTab;
+
 		/**
 		 * The bounds of the reference tab.
 		 */
 		public final Bounds bounds;
+
 		/**
 		 * The drop type.
 		 */

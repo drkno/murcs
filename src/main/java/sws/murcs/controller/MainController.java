@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -26,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
+import sws.murcs.controller.controls.tabs.tabpane.skin.AddableDnDTabPaneSkin;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
@@ -136,12 +139,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             }
 
             Tabbable tabbable = getTabbable(newValue);
-            showHide.setSelected(tabbable.sideBarVisible());
-            showHide.setDisable(!tabbable.canToggleSideBar());
-
             if (tabbable == null) {
                 return;
             }
+
+            showHide.setSelected(tabbable.sideBarVisible());
+            showHide.setDisable(!tabbable.canToggleSideBar());
 
             toolBarController.setModelManagable(tabbable);
             currentTabbable = tabbable;
@@ -168,8 +171,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         tabPane.setPrefWidth(200);
         tabPane.setPrefHeight(200);
 
-        DnDTabPaneSkin skin = new DnDTabPaneSkin(tabPane);
         StackPane containerPane = new StackPane(tabPane);
+        AddableDnDTabPaneSkin skin = new AddableDnDTabPaneSkin(containerPane, tabPane);
         DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
         skin.addDropListener((event, tab) -> {
             //If the event has already been accepted, we don't want to move the tab to a new window.
@@ -190,7 +193,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Attempts to find the tabbable associated with a tab
+     * Attempts to find the tabbable associated with a tab.
      * @param tab The tab
      * @return The tabbable (null if not found).
      */
@@ -219,7 +222,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         tabPane.getTabs().add(tab);
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
+            if (newValue == null || "+".equals(newValue.getText())) {
                 stage.close();
             }
         });
@@ -368,6 +371,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             controller.setTab(tabNode);
 
             Label tabLabel = new Label(controller.getTitle().getValue());
+            tabLabel.setFocusTraversable(false);
             tabLabel.setMinWidth(30);
             tabLabel.setPrefWidth(100);
             tabLabel.setMaxWidth(100);
