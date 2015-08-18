@@ -152,6 +152,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         toolBarController.setNavigable(this);
 
         undoRedoNotification(ChangeState.Commit);
+        UndoRedoManager.addChangeListener(this);
 
         addModelViewTab(mainTabPane);
     }
