@@ -2,30 +2,16 @@ package sws.murcs.controller.controls.tabs.tabpane.skin;
 
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import java.lang.reflect.Field;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.listeners.GenericCallback;
 import sws.murcs.listeners.TabFactory;
 
 /**
- * A tab pane skin with an add button.
+ * A tab pane skin with an add button. This class is essentially a giant Hack.
  */
 public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
     /**
@@ -50,6 +36,18 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
     private TabFactory tabFactory;
 
     /**
+     * The header pane.
+     */
+    private StackPane headerPane;
+
+    /**
+     * Trust me. You don't want to know.
+     * (you do? Oh. Well JavaFx doesn't play nice with sizing
+     * unless you've started..).
+     */
+    private boolean started;
+
+    /**
      * Create a new skin.
      * @param container the container of the tab pane
      * @param tabPane the tab pane
@@ -66,10 +64,15 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
      * Sets up the add button for the tab pane.
      */
     private void setupAddButton() {
-        Button addButton = new Button("+");
-        addButton.getStyleClass().add("tab-add-button");
+        addTabButton = new Button("+");
+        addTabButton.getStyleClass().add("tab-add-button");
+        addTabButton.setOnAction(e -> {
+            if (tabFactory != null){
+                tabPane.getTabs().add(tabFactory.createTab(tabPane));
+            }
+        });
 
-        container.getChildren().add(addButton);
+        container.getChildren().add(addTabButton);
 
         try {
             Field fTabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
@@ -79,22 +82,27 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
             Field fHeadersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
             fHeadersRegion.setAccessible(true);
 
-            final Pane headersRegion = (StackPane) fHeadersRegion.get(tabHeaderArea);
-            headersRegion.widthProperty().addListener((observable, oldValue, newValue) -> {
-                addButton.setManaged(false);
-                double height = addButton.getBoundsInLocal().getHeight();
-                Bounds b = headersRegion.getBoundsInLocal();
-                b = headersRegion.localToScene(b);
-                b = AddableDnDTabPaneSkin.this.getSkinnable().sceneToLocal(b);
-                addButton.relocate(b.getMaxX(), b.getMaxY() - height);
-            });
-
-            headersRegion.getChildren().addListener((ListChangeListener<Node>) observable -> {
-                //observable.next();
+            headerPane = (StackPane) fHeadersRegion.get(tabHeaderArea);
+            headerPane.widthProperty().addListener((observable, oldValue, newValue) -> {
+                //Stop the layout from updating the buttons position
+                addTabButton.setManaged(false);
+                recalculateAddPosition();
+                started = true;
             });
         } catch (Exception e){
             ErrorReporter.get().reportError(e, "Seems like Java's internal tab interface has changed :'(");
         }
+    }
+
+    /**
+     * Recalculates and updates the add button position.
+     */
+    private void recalculateAddPosition() {
+        double height = addTabButton.getBoundsInLocal().getHeight();
+        Bounds b = headerPane.getBoundsInLocal();
+        b = headerPane.localToScene(b);
+        b = AddableDnDTabPaneSkin.this.getSkinnable().sceneToLocal(b);
+        addTabButton.relocate(b.getMaxX() + 5 * addTabButton.getScaleX() + (started ? 0 : 5), 5 * addTabButton.getScaleY());
     }
 
     /**

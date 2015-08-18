@@ -132,9 +132,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         mainTabPane = (DnDTabPane) containerPane.getChildren().get(0);
 
         mainTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //If all the tabs have been closed, add a new model tab (we should never have none)
+            //If all the tabs have been closed, return.
             if (newValue == null) {
-                addModelViewTab(mainTabPane);
                 return;
             }
 
@@ -171,8 +170,18 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         tabPane.setPrefWidth(200);
         tabPane.setPrefHeight(200);
 
-        StackPane containerPane = new StackPane(tabPane);
+        AnchorPane containerPane = new AnchorPane();
+        containerPane.getChildren().add(tabPane);
+        AnchorPane.setRightAnchor(tabPane, 0.0);
+        AnchorPane.setTopAnchor(tabPane, 0.0);
+        AnchorPane.setBottomAnchor(tabPane, 0.0);
+        AnchorPane.setLeftAnchor(tabPane, 0.0);
+
         AddableDnDTabPaneSkin skin = new AddableDnDTabPaneSkin(containerPane, tabPane);
+        skin.setTabFactory(pane -> {
+            Tabbable t = addModelViewTab(pane, false);
+            return t.getTab();
+        });
         DnDTabPaneFactory.setup(DnDTabPaneFactory.FeedbackType.MARKER, containerPane, skin);
         skin.addDropListener((event, tab) -> {
             //If the event has already been accepted, we don't want to move the tab to a new window.
@@ -211,7 +220,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private void createWindow(final Point2D mousePos, final Tab tab) {
         Tabbable tabbable = getTabbable(tab);
-        mainTabPane.getTabs().remove(tab);
+        tab.getTabPane().getTabs().remove(tab);
 
         Stage stage = new Stage();
         stage.setTitle(tabbable.getTitle().getValue());
@@ -222,7 +231,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         tabPane.getTabs().add(tab);
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null || "+".equals(newValue.getText())) {
+            if (newValue == null) {
                 stage.close();
             }
         });
@@ -341,15 +350,25 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param tabPane The pane to add the tab to
      */
     public ModelViewController addModelViewTab(final TabPane tabPane) {
-        return (ModelViewController) addTab("/sws/murcs/ModelView.fxml", tabPane);
+        return addModelViewTab(tabPane, true);
+    }
+
+    /**
+     * Adds a model view tab to the main pane.
+     * @param tabPane The pane to add the tab to
+     * @param addToPane Indicates whether the tab should be added to the pane
+     */
+    public ModelViewController addModelViewTab(final TabPane tabPane, final boolean addToPane) {
+        return (ModelViewController) addTab("/sws/murcs/ModelView.fxml", tabPane, addToPane);
     }
 
     /**
      * Adds a tab to the pane.
      * @param fxmlPath The path for the fxml to load
      * @param tabPane The tabpane to add the tab to
+     * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
      */
-    public Tabbable addTab(final String fxmlPath, final TabPane tabPane) {
+    public Tabbable addTab(final String fxmlPath, final TabPane tabPane, boolean addToPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
@@ -380,8 +399,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             tabNode.setOnClosed(e -> tabs.remove(controller));
 
-            tabPane.getTabs().add(tabNode);
-            tabPane.getSelectionModel().select(tabNode);
+            if (addToPane) {
+                tabPane.getTabs().add(tabNode);
+                tabPane.getSelectionModel().select(tabNode);
+            }
 
             return controller;
         } catch (IOException e) {
