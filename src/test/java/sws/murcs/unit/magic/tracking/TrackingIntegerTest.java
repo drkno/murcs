@@ -160,4 +160,66 @@ public class TrackingIntegerTest {
         UndoRedoManager.revert();
         Assert.assertEquals(2, a.getTestInteger());
     }
+
+    @Test
+    public void repetitiveRevertRemakeTest() throws Exception {
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
+        a.setTestInteger(4);
+        a.setTestInteger(5);
+        a.setTestInteger(6);
+        a.setTestInteger(7);
+        a.setTestInteger(8);
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        Assert.assertEquals(7, a.getTestInteger());
+    }
+
+    @Test
+    public void repetitiveRevertRemakeAddTest() throws Exception {
+        TestInteger a = new TestInteger();
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        a.setTestInteger(3);
+        a.setTestInteger(4);
+        a.setTestInteger(5);
+        a.setTestInteger(6);
+        a.setTestInteger(7);
+        a.setTestInteger(8);
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.remake();
+        UndoRedoManager.remake();
+        a.setTestInteger(9);
+        UndoRedoManager.revert();
+        Assert.assertEquals(6, a.getTestInteger());
+        UndoRedoManager.remake();
+        Assert.assertEquals(9, a.getTestInteger());
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        UndoRedoManager.revert();
+        Assert.assertFalse(UndoRedoManager.canRevert());
+        Assert.assertEquals(0, a.getTestInteger());
+    }
 }
