@@ -138,7 +138,7 @@ public class ErrorReportPopup {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        swapForMDElements();
+        insertMDCheckBox();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this);
         window.register();
@@ -150,7 +150,7 @@ public class ErrorReportPopup {
     /**
      * Adds a material design checkBox to the form.
      */
-    private void swapForMDElements() {
+    private void insertMDCheckBox() {
         checkBox = new MaterialDesignCheckBox();
         checkBox.setSelected(true);
         screenshotLabel.setGraphic(checkBox);

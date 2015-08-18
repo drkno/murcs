@@ -339,10 +339,10 @@ public class TeamEditor extends GenericEditor<Team> {
                 GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
                 popup.setTitleText("Remove Team Member");
                 String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
-                if (getModel().getScrumMaster() != null && getModel().getScrumMaster().equals(person)) {
+                if (person.equals(getModel().getScrumMaster())) {
                     message += "\nThey are currently the teams Scrum Master.";
                 }
-                if (getModel().getProductOwner() != null && getModel().getProductOwner().equals(person)) {
+                if (person.equals(getModel().getProductOwner())) {
                     message += "\nThey are currently the teams Product Owner.";
                 }
                 popup.setMessageText(message);

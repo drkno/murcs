@@ -73,7 +73,8 @@ public class Window {
      * Override for when we don't want to pass a callback.
      */
     public final void close() {
-        close(() -> { });
+        stage.close();
+        App.getWindowManager().removeWindow(this);
     }
 
     /**
