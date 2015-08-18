@@ -978,6 +978,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
     @Override
     public void navigateToNewTab(final Model model) {
-
+        ModelViewController controller = addModelViewTab(mainTabPane);
+        controller.navigateTo(model);
     }
 }
