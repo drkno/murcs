@@ -130,7 +130,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private CreatorWindowView creatorWindow;
 
     /**
-     * Stores and instance of the main app window.
+     * Stores an instance of the main app window.
      */
     private Window window;
 

@@ -1,6 +1,5 @@
 package sws.murcs.controller.windowManagement;
 
-
 import javafx.collections.FXCollections;
 import sws.murcs.controller.AppController;
 

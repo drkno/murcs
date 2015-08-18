@@ -55,12 +55,6 @@ public class AboutController {
     private Window parentWindow;
 
     /**
-     * Empty constructor for FXML.
-     */
-    public AboutController() {
-    }
-
-    /**
      * Closes the About window.
      * @param actionEvent the event, not used.
      */
