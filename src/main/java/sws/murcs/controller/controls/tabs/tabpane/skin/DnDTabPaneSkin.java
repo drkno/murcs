@@ -1,5 +1,6 @@
 package sws.murcs.controller.controls.tabs.tabpane.skin;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import java.util.function.Predicate;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
@@ -50,6 +52,8 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	private StyleableProperty<Object> openAnimation;
 	private StyleableProperty<Object> closeAnimation;
 
+    private Pane tabHeaderArea;
+
 	/**
 	 * Create a new skin
 	 * 
@@ -59,7 +63,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	public DnDTabPaneSkin(TabPane tabPane) {
 		super(tabPane);
 		hookTabFolderSkin();
-	}
+    }
 
 	@SuppressWarnings("unchecked")
 	private void hookTabFolderSkin() {
@@ -67,7 +71,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			Field f_tabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
 			f_tabHeaderArea.setAccessible(true);
 
-			Pane tabHeaderArea = (StackPane) f_tabHeaderArea.get(this);
+			tabHeaderArea = (StackPane) f_tabHeaderArea.get(this);
 			tabHeaderArea.setOnDragOver((e) -> e.consume());
 
 			Field f_headersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
@@ -146,7 +150,9 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				DRAGGED_TAB = t;
 				Node node = (Node) event.getSource();
 				Dragboard db = node.startDragAndDrop(TransferMode.MOVE);
-				node.setOnDragDone(e -> fireDropListeners(e, t));
+				node.setOnDragDone(e -> {
+                    fireDropListeners(e, t);
+                });
 
 				WritableImage snapShot = node.snapshot(new SnapshotParameters(), null);
 				PixelReader reader = snapShot.getPixelReader();
@@ -174,7 +180,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				}
 
 				//TODO make a cooler screen shot
-				db.setDragView(image, image.getWidth(), image.getHeight() * -1);
+				db.setDragView(image, image.getWidth() * 0.5, 0);
 
 				ClipboardContent content = new ClipboardContent();
 				String data = efx_getClipboardContent(t);
@@ -452,6 +458,14 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	 * @param dropped The dropped tab
 	 */
 	private void fireDropListeners(final DragEvent event, final Tab dropped) {
+        Bounds b = tabHeaderArea.getBoundsInLocal();
+        b = tabHeaderArea.localToScreen(b);
+        Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+
+        if (b.contains(mousePoint.getX(), mousePoint.getY())) {
+            return;
+        }
+
 		for (DropListener listener : dropListeners) {
 			listener.dropped(event, dropped);
 		}
