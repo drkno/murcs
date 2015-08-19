@@ -170,7 +170,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
                 return;
             }
 
-			if (t != null && efx_canStartDrag(t)) {
+			if (t != null && efxCanStartDrag(t)) {
 				draggedTab = t;
 				Node node = (Node) event.getSource();
 				Dragboard db = node.startDragAndDrop(TransferMode.MOVE);
@@ -285,7 +285,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				}
 
 				if (noMove) {
-					efx_dragFeedback(draggedTab, null, null, DropType.NONE);
+					efxDragFeedback(draggedTab, null, null, DropType.NONE);
 					return;
 				}
 
@@ -293,14 +293,14 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				b = referenceNode.localToScene(b);
 				b = getSkinnable().sceneToLocal(b);
 
-				efx_dragFeedback(draggedTab, tab, b, type);
+				efxDragFeedback(draggedTab, tab, b, type);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 
 			event.acceptTransferModes(TransferMode.MOVE);
 		} else {
-			efx_dragFeedback(draggedTab, null, null, DropType.NONE);
+			efxDragFeedback(draggedTab, null, null, DropType.NONE);
 		}
 	}
 
@@ -347,7 +347,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				Tab tab = (Tab) field.get(referenceNode);
 
 				boolean noMove = false;
-				if( tab == null ) {
+				if (tab == null) {
 					event.setDropCompleted(false);
 					return;
 				}
@@ -380,7 +380,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 					try {
 						this.openAnimation.setValue(this.noneEnum);
 						this.closeAnimation.setValue(this.noneEnum);
-						efx_dropped(draggedTab, tab, type);
+						efxDropped(draggedTab, tab, type);
 						event.setDropCompleted(true);
 					} finally {
 						this.openAnimation.applyStyle(openOrigin, openValue);
@@ -460,27 +460,27 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	private Function<Tab, String> clipboardDataFunction;
 
 	@Override
-	public void setClipboardDataFunction(Function<Tab, String> clipboardDataFunction) {
+	public void setClipboardDataFunction(final Function<Tab, String> clipboardDataFunction) {
 		this.clipboardDataFunction = clipboardDataFunction;
 	}
 
 	@Override
-	public void setStartFunction(Function<Tab, Boolean> startFunction) {
+	public void setStartFunction(final Function<Tab, Boolean> startFunction) {
 		this.startFunction = startFunction;
 	}
 
 	@Override
-	public void setDragFinishedConsumer(Consumer<Tab> dragFinishedConsumer) {
+	public void setDragFinishedConsumer(final Consumer<Tab> dragFinishedConsumer) {
 		this.dragFinishedConsumer = dragFinishedConsumer;
 	}
 
 	@Override
-	public void setFeedbackConsumer(Consumer<FeedbackData> feedbackConsumer) {
+	public void setFeedbackConsumer(final Consumer<FeedbackData> feedbackConsumer) {
 		this.feedbackConsumer = feedbackConsumer;
 	}
 
 	@Override
-	public void setDropConsumer(Consumer<DroppedData> dropConsumer) {
+	public void setDropConsumer(final Consumer<DroppedData> dropConsumer) {
 		this.dropConsumer = dropConsumer;
 	}
 
@@ -533,7 +533,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	}
 
 	/**
-	 * Fires all the drop listeners
+	 * Fires all the drop listeners.
 	 * @param event The drag event
 	 * @param dropped The dropped tab
 	 */
@@ -551,20 +551,39 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	private boolean efx_canStartDrag(Tab tab) {
+	/**
+	 * Determines whether a drag can be started for a specific tab.
+	 * @param tab The tab
+	 * @return Whether the tab can be dragged.
+	 */
+	private boolean efxCanStartDrag(final Tab tab) {
 		if (this.startFunction != null) {
 			return this.startFunction.apply(tab).booleanValue();
 		}
 		return true;
 	}
 
-	private void efx_dragFeedback(Tab draggedTab, Tab targetTab, Bounds bounds, DropType dropType) {
+	/**
+	 * Handles feedback for a tab that is being dragged.
+	 * @param draggedTab The tab being dragged
+	 * @param targetTab The  tab that the dragged tab is being dropped onto
+	 * @param bounds The bounds of the target tab
+	 * @param dropType The type of drop
+	 */
+	private void efxDragFeedback(final Tab draggedTab, final Tab targetTab,
+								 final Bounds bounds, final DropType dropType) {
 		if (this.feedbackConsumer != null) {
 			this.feedbackConsumer.accept(new FeedbackData(draggedTab, targetTab, bounds, dropType));
 		}
 	}
 
-	private void efx_dropped(Tab draggedTab, Tab targetTab, DropType dropType) {
+	/**
+	 * Handles a tab being dropped onto another tab.
+	 * @param draggedTab The tab being dropped
+	 * @param targetTab The target
+	 * @param dropType The type of drop
+	 */
+	private void efxDropped(final Tab draggedTab, final Tab targetTab, final DropType dropType) {
 		if (this.dropConsumer != null) {
 			this.dropConsumer.accept(new DroppedData(draggedTab, targetTab, dropType));
 		}
