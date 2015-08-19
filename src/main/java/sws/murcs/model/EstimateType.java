@@ -42,6 +42,17 @@ public enum EstimateType {
     public static final String NOT_ESTIMATED = "Not Estimated";
 
     /**
+     * Used when something has an estimate of 0.
+     */
+    public static final String ZERO = "0";
+
+    /**
+     * Used when something is estimated as infinite i.e. if it's using and unknown technology and therefore
+     * it isn't clear how long it will take.
+     */
+    public static final String INFINITE = "Infinite";
+
+    /**
      * Gets the list of estimates for the estimate type.
      * @return A list of the estimates.
      */

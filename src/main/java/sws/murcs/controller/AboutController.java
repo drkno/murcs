@@ -20,16 +20,19 @@ public class AboutController {
      */
     @FXML
     private Label versionNumber;
+
     /**
      * The Murcs logo.
      */
     @FXML
     private ImageView logoImage;
+
     /**
      * The close button.
      */
     @FXML
     private Button closeButton;
+
     /**
      * Murcs.
      */
@@ -50,17 +53,6 @@ public class AboutController {
      * The parent of the about window.
      */
     private Window parentWindow;
-
-    /**
-     * An attempt at getting the display scaling of text.
-     */
-    private final double rem = javafx.scene.text.Font.getDefault().getSize();
-
-    /**
-     * Empty constructor for FXML.
-     */
-    public AboutController() {
-    }
 
     /**
      * Closes the About window.
@@ -85,8 +77,8 @@ public class AboutController {
                 .getResourceAsStream(("sws/murcs/logo/Murcs_logo_transparent_background.png")));
         logoImage.setImage(iconImage);
         versionNumber.setText("Version: " + Organisation.getVersion());
-        stage.setMinHeight(rem * 17);
-        stage.setMinWidth(rem * 25);
+        stage.setMinHeight(200);
+        stage.setMinWidth(300);
         closeButton.getStyleClass().add("create-save-button");
     }
 

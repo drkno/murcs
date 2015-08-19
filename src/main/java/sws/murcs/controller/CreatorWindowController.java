@@ -145,7 +145,8 @@ public class CreatorWindowController {
                 }
                 PersistenceManager.getCurrent().getCurrentModel().add(model);
                 createClicked.accept(model);
-            } catch (CustomException e) {
+            }
+            catch (CustomException e) {
                 ErrorReporter.get().reportError(e, "Unable to add new model to Organisation");
             }
         }

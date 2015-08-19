@@ -178,8 +178,6 @@ public class GenericPopup extends AnchorPane {
             ErrorReporter.get().reportError(e, "Generic popup failed to load");
         }
         popupScene = new Scene(this);
-        popupStage.initOwner(App.getStage());
-        popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setScene(popupScene);
         popupScene.getStylesheets().add(getClass().getResource("/sws/murcs/styles/global.css").toExternalForm());
 
@@ -200,7 +198,7 @@ public class GenericPopup extends AnchorPane {
      * Sets up a window for the popup.
      */
     private void setupWindow() {
-        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initModality(Modality.WINDOW_MODAL);
         popupStage.initOwner(App.getStage());
         window = new Window(popupStage, this, parentWindow);
         window.register();

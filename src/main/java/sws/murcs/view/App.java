@@ -61,6 +61,12 @@ public class App extends Application {
     private static final int SUBSTRINGLENGTH = 3;
 
     /**
+     * The update version of the current running version of Java. (i.e. if you're on 8u25 this would be 25).
+     */
+    public static final int JAVA_UPDATE_VERSION = Integer.parseInt(System.getProperty("java.version")
+            .split("_")[1].split("-")[0]);
+
+    /**
      * The current main controller.
      */
     private static MainController mainController;

@@ -26,6 +26,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.ModelViewController;
+import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -389,10 +391,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     /**
@@ -715,7 +721,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 Button button = new Button("X");
                 button.getStyleClass().add("mdr-button");
                 button.getStyleClass().add("mdrd-button");
-                button.setOpacity(0.0);
                 button.setOnAction(e -> {
                     if (!isCreationWindow) {
                         GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
@@ -736,8 +741,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         updateAvailableStories();
                     }
                 });
-                getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
-                getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
+                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+                fadeButtonOnHover.setupEffect();
                 AnchorPane.setRightAnchor(button, 0.0);
                 container.getChildren().add(button);
 

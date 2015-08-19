@@ -11,8 +11,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Searchable {
+
     /**
      * Priority to search this field with.
      */
     SearchPriority value() default SearchPriority.Medium;
+
+    /**
+     * Field name to identify this field as.
+     */
+    String fieldName() default "";
 }

@@ -640,12 +640,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             if (UndoRedoManager.canRevert()) {
                 popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
-                    if (save()) {
-                        if (openFile()) {
-                            popup.close();
-                            // Close all windows which are not the main app.
-                            App.getWindowManager().cleanUp();
-                        }
+                    if (save() && openFile()) {
+                        popup.close();
+                        // Close all windows which are not the main app.
+                        App.getWindowManager().cleanUp();
                     }
                 });
             }
@@ -1016,5 +1014,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     public void navigateToNewTab(final Model model) {
         ModelViewController controller = addModelViewTab(mainTabPane);
         controller.navigateTo(model);
+    }
+
+    /**
+     * Gets the currently selected model type.
+     * @return The current model type
+     */
+    public ModelType getCurrentModelType() {
+        return currentTabbable.getCurrentModelType();
     }
 }

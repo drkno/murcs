@@ -1,10 +1,8 @@
 package sws.murcs.debug.errorreporting;
 
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
@@ -140,7 +138,7 @@ public class ErrorReportPopup {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        swapForMDElements();
+        insertMDCheckBox();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this);
         window.register();
@@ -152,18 +150,15 @@ public class ErrorReportPopup {
     /**
      * Adds a material design checkBox to the form.
      */
-    private void swapForMDElements() {
+    private void insertMDCheckBox() {
         checkBox = new MaterialDesignCheckBox();
         checkBox.setSelected(true);
         screenshotLabel.setGraphic(checkBox);
         screenshotLabel.setContentDisplay(ContentDisplay.LEFT);
-        screenshotLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                checkBox.fireEvent(event);
-                checkBox.fire();
-                event.consume();
-            }
+        screenshotLabel.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            checkBox.fireEvent(event);
+            checkBox.fire();
+            event.consume();
         });
     }
 
@@ -210,6 +205,7 @@ public class ErrorReportPopup {
                         + "Please act responsibly.");
                 break;
             default:
+                break;
         }
     }
 

@@ -293,7 +293,6 @@ public final class ErrorReporter {
             reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             // encoding is hard coded so can never happen.
-            e.printStackTrace();
         }
 
         reportFields.put("misc", miscData);

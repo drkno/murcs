@@ -18,6 +18,7 @@ import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
@@ -114,6 +115,10 @@ public class PersonEditor extends GenericEditor<Person> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     @Override
@@ -238,6 +243,8 @@ public class PersonEditor extends GenericEditor<Person> {
         pane.add(removeButton, 1, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         return pane;
     }
 }

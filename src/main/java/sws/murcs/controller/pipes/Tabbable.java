@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.ToolBarController;
+import sws.murcs.model.ModelType;
 
 /**
  * Indicates the object can be
@@ -64,4 +65,10 @@ public interface Tabbable extends Navigable, ModelManagable{
      * @return Whether the sidebar can be toggled.
      */
     boolean canToggleSideBar();
+
+    /**
+     * The currently selected model type. Used by search.
+     * @return The currently selected model type
+     */
+    ModelType getCurrentModelType();
 }

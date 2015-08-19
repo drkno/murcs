@@ -13,11 +13,6 @@ import java.util.regex.PatternSyntaxException;
 public class SearchToken extends Token {
 
     /**
-     * Maximum length of a search result as returned result text.
-     */
-    private static final int SEARCH_RESULT_MAX_LENGTH = 50;
-
-    /**
      * New search tokens will be case insensitive?
      */
     private static boolean caseInsensitive = true;
@@ -86,9 +81,12 @@ public class SearchToken extends Token {
      * @return the regular expression equivalent.
      */
     private String wildcardToRegex(final String wildcardExpression) {
+        // escape expression
         String regex = SPECIAL_REGEX_CHARS.matcher(wildcardExpression).replaceAll("\\\\$0");
+        // convert * to .*
         regex = regex.replaceAll("(?<=(^|[^\\\\]))(\\\\)(\\*)", ".*");
         regex = regex.replaceAll("(\\\\){2}(\\*)", "\\*");
+        // convert ? to .
         regex = regex.replaceAll("(?<=(^|[^\\\\]))(\\\\)(\\?)", ".");
         regex = regex.replaceAll("(\\\\){2}(\\?)", "\\?");
         return regex;
@@ -102,32 +100,9 @@ public class SearchToken extends Token {
         Matcher matcher = searchRegex.matcher(input);
         if (matcher.find()) {
             MatchResult result = matcher.toMatchResult();
-            String str = input;
             int start = result.start();
             int end = result.end();
-            if (end - start < SEARCH_RESULT_MAX_LENGTH) {
-                int difference = SEARCH_RESULT_MAX_LENGTH - (end - start);
-                if (start != 0 && end != str.length()) {
-                    difference /= 2;
-                    start -= difference;
-                    end += difference;
-                }
-                else if (start != 0) {
-                    start -= difference;
-                }
-                else if (end != str.length()) {
-                    end += difference;
-                }
-
-                if (start < 0) {
-                    start = 0;
-                }
-                if (end > str.length()) {
-                    end = str.length();
-                }
-                str = input.substring(start, end);
-            }
-            return new SearchResult(str);
+            return new SearchResult(start, end, input);
         }
         return null;
     }

@@ -130,6 +130,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     @Override

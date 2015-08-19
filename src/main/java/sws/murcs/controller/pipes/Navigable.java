@@ -1,6 +1,7 @@
 package sws.murcs.controller.pipes;
 
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 
 /**
  * An interface that provides methods for going back and

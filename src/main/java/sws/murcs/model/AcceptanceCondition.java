@@ -46,4 +46,9 @@ public class AcceptanceCondition extends TrackableObject implements Serializable
         condition = newCondition;
         commit("edit condition");
     }
+
+    @Override
+    public final String toString() {
+        return getCondition();
+    }
 }

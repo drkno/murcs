@@ -45,7 +45,6 @@ public class Window {
          parentWindow = pParentWindow;
      }
 
-
     /**
      * Gets the stage of the window.
      * @return The stage.
@@ -74,7 +73,8 @@ public class Window {
      * Override for when we don't want to pass a callback.
      */
     public final void close() {
-        close(() -> { });
+        stage.close();
+        App.getWindowManager().removeWindow(this);
     }
 
     /**
@@ -83,8 +83,8 @@ public class Window {
      */
     public final void close(final GenericCallback callback) {
         stage.close();
-        callback.call();
         App.getWindowManager().removeWindow(this);
+        callback.call();
     }
 
     /**
@@ -122,6 +122,7 @@ public class Window {
 
     /**
      * Brings the parentWindow to the front.
+     * Requires that the parent window is set.
      */
     public final void parentToFront() {
         if (parentWindow != null) {

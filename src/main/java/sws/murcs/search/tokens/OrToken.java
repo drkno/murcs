@@ -33,12 +33,18 @@ public class OrToken extends Token {
 
     @Override
     public final SearchResult matches(final String query) {
+        SearchResult searchResults = null;
         for (Token token : tokenCollection) {
             SearchResult searchResult = token.matches(query);
             if (searchResult != null) {
-                return searchResult;
+                if (searchResults == null) {
+                    searchResults = searchResult;
+                }
+                else {
+                    searchResults.addMatch(searchResult, query);
+                }
             }
         }
-        return null;
+        return searchResults;
     }
 }

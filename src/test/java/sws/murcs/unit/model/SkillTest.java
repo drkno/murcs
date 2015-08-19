@@ -35,17 +35,17 @@ public class SkillTest {
     }
 
     @Test (expected = Exception.class)
-    public void setShortNameTest1() throws Exception{
+    public void setShortNameTest1() throws Exception {
         skill.setShortName(null);
     }
 
     @Test(expected = Exception.class)
-    public void setShortNameTest2() throws Exception{
+    public void setShortNameTest2() throws Exception {
         skill.setShortName("");
     }
 
     @Test(expected = Exception.class)
-    public void setShortNameTest3() throws Exception{
+    public void setShortNameTest3() throws Exception {
         skill.setShortName("   \n\r\t");
     }
 
