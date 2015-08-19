@@ -251,7 +251,7 @@ public class GridManager extends Group {
      * Allows using tiles from the map at some location, whether they
      * are null or not.
      * @param loc location of the tile
-     * @return an Optional<Tile> containing null or a valid tile
+     * @return an optoinal containing null or a valid tile
      */
     private Optional<Tile> optionalTile(final Location loc) {
         return Optional.ofNullable(grid.get(loc));
