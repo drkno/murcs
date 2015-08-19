@@ -12,6 +12,8 @@ import sws.murcs.controller.controls.customGrid.GridController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Organisation;
 
+import java.util.Base64;
+
 /**
  * About window controller.
  */
@@ -58,24 +60,24 @@ public class AboutController {
     private Window parentWindow;
 
     /**
-     * Current index for the key combination.
+     * Current index the hashes.
      */
-    private int combinationIndex = 0;
+    private int hashIndex = 0;
 
     /**
-     * The list of key codes for the combination.
+     * The list hashes, because Java doesn't like these as strings for some reason.
      */
-    private KeyCode[] combination = new KeyCode[]{
-            KeyCode.UP,
-            KeyCode.UP,
-            KeyCode.DOWN,
-            KeyCode.DOWN,
-            KeyCode.LEFT,
-            KeyCode.RIGHT,
-            KeyCode.LEFT,
-            KeyCode.RIGHT,
-            KeyCode.B,
-            KeyCode.A
+    private String[] hashes = new String[]{
+            "VVA=",
+            "VVA=",
+            "RE9XTg==",
+            "RE9XTg==",
+            "TEVGVA==",
+            "UklHSFQ=",
+            "TEVGVA==",
+            "UklHSFQ=",
+            "Qg==",
+            "QQ=="
     };
 
     /**
@@ -128,15 +130,17 @@ public class AboutController {
         window = new Window(stage, this, parentWindow);
         window.register();
         stage.getScene().setOnKeyPressed(event -> {
-            if (event.getCode().equals(combination[combinationIndex])) {
-                combinationIndex++;
-                if (combinationIndex == combination.length) {
-                    combinationIndex = 0;
+            System.out.println(event.getCode().getName().toUpperCase());
+            if (event.getCode().getName().toUpperCase()
+                    .equals(new String(Base64.getDecoder().decode(hashes[hashIndex])))) {
+                hashIndex++;
+                if (hashIndex == hashes.length) {
+                    hashIndex = 0;
                     createCustomGrid();
                 }
             }
             else {
-                combinationIndex = 0;
+                hashIndex = 0;
             }
         });
     }

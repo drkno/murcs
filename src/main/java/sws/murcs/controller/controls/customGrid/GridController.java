@@ -23,7 +23,7 @@ public class GridController {
     /**
      * Title for the grid, has to be like this to avoid problems with serialisation in JavaFx.
      */
-    public static final String TITLE_HASH = "MjA0OA==";
+    public static final String TITLE_HASHCODE = "MjA0OA==";
 
     /**
      * The min width of the gird.
@@ -47,7 +47,7 @@ public class GridController {
 
         int margin = CustomGridPane.getMargin();
 
-        primaryStage.setTitle(new String(Base64.getDecoder().decode(TITLE_HASH)));
+        primaryStage.setTitle(new String(Base64.getDecoder().decode(TITLE_HASHCODE)));
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(MIN_WIDTH / 2d);
         primaryStage.setMinHeight(MIN_HEIGHT / 2d);

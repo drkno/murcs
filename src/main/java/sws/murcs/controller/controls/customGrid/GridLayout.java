@@ -44,7 +44,7 @@ public class GridLayout extends Group {
     /**
      * The width of the borders.
      */
-    private static final int BORDER_WIDTH = (14 + 2) / 2;
+    private static final int BORDER_WIDTH = 8;
 
     /**
      * The height of the top of the grid.
@@ -112,7 +112,7 @@ public class GridLayout extends Group {
     private final BooleanProperty openGrid = new SimpleBooleanProperty(false);
 
     /**
-     * Current time used for some of the controls within the grid.
+     * Current time used for some testing of performance within the grid.
      */
     private LocalTime time;
 
@@ -122,7 +122,7 @@ public class GridLayout extends Group {
     private Timeline timer;
 
     /**
-     * String for the time when it is used in the grid.
+     * String for the time when it is used in the grid, mainly for performance testing.
      */
     private final StringProperty clock = new SimpleStringProperty("00:00:00");
 
@@ -256,7 +256,7 @@ public class GridLayout extends Group {
      * Create labels on the grid.
      */
     private void createLabels() {
-        Label lblTitle = new Label(new String(Base64.getDecoder().decode(GridController.TITLE_HASH)));
+        Label lblTitle = new Label(new String(Base64.getDecoder().decode(GridController.TITLE_HASHCODE)));
         lblTitle.getStyleClass().addAll("grid-label", "grid-title-2");
         HBox hFill = new HBox();
         HBox.setHgrow(hFill, Priority.ALWAYS);
@@ -560,6 +560,7 @@ public class GridLayout extends Group {
         timerPause.setCycleCount(Animation.INDEFINITE);
 
         gridSuccessLoadingProperty.addListener(closedListener);
+        //These strings are this long because they're a hash because of a serialisation problem with Java.
         closeGridProperty.addListener(new Overlay(new String(Base64.getDecoder().decode("R2FtZSBvdmVyIQ==")),
                 "", bTry, null, "grid-overlay-over", "grid-lblOver", false));
         retryGridLoadProperty.addListener(new Overlay("Try Again?",

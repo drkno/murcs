@@ -81,7 +81,8 @@ public class CustomGridPane extends StackPane {
     }
 
     /**
-     * Adds swipe handlers to a given node.
+     * Adds swipe handlers to a given node. Swipe is for touch based interfaces. This is probably going a bit far
+     * but it was fun to do.
      * @param node The node that the swipe handlers are being added to.
      */
     private void addSwipeHandlers(final Node node) {
