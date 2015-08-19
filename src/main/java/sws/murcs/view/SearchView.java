@@ -80,12 +80,4 @@ public final class SearchView {
                 .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         controller.selectText();
     }
-
-    /**
-     * Sets the navigation manager on the search view.
-     * @param navigationManager The navigation manager
-     */
-    public void setNavigationManager(final Navigable navigationManager) {
-        controller.setNavigationManager(navigationManager);
-    }
 }

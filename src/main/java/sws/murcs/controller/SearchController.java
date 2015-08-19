@@ -45,7 +45,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
-import sws.murcs.view.App;
 
 /**
  * Controller for search UI.
@@ -121,13 +120,6 @@ public class SearchController {
      */
     @FXML
     private GridPane resultsPane, searchPane;
-
-    /**
-     * The navigation manager for the active tab. I'm not sure if this is
-     * expected behaviour (try and select the item in the active tab). Alternatives
-     * might be to open in a new tab.
-     */
-    private Navigable navigationManager;
 
     /**
      * The seach commands pane which embeds in the search popover.
@@ -243,7 +235,7 @@ public class SearchController {
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
-            navigationManager.navigateTo(foundItems.getSelectionModel().getSelectedItem().getModel());
+            App.getMainController().navigateToNewTab(foundItems.getSelectionModel().getSelectedItem().getModel());
             popOverWindow.hide();
         };
 
@@ -633,21 +625,5 @@ public class SearchController {
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
-    }
-
-    /**
-     * Gets the navigation manager used by the search window
-     * @return The navigation manager
-     */
-    public Navigable getNavigationManager() {
-        return navigationManager;
-    }
-
-    /**
-     * Sets the navigation manager for the Search UI
-     * @param navigationManager The new navigation manager.
-     */
-    public void setNavigationManager(final Navigable navigationManager) {
-        this.navigationManager = navigationManager;
     }
 }

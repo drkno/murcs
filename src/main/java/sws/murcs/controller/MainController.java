@@ -1,6 +1,5 @@
 package sws.murcs.controller;
 
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +16,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -29,7 +27,6 @@ import javafx.stage.Stage;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPane;
 import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.AddableDnDTabPaneSkin;
-import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.Tabbable;
@@ -106,7 +103,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private ToolBarController toolBarController;
 
     /**
-     * The current tab controller
+     * The current tab controller.
      */
     private Tabbable currentTabbable;
 
@@ -160,9 +157,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Builds a new DnDTabPane and returns it's container
+     * Builds a new DnDTabPane and returns it's container.
      * @return The container of the DnDTabPane
      */
+    @SuppressWarnings("CheckStyle-IDEA")
     private Pane buildDnDTabPane() {
         DnDTabPane tabPane = new DnDTabPane();
 
@@ -214,7 +212,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Creates a new window, at the specified position
+     * Creates a new window, at the specified position.
      * @param mousePos The mouse position
      * @param tab The tab
      */
@@ -358,6 +356,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     /**
      * Adds a model view tab to the main pane.
      * @param tabPane The pane to add the tab to
+     * @return The newly created tabbable
      */
     public ModelViewController addModelViewTab(final TabPane tabPane) {
         return addModelViewTab(tabPane, true);
@@ -367,6 +366,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * Adds a model view tab to the main pane.
      * @param tabPane The pane to add the tab to
      * @param addToPane Indicates whether the tab should be added to the pane
+     * @return The newly created model controller.
      */
     public ModelViewController addModelViewTab(final TabPane tabPane, final boolean addToPane) {
         return (ModelViewController) addTab("/sws/murcs/ModelView.fxml", tabPane, addToPane);
@@ -377,8 +377,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param fxmlPath The path for the fxml to load
      * @param tabPane The tabpane to add the tab to
      * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
+     * @return The newly created tabbable
      */
-    public Tabbable addTab(final String fxmlPath, final TabPane tabPane, boolean addToPane) {
+    @SuppressWarnings("CheckStyle-IDEA")
+    public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
@@ -460,7 +462,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param event Clicking the search button on the toolbar.
      */
     public final void search(final ActionEvent event) {
-        SearchView.get().setNavigationManager(this);
         SearchView.get().show(mainTabPane.getScene().getWindow());
     }
 
@@ -779,7 +780,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     /**
-     * Toggles a the side bar list
+     * Toggles a the side bar list.
      * @param event The event information
      */
     @FXML
