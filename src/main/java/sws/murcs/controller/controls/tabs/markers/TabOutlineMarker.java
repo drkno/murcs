@@ -171,7 +171,7 @@ public final class TabOutlineMarker extends Group {
 	 * @param fill
 	 *            the fill
 	 */
-	public void setFill(Paint fill) {
+	public void setFill(final Paint fill) {
 		fillProperty().set(fill);
 	}
 
@@ -192,16 +192,17 @@ public final class TabOutlineMarker extends Group {
 	/**
 	 * The CSS meta data.
 	 */
-	private static final CssMetaData<TabOutlineMarker, Paint> FILL = new CssMetaData<TabOutlineMarker, Paint>("-fx-fill", PaintConverter.getInstance(), Color.ORANGE) { //$NON-NLS-1$
+	private static final CssMetaData<TabOutlineMarker, Paint> FILL =
+			new CssMetaData<TabOutlineMarker, Paint>("-fx-fill", PaintConverter.getInstance(), Color.ORANGE) { //$NON-NLS-1$
 
 		@Override
-		public boolean isSettable(TabOutlineMarker node) {
+		public boolean isSettable(final TabOutlineMarker node) {
 			return !node.fillProperty().isBound();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public StyleableProperty<Paint> getStyleableProperty(TabOutlineMarker node) {
+		public StyleableProperty<Paint> getStyleableProperty(final TabOutlineMarker node) {
 			return (StyleableProperty<Paint>) node.fillProperty();
 		}
 
