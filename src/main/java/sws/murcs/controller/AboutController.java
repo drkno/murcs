@@ -130,7 +130,6 @@ public class AboutController {
         window = new Window(stage, this, parentWindow);
         window.register();
         stage.getScene().setOnKeyPressed(event -> {
-            System.out.println(event.getCode().getName().toUpperCase());
             if (event.getCode().getName().toUpperCase()
                     .equals(new String(Base64.getDecoder().decode(hashes[hashIndex])))) {
                 hashIndex++;
