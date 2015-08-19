@@ -334,7 +334,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
                 () -> redo(null));
 
-        //TODO Work out routing for menu items
         accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
                 () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
