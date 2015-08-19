@@ -6,9 +6,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import sws.murcs.controller.controls.customGrid.GridController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Organisation;
+
+import java.util.Base64;
 
 /**
  * About window controller.
@@ -39,6 +43,7 @@ public class AboutController {
     @FXML
     private Label messageTitleLabel;
 
+
     /**
      * The about window.
      */
@@ -53,6 +58,27 @@ public class AboutController {
      * The parent of the about window.
      */
     private Window parentWindow;
+
+    /**
+     * Current index the hashes.
+     */
+    private int hashIndex = 0;
+
+    /**
+     * The list hashes, because Java doesn't like these as strings for some reason.
+     */
+    private String[] hashes = new String[]{
+            "VVA=",
+            "VVA=",
+            "RE9XTg==",
+            "RE9XTg==",
+            "TEVGVA==",
+            "UklHSFQ=",
+            "TEVGVA==",
+            "UklHSFQ=",
+            "Qg==",
+            "QQ=="
+    };
 
     /**
      * Closes the About window.
@@ -83,6 +109,14 @@ public class AboutController {
     }
 
     /**
+     * Creates a new custom grid.
+     */
+    private void createCustomGrid() {
+        GridController grid = new GridController();
+        grid.show();
+    }
+
+    /**
      * Shows the about window.
      */
     public final void show() {
@@ -95,5 +129,18 @@ public class AboutController {
     public final void setUpWindow() {
         window = new Window(stage, this, parentWindow);
         window.register();
+        stage.getScene().setOnKeyPressed(event -> {
+            if (event.getCode().getName().toUpperCase()
+                    .equals(new String(Base64.getDecoder().decode(hashes[hashIndex])))) {
+                hashIndex++;
+                if (hashIndex == hashes.length) {
+                    hashIndex = 0;
+                    createCustomGrid();
+                }
+            }
+            else {
+                hashIndex = 0;
+            }
+        });
     }
 }
