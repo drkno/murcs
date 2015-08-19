@@ -102,7 +102,6 @@ public class ProjectEditor extends GenericEditor<Project> {
 
     @Override
     public final void loadObject() {
-        // todo decouple from model
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
         String modelShortName = getModel().getShortName();
