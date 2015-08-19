@@ -6,7 +6,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import sws.murcs.controller.controls.customGrid.GridController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.model.Organisation;
 
@@ -39,6 +41,7 @@ public class AboutController {
     @FXML
     private Label messageTitleLabel;
 
+
     /**
      * The about window.
      */
@@ -53,6 +56,27 @@ public class AboutController {
      * The parent of the about window.
      */
     private Window parentWindow;
+
+    /**
+     * Current index for the key combination.
+     */
+    private int combinationIndex = 0;
+
+    /**
+     * The list of key codes for the combination.
+     */
+    private KeyCode[] combination = new KeyCode[]{
+            KeyCode.UP,
+            KeyCode.UP,
+            KeyCode.DOWN,
+            KeyCode.DOWN,
+            KeyCode.LEFT,
+            KeyCode.RIGHT,
+            KeyCode.LEFT,
+            KeyCode.RIGHT,
+            KeyCode.B,
+            KeyCode.A
+    };
 
     /**
      * Closes the About window.
@@ -83,6 +107,14 @@ public class AboutController {
     }
 
     /**
+     * Creates a new custom grid.
+     */
+    private void createCustomGrid() {
+        GridController grid = new GridController();
+        grid.show();
+    }
+
+    /**
      * Shows the about window.
      */
     public final void show() {
@@ -95,5 +127,17 @@ public class AboutController {
     public final void setUpWindow() {
         window = new Window(stage, this, parentWindow);
         window.register();
+        stage.getScene().setOnKeyPressed(event -> {
+            if (event.getCode().equals(combination[combinationIndex])) {
+                combinationIndex++;
+                if (combinationIndex == combination.length) {
+                    combinationIndex = 0;
+                    createCustomGrid();
+                }
+            }
+            else {
+                combinationIndex = 0;
+            }
+        });
     }
 }
