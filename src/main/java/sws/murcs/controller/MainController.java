@@ -392,7 +392,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             Tab tabNode = new Tab();
             tabNode.setClosable(true);
             tabNode.setOnClosed(e -> {
-                Tab t = (Tab)e.getSource();
+                Tab t = (Tab) e.getSource();
                 Tabbable tabbable = getTabbable(t);
                 tabs.remove(tabbable);
             });

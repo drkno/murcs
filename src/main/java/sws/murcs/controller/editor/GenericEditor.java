@@ -33,10 +33,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * The name for the default section of the form.
      */
     private final String defaultSectionName = "default";
-    
+
     /**
      * A method of routing navigation events to the controller that owns
-     * this editor
+     * this editor.
      */
     private Navigable navigationManager;
 

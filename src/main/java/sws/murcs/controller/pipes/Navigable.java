@@ -1,11 +1,10 @@
 package sws.murcs.controller.pipes;
 
 import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
 
 /**
  * An interface that provides methods for going back and
- * forward
+ * forward.
  */
 public interface Navigable {
     /**
@@ -20,11 +19,13 @@ public interface Navigable {
 
     /**
      * Indicates whether the navigable can go forward.
+     * @return Whether forward navigation is possible
      */
     boolean canGoForward();
 
     /**
      * Indicates whether the navigable can go back.
+     * @return Whether backward navigation is possible
      */
     boolean canGoBack();
 

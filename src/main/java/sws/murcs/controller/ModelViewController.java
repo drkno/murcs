@@ -65,7 +65,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private GridPane contentPane;
 
     /**
-     * The Vbox containing the display list
+     * The Vbox containing the display list.
      */
     @FXML
     private VBox vBoxSideDisplay;
@@ -81,7 +81,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private EditorPane editorPane;
 
     /***
-     * The toolbar associated with this controller
+     * The toolbar associated with this controller.
      */
     private ToolBarController toolBarController;
 
@@ -291,6 +291,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         popup.show();
     }
 
+    @SuppressWarnings("all")
     @Override
     public final void selectItem(Model parameter) {
         ModelType type;
@@ -351,7 +352,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     /**
-     * The root of the current form
+     * The root of the current form.
      * @return The root node
      */
     @Override

@@ -207,7 +207,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				db.setDragView(image, image.getWidth() * 0.5, 0);
 
 				ClipboardContent content = new ClipboardContent();
-				String data = efx_getClipboardContent(t);
+				String data = efxGetClipboardContent(t);
 				if (data != null) {
 					content.put(TAB_MOVE, data);
 				}
@@ -409,7 +409,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			return;
 		}
 
-		efx_dragFinished(tab);
+		efxDragFinished(tab);
 	}
 
 	/**
@@ -589,17 +589,25 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	private void efx_dragFinished(Tab tab) {
+	/**
+	 * Handles a drag finishing for a specific tab.
+	 * @param tab The tab
+	 */
+	private void efxDragFinished(final Tab tab) {
 		if (this.dragFinishedConsumer != null) {
 			this.dragFinishedConsumer.accept(tab);
 		}
 	}
 
-	private String efx_getClipboardContent(Tab t) {
+	/**
+	 * Converts a tab into clipboard content.
+	 * @param t The tab
+	 * @return The clipboard content
+	 */
+	private String efxGetClipboardContent(final Tab t) {
 		if (this.clipboardDataFunction != null) {
 			return this.clipboardDataFunction.apply(t);
 		}
 		return System.identityHashCode(t) + ""; //$NON-NLS-1$
 	}
-
 }
