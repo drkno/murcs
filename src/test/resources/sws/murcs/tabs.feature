@@ -1,3 +1,7 @@
+# Mrs. Richards: Now, listen to me. I'm not satisfied, but I've decided to stay here; however, I shall expect a reduction.
+# Basil Fawlty: Why? Because Krakatoa's not erupting at the moment?
+# Mrs. Richards: No, because the room is cold, the bath is too small, the view is invisible, and the radio doesn't work.
+# Basil Fawlty: No, the radio works. You don't.
 @Manual
 Feature: Working with tabs
   # Acceptance tests for managing tabs
