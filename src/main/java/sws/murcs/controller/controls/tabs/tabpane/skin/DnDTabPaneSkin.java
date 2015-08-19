@@ -81,6 +81,9 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		hookTabFolderSkin();
     }
 
+	/**
+	 * Adds the relevant listeners to the tab pane to allow drag and drop.
+	 */
 	@SuppressWarnings("unchecked")
 	private void hookTabFolderSkin() {
 		try {
@@ -94,7 +97,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			fHeadersRegion.setAccessible(true);
 
 			Pane headersRegion = (StackPane) fHeadersRegion.get(tabHeaderArea);
-			EventHandler<MouseEvent> handler = this::tabPane_handleDragStart;
+			EventHandler<MouseEvent> handler = this::tabPaneHandleDragStart;
 			EventHandler<DragEvent> handlerFinished = this::tabPane_handleDragDone;
 
 			for (Node tabHeaderSkin : headersRegion.getChildren()) {
@@ -123,7 +126,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				}
 			});
 
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_OVER, (e) -> tabPane_handleDragOver(tabHeaderArea, headersRegion, e));
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_OVER, (e) -> tabPaneHandleDragOver(tabHeaderArea, headersRegion, e));
 			tabHeaderArea.addEventHandler(DragEvent.DRAG_DROPPED, (e) -> tabPane_handleDragDropped(tabHeaderArea, headersRegion, e));
 			tabHeaderArea.addEventHandler(DragEvent.DRAG_EXITED, this::tabPane_handleDragDone);
 
@@ -153,11 +156,16 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	void tabPane_handleDragStart(MouseEvent event) {
+	/**
+	 * A method that handles a drag starting on the tab header.
+	 * @param event The mouse event
+	 */
+	@SuppressWarnings("all")
+	void tabPaneHandleDragStart(final MouseEvent event) {
 		try {
-			Field f_tab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
-			f_tab.setAccessible(true);
-			Tab t = (Tab) f_tab.get(event.getSource());
+			Field fTab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
+			fTab.setAccessible(true);
+			Tab t = (Tab) fTab.get(event.getSource());
             if (!validateDrag(t)) {
                 return;
             }
@@ -211,8 +219,14 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
+	/**
+	 * Handles a drag event that goes over the tab header area.
+	 * @param tabHeaderArea The tab header area
+	 * @param headersRegion The region containing the tab headers
+	 * @param event The drag event.
+	 */
 	@SuppressWarnings("all")
-	void tabPane_handleDragOver(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
+	void tabPaneHandleDragOver(final Pane tabHeaderArea, final Pane headersRegion, final DragEvent event) {
 		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
@@ -281,7 +295,6 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 
 				efx_dragFeedback(draggedTab, tab, b, type);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
