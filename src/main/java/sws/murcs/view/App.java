@@ -89,7 +89,13 @@ public class App extends Application {
         return shortcutManager;
     }
 
-    public static MainController getMainController() { return mainController;  }
+    /**
+     * Gets the main controller for the App.
+     * @return The main controller
+     */
+    public static MainController getMainController() {
+        return mainController;
+    }
 
     /**
      * Gets the window manager.
@@ -182,6 +188,7 @@ public class App extends Application {
     /**
      * Creates a new MainWindow.
      * @param window The stage to load the window onto
+     * @return The main controller for the window
      */
     public static MainController createWindow(final Stage window) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {

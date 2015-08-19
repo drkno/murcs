@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import java.util.function.Predicate;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
@@ -39,28 +38,45 @@ import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.*;
  * A lightly modified version of the class found here:
  * https://github.com/sibvisions/javafx.DndTabPane
  *
- * Skin for TabPane which support DnD
+ * Skin for TabPane which support DnD.
  */
 public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
-	private static Tab DRAGGED_TAB;
 	/**
-	 * Custom data format for move data
+	 * The Dragged Tab.
+	 */
+	private static Tab draggedTab;
+
+	/**
+	 * Custom data format for move data.
 	 */
 	public static final DataFormat TAB_MOVE = new DataFormat("DnDTabPane:tabMove"); //$NON-NLS-1$
 
+	/**
+	 * A none enum.
+	 */
 	private Object noneEnum;
+
+	/**
+	 * The open animation.
+	 */
 	private StyleableProperty<Object> openAnimation;
+
+	/**
+	 * The close animation.
+	 */
 	private StyleableProperty<Object> closeAnimation;
 
+	/**
+	 * The header area of the tab pane.
+	 */
     private Pane tabHeaderArea;
 
 	/**
-	 * Create a new skin
-	 * 
+	 * Create a new skin.
 	 * @param tabPane
 	 *            the tab pane
 	 */
-	public DnDTabPaneSkin(TabPane tabPane) {
+	public DnDTabPaneSkin(final TabPane tabPane) {
 		super(tabPane);
 		hookTabFolderSkin();
     }
@@ -68,16 +84,16 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	@SuppressWarnings("unchecked")
 	private void hookTabFolderSkin() {
 		try {
-			Field f_tabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
-			f_tabHeaderArea.setAccessible(true);
+			Field fTabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
+			fTabHeaderArea.setAccessible(true);
 
-			tabHeaderArea = (StackPane) f_tabHeaderArea.get(this);
+			tabHeaderArea = (StackPane) fTabHeaderArea.get(this);
 			tabHeaderArea.setOnDragOver((e) -> e.consume());
 
-			Field f_headersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
-			f_headersRegion.setAccessible(true);
+			Field fHeadersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
+			fHeadersRegion.setAccessible(true);
 
-			Pane headersRegion = (StackPane) f_headersRegion.get(tabHeaderArea);
+			Pane headersRegion = (StackPane) fHeadersRegion.get(tabHeaderArea);
 			EventHandler<MouseEvent> handler = this::tabPane_handleDragStart;
 			EventHandler<DragEvent> handlerFinished = this::tabPane_handleDragDone;
 
@@ -147,7 +163,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
             }
 
 			if (t != null && efx_canStartDrag(t)) {
-				DRAGGED_TAB = t;
+				draggedTab = t;
 				Node node = (Node) event.getSource();
 				Dragboard db = node.startDragAndDrop(TransferMode.MOVE);
 				node.setOnDragDone(e -> {
@@ -197,7 +213,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 
 	@SuppressWarnings("all")
 	void tabPane_handleDragOver(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
-		Tab draggedTab = DRAGGED_TAB;
+		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
 		}
@@ -277,7 +293,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 
 	@SuppressWarnings("all")
 	void tabPane_handleDragDropped(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
-		Tab draggedTab = DRAGGED_TAB;
+		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
 		}
@@ -362,7 +378,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	}
 
 	void tabPane_handleDragDone(DragEvent event) {
-		Tab tab = DRAGGED_TAB;
+		Tab tab = draggedTab;
 		if (tab == null) {
 			return;
 		}

@@ -1,9 +1,7 @@
 package sws.murcs.controller.controls.cells;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import sws.murcs.controller.MainController;
 import sws.murcs.model.Model;
 
 /**

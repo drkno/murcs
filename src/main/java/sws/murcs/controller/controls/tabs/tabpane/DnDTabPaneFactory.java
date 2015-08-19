@@ -222,8 +222,9 @@ public final class DnDTabPaneFactory {
 
 		double ratio = data.bounds.getHeight() / h;
 
-        //noinspection CheckStyle-IDEA
+		//CHECKSTYLE: OFF
         ratio += 0.1;
+		//CHECKSTYLE: ON
         marker.setScaleX(ratio);
 		marker.setScaleY(ratio);
 
@@ -299,6 +300,7 @@ public final class DnDTabPaneFactory {
     /**
      * A class representing marker feedback.
      */
+	@SuppressWarnings("CheckStyle")
 	private abstract static class MarkerFeedback {
         /**
          * The feedback data.
@@ -435,6 +437,7 @@ public final class DnDTabPaneFactory {
 
 	}
 
+	//CHECKSTYLE: OFF
 	/**
 	 * The drop data.
 	 */
@@ -467,6 +470,7 @@ public final class DnDTabPaneFactory {
 			this.dropType = dropType;
 		}
 	}
+	//CHECKSTYLE: ON
 
 	/**
 	 * Setup of the drag and drop.
@@ -477,34 +481,34 @@ public final class DnDTabPaneFactory {
 		 * @param startFunction
 		 *            the function
 		 */
-		public void setStartFunction(Function<Tab, Boolean> startFunction);
+		void setStartFunction(Function<Tab, Boolean> startFunction);
 
 		/**
 		 * Consumer called to handle the finishing of the drag process.
 		 * @param dragFinishedConsumer
 		 *            the consumer
 		 */
-		public void setDragFinishedConsumer(Consumer<Tab> dragFinishedConsumer);
+		void setDragFinishedConsumer(Consumer<Tab> dragFinishedConsumer);
 
 		/**
 		 * Consumer called to present drag feedback.
 		 * @param feedbackConsumer
 		 *            the consumer to call
 		 */
-		public void setFeedbackConsumer(Consumer<FeedbackData> feedbackConsumer);
+		void setFeedbackConsumer(Consumer<FeedbackData> feedbackConsumer);
 
 		/**
-		 * Consumer called when the drop has to be handled
+		 * Consumer called when the drop has to be handled.
 		 * @param dropConsumer
 		 *            the consumer
 		 */
-		public void setDropConsumer(Consumer<DroppedData> dropConsumer);
+		void setDropConsumer(Consumer<DroppedData> dropConsumer);
 
 		/**
-		 * Function to translate the tab content into clipboard content
+		 * Function to translate the tab content into clipboard content.
 		 * @param clipboardDataFunction
 		 *            the function
 		 */
-		public void setClipboardDataFunction(Function<Tab, String> clipboardDataFunction);
+		void setClipboardDataFunction(Function<Tab, String> clipboardDataFunction);
 	}
 }
