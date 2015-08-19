@@ -98,7 +98,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 
 			Pane headersRegion = (StackPane) fHeadersRegion.get(tabHeaderArea);
 			EventHandler<MouseEvent> handler = this::tabPaneHandleDragStart;
-			EventHandler<DragEvent> handlerFinished = this::tabPane_handleDragDone;
+			EventHandler<DragEvent> handlerFinished = this::tabPaneHandleDragDone;
 
 			for (Node tabHeaderSkin : headersRegion.getChildren()) {
 				tabHeaderSkin.addEventHandler(MouseEvent.DRAG_DETECTED, handler);
@@ -127,8 +127,8 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 			});
 
 			tabHeaderArea.addEventHandler(DragEvent.DRAG_OVER, (e) -> tabPaneHandleDragOver(tabHeaderArea, headersRegion, e));
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_DROPPED, (e) -> tabPane_handleDragDropped(tabHeaderArea, headersRegion, e));
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_EXITED, this::tabPane_handleDragDone);
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_DROPPED, (e) -> tabPaneHandleDragDropped(tabHeaderArea, headersRegion, e));
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_EXITED, this::tabPaneHandleDragDone);
 
 			Field field = TabPaneSkin.class.getDeclaredField("openTabAnimation"); //$NON-NLS-1$
 			field.setAccessible(true);
@@ -304,8 +304,14 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
+	/**
+	 * Handles a drop event on the tab header area.
+	 * @param tabHeaderArea The header area
+	 * @param headersRegion The region containing the tab headers
+	 * @param event The drag event
+	 */
 	@SuppressWarnings("all")
-	void tabPane_handleDragDropped(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
+	void tabPaneHandleDragDropped(final Pane tabHeaderArea, final Pane headersRegion, final DragEvent event) {
 		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
@@ -344,16 +350,19 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				if( tab == null ) {
 					event.setDropCompleted(false);
 					return;
-				} else if (tab == draggedTab) {
+				}
+				else if (tab == draggedTab) {
 					noMove = true;
-				} else if (type == DropType.BEFORE) {
+				}
+				else if (type == DropType.BEFORE) {
 					int idx = getSkinnable().getTabs().indexOf(tab);
 					if (idx > 0) {
 						if (getSkinnable().getTabs().get(idx - 1) == draggedTab) {
 							noMove = true;
 						}
 					}
-				} else {
+				}
+				else {
 					int idx = getSkinnable().getTabs().indexOf(tab);
 
 					if (idx + 1 < getSkinnable().getTabs().size()) {
@@ -378,11 +387,11 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 						this.closeAnimation.applyStyle(closeOrigin, closeValue);
 					}
 
-				} else {
+				}
+				else {
 					event.setDropCompleted(false);
 				}
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -390,7 +399,11 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	void tabPane_handleDragDone(DragEvent event) {
+	/**
+	 * Handles a drag being finished.
+	 * @param event The drag event
+	 */
+	void tabPaneHandleDragDone(final DragEvent event) {
 		Tab tab = draggedTab;
 		if (tab == null) {
 			return;
@@ -399,13 +412,51 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		efx_dragFinished(tab);
 	}
 
+	/**
+	 * A function that takes a tab and returns a boolean
+	 * which indicates if a drag can be started.
+	 */
 	private Function<Tab, Boolean> startFunction;
+
+	/**
+	 * A consumer taking a tab that is fired when
+	 * a drag finished and recieves the dragged
+	 * tab as a parameter.
+	 */
 	private Consumer<Tab> dragFinishedConsumer;
+
+	/**
+	 * A list of listeners that are fired when a tab is dropped
+	 * outside of the header area.
+	 */
 	private List<DropListener> dropListeners = new ArrayList<>();
+
+	/**
+	 * A list of predicates that determine whether a tab can be dragged.
+	 * In order to be dragged all predicates must be true.
+	 */
 	private List<Predicate<Tab>> dragFilters = new ArrayList<>();
+
+	/**
+	 * A consumer of feedback that determines what the user feedback
+	 * will look like.
+	 */
 	private Consumer<FeedbackData> feedbackConsumer;
+
+	/**
+	 * A dropped data consumer, dired when a tab is dropped.
+	 */
 	private Consumer<DroppedData> dropConsumer;
+
+	/**
+	 * A consumer that is fired when the drag completes.
+	 */
 	private Consumer<DragEvent> doneConsumer;
+
+	/**
+	 * A function that converts a tab into a string
+	 * for use in the clip board.
+	 */
 	private Function<Tab, String> clipboardDataFunction;
 
 	@Override
