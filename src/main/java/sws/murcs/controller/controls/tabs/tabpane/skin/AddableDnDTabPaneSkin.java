@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -82,7 +83,12 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
      * Sets up the add button for the tab pane.
      */
     private void setupAddButton() {
+        final int minButtonHeight = 35;
+
         addTabButton = new Button("+");
+        addTabButton.setFocusTraversable(false);
+        addTabButton.setMinHeight(minButtonHeight);
+        AnchorPane.clearConstraints(addTabButton);
         addTabButton.getStyleClass().add("tab-add-button");
         addTabButton.setOnAction(e -> {
             if (tabFactory != null) {
