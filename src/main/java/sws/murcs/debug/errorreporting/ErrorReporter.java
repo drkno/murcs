@@ -15,10 +15,8 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.MainController;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
-import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
 import javax.imageio.ImageIO;
@@ -292,7 +290,8 @@ public final class ErrorReporter {
         try {
             reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            // encoding is hard coded so can never happen.
+            // encoding is hard coded so can never happen. But because check style, stack trace
+            e.printStackTrace();
         }
 
         reportFields.put("misc", miscData);
@@ -446,6 +445,7 @@ public final class ErrorReporter {
                     catch (Exception a) {
                         // the error reporter cant send, an exception was thrown within it and to
                         // top it all off we cant open a url. things are bad...
+                        e.printStackTrace();
                     }
                 });
                 link.getStyleClass().add("zero-border");

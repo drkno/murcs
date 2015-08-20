@@ -11,7 +11,7 @@ import sws.murcs.model.ModelType;
  * Indicates the object can be
  * used as a tab.
  */
-public interface Tabbable extends Navigable, ModelManagable{
+public interface Tabbable extends Navigable, ModelManagable {
     /**
      * Sets the tab that this tabbable exists within.
      * @param tab The tab
@@ -55,7 +55,7 @@ public interface Tabbable extends Navigable, ModelManagable{
     void toggleSideBar(boolean sidebar);
 
     /**
-     * Indicates whether the sidebar is currently visible
+     * Indicates whether the sidebar is currently visible.
      * @return Whether the side bar is visible
      */
     boolean sideBarVisible();

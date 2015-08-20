@@ -141,10 +141,10 @@ public enum ModelType {
      * @param modelTypeString The string to attempt to parse.
      * @return The parsed type. Null if the method fails.
      */
-    public static ModelType parseString(String modelTypeString) {
+    public static ModelType parseString(final String modelTypeString) {
         for (ModelType type : values()) {
             String asString = type.toString().toLowerCase();
-            if (modelTypeString.toLowerCase().contains(asString)){
+            if (modelTypeString.toLowerCase().contains(asString)) {
                 return type;
             }
         }

@@ -11,7 +11,6 @@ import javafx.css.Styleable;
 import javafx.css.StyleableProperty;
 import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.control.TabPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -25,12 +24,13 @@ import com.sun.javafx.css.converters.PaintConverter;
  * A slightly modified version of the "PositionModifier" class found here:
  * https://github.com/sibvisions/javafx.DndTabPane
  *
- * Marker which can be used to show an insert position {@link TabPane}
+ * Marker which can be used to show an insert position {@link javafx.scene.control.TabPane}.
  */
 public final class PositionMarker extends Group {
 	/**
-	 * Create a new marker
+	 * Create a new marker.
 	 */
+    @SuppressWarnings("all")
 	public PositionMarker() {
 		setMouseTransparent(true);
 		getStyleClass().add("position-marker"); //$NON-NLS-1$
@@ -74,14 +74,18 @@ public final class PositionMarker extends Group {
 		setEffect(new DropShadow(3, Color.BLACK));
 	}
 
+    /**
+     * The fill of the marker.
+     */
 	private final ObjectProperty<Paint> fill = new SimpleStyleableObjectProperty<>(FILL, this, "fill", Color.rgb(0, 139, 255)); //$NON-NLS-1$
 
 	/**
 	 * The property
 	 * <p>
 	 * The default color Color.rgb(0, 139, 255) <span style=
-	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255); border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255); border-width: 1px;
+     * border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @return the fill property of the marker
 	 */
@@ -93,13 +97,14 @@ public final class PositionMarker extends Group {
 	 * Set the fill of the marker
 	 * <p>
 	 * The default color Color.rgb(0, 139, 255) <span style=
-	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255); border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255);
+     * border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @param fill
 	 *            the new fill
 	 */
-	public void setFill(Paint fill) {
+	public void setFill(final Paint fill) {
 		fillProperty().set(fill);
 	}
 
@@ -107,8 +112,9 @@ public final class PositionMarker extends Group {
 	 * Access the current fill
 	 * <p>
 	 * The default color Color.rgb(0, 139, 255) <span style=
-	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255); border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: rgb(0, 139, 255); color: rgb(0, 139, 255);
+     * border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @return the current fill
 	 */
@@ -116,21 +122,28 @@ public final class PositionMarker extends Group {
 		return fillProperty().get();
 	}
 
-	private static final CssMetaData<PositionMarker, Paint> FILL = new CssMetaData<PositionMarker, Paint>("-fx-fill", PaintConverter.getInstance(), Color.rgb(0, 139, 255)) { //$NON-NLS-1$
+    /**
+     * The css meta data for the marker.
+     */
+	private static final CssMetaData<PositionMarker, Paint> FILL = new CssMetaData<PositionMarker, Paint>("-fx-fill",
+            PaintConverter.getInstance(), Color.rgb(0, 139, 255)) { //$NON-NLS-1$
 
 		@Override
-		public boolean isSettable(PositionMarker node) {
+		public boolean isSettable(final PositionMarker node) {
 			return !node.fillProperty().isBound();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public StyleableProperty<Paint> getStyleableProperty(PositionMarker node) {
+		public StyleableProperty<Paint> getStyleableProperty(final PositionMarker node) {
 			return (StyleableProperty<Paint>) node.fillProperty();
 		}
 
 	};
 
+    /**
+     * A list of styles.
+     */
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
 	static {
@@ -140,6 +153,10 @@ public final class PositionMarker extends Group {
 		STYLEABLES = Collections.unmodifiableList(styleables);
 	}
 
+    /**
+     * Gets the styles.
+     * @return The styles.
+     */
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
 		return STYLEABLES;
 	}

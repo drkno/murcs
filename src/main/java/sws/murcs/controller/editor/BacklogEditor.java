@@ -25,8 +25,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.ModelViewController;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -41,7 +39,6 @@ import sws.murcs.model.persistence.PersistenceManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import sws.murcs.view.App;
 
 /**
  * Controller for the model creator popup window.

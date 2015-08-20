@@ -12,47 +12,53 @@ import javafx.scene.control.Tab;
  */
 @SuppressWarnings("serial")
 public class TabDraggedEvent extends Event {
+	/**
+	 * The index the tab is being dragged from.
+	 */
 	private int fromIndex;
+
+	/**
+	 * The index the tab is being dragged to.
+	 */
 	private int toIndex;
-	
+
+	/**
+	 * The event type.
+	 */
 	public static final EventType<TabDraggedEvent> TAB_DRAGGED = new EventType<>(Event.ANY, "TAB_DRAGGED");
-	
+
 	/**
 	 * Creates a new instance of {@link TabDraggedEvent}.
-	 * 
 	 * @param draggedTab the dragged tab.
 	 * @param fromIndex the from index.
 	 * @param toIndex the to index.
 	 */
-	public TabDraggedEvent(Tab draggedTab, int fromIndex, int toIndex) {
+	public TabDraggedEvent(final Tab draggedTab, final int fromIndex, final int toIndex) {
 		super(TAB_DRAGGED);
-		
+
 		this.source = draggedTab;
 		this.fromIndex = fromIndex;
 		this.toIndex = toIndex;
 	}
-	
+
 	/**
 	 * Gets the dragged tab.
-	 * 
 	 * @return the dragged tab.
 	 */
 	public Tab getDraggedTab() {
 		return (Tab) source;
 	}
-	
+
 	/**
 	 * Gets the from index.
-	 * 
 	 * @return the from index.
 	 */
 	public int getFromIndex() {
 		return fromIndex;
 	}
-	
+
 	/**
 	 * Gets the to index.
-	 * 
 	 * @return the to index.
 	 */
 	public int getToIndex() {

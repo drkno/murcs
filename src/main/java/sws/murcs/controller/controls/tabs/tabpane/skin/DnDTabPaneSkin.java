@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import java.util.function.Predicate;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
@@ -39,47 +38,67 @@ import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.*;
  * A lightly modified version of the class found here:
  * https://github.com/sibvisions/javafx.DndTabPane
  *
- * Skin for TabPane which support DnD
+ * Skin for TabPane which support DnD.
  */
 public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
-	private static Tab DRAGGED_TAB;
 	/**
-	 * Custom data format for move data
+	 * The Dragged Tab.
+	 */
+	private static Tab draggedTab;
+
+	/**
+	 * Custom data format for move data.
 	 */
 	public static final DataFormat TAB_MOVE = new DataFormat("DnDTabPane:tabMove"); //$NON-NLS-1$
 
+	/**
+	 * A none enum.
+	 */
 	private Object noneEnum;
+
+	/**
+	 * The open animation.
+	 */
 	private StyleableProperty<Object> openAnimation;
+
+	/**
+	 * The close animation.
+	 */
 	private StyleableProperty<Object> closeAnimation;
 
+	/**
+	 * The header area of the tab pane.
+	 */
     private Pane tabHeaderArea;
 
 	/**
-	 * Create a new skin
-	 * 
+	 * Create a new skin.
 	 * @param tabPane
 	 *            the tab pane
 	 */
-	public DnDTabPaneSkin(TabPane tabPane) {
+	public DnDTabPaneSkin(final TabPane tabPane) {
 		super(tabPane);
 		hookTabFolderSkin();
     }
 
+	/**
+	 * Adds the relevant listeners to the tab pane to allow drag and drop.
+	 */
 	@SuppressWarnings("unchecked")
 	private void hookTabFolderSkin() {
 		try {
-			Field f_tabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
-			f_tabHeaderArea.setAccessible(true);
+			Field fTabHeaderArea = TabPaneSkin.class.getDeclaredField("tabHeaderArea"); //$NON-NLS-1$
+			fTabHeaderArea.setAccessible(true);
 
-			tabHeaderArea = (StackPane) f_tabHeaderArea.get(this);
+			tabHeaderArea = (StackPane) fTabHeaderArea.get(this);
 			tabHeaderArea.setOnDragOver((e) -> e.consume());
 
-			Field f_headersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
-			f_headersRegion.setAccessible(true);
+			Field fHeadersRegion = tabHeaderArea.getClass().getDeclaredField("headersRegion"); //$NON-NLS-1$
+			fHeadersRegion.setAccessible(true);
 
-			Pane headersRegion = (StackPane) f_headersRegion.get(tabHeaderArea);
-			EventHandler<MouseEvent> handler = this::tabPane_handleDragStart;
-			EventHandler<DragEvent> handlerFinished = this::tabPane_handleDragDone;
+			Pane headersRegion = (StackPane) fHeadersRegion.get(tabHeaderArea);
+			EventHandler<MouseEvent> handler = this::tabPaneHandleDragStart;
+			EventHandler<DragEvent> handlerFinished = this::tabPaneHandleDragDone;
 
 			for (Node tabHeaderSkin : headersRegion.getChildren()) {
 				tabHeaderSkin.addEventHandler(MouseEvent.DRAG_DETECTED, handler);
@@ -107,9 +126,9 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				}
 			});
 
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_OVER, (e) -> tabPane_handleDragOver(tabHeaderArea, headersRegion, e));
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_DROPPED, (e) -> tabPane_handleDragDropped(tabHeaderArea, headersRegion, e));
-			tabHeaderArea.addEventHandler(DragEvent.DRAG_EXITED, this::tabPane_handleDragDone);
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_OVER, (e) -> tabPaneHandleDragOver(tabHeaderArea, headersRegion, e));
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_DROPPED, (e) -> tabPaneHandleDragDropped(tabHeaderArea, headersRegion, e));
+			tabHeaderArea.addEventHandler(DragEvent.DRAG_EXITED, this::tabPaneHandleDragDone);
 
 			Field field = TabPaneSkin.class.getDeclaredField("openTabAnimation"); //$NON-NLS-1$
 			field.setAccessible(true);
@@ -137,17 +156,22 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	void tabPane_handleDragStart(MouseEvent event) {
+	/**
+	 * A method that handles a drag starting on the tab header.
+	 * @param event The mouse event
+	 */
+	@SuppressWarnings("all")
+	void tabPaneHandleDragStart(final MouseEvent event) {
 		try {
-			Field f_tab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
-			f_tab.setAccessible(true);
-			Tab t = (Tab) f_tab.get(event.getSource());
+			Field fTab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
+			fTab.setAccessible(true);
+			Tab t = (Tab) fTab.get(event.getSource());
             if (!validateDrag(t)) {
                 return;
             }
 
-			if (t != null && efx_canStartDrag(t)) {
-				DRAGGED_TAB = t;
+			if (t != null && efxCanStartDrag(t)) {
+				draggedTab = t;
 				Node node = (Node) event.getSource();
 				Dragboard db = node.startDragAndDrop(TransferMode.MOVE);
 				node.setOnDragDone(e -> {
@@ -183,7 +207,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				db.setDragView(image, image.getWidth() * 0.5, 0);
 
 				ClipboardContent content = new ClipboardContent();
-				String data = efx_getClipboardContent(t);
+				String data = efxGetClipboardContent(t);
 				if (data != null) {
 					content.put(TAB_MOVE, data);
 				}
@@ -195,9 +219,15 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
+	/**
+	 * Handles a drag event that goes over the tab header area.
+	 * @param tabHeaderArea The tab header area
+	 * @param headersRegion The region containing the tab headers
+	 * @param event The drag event.
+	 */
 	@SuppressWarnings("all")
-	void tabPane_handleDragOver(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
-		Tab draggedTab = DRAGGED_TAB;
+	void tabPaneHandleDragOver(final Pane tabHeaderArea, final Pane headersRegion, final DragEvent event) {
+		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
 		}
@@ -255,7 +285,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				}
 
 				if (noMove) {
-					efx_dragFeedback(draggedTab, null, null, DropType.NONE);
+					efxDragFeedback(draggedTab, null, null, DropType.NONE);
 					return;
 				}
 
@@ -263,21 +293,26 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				b = referenceNode.localToScene(b);
 				b = getSkinnable().sceneToLocal(b);
 
-				efx_dragFeedback(draggedTab, tab, b, type);
+				efxDragFeedback(draggedTab, tab, b, type);
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 			event.acceptTransferModes(TransferMode.MOVE);
 		} else {
-			efx_dragFeedback(draggedTab, null, null, DropType.NONE);
+			efxDragFeedback(draggedTab, null, null, DropType.NONE);
 		}
 	}
 
+	/**
+	 * Handles a drop event on the tab header area.
+	 * @param tabHeaderArea The header area
+	 * @param headersRegion The region containing the tab headers
+	 * @param event The drag event
+	 */
 	@SuppressWarnings("all")
-	void tabPane_handleDragDropped(Pane tabHeaderArea, Pane headersRegion, DragEvent event) {
-		Tab draggedTab = DRAGGED_TAB;
+	void tabPaneHandleDragDropped(final Pane tabHeaderArea, final Pane headersRegion, final DragEvent event) {
+		Tab draggedTab = DnDTabPaneSkin.draggedTab;
 		if (draggedTab == null) {
 			return;
 		}
@@ -312,19 +347,22 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				Tab tab = (Tab) field.get(referenceNode);
 
 				boolean noMove = false;
-				if( tab == null ) {
+				if (tab == null) {
 					event.setDropCompleted(false);
 					return;
-				} else if (tab == draggedTab) {
+				}
+				else if (tab == draggedTab) {
 					noMove = true;
-				} else if (type == DropType.BEFORE) {
+				}
+				else if (type == DropType.BEFORE) {
 					int idx = getSkinnable().getTabs().indexOf(tab);
 					if (idx > 0) {
 						if (getSkinnable().getTabs().get(idx - 1) == draggedTab) {
 							noMove = true;
 						}
 					}
-				} else {
+				}
+				else {
 					int idx = getSkinnable().getTabs().indexOf(tab);
 
 					if (idx + 1 < getSkinnable().getTabs().size()) {
@@ -342,18 +380,18 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 					try {
 						this.openAnimation.setValue(this.noneEnum);
 						this.closeAnimation.setValue(this.noneEnum);
-						efx_dropped(draggedTab, tab, type);
+						efxDropped(draggedTab, tab, type);
 						event.setDropCompleted(true);
 					} finally {
 						this.openAnimation.applyStyle(openOrigin, openValue);
 						this.closeAnimation.applyStyle(closeOrigin, closeValue);
 					}
 
-				} else {
+				}
+				else {
 					event.setDropCompleted(false);
 				}
 			} catch (Throwable e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -361,46 +399,88 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	void tabPane_handleDragDone(DragEvent event) {
-		Tab tab = DRAGGED_TAB;
+	/**
+	 * Handles a drag being finished.
+	 * @param event The drag event
+	 */
+	void tabPaneHandleDragDone(final DragEvent event) {
+		Tab tab = draggedTab;
 		if (tab == null) {
 			return;
 		}
 
-		efx_dragFinished(tab);
+		efxDragFinished(tab);
 	}
 
+	/**
+	 * A function that takes a tab and returns a boolean
+	 * which indicates if a drag can be started.
+	 */
 	private Function<Tab, Boolean> startFunction;
+
+	/**
+	 * A consumer taking a tab that is fired when
+	 * a drag finished and recieves the dragged
+	 * tab as a parameter.
+	 */
 	private Consumer<Tab> dragFinishedConsumer;
+
+	/**
+	 * A list of listeners that are fired when a tab is dropped
+	 * outside of the header area.
+	 */
 	private List<DropListener> dropListeners = new ArrayList<>();
+
+	/**
+	 * A list of predicates that determine whether a tab can be dragged.
+	 * In order to be dragged all predicates must be true.
+	 */
 	private List<Predicate<Tab>> dragFilters = new ArrayList<>();
+
+	/**
+	 * A consumer of feedback that determines what the user feedback
+	 * will look like.
+	 */
 	private Consumer<FeedbackData> feedbackConsumer;
+
+	/**
+	 * A dropped data consumer, dired when a tab is dropped.
+	 */
 	private Consumer<DroppedData> dropConsumer;
+
+	/**
+	 * A consumer that is fired when the drag completes.
+	 */
 	private Consumer<DragEvent> doneConsumer;
+
+	/**
+	 * A function that converts a tab into a string
+	 * for use in the clip board.
+	 */
 	private Function<Tab, String> clipboardDataFunction;
 
 	@Override
-	public void setClipboardDataFunction(Function<Tab, String> clipboardDataFunction) {
+	public void setClipboardDataFunction(final Function<Tab, String> clipboardDataFunction) {
 		this.clipboardDataFunction = clipboardDataFunction;
 	}
 
 	@Override
-	public void setStartFunction(Function<Tab, Boolean> startFunction) {
+	public void setStartFunction(final Function<Tab, Boolean> startFunction) {
 		this.startFunction = startFunction;
 	}
 
 	@Override
-	public void setDragFinishedConsumer(Consumer<Tab> dragFinishedConsumer) {
+	public void setDragFinishedConsumer(final Consumer<Tab> dragFinishedConsumer) {
 		this.dragFinishedConsumer = dragFinishedConsumer;
 	}
 
 	@Override
-	public void setFeedbackConsumer(Consumer<FeedbackData> feedbackConsumer) {
+	public void setFeedbackConsumer(final Consumer<FeedbackData> feedbackConsumer) {
 		this.feedbackConsumer = feedbackConsumer;
 	}
 
 	@Override
-	public void setDropConsumer(Consumer<DroppedData> dropConsumer) {
+	public void setDropConsumer(final Consumer<DroppedData> dropConsumer) {
 		this.dropConsumer = dropConsumer;
 	}
 
@@ -453,7 +533,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	}
 
 	/**
-	 * Fires all the drop listeners
+	 * Fires all the drop listeners.
 	 * @param event The drag event
 	 * @param dropped The dropped tab
 	 */
@@ -471,36 +551,63 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 		}
 	}
 
-	private boolean efx_canStartDrag(Tab tab) {
+	/**
+	 * Determines whether a drag can be started for a specific tab.
+	 * @param tab The tab
+	 * @return Whether the tab can be dragged.
+	 */
+	private boolean efxCanStartDrag(final Tab tab) {
 		if (this.startFunction != null) {
 			return this.startFunction.apply(tab).booleanValue();
 		}
 		return true;
 	}
 
-	private void efx_dragFeedback(Tab draggedTab, Tab targetTab, Bounds bounds, DropType dropType) {
+	/**
+	 * Handles feedback for a tab that is being dragged.
+	 * @param draggedTab The tab being dragged
+	 * @param targetTab The  tab that the dragged tab is being dropped onto
+	 * @param bounds The bounds of the target tab
+	 * @param dropType The type of drop
+	 */
+	private void efxDragFeedback(final Tab draggedTab, final Tab targetTab,
+								 final Bounds bounds, final DropType dropType) {
 		if (this.feedbackConsumer != null) {
 			this.feedbackConsumer.accept(new FeedbackData(draggedTab, targetTab, bounds, dropType));
 		}
 	}
 
-	private void efx_dropped(Tab draggedTab, Tab targetTab, DropType dropType) {
+	/**
+	 * Handles a tab being dropped onto another tab.
+	 * @param draggedTab The tab being dropped
+	 * @param targetTab The target
+	 * @param dropType The type of drop
+	 */
+	private void efxDropped(final Tab draggedTab, final Tab targetTab, final DropType dropType) {
 		if (this.dropConsumer != null) {
 			this.dropConsumer.accept(new DroppedData(draggedTab, targetTab, dropType));
 		}
 	}
 
-	private void efx_dragFinished(Tab tab) {
+	/**
+	 * Handles a drag finishing for a specific tab.
+	 * @param tab The tab
+	 */
+	private void efxDragFinished(final Tab tab) {
 		if (this.dragFinishedConsumer != null) {
 			this.dragFinishedConsumer.accept(tab);
 		}
 	}
 
-	private String efx_getClipboardContent(Tab t) {
+	/**
+	 * Converts a tab into clipboard content.
+	 * @param t The tab
+	 * @return The clipboard content
+	 */
+	private String efxGetClipboardContent(final Tab t) {
 		if (this.clipboardDataFunction != null) {
 			return this.clipboardDataFunction.apply(t);
 		}
 		return System.identityHashCode(t) + ""; //$NON-NLS-1$
 	}
-
 }

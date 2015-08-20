@@ -23,15 +23,26 @@ import com.sun.javafx.css.converters.PaintConverter;
  * A slightly modified version of the class found here:
  * https://github.com/sibvisions/javafx.DndTabPane
  *
- * Marks a Tab-Position
+ * Marks a Tab-Position.
  */
 public final class TabOutlineMarker extends Group {
+	/**
+	 * The container bounds.
+	 */
 	private Bounds containerBounds;
+
+	/**
+	 * The reference bounds.
+	 */
 	private Bounds referenceBounds;
+
+	/**
+	 * Indicates whether this is "before".
+	 */
 	private boolean before;
 
 	/**
-	 * Create a new tab outline
+	 * Create a new tab outline.
 	 *
 	 * @param containerBounds
 	 *            the bounds of the container
@@ -41,7 +52,7 @@ public final class TabOutlineMarker extends Group {
 	 *            <code>true</code> to mark the insert point before reference
 	 *            bounds
 	 */
-	public TabOutlineMarker(Bounds containerBounds, Bounds referenceBounds, boolean before) {
+	public TabOutlineMarker(final Bounds containerBounds, final Bounds referenceBounds, final boolean before) {
 		this.containerBounds = containerBounds;
 		this.referenceBounds = referenceBounds;
 		updateBounds(containerBounds, referenceBounds, before);
@@ -49,7 +60,7 @@ public final class TabOutlineMarker extends Group {
 	}
 
 	/**
-	 * Update the tab outline
+	 * Update the tab outline.
 	 *
 	 * @param containerBounds
 	 *            the bounds of the container
@@ -59,8 +70,10 @@ public final class TabOutlineMarker extends Group {
 	 *            <code>true</code> to mark the insert point before reference
 	 *            bounds
 	 */
-	public void updateBounds(Bounds containerBounds, Bounds referenceBounds, boolean before) {
-		if (containerBounds.equals(this.containerBounds) && referenceBounds.equals(this.referenceBounds) && before == this.before) {
+	public void updateBounds(final Bounds containerBounds, final Bounds referenceBounds, final boolean before) {
+		if (containerBounds.equals(this.containerBounds)
+				&& referenceBounds.equals(this.referenceBounds)
+				&& before == this.before) {
 			return;
 		}
 
@@ -73,9 +86,16 @@ public final class TabOutlineMarker extends Group {
 		Bounds _referenceBounds = referenceBounds;
 
 		if (before) {
-			_referenceBounds = new BoundingBox(Math.max(0, _referenceBounds.getMinX() - _referenceBounds.getWidth() / 2), _referenceBounds.getMinY(), _referenceBounds.getWidth(), _referenceBounds.getHeight());
-		} else {
-			_referenceBounds = new BoundingBox(Math.max(0, _referenceBounds.getMaxX() - _referenceBounds.getWidth() / 2), _referenceBounds.getMinY(), _referenceBounds.getWidth(), _referenceBounds.getHeight());
+			_referenceBounds = new BoundingBox(Math.max(0,
+					_referenceBounds.getMinX() - _referenceBounds.getWidth() / 2),
+					_referenceBounds.getMinY(), _referenceBounds.getWidth(),
+					_referenceBounds.getHeight());
+		}
+		else {
+			_referenceBounds = new BoundingBox(Math.max(0,
+					_referenceBounds.getMaxX() - _referenceBounds.getWidth() / 2),
+					_referenceBounds.getMinY(), _referenceBounds.getWidth(),
+					_referenceBounds.getHeight());
 		}
 
 		pl.getPoints().addAll(
@@ -120,6 +140,9 @@ public final class TabOutlineMarker extends Group {
 		getChildren().setAll(pl);
 	}
 
+	/**
+	 * The fill property of the outline marker.
+	 */
 	private final ObjectProperty<Paint> fill = new SimpleStyleableObjectProperty<>(FILL, this, "fill", Color.ORANGE); //$NON-NLS-1$
 
 	/**
@@ -127,8 +150,9 @@ public final class TabOutlineMarker extends Group {
 	 *
 	 * <p>
 	 * The default color {@link Color#ORANGE} <span style=
-	 * "background-color: orange; color: orange; border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: orange; color: orange; border-width: 1px;
+	 * border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @return the property
 	 */
@@ -140,13 +164,14 @@ public final class TabOutlineMarker extends Group {
 	 * Set a new fill
 	 * <p>
 	 * The default color {@link Color#ORANGE} <span style=
-	 * "background-color: orange; color: orange; border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: orange; color: orange; border-width: 1px;
+	 * border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @param fill
 	 *            the fill
 	 */
-	public void setFill(Paint fill) {
+	public void setFill(final Paint fill) {
 		fillProperty().set(fill);
 	}
 
@@ -154,8 +179,9 @@ public final class TabOutlineMarker extends Group {
 	 * Get the current fill
 	 * <p>
 	 * The default color {@link Color#ORANGE} <span style=
-	 * "background-color: orange; color: orange; border-width: 1px; border-color: black; border-style: solid; width: 15; height: 15;">__</span>
-	 * </p>
+	 * "background-color: orange; color: orange; border-width: 1px;
+	 * border-color: black; border-style: solid; width: 15; height: 15;">__</span>
+	 * </p>.
 	 *
 	 * @return the current fill
 	 */
@@ -163,21 +189,28 @@ public final class TabOutlineMarker extends Group {
 		return fillProperty().get();
 	}
 
-	private static final CssMetaData<TabOutlineMarker, Paint> FILL = new CssMetaData<TabOutlineMarker, Paint>("-fx-fill", PaintConverter.getInstance(), Color.ORANGE) { //$NON-NLS-1$
+	/**
+	 * The CSS meta data.
+	 */
+	private static final CssMetaData<TabOutlineMarker, Paint> FILL =
+			new CssMetaData<TabOutlineMarker, Paint>("-fx-fill", PaintConverter.getInstance(), Color.ORANGE) { //$NON-NLS-1$
 
 		@Override
-		public boolean isSettable(TabOutlineMarker node) {
+		public boolean isSettable(final TabOutlineMarker node) {
 			return !node.fillProperty().isBound();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public StyleableProperty<Paint> getStyleableProperty(TabOutlineMarker node) {
+		public StyleableProperty<Paint> getStyleableProperty(final TabOutlineMarker node) {
 			return (StyleableProperty<Paint>) node.fillProperty();
 		}
 
 	};
 
+	/**
+	 * All the stylable elements of the marker.
+	 */
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
 	static {
@@ -186,6 +219,10 @@ public final class TabOutlineMarker extends Group {
 		STYLEABLES = Collections.unmodifiableList(styleables);
 	}
 
+	/**
+	 * The stylable elements.
+	 * @return The stylable elements.
+	 */
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
 		return STYLEABLES;
 	}

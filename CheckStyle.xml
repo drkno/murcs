@@ -24,6 +24,7 @@
 <module name="Checker">
 
     <module name="SuppressWarningsFilter" />
+    <module name="SuppressionCommentFilter"/>
     <!--
         If you set the basedir property below, then all reported file
         names will be relative to the specified directory. See

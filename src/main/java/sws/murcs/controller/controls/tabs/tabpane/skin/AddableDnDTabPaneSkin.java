@@ -13,7 +13,12 @@ import sws.murcs.listeners.TabFactory;
 /**
  * A tab pane skin with an add button. This class is essentially a giant Hack.
  */
-public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
+public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
+    /**
+     * The offset of the tabs.
+     */
+    private static final double TAB_OFFSET = 5.0;
+
     /**
      * Button for adding tabs.
      */
@@ -67,7 +72,7 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
         addTabButton = new Button("+");
         addTabButton.getStyleClass().add("tab-add-button");
         addTabButton.setOnAction(e -> {
-            if (tabFactory != null){
+            if (tabFactory != null) {
                 tabPane.getTabs().add(tabFactory.createTab(tabPane));
             }
         });
@@ -89,7 +94,7 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
                 recalculateAddPosition();
                 started = true;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Seems like Java's internal tab interface has changed :'(");
         }
     }
@@ -102,11 +107,14 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin{
         Bounds b = headerPane.getBoundsInLocal();
         b = headerPane.localToScene(b);
         b = AddableDnDTabPaneSkin.this.getSkinnable().sceneToLocal(b);
-        addTabButton.relocate(b.getMaxX() + 5 * addTabButton.getScaleX() + (started ? 0 : 5), 5 * addTabButton.getScaleY());
+        addTabButton.relocate(b.getMaxX()
+                + TAB_OFFSET * addTabButton.getScaleX()
+                + (started ? 0 : TAB_OFFSET),
+                TAB_OFFSET * addTabButton.getScaleY());
     }
 
     /**
-     * Sets the current tab factory
+     * Sets the current tab factory.
      * @param tabFactory the tab factory
      */
     public void setTabFactory(final TabFactory tabFactory) {

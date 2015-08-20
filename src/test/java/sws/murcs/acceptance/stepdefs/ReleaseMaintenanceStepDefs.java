@@ -69,7 +69,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
-                //TODO FIX ME!! registeredStages.add(App.getMainController().getWindow());
             } catch (Exception e) {
                 e.printStackTrace();
             }

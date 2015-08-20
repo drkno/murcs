@@ -67,6 +67,9 @@ public class ToolBarController {
      */
     private ModelManagable modelManagable;
 
+    /**
+     * Creates a new toolbar controller.
+     */
     public ToolBarController() {
     }
 
@@ -452,7 +455,7 @@ public class ToolBarController {
     }
 
     /**
-     * The navigable that the toolbar controls
+     * The navigable that the toolbar controls.
      * @return The navigable
      */
     public Navigable getNavigable() {
@@ -460,10 +463,10 @@ public class ToolBarController {
     }
 
     /**
-     * Sets the navigable that the toolbar controls
+     * Sets the navigable that the toolbar controls.
      * @param navigable The new navigable
      */
-    public void setNavigable(Navigable navigable) {
+    public void setNavigable(final Navigable navigable) {
         this.navigable = navigable;
     }
 
@@ -481,7 +484,7 @@ public class ToolBarController {
      * from the tool bar.
      * @param modelManagable The controller responsible
      */
-    public void setModelManagable(ModelManagable modelManagable) {
+    public void setModelManagable(final ModelManagable modelManagable) {
         this.modelManagable = modelManagable;
     }
 }

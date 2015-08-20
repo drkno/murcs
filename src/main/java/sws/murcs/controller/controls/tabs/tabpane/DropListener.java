@@ -8,5 +8,10 @@ import javafx.scene.input.DragEvent;
  * a DnDPane.
  */
 public interface DropListener {
+    /**
+     * Called when a tab is dropped.
+     * @param event The drag event
+     * @param tab The tab
+     */
     void dropped(DragEvent event, Tab tab);
 }
