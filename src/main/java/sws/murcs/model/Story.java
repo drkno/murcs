@@ -311,6 +311,6 @@ public class Story extends Model {
         if (shortName == null || shortNameO == null) {
             return shortName == shortNameO;
         }
-        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+        return shortName.equalsIgnoreCase(shortNameO);
     }
 }

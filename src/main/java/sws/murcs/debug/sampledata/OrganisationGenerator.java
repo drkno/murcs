@@ -100,6 +100,18 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private boolean lastWasError;
 
     /**
+     * Put numbers next to the short names.
+     */
+    private static boolean numbering = false;
+
+    /**
+     * Set numbering on the model objects (short names).
+     * @param isNumbering
+     */
+    public static final void isNumbering(final boolean isNumbering) {
+        numbering = isNumbering;
+    }
+    /**
      * The last generation of an Organisation incurred an error.
      * @return true if an error occurred, false otherwise.
      */
@@ -151,11 +163,13 @@ public class OrganisationGenerator implements Generator<Organisation> {
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
-            try {
-                g.setShortName(g.getShortName() + " (" + i + ")");
-            } catch (CustomException e) {
-                //never here... EVER.
-                ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
+            if (numbering) {
+                try {
+                    g.setShortName(g.getShortName() + " (" + i + ")");
+                } catch (CustomException e) {
+                    //never here... EVER.
+                    ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
+                }
             }
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);

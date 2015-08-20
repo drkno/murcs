@@ -196,7 +196,11 @@ public class App extends Application {
 
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
+        int numbering = argsList.indexOf("numbering");
 
+        if (numbering >= 0) {
+            OrganisationGenerator.isNumbering(true);
+        }
         if (debug >= 0) {
             OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
             if (debug + 1 < args.length) {

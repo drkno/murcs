@@ -247,9 +247,7 @@ public class StoryGenerator implements Generator<Story> {
 
         //Generate and add the acceptance criteria
         List<AcceptanceCondition> acceptanceConditions = generateAcceptanceCriteria();
-        for (AcceptanceCondition condition : acceptanceConditions) {
-            story.addAcceptanceCondition(condition);
-        }
+        acceptanceConditions.forEach(story::addAcceptanceCondition);
 
         Collection<Task> tasks = generateTasks();
         for (Task task : tasks) {

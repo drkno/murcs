@@ -1,8 +1,5 @@
 package sws.murcs.reporting.ui;
 
-import com.oracle.jrockit.jfr.Producer;
-import com.sun.tools.javac.code.Attribute;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -35,12 +32,8 @@ import sws.murcs.view.App;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
