@@ -13,6 +13,8 @@ import sws.murcs.listeners.TabFactory;
 
 /**
  * A tab pane skin with an add button. This class is essentially a giant Hack.
+ *
+ * HERE BE THE DRAGONS LAIR!
  */
 public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
     /**
