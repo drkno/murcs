@@ -258,8 +258,7 @@ public class StoryGenerator implements Generator<Story> {
                 story.addTask(task);
             }
             catch (CustomException e) {
-                //Should never happen
-                e.printStackTrace();
+                //Should never happen but does
             }
         }
 

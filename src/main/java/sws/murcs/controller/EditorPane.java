@@ -119,6 +119,7 @@ public class EditorPane {
             else {
                 view = loader.load();
                 controller = loader.getController();
+                controller.setNavigationManager(navigationManager);
                 controller.setModel(model);
                 controller.loadObject();
             }
