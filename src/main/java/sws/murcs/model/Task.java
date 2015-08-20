@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -46,6 +48,12 @@ public class Task extends TrackableObject implements Serializable {
      */
     @TrackableValue
     private TaskState state;
+
+    /**
+     * The people who are assigned to the task. These may just be the people overseeing its
+     * completion.
+     */
+    private Collection<Person> assignees = new ArrayList<>();
 
     /**
      * Gets this tasks name.
@@ -113,6 +121,34 @@ public class Task extends TrackableObject implements Serializable {
     public final void setEstimate(final float newEstimate) {
         estimate = newEstimate;
         commit("edit Task");
+    }
+
+    /**
+     * Adds a given person to the list of people assigned to the task.
+     * @param assignee The person to be assigned to the task.
+     */
+    public final void addAssignee(final Person assignee) {
+        assignees.add(assignee);
+        commit("edit Task");
+    }
+
+    /**
+     * Removes an assigned person from the list of assigned people for the task.
+     * @param assignee The assignee to remove.
+     */
+    public final void removeAssignee(final Person assignee) {
+        if (assignees.contains(assignee)) {
+            assignees.remove(assignee);
+        }
+    }
+
+    /**
+     * Gets whether or not the task is currently allocated by checking to see if anyone
+     * is currently assigned to the task.
+     * @return Whether or not the task has been allocated.
+     */
+    public final boolean isAllocated() {
+        return assignees.size() > 0;
     }
 
     @Override
