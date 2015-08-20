@@ -567,9 +567,6 @@ public class SearchController {
                         }
                         disableControlsAndUpdateButton();
                     }
-
-                    Thread.sleep(disableDelay);
-                    disableControlsAndUpdateButton();
                 }
 
                 final CountDownLatch latch = new CountDownLatch(1);
