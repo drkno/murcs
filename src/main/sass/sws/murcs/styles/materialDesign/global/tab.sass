@@ -5,8 +5,15 @@
   -fx-background-color: $button-color
   -fx-background-insets: 0
   -fx-padding: 6 12
-  -fx-background-radius: 2px
   -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+  -fx-border-color: lightgray
+  -fx-opacity: 0.8
+  -fx-focus-color: transparent
+  -fx-faint-focus-color: transparent
+  -fx-background-radius: 0
+
+.tab-pane
+  -fx-background-color: $tab-background-color
 
 .tab-add-button
   -fx-background-color: $button-color
@@ -17,3 +24,19 @@
 .tab:hover
   -fx-color: $button-focus-color
 
+.tab:selected, .tab:focused
+  -fx-border-color: darkgray
+  -fx-border-width: 1px 1px 0 1px
+  -fx-opacity: 1
+
+.tab *.tab-label, .tab *.tab-label:focused
+  -fx-border-color: transparent
+
+.tab .tab-close-button
+  -fx-background-color: transparent
+
+.tab:hover .tab-close-button
+  -fx-background-color: -fx-mark-color
+
+.tab:hover .tab-close-button:hover
+  -fx-background-color: black
