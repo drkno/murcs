@@ -7,6 +7,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
@@ -14,7 +15,10 @@ import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.AppController;
 import sws.murcs.controller.JavaFXHelpers;
+import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.exceptions.CustomException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -23,6 +27,10 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -35,6 +43,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     private Organisation model;
     private Application app;
     private Release release;
+    private List<Window> registeredStages = new ArrayList<>();
 
     @Override
     public void start(Stage stage) throws Exception {}
@@ -63,6 +72,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
+                registeredStages.add(App.getAppController().getWindow());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -85,6 +95,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
         UndoRedoManager.setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
+        registeredStages = new ArrayList<>();
     }
 
     @And("^I have selected the release view from the display list type$")
@@ -102,6 +113,14 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @When("^I click on the remove button$")
     public void I_click_on_the_remove_button() throws Throwable {
         fx.clickOn("#removeButton");
+        App.getWindowManager().getAllWindows().stream().filter(w -> !registeredStages.contains(w)).forEach(s -> {
+            try {
+                FxToolkit.registerStage(s::getStage);
+                registeredStages.add(s);
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        });
         fx.clickOn("Yes");
     }
 
@@ -114,8 +133,16 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @When("^I select new release from the file menu$")
     public void I_select_new_release_from_the_file_menu() throws Throwable {
         fx.clickOn("#fileMenu").clickOn("#newMenu");
-        fx.moveBy(100,0);
+        fx.moveTo("#newModel");
         fx.clickOn("#addRelease");
+        App.getWindowManager().getAllWindows().stream().filter(w -> !registeredStages.contains(w)).forEach(s -> {
+            try {
+                FxToolkit.registerStage(s::getStage);
+                registeredStages.add(s);
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @And("^I fill in valid information in the popup$")
@@ -140,11 +167,25 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @And("^I click on the add button$")
     public void I_click_on_the_add_button() throws Throwable {
         fx.clickOn("#addButton");
+        App.getWindowManager().getAllWindows().stream().filter(w -> w.getController().getClass() != AppController.class).forEach(s -> {
+            try {
+                FxToolkit.registerStage(s::getStage);
+                registeredStages.add(s);
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Given("^there is a release$")
     public void there_is_a_release() throws Throwable {
-        PersistenceManager.getCurrent().getCurrentModel().add(release);
+        Platform.runLater(() -> {
+            try {
+                PersistenceManager.getCurrent().getCurrentModel().add(release);
+            } catch (CustomException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @When("^I edit the values of the release$")

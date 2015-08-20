@@ -38,6 +38,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 /**
  * Controller for the model creator popup window.
@@ -385,6 +386,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     /**
@@ -702,17 +704,24 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.getStyleClass().add("mdr-button");
                 button.getStyleClass().add("mdrd-button");
                 button.setOnAction(e -> {
-                    GenericPopup popup = new GenericPopup();
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \""
-                            + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(p -> {
+                    if (!isCreationWindow) {
+                        GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                        popup.setTitleText("Are you sure?");
+                        popup.setMessageText("Are you sure you wish to remove the story \""
+                                + story.getShortName() + "\" from this backlog?");
+                        popup.addYesNoButtons(() -> {
+                            getModel().removeStory(story);
+                            updateStoryTable();
+                            updateAvailableStories();
+                            popup.close();
+                        }, "danger-will-robinson", "dont-panic");
+                        popup.show();
+                    }
+                    else {
                         getModel().removeStory(story);
                         updateStoryTable();
                         updateAvailableStories();
-                        popup.close();
-                    });
-                    popup.show();
+                    }
                 });
                 FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
                 fadeButtonOnHover.setupEffect();

@@ -104,6 +104,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

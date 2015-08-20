@@ -35,6 +35,16 @@ public class CreatorWindowView {
     private Consumer<Model> cancelAction;
 
     /**
+     * The minimum height of the application.
+     */
+    private final int minimumApplicationHeight = 650;
+
+    /**
+     * The minimum width of the application.
+     */
+    private final int minimumApplicationWidth = 300;
+
+    /**
      * Gets the model.
      * @return The model.
      */
@@ -119,6 +129,9 @@ public class CreatorWindowView {
 
             // Set up the stage
             Stage stage = new Stage();
+            stage.setResizable(true);
+            stage.setMinHeight(minimumApplicationHeight);
+            stage.setMinWidth(minimumApplicationWidth);
             controller.setStage(stage);
             if (root == null) {
                 stage.setResizable(false);
@@ -134,14 +147,14 @@ public class CreatorWindowView {
             // Give the stage a name and icon
             stage.setTitle("Create " + type);
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
+            Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
             stage.getIcons().add(iconImage);
 
             // Set modality of the stage on top of the App
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(App.getStage());
+            stage.initModality(Modality.NONE);
 
-            stage.show();
+            controller.setupWindow();
+            controller.show();
             stage.sizeToScene();
             stage.setResizable(false);
         }

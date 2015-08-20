@@ -3,6 +3,7 @@ package sws.murcs.model;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,6 +24,7 @@ public class Team extends Model {
     /**
      * A list of members in the team.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "members")
     @XmlElement(name = "person")
@@ -32,6 +34,7 @@ public class Team extends Model {
     /**
      * The scrum master of the team.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person scrumMaster;
@@ -39,6 +42,7 @@ public class Team extends Model {
     /**
      * The product owner of the team.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person productOwner;

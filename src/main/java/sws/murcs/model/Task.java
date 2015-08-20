@@ -137,4 +137,9 @@ public class Task extends TrackableObject implements Serializable {
         }
         return hashCodePrime + c;
     }
+
+    @Override
+    public final String toString() {
+        return state + " (" + estimate + "): " + name + " - " + description;
+    }
 }

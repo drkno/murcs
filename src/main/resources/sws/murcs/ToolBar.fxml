@@ -198,6 +198,27 @@
             </Button>
          </children>
       </HBox>
+      <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
+         <padding>
+            <Insets left="7.0" right="5.0" />
+         </padding>
+      </Separator>
+      <HBox fx:id="searchToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
+         <children>
+            <Button fx:id="searchButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#searchButtonClick" prefHeight="30.0" prefWidth="30.0">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/search.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <tooltip>
+                  <Tooltip />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
   </items>
    <contextMenu>
       <ContextMenu fx:id="visibilityContextMenu">
@@ -206,6 +227,7 @@
             <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
             <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
             <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
+            <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Search Toolbar" />
         </items>
       </ContextMenu>
    </contextMenu>

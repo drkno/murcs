@@ -75,6 +75,7 @@ release.properties
 .gitignore
 *.testProject
 *.css
+!grid-styles.css
 *.map
 
 ### SASS ###

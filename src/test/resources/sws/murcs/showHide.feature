@@ -1,3 +1,4 @@
+@Manual
 @ShowHide
 Feature: Show or hide the side panel list
 

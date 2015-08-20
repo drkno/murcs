@@ -6,6 +6,7 @@
         <stories>
             <story shortName="1">
                 <longName>Revert</longName>
+                <description>Revert to last saved state</description>
                 <storyState>None</storyState>
                 <acceptanceCriteria>
                     <acceptanceCriterion>

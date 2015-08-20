@@ -207,7 +207,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     popup.setMessageText("Do you really want to change the Sprint Backlog? "
                             + "All added stories will be cleared");
                     popup.setTitleText("Change Sprint Backlog");
-                    popup.addYesNoButtons(func -> {
+                    popup.addYesNoButtons(() -> {
                         sprint.setBacklog(backlogComboBox.getValue());
                         storiesList.getItems().clear();
                         storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
@@ -252,7 +252,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         + selectedStory.getShortName()
                         + " to be Ready so that it can be added to this sprint?");
                 popup.setTitleText("Change Story State");
-                popup.addYesNoButtons(func -> {
+                popup.addYesNoButtons(() -> {
                     try {
                         selectedStory.setStoryState(Story.StoryState.Ready);
                         getModel().addStory(selectedStory);
@@ -420,7 +420,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     + story.getShortName() + " from "
                     + getModel().getShortName() + "?");
             popup.setTitleText("Remove Story from Sprint");
-            popup.addYesNoButtons(func -> {
+            popup.addYesNoButtons(() -> {
                 allocatableStories.add(story);
                 Node storyNode = storyNodeIndex.get(story);
                 storiesContainer.getChildren().remove(storyNode);
