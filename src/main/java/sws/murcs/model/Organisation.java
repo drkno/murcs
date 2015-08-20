@@ -560,8 +560,6 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     private void removeSprint(final Sprint sprint) {
         sprints.remove(sprint);
-
-        //TODO Remove sprint from any places it is used.
     }
 
     /**
@@ -591,12 +589,10 @@ public class Organisation extends TrackableObject implements Serializable {
         getProjects().stream()
                 .forEach(project -> project.removeBacklog(backlog));
 
-        //Remove the backlog from any sprints it is associated with
-        getSprints().stream().forEach(sprint -> {
-            if (sprint.getBacklog() == backlog) {
-                sprint.setBacklog(null);
-            }
-        });
+        //Remove the sprints with that associated backlog
+        getSprints().stream()
+                .filter(s -> s.getBacklog() == backlog)
+                .collect(Collectors.toList()).forEach(sprints::remove);
     }
 
     /**

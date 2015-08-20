@@ -279,7 +279,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             storyGenerator.setPersonsPool(people);
             min = getMin(stress, StoryGenerator.LOW_STRESS_MIN, StoryGenerator.MEDIUM_STRESS_MIN,
                     StoryGenerator.HIGH_STRESS_MIN);
-            max = getMin(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX,
+            max = getMax(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX,
                     StoryGenerator.HIGH_STRESS_MAX);
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
@@ -289,7 +289,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             backlogGenerator.setPersonsPool(people);
             min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
                     BacklogGenerator.HIGH_STRESS_MIN);
-            max = getMin(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
+            max = getMax(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
                     BacklogGenerator.HIGH_STRESS_MAX);
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
@@ -299,7 +299,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             sprintGenerator.setTeamPool(teams);
             min = getMin(stress, SprintGenerator.LOW_STRESS_MIN, SprintGenerator.MEDIUM_STRESS_MIN,
                     SprintGenerator.HIGH_STRESS_MIN);
-            max = getMin(stress, SprintGenerator.LOW_STRESS_MAX, SprintGenerator.MEDIUM_STRESS_MAX,
+            max = getMax(stress, SprintGenerator.LOW_STRESS_MAX, SprintGenerator.MEDIUM_STRESS_MAX,
                     SprintGenerator.HIGH_STRESS_MAX);
             List<Sprint> sprints = generateItems(sprintGenerator, min, max).stream()
                     .map(m -> (Sprint) m).collect(Collectors.toList());

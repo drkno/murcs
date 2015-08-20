@@ -191,13 +191,11 @@ public class BacklogGenerator implements Generator<Backlog> {
         int prioritised = size / 2;
 
         try {
-            for (int i = 0; i < prioritised; i++) {
+            for (Story story : stories.subList(0, prioritised)) {
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
-                stories.get(i).setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
-
-                Story.StoryState[] storyStates = Story.StoryState.values();
-                stories.get(i).setStoryState(storyStates[GenerationHelper.random(storyStates.length)]);
-                backlog.addStory(stories.get(i), i + 1);
+                story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
+                story.setStoryState(Story.StoryState.Ready);
+                backlog.addStory(story, 1);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);

@@ -303,7 +303,7 @@ public class Story extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Story)) {
+        if (!(object instanceof Story)) {
             return false;
         }
         String shortNameO = ((Story) object).getShortName();

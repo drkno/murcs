@@ -358,10 +358,9 @@ public class StoryEditor extends GenericEditor<Story> {
                         .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                         .map(m -> (Sprint) m)
                         .collect(Collectors.toList());
-                List<String> collect = sprintsWithStory.stream()
+                List<String> sprintNames = sprintsWithStory.stream()
                         .map(Model::toString)
                         .collect(Collectors.toList());
-                String[] sprintNames = collect.toArray(new String[collect.size()]);
                 String actualEstimate = estimateChoiceBox.getValue();
                 estimateChoiceBox.setValue(getModel().getEstimate());
                 GenericPopup popup = new GenericPopup();

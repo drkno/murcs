@@ -34,9 +34,10 @@ public class ShowHideStepDefs extends ApplicationTest {
     @Before("@ShowHide")
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(false);
-        fx = new FxRobot();
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
+        fx = new FxRobot();
+        launch(App.class);
 
         interact(() -> {
             try {

@@ -106,7 +106,9 @@ public class Sprint extends Model {
      * @throws InvalidParameterException if the release is before the end date of the sprint
      */
     public final void setAssociatedRelease(final Release pAssociatedRelease) throws InvalidParameterException {
-        validateDates(startDate, endDate, pAssociatedRelease);
+        if (pAssociatedRelease != null) {
+            validateDates(startDate, endDate, pAssociatedRelease);
+        }
 
         this.associatedRelease = pAssociatedRelease;
         commit("edit sprint");
@@ -182,7 +184,7 @@ public class Sprint extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (!(object instanceof Sprint) || object == null) {
+        if (!(object instanceof Sprint)) {
             return false;
         }
         Sprint sprint = (Sprint) object;
