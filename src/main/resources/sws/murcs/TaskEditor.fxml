@@ -65,7 +65,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <graphic>
-                  <ImageView fx:id="editAssignedButtonClicked" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                  <ImageView fx:id="editAssignedButton" fitHeight="25.0" fitWidth="25.0" onDragDetected="#editAssignedButtonClicked" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
                      <image>
                         <Image url="@icons/edit.png" />
                      </image>

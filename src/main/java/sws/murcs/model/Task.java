@@ -177,4 +177,8 @@ public class Task extends TrackableObject implements Serializable {
     public final String toString() {
         return state + " (" + estimate + "): " + name + " - " + description;
     }
+
+    public Collection<Person> getAssignees() {
+        return assignees;
+    }
 }

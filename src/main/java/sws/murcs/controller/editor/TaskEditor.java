@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -11,11 +12,16 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.SearchController;
+import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Person;
+import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -48,6 +54,8 @@ public class TaskEditor {
      */
     private boolean descriptionVisible;
 
+    private PopOver assigneePopOver;
+
     /**
      * The anchor pane that contains the entire editor.
      */
@@ -55,10 +63,10 @@ public class TaskEditor {
     private AnchorPane editor;
 
     /**
-     * The minimise editor, delete task and create buttons.
+     * The minimise editor, delete task, create and edit assignees buttons.
      */
     @FXML
-    private Button toggleButton, createButton;
+    private Button toggleButton, createButton, editAssignedButton;
 
     /**
      * The state choice boxes.
@@ -300,7 +308,22 @@ public class TaskEditor {
      */
     @FXML
     private void editAssignedButtonClick(final ActionEvent event) {
+        if (assigneePopOver == null) {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
 
+            try {
+                Parent parent = loader.load();
+                assigneePopOver = new PopOver(parent);
+                AssigneeController controller = loader.getController();
+                controller.setUp(this, null);
+                assigneePopOver.hideOnEscapeProperty().setValue(true);
+            }
+            catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create a assignee popover");
+            }
+        }
+        assigneePopOver.show(editAssignedButton);
     }
 
     public void addAssignee(Person assignee) {
@@ -313,5 +336,9 @@ public class TaskEditor {
 
     public Task getTask() {
         return task;
+    }
+
+    public Story getStory() {
+        return storyEditor.getModel();
     }
 }

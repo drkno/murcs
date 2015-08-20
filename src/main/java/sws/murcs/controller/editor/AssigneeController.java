@@ -7,7 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
+import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,15 +27,28 @@ public class AssigneeController {
 
     private Collection<Person> recentAssignees;
 
+    private Collection<Person> assignees;
+
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
-    private void setUp(final TaskEditor parent, List<Person> recentPeople) {
+    public void setUp(final TaskEditor parent, List<Person> recentPeople) {
         parentEditor = parent;
         recentAssignees = recentPeople;
         if (recentAssignees != null) {
             addRecentPeople();
         }
-        
+        searchableComboBoxDecorator = new SearchableComboBox<>(assigneeComboBox);
+        assignees = parentEditor.getTask().getAssignees();
+        addAssignees(assignees);
+        Backlog backlog = (Backlog) UsageHelper.findUsages(parentEditor.getStory()).stream().filter(model -> model instanceof Backlog).findFirst().get();
+        Team team = (Team) UsageHelper.findUsages(backlog).stream().filter(model -> model instanceof Team).findFirst().get();
+        searchableComboBoxDecorator.addAll(team.getMembers());
+    }
+
+    private void addAssignees(Collection<Person> assignees) {
+        for (Person assignee : assignees) {
+            addAssignee(assignee);
+        }
     }
 
     private void addRecentPeople() {
@@ -51,6 +67,7 @@ public class AssigneeController {
     }
 
     private void addAssignee(Person assignee) {
+        searchableComboBoxDecorator.remove(assignee);
         HBox container = new HBox();
         Button delete = new Button();
         delete.setText("X");
@@ -68,6 +85,7 @@ public class AssigneeController {
     private void removeAssignee(Person assignee, HBox container) {
         currentAssigneesVBox.getChildren().remove(assignee);
         parentEditor.removeAssignee(assignee);
+        searchableComboBoxDecorator.add(assignee);
     }
 
 
