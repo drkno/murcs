@@ -11,9 +11,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.model.Person;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
+import java.awt.*;
 import java.util.Objects;
 
 /**
@@ -83,19 +85,25 @@ public class TaskEditor {
     private TextField nameTextField, estimateTextField;
 
     /**
+     * The label that has the assigned people's names on it.
+     */
+    @FXML
+    private Label assigneesLabel;
+
+    /**
      * The height of the window during creation.
      */
-    private static final double CREATION_HEIGHT = 240.0;
+    private static final double CREATION_HEIGHT = 270.0;
 
     /**
      * The height of the window when it is collapsed.
      */
-    private static final double COLLAPSED_HEIGHT = 50.0;
+    private static final double COLLAPSED_HEIGHT = 80.0;
 
     /**
      * The height of the window when it is expanded.
      */
-    private static final double EXPANDED_HEIGHT = 210.0;
+    private static final double EXPANDED_HEIGHT = 240.0;
 
     /**
      * Sets up the form with all its event handlers and things.
@@ -284,5 +292,26 @@ public class TaskEditor {
             popup.close();
         });
         popup.show();
+    }
+
+    /**
+     * The opens a new popover window to add and remove assigned people.
+     * @param event An event, probably clicking.
+     */
+    @FXML
+    private void editAssignedButtonClick(final ActionEvent event) {
+
+    }
+
+    public void addAssignee(Person assignee) {
+        task.addAssignee(assignee);
+    }
+
+    public void removeAssignee(Person assignee) {
+        task.removeAssignee(assignee);
+    }
+
+    public Task getTask() {
+        return task;
     }
 }
