@@ -162,6 +162,16 @@ public class TaskEditor {
             stateChoiceBox.getSelectionModel().select(newTask.getState());
             descriptionTextArea.setText(newTask.getDescription());
         }
+        updateAssigneesLabel();
+    }
+
+    private void updateAssigneesLabel() {
+        if (task.getAssignees().size() > 0) {
+            assigneesLabel.setText(task.getAssigneesAsString());
+        }
+        else {
+            assigneesLabel.setText("Not assigned!");
+        }
     }
 
     /**
@@ -326,10 +336,12 @@ public class TaskEditor {
 
     public void addAssignee(Person assignee) {
         task.addAssignee(assignee);
+        updateAssigneesLabel();
     }
 
     public void removeAssignee(Person assignee) {
         task.removeAssignee(assignee);
+        updateAssigneesLabel();
     }
 
     public Task getTask() {

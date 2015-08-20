@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A class for keeping track of a Task within a story.
@@ -180,5 +181,9 @@ public class Task extends TrackableObject implements Serializable {
 
     public Collection<Person> getAssignees() {
         return assignees;
+    }
+
+    public String getAssigneesAsString() {
+        return assignees.stream().map(Person::getShortName).collect(Collectors.joining(", "));
     }
 }
