@@ -1,8 +1,5 @@
 package sws.murcs.reporting.ui;
 
-import com.oracle.jrockit.jfr.Producer;
-import com.sun.tools.javac.code.Attribute;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
@@ -24,6 +21,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -35,12 +33,8 @@ import sws.murcs.view.App;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -115,6 +109,11 @@ public class ReportGeneratorController {
      * Group containing toggle buttons.
      */
     private ToggleGroup toggleGroup;
+
+    /**
+     * The window for the report generator.
+     */
+    private Window window;
 
     /**
      * Empty Constructor for fxml creation.
@@ -289,8 +288,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     managementList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type "
-                            + "has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
         }
     }
@@ -320,8 +319,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     workflowList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type "
-                            + "has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
         }
     }
@@ -380,7 +379,7 @@ public class ReportGeneratorController {
      */
     @FXML
     private void cancelButtonClicked(final ActionEvent event) {
-        stage.close();
+        window.close();
     }
 
     /**
@@ -403,13 +402,14 @@ public class ReportGeneratorController {
                 if (file != null) {
                     generateReport(file);
                     PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
-                    stage.close();
+                    window.close();
                 }
             } catch (Exception e) {
                 if (file != null) {
                     file.delete();
                 }
-                ErrorReporter.get().reportError(e, "Failed to generate report");
+                ErrorReporter.get().reportError(e,
+                        "Something went wrong creating a report, probably to do with saving the file");
             }
         }
     }
@@ -484,5 +484,21 @@ public class ReportGeneratorController {
         else {
             return true;
         }
+    }
+
+    /**
+     * Shows the creation window.
+     */
+    public final void show() {
+        window.show();
+    }
+
+    /**
+     * Creates a window that can be managed.
+     */
+    public final void setUpWindow() {
+        window = new Window(stage, this);
+        window.register();
+        window.addGlobalShortcutsToWindow();
     }
 }

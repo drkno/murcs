@@ -1,7 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.time.LocalDate;
-import java.util.Optional;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
@@ -12,6 +10,9 @@ import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 /**
  * An editor for editing/creating a release.
@@ -104,6 +105,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

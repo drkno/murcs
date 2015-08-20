@@ -93,27 +93,27 @@ public class FadeButtonOnHover {
      * Sets up the effect on the button.
      */
     public final void setupEffect() {
-        button.setOpacity(0);
+        button.setOpacity(0.1);
 
         final FadeTransition fadeInEmbedded = new FadeTransition(fadeDuration, button);
         fadeInEmbedded.setAutoReverse(false);
-        fadeInEmbedded.setFromValue(0);
+        fadeInEmbedded.setFromValue(0.1);
         fadeInEmbedded.setToValue(1);
 
         final FadeTransition fadeOutEmbedded = new FadeTransition(fadeDuration, button);
         fadeOutEmbedded.setAutoReverse(false);
         fadeOutEmbedded.setFromValue(1);
-        fadeOutEmbedded.setToValue(0);
+        fadeOutEmbedded.setToValue(0.1);
 
         final FadeTransition fadeIn = new FadeTransition(fadeDuration, button);
         fadeIn.setAutoReverse(false);
-        fadeIn.setFromValue(0);
+        fadeIn.setFromValue(0.1);
         fadeIn.setToValue(1);
 
         final FadeTransition fadeOut = new FadeTransition(fadeDuration, button);
         fadeOut.setAutoReverse(false);
         fadeOut.setFromValue(1);
-        fadeOut.setToValue(0);
+        fadeOut.setToValue(0.1);
 
         final PauseTransition pause = new PauseTransition(Duration.millis(delay));
 

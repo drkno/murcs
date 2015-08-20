@@ -59,7 +59,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 UndoRedoManager.add(model);
 
                 project = new Project();
-                project.setShortName("Testing");
+                project.setShortName("Testing project");
 
                 skill = new Skill();
                 skill.setShortName("Skill");

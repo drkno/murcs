@@ -278,7 +278,7 @@ public class TaskEditor {
         GenericPopup popup = new GenericPopup();
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
-        popup.addYesNoButtons(p -> {
+        popup.addYesNoButtons(() -> {
             storyEditor.removeTask(task);
             storyEditor.removeTaskEditor(parent);
             popup.close();

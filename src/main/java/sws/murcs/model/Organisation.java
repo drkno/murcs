@@ -1,14 +1,5 @@
 package sws.murcs.model;
 
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -18,6 +9,17 @@ import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.observable.ModelObservableArrayList;
+import sws.murcs.search.Searchable;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * The top level organisation. Manages the Model types within the application. This involves the adding, removing,
@@ -28,42 +30,49 @@ public class Organisation extends TrackableObject implements Serializable {
     /**
      * The list of projects currently loaded in the application.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Project> projects;
 
     /**
      * The list of all the releases in the current application.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Release> releases;
 
     /**
      * The list of all the work allocations in the application.
      */
+    @Searchable
     @TrackableValue
     private final List<WorkAllocation> allocations;
 
     /**
      * The list of teams within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Team> teams;
 
     /**
      * The list of people within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Person> people;
 
     /**
      * The list of skills that people can have within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Skill> skills;
 
     /**
      * The list of backlogs within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Backlog> backlogs;
 
@@ -76,6 +85,7 @@ public class Organisation extends TrackableObject implements Serializable {
     /**
      * The list of stories contained within the current organisation.
      */
+    @Searchable
     @TrackableValue
     private final ModelObservableArrayList<Story> stories;
 

@@ -70,6 +70,7 @@ public class SkillEditor extends GenericEditor<Skill> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

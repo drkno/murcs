@@ -5,6 +5,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,6 +47,7 @@ public class Story extends Model {
      * Indicates the current state of the story
      * (e.g. ready, not ready, in progress)
      */
+    @Searchable
     @TrackableValue
     private StoryState storyState;
 
@@ -54,6 +56,7 @@ public class Story extends Model {
      * story can be marked as done. This has been made a list
      * (as opposed to a Collection) as order is important.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "acceptanceCriteria")
     @XmlElement(name = "acceptanceCriterion")
@@ -62,21 +65,17 @@ public class Story extends Model {
     /**
      * The list of tasks associated with this story.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "tasks")
     @XmlElement(name = "task")
     private List<Task> tasks;
 
     /**
-     * A description of the story.
-     */
-    @TrackableValue
-    private String description;
-
-    /**
      * The person who created this story. This should not be changed after
      * initial creation.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person creator;
@@ -84,6 +83,7 @@ public class Story extends Model {
     /**
      * Stories that must be complete before this story can be worked on.
      */
+    @Searchable
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependence")
     @XmlIDREF

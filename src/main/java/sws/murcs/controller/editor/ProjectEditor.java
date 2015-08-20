@@ -1,7 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,6 +20,9 @@ import sws.murcs.model.Project;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Controller for the model creator popup window.
@@ -132,6 +133,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override
@@ -234,11 +236,11 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\" from \""
                 + allocation.getProject()
                 + "\"?");
-        alert.addYesNoButtons(a -> {
+        alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
-        });
+        }, "danger-will-robinson", "dont-panic");
         alert.show();
     }
 

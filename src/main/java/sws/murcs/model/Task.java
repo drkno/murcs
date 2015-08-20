@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-
 import java.util.Objects;
 
 /**
@@ -136,5 +135,10 @@ public class Task extends TrackableObject implements Serializable {
             c = getName().hashCode();
         }
         return hashCodePrime + c;
+    }
+
+    @Override
+    public final String toString() {
+        return state + " (" + estimate + "): " + name + " - " + description;
     }
 }

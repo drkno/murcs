@@ -1,9 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +29,12 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The controller for the team editor.
@@ -142,6 +144,7 @@ public class TeamEditor extends GenericEditor<Team> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override
@@ -332,26 +335,36 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setTitleText("Remove Team Member");
-            String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
-            if (getModel().getScrumMaster() != null && getModel().getScrumMaster().equals(person)) {
-                message += "\nThey are currently the teams Scrum Master.";
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                popup.setTitleText("Remove Team Member");
+                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                if (person.equals(getModel().getScrumMaster())) {
+                    message += "\nThey are currently the teams Scrum Master.";
+                }
+                if (person.equals(getModel().getProductOwner())) {
+                    message += "\nThey are currently the teams Product Owner.";
+                }
+                popup.setMessageText(message);
+                popup.addYesNoButtons(() -> {
+                    allocatablePeople.add(person);
+                    Node memberNode = memberNodeIndex.get(person);
+                    teamMembersContainer.getChildren().remove(memberNode);
+                    memberNodeIndex.remove(person);
+                    getModel().removeMember(person);
+                    updatePOSM();
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
             }
-            if (getModel().getProductOwner() != null && getModel().getProductOwner().equals(person)) {
-                message += "\nThey are currently the teams Product Owner.";
-            }
-            popup.setMessageText(message);
-            popup.addYesNoButtons(f -> {
+            else {
                 allocatablePeople.add(person);
                 Node memberNode = memberNodeIndex.get(person);
                 teamMembersContainer.getChildren().remove(memberNode);
                 memberNodeIndex.remove(person);
                 getModel().removeMember(person);
                 updatePOSM();
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();

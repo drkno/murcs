@@ -1,8 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +23,11 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Allows you to model a model.
@@ -115,6 +117,7 @@ public class PersonEditor extends GenericEditor<Person> {
         else {
             shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override
@@ -185,20 +188,29 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + skill.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Skill from Person");
-            popup.addYesNoButtons(func -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                popup.setMessageText("Are you sure you want to remove "
+                        + skill.getShortName() + " from "
+                        + getModel().getShortName() + "?");
+                popup.setTitleText("Remove Skill from Person");
+                popup.addYesNoButtons(() -> {
+                    allocatableSkills.add(skill);
+                    Node skillNode = skillNodeIndex.get(skill);
+                    allocatedSkillsContainer.getChildren().remove(skillNode);
+                    skillNodeIndex.remove(skill);
+                    getModel().removeSkill(skill);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+            else {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);
                 skillNodeIndex.remove(skill);
                 getModel().removeSkill(skill);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();
@@ -209,8 +221,7 @@ public class PersonEditor extends GenericEditor<Person> {
         ColumnConstraints column2 = new ColumnConstraints();
         column2.setHgrow(Priority.SOMETIMES);
 
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
+        pane.getColumnConstraints().addAll(column1, column2);
 
         if (getIsCreationWindow()) {
             Text nameText = new Text(skill.toString());
@@ -218,6 +229,7 @@ public class PersonEditor extends GenericEditor<Person> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(skill.toString());
+            nameLink.setMinWidth(0.0);
             nameLink.setOnAction(a -> NavigationManager.navigateTo(skill));
             pane.add(nameLink, 0, 0);
         }

@@ -41,6 +41,7 @@ public class OrganisationSkillTest {
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
     }
 
     /**

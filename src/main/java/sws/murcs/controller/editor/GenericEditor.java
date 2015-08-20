@@ -1,12 +1,10 @@
 package sws.murcs.controller.editor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
@@ -18,6 +16,9 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * The type of model the editor is being used for.
      */
-    private T model;
+    protected T model;
 
     /**
      * The label for showing error messages.
@@ -61,7 +62,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     /**
      * Details whether or not the window is a creator for a new model or an editor.
      */
-    private boolean isCreationWindow;
+    protected boolean isCreationWindow;
+
+    /**
+     * Whether or not the editor is loaded.
+     */
+    protected boolean isLoaded;
 
     /**
      * Stores if a save changes button exists, preventing a new button being created
@@ -102,6 +108,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final void setModel(final Model pModel) {
         if (pModel != null) {
+            isLoaded = false;
             model = (T) pModel;
             setIsCreationWindow(pModel.getShortName() == null);
             setupSaveChangesButton();
@@ -148,7 +155,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             errorMessagePopover.autoHideProperty().setValue(false);
 
             errorMessagePopoverListener = (observable, oldValue, newValue) -> {
-                if (!newValue && observable != null) {
+                if (!newValue && observable != null && errorMessagePopoverListener != null) {
                     observable.removeListener(errorMessagePopoverListener);
                     errorMessagePopover.hide();
                 }
@@ -374,5 +381,21 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
         saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
         bottomBar.getChildren().add(saveButton);
         HBox.setMargin(saveButton, new Insets(pad, 0, 0, pad));
+    }
+
+    /**
+     * Gets the save changes button so that it can be externally manipulated.
+     * @return the save changes button.
+     */
+    public final Button getSaveChangesButton() {
+        return saveButton;
+    }
+
+    /**
+     * Is the editor loaded.
+     * @return if the editor is loaded.
+     */
+    public final boolean isLoaded() {
+        return isLoaded;
     }
 }

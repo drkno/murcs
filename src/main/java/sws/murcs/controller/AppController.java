@@ -1,9 +1,5 @@
 package sws.murcs.controller;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -19,13 +15,14 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import sws.murcs.controller.editor.BacklogEditor;
+import sws.murcs.controller.windowManagement.ShortcutManager;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -46,8 +43,17 @@ import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ui.ReportGeneratorView;
+import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+import sws.murcs.view.SearchView;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate
@@ -126,6 +132,11 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private CreatorWindowView creatorWindow;
 
     /**
+     * Stores an instance of the main app window.
+     */
+    private Window window;
+
+    /**
      * The controller for the toolbar in the window.
      */
     private ToolBarController toolBarController;
@@ -138,10 +149,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     public final void initialize() {
         addToolBar();
         NavigationManager.setAppController(this);
-        App.addListener(e -> {
-            e.consume();
-            fileQuitPress(null);
-        });
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
@@ -165,7 +172,6 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 updateDisplayListSelection(newValue, oldValue);
             }
         });
-        setUpShortCuts();
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.addChangeListener(this);
@@ -218,47 +224,65 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     private void setUpShortCuts() {
         //Menu item shortcuts
         // You should use SHORTCUT_DOWN as it uses the COMMAND key for Mac and the CTRL key for Windows
-        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
-        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
-        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN
-                , KeyCombination.SHIFT_DOWN));
-        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
-        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
-        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
-                KeyCombination.SHIFT_DOWN));
-        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
-        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
-        addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
-        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
-        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
-        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
-        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
-        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
-        addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
-        addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
-        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+        ShortcutManager shortcutManager = App.getShortcutManager();
 
-        //Key combinations for things other than menu items
-        borderPaneMain.addEventHandler(KeyEvent.KEY_PRESSED, event -> handleKey(event));
-    }
+        //Global shortcuts
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN), () -> revert(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN),
+                () -> newModel(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN),
+                this::save);
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
+                        KeyCombination.SHIFT_DOWN), () -> saveAs(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN),
+                () -> open(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
+                () -> generateReport(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
+                () -> ErrorReporter.get().reportManually());
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
+                () -> search(null));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Project));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Team));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Person));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Skill));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Release));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Backlog));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Story));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
+                () -> addNewItem(ModelType.Sprint));
 
-    /**
-     * Handles keys being pressed.
-     * @param event Key event
-     */
-    private void handleKey(final KeyEvent event) {
-        if (new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHIFT_DOWN).match(event)) {
-            add(null);
-        }
-        if (new KeyCodeCombination(KeyCode.DELETE).match(event)) {
-            remove(null);
-        }
-        if (new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN).match(event)) {
-            back(null);
-        }
-        if (new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.ALT_DOWN).match(event)) {
-            forward(null);
-        }
+        //Local shortcuts.
+        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
+        accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
+                () -> undo(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
+                () -> redo(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+                () -> toggleItemListView(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS, KeyCombination.SHORTCUT_DOWN),
+                () -> add(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS,
+                        KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN),
+                () -> add(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.DELETE, KeyCombination.SHORTCUT_DOWN),
+                () -> remove(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+                () -> back(null));
+        accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+                () -> forward(null));
+
+        App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
 
     /**
@@ -306,26 +330,42 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     private void fileQuitPress(final ActionEvent event) {
-        if (UndoRedoManager.canRevert()) {
-            GenericPopup popup = new GenericPopup();
-            popup.setWindowTitle("Unsaved Changes");
-            popup.setTitleText("Do you wish to save changes?");
-            popup.setMessageText("You have unsaved changes to your project.");
-            popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
+        borderPaneMain.requestFocus();
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup(window);
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
+                App.getWindowManager().cleanUp();
                 Platform.exit();
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                // Let the user save the project
-                if (save()) {
-                    popup.close();
-                    Platform.exit();
-                }
-            });
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+            }, "danger-will-robinson");
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (save()) {
+                        popup.close();
+                        App.getWindowManager().cleanUp();
+                        Platform.exit();
+                    }
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            Platform.runLater(() -> {
+                                App.getWindowManager().bringToTop(openWindow, true);
+                            });
+                        });
+            }, "dont-panic");
             popup.show();
         }
         else {
+            App.getWindowManager().cleanUp();
             Platform.exit();
         }
     }
@@ -377,8 +417,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup(e);
-            popup.show();
+            ErrorReporter.get().reportError(e, "Something went wrong saving :(");
         }
         return false;
     }
@@ -421,7 +460,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             }
         }
         catch (Exception e) {
-            showSaveFailedDialog();
+            ErrorReporter.get().reportError(e, "Something went wrong saving :(");
         }
         return false;
     }
@@ -432,57 +471,54 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     private void newModel(final ActionEvent event) {
-        try {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup(window);
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+                popup.close();
+                try {
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
+                    createNewModel();
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
+                }
+            }, "danger-will-robinson");
             if (UndoRedoManager.canRevert()) {
-                GenericPopup popup = new GenericPopup();
-                popup.setWindowTitle("Unsaved Changes");
-                popup.setTitleText("Do you wish to save changes?");
-                popup.setMessageText("You have unsaved changes.");
-                popup.addButton("Discard", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
-                    popup.close();
-                    try {
-                        createNewModel();
-                    } catch (Exception e) {
-                        GenericPopup errorPopup = new GenericPopup(e);
-                        errorPopup.show();
-                    }
-                });
-                popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
+                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
                         try {
+                            // Close all windows which are not the main app.
+                            App.getWindowManager().cleanUp();
                             createNewModel();
                         } catch (Exception e) {
-                            showSaveFailedDialog();
+                            ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
                         }
                     }
-                    else {
-                        showSaveFailedDialog();
-                    }
                 });
-                popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
-                popup.show();
             }
-            else {
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow, true);
+                        });
+            }, "dont-panic");
+            popup.show();
+        }
+        else {
+            try {
                 createNewModel();
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
             }
         }
-        catch (Exception e) {
-            showSaveFailedDialog();
-        }
-    }
-
-    /**
-     * Shows a failed save dialog.
-     */
-    private void showSaveFailedDialog() {
-        GenericPopup errorPopup = new GenericPopup();
-        String message = "Something went wrong saving";
-        errorPopup.setTitleText("Something went wrong");
-        errorPopup.setMessageText(message);
-        errorPopup.addButton("Ok", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> errorPopup.close());
-        errorPopup.show();
     }
 
     /**
@@ -500,11 +536,54 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     }
 
     /**
-     * Opens a specified project file, from a specified location.
+     * Opens a file.
      * @param event The event that caused the function to be called.
      */
     @FXML
     public final void open(final ActionEvent event) {
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup(window);
+            popup.setWindowTitle("Still working on something?");
+            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
+            popup.setMessageText("Do you want to,");
+            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+                if (openFile()) {
+                    popup.close();
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
+                }
+            }, "danger-will-robinson");
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (save() && openFile()) {
+                        popup.close();
+                        // Close all windows which are not the main app.
+                        App.getWindowManager().cleanUp();
+                    }
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow, true);
+                        });
+            }, "dont-panic");
+            popup.show();
+        }
+        else {
+            openFile();
+        }
+    }
+
+    /**
+     * Prompts the user to open an organisation.
+     * @return If opening the file was successful.
+     */
+    private boolean openFile() {
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
@@ -527,14 +606,19 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
                 //This happens because forget clears the navigation history
                 displayList.getSelectionModel().clearSelection();
                 displayList.getSelectionModel().select(0);
+                return true;
+            }
+            else {
+                return false;
             }
         }
         catch (Exception e) {
-            GenericPopup popup = new GenericPopup();
+            GenericPopup popup = new GenericPopup(window);
             popup.setTitleText("Old or corrupted project!");
             popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
                     + "Please use the version it was created with to open the file.");
             popup.show();
+            return false;
         }
     }
 
@@ -586,37 +670,47 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
      */
     @FXML
     public final void revert(final ActionEvent event) {
-        if (UndoRedoManager.canRevert()) {
-            GenericPopup popup = new GenericPopup();
-            popup.setTitleText("Do you wish to revert changes?");
-            popup.setMessageText("There are unsaved changes that will be lost if you continue.\n"
-                    + "If you wish to save your current changes first press 'Save'.");
-            popup.addButton("Revert", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, m -> {
-                popup.close();
+        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+            GenericPopup popup = new GenericPopup(window);
+            popup.setTitleText("Revert changes?");
+            popup.setMessageText("Look like you are still working on something"
+                    + "\nChanges will be lost if you continue.");
+            popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.revert(0);
-                } catch (Exception e) {
-                    GenericPopup errorPopup = new GenericPopup(e);
-                    errorPopup.show();
-                }
-                selectItem(null);
-            });
-            popup.addButton("Save", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, m -> {
-                // Let the user save the project
-                if (saveAs(null, false)) {
                     popup.close();
-                    try {
-                        UndoRedoManager.revert(0);
-                    } catch (Exception e) {
-                        GenericPopup errorPopup = new GenericPopup(e);
-                        errorPopup.show();
+                    // Close all windows which are not the main app.
+                    App.getWindowManager().cleanUp();
+                    selectItem(null);
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
+                }
+            }, "danger-will-robinson");
+            if (UndoRedoManager.canRevert()) {
+                popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                    // Let the user save the project
+                    if (saveAs(null, false)) {
+                        try {
+                            UndoRedoManager.revert(0);
+                            popup.close();
+                            // Close all windows which are not the main app.
+                            App.getWindowManager().cleanUp();
+                            selectItem(null);
+                        } catch (Exception e) {
+                            ErrorReporter.get().reportError(e, "Something went wrong saving the organisation");
+                        }
                     }
-                }
-                else {
-                    showSaveFailedDialog();
-                }
-            });
-            popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, m -> popup.close());
+                });
+            }
+            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+                popup.close();
+                App.getWindowManager().getAllWindows()
+                        .stream()
+                        .filter(openWindow -> openWindow.getController().getClass() != this.getClass())
+                        .forEach(openWindow -> {
+                            App.getWindowManager().bringToTop(openWindow, true);
+                        });
+            }, "dont-panic");
             popup.show();
         }
     }
@@ -714,7 +808,23 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
             ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
             clazz = ModelType.getTypeFromModel(type);
         }
+        createNewItem(clazz);
+    }
 
+    /**
+     * Adds a new item from a given model type.
+     * @param modelType The type to get the class from.
+     */
+    private void addNewItem(final ModelType modelType) {
+        Class<? extends Model> clazz = ModelType.getTypeFromModel(modelType);
+        createNewItem(clazz);
+    }
+
+    /**
+     * Creates a new model from a class instance.
+     * @param clazz the class to create the model instance from.
+     */
+    private void createNewItem(final Class<? extends Model> clazz) {
         if (clazz != null) {
             try {
                 creatorWindow = new CreatorWindowView(clazz.newInstance(),
@@ -765,7 +875,7 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         }
 
         Collection<Model> usages = UsageHelper.findUsages(selectedItem);
-        GenericPopup popup = new GenericPopup();
+        GenericPopup popup = new GenericPopup(window);
         String message = "Are you sure you want to delete this?";
         if (usages.size() != 0) {
             message += "\nThis ";
@@ -778,14 +888,14 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
         popup.setTitleText("Really delete?");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, v -> {
+        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
             popup.close();
             NavigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             toolBarController.updateBackForwardButtons();
-        });
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, v -> popup.close());
+        }, "danger-will-robinson");
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "dont-panic");
         popup.show();
     }
 
@@ -877,11 +987,68 @@ public class AppController implements ViewUpdate<Model>, UndoRedoChangeListener,
     }
 
     /**
+     * The function that is called to bring up the search window.
+     * @param event Clicking the search button on the toolbar.
+     */
+    public final void search(final ActionEvent event) {
+        SearchView.get().show(borderPaneMain.getScene().getWindow());
+    }
+
+    /**
      * Toggles a section of the toolbar based on the check menu item selected in the view menu.
      * @param event Clicking on an option in the tool bar section of the view menu.
      */
     @FXML
     private void toolBarToggle(final ActionEvent event) {
         toolBarController.toolBarToggle(event);
+    }
+
+    /**
+     * Shows the main app.
+     */
+    public final void show() {
+        window = new Window(App.getStage(), this);
+        window.register();
+        window.show();
+        window.getStage().setOnCloseRequest(App::notifyListeners);
+        App.addListener(e -> {
+            e.consume();
+            fileQuitPress(null);
+        });
+        setUpShortCuts();
+    }
+
+    /**
+     * Gets the window of the AppController.
+     * @return The window for AppController.
+     */
+    public final Window getWindow() {
+        return window;
+    }
+
+    /**
+     * Shows the about window.
+     * @param actionEvent event arguments.
+     */
+    @FXML
+    private void showAbout(final ActionEvent actionEvent) {
+        AboutView aboutWindow = new AboutView(window);
+        aboutWindow.show();
+    }
+
+    /**
+     * Gets the toolBar controller.
+     * @return The toolBar controller.
+     */
+    public final ToolBarController getToolBarController() {
+        return toolBarController;
+    }
+
+    /**
+     * Gets the current type that is displayed within the display list.
+     * @return the current type.
+     */
+    public final ModelType getCurrentType() {
+        return ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
     }
 }

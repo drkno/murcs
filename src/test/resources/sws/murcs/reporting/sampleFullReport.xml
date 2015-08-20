@@ -24,6 +24,7 @@
                 <prioritisedStories>
                     <story shortName="1">
                         <longName>Revert</longName>
+                        <description>Revert to last saved state</description>
                         <storyState>None</storyState>
                         <acceptanceCriteria>
                             <acceptanceCriterion>
@@ -32,7 +33,6 @@
                         </acceptanceCriteria>
                         <tasks>
                             <task>
-                                <hashCodePrime>43</hashCodePrime>
                                 <name>Become one with the universe</name>
                                 <description>Attempt to absorb the universe, this problably won't work</description>
                                 <estimate>100.0</estimate>
@@ -49,6 +49,7 @@
                 <estimateType>Fibonacci</estimateType>
             </backlog>
         </backlogs>
+        <sprints/>
         <workAllocations>
             <workAllocation>
                 <project>FITR</project>
@@ -60,6 +61,7 @@
         <unassignedStories>
             <story shortName="2">
                 <longName>Story Maintenance</longName>
+                <description>add stories to project</description>
                 <storyState>None</storyState>
                 <acceptanceCriteria/>
                 <tasks/>
