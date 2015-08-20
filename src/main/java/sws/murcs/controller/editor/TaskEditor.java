@@ -5,14 +5,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.SearchController;
+import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Person;
@@ -20,7 +17,6 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -307,7 +303,7 @@ public class TaskEditor {
      * @param event An event, probably clicking.
      */
     @FXML
-    private void editAssignedButtonClick(final ActionEvent event) {
+    private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
@@ -323,6 +319,8 @@ public class TaskEditor {
                 ErrorReporter.get().reportError(e, "Could not create a assignee popover");
             }
         }
+
+        assigneePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
         assigneePopOver.show(editAssignedButton);
     }
 
