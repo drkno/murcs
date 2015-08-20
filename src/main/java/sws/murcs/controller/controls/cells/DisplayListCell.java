@@ -54,8 +54,8 @@ public class DisplayListCell extends ListCell<Model> {
 
         if (root == null) {
             root = new Label();
-            root.textProperty().bind(model.getShortNameProperty());
         }
+        root.textProperty().bind(model.getShortNameProperty());
 
         setGraphic(root);
     }
