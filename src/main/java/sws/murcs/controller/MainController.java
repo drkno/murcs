@@ -428,7 +428,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             return controller;
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorReporter.get().reportErrorSecretly(e, "Failed to load tabs");
         }
 
         return null;
