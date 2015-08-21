@@ -395,7 +395,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 					event.setDropCompleted(false);
 				}
 			} catch (Throwable e) {
-				e.printStackTrace();
+                ErrorReporter.get().reportErrorSecretly(e, "Reflection error on tabpaneskin (bad)");
 			}
 
 			event.consume();
