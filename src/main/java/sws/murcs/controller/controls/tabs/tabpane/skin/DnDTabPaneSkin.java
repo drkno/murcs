@@ -24,7 +24,8 @@ import javafx.scene.paint.Color;
 import sws.murcs.controller.controls.tabs.tabpane.DropListener;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
-import java.awt.*;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;

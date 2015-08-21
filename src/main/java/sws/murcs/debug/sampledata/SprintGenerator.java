@@ -360,8 +360,8 @@ public class SprintGenerator implements Generator<Sprint> {
     @Override
     @SuppressWarnings("checkstyle:magicnumber")
     public final Sprint generate() {
-        int weeksBetweenStartEnd = 6;
-        int daysBeforeRelease = 30;
+        final int weeksBetweenStartEnd = 6;
+        final int daysBeforeRelease = 30;
         Sprint sprint = new Sprint();
         try {
             StringBuilder sprintName = new StringBuilder(GenerationHelper.randomElement(SPRINT_NAMES));
