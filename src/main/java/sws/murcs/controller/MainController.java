@@ -523,6 +523,18 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(false, redoPrompt);
         }
+
+        //Update all the tabs that are selected.
+        for (Tabbable t : tabs) {
+            TabPane pane = t.getTab().getTabPane();
+            if (pane == null) {
+                continue;
+            }
+
+            if (pane.getSelectionModel().getSelectedItem() == t.getTab()) {
+                t.update();
+            }
+        }
     }
 
     /**
