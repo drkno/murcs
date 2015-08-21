@@ -1,8 +1,5 @@
 package sws.murcs.controller;
 
-import java.io.File;
-import java.util.*;
-
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -26,7 +23,6 @@ import javafx.stage.FileChooser;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
-import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -55,7 +51,9 @@ import sws.murcs.view.SearchView;
 import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Main app class controller. This controls all the main window functionality, so anything that isn't in a separate

@@ -393,8 +393,11 @@ public class Organisation extends TrackableObject implements Serializable {
             }
         }
 
-        //Set the team to null for any sprint that uses this team
-        getSprints().stream().filter(sprint -> team.equals(sprint.getTeam())).forEach(sprint -> sprint.setTeam(null));
+        //Remove any sprints for this team
+        getSprints().stream()
+                .filter(sprint -> team.equals(sprint.getTeam()))
+                .collect(Collectors.toList())
+                .forEach(sprints::remove);
     }
 
     /**
@@ -747,17 +750,10 @@ public class Organisation extends TrackableObject implements Serializable {
                 .filter(project -> project.getReleases().contains(release))
                 .forEach(project -> project.removeRelease(release));
 
-        //Remove it from any sprints it is associated with
+        //Remove any sprints it is associated with
         getSprints().stream()
                 .filter(sprint -> release.equals(sprint.getAssociatedRelease()))
-                .forEach(sprint -> {
-                    try {
-                        sprint.setAssociatedRelease(null);
-                    } catch (InvalidParameterException e) {
-                        //This should never happen, as the exception is dependent
-                        //on the release not being null
-                    }
-                });
+                .collect(Collectors.toList()).forEach(sprints::remove);
     }
 
     /**
@@ -793,7 +789,7 @@ public class Organisation extends TrackableObject implements Serializable {
         //Remove it from any sprints
         getSprints().stream()
                 .filter(sprint -> sprint.getStories().contains(story))
-                .forEach(sprint -> sprint.getStories().remove(story));
+                .forEach(sprint -> sprint.removeStory(story));
 
     }
 
