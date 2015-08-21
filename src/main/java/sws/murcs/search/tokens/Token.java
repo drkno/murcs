@@ -40,8 +40,8 @@ public abstract class Token {
         new BangCommand("team", "te", "Searches teams.", v -> addSearchType(v, ModelType.Team)),
         new BangCommand("current", "cu", "Searches the current display list.",
         v -> {
-            if (App.getAppController() != null) {
-                addSearchType(v, App.getAppController().getCurrentType());
+            if (App.getMainController() != null) {
+                addSearchType(v, App.getMainController().getCurrentModelType());
             }
         })
     };

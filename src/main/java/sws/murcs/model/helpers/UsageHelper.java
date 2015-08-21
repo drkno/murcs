@@ -1,10 +1,5 @@
 package sws.murcs.model.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -19,6 +14,11 @@ import sws.murcs.model.Task;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Helps to find usages of a model within the current organisation. This is a singleton class and is not designed to be

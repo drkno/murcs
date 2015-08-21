@@ -255,7 +255,7 @@ public class StoryGenerator implements Generator<Story> {
                 story.addTask(task);
             }
             catch (CustomException e) {
-                //Should never happen
+                //Should never happen but does
             }
         }
 
@@ -315,6 +315,7 @@ public class StoryGenerator implements Generator<Story> {
                 catch (CyclicDependencyException e) {
                     // Ignore this, there is no effective way of checking for and
                     // dealing with these in an acceptable time frame.
+                    return;
                 }
             }
         });

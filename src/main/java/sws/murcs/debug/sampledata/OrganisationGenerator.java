@@ -106,7 +106,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
 
     /**
      * Set numbering on the model objects (short names).
-     * @param isNumbering
+     * @param isNumbering is numbering on
      */
     public static final void isNumbering(final boolean isNumbering) {
         numbering = isNumbering;

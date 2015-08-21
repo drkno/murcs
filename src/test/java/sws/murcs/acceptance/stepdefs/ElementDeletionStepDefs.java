@@ -16,7 +16,14 @@ import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 

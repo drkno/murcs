@@ -6,7 +6,6 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
-import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,8 +78,6 @@ public class BacklogGenerator implements Generator<Backlog> {
      * A list of stories to use in this backlog, not copied.
      */
     private List<Story> unsafeStoryPool;
-
-    private List<Story> inUse = new ArrayList<>();
 
     /**
      * A list of people to use in this team.

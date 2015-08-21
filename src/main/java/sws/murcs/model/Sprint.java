@@ -1,9 +1,11 @@
 package sws.murcs.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.search.Searchable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -11,11 +13,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.reporting.LocalDateAdapter;
-import sws.murcs.search.Searchable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Model of a sprint.

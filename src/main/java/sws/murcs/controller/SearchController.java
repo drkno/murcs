@@ -234,7 +234,7 @@ public class SearchController {
         foundItems.getStyleClass().add("search-list");
 
         selectEvent = event -> {
-            NavigationManager.navigateTo(foundItems.getSelectionModel().getSelectedItem().getModel());
+            App.getMainController().navigateToNewTab(foundItems.getSelectionModel().getSelectedItem().getModel());
             popOverWindow.hide();
         };
 
@@ -552,13 +552,13 @@ public class SearchController {
 
                     synchronized (StyleManager.getInstance()) {
                         if (editorPane == null) {
-                            editorPane = new EditorPane(newValue);
+                            editorPane = new EditorPane(newValue, App.getMainController());
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
                             editorPane.setModel(newValue);
                         }
                         else {
                             editorPane.dispose();
-                            editorPane = new EditorPane(newValue);
+                            editorPane = new EditorPane(newValue, App.getMainController());
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
 

@@ -1,11 +1,6 @@
 package sws.murcs.controller.editor;
 
 import javafx.animation.FadeTransition;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -31,6 +26,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -39,11 +35,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
-import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
@@ -59,7 +54,11 @@ import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An editor for the story model.
@@ -568,7 +567,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
@@ -612,7 +611,13 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(newDependency);
+                } else {
+                    getNavigationManager().navigateTo(newDependency);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
@@ -997,7 +1002,7 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                if (UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
+                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
                         && getModel().getAcceptanceCriteria().size() <= 1) {
                     List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
                             .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))

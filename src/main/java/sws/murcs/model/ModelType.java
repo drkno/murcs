@@ -137,4 +137,22 @@ public enum ModelType {
     public static Class<? extends Model> getTypeFromModel(final ModelType type) {
         return type.clazz;
     }
+
+    /**
+     * Attempts to get a model type from a string. This is calculated
+     * by seeing if the type (as a lower case string) is contained by
+     * the "modelTypeString." If no type matches, the method will return
+     * null.
+     * @param modelTypeString The string to attempt to parse.
+     * @return The parsed type. Null if the method fails.
+     */
+    public static ModelType parseString(final String modelTypeString) {
+        for (ModelType type : values()) {
+            String asString = type.toString().toLowerCase();
+            if (modelTypeString.toLowerCase().contains(asString)) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

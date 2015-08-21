@@ -1,8 +1,9 @@
 package sws.murcs.unit.model;
 
-import java.util.List;
 import org.junit.Test;
 import sws.murcs.model.EstimateType;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 

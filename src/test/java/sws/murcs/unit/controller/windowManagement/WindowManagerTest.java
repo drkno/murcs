@@ -1,6 +1,5 @@
 package sws.murcs.unit.controller.windowManagement;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import javafx.stage.Stage;
 import org.junit.After;
 import org.junit.Before;
@@ -12,7 +11,6 @@ import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.controller.windowManagement.WindowManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;

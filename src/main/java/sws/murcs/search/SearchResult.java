@@ -1,6 +1,7 @@
 package sws.murcs.search;
 
 import sws.murcs.model.Model;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
