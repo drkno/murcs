@@ -30,6 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import sws.murcs.controller.controls.tabs.tabpane.DropListener;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 
 import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DragSetup;
 import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DropType;
@@ -216,8 +217,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 				db.setContent(content);
 			}
 		} catch (Throwable t) {
-			// // TODO Auto-generated catch block
-			t.printStackTrace();
+			ErrorReporter.get().reportErrorSecretly(t, "Java seems to have changed their internals :/");
 		}
 	}
 
