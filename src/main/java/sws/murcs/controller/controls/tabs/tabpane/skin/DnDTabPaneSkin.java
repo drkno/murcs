@@ -297,7 +297,8 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 
 				efxDragFeedback(draggedTab, tab, b, type);
 			} catch (Throwable e) {
-				e.printStackTrace();
+				ErrorReporter.get().reportErrorSecretly(e,
+						"Reflection error! Something inside tabpane skin has changed :/");
 			}
 
 			event.acceptTransferModes(TransferMode.MOVE);
