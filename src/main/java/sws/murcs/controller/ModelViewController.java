@@ -1,11 +1,16 @@
 package sws.murcs.controller;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -26,10 +31,6 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Model View controller. Controls the main tabs.
