@@ -418,6 +418,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         return displayChoiceBox.getValue();
     }
 
+    @Override
+    public void update() {
+        if (editorPane != null) {
+            editorPane.getController().loadObject();
+        }
+    }
+
     /**
      * Navigates forward.
      */

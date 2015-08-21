@@ -71,4 +71,9 @@ public interface Tabbable extends Navigable, ModelManagable {
      * @return The currently selected model type
      */
     ModelType getCurrentModelType();
+
+    /**
+     * Updates the current tab.
+     */
+    void update();
 }

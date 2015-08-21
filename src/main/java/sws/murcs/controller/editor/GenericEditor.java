@@ -247,14 +247,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     }
 
     /**
-     * Adds an error message to the form.
-     * @param helpfulMessage A helpful error message describing the problem.
-     */
-    protected final void addFormError(final String helpfulMessage) {
-        addFormError(null, helpfulMessage);
-    }
-
-    /**
      * Adds an error to the form and highlights the node that caused it.
      * @param invalidNode The node that has the problem
      * @param helpfulMessage A helpful message describing the problem.

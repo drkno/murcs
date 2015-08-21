@@ -154,7 +154,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             showHide.setDisable(!tabbable.canToggleSideBar());
 
             toolBarController.setModelManagable(tabbable);
+
             currentTabbable = tabbable;
+            toolBarController.updateBackForwardButtons();
+
+            //Run this later so the model definitely saves before we change tab.
+            Platform.runLater(() -> currentTabbable.update());
         });
 
         loadToolbar();
