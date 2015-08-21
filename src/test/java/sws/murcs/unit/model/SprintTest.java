@@ -60,6 +60,7 @@ public class SprintTest {
 
     @Test
     public void testModifyDescription() throws Exception {
+        sprint.setDescription("new description");
         assertEquals("Description should be new description!", "new description", sprint.getDescription());
     }
 
