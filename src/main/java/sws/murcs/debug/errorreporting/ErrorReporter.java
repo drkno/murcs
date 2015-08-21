@@ -1,5 +1,6 @@
 package sws.murcs.debug.errorreporting;
 
+import java.util.*;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -13,7 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.JavaFXHelpers;
-import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.MainController;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -31,12 +32,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -215,10 +210,9 @@ public final class ErrorReporter {
                     });
                     popup.show();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 performReporting(pThread, pThrowable,
-                    "User could not enter description. Exception killed the reporting window too.", pProgDescription);
+                        "User could not enter description. Exception killed the reporting window too.", pProgDescription);
             }
         });
     }
@@ -232,7 +226,15 @@ public final class ErrorReporter {
         popOver.detachableProperty().set(true);
         popOver.detachedProperty().set(true);
         popOver.detachedCloseButtonProperty().set(false);
-        popOver.show(App.getAppController().getToolBarController().getToolBar());
+
+        //Get the top most main controller window.
+        MainController controller = App.getMainController();
+
+        //Possible if the app crashes on opening.
+        if (controller != null) {
+            popOver.show(controller.getToolBarController().getToolBar());
+        }
+
         VBox loader = new VBox();
 
         ImageView imageView = new ImageView();
@@ -288,7 +290,8 @@ public final class ErrorReporter {
         try {
             reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            // encoding is hard coded so can never happen.
+            // encoding is hard coded so can never happen. But because check style, stack trace
+            e.printStackTrace();
         }
 
         reportFields.put("misc", miscData);
@@ -300,8 +303,6 @@ public final class ErrorReporter {
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
         reportFields.put("javaVersion", System.getProperty("java.version"));
-        reportFields.put("navForwardPossible", Boolean.toString(NavigationManager.canGoForward()));
-        reportFields.put("navBackwardPossible", Boolean.toString(NavigationManager.canGoBack()));
         reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
         reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
 
@@ -444,6 +445,7 @@ public final class ErrorReporter {
                     catch (Exception a) {
                         // the error reporter cant send, an exception was thrown within it and to
                         // top it all off we cant open a url. things are bad...
+                        e.printStackTrace();
                     }
                 });
                 link.getStyleClass().add("zero-border");

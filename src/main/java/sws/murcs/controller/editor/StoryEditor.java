@@ -26,6 +26,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -34,7 +35,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -51,7 +51,6 @@ import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -483,7 +482,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
@@ -526,7 +525,13 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(newDependency);
+                } else {
+                    getNavigationManager().navigateTo(newDependency);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
@@ -912,7 +917,7 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
                 if (!isCreationWindow) {
-                    GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                    GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                     popup.setTitleText("Are you sure?");
                     popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
                     popup.addYesNoButtons(() -> {

@@ -13,13 +13,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -29,7 +29,6 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -336,7 +335,7 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setTitleText("Remove Team Member");
                 String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
                 if (person.equals(getModel().getScrumMaster())) {
@@ -384,7 +383,13 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(person.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(person));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

@@ -9,9 +9,14 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
+import sws.murcs.controller.pipes.ModelManagable;
+import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.ToolBarCommands;
+import sws.murcs.model.ModelType;
 
 /**
  * Controller for the toolbar.
@@ -60,6 +65,22 @@ public class ToolBarController {
     private ToolBarCommands linkedController;
 
     /**
+     * The navigation controller that navigation commands are routed through.
+     */
+    private Navigable navigable;
+
+    /**
+     * The controller responsible for managing model objects.
+     */
+    private ModelManagable modelManagable;
+
+    /**
+     * Creates a new toolbar controller.
+     */
+    public ToolBarController() {
+    }
+
+    /**
      * Initialises the toolbar by setting up appropriate tooltips.
      */
     @FXML
@@ -106,7 +127,8 @@ public class ToolBarController {
      */
     @FXML
     private void backButtonClick(final ActionEvent event) {
-        linkedController.back(event);
+        navigable.goBack();
+        updateBackForwardButtons();
     }
 
     /**
@@ -115,7 +137,8 @@ public class ToolBarController {
      */
     @FXML
     private void forwardButtonClick(final ActionEvent event) {
-        linkedController.forward(event);
+        navigable.goForward();
+        updateBackForwardButtons();
     }
 
     /**
@@ -151,7 +174,43 @@ public class ToolBarController {
      */
     @FXML
     private void addButtonClick(final ActionEvent event) {
-        linkedController.add(event);
+        ModelType type = null;
+        if (event != null && event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addProject":
+                    type = ModelType.Project;
+                    break;
+                case "addPerson":
+                    type = ModelType.Person;
+                    break;
+                case "addTeam":
+                    type = ModelType.Team;
+                    break;
+                case "addSkill":
+                    type = ModelType.Skill;
+                    break;
+                case "addRelease":
+                    type = ModelType.Release;
+                    break;
+                case "addBacklog":
+                    type = ModelType.Backlog;
+                    break;
+                case "addStory":
+                    type = ModelType.Story;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
+            }
+        }
+
+        if (type == null) {
+            modelManagable.create();
+        }
+        else{
+            modelManagable.create(type);
+        }
     }
 
     /**
@@ -205,7 +264,7 @@ public class ToolBarController {
      */
     @FXML
     private void removeButtonClick(final ActionEvent event) {
-        linkedController.remove(event);
+        modelManagable.remove();
     }
 
     /**
@@ -221,8 +280,8 @@ public class ToolBarController {
      * Toggles the state of the back and forward buttons if they disabled or enabled.
      */
     public final void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
+        backButton.setDisable(!navigable.canGoBack());
+        forwardButton.setDisable(!navigable.canGoForward());
     }
 
     /**
@@ -254,7 +313,7 @@ public class ToolBarController {
     }
 
     /**
-     * Sets wether or not the remove button is disabled or not.
+     * Sets whether or not the remove button is disabled or not.
      * @param disabled Whether or not it is disabled.
      */
     public final void removeButtonDisabled(final boolean disabled) {
@@ -404,5 +463,39 @@ public class ToolBarController {
      */
     public final ToolBar getToolBar() {
         return toolBar;
+    }
+
+    /**
+     * The navigable that the toolbar controls.
+     * @return The navigable
+     */
+    public Navigable getNavigable() {
+        return navigable;
+    }
+
+    /**
+     * Sets the navigable that the toolbar controls.
+     * @param navigable The new navigable
+     */
+    public void setNavigable(final Navigable navigable) {
+        this.navigable = navigable;
+    }
+
+    /**
+     * Gets the controller that is responsible for
+     * managing model commands.
+     * @return The manager
+     */
+    public ModelManagable getModelManagable() {
+        return modelManagable;
+    }
+
+    /**
+     * Sets the controller that will recieve create/remove commands
+     * from the tool bar.
+     * @param modelManagable The controller responsible
+     */
+    public void setModelManagable(final ModelManagable modelManagable) {
+        this.modelManagable = modelManagable;
     }
 }

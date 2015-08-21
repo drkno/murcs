@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -17,7 +18,6 @@ import java.util.concurrent.CountDownLatch;
  * Creates the editor Pane.
  */
 public class EditorPane {
-
     /**
      * The controller for the editor.
      */
@@ -27,6 +27,11 @@ public class EditorPane {
      * The Model to model.
      */
     private Model model;
+
+    /**
+     * The navigation manager.
+     */
+    private Navigable navigationManager;
 
     /**
      * The editor pane view.
@@ -41,8 +46,10 @@ public class EditorPane {
     /**
      * Creates a new Editor pane, and sets the model.
      * @param pModel The model to set
+     * @param navigationManager The navigation manager that the pane should make use of
      */
-    public EditorPane(final Model pModel) {
+    public EditorPane(final Model pModel, final Navigable navigationManager) {
+        this.navigationManager = navigationManager;
         if (pModel != null) {
             model = pModel;
             create();
@@ -98,6 +105,7 @@ public class EditorPane {
                     try {
                         view = loader.load();
                         controller = loader.getController();
+                        controller.setNavigationManager(navigationManager);
                         controller.setModel(model);
                         controller.loadObject();
                         latch.countDown();
@@ -111,6 +119,7 @@ public class EditorPane {
             else {
                 view = loader.load();
                 controller = loader.getController();
+                controller.setNavigationManager(navigationManager);
                 controller.setModel(model);
                 controller.loadObject();
             }

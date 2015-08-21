@@ -1,0 +1,59 @@
+@import "../../globalStyles"
+
+.tab
+  -fx-text-fill: $black-text
+  -fx-background-color: $button-color
+  -fx-background-insets: 0
+  -fx-padding: 6 12
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.25), 4, 0.0, 0, 1)
+  -fx-border-color: $tab-background-color
+  -fx-opacity: 0.9
+  -fx-focus-color: transparent
+  -fx-faint-focus-color: transparent
+  -fx-background-radius: 0
+  -fx-open-tab-animation: NONE
+  -fx-close-tab-animation: NONE
+  -fx-border-width: 1px 1px 0 1px
+
+.tab-pane
+  -fx-background-color: $tab-background-color
+  -fx-open-tab-animation: NONE
+  -fx-close-tab-animation: NONE
+
+.tab-header-background
+  -fx-background-color: $tab-background-color
+  -fx-effect: none
+
+.tab-add-button
+  -fx-background-color: $button-color
+  -fx-effect: none
+  -fx-border-radius: 0
+  -fx-border-color: $tab-default-colour
+  -fx-border-width: 1px 1px 0 1px
+  -fx-color: $tab-background-color
+  -fx-font-size: 12px
+
+.tab-add-button:hover, .tab-add-button:selected, .tab-add-button:focused
+  -fx-background-color: $primary-500
+  -fx-effect: none
+  -fx-color: $black
+
+.tab:hover
+  -fx-color: $button-focus-color
+
+.tab:selected, .tab:focused
+  -fx-border-color: $tab-default-colour
+  -fx-opacity: 1
+  -fx-padding: 6 12
+
+.tab .tab-close-button
+  -fx-background-color: $tab-background-color
+  -fx-opacity: 0.1
+
+.tab:hover .tab-close-button
+  -fx-background-color: -fx-mark-color
+  -fx-opacity: 0.6
+
+.tab:hover .tab-close-button:hover
+  -fx-background-color: $black
+  -fx-opacity: 1

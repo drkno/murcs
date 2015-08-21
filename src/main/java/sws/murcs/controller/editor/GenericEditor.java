@@ -10,6 +10,8 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -20,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import sws.murcs.view.App;
 
 /**
  * A generic class for making editing easier.
@@ -30,6 +33,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * The name for the default section of the form.
      */
     private final String defaultSectionName = "default";
+
+    /**
+     * A method of routing navigation events to the controller that owns
+     * this editor.
+     */
+    private Navigable navigationManager;
 
     /**
      * The type of model the editor is being used for.
@@ -230,22 +239,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     }
 
     /**
-     * Highlights an error on the form.
-     * @param invalidNode The invalid node
-     */
-    protected final void addFormError(final Node invalidNode) {
-        addFormError(invalidNode, "");
-    }
-
-    /**
-     * Adds an error message to the form.
-     * @param helpfulMessage A helpful error message describing the problem.
-     */
-    protected final void addFormError(final String helpfulMessage) {
-        addFormError(null, helpfulMessage);
-    }
-
-    /**
      * Adds an error to the form and highlights the node that caused it.
      * @param invalidNode The node that has the problem
      * @param helpfulMessage A helpful message describing the problem.
@@ -271,7 +264,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             throw new UnsupportedOperationException("A node must be provided.");
         }
 
-        if (helpfulMessage == null || helpfulMessage.isEmpty()) {
+        if (helpfulMessage == null) {
             throw new UnsupportedOperationException("An error message must be provided.");
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
@@ -394,5 +387,36 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      */
     public final boolean isLoaded() {
         return isLoaded;
+    }
+
+    /**
+     * Gets the navigationManager for this controller.
+     * @return The navigationManager
+     */
+    public Navigable getNavigationManager() {
+        return navigationManager;
+    }
+
+    /**
+     * Sets the navigationManager for this controller.
+     * @param navigationManager The navigationManager.
+     */
+    public void setNavigationManager(final Navigable navigationManager) {
+        this.navigationManager = navigationManager;
+    }
+
+    /**
+     * Gets Dion's window from a node. This method is O(N) (where N is the number of windows
+     * you have open). This method will return null if it can't find a Window.
+     * @param node The node to try and find the window for.
+     * @return The Window that is used in the WindowManager.
+     */
+    protected Window getWindowFromNode(final Node node) {
+        return App.getWindowManager()
+                .getAllWindows()
+                .stream()
+                .filter(w -> w.getStage() == node.getScene().getWindow())
+                .findFirst()
+                .orElse(null);
     }
 }
