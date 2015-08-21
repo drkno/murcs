@@ -366,7 +366,6 @@ public class PopOver extends PopupControl {
                     // caught and ignored to bypass a race condition.
                     // should not be reported as the outcome will be the same
                     // ie. the window will be closed
-                    e.printStackTrace();
                 }
             });
             fadeOut.play();
