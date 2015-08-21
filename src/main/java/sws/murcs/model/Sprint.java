@@ -13,7 +13,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.search.Searchable;
 
 /**
  * Model of a sprint.
@@ -25,11 +27,15 @@ public class Sprint extends Model {
      * The start and end dates for the sprint.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
+    @TrackableValue
+    @Searchable
     private LocalDate startDate, endDate;
 
     /**
      * The release associated to this sprint.
      */
+    @TrackableValue
+    @Searchable
     private Release associatedRelease;
 
     /**
@@ -38,18 +44,24 @@ public class Sprint extends Model {
     @XmlElementWrapper(name = "stories")
     @XmlElement(name = "story")
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private List<Story> stories = new ArrayList<>();
 
     /**
      * The backlog associated with this sprint.
      */
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private Backlog associatedBacklog;
 
     /**
      * The team who is working on this sprint.
      */
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private Team team;
 
     /**
