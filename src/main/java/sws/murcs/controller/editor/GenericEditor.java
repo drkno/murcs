@@ -239,14 +239,6 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
     }
 
     /**
-     * Highlights an error on the form.
-     * @param invalidNode The invalid node
-     */
-    protected final void addFormError(final Node invalidNode) {
-        addFormError(invalidNode, "");
-    }
-
-    /**
      * Adds an error to the form and highlights the node that caused it.
      * @param invalidNode The node that has the problem
      * @param helpfulMessage A helpful message describing the problem.
@@ -272,7 +264,7 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
             throw new UnsupportedOperationException("A node must be provided.");
         }
 
-        if (helpfulMessage == null || helpfulMessage.isEmpty()) {
+        if (helpfulMessage == null) {
             throw new UnsupportedOperationException("An error message must be provided.");
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);

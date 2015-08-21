@@ -211,7 +211,7 @@ public class ProjectEditor extends GenericEditor<Project> {
         }
         catch (CustomException e) {
             addFormError(datePickerStartDate, e.getMessage());
-            addFormError(datePickerEndDate);
+            addFormError(datePickerEndDate, "");
         }
     }
 
