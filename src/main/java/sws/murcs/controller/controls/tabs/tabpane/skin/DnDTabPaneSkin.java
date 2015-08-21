@@ -1,12 +1,13 @@
 package sws.murcs.controller.controls.tabs.tabpane.skin;
 
-import java.awt.*;
+import com.sun.javafx.scene.control.skin.TabPaneSkin;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import java.util.function.Predicate;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
@@ -28,11 +29,12 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
 import sws.murcs.controller.controls.tabs.tabpane.DropListener;
 
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.*;
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DragSetup;
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DropType;
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DroppedData;
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.FeedbackData;
 
 /**
  * A lightly modified version of the class found here:
