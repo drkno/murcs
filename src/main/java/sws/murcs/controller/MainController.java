@@ -24,6 +24,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -267,6 +268,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> tabPane.getTabs().remove(tabPane.getSelectionModel().getSelectedItem()));
         scene.getAccelerators().put(new KeyCodeCombination(KeyCode.T, KeyCodeCombination.SHORTCUT_DOWN),
                 () -> addModelViewTab(tabPane));
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
+        stage.getIcons().add(iconImage);
 
         stage.show();
         stage.setX(mousePos.getX());
