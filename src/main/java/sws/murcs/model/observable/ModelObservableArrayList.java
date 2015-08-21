@@ -17,7 +17,7 @@ import java.util.List;
  * @param <T> type of the list, expected to extend Model.
  */
 public class ModelObservableArrayList<T extends Model>
-        extends ObservableArrayList<T> implements Serializable, Comparator<T>, List<T> {
+        extends ObservableArrayList<T> implements Serializable, Comparator<T> {
 
     /**
      * Serializable backing field.

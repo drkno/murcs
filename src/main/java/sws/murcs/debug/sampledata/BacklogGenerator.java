@@ -112,8 +112,8 @@ public class BacklogGenerator implements Generator<Backlog> {
      * @param stories The story pool
      */
     public final void setStoryPool(final List<Story> stories) {
-        this.unsafeStoryPool = stories;
-        this.storyPool = new ArrayList<>(stories);
+        unsafeStoryPool = stories;
+        storyPool = new ArrayList<>(stories);
     }
 
     /**

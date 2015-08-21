@@ -81,7 +81,7 @@ public class Sprint extends Model {
     public final void setEndDate(final LocalDate pEndDate) throws InvalidParameterException {
         validateDates(startDate, pEndDate, associatedRelease);
 
-        this.endDate = pEndDate;
+        endDate = pEndDate;
         commit("edit sprint");
     }
 
@@ -101,7 +101,7 @@ public class Sprint extends Model {
     public final void setStartDate(final LocalDate pStartDate) throws InvalidParameterException {
         validateDates(pStartDate, endDate, associatedRelease);
 
-        this.startDate = pStartDate;
+        startDate = pStartDate;
         commit("edit sprint");
     }
 
@@ -123,7 +123,7 @@ public class Sprint extends Model {
             validateDates(startDate, endDate, pAssociatedRelease);
         }
 
-        this.associatedRelease = pAssociatedRelease;
+        associatedRelease = pAssociatedRelease;
         commit("edit sprint");
     }
 
@@ -172,9 +172,9 @@ public class Sprint extends Model {
      * @param pBacklog the sprint backlog
      */
     public final void setBacklog(final Backlog pBacklog) {
-        this.associatedBacklog = pBacklog;
+        associatedBacklog = pBacklog;
         // Any time a new backlog is introduced should also clear the previous stories added from another backlog
-        this.stories.clear();
+        stories.clear();
         commit("edit sprint");
     }
 
@@ -191,7 +191,7 @@ public class Sprint extends Model {
      * @param pTeam the sprint team
      */
     public final void setTeam(final Team pTeam) {
-        this.team = pTeam;
+        team = pTeam;
         commit("edit sprint");
     }
 

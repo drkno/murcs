@@ -47,7 +47,9 @@ import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
 
-import java.awt.*;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
