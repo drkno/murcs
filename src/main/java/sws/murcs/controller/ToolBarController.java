@@ -205,8 +205,12 @@ public class ToolBarController {
             }
         }
 
-        if (type == null) modelManagable.create();
-        else modelManagable.create(type);
+        if (type == null) {
+            modelManagable.create();
+        }
+        else{
+            modelManagable.create(type);
+        }
     }
 
     /**
