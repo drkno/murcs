@@ -16,15 +16,9 @@ import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Person;
-import sws.murcs.model.Project;
-import sws.murcs.model.Release;
-import sws.murcs.model.Skill;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import sws.murcs.view.App;
 
 import java.time.LocalDate;
@@ -53,60 +47,61 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @Before("@ElementDeletion")
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(false);
+
+        try {
+            if (PersistenceManager.getCurrent() == null) {
+                PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
+            }
+            PersistenceManager.getCurrent().setCurrentModel(null);
+            model = new Organisation();
+            UndoRedoManager.forget(true);
+            UndoRedoManager.add(model);
+
+            project = new Project();
+            project.setShortName("Testing project");
+
+            skill = new Skill();
+            skill.setShortName("Skill");
+            skill.setDescription("A skill");
+
+            person = new Person();
+            person.setUserId("foo123");
+            person.setShortName("Things");
+            person.addSkill(skill);
+
+            team = new Team();
+            team.setShortName("team");
+            team.setDescription("A team");
+            team.addMember(person);
+
+            release = new Release();
+            release.setShortName("TestRelease");
+            project.addRelease(release);
+            release.setReleaseDate(LocalDate.of(2015, 4, 22));
+
+            story = new Story();
+            story.setShortName("TestStory");
+            story.setCreator(person);
+
+            backlog = new Backlog();
+            backlog.setShortName("TestBacklog");
+            backlog.setAssignedPO(person);
+            backlog.addStory(story, 1);
+
+            model.add(project);
+            model.add(person);
+            model.add(release);
+            model.add(team);
+            model.add(skill);
+            model.add(story);
+            model.add(backlog);
+            PersistenceManager.getCurrent().setCurrentModel(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
-        fx = new FxRobot();
-        launch(App.class);
-
-        interact(() -> {
-            try {
-                model = new Organisation();
-                PersistenceManager.getCurrent().setCurrentModel(model);
-                UndoRedoManager.forget(true);
-                UndoRedoManager.add(model);
-
-                project = new Project();
-                project.setShortName("Testing project");
-
-                skill = new Skill();
-                skill.setShortName("Skill");
-                skill.setDescription("A skill");
-
-                person = new Person();
-                person.setUserId("foo123");
-                person.setShortName("Things");
-                person.addSkill(skill);
-
-                team = new Team();
-                team.setShortName("team");
-                team.setDescription("A team");
-                team.addMember(person);
-
-                release = new Release();
-                release.setShortName("TestRelease");
-                project.addRelease(release);
-                release.setReleaseDate(LocalDate.of(2015, 4, 22));
-
-                story = new Story();
-                story.setShortName("TestStory");
-                story.setCreator(person);
-
-                backlog = new Backlog();
-                backlog.setShortName("TestBacklog");
-                backlog.setAssignedPO(person);
-                backlog.addStory(story, 1);
-
-                model.add(project);
-                model.add(person);
-                model.add(release);
-                model.add(team);
-                model.add(skill);
-                model.add(story);
-                model.add(backlog);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
 
         // Mac OSX Workaround for testing ONLY!
         interact(() -> {
@@ -116,6 +111,9 @@ public class ElementDeletionStepDefs extends ApplicationTest{
                 menuBar.useSystemMenuBarProperty().set(false);
             }
         });
+        
+        fx = new FxRobot();
+        launch(App.class);
     }
 
     @After("@ElementDeletion")
