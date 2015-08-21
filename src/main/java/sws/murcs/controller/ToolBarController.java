@@ -4,12 +4,19 @@ import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
 import sws.murcs.controller.pipes.ModelManagable;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.ToolBarCommands;
-import sws.murcs.model.*;
+import sws.murcs.model.ModelType;
 
 /**
  * Controller for the toolbar.

@@ -682,7 +682,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.getExtensionFilters()
-                    .add(new FileChooser.ExtensionFilter("Project File (*.project)", "*.project"));
+                    .add(new FileChooser.ExtensionFilter("Organisations (*.project)", "*.project"));
             fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
             fileChooser.setTitle("Select Project");
             File file = fileChooser.showOpenDialog(App.getStage());
@@ -690,7 +690,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 Organisation model = PersistenceManager.getCurrent().loadModel(file.getName());
                 if (model == null) {
-                    throw new Exception("Project was not opened.");
+                    throw new Exception("Organisation was not opened.");
                 }
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
@@ -705,7 +705,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         }
         catch (Exception e) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setTitleText("Old or corrupted project!");
+            popup.setTitleText("Old or corrupted file!");
             popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
                     + "Please use the version it was created with to open the file.");
             popup.show();
