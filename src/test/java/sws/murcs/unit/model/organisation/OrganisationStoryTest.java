@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -22,21 +21,23 @@ import java.util.List;
 
 public class OrganisationStoryTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -52,16 +53,10 @@ public class OrganisationStoryTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetStoriesNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234a");
         model.add(story);
         List<Story> stories = model.getStories();
 
@@ -72,7 +67,7 @@ public class OrganisationStoryTest {
     @Test
     public void testGetStoriesStoryRemoved() throws Exception {
         Story removedStory = new Story();
-        removedStory.setShortName("testing1234");
+        removedStory.setShortName("testing1234b");
         model.add(removedStory);
         List<Story> stories = model.getStories();
         int size = stories.size();
@@ -86,7 +81,7 @@ public class OrganisationStoryTest {
     @Test
     public void testGetStoriesAdded() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234c");
         model.add(story);
         List<Story> stories = model.getStories();
         Story storyToAdd = stories.get(0);
@@ -118,7 +113,7 @@ public class OrganisationStoryTest {
     @Test(expected = DuplicateObjectException.class)
     public void testStoriesDuplicateAdded() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234d");
         model.add(story);
         model.add(story);
     }
@@ -136,7 +131,7 @@ public class OrganisationStoryTest {
     @Test
     public void testStoryExists() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234e");
         model.add(story);
         List<Story> stories = model.getStories();
         Assert.assertTrue("Story exists but was not found.", UsageHelper.exists(stories.get(0)));
@@ -145,14 +140,14 @@ public class OrganisationStoryTest {
     @Test
     public void testStoryDoesNotExist() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234f");
         Assert.assertFalse("Story exists when it should not.", UsageHelper.exists(story));
     }
 
     @Test
     public void testStoryFindUsagesDoesNotExist() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234g");
         List<Model> usages = UsageHelper.findUsages(story);
 
         Assert.assertNotNull("The returned usages was null.", usages);
@@ -162,7 +157,7 @@ public class OrganisationStoryTest {
     @Test
     public void testStoryFindUsages() throws Exception {
         Story story = new Story();
-        story.setShortName("testing1234");
+        story.setShortName("testing1234h");
         model.add(story);
         List<Story> stories = model.getStories();
         List<Backlog> backlogs = model.getBacklogs();

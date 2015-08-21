@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -22,22 +21,23 @@ import java.util.List;
 
 public class OrganisationReleaseTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
-
+        model = null;
     }
 
     /**
@@ -53,16 +53,9 @@ public class OrganisationReleaseTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetReleasesNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         List<Release> releases = model.getReleases();
-
         Assert.assertNotNull("getReleases() should return releases but is null.", releases);
         Assert.assertNotEquals("getReleases() should return releases but is empty.", 0, releases.size());
     }
