@@ -2,16 +2,13 @@ package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
-import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.*;
-import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.model.Person;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +29,7 @@ public class AssigneeController {
 
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
-    public void setUp(final TaskEditor parent, List<Person> recentPeople) {
+    public void setUp(final TaskEditor parent, List<Person> recentPeople, List<Person> possibleAssignees) {
         parentEditor = parent;
         recentAssignees = recentPeople;
         if (recentAssignees != null) {
@@ -50,11 +47,9 @@ public class AssigneeController {
                 }
             }
         });
+        searchableComboBoxDecorator.addAll(possibleAssignees);
         assignees = parentEditor.getTask().getAssignees();
         addAssignees(assignees);
-        Backlog backlog = (Backlog) UsageHelper.findUsages(parentEditor.getStory()).stream().filter(model -> model instanceof Backlog).findFirst().get();
-        Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().get();
-        searchableComboBoxDecorator.addAll(team.getMembers());
     }
 
     private void addAssignees(Collection<Person> people) {
@@ -62,17 +57,13 @@ public class AssigneeController {
     }
 
     private void addRecentPeople() {
-        for (Person assignee : recentAssignees) {
-            addRecentButton(assignee);
-        }
+        recentAssignees.forEach(this::addRecentButton);
     }
 
     private void addRecentButton(final Person assignee) {
         Button button = new Button();
         button.setText(assignee.getShortName());
-        button.setOnAction((event) -> {
-            addAssignee(assignee);
-        });
+        button.setOnAction((event) -> addAssignee(assignee));
         recentlyUsedVBox.getChildren().add(button);
     }
 
@@ -82,9 +73,7 @@ public class AssigneeController {
         Button delete = new Button();
         delete.setText("X");
         delete.getStyleClass().addAll("mdr-button", "mdrd-button");
-        delete.setOnAction((event) -> {
-            removeAssignee(assignee, container);
-        });
+        delete.setOnAction((event) -> removeAssignee(assignee, container));
         Label personLabel = new Label(assignee.getShortName());
         container.getChildren().addAll(personLabel, delete);
         container.setSpacing(5);

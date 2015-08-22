@@ -8,9 +8,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="80.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="80.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-      <GridPane minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="taskGridPane" minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" />
           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="260.0" />
@@ -60,7 +60,7 @@
                   <Label fx:id="assigneesLabel" text="Placeholder Text" wrapText="true" />
                </children>
             </HBox>
-            <Button fx:id="editAssignedButton" onAction="#editAssignedButtonClicked" mnemonicParsing="false" style="-fx-padding: 0;" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <Button fx:id="editAssignedButton" mnemonicParsing="false" onAction="#editAssignedButtonClicked" style="-fx-padding: 0;" GridPane.columnIndex="2" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
@@ -71,6 +71,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="Edit Assignees" />
+               </tooltip>
             </Button>
             <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">

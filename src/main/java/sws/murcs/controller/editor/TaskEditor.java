@@ -1,23 +1,28 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.*;
+import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -52,11 +57,18 @@ public class TaskEditor {
 
     private PopOver assigneePopOver;
 
+    private List<Person> possibleAssignees;
+
     /**
      * The anchor pane that contains the entire editor.
      */
     @FXML
     private AnchorPane editor;
+
+    /**
+     * The grid pane containing the task
+     */
+    @FXML private GridPane taskGridPane;
 
     /**
      * The minimise editor, delete task, create and edit assignees buttons.
@@ -163,6 +175,20 @@ public class TaskEditor {
             descriptionTextArea.setText(newTask.getDescription());
         }
         updateAssigneesLabel();
+        updateAddAssigneesButton();
+    }
+
+    private void updateAddAssigneesButton() {
+        Backlog backlog = (Backlog) UsageHelper.findUsages(getStory()).stream().filter(model -> model instanceof Backlog).findFirst().orElseGet(() -> null);
+        if (backlog != null) {
+            editAssignedButton.setDisable(false);
+            Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().get();
+            possibleAssignees = team.getMembers();
+        }
+        else {
+            editAssignedButton.setDisable(true);
+            assigneesLabel.setText("To add assignees this story must be in a backlog with an assigned PO");
+        }
     }
 
     private void updateAssigneesLabel() {
@@ -322,7 +348,7 @@ public class TaskEditor {
                 Parent parent = loader.load();
                 assigneePopOver = new PopOver(parent);
                 AssigneeController controller = loader.getController();
-                controller.setUp(this, null);
+                controller.setUp(this, null, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
             }
             catch (IOException e) {
