@@ -210,6 +210,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             case Release: arrayList = model.getReleases(); break;
             case Story: arrayList = model.getStories(); break;
             case Backlog: arrayList = model.getBacklogs(); break;
+            case Sprint: arrayList = model.getSprints(); break;
             default: throw new UnsupportedOperationException();
         }
 

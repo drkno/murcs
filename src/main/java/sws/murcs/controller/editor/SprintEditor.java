@@ -103,7 +103,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
     private List<Story> allocatableStories;
 
     /**
-     *
+     * Maps the story to the node it is displayed in.
      */
     private Map<Story, Node> storyNodeIndex;
 
@@ -156,7 +156,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                             && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
                             || story.getEstimate().equals(EstimateType.INFINITE)))
                     .forEach(allocatableStories::add);
-            // Remove all the stories already in backlog
+            // Remove all the stories already in the sprint
             getModel().getStories().stream().forEach(allocatableStories::remove);
         }
 

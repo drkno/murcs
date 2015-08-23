@@ -111,6 +111,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
     public static final void isNumbering(final boolean isNumbering) {
         numbering = isNumbering;
     }
+
     /**
      * The last generation of an Organisation incurred an error.
      * @return true if an error occurred, false otherwise.
