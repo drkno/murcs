@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.model.Person;
+import sws.murcs.model.helpers.RecentlyUsedHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,13 +26,16 @@ public class AssigneeController {
 
     private Collection<Person> recentAssignees;
 
+    private Collection<Person> possibleAssignees;
+
     private Collection<Person> assignees;
 
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
-    public void setUp(final TaskEditor parent, List<Person> recentPeople, List<Person> possibleAssignees) {
+    public void setUp(final TaskEditor parent, List<Person> pPossibleAssignees) {
         parentEditor = parent;
-        recentAssignees = recentPeople;
+        recentAssignees = RecentlyUsedHelper.get().getRecentPeople();
+        possibleAssignees = pPossibleAssignees;
         if (recentAssignees != null) {
             addRecentPeople();
         }
@@ -57,7 +61,7 @@ public class AssigneeController {
     }
 
     private void addRecentPeople() {
-        recentAssignees.forEach(this::addRecentButton);
+        recentAssignees.stream().filter(person -> possibleAssignees.contains(person)).forEach(this::addRecentButton);
     }
 
     private void addRecentButton(final Person assignee) {
@@ -79,6 +83,7 @@ public class AssigneeController {
         container.setSpacing(5);
         currentAssigneesVBox.getChildren().add(container);
         parentEditor.addAssignee(assignee);
+        RecentlyUsedHelper.get().addToRecentPeople(assignee);
     }
 
     private void removeAssignee(Person assignee, HBox container) {

@@ -348,7 +348,7 @@ public class TaskEditor {
                 Parent parent = loader.load();
                 assigneePopOver = new PopOver(parent);
                 AssigneeController controller = loader.getController();
-                controller.setUp(this, null, possibleAssignees);
+                controller.setUp(this, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
             }
             catch (IOException e) {
