@@ -1,8 +1,5 @@
 package sws.murcs.controller;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -31,6 +28,10 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
+
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Model View controller. Controls the main tabs.
@@ -209,6 +210,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             case Release: arrayList = model.getReleases(); break;
             case Story: arrayList = model.getStories(); break;
             case Backlog: arrayList = model.getBacklogs(); break;
+            case Sprint: arrayList = model.getSprints(); break;
             default: throw new UnsupportedOperationException();
         }
 

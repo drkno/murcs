@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import javafx.collections.ObservableList;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -32,14 +33,14 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     @Searchable
     @TrackableValue
-    private final List<Project> projects;
+    private final ObservableList<Project> projects;
 
     /**
      * The list of all the releases in the current application.
      */
     @Searchable
     @TrackableValue
-    private final List<Release> releases;
+    private final ObservableList<Release> releases;
 
     /**
      * The list of all the work allocations in the application.
@@ -77,6 +78,12 @@ public class Organisation extends TrackableObject implements Serializable {
     private final List<Backlog> backlogs;
 
     /**
+     * The list of sprints within the current organisation.
+     */
+    @TrackableValue
+    private final List<Sprint> sprints;
+
+    /**
      * The list of stories contained within the current organisation.
      */
     @Searchable
@@ -107,6 +114,7 @@ public class Organisation extends TrackableObject implements Serializable {
         this.people = new ModelObservableArrayList<>();
         this.skills = new ModelObservableArrayList<>();
         this.backlogs = new ModelObservableArrayList<>();
+        sprints = new ModelObservableArrayList<>();
         this.stories = new ModelObservableArrayList<>();
 
         try {
@@ -184,6 +192,14 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     public final List<Backlog> getBacklogs() {
         return backlogs;
+    }
+
+    /**
+     * Gets the sprints contained within the organisation.
+     * @return The sprints
+     */
+    public final List<Sprint> getSprints() {
+        return sprints;
     }
 
     /**
@@ -378,6 +394,12 @@ public class Organisation extends TrackableObject implements Serializable {
                 i--;
             }
         }
+
+        //Remove any sprints for this team
+        getSprints().stream()
+                .filter(sprint -> team.equals(sprint.getTeam()))
+                .collect(Collectors.toList())
+                .forEach(sprints::remove);
     }
 
     /**
@@ -533,6 +555,28 @@ public class Organisation extends TrackableObject implements Serializable {
     }
 
     /**
+     * Adds the sprint to the organisation.
+     * @param sprint The sprint to add
+     * @throws DuplicateObjectException if the sprint has already been added to the organisation
+     */
+    private void addSprint(final Sprint sprint) throws DuplicateObjectException {
+        if (!sprints.contains(sprint)) {
+            sprints.add(sprint);
+        }
+        else {
+           throw new DuplicateObjectException("The sprint is already contained in the organisation");
+        }
+    }
+
+    /**
+     * Removes a sprint from the organisation and any associated.
+     * @param sprint The sprint to remove from the organisation
+     */
+    private void removeSprint(final Sprint sprint) {
+        sprints.remove(sprint);
+    }
+
+    /**
      * Adds a backlog to backlogs only if the backlog does not already exist.
      * @param backlog The backlog to add
      * @throws DuplicateObjectException if the backlog already exists in the organisation
@@ -558,6 +602,11 @@ public class Organisation extends TrackableObject implements Serializable {
         //Remove the backlog from any project that might contain it.
         getProjects().stream()
                 .forEach(project -> project.removeBacklog(backlog));
+
+        //Remove the sprints with that associated backlog
+        getSprints().stream()
+                .filter(s -> s.getBacklog() == backlog)
+                .collect(Collectors.toList()).forEach(sprints::remove);
     }
 
     /**
@@ -601,6 +650,9 @@ public class Organisation extends TrackableObject implements Serializable {
                 break;
             case Backlog:
                 addBacklog((Backlog) model);
+                break;
+            case Sprint:
+                addSprint((Sprint) model);
                 break;
             default:
                 throw new UnsupportedOperationException("Adding of this model type has not yet been implemented.");
@@ -653,6 +705,9 @@ public class Organisation extends TrackableObject implements Serializable {
             case Backlog:
                 removeBacklog((Backlog) model);
                 break;
+            case Sprint:
+                removeSprint((Sprint) model);
+                break;
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (remove for "
                         + model.getClass().getName()
@@ -696,6 +751,11 @@ public class Organisation extends TrackableObject implements Serializable {
         projects.stream()
                 .filter(project -> project.getReleases().contains(release))
                 .forEach(project -> project.removeRelease(release));
+
+        //Remove any sprints it is associated with
+        getSprints().stream()
+                .filter(sprint -> release.equals(sprint.getAssociatedRelease()))
+                .collect(Collectors.toList()).forEach(sprints::remove);
     }
 
     /**
@@ -722,8 +782,17 @@ public class Organisation extends TrackableObject implements Serializable {
             stories.remove(story);
         }
 
+        //Remove it from any associated backlogs
         backlogs.forEach(backlog -> backlog.removeStory(story));
+
+        //Remove it from any dependencies
         stories.forEach(s -> s.removeDependency(story));
+
+        //Remove it from any sprints
+        getSprints().stream()
+                .filter(sprint -> sprint.getStories().contains(story))
+                .forEach(sprint -> sprint.removeStory(story));
+
     }
 
     /**

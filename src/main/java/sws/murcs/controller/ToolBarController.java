@@ -1,6 +1,5 @@
 package sws.murcs.controller;
 
-import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,6 +16,8 @@ import sws.murcs.controller.pipes.ModelManagable;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.model.ModelType;
+
+import java.util.List;
 
 /**
  * Controller for the toolbar.
@@ -208,7 +209,7 @@ public class ToolBarController {
         if (type == null) {
             modelManagable.create();
         }
-        else{
+        else {
             modelManagable.create(type);
         }
     }

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 <BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.MainController">
     <top>
-      <VBox fx:id="titleVBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="65.0">
+      <VBox fx:id="titleVBox">
          <children>
               <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
                   <menus>
@@ -25,6 +27,7 @@
                                       <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#create" text="Release" />
                                       <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#create" text="Backlog" />
                                       <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#create" text="Story" />
+                                      <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#create" text="Sprint" />
                                   </items>
                               </Menu>
                               <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />

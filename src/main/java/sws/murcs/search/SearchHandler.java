@@ -39,7 +39,8 @@ public  class SearchHandler {
                 new SearchThread<>(results, ModelType.Release, organisation.getReleases()),
                 new SearchThread<>(results, ModelType.Skill, organisation.getSkills()),
                 new SearchThread<>(results, ModelType.Story, organisation.getStories()),
-                new SearchThread<>(results, ModelType.Team, organisation.getTeams())
+                new SearchThread<>(results, ModelType.Team, organisation.getTeams()),
+                new SearchThread<>(results, ModelType.Sprint, organisation.getSprints())
         };
     }
 

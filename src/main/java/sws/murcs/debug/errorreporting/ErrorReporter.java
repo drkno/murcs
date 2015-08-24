@@ -1,6 +1,5 @@
 package sws.murcs.debug.errorreporting;
 
-import java.util.*;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
@@ -19,6 +18,7 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.view.App;
+
 import javax.imageio.ImageIO;
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
@@ -32,6 +32,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +92,11 @@ public final class ErrorReporter {
      * The pop over for displaying helpful messages.
      */
     private PopOver popOver;
+
+    /**
+     * Determines if the popover should be shown.
+     */
+    private boolean shouldShowPopover;
 
     /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
@@ -145,6 +156,7 @@ public final class ErrorReporter {
      * This MUST be used on the JavaFX application thread.
      */
     public void reportManually() {
+        shouldShowPopover = true;
         report(Thread.currentThread(), null, "![MANUAL]", true, ErrorType.Manual);
     }
 
@@ -154,6 +166,7 @@ public final class ErrorReporter {
      * @param description a brief message describing some context (for an issue report title).
      */
     public void reportError(final Throwable e, final String description) {
+        shouldShowPopover = true;
         report(Thread.currentThread(), e, description, true, ErrorType.Automatic);
     }
 
@@ -168,6 +181,7 @@ public final class ErrorReporter {
      * @param description a brief message describing some context (for an issue report title).
      */
     public void reportErrorSecretly(final Throwable e, final String description) {
+        shouldShowPopover = false;
         report(Thread.currentThread(), e, description, false, ErrorType.Automatic);
     }
 
@@ -177,6 +191,7 @@ public final class ErrorReporter {
      * @param e error that occurred.
      */
     private void reportException(final Thread pThread, final Throwable e) {
+        shouldShowPopover = true;
         report(pThread, e, "![UNHANDLED]", true, ErrorType.Automatic);
     }
 
@@ -196,6 +211,7 @@ public final class ErrorReporter {
         }
 
         if (!showDialog) {
+            shouldShowPopover = false;
             performReporting(pThread, pThrowable, null, pProgDescription);
             return;
         }
@@ -262,7 +278,9 @@ public final class ErrorReporter {
      */
     private void performReporting(final Thread pThread, final Throwable pThrowable,
                                   final String pUserDescription, final String pProgDescription) {
-        setupPopOver();
+        if (shouldShowPopover) {
+            setupPopOver();
+        }
 
         thread = pThread;
         throwable = pThrowable;
@@ -423,41 +441,46 @@ public final class ErrorReporter {
                 if (con.getResponseCode() != successfulCode) {
                     throw new Exception("Transmission failed.");
                 }
-                Label helpfulMessage = new Label("Report sent :)");
-                helpfulMessage.setPadding(new Insets(10));
-                helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#4caf50"));
-                Platform.runLater(() -> {
-                    popOver.contentNodeProperty().setValue(helpfulMessage);
-                    hidePopOverAfterGivenTime(3, 0.5);
-                });
+
+                if (shouldShowPopover) {
+                    Label helpfulMessage = new Label("Report sent :)");
+                    helpfulMessage.setPadding(new Insets(10));
+                    helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#4caf50"));
+                    Platform.runLater(() -> {
+                        popOver.contentNodeProperty().setValue(helpfulMessage);
+                        hidePopOverAfterGivenTime(3, 0.5);
+                    });
+                }
             } catch (Exception e) {
-                VBox errorMessage = new VBox();
-                Label helpfulMessage = new Label("Sending of report failed :(\n"
-                        + "Email the developers, perhaps the server is down");
-                helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#f44336"));
-                errorMessage.getChildren().add(helpfulMessage);
+                if (shouldShowPopover) {
+                    VBox errorMessage = new VBox();
+                    Label helpfulMessage = new Label("Sending of report failed :(\n"
+                            + "Email the developers, perhaps the server is down");
+                    helpfulMessage.setTextFill(JavaFXHelpers.hex2RGB("#f44336"));
+                    errorMessage.getChildren().add(helpfulMessage);
 
-                Hyperlink link = new Hyperlink("s302g1@cosc.canterbury.ac.nz");
-                link.setOnAction(event -> {
-                    try {
-                        Desktop.getDesktop().browse(new URL("mailto:s302g1@cosc.canterbury.ac.nz").toURI());
-                    }
-                    catch (Exception a) {
-                        // the error reporter cant send, an exception was thrown within it and to
-                        // top it all off we cant open a url. things are bad...
-                        e.printStackTrace();
-                    }
-                });
-                link.getStyleClass().add("zero-border");
-                errorMessage.getChildren().add(link);
+                    Hyperlink link = new Hyperlink("s302g1@cosc.canterbury.ac.nz");
+                    link.setOnAction(event -> {
+                        try {
+                            Desktop.getDesktop().browse(new URL("mailto:s302g1@cosc.canterbury.ac.nz").toURI());
+                        }
+                        catch (Exception a) {
+                            // the error reporter cant send, an exception was thrown within it and to
+                            // top it all off we cant open a url. things are bad...
+                            e.printStackTrace();
+                        }
+                    });
+                    link.getStyleClass().add("zero-border");
+                    errorMessage.getChildren().add(link);
 
-                errorMessage.setAlignment(Pos.CENTER);
-                errorMessage.setPadding(new Insets(10));
-                helpfulMessage.setPadding(new Insets(10));
-                Platform.runLater(() -> {
-                    popOver.contentNodeProperty().setValue(errorMessage);
-                    hidePopOverAfterGivenTime(5, 0.75);
-                });
+                    errorMessage.setAlignment(Pos.CENTER);
+                    errorMessage.setPadding(new Insets(10));
+                    helpfulMessage.setPadding(new Insets(10));
+                    Platform.runLater(() -> {
+                        popOver.contentNodeProperty().setValue(errorMessage);
+                        hidePopOverAfterGivenTime(5, 0.75);
+                    });
+                }
                 System.err.println("Could not submit error report.");
             }
         }, 3, TimeUnit.SECONDS);

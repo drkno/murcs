@@ -1,9 +1,10 @@
 package sws.murcs.controller.controls.customGrid;
 
-import java.util.Optional;
-import java.util.Random;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+
+import java.util.Optional;
+import java.util.Random;
 
 /**
  * Is used for tiles on the custom grid.

@@ -18,7 +18,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     /**
      * The max number of projects generated when stress level is low.
      */
-    public static final int LOW_STRESS_MAX = 5;
+    public static final int LOW_STRESS_MAX = 3;
 
     /**
      * The min number of projects generated when stress level is low.
@@ -29,23 +29,23 @@ public class BacklogGenerator implements Generator<Backlog> {
     /**
      * The max number of projects generated when stress level is medium.
      */
-    public static final int MEDIUM_STRESS_MAX = 10;
+    public static final int MEDIUM_STRESS_MAX = 6;
 
     /**
      * The min number of projects generated when stress level is medium.
      */
-    public static final int MEDIUM_STRESS_MIN = 5;
+    public static final int MEDIUM_STRESS_MIN = 3;
 
 
     /**
      * The max number of projects generated when stress level is high.
      */
-    public static final int HIGH_STRESS_MAX = 20;
+    public static final int HIGH_STRESS_MAX = 12;
 
     /**
      * The min number of projects generated when stress level is high.
      */
-    public static final int HIGH_STRESS_MIN = 10;
+    public static final int HIGH_STRESS_MIN = 6;
 
 
     /**
@@ -73,6 +73,11 @@ public class BacklogGenerator implements Generator<Backlog> {
      * A list of stories to use in this team.
      */
     private List<Story> storyPool;
+
+    /**
+     * A list of stories to use in this backlog, not copied.
+     */
+    private List<Story> unsafeStoryPool;
 
     /**
      * A list of people to use in this team.
@@ -107,7 +112,8 @@ public class BacklogGenerator implements Generator<Backlog> {
      * @param stories The story pool
      */
     public final void setStoryPool(final List<Story> stories) {
-        storyPool = stories;
+        unsafeStoryPool = stories;
+        storyPool = new ArrayList<>(stories);
     }
 
     /**
@@ -128,27 +134,24 @@ public class BacklogGenerator implements Generator<Backlog> {
         List<Story> generated = new ArrayList<>();
         int storyCount = GenerationHelper.random(min, max);
 
-        //If we haven't been given a pool of stories, make some up
-        if (storyPool == null) {
-            for (int i = 0; i < storyCount; i++) {
+        //If there are less stories than the story count, then add a bunch more stories
+        if (storyCount > storyPool.size()) {
+            while (storyCount != storyPool.size()) {
                 Story newStory = storyGenerator.generate();
-                if (!generated.stream().filter(newStory::equals).findAny().isPresent()) {
-                    generated.add(newStory);
+                if (!storyPool.stream().filter(newStory::equals).findAny().isPresent()) {
+                    if (!unsafeStoryPool.contains(newStory)) {
+                        unsafeStoryPool.add(newStory);
+                    }
+                    storyPool.add(newStory);
                 }
             }
         }
-        else {
-            //If there are less stories than the story count, then reduce the story count
-            if (storyCount > storyPool.size()) {
-                storyCount = storyPool.size();
-            }
 
-            for (int i = 0; i < storyCount; i++) {
-                // Remove the story so we can't pick it again.
-                // We'll put it back when we're done
-                Story story = storyPool.remove(GenerationHelper.random(storyPool.size()));
-                generated.add(story);
-            }
+        for (int i = 0; i < storyCount; i++) {
+            // Remove the story so we can't pick it again.
+            // We'll put it back when we're done
+            Story story = storyPool.remove(GenerationHelper.random(storyPool.size()));
+            generated.add(story);
         }
         return generated;
     }
@@ -156,8 +159,8 @@ public class BacklogGenerator implements Generator<Backlog> {
     @Override
     public final Backlog generate() {
         final int longNameMax = 10;
-        final int minStories = 3;
-        final int maxStories = 6;
+        final int minStories = 10;
+        final int maxStories = 20;
 
         Backlog backlog = new Backlog();
 
@@ -185,13 +188,11 @@ public class BacklogGenerator implements Generator<Backlog> {
         int prioritised = size / 2;
 
         try {
-            for (int i = 0; i < prioritised; i++) {
+            for (Story story : stories.subList(0, prioritised)) {
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
-                stories.get(i).setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
-
-                Story.StoryState[] storyStates = Story.StoryState.values();
-                stories.get(i).setStoryState(storyStates[GenerationHelper.random(storyStates.length)]);
-                backlog.addStory(stories.get(i), i + 1);
+                story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
+                story.setStoryState(Story.StoryState.Ready);
+                backlog.addStory(story, 1);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);

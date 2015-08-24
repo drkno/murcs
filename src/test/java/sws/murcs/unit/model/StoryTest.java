@@ -83,8 +83,11 @@ public class StoryTest {
     public void testResetEstimationResetsState() {
         story.setEstimate("Foo");
         story.setStoryState(Story.StoryState.Ready);
-
         story.setEstimate(EstimateType.NOT_ESTIMATED);
+        assertEquals("Story state should have reset to 'None'", Story.StoryState.None, story.getStoryState());
+
+        story.setStoryState(Story.StoryState.Ready);
+        story.setEstimate(EstimateType.INFINITE);
         assertEquals("Story state should have reset to 'None'", Story.StoryState.None, story.getStoryState());
     }
 

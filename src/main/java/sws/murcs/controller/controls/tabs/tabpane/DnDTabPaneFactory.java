@@ -1,8 +1,5 @@
 package sws.murcs.controller.controls.tabs.tabpane;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -11,10 +8,12 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-
 import sws.murcs.controller.controls.tabs.markers.PositionMarker;
 import sws.murcs.controller.controls.tabs.markers.TabOutlineMarker;
 import sws.murcs.controller.controls.tabs.tabpane.skin.DnDTabPaneSkin;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A modified version of the class found in this repository

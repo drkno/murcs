@@ -247,12 +247,12 @@ public class Story extends Model {
      * @param newEstimate The estimate.
      */
     public final void setEstimate(final String newEstimate) {
-        if (newEstimate == estimate) {
+        if (newEstimate.equals(estimate)) {
             return;
         }
-        // If you change the estimate type to not estimated or infinite, then None is the only valid story state
-        if (newEstimate.equals(EstimateType.NOT_ESTIMATED) || newEstimate.equals(EstimateType.INFINITE)) {
-            storyState = StoryState.None;
+        if (newEstimate.equals(EstimateType.INFINITE) || newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+            // The story state must now be set to None.
+            setStoryState(StoryState.None);
         }
         estimate = newEstimate;
         commit("edit story");
@@ -303,7 +303,7 @@ public class Story extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Story)) {
+        if (!(object instanceof Story)) {
             return false;
         }
         String shortNameO = ((Story) object).getShortName();
@@ -311,6 +311,6 @@ public class Story extends Model {
         if (shortName == null || shortNameO == null) {
             return shortName == shortNameO;
         }
-        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+        return shortName.equalsIgnoreCase(shortNameO);
     }
 }

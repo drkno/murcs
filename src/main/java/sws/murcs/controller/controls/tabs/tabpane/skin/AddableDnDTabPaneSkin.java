@@ -1,7 +1,6 @@
 package sws.murcs.controller.controls.tabs.tabpane.skin;
 
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
-import java.lang.reflect.Field;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
@@ -11,6 +10,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.TabFactory;
+
+import java.lang.reflect.Field;
 
 /**
  * A tab pane skin with an add button. This class is essentially a giant Hack.
@@ -22,6 +23,11 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
      * The offset of the tabs.
      */
     private static final double TAB_OFFSET = 5.0;
+
+    /**
+     * The width of the dropdown button.
+     */
+    private static final double CONTROLS_DROPDOWN_WIDTH = 20.0;
 
     /**
      * Button for adding tabs.
@@ -61,7 +67,6 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
      * @return The bounding width
      */
     private double widthBound() {
-        final double CONTROLS_DROPDOWN_WIDTH = 20;
         return tabPane.getWidth() - TAB_OFFSET - addTabButton.getWidth() * 0.5 - addTabButton.getWidth()
                 - CONTROLS_DROPDOWN_WIDTH;
     }
@@ -109,7 +114,7 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
 
             Rectangle r = ((Rectangle) fTabHeaderAreaClipRect.get(tabHeaderArea));
             r.layoutBoundsProperty().addListener((observable1, oldValue1, newValue1) -> {
-                if (r.getWidth() > widthBound()){
+                if (r.getWidth() > widthBound()) {
                     r.setWidth(widthBound());
                 }
             });

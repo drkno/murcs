@@ -15,6 +15,8 @@ import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Model;
+import sws.murcs.view.App;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -22,13 +24,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import sws.murcs.view.App;
 
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener {
+public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener {
     /**
      * The name for the default section of the form.
      */
@@ -114,10 +115,12 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets the current model for the editor.
      * @param pModel The new model to edit
      */
-    public final void setModel(final Object pModel) {
+    public final void setModel(final T pModel) {
         if (pModel != null) {
             isLoaded = false;
-            model = (T) pModel;
+            model = pModel;
+            setIsCreationWindow(pModel.getShortName() == null);
+            setupSaveChangesButton();
         }
     }
 
@@ -360,8 +363,8 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    protected final void setupSaveChangesButton() {
-        if (saveChangesButtonExists) {
+    public final void setupSaveChangesButton() {
+        if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }
         saveChangesButtonExists = true;

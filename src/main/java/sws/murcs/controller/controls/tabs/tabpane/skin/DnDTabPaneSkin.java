@@ -1,14 +1,6 @@
 package sws.murcs.controller.controls.tabs.tabpane.skin;
 
 import com.sun.javafx.scene.control.skin.TabPaneSkin;
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import javafx.css.StyleOrigin;
 import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
@@ -32,10 +24,16 @@ import javafx.scene.paint.Color;
 import sws.murcs.controller.controls.tabs.tabpane.DropListener;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DragSetup;
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DropType;
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.DroppedData;
-import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.FeedbackData;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory.*;
 
 /**
  * A lightly modified version of the class found here:

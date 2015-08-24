@@ -226,8 +226,7 @@ public class StoryGenerator implements Generator<Story> {
     @Override
     public final Story generate() {
         String name = storyNames[GenerationHelper.random(storyNames.length)];
-        String description = descriptions[GenerationHelper.random(descriptions.length)];
-
+        String description = NameGenerator.randomDescription();
         Person creator;
         if (personsPool == null || personsPool.isEmpty()) {
             creator = personGenerator.generate();
@@ -248,9 +247,7 @@ public class StoryGenerator implements Generator<Story> {
 
         //Generate and add the acceptance criteria
         List<AcceptanceCondition> acceptanceConditions = generateAcceptanceCriteria();
-        for (AcceptanceCondition condition : acceptanceConditions) {
-            story.addAcceptanceCondition(condition);
-        }
+        acceptanceConditions.forEach(story::addAcceptanceCondition);
 
         Collection<Task> tasks = generateTasks();
         for (Task task : tasks) {

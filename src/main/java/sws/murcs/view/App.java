@@ -1,6 +1,5 @@
 package sws.murcs.view;
 
-import java.io.IOException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +19,7 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -262,7 +262,11 @@ public class App extends Application {
 
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
+        int numbering = argsList.indexOf("numbering");
 
+        if (numbering >= 0) {
+            OrganisationGenerator.isNumbering(true);
+        }
         if (debug >= 0) {
             OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
             if (debug + 1 < args.length) {

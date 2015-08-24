@@ -1,9 +1,6 @@
 package sws.murcs.controller.controls.tabs.markers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.sun.javafx.css.converters.PaintConverter;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableObjectProperty;
@@ -17,7 +14,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.StrokeType;
 
-import com.sun.javafx.css.converters.PaintConverter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A slightly modified version of the class found here:
@@ -83,19 +82,19 @@ public final class TabOutlineMarker extends Group {
 
 		Polyline pl = new Polyline();
 
-		Bounds _referenceBounds = referenceBounds;
+		Bounds refBounds = referenceBounds;
 
 		if (before) {
-			_referenceBounds = new BoundingBox(Math.max(0,
-					_referenceBounds.getMinX() - _referenceBounds.getWidth() / 2),
-					_referenceBounds.getMinY(), _referenceBounds.getWidth(),
-					_referenceBounds.getHeight());
+			refBounds = new BoundingBox(Math.max(0,
+					refBounds.getMinX() - refBounds.getWidth() / 2),
+					refBounds.getMinY(), refBounds.getWidth(),
+					refBounds.getHeight());
 		}
 		else {
-			_referenceBounds = new BoundingBox(Math.max(0,
-					_referenceBounds.getMaxX() - _referenceBounds.getWidth() / 2),
-					_referenceBounds.getMinY(), _referenceBounds.getWidth(),
-					_referenceBounds.getHeight());
+			refBounds = new BoundingBox(Math.max(0,
+					refBounds.getMaxX() - refBounds.getWidth() / 2),
+					refBounds.getMinY(), refBounds.getWidth(),
+					refBounds.getHeight());
 		}
 
 		pl.getPoints().addAll(
@@ -103,22 +102,22 @@ public final class TabOutlineMarker extends Group {
 		// top
 		// -----------------
 		// start
-				Double.valueOf(0.0), Double.valueOf(_referenceBounds.getMaxY()),
+				Double.valueOf(0.0), Double.valueOf(refBounds.getMaxY()),
 
 				// tab start
-				Double.valueOf(_referenceBounds.getMinX()), Double.valueOf(_referenceBounds.getMaxY()),
+				Double.valueOf(refBounds.getMinX()), Double.valueOf(refBounds.getMaxY()),
 
 				// // tab start top
-				Double.valueOf(_referenceBounds.getMinX()), Double.valueOf(_referenceBounds.getMinY()),
+				Double.valueOf(refBounds.getMinX()), Double.valueOf(refBounds.getMinY()),
 
 				// tab end right
-				Double.valueOf(_referenceBounds.getMaxX()), Double.valueOf(_referenceBounds.getMinY()),
+				Double.valueOf(refBounds.getMaxX()), Double.valueOf(refBounds.getMinY()),
 
 				// tab end bottom
-				Double.valueOf(_referenceBounds.getMaxX()), Double.valueOf(_referenceBounds.getMaxY()),
+				Double.valueOf(refBounds.getMaxX()), Double.valueOf(refBounds.getMaxY()),
 
 				// end
-				Double.valueOf(containerBounds.getMaxX()), Double.valueOf(_referenceBounds.getMaxY()),
+				Double.valueOf(containerBounds.getMaxX()), Double.valueOf(refBounds.getMaxY()),
 
 				// -----------------
 				// right
@@ -133,7 +132,7 @@ public final class TabOutlineMarker extends Group {
 				// -----------------
 				// left
 				// -----------------
-				Double.valueOf(containerBounds.getMinX()), Double.valueOf(_referenceBounds.getMaxY()));
+				Double.valueOf(containerBounds.getMinX()), Double.valueOf(refBounds.getMaxY()));
 		pl.strokeProperty().bind(fillProperty());
 		pl.setStrokeWidth(3);
 		pl.setStrokeType(StrokeType.INSIDE);

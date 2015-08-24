@@ -1,9 +1,6 @@
 package sws.murcs.controller.controls.tabs.markers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.sun.javafx.css.converters.PaintConverter;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableObjectProperty;
@@ -18,7 +15,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.StrokeLineCap;
 
-import com.sun.javafx.css.converters.PaintConverter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A slightly modified version of the "PositionModifier" class found here:

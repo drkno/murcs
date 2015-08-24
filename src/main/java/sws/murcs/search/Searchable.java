@@ -20,7 +20,7 @@ public @interface Searchable {
 
     /**
      * Field name to identify this field as.
-     * @return the firled name
+     * @return the field name
      */
     String fieldName() default "";
 }

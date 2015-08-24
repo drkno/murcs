@@ -1,8 +1,8 @@
 package sws.murcs.reporting.header;
 
 import sws.murcs.model.Organisation;
-import sws.murcs.model.Story;
-import sws.murcs.reporting.model.ReportModelStory;
+import sws.murcs.model.Sprint;
+import sws.murcs.reporting.model.ReportModelSprint;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -16,14 +16,14 @@ import java.util.List;
  */
 @XmlRootElement(name = "report")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ReportHeaderStory extends ReportHeader {
+public class ReportHeaderSprint extends ReportHeader {
 
     /**
-     * Creates a new Report Header from given stories.
-     * @param stories the stories given.
+     * Creates a new Report Header from given sprints.
+     * @param sprints the sprints given.
      */
-    public ReportHeaderStory(final List<Story> stories) {
-        reportModel = new ReportModelStory(stories);
+    public ReportHeaderSprint(final List<Sprint> sprints) {
+        reportModel = new ReportModelSprint(sprints);
         projectVersion = Organisation.getVersion();
         dateGenerated = LocalDate.now();
     }
@@ -31,6 +31,6 @@ public class ReportHeaderStory extends ReportHeader {
     /**
      * An unused constructor that is needed by Jaxb for some reason.
      */
-    private ReportHeaderStory() {
+    private ReportHeaderSprint() {
     }
 }

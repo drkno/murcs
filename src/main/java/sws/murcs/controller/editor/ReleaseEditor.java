@@ -86,7 +86,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -102,10 +101,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
         LocalDate viewReleaseDate = releaseDatePicker.getValue();
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
-        }
-
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
         }
         else {
             shortNameTextField.requestFocus();

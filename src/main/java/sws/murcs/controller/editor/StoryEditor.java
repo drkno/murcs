@@ -37,14 +37,17 @@ import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
-import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
@@ -53,7 +56,9 @@ import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An editor for the story model.
@@ -73,10 +78,22 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator and the estimate choice box and a choice box for changing the story state.
+     * A choice box for the creator.
      */
     @FXML
-    private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
+    private ChoiceBox<Person> creatorChoiceBox;
+
+    /**
+     * A choice box for the estimation of a story.
+     */
+    @FXML
+    private ChoiceBox<String> estimateChoiceBox;
+
+    /**
+     * A choice box for changing the story state.
+     */
+    @FXML
+    private ChoiceBox<Story.StoryState> storyStateChoiceBox;
 
     /**
      * Drop down with dependencies that can be added to this story.
@@ -143,6 +160,20 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void loadObject() {
+        Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
+                .stream()
+                .filter(model -> model instanceof Backlog)
+                .findFirst()
+                .orElse(null);
+
+        estimateChoiceBox.getItems().clear();
+        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+        estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+        estimateChoiceBox.getItems().add(EstimateType.ZERO);
+        if (backlog != null) {
+            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+        }
+
         if (thread != null && thread.isAlive()) {
             stop = true;
             try {
@@ -153,18 +184,10 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         stop = false;
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
-        setIsCreationWindow(modelShortName == null);
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-
-        updateStoryState();
-
-        //Add all the story states to the choice box
-        storyStateChoiceBox.getItems().clear();
-        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -246,6 +269,7 @@ public class StoryEditor extends GenericEditor<Story> {
         if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
+        updateEstimation();
         updateAcceptanceCriteria();
         super.clearErrors();
         if (!getIsCreationWindow()) {
@@ -267,18 +291,13 @@ public class StoryEditor extends GenericEditor<Story> {
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
         if (backlog == null  || getModel().getAcceptanceCriteria().size() == 0) {
-            estimateChoiceBox.getSelectionModel().select(0);
+            estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
             estimateChoiceBox.setDisable(true);
         }
         else {
             estimateChoiceBox.setDisable(false);
-            estimateChoiceBox.getItems().add(EstimateType.ZERO);
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
-            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
-            estimateChoiceBox.getSelectionModel().select(currentEstimation);
+            estimateChoiceBox.setValue(currentEstimation);
         }
     }
 
@@ -299,9 +318,6 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the story state because otherwise we might have a ready story with no ACs
         updateStoryState();
-
-        //Update the estimation so we don't end up with an estimated story and no ACs
-        updateEstimation();
     }
 
     /**
@@ -357,6 +373,10 @@ public class StoryEditor extends GenericEditor<Story> {
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         conditionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getCondition()));
+
+        //Add all the story states to the choice box
+        storyStateChoiceBox.getItems().clear();
+        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
     }
 
     @Override
@@ -398,6 +418,44 @@ public class StoryEditor extends GenericEditor<Story> {
         String viewDescription = descriptionTextArea.getText();
         if (isNullOrNotEqual(modelDescription, viewDescription)) {
             getModel().setDescription(viewDescription);
+        }
+
+        if (estimateChoiceBox.getValue() != null
+                && isNotEqual(getModel().getEstimate(), estimateChoiceBox.getValue())) {
+            // Updates the story state as this gets changed if you set the estimate to Not Estimated
+            if ((estimateChoiceBox.getValue().equals(EstimateType.NOT_ESTIMATED)
+                    || estimateChoiceBox.getValue().equals(EstimateType.INFINITE))
+                    && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> sprintNames = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String actualEstimate = estimateChoiceBox.getValue();
+                estimateChoiceBox.setValue(getModel().getEstimate());
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the Estimate of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n", actualEstimate)
+                        + "This will set the Story State to None.\n\n"
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    getModel().setEstimate(actualEstimate);
+                    estimateChoiceBox.setValue(actualEstimate);
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    assert getModel().getStoryState().equals(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            } else {
+                getModel().setEstimate(estimateChoiceBox.getValue());
+            }
         }
 
         updateStoryState();
@@ -444,7 +502,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * displays an error if it isn't.
      */
     private void updateStoryState() {
-        Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+        Story.StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
         boolean hasErrors = false;
 
@@ -457,17 +515,44 @@ public class StoryEditor extends GenericEditor<Story> {
                 addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
                 hasErrors = true;
             }
-            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
+            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)
+                    || model.getEstimate().equals(EstimateType.INFINITE)) {
                 addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
                 hasErrors = true;
             }
         }
+        else if (state == Story.StoryState.None) {
+            hasErrors = true; // So that the story state is not set.
+            if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                storyStateChoiceBox.setValue(getModel().getStoryState());
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the State of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n\n", state)
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    getModel().setStoryState(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+        }
 
         if (!hasErrors && state != null) {
-            Story.StoryState newState = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
-            if (!newState.equals(getModel().getStoryState())) {
-                getModel().setStoryState(newState);
-            }
+            getModel().setStoryState(storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 
@@ -486,6 +571,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
+                popup.setWindowTitle("Are you sure?");
                 popup.addYesNoButtons(() -> {
                     searchableComboBoxDecorator.add(newDependency);
                     Node dependencyNode = dependenciesMap.get(newDependency);
@@ -916,20 +1002,42 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                if (!isCreationWindow) {
-                    GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
+                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
+                        && getModel().getAcceptanceCriteria().size() <= 1) {
+                    List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                            .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                            .map(m -> (Sprint) m)
+                            .collect(Collectors.toList());
+                    List<String> collect = sprintsWithStory.stream()
+                            .map(Model::toString)
+                            .collect(Collectors.toList());
+                    String[] sprintNames = collect.toArray(new String[collect.size()]);
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
+                    GenericPopup popup = new GenericPopup();
+                    popup.setMessageText("Do you really want to remove the last Acceptance Criteria from "
+                            + getModel().toString()
+                            + " ?\n"
+                            + "This will set the Story Estimate to Not Estimated and the Story State to None.\n\n"
+                            + "The following Sprints will be affected:\n\t"
+                            + String.join("\n\t", sprintNames));
+                    popup.setTitleText("Change Story State");
+                    popup.setWindowTitle("Are you sure?");
                     popup.addYesNoButtons(() -> {
+                        getModel().setEstimate(EstimateType.NOT_ESTIMATED);
+                        estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
+                        sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
+                        updateEstimation();
+                        storyStateChoiceBox.setValue(Story.StoryState.None);
+                        getModel().setStoryState(Story.StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "dont-panic");
                     popup.show();
-                }
-                else {
+                } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
+                    updateEstimation();
                 }
             });
             FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());

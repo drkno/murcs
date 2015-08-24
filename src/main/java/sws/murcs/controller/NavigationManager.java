@@ -2,10 +2,10 @@ package sws.murcs.controller;
 
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.model.Model;
+import sws.murcs.view.App;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import sws.murcs.view.App;
 
 /**
  * A class for helping with navigation.

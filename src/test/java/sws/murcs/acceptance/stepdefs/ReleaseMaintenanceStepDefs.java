@@ -9,11 +9,13 @@ import cucumber.api.java.en.When;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.ModelViewController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.exceptions.CustomException;
@@ -71,6 +73,15 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
                 model.add(project);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+
+        // Mac OSX Workaround for testing ONLY!
+        interact(() -> {
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MenuBar menuBar = (MenuBar) JavaFXHelpers.getByID(primaryStage.getScene().getRoot(), "menuBar");
+                menuBar.useSystemMenuBarProperty().set(false);
             }
         });
     }
