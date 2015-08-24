@@ -29,7 +29,7 @@ import java.util.Map;
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T> implements UndoRedoChangeListener {
+public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener {
     /**
      * The name for the default section of the form.
      */
@@ -115,10 +115,10 @@ public abstract class GenericEditor<T> implements UndoRedoChangeListener {
      * Sets the current model for the editor.
      * @param pModel The new model to edit
      */
-    public final void setModel(final Model pModel) {
+    public final void setModel(final T pModel) {
         if (pModel != null) {
             isLoaded = false;
-            model = (T) pModel;
+            model = pModel;
             setIsCreationWindow(pModel.getShortName() == null);
             setupSaveChangesButton();
         }

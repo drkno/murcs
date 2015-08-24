@@ -40,7 +40,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from a organisation.
      * @param organisation the model from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     public static void generate(final Organisation organisation, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderAll(organisation);
@@ -56,7 +56,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from a model.
      * @param model the model from which to generate the report
      * @param file the file to output the report to
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     public static void generate(final List<Model> model, final File file) throws JAXBException {
         ModelType type = ModelType.getModelType(model.get(0));
@@ -113,7 +113,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from a project.
      * @param projects the models from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generateProjects(final List<Project> projects, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderProject(projects);
@@ -128,7 +128,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from a team.
      * @param teams the teams from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generateTeams(final List<Team> teams, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderTeam(teams);
@@ -144,7 +144,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from a person.
      * @param people the people from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generatePeople(final List<Person> people, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderPerson(people);
@@ -160,7 +160,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from backlogs.
      * @param backlogs the backlogs from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generateBacklogs(final List<Backlog> backlogs, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderBacklog(backlogs);
@@ -176,7 +176,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from stories.
      * @param stories the stories from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generateStories(final List<Story> stories, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderStory(stories);
@@ -192,7 +192,7 @@ public final class ReportGenerator {
      * Generates an xml report to file from stories.
      * @param sprints the stories from which to create the report
      * @param file the file to output the report
-     * @throws JAXBException Exceptions from JAXB
+     * @throws JAXBException Exceptions from JAXB that are thrown during serialisation.
      */
     private static void generateSprints(final List<Sprint> sprints, final File file) throws JAXBException {
         ReportHeader reportModel = new ReportHeaderSprint(sprints);
