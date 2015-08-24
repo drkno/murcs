@@ -144,6 +144,7 @@ public class OrganisationBacklogTest {
 
     @Test
     public void testBacklogFindUsages() throws Exception {
+        PersistenceManager.getCurrent().setCurrentModel(model);
         List<Backlog> backlogs = model.getBacklogs();
         List<Project> projects = model.getProjects();
         try {
