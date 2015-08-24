@@ -5,12 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
@@ -146,6 +141,7 @@ public class TaskEditor {
         stateChoiceBox.focusedProperty().addListener(changeListener);
         stateChoiceBox.focusedProperty().addListener(changeListener);
         descriptionTextArea.focusedProperty().addListener(changeListener);
+        editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
     }
 
     /**

@@ -83,9 +83,6 @@
                      </image>
                   </ImageView>
                </graphic>
-               <tooltip>
-                  <Tooltip text="Edit Assignees" />
-               </tooltip>
             </Button>
             <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
