@@ -92,7 +92,7 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
         fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
-        fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+        fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
 
         ModelType type = ModelType.getModelType(model);
         if (!fxmlPaths.containsKey(type)) {

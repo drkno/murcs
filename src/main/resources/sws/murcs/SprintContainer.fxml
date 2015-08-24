@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintContainer">
+    <children>
+        <TabPane fx:id="containerTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" side="RIGHT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <tabs>
+                <Tab fx:id="overviewTab" onSelectionChanged="#overviewTabSelected" text="Overview" />
+                <Tab fx:id="scrumBoardTab" onSelectionChanged="#scrumBoardTabSelected" text="Scrum Board" />
+                <Tab fx:id="burnDownChartTab" onSelectionChanged="#burnDownChartTabSelected" text="Burn Down Chart" />
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

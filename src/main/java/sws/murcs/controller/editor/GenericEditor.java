@@ -202,7 +202,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Clears the errors on the form.
      * @param sectionName The name of the section to clear the errors on
      */
-    public final void clearErrors(final String sectionName) {
+    public void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
         boolean hideError = true;
@@ -363,7 +363,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    public final void setupSaveChangesButton() {
+    public void setupSaveChangesButton() {
         if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }
