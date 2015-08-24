@@ -14,22 +14,47 @@ import sws.murcs.model.helpers.RecentlyUsedHelper;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * The controller for the assignee popover GUI element.
+ */
 public class AssigneeController {
 
+    /**
+     * The recently used VBox and the current assignees vbox.
+     */
     @FXML
     private VBox recentlyUsedVBox, currentAssigneesVBox;
 
+    /**
+     * The combobox used for selecting a new assignee.
+     */
     @FXML
     private ComboBox assigneeComboBox;
 
+    /**
+     * The editor the popover is linked to.
+     */
     private TaskEditor parentEditor;
 
+    /**
+     * The recent assignees (this is only updated when the popover is opened otherwise you'd get
+     * people turning up in here that you'd literally just added).
+     */
     private Collection<Person> recentAssignees;
 
+    /**
+     * The list of people who can possibly be assigned to the task.
+     */
     private Collection<Person> possibleAssignees;
 
+    /**
+     * The people who are currently assigned to the task.
+     */
     private Collection<Person> assignees;
 
+    /**
+     * A decorator for making the add assignees combobox searchable.
+     */
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
     public void setUp(final TaskEditor parent, List<Person> pPossibleAssignees) {
@@ -67,7 +92,11 @@ public class AssigneeController {
     private void addRecentButton(final Person assignee) {
         Button button = new Button();
         button.setText(assignee.getShortName());
-        button.setOnAction((event) -> addAssignee(assignee));
+        button.setOnAction((event) -> {
+            if (!parentEditor.getTask().getAssignees().contains(assignee)) {
+                addAssignee(assignee);
+            }
+        });
         recentlyUsedVBox.getChildren().add(button);
     }
 
