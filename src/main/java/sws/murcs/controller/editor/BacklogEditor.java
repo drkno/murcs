@@ -22,9 +22,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -35,7 +35,10 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import java.util.Collection;
 import java.util.List;
@@ -119,7 +122,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
-        highlighted.setValue(!highlighted.getValue());
+        toggleHighlightState(!highlighted.getValue());
+    }
+
+    /**
+     * Sets the state of story highlighting.
+     * @param highlights The highlight state.
+     */
+    public static void toggleHighlightState(final boolean highlights) {
+        highlighted.setValue(highlights);
     }
 
     /**
@@ -697,7 +708,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(name);
                 } else {
                     Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                    nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                        if (e.isControlDown()) {
+                            getNavigationManager().navigateToNewTab(story);
+                        } else {
+                            getNavigationManager().navigateTo(story);
+                        }
+                    });
                     container.getChildren().add(nameLink);
                 }
 
@@ -706,7 +723,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 button.getStyleClass().add("mdrd-button");
                 button.setOnAction(e -> {
                     if (!isCreationWindow) {
-                        GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                        GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                         popup.setTitleText("Are you sure?");
                         popup.setMessageText("Are you sure you wish to remove the story \""
                                 + story.getShortName() + "\" from this backlog?");

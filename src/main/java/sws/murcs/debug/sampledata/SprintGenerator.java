@@ -2,14 +2,18 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Generates random Sprints with stories.
  */
@@ -356,8 +360,8 @@ public class SprintGenerator implements Generator<Sprint> {
     @Override
     @SuppressWarnings("checkstyle:magicnumber")
     public final Sprint generate() {
-        int weeksBetweenStartEnd = 6;
-        int daysBeforeRelease = 30;
+        final int weeksBetweenStartEnd = 6;
+        final int daysBeforeRelease = 30;
         Sprint sprint = new Sprint();
         try {
             StringBuilder sprintName = new StringBuilder(GenerationHelper.randomElement(SPRINT_NAMES));
@@ -389,6 +393,20 @@ public class SprintGenerator implements Generator<Sprint> {
         if (backlogPool.size() > 0) {
             Backlog backlog = backlogPool.get(GenerationHelper.random(backlogPool.size()));
             sprint.setBacklog(backlog);
+            List<Story> stories = backlog.getAllStories().stream()
+                    .filter(story -> story.getStoryState().equals(Story.StoryState.Ready))
+                    .collect(Collectors.toList());
+            if (stories.size() > 0) {
+                int numStories = GenerationHelper.random(stories.size() + 1);
+                for (int i = 0; i < numStories; i++) {
+                    try {
+                        sprint.addStory(stories.remove(GenerationHelper.random(stories.size())));
+                    } catch (NotReadyException e) {
+                        ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
+                    }
+                }
+            }
+
         }
         else {
             return null;

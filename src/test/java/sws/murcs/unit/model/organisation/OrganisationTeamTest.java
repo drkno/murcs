@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -10,7 +9,6 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.*;
-import sws.murcs.model.Organisation;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
@@ -22,21 +20,23 @@ import java.util.List;
 
 public class OrganisationTeamTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -52,16 +52,9 @@ public class OrganisationTeamTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetTeamsNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         List<Team> teams = model.getTeams();
-
         Assert.assertNotNull("getTeams() should return teams but is null.", teams);
         Assert.assertNotEquals("getTeams() should return teams but is empty.", 0, teams.size());
     }

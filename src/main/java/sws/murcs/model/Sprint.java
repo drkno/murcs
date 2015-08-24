@@ -1,9 +1,11 @@
 package sws.murcs.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.search.Searchable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -11,9 +13,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import sws.murcs.exceptions.InvalidParameterException;
-import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.reporting.LocalDateAdapter;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Model of a sprint.
@@ -25,11 +28,15 @@ public class Sprint extends Model {
      * The start and end dates for the sprint.
      */
     @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
+    @TrackableValue
+    @Searchable
     private LocalDate startDate, endDate;
 
     /**
      * The release associated to this sprint.
      */
+    @TrackableValue
+    @Searchable
     private Release associatedRelease;
 
     /**
@@ -38,18 +45,24 @@ public class Sprint extends Model {
     @XmlElementWrapper(name = "stories")
     @XmlElement(name = "story")
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private List<Story> stories = new ArrayList<>();
 
     /**
      * The backlog associated with this sprint.
      */
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private Backlog associatedBacklog;
 
     /**
      * The team who is working on this sprint.
      */
     @XmlIDREF
+    @TrackableValue
+    @Searchable
     private Team team;
 
     /**
@@ -68,7 +81,7 @@ public class Sprint extends Model {
     public final void setEndDate(final LocalDate pEndDate) throws InvalidParameterException {
         validateDates(startDate, pEndDate, associatedRelease);
 
-        this.endDate = pEndDate;
+        endDate = pEndDate;
         commit("edit sprint");
     }
 
@@ -88,7 +101,7 @@ public class Sprint extends Model {
     public final void setStartDate(final LocalDate pStartDate) throws InvalidParameterException {
         validateDates(pStartDate, endDate, associatedRelease);
 
-        this.startDate = pStartDate;
+        startDate = pStartDate;
         commit("edit sprint");
     }
 
@@ -106,9 +119,11 @@ public class Sprint extends Model {
      * @throws InvalidParameterException if the release is before the end date of the sprint
      */
     public final void setAssociatedRelease(final Release pAssociatedRelease) throws InvalidParameterException {
-        validateDates(startDate, endDate, pAssociatedRelease);
+        if (pAssociatedRelease != null) {
+            validateDates(startDate, endDate, pAssociatedRelease);
+        }
 
-        this.associatedRelease = pAssociatedRelease;
+        associatedRelease = pAssociatedRelease;
         commit("edit sprint");
     }
 
@@ -157,9 +172,9 @@ public class Sprint extends Model {
      * @param pBacklog the sprint backlog
      */
     public final void setBacklog(final Backlog pBacklog) {
-        this.associatedBacklog = pBacklog;
+        associatedBacklog = pBacklog;
         // Any time a new backlog is introduced should also clear the previous stories added from another backlog
-        this.stories.clear();
+        stories.clear();
         commit("edit sprint");
     }
 
@@ -176,13 +191,13 @@ public class Sprint extends Model {
      * @param pTeam the sprint team
      */
     public final void setTeam(final Team pTeam) {
-        this.team = pTeam;
+        team = pTeam;
         commit("edit sprint");
     }
 
     @Override
     public final boolean equals(final Object object) {
-        if (!(object instanceof Sprint) || object == null) {
+        if (!(object instanceof Sprint)) {
             return false;
         }
         Sprint sprint = (Sprint) object;

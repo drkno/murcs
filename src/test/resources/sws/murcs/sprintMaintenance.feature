@@ -13,7 +13,7 @@ Feature: Sprint Maintenance
     Then A Sprint is made with the given information
 
   Scenario: Create a new Sprint using the add button
-    Given I have selected the Sprint view from the display list type
+    And a Sprint is in view
     And I click on the add button
     And I fill in valid information in the popup
     When Click Ok
@@ -21,14 +21,14 @@ Feature: Sprint Maintenance
 
   Scenario: Remove Sprint using the remove button
     Given there is a Sprint
-    And I have selected the Sprint view from the display list type
+    And a Sprint is in view
     And a Sprint is selected from the list
     When I click on the remove button
     Then the Sprint is removed from the list
 
   Scenario: Edit a Sprint
     Given there is a Sprint
-    And I have selected the Sprint view from the display list type
+    And a Sprint is in view
     And a Sprint is selected from the list
     When I edit the values of the Sprint
     Then the Sprint updates to the values given

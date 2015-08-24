@@ -3,7 +3,6 @@ package sws.murcs.model.helpers;
 import sws.murcs.model.Person;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RecentlyUsedHelper {
 

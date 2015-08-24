@@ -21,7 +21,6 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -101,7 +100,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
     private List<Story> allocatableStories;
 
     /**
-     *
+     * Maps the story to the node it is displayed in.
      */
     private Map<Story, Node> storyNodeIndex;
 
@@ -154,7 +153,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                             && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
                             || story.getEstimate().equals(EstimateType.INFINITE)))
                     .forEach(allocatableStories::add);
-            // Remove all the stories already in backlog
+            // Remove all the stories already in the sprint
             getModel().getStories().stream().forEach(allocatableStories::remove);
         }
 
@@ -216,7 +215,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         storyNodeIndex.clear();
                         updateAllocatableStories();
                         popup.close();
-                    });
+                    }, "danger-will-robinson", "dont-panic");
                     popup.show();
                 }
                 else {
@@ -270,7 +269,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     finally {
                         popup.close();
                     }
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             }
         }
@@ -304,7 +303,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             addFormError(startDatePicker, "Start date must be before end date");
-            addFormError(endDatePicker);
             hasProblems = true;
         }
 
@@ -427,7 +425,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 storyNodeIndex.remove(story);
                 getModel().removeStory(story);
                 popup.close();
-            });
+            }, "danger-will-robinson", "dont-panic");
             popup.show();
         });
 
@@ -448,7 +446,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(story.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+            nameLink.setOnAction(a -> getNavigationManager().navigateTo(story));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

@@ -637,7 +637,7 @@ public class GridLayout extends Group {
         final Timeline timeline = new Timeline();
         currentSelectionLabel.setText("+" + gridMinTilesProperty.getValue().toString());
         currentSelectionLabel.setOpacity(1);
-        double posX = selectionBox.localToScene(selectionBox.getWidth()/2d, 0).getX();
+        double posX = selectionBox.localToScene(selectionBox.getWidth() / 2d, 0).getX();
         currentSelectionLabel.setTranslateX(0);
         currentSelectionLabel.setTranslateX(currentSelectionLabel.sceneToLocal(posX, 0).getX()
                 - currentSelectionLabel.getWidth() / 2d);

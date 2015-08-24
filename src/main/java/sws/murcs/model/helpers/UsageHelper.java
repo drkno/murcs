@@ -1,10 +1,5 @@
 package sws.murcs.model.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -19,6 +14,11 @@ import sws.murcs.model.Task;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Helps to find usages of a model within the current organisation. This is a singleton class and is not designed to be
@@ -82,7 +82,7 @@ public final class UsageHelper {
      */
     private static List<Model> findUsages(final Release release) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
-        ArrayList<Model> usages = new ArrayList<>();
+        List<Model> usages = new ArrayList<>();
         currentModel.getSprints().stream()
                 .filter(sprint -> release.equals(sprint.getAssociatedRelease()))
                 .forEach(sprint -> usages.add(sprint));
@@ -189,19 +189,19 @@ public final class UsageHelper {
     private static List<Model> findUsages(final Story story) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
 
-        ArrayList<Model> usages = new ArrayList<>();
+        List<Model> usages = new ArrayList<>();
 
         currentModel.getBacklogs().stream()
                 .filter(backlog -> backlog.getAllStories().contains(story))
-                .forEach(backlog -> usages.add(backlog));
+                .forEach(usages::add);
 
         currentModel.getStories().stream()
-                .filter(storys -> storys.getDependencies().contains(story))
-                .forEach(s -> usages.add(s));
+                .filter(s -> s.getDependencies().contains(story))
+                .forEach(usages::add);
 
         currentModel.getSprints().stream()
                 .filter(sprint -> sprint.getStories().contains(story))
-                .forEach(sprint -> usages.add(sprint));
+                .forEach(usages::add);
 
         return usages;
     }
@@ -253,10 +253,9 @@ public final class UsageHelper {
             case Sprint: list = (List<T>) currentModel.getSprints(); break;
             default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
         }
-        T foundModel = list.stream()
+        return list.stream()
                 .filter(predicate)
                 .findAny().orElseGet(() -> null);
-        return foundModel;
     }
 
     /**

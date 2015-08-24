@@ -1,7 +1,5 @@
 package sws.murcs.unit.model;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +12,9 @@ import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,7 +33,6 @@ public class SprintTest {
     @Before
     public void setup() throws Exception{
         sprint = new Sprint();
-        //TODO use generators which we very cleverly wrote before this test..
         sprint.setShortName("name");
         sprint.setLongName("long name");
         sprint.setDescription("description");
@@ -59,13 +59,13 @@ public class SprintTest {
     }
 
     @Test
-    public void testModifyDescription() throws Exception{
+    public void testModifyDescription() throws Exception {
         sprint.setDescription("new description");
         assertEquals("Description should be new description!", "new description", sprint.getDescription());
     }
 
     @Test
-    public void testModifyTeam() {
+    public void testModifyTeam() throws Exception {
         Team team = (new TeamGenerator()).generate();
         sprint.setTeam(team);
 
@@ -73,7 +73,7 @@ public class SprintTest {
     }
 
     @Test()
-    public void testModifyRelease() throws InvalidParameterException {
+    public void testModifyRelease() throws Exception {
         Release release = (new ReleaseGenerator()).generate();
         release.setReleaseDate(sprint.getEndDate().plus(10, ChronoUnit.DAYS));
         sprint.setAssociatedRelease(release);
@@ -82,7 +82,7 @@ public class SprintTest {
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testInvalidRelease() throws InvalidParameterException {
+    public void testInvalidRelease() throws Exception {
         Release release = (new ReleaseGenerator()).generate();
         release.setReleaseDate(sprint.getStartDate().plus(1, ChronoUnit.DAYS));
 
@@ -90,32 +90,32 @@ public class SprintTest {
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testInvalidStartDate() throws InvalidParameterException {
+    public void testInvalidStartDate() throws Exception {
         LocalDate start = sprint.getEndDate().plus(1, ChronoUnit.DAYS);
         sprint.setStartDate(start);
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testInvalidEndDate1() throws InvalidParameterException {
+    public void testInvalidEndDate1() throws Exception {
         LocalDate end = sprint.getStartDate().minus(1, ChronoUnit.DAYS);
         sprint.setEndDate(end);
     }
 
     @Test(expected = InvalidParameterException.class)
-    public void testInvalidEndDate2() throws InvalidParameterException {
+    public void testInvalidEndDate2() throws Exception {
         LocalDate end = sprint.getAssociatedRelease().getReleaseDate().plus(10, ChronoUnit.DAYS);
         sprint.setEndDate(end);
     }
 
     @Test(expected = NotReadyException.class)
-    public void testAddStoryNotReady() throws NotReadyException {
+    public void testAddStoryNotReady() throws Exception {
         Story story = new Story();
         story.setStoryState(Story.StoryState.None);
         sprint.addStory(story);
     }
 
     @Test
-    public void testAddStoryReady() throws NotReadyException {
+    public void testAddStoryReady() throws Exception {
         Story story = new Story();
         story.setStoryState(Story.StoryState.Ready);
         sprint.addStory(story);
@@ -125,7 +125,7 @@ public class SprintTest {
     }
 
     @Test
-    public void testRemoveStory() throws NotReadyException {
+    public void testRemoveStory() throws Exception {
         Story story = new Story();
         story.setStoryState(Story.StoryState.Ready);
         sprint.addStory(story);

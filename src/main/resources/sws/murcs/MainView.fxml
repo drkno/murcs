@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.AppController">
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane fx:id="borderPaneMain" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.MainController">
     <top>
       <VBox fx:id="titleVBox">
          <children>
@@ -18,14 +20,14 @@
                                   <items>
                                       <MenuItem fx:id="newModel" mnemonicParsing="false" onAction="#newModel" text="Organisation" />
                                       <SeparatorMenuItem />
-                                      <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#add" text="Project" />
-                                      <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#add" text="Team" />
-                                      <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#add" text="Person" />
-                                      <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#add" text="Skill" />
-                                      <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#add" text="Release" />
-                                      <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#add" text="Backlog" />
-                                      <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#add" text="Story" />
-                                      <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#add" text="Sprint" />
+                                      <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#create" text="Project" />
+                                      <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#create" text="Team" />
+                                      <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#create" text="Person" />
+                                      <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#create" text="Skill" />
+                                      <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#create" text="Release" />
+                                      <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#create" text="Backlog" />
+                                      <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#create" text="Story" />
+                                      <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#create" text="Sprint" />
                                   </items>
                               </Menu>
                               <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="Open" />
@@ -45,7 +47,7 @@
                       </Menu>
                       <Menu id="viewMenu" mnemonicParsing="false" text="View">
                           <items>
-                              <MenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" />
+                              <CheckMenuItem id="viewShowHide" fx:id="showHide" mnemonicParsing="false" onAction="#toggleItemListView" text="Show/Hide Item List" selected="true"/>
                               <CheckMenuItem fx:id="highlightToggle" mnemonicParsing="false" onAction="#toggleBacklogStories" selected="true" text="Highlight Stories" />
                         <Menu fx:id="toolBarMenu" mnemonicParsing="false" text="Tool Bar">
                            <items>
@@ -53,7 +55,6 @@
                                <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
                                <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
                               <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
-                              <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Search Toolbar" />
                            </items>
                         </Menu>
                           </items>
@@ -69,28 +70,7 @@
          </children>
       </VBox>
     </top>
-    <center>
-        <HBox fx:id="hBoxMainDisplay" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" BorderPane.alignment="CENTER">
-            <children>
-                <VBox fx:id="vBoxSideDisplay" id="vBoxSideDisplay" HBox.hgrow="NEVER">
-                    <children>
-                        <AnchorPane>
-                            <children>
-                                <ChoiceBox fx:id="displayChoiceBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
-                            </children>
-                        </AnchorPane>
-                        <ListView fx:id="displayList" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                    </children>
-                </VBox>
-                <GridPane fx:id="contentPane" HBox.hgrow="ALWAYS">
-                    <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                </GridPane>
-            </children>
-        </HBox>
-    </center>
+   <center>
+      <TabPane fx:id="mainTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER"/>
+   </center>
 </BorderPane>

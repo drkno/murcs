@@ -16,7 +16,7 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.JavaFXHelpers;
-import sws.murcs.controller.AppController;
+import sws.murcs.controller.ModelViewController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
@@ -32,12 +32,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ReleaseMaintenanceStepDefs extends ApplicationTest{
+public class ReleaseMaintenanceStepDefs extends ApplicationTest {
 
     private FxRobot fx;
     private Stage primaryStage;
@@ -74,7 +73,6 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
                 release.setReleaseDate(LocalDate.of(2015, 4, 22));
 
                 model.add(project);
-                registeredStages.add(App.getAppController().getWindow());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -169,7 +167,7 @@ public class ReleaseMaintenanceStepDefs extends ApplicationTest{
     @And("^I click on the add button$")
     public void I_click_on_the_add_button() throws Throwable {
         fx.clickOn("#addButton");
-        App.getWindowManager().getAllWindows().stream().filter(w -> w.getController().getClass() != AppController.class).forEach(s -> {
+        App.getWindowManager().getAllWindows().stream().filter(w -> w.getController().getClass() != ModelViewController.class).forEach(s -> {
             try {
                 FxToolkit.registerStage(s::getStage);
                 registeredStages.add(s);

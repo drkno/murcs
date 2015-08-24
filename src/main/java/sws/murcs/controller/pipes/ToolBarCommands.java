@@ -1,4 +1,4 @@
-package sws.murcs.controller;
+package sws.murcs.controller.pipes;
 
 import javafx.event.ActionEvent;
 
@@ -6,19 +6,6 @@ import javafx.event.ActionEvent;
  * Interface that is implemented by any controller that is linked to the toolbar fxml.
  */
 public interface ToolBarCommands {
-
-    /**
-     * The event to be fired when you click the back arrow on the toolbar.
-     * @param event Clicking the back arrow on the toolbar.
-     */
-    void back(ActionEvent event);
-
-    /**
-     * The function to be called when you click the forward arrow on the keyboard.
-     * @param event Clicking the forward arrow on the toolbar.
-     */
-    void forward(ActionEvent event);
-
     /**
      * The function to be called when you click the undo button on the toolbar.
      * @param event Clicking the undo button on the toolbar.
@@ -36,20 +23,6 @@ public interface ToolBarCommands {
      * @param event Clicking the return button on the toolbar.
      */
     void revert(ActionEvent event);
-
-    /**
-     * The function to be called when you click the add button on the toolbar.
-     * @param event Clicking either the add button on the toolbar or one of the menu items from the selection box.
-     *              NOTE: make sure this function deals with the different menu items in some way or form. (i.e. works
-     *              out which item was selected - see AppController add() for more details).
-     */
-    void add(ActionEvent event);
-
-    /**
-     * The function to be called when you click the remove button on the toolbar.
-     * @param event Clicking the remove button.
-     */
-    void remove(ActionEvent event);
 
     /**
      * The function to be called when you click the generate report button on the toolbar.

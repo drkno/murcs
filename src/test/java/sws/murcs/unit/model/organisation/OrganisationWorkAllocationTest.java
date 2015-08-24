@@ -2,11 +2,10 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import sws.murcs.debug.sampledata.ProjectGenerator;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
+import sws.murcs.debug.sampledata.ProjectGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -28,21 +27,23 @@ import static org.junit.Assert.assertTrue;
 
 public class OrganisationWorkAllocationTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -58,16 +59,9 @@ public class OrganisationWorkAllocationTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetWorkAllocationsNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         List<WorkAllocation> workAllocations = model.getAllocations();
-
         Assert.assertNotNull("getWorkAllocations() should return workAllocations but is null.", workAllocations);
         Assert.assertNotEquals("getWorkAllocations() should return workAllocations but is empty.", 0, workAllocations.size());
     }

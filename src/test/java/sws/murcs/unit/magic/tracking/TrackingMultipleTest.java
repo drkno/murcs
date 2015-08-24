@@ -1,6 +1,10 @@
 package sws.murcs.unit.magic.tracking;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;

@@ -847,12 +847,7 @@ public class TaskGenerator implements Generator<Task> {
             verb = GenerationHelper.randomElement(verbs);
             noun = GenerationHelper.randomElement(nouns);
             String taskName = verb;
-            if ("aeiou".contains(noun.subSequence(0, 1))) {
-                taskName += " an ";
-            }
-            else {
-                taskName += " a ";
-            }
+            taskName += "aeiou".contains(noun.subSequence(0, 1)) ? " an " : " a ";
             taskName += noun;
             names.add(Character.toUpperCase(taskName.charAt(0)) + taskName.substring(1));
         }

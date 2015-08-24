@@ -8,7 +8,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.MenuBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -35,9 +34,10 @@ public class ShowHideStepDefs extends ApplicationTest {
     @Before("@ShowHide")
     public void setUp() throws Exception {
         UndoRedoManager.setDisabled(false);
-        fx = new FxRobot();
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
+        fx = new FxRobot();
+        launch(App.class);
 
         interact(() -> {
             try {

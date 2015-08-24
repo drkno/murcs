@@ -26,6 +26,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -34,7 +35,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
@@ -54,7 +54,6 @@ import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.List;
@@ -161,15 +160,6 @@ public class StoryEditor extends GenericEditor<Story> {
 
     @Override
     public final void loadObject() {
-        if (thread != null && thread.isAlive()) {
-            stop = true;
-            try {
-                thread.join();
-            } catch (Throwable t) {
-                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
-            }
-        }
-        stop = false;
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
@@ -184,6 +174,15 @@ public class StoryEditor extends GenericEditor<Story> {
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
         }
 
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+            }
+        }
+        stop = false;
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
@@ -431,10 +430,9 @@ public class StoryEditor extends GenericEditor<Story> {
                         .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                         .map(m -> (Sprint) m)
                         .collect(Collectors.toList());
-                List<String> collect = sprintsWithStory.stream()
+                List<String> sprintNames = sprintsWithStory.stream()
                         .map(Model::toString)
                         .collect(Collectors.toList());
-                String[] sprintNames = collect.toArray(new String[collect.size()]);
                 String actualEstimate = estimateChoiceBox.getValue();
                 estimateChoiceBox.setValue(getModel().getEstimate());
                 GenericPopup popup = new GenericPopup();
@@ -453,7 +451,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     assert getModel().getStoryState().equals(Story.StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             } else {
                 getModel().setEstimate(estimateChoiceBox.getValue());
@@ -548,16 +546,13 @@ public class StoryEditor extends GenericEditor<Story> {
                     getModel().setStoryState(Story.StoryState.None);
                     storyStateChoiceBox.setValue(Story.StoryState.None);
                     popup.close();
-                });
+                }, "danger-will-robinson", "dont-panic");
                 popup.show();
             }
         }
 
         if (!hasErrors && state != null) {
-            Story.StoryState newState = storyStateChoiceBox.getSelectionModel().getSelectedItem();
-            if (!newState.equals(getModel().getStoryState())) {
-                getModel().setStoryState(newState);
-            }
+            getModel().setStoryState(storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 
@@ -572,7 +567,7 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
-                GenericPopup popup = new GenericPopup(App.getAppController().getWindow());
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
                 popup.setMessageText("Are you sure you want to remove the dependency "
                         + newDependency.getShortName() + "?");
                 popup.setTitleText("Remove Dependency");
@@ -616,7 +611,13 @@ public class StoryEditor extends GenericEditor<Story> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(newDependency);
+                } else {
+                    getNavigationManager().navigateTo(newDependency);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
@@ -1001,7 +1002,7 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                if (UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
+                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
                         && getModel().getAcceptanceCriteria().size() <= 1) {
                     List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
                             .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
@@ -1032,7 +1033,6 @@ public class StoryEditor extends GenericEditor<Story> {
                         getModel().setStoryState(Story.StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "dont-panic");
-
                     popup.show();
                 } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);

@@ -1,19 +1,14 @@
 package sws.murcs.controller.editor;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -21,7 +16,6 @@ import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
