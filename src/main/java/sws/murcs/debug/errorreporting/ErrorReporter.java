@@ -99,6 +99,11 @@ public final class ErrorReporter {
     private boolean shouldShowPopover;
 
     /**
+     * Check variable to prevent multiple instances of the reporter window.
+     */
+    private boolean reporterIsOpen;
+
+    /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
      * @param args the arguments the program was started with.
      */
@@ -219,12 +224,18 @@ public final class ErrorReporter {
         Platform.runLater(() -> {
             try {
                 popup = ErrorReportPopup.newErrorReporter();
-                if (popup != null) {
-                    popup.setType(dialogType);
-                    popup.setReportListener(description -> {
-                        performReporting(pThread, pThrowable, description, pProgDescription);
-                    });
-                    popup.show();
+                synchronized (ErrorReporter.class) {
+                    if (popup != null && !reporterIsOpen) {
+                        popup.setType(dialogType);
+                        popup.setReportListener(description -> {
+                            synchronized (ErrorReporter.class) {
+                                reporterIsOpen = false;
+                            }
+                            performReporting(pThread, pThrowable, description, pProgDescription);
+                        });
+                        reporterIsOpen = true;
+                        popup.show();
+                    }
                 }
             } catch (Exception e) {
                 performReporting(pThread, pThrowable,
