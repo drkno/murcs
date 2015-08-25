@@ -88,7 +88,7 @@ public class BacklogGenerator implements Generator<Backlog> {
      * Instantiates a new story generator.
      */
     public BacklogGenerator() {
-        storyGenerator = new StoryGenerator();
+        this(new StoryGenerator());
     }
 
     /**
@@ -97,6 +97,8 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public BacklogGenerator(final Generator<Story> generator) {
         this.storyGenerator = generator;
+        storyPool = new ArrayList<>();
+        unsafeStoryPool = new ArrayList<>();
     }
 
     /**
@@ -105,15 +107,6 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public final void setStoryGenerator(final Generator<Story> generator) {
         this.storyGenerator = generator;
-    }
-
-    /**
-     * Sets the story pool. If null, stories will be randomly generated.
-     * @param stories The story pool
-     */
-    public final void setStoryPool(final List<Story> stories) {
-        unsafeStoryPool = stories;
-        storyPool = new ArrayList<>(stories);
     }
 
     /**
@@ -138,10 +131,8 @@ public class BacklogGenerator implements Generator<Backlog> {
         if (storyCount > storyPool.size()) {
             while (storyCount != storyPool.size()) {
                 Story newStory = storyGenerator.generate();
-                if (!storyPool.stream().filter(newStory::equals).findAny().isPresent()) {
-                    if (!unsafeStoryPool.contains(newStory)) {
-                        unsafeStoryPool.add(newStory);
-                    }
+                if (!storyPool.stream().filter(newStory::equals).findAny().isPresent() && !unsafeStoryPool.stream().filter(newStory::equals).findAny().isPresent()) {
+                    unsafeStoryPool.add(newStory);
                     storyPool.add(newStory);
                 }
             }
@@ -204,5 +195,17 @@ public class BacklogGenerator implements Generator<Backlog> {
         backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);
 
         return backlog;
+    }
+
+    /**
+     * Sets the stories that should not be used when you're generating stories for the backlogs.
+     * @param unsafeStories The stories not to be used when making backlogs.
+     */
+    public void setUnsafeStories(final List<Story> unsafeStories) {
+        unsafeStoryPool = unsafeStories;
+    }
+
+    public List<Story> getUnsafeStories() {
+        return unsafeStoryPool;
     }
 }
