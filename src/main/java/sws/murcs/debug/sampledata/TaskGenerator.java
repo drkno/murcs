@@ -54,12 +54,12 @@ public class TaskGenerator implements Generator<Task> {
     /**
      * An array of strings used for generated task names.
      */
-    private String[] taskNames;
+    private static String[] taskNames;
 
     /**
      * An array of nouns used for creating task names.
      */
-    private String[] nouns = {
+    private static String[] nouns = {
             "able",
             "achieve",
             "acoustics",
@@ -160,7 +160,7 @@ public class TaskGenerator implements Generator<Task> {
     /**
      * And array of verbs used for creating task names.
      */
-    private String[] verbs = {
+    private static String[] verbs = {
             "accept",
             "add",
             "admire",
@@ -832,14 +832,16 @@ public class TaskGenerator implements Generator<Task> {
      * Sets up a new task generator.
      */
     public TaskGenerator() {
-        setUpNameList();
+        if (taskNames == null) {
+            setUpNameList();
+        }
     }
 
     /**
      * Sets up the list of names used for task names.
      */
     @SuppressWarnings("checkstyle:avoidinlineconditionals")
-    private void setUpNameList() {
+    private static void setUpNameList() {
         List<String> names = new ArrayList<>();
         String verb;
         String noun;

@@ -141,7 +141,6 @@ public class TaskEditor {
         stateChoiceBox.focusedProperty().addListener(changeListener);
         stateChoiceBox.focusedProperty().addListener(changeListener);
         descriptionTextArea.focusedProperty().addListener(changeListener);
-        editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
     }
 
     /**

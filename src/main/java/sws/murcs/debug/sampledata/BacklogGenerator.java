@@ -47,6 +47,8 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public static final int HIGH_STRESS_MIN = 6;
 
+    private static int indicator = 0;
+
 
     /**
      * A list of backlog names.
@@ -131,9 +133,20 @@ public class BacklogGenerator implements Generator<Backlog> {
         if (storyCount > storyPool.size()) {
             while (storyCount != storyPool.size()) {
                 Story newStory = storyGenerator.generate();
-                if (!storyPool.stream().filter(newStory::equals).findAny().isPresent() && !unsafeStoryPool.stream().filter(newStory::equals).findAny().isPresent()) {
+                if (!unsafeStoryPool.contains(newStory)) {
                     unsafeStoryPool.add(newStory);
                     storyPool.add(newStory);
+                }
+                else {
+                    try {
+                        newStory.setShortName(newStory.getShortName() + " (" + indicator + ")");
+                        unsafeStoryPool.add(newStory);
+                        storyPool.add(newStory);
+                        indicator++;
+                    }
+                    catch (Exception e) {
+                        //Suppress because I really don't care.
+                    }
                 }
             }
         }
