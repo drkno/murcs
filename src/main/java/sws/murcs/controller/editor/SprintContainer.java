@@ -26,6 +26,8 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @FXML
     private TabPane containerTabPane;
 
+    @FXML AnchorPane overviewAnchorPane;
+
     /**
      * The editor of the overview.
      */
@@ -43,8 +45,12 @@ public class SprintContainer extends GenericEditor<Sprint> {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
+            overviewAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
             overviewEditor = loader.getController();
-            overviewTab.setContent(view);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load sprint overview");
         }
