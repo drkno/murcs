@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -26,12 +27,14 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @FXML
     private TabPane containerTabPane;
 
-    @FXML AnchorPane overviewAnchorPane;
+    @FXML AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
 
     /**
      * The editor of the overview.
      */
     private SprintEditor overviewEditor;
+
+    private SprintAllTasksController allTasksController;
 
     /**
      * Creates a new Sprint Container editor.
@@ -95,6 +98,25 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @FXML
     private void burnDownChartTabSelected() {
         // Currently doesn't do anything as there is no burndown chart to load
+    }
+
+    @FXML
+    private void allTasksTabSelected() {
+        if (allTasksController == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
+                Parent view = loader.load();
+                allTasksAnchorPane.getChildren().add(view);
+                AnchorPane.setRightAnchor(view, 0.0);
+                AnchorPane.setLeftAnchor(view, 0.0);
+                AnchorPane.setTopAnchor(view, 0.0);
+                AnchorPane.setBottomAnchor(view, 0.0);
+                allTasksController = loader.getController();
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
+            }
+        }
+        allTasksController.setUpController(getModel());
     }
 
     @Override

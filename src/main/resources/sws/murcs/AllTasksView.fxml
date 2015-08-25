@@ -6,7 +6,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintAllTasksController">
    <children>
       <GridPane layoutX="171.0" layoutY="89.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -26,13 +26,13 @@
                     
                 </items>
             </ChoiceBox>
-            <ChoiceBox fx:id="groupingCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ChoiceBox fx:id="groupingChoiceBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <ChoiceBox fx:id="orderingChoiceBox" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label text="Group By" GridPane.columnIndex="1" />
             <Label text="Order By" GridPane.columnIndex="2" />
-            <ScrollPane prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
                <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0" />
+                  <VBox fx:id="tasksVBox" />
                </content>
             </ScrollPane>
          </children>
