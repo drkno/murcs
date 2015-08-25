@@ -146,22 +146,24 @@ public class SprintEditor extends GenericEditor<Sprint> {
      * Updates the list of allocatable stories in a sprint.
      */
     private void updateAllocatableStories() {
-        allocatableStories.clear();
-        if (getModel().getBacklog() != null) {
-            getModel().getBacklog().getAllStories().stream()
-                    .filter(story -> story.getAcceptanceCriteria().size() > 0
-                            && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
-                            || story.getEstimate().equals(EstimateType.INFINITE)))
-                    .forEach(allocatableStories::add);
-            // Remove all the stories already in the sprint
-            getModel().getStories().stream().forEach(allocatableStories::remove);
-        }
+        Platform.runLater(() -> {
+            allocatableStories.clear();
+            if (getModel().getBacklog() != null) {
+                getModel().getBacklog().getAllStories().stream()
+                        .filter(story -> story.getAcceptanceCriteria().size() > 0
+                                && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
+                                || story.getEstimate().equals(EstimateType.INFINITE)))
+                        .forEach(allocatableStories::add);
+                // Remove all the stories already in the sprint
+                getModel().getStories().stream().forEach(allocatableStories::remove);
+            }
 
-        storiesContainer.getChildren().clear();
-        getModel().getStories().forEach(story -> {
-            Node storyNode = generateStoryNode(story);
-            storiesContainer.getChildren().add(storyNode);
-            storyNodeIndex.put(story, storyNode);
+            storiesContainer.getChildren().clear();
+            getModel().getStories().forEach(story -> {
+                Node storyNode = generateStoryNode(story);
+                storiesContainer.getChildren().add(storyNode);
+                storyNodeIndex.put(story, storyNode);
+            });
         });
     }
 
