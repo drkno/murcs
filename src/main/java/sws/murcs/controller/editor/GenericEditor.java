@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -138,7 +139,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      */
     public final void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            loadObject();
+            synchronized (StyleManager.getInstance()) {
+                loadObject();
+            }
         }
     }
 
@@ -208,18 +211,20 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        for (Map.Entry<Node, String> entry : invalidInSection) {
-            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-            if (entry.getKey().isFocused()) {
-                hideError = false;
+        synchronized (StyleManager.getInstance()) {
+            for (Map.Entry<Node, String> entry : invalidInSection) {
+                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+                if (entry.getKey().isFocused()) {
+                    hideError = false;
+                }
             }
+            invalidInSection.clear();
+            if (hideError && errorMessagePopover != null) {
+                errorMessagePopover.hide();
+            }
+            labelErrorMessage.setText("");
         }
-        invalidInSection.clear();
-        if (hideError && errorMessagePopover != null) {
-            errorMessagePopover.hide();
-        }
-        labelErrorMessage.setText("");
     }
 
     /**
@@ -272,7 +277,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
         invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
-        showErrors(sectionName);
+        synchronized (StyleManager.class) {
+            showErrors(sectionName);
+        }
     }
 
     /**
@@ -284,7 +291,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
      */
     @SuppressWarnings("checkstyle:designforextension")
-    public void dispose() {
+    public synchronized void dispose() {
         setChangeListener(null);
         UndoRedoManager.removeChangeListener(this);
         setModel(null);
@@ -363,7 +370,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    public void setupSaveChangesButton() {
+    public synchronized void setupSaveChangesButton() {
         if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }
