@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,8 @@ import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
@@ -28,7 +31,7 @@ import java.util.Objects;
 /**
  * The editor for a task contained within a story.
  */
-public class TaskEditor {
+public class TaskEditor implements UndoRedoChangeListener {
 
     /**
      * The model of the tasks you are editing.
@@ -378,5 +381,14 @@ public class TaskEditor {
 
     public Story getStory() {
         return editorController.getAssociatedStory(task);
+    }
+
+    @Override
+    public void undoRedoNotification(ChangeState param) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert) {
+            synchronized (StyleManager.getInstance()) {
+                configure(task, creationBox, parent, editorController);
+            }
+        }
     }
 }

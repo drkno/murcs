@@ -173,7 +173,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
             }
         }
-        super.dispose();
+        //super.dispose();
     }
 
     private class TaskLoadingTask<T> extends javafx.concurrent.Task {

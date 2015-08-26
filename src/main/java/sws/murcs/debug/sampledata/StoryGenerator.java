@@ -3,6 +3,7 @@ package sws.murcs.debug.sampledata;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
