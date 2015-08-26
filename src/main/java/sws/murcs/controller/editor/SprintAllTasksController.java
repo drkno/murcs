@@ -3,6 +3,7 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.VBox;
@@ -12,8 +13,8 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SprintAllTasksController extends GenericEditor<Sprint> implements TaskEditorParent {
 
@@ -30,8 +31,13 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     enum OrderBy {
         Alphabetical,
+        Estimate,
         None
     }
+
+    private Map<Task, TaskEditor> allTaskEditors;
+
+    private HashSet<Task> visibleTasks;
 
     private List<Task> allTasks;
 
@@ -95,6 +101,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         stop = false;
         allTasks = new ArrayList<>();
+        allTaskEditors = new HashMap<>();
+        visibleTasks = new HashSet<>();
         getModel().getStories().forEach(story -> allTasks.addAll(story.getTasks()));
         loadTasks();
     }
@@ -143,12 +151,69 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     private void updateOrderBy(OrderBy newValue) {
         if (currentOrderBy != newValue) {
             currentOrderBy = newValue;
+            if (!isLoaded) {
+                //Todo work out how to order while it's still loading
+            }
+            else {
+                tasksVBox.getChildren().clear();
+                if (newValue == OrderBy.Alphabetical) {
+                    allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+                }
+                else if (newValue == OrderBy.Estimate) {
+                    allTasks.sort((o1, o2) -> {
+                        if (o1.getEstimate() > o2.getEstimate()) return 1;
+                        if (o1.getEstimate() < o2.getEstimate()) return -1;
+                        return 0;
+                    });
+                }
+                else {
+                    Collections.shuffle(allTasks);
+                }
+                allTasks.forEach(task -> {
+                    if (visibleTasks.contains(task)) {
+                        addTaskNode(allTaskEditors.get(task).getParent(), null);
+                    }
+                });
+            }
         }
     }
 
     private void updateFilterBy(FilterBy newValue) {
         if (currentFilterBy != newValue) {
             currentFilterBy = newValue;
+            if (!isLoaded) {
+                //Todo work out how to filter while tasks are still loading
+            }
+            else {
+                tasksVBox.getChildren().clear();
+                if (newValue == FilterBy.Allocated) {
+                    allTasks.forEach(task -> {
+                        if (task.isAllocated()) {
+                            visibleTasks.add(task);
+                            addTaskNode(allTaskEditors.get(task).getParent(), null);
+                        }
+                        else {
+                            visibleTasks.remove(task);
+                        }
+                    });
+                }
+                else if (newValue == FilterBy.Unallocated) {
+                    allTasks.forEach(task -> {
+                        if (!task.isAllocated()) {
+                            visibleTasks.add(task);
+                            addTaskNode(allTaskEditors.get(task).getParent(), null);
+                        }
+                        else {
+                            visibleTasks.remove(task);
+                        }
+                    });
+                }
+                else {
+                    visibleTasks.clear();
+                    visibleTasks.addAll(allTasks);
+                    allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), null));
+                }
+            }
         }
     }
 
@@ -173,7 +238,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
             }
         }
-        //super.dispose();
+        super.dispose();
     }
 
     private class TaskLoadingTask<T> extends javafx.concurrent.Task {
@@ -206,7 +271,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         if (!getModel().equals(currentSprint)) {
                             return;
                         }
-                        tasksVBox.getChildren().add(view);
+                        addTaskNode(view, controller);
                     });
                 }
                 catch (Exception e) {
@@ -219,6 +284,22 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         @Override
         protected void succeeded() {
             isLoaded = true;
+        }
+    }
+
+    private void addTaskNode(Node view, TaskEditor editor) {
+        if (currentGroupBy != GroupBy.Story) {
+            //So if it's coming from the initial loading.
+            if (editor != null) {
+                allTaskEditors.put(editor.getTask(), editor);
+                visibleTasks.add(editor.getTask());
+            }
+            if (!tasksVBox.getChildren().contains(view)) {
+                tasksVBox.getChildren().add(view);
+            }
+        }
+        else {
+            //Todo search for the story and then insert into it.
         }
     }
 }

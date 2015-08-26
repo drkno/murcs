@@ -18,7 +18,7 @@
           <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
             <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+            <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="50.0" vgrow="NEVER" />
         </rowConstraints>
          <children>
             <Label text="Filter By" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
