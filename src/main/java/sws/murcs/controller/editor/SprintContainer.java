@@ -144,6 +144,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
         if (overviewEditor != null) {
             overviewEditor.dispose();
         }
+        if (allTasksController != null) {
+            allTasksController.dispose();
+        }
         //Makes sure to add dispose methods for the other tabs.
     }
 }
