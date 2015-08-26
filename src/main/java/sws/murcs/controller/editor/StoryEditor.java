@@ -38,6 +38,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
@@ -63,7 +64,7 @@ import java.util.stream.Collectors;
 /**
  * An editor for the story model.
  */
-public class StoryEditor extends GenericEditor<Story> {
+public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
 
     /**
      * The short name of the story.
@@ -820,7 +821,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * Adds a task to this story.
      * @param task The task to add
      */
-    protected final void addTask(final Task task) {
+    public final void addTask(final Task task) {
         try {
             getModel().addTask(task);
         }
@@ -829,11 +830,21 @@ public class StoryEditor extends GenericEditor<Story> {
         }
     }
 
+    @Override
+    public List<Task> getTasks() {
+        return getModel().getTasks();
+    }
+
+    @Override
+    public Story getAssociatedStory() {
+        return getModel();
+    }
+
     /**
      * Removes a task from this story.
      * @param task The task to remove
      */
-    protected final void removeTask(final Task task) {
+    public final void removeTask(final Task task) {
         if (getModel().getTasks().contains(task)) {
             getModel().removeTask(task);
         }
@@ -843,7 +854,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * Removes the editor of a task.
      * @param view The parent node of the task editor
      */
-    protected final void removeTaskEditor(final Parent view) {
+    public final void removeTaskEditor(final Parent view) {
         taskContainer.getChildren().remove(view);
     }
 

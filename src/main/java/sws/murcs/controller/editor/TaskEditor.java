@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Person;
@@ -42,7 +43,7 @@ public class TaskEditor {
     /**
      * The StoryEditor that this TaskEditror is contained within.
      */
-    private StoryEditor storyEditor;
+    private TaskEditorParent editorController;
 
     /**
      * Whether this is a creation box or not.
@@ -147,16 +148,16 @@ public class TaskEditor {
      * Sets the task for the editor.
      * @param newTask The new task to be edited
      * @param isCreationBox Whether or not this is a creation box
-     * @param view The storyEditor node from the FXML
-     * @param containingStoryEditor The storyEditor node from the fxml
+     * @param view The editorController node from the FXML
+     * @param containingStoryEditor The editorController node from the fxml
      */
     public final void configure(final Task newTask,
                                 final boolean isCreationBox,
                                 final Parent view,
-                                final StoryEditor containingStoryEditor) {
+                                final TaskEditorParent containingStoryEditor) {
         task = newTask;
         parent = view;
-        storyEditor = containingStoryEditor;
+        editorController = containingStoryEditor;
         descriptionVisible = false;
         creationBox = isCreationBox;
         if (isCreationBox) {
@@ -204,7 +205,7 @@ public class TaskEditor {
      */
     @FXML
     private void saveChanges() {
-        storyEditor.clearErrors("tasks");
+        editorController.clearErrors("tasks");
 
         // Check name
         String name = nameTextField.getText();
@@ -215,7 +216,7 @@ public class TaskEditor {
         }
         else {
             nameTextField.setText(task.getName());
-            storyEditor.addFormError("tasks", nameTextField,
+            editorController.addFormError("tasks", nameTextField,
                     "Task names must be unique and have at least one character!");
         }
 
@@ -227,7 +228,7 @@ public class TaskEditor {
             }
         }
         catch (NumberFormatException e) {
-            storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
         }
 
         // Check state
@@ -249,7 +250,7 @@ public class TaskEditor {
      * @return Whether a task already exists with that name
      */
     private boolean nameExists(final String name) {
-        return storyEditor.getModel().getTasks().stream().anyMatch(t -> t.getName().equals(name) && !t.equals(task));
+        return editorController.getTasks().stream().anyMatch(t -> t.getName().equals(name) && !t.equals(task));
     }
 
     /**
@@ -258,7 +259,7 @@ public class TaskEditor {
      */
     @FXML
     private void createButtonClicked(final ActionEvent event) {
-        storyEditor.clearErrors("tasks");
+        editorController.clearErrors("tasks");
         boolean acceptable = true;
 
         String name = nameTextField.getText();
@@ -267,7 +268,7 @@ public class TaskEditor {
         }
         else {
             acceptable = false;
-            storyEditor.addFormError("tasks", nameTextField,
+            editorController.addFormError("tasks", nameTextField,
                     "Task names must be unique and have at least one character!");
         }
 
@@ -277,14 +278,14 @@ public class TaskEditor {
         }
         catch (NumberFormatException e) {
             acceptable = false;
-            storyEditor.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
         }
 
         if (acceptable) {
             creationBox = false;
             createButton.setVisible(false);
             toggleButton.setVisible(true);
-            storyEditor.addTask(task);
+            editorController.addTask(task);
             toggleButtonClicked(null);
             separator.setVisible(true);
         }
@@ -317,8 +318,8 @@ public class TaskEditor {
     @FXML
     private void deleteButtonClicked(final ActionEvent event) {
         if (creationBox) {
-            storyEditor.removeTask(task);
-            storyEditor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            editorController.removeTaskEditor(parent);
             return;
         }
 
@@ -326,8 +327,8 @@ public class TaskEditor {
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {
-            storyEditor.removeTask(task);
-            storyEditor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            editorController.removeTaskEditor(parent);
             popup.close();
         });
         popup.show();
@@ -374,6 +375,6 @@ public class TaskEditor {
     }
 
     public Story getStory() {
-        return storyEditor.getModel();
+        return editorController.getAssociatedStory();
     }
 }

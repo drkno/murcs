@@ -130,4 +130,12 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @Override
     public final void setupSaveChangesButton() {
     }
+
+    @Override
+    public void dispose() {
+        if (overviewEditor != null) {
+            overviewEditor.dispose();
+        }
+        //Makes sure to add dispose methods for the other tabs.
+    }
 }

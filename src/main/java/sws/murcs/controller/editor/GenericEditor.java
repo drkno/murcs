@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.FormErrors;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -30,7 +31,7 @@ import java.util.Map;
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener {
+public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener, FormErrors {
     /**
      * The name for the default section of the form.
      */
@@ -265,7 +266,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * @throws UnsupportedOperationException when an unhelpful error message is provided or
      * when no node is provided to work with.
      */
-    protected final void addFormError(final String sectionName, final Node invalidNode, final String helpfulMessage) {
+    public final void addFormError(final String sectionName, final Node invalidNode, final String helpfulMessage) {
         ensureSectionExists(sectionName);
 
         if (invalidNode == null) {
