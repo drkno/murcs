@@ -283,7 +283,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
         @Override
         protected void succeeded() {
-            isLoaded = true;
+            Platform.runLater(() -> isLoaded = true);
         }
     }
 

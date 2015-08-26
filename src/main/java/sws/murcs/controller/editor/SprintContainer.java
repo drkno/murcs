@@ -121,7 +121,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
             }
         }
-        else {
+        else if (allTasksController.getModel() != getModel()) {
             allTasksController.setModel(getModel());
             allTasksController.loadObject();
         }
