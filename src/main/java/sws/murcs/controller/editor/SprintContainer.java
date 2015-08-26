@@ -112,11 +112,16 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 AnchorPane.setTopAnchor(view, 0.0);
                 AnchorPane.setBottomAnchor(view, 0.0);
                 allTasksController = loader.getController();
+                allTasksController.setModel(getModel());
+                allTasksController.loadObject();
             } catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
             }
         }
-        allTasksController.setUpController(getModel());
+        else {
+            allTasksController.setModel(getModel());
+            allTasksController.loadObject();
+        }
     }
 
     @Override

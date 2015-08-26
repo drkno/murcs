@@ -16,5 +16,5 @@ public interface TaskEditorParent extends FormErrors {
 
     List<Task> getTasks();
 
-    Story getAssociatedStory();
+    Story getAssociatedStory(Task task);
 }

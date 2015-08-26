@@ -122,7 +122,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
             isLoaded = false;
             model = pModel;
             setIsCreationWindow(pModel.getShortName() == null);
-            setupSaveChangesButton();
+            if (bottomBar != null) {
+                setupSaveChangesButton();
+            }
         }
     }
 

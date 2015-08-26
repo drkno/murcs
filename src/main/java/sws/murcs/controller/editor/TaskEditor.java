@@ -375,6 +375,6 @@ public class TaskEditor {
     }
 
     public Story getStory() {
-        return editorController.getAssociatedStory();
+        return editorController.getAssociatedStory(task);
     }
 }

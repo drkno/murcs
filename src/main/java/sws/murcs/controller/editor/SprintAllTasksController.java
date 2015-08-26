@@ -19,7 +19,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void removeTask(Task task) {
-
+        //Todo work out if I want to have this in here or not.
     }
 
     @Override
@@ -29,17 +29,17 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void addTask(Task task) {
-
+        //Todo work out if I want to have task creation in here at all.
     }
 
     @Override
     public List<Task> getTasks() {
-        return null;
+        return allTasks;
     }
 
     @Override
-    public Story getAssociatedStory() {
-        return null;
+    public Story getAssociatedStory(Task task) {
+        return getModel().getStories().stream().filter(story -> story.getTasks().contains(task)).findFirst().orElseGet(() -> null);
     }
 
     enum Filters {
@@ -64,7 +64,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     private ChoiceBox filteringChoiceBox, groupingChoiceBox, orderingChoiceBox;
 
     @FXML
-    private VBox taskVBox;
+    private VBox tasksVBox;
 
     private Sprint sprint;
 
@@ -74,6 +74,15 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void loadObject() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+            }
+        }
+        stop = false;
         allTasks = new ArrayList<>();
         getModel().getStories().forEach(story -> allTasks.addAll(story.getTasks()));
         loadTasks();
@@ -93,11 +102,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         groupingChoiceBox.setValue(Groups.None);
         orderingChoiceBox.getItems().addAll(Orders.values());
         orderingChoiceBox.setValue(Orders.None);
-    }
-
-    public void setUpController(Sprint associatedSprint) {
-        sprint = associatedSprint;
-        loadObject();
     }
 
     private void loadTasks() {
@@ -120,10 +124,10 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         Parent view = threadTaskLoader.load();
                         controller.configure(task, false, view, foo);
                         Platform.runLater(() -> {
-                            if (!getModel().equals(tasks)) {
+                            if (!allTasks.equals(tasks)) {
                                 return;
                             }
-                            taskVBox.getChildren().add(view);
+                            tasksVBox.getChildren().add(view);
                         });
                     }
                     catch (Exception e) {
