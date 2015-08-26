@@ -169,11 +169,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 else {
                     Collections.shuffle(allTasks);
                 }
-                allTasks.forEach(task -> {
+                for (Task task : allTasks) {
                     if (visibleTasks.contains(task)) {
                         addTaskNode(allTaskEditors.get(task).getParent(), null);
                     }
-                });
+                }
             }
         }
     }

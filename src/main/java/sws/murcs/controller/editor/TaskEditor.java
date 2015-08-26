@@ -190,13 +190,12 @@ public class TaskEditor implements UndoRedoChangeListener {
                 Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().orElseGet(() -> null);
                 if (team != null) {
                     possibleAssignees = team.getMembers();
+                    return;
                 }
             }
         }
-        else {
-            editAssignedButton.setDisable(true);
-            assigneesLabel.setText("To add assignees this story must be in a backlog with an assigned PO");
-        }
+        editAssignedButton.setDisable(true);
+        assigneesLabel.setText("To add assignees this story must be in a backlog with an assigned PO");
     }
 
     private void updateAssigneesLabel() {

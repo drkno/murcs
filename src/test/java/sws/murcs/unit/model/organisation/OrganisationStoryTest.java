@@ -162,7 +162,7 @@ public class OrganisationStoryTest {
         List<Story> stories = model.getStories();
         List<Backlog> backlogs = model.getBacklogs();
         try {
-            backlogs.get(0).addStory(stories.get(0), 0);
+            backlogs.get(0).addStory(stories.get(0), 1);
         }
         catch (Exception e) {
             // ignore, we just want to ensure story is attached to a backlog
