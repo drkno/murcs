@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,11 @@ public class Task extends TrackableObject implements Serializable {
      * completion.
      */
     private Collection<Person> assignees = new ArrayList<>();
+
+    /**
+     * The effort people have logged against this task.
+     */
+    private Collection<Effort> logs = new ArrayList<>();
 
     /**
      * Gets this tasks name.
