@@ -5,7 +5,7 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +40,17 @@ public enum EstimateType {
      * Used when something is not estimated.
      */
     public static final String NOT_ESTIMATED = "Not Estimated";
+
+    /**
+     * Used when something has an estimate of 0.
+     */
+    public static final String ZERO = "0";
+
+    /**
+     * Used when something is estimated as infinite i.e. if it's using and unknown technology and therefore
+     * it isn't clear how long it will take.
+     */
+    public static final String INFINITE = "Infinite";
 
     /**
      * Gets the list of estimates for the estimate type.

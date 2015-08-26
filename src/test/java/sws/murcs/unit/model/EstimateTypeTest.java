@@ -1,8 +1,9 @@
 package sws.murcs.unit.model;
 
-import java.util.List;
 import org.junit.Test;
 import sws.murcs.model.EstimateType;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,5 +35,16 @@ public class EstimateTypeTest {
         assertEquals("M", EstimateType.ShirtSize.convert(EstimateType.ShirtSize, "M"));
         assertEquals("Not Estimated", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, EstimateType.NOT_ESTIMATED));
         assertEquals("1", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, "XS"));
+    }
+
+    @Test
+    public void testConvertFixedValues() throws Exception {
+        assertEquals("When converting the EstimateType.ZERO it should keep it the same.",
+                "0", EstimateType.ShirtSize.convert(EstimateType.Fibonacci, EstimateType.ZERO));
+        assertEquals("When converting the EstimateType.INFINITE it should keep it the same",
+                "Infinite", EstimateType.MovieClassification.convert(EstimateType.Fibonacci, EstimateType.INFINITE));
+        assertEquals("When converting the EstimateType.NOT_ESTIMATED it should keep it the same",
+                "Not Estimated",
+                EstimateType.Fibonacci.convert(EstimateType.MovieClassification, EstimateType.NOT_ESTIMATED));
     }
 }

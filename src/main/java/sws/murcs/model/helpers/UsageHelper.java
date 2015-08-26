@@ -8,7 +8,9 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -17,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Helps to find usages of a model within the current organisation. This is a singleton class and is not designed to be
@@ -64,6 +65,8 @@ public final class UsageHelper {
                 return findUsages((Story) model);
             case Backlog:
                 return findUsages((Backlog) model);
+            case Sprint:
+                return findUsages((Sprint) model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (findUsages for "
                         + model.getClass().getName()
@@ -78,7 +81,12 @@ public final class UsageHelper {
      * @return The places the release is used.
      */
     private static List<Model> findUsages(final Release release) {
-        return new ArrayList<>();
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        List<Model> usages = new ArrayList<>();
+        currentModel.getSprints().stream()
+                .filter(sprint -> release.equals(sprint.getAssociatedRelease()))
+                .forEach(sprint -> usages.add(sprint));
+        return usages;
     }
 
     /**
@@ -108,6 +116,12 @@ public final class UsageHelper {
                 }
             }
         }
+
+        //Add all the sprints that use this team
+        currentModel.getSprints()
+                .stream()
+                .filter(sprint -> team.equals(sprint.getTeam()))
+                .forEach(sprint -> usages.add(sprint));
         return usages;
     }
 
@@ -136,15 +150,35 @@ public final class UsageHelper {
     }
 
     /**
+     * Gets a list of places that sprint is used.
+     * @param sprint The sprint to find usages for
+     * @return The usages of the sprint
+     */
+    private static List<Model> findUsages(final Sprint sprint) {
+        return new ArrayList<>();
+    }
+
+    /**
      * Gets a list of all the places that a backlog has been used.
      * @param backlog The backlog to find the usages for
      * @return The usages of the backlog
      */
     private static List<Model> findUsages(final Backlog backlog) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
-        return currentModel.getProjects().stream()
+
+        List<Model> usages = new ArrayList<>();
+
+        //Add all the projects
+        currentModel.getProjects().stream()
                 .filter(project -> project.getBacklogs().contains(backlog))
-                .collect(Collectors.toList());
+                .forEach(project -> usages.add(project));
+
+        //Add all the sprints
+        currentModel.getSprints().stream()
+                .filter(sprint -> backlog.equals(sprint.getBacklog()))
+                .forEach(sprint -> usages.add(sprint));
+
+        return usages;
     }
 
     /**
@@ -154,11 +188,39 @@ public final class UsageHelper {
      */
     private static List<Model> findUsages(final Story story) {
         Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
-        Stream backlogStream = currentModel.getBacklogs().stream()
-                .filter(backlog -> backlog.getAllStories().contains(story));
-        Stream storiesStream = currentModel.getStories().stream()
-                .filter(storys -> storys.getDependencies().contains(story));
-        return (List<Model>) Stream.concat(backlogStream, storiesStream).collect(Collectors.toList());
+
+        List<Model> usages = new ArrayList<>();
+
+        currentModel.getBacklogs().stream()
+                .filter(backlog -> backlog.getAllStories().contains(story))
+                .forEach(usages::add);
+
+        currentModel.getStories().stream()
+                .filter(s -> s.getDependencies().contains(story))
+                .forEach(usages::add);
+
+        currentModel.getSprints().stream()
+                .filter(sprint -> sprint.getStories().contains(story))
+                .forEach(usages::add);
+
+        return usages;
+    }
+
+    /**
+     * Gets a list of all the places that a task has been used.
+     * @param task The task to find the usages for
+     * @return The usages of the story
+     */
+    private static List<Model> findUsages(final Task task) {
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        for (Story story : currentModel.getStories()) {
+            if (story.getTasks().contains(task)) {
+                List<Model> list = new ArrayList<>();
+                list.add(story);
+                return list;
+            }
+        }
+        return null;
     }
 
     /**
@@ -188,12 +250,12 @@ public final class UsageHelper {
             case Release: list = (List<T>) currentModel.getReleases(); break;
             case Story: list = (List<T>) currentModel.getStories(); break;
             case Backlog: list = (List<T>) currentModel.getBacklogs(); break;
+            case Sprint: list = (List<T>) currentModel.getSprints(); break;
             default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
         }
-        T foundModel = list.stream()
+        return list.stream()
                 .filter(predicate)
                 .findAny().orElseGet(() -> null);
-        return foundModel;
     }
 
     /**
@@ -218,6 +280,8 @@ public final class UsageHelper {
                 return currentModel.getBacklogs().contains(model);
             case Story:
                 return currentModel.getStories().contains(model);
+            case Sprint:
+                return currentModel.getSprints().contains(model);
             default:
                 throw new UnsupportedOperationException("We don't know what to do with this model (exists for "
                         + model.getClass().getName()

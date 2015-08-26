@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<report>
+    <projectVersion>0.0.5</projectVersion>
+    <dateGenerated>2015-08-21</dateGenerated>
+    <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelStory">
+        <stories>
+            <story shortName="1">
+                <longName>Revert</longName>
+                <description>Revert to last saved state</description>
+                <storyState>Ready</storyState>
+                <acceptanceCriteria>
+                    <acceptanceCriterion>
+                        <condition>This is a condition</condition>
+                    </acceptanceCriterion>
+                </acceptanceCriteria>
+                <tasks>
+                    <task>
+                        <name>Become one with the universe</name>
+                        <description>Attempt to absorb the universe, this probably won't work</description>
+                        <estimate>100.0</estimate>
+                        <state>Blocked</state>
+                    </task>
+                </tasks>
+                <creator>Haydon</creator>
+                <dependencies>
+                    <dependence>2</dependence>
+                </dependencies>
+                <estimate>1</estimate>
+            </story>
+        </stories>
+    </content>
+</report>

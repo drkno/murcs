@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.GenerationHelper;
@@ -28,20 +27,23 @@ import static org.junit.Assert.assertEquals;
 
 public class OrganisationPersonTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -57,16 +59,9 @@ public class OrganisationPersonTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetPeopleNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         List<Person> people = model.getPeople();
-
         Assert.assertNotNull("getPeople() should return people but is null.", people);
         Assert.assertNotEquals("getPeople() should return people but is empty.", 0, people.size());
     }
@@ -179,7 +174,10 @@ public class OrganisationPersonTest {
     }
 
     @Test
-    public void testDeletionsCascadePerson() throws Exception{
+    public void testDeletionsCascadePerson() throws Exception {
+        Organisation curr = PersistenceManager.getCurrent().getCurrentModel();
+        ArrayList<Team> teamsBackup = new ArrayList<>(model.getTeams());
+        ArrayList<Person> peopleBackup = new ArrayList<>(model.getPeople());
         PersistenceManager.getCurrent().setCurrentModel(null);
         PersonGenerator personGenerator = new PersonGenerator();
         TeamGenerator teamGenerator = new TeamGenerator();
@@ -220,5 +218,9 @@ public class OrganisationPersonTest {
         for (int i = 0; i < model.getTeams().size(); i++){
             assertEquals("There should be no people in any team", 0 , model.getTeams().get(i).getMembers().size());
         }
+
+        model.addCollection(peopleBackup);
+        model.addCollection(teamsBackup);
+        PersistenceManager.getCurrent().setCurrentModel(curr);
     }
 }

@@ -5,10 +5,12 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import javafx.application.Application;
+import javafx.scene.control.MenuBar;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -38,9 +40,17 @@ public class ProjectMaintenanceStepDefs extends ApplicationTest {
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.forget(true);
                 UndoRedoManager.add(model);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+            }
+        });
+
+        // Mac OSX Workaround for testing ONLY!
+        interact(() -> {
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MenuBar menuBar = (MenuBar) JavaFXHelpers.getByID(primaryStage.getScene().getRoot(), "menuBar");
+                menuBar.useSystemMenuBarProperty().set(false);
             }
         });
     }

@@ -36,6 +36,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -60,6 +61,7 @@ import java.util.List;
 
 import static java.lang.Double.MAX_VALUE;
 import static javafx.geometry.Pos.CENTER_LEFT;
+import static javafx.geometry.Pos.CENTER_RIGHT;
 import static javafx.scene.control.ContentDisplay.GRAPHIC_ONLY;
 import static javafx.scene.paint.Color.YELLOW;
 
@@ -127,6 +129,7 @@ public class PopOverSkin implements Skin<PopOver> {
      * Creates a new PopOver skin for a PopOver control.
      * @param thePopOver control to make the skin for.
      */
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     public PopOverSkin(final PopOver thePopOver) {
         popOver = thePopOver;
         stackPane = thePopOver.getRoot();
@@ -134,23 +137,21 @@ public class PopOverSkin implements Skin<PopOver> {
         Bindings.bindContent(stackPane.getStyleClass(), thePopOver.getStyleClass());
         stackPane.minWidthProperty().bind(
                 Bindings.add(Bindings.multiply(2, thePopOver.arrowSizeProperty()),
-                        Bindings.add(
-                                Bindings.multiply(2,
-                                        thePopOver.cornerRadiusProperty()),
-                                Bindings.multiply(2,
-                                        thePopOver.arrowIndentProperty()))));
+                        Bindings.add(Bindings.multiply(2, thePopOver.cornerRadiusProperty()),
+                                Bindings.multiply(2, thePopOver.arrowIndentProperty()))));
 
         stackPane.minHeightProperty().bind(stackPane.minWidthProperty());
-
+        final int closeIconIndent = 10;
         Label closeIcon = new Label();
         closeIcon.setGraphic(createCloseIcon());
         closeIcon.setMaxSize(MAX_VALUE, MAX_VALUE);
         closeIcon.setContentDisplay(GRAPHIC_ONLY);
         closeIcon.visibleProperty().bind(thePopOver.detachedProperty());
         closeIcon.getStyleClass().add("icon"); //$NON-NLS-1$
-        closeIcon.setAlignment(CENTER_LEFT);
+        closeIcon.setAlignment(System.getProperty("os.name").contains("OS X") ? CENTER_LEFT : CENTER_RIGHT);
         closeIcon.getGraphic().setOnMouseClicked(evt -> thePopOver.hide());
         titlePane = new StackPane();
+        titlePane.setPadding(new Insets(0, closeIconIndent, 0, 0));
         titlePane.getChildren().add(closeIcon);
         titlePane.getStyleClass().add("title"); //$NON-NLS-1$
         content = new BorderPane();
@@ -158,7 +159,9 @@ public class PopOverSkin implements Skin<PopOver> {
         content.getStyleClass().add("content"); //$NON-NLS-1$
 
         if (thePopOver.detachedProperty().get()) {
-            content.setTop(titlePane);
+            if (thePopOver.detachedCloseButtonProperty().get()) {
+                content.setTop(titlePane);
+            }
             thePopOver.getStyleClass().add(DETACHED_STYLE_CLASS);
             content.getStyleClass().add(DETACHED_STYLE_CLASS);
         }

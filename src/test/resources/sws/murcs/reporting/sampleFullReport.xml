@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
     <projectVersion>0.0.5</projectVersion>
-    <dateGenerated>2015-08-04</dateGenerated>
+    <dateGenerated>2015-08-21</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
         <projects>
             <project shortName="FITR">
@@ -25,15 +25,45 @@
                     <story shortName="1">
                         <longName>Revert</longName>
                         <description>Revert to last saved state</description>
-                        <storyState>None</storyState>
+                        <storyState>Ready</storyState>
+                        <acceptanceCriteria>
+                            <acceptanceCriterion>
+                                <condition>This is a condition</condition>
+                            </acceptanceCriterion>
+                        </acceptanceCriteria>
+                        <tasks>
+                            <task>
+                                <name>Become one with the universe</name>
+                                <description>Attempt to absorb the universe, this probably won't work</description>
+                                <estimate>100.0</estimate>
+                                <state>Blocked</state>
+                            </task>
+                        </tasks>
                         <creator>Haydon</creator>
-                        <dependencies/>
-                        <estimate>Not Estimated</estimate>
+                        <dependencies>
+                            <dependence>2</dependence>
+                        </dependencies>
+                        <estimate>1</estimate>
                     </story>
                 </prioritisedStories>
                 <estimateType>Fibonacci</estimateType>
             </backlog>
         </backlogs>
+        <sprints>
+            <sprint shortName="This is the sprint">
+                <longName>This is the sprint's long name</longName>
+                <description>high five</description>
+                <associatedRelease shortName="Now">
+                    <description>This current time</description>
+                    <releaseDate>2015-04-22</releaseDate>
+                </associatedRelease>
+                <stories>
+                    <story>1</story>
+                </stories>
+                <associatedBacklog>This is the backlog</associatedBacklog>
+                <team>Sengineers</team>
+            </sprint>
+        </sprints>
         <workAllocations>
             <workAllocation>
                 <project>FITR</project>
@@ -47,6 +77,8 @@
                 <longName>Story Maintenance</longName>
                 <description>add stories to project</description>
                 <storyState>None</storyState>
+                <acceptanceCriteria/>
+                <tasks/>
                 <creator>Unallocated</creator>
                 <dependencies/>
                 <estimate>Not Estimated</estimate>

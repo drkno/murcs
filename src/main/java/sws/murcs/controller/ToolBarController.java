@@ -1,12 +1,23 @@
 package sws.murcs.controller;
 
-import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Control;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
+import sws.murcs.controller.pipes.ModelManagable;
+import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.ToolBarCommands;
+import sws.murcs.model.ModelType;
+
+import java.util.List;
 
 /**
  * Controller for the toolbar.
@@ -18,19 +29,30 @@ public class ToolBarController {
      */
     @FXML
     private Button backButton, forwardButton, undoButton, redoButton, revertButton, removeButton,
-            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton;
+            openButton, saveButton, saveAsButton, sendFeedbackButton, generateReportButton, searchButton;
 
     /**
      * The toolbar sections for the toolbar.
      */
     @FXML
-    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar;
+    private HBox navigationToolBar, historyToolBar, editToolBar, reportingToolBar, searchToolBar;
 
     /**
      * The overall container for the toolbar.
      */
     @FXML
     private ToolBar toolBar;
+
+    /**
+     * The context menu that is used for toggling visibility on sections of the toolbar.
+     */
+    @FXML
+    private ContextMenu visibilityContextMenu;
+
+    /**
+     * The toolbar on any parent controller that controls visibility for sections of the toolbar.
+     */
+    private Menu toolBarMenu;
 
     /**
      * The shortcut key to used based on the OS.
@@ -44,9 +66,26 @@ public class ToolBarController {
     private ToolBarCommands linkedController;
 
     /**
+     * The navigation controller that navigation commands are routed through.
+     */
+    private Navigable navigable;
+
+    /**
+     * The controller responsible for managing model objects.
+     */
+    private ModelManagable modelManagable;
+
+    /**
+     * Creates a new toolbar controller.
+     */
+    public ToolBarController() {
+    }
+
+    /**
      * Initialises the toolbar by setting up appropriate tooltips.
      */
     @FXML
+    @SuppressWarnings("checkstyle:avoidinlineconditionals")
     private void initialize() {
         shortCutKey  = System.getProperty("os.name").toLowerCase().contains("mac") ? "Command" : "Ctrl";
         setUpToolTips();
@@ -60,8 +99,9 @@ public class ToolBarController {
         openButton.getTooltip().setText("Open project (" + shortCutKey + "+O)");
         saveAsButton.getTooltip().setText("Save As (" + shortCutKey + "+Shift+S)");
         saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
-        sendFeedbackButton.getTooltip().setText("Send feedback to the developers");
+        sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
+        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F Or " + shortCutKey + "+Space)");
     }
 
     /**
@@ -75,12 +115,21 @@ public class ToolBarController {
     }
 
     /**
+     * Sets up the tool bar menu that is linked to the toolbar (in app controller this is in the view menu).
+     * @param menu The menu that has links to the toolbar for showing and hiding sections.
+     */
+    public final void setToolBarMenu(final Menu menu) {
+        toolBarMenu = menu;
+    }
+
+    /**
      * The function called when you click the back button. It redirects it through the linkedController.
      * @param event Clicking the back button.
      */
     @FXML
     private void backButtonClick(final ActionEvent event) {
-        linkedController.back(event);
+        navigable.goBack();
+        updateBackForwardButtons();
     }
 
     /**
@@ -89,7 +138,8 @@ public class ToolBarController {
      */
     @FXML
     private void forwardButtonClick(final ActionEvent event) {
-        linkedController.forward(event);
+        navigable.goForward();
+        updateBackForwardButtons();
     }
 
     /**
@@ -125,7 +175,43 @@ public class ToolBarController {
      */
     @FXML
     private void addButtonClick(final ActionEvent event) {
-        linkedController.add(event);
+        ModelType type = null;
+        if (event != null && event.getSource() instanceof MenuItem) {
+            //If pressing a menu item to add a person, team or skill
+            String id = ((MenuItem) event.getSource()).getId();
+            switch (id) {
+                case "addProject":
+                    type = ModelType.Project;
+                    break;
+                case "addPerson":
+                    type = ModelType.Person;
+                    break;
+                case "addTeam":
+                    type = ModelType.Team;
+                    break;
+                case "addSkill":
+                    type = ModelType.Skill;
+                    break;
+                case "addRelease":
+                    type = ModelType.Release;
+                    break;
+                case "addBacklog":
+                    type = ModelType.Backlog;
+                    break;
+                case "addStory":
+                    type = ModelType.Story;
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Adding has not been implemented.");
+            }
+        }
+
+        if (type == null) {
+            modelManagable.create();
+        }
+        else {
+            modelManagable.create(type);
+        }
     }
 
     /**
@@ -179,15 +265,24 @@ public class ToolBarController {
      */
     @FXML
     private void removeButtonClick(final ActionEvent event) {
-        linkedController.remove(event);
+        modelManagable.remove();
+    }
+
+    /**
+     * The function called when you click the remove button. It redirects it through the linkedController.
+     * @param event Clicking the search button in the toolbar.
+     */
+    @FXML
+    private void searchButtonClick(final ActionEvent event) {
+        linkedController.search(event);
     }
 
     /**
      * Toggles the state of the back and forward buttons if they disabled or enabled.
      */
     public final void updateBackForwardButtons() {
-        backButton.setDisable(!NavigationManager.canGoBack());
-        forwardButton.setDisable(!NavigationManager.canGoForward());
+        backButton.setDisable(!navigable.canGoBack());
+        forwardButton.setDisable(!navigable.canGoForward());
     }
 
     /**
@@ -219,7 +314,7 @@ public class ToolBarController {
     }
 
     /**
-     * Sets wether or not the remove button is disabled or not.
+     * Sets whether or not the remove button is disabled or not.
      * @param disabled Whether or not it is disabled.
      */
     public final void removeButtonDisabled(final boolean disabled) {
@@ -232,14 +327,32 @@ public class ToolBarController {
      * @param event Clicking on a check menu item in the context menu for the toolbar.
      */
     @FXML
-    private void toolBarToggle(final ActionEvent event) {
+    protected final void toolBarToggle(final ActionEvent event) {
         CheckMenuItem menuItem = (CheckMenuItem) event.getSource();
+        boolean isFromAppController = menuItem.getParentMenu() != null;
+        boolean isChecked = menuItem.isSelected();
         HBox associatedToolBar;
         switch (menuItem.getId()) {
-            case "navigation": associatedToolBar = navigationToolBar; break;
-            case "history": associatedToolBar = historyToolBar; break;
-            case "edit": associatedToolBar = editToolBar; break;
-            case "reporting": associatedToolBar = reportingToolBar; break;
+            case "navigation":
+                associatedToolBar = navigationToolBar;
+                updateCheckMenu("navigation", isFromAppController, isChecked);
+                break;
+            case "history":
+                associatedToolBar = historyToolBar;
+                updateCheckMenu("history", isFromAppController, isChecked);
+                break;
+            case "edit":
+                associatedToolBar = editToolBar;
+                updateCheckMenu("edit", isFromAppController, isChecked);
+                break;
+            case "reporting":
+                associatedToolBar = reportingToolBar;
+                updateCheckMenu("reporting", isFromAppController, isChecked);
+                break;
+            case "search":
+                associatedToolBar = searchToolBar;
+                updateCheckMenu("search", isFromAppController, isChecked);
+                break;
             default: throw new UnsupportedOperationException("EXPLOSION!!!!!!!!!(unsupported toolbar)");
         }
 
@@ -252,14 +365,42 @@ public class ToolBarController {
             associatedToolBar.setPrefWidth(0);
         }
 
-        killThoseSeparators();
+        updateVisibleSeparators();
     }
 
     /**
-     * As the name implies it kills the separators between the sections of the toolbar depending on which ones are
-     * currently visible.
+     * Updates the check menu item that didn't fire off the event to toggle sections of the toolbar, so that they
+     * are both in sync with each other.
+     * @param id The id of the checkMenuItem that needs to be udpated.
+     * @param fromAppController Whether or not the event came from the app controller.
+     * @param checked Whether or not the menu item that fired the event is checked.
      */
-    private void killThoseSeparators() {
+    private void updateCheckMenu(final String id, final boolean fromAppController, final boolean checked) {
+        if (!fromAppController) {
+            //This is just in case you add a toolbar to a window that doesn't have a view menu that allows you
+            //to toggle sections of the toolbar on and off. In all other cases toolBarMenu should not be null.
+            if (toolBarMenu == null) {
+                return;
+            }
+            toolBarMenu.getItems()
+                    .stream()
+                    .filter(menuItem -> menuItem.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(menuItem1 -> ((CheckMenuItem) menuItem1).setSelected(checked));
+        }
+        else {
+            visibilityContextMenu.getItems()
+                    .stream()
+                    .filter(menuItem -> menuItem.getId().equals(id))
+                    .findFirst()
+                    .ifPresent(menuItem1 -> ((CheckMenuItem) menuItem1).setSelected(checked));
+        }
+    }
+
+    /**
+     * Updates the separators that are visible depending on the tool bar sections that are visible.
+     */
+    private void updateVisibleSeparators() {
         List<Node> toolBarItems = toolBar.getItems();
         int firstVisibleIndex = -1;
         int nextVisibleIndex = -1;
@@ -271,7 +412,7 @@ public class ToolBarController {
         //visible HBoxs we turn on a separator between them and make the firstVisibleIndex the nextVisibleIndex, the
         //nextVisibleIndex -1 and carry on until we reach the end of the toolbar. Hope you had fun reading and
         //understanding that.
-        //Firstly not the amusingly uncommon for loop that uses the <= instead of <. This is because otherwise we don't
+        //Firstly note the amusingly uncommon for loop that uses the <= instead of <. This is because otherwise we don't
         //make the last separator visible after invisibling it.
         for (int i = 0; i <= toolBarItems.size(); ++i) {
             //If we've found two HBoxs that are visible then we'll go in here.
@@ -315,5 +456,47 @@ public class ToolBarController {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the tool bar node.
+     * @return The toolBar.
+     */
+    public final ToolBar getToolBar() {
+        return toolBar;
+    }
+
+    /**
+     * The navigable that the toolbar controls.
+     * @return The navigable
+     */
+    public Navigable getNavigable() {
+        return navigable;
+    }
+
+    /**
+     * Sets the navigable that the toolbar controls.
+     * @param navigable The new navigable
+     */
+    public void setNavigable(final Navigable navigable) {
+        this.navigable = navigable;
+    }
+
+    /**
+     * Gets the controller that is responsible for
+     * managing model commands.
+     * @return The manager
+     */
+    public ModelManagable getModelManagable() {
+        return modelManagable;
+    }
+
+    /**
+     * Sets the controller that will recieve create/remove commands
+     * from the tool bar.
+     * @param modelManagable The controller responsible
+     */
+    public void setModelManagable(final ModelManagable modelManagable) {
+        this.modelManagable = modelManagable;
     }
 }

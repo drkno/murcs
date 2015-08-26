@@ -1,44 +1,64 @@
 package sws.murcs.controller.editor;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An editor for the story model.
@@ -58,10 +78,22 @@ public class StoryEditor extends GenericEditor<Story> {
     private TextArea descriptionTextArea;
 
     /**
-     * A choice box for the creator and the estimate choice box and a choice box for changing the story state.
+     * A choice box for the creator.
      */
     @FXML
-    private ChoiceBox creatorChoiceBox, estimateChoiceBox, storyStateChoiceBox;
+    private ChoiceBox<Person> creatorChoiceBox;
+
+    /**
+     * A choice box for the estimation of a story.
+     */
+    @FXML
+    private ChoiceBox<String> estimateChoiceBox;
+
+    /**
+     * A choice box for changing the story state.
+     */
+    @FXML
+    private ChoiceBox<Story.StoryState> storyStateChoiceBox;
 
     /**
      * Drop down with dependencies that can be added to this story.
@@ -71,9 +103,10 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Container that dependencies are added to when they are added.
+     * Also the container for the tasks.
      */
     @FXML
-    private VBox dependenciesContainer;
+    private VBox dependenciesContainer, taskContainer;
 
     /**
      * A map of dependencies and their respective nodes.
@@ -110,21 +143,51 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     private TextField addConditionTextField;
 
+    /**
+     * The FXMLLoader used to create new tasks.
+     */
+    private FXMLLoader taskLoader;
+
+    /**
+     * The thread used to create tasks that already exist in the story.
+     */
+    private Thread thread;
+
+    /**
+     * Whether or not the thread creating task GUIs should stop.
+     */
+    private boolean stop;
+
     @Override
     public final void loadObject() {
+        Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
+                .stream()
+                .filter(model -> model instanceof Backlog)
+                .findFirst()
+                .orElse(null);
+
+        estimateChoiceBox.getItems().clear();
+        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+        estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+        estimateChoiceBox.getItems().add(EstimateType.ZERO);
+        if (backlog != null) {
+            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+        }
+
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+            }
+        }
+        stop = false;
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
-        setIsCreationWindow(modelShortName == null);
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
         }
-
-        updateStoryState();
-
-        //Add all the story states to the choice box
-        storyStateChoiceBox.getItems().clear();
-        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
 
         String modelDescription = getModel().getDescription();
         String viewDescription = descriptionTextArea.getText();
@@ -145,7 +208,49 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        //Enable or disable whether you can change the creator
+        taskContainer.getChildren().clear();
+        StoryEditor foo = this;
+        javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            private Story model = getModel();
+            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+
+            @Override
+            protected Void call() throws Exception {
+                for (Task task : model.getTasks()) {
+                    if (stop) {
+                        break;
+                    }
+                    try {
+                        //Do not try and make this call injectTask as it doesn't work, I've tried.
+                        threadTaskLoader.setRoot(null);
+                        TaskEditor controller = new TaskEditor();
+                        threadTaskLoader.setController(controller);
+                        Parent view = threadTaskLoader.load();
+                        controller.configure(task, false, view, foo);
+                        Platform.runLater(() -> {
+                            if (!getModel().equals(model)) {
+                                return;
+                            }
+                            taskContainer.getChildren().add(view);
+                        });
+                    }
+                    catch (Exception e) {
+                        ErrorReporter.get().reportError(e, "Unable to create new task");
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                isLoaded = true;
+            }
+        };
+        thread = new Thread(taskThread);
+        thread.setDaemon(true);
+        thread.start();
+
+        // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
             creatorChoiceBox.getItems().clear();
@@ -164,11 +269,15 @@ public class StoryEditor extends GenericEditor<Story> {
         if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
+        updateEstimation();
         updateAcceptanceCriteria();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
     }
 
     /**
@@ -182,16 +291,13 @@ public class StoryEditor extends GenericEditor<Story> {
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
         if (backlog == null  || getModel().getAcceptanceCriteria().size() == 0) {
-            estimateChoiceBox.getSelectionModel().select(0);
+            estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
             estimateChoiceBox.setDisable(true);
         }
         else {
             estimateChoiceBox.setDisable(false);
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
-            estimateChoiceBox.getSelectionModel().select(currentEstimation);
+            estimateChoiceBox.setValue(currentEstimation);
         }
     }
 
@@ -212,9 +318,6 @@ public class StoryEditor extends GenericEditor<Story> {
 
         //Update the story state because otherwise we might have a ready story with no ACs
         updateStoryState();
-
-        //Update the estimation so we don't end up with an estimated story and no ACs
-        updateEstimation();
     }
 
     /**
@@ -249,6 +352,9 @@ public class StoryEditor extends GenericEditor<Story> {
     @FXML
     @Override
     public final void initialize() {
+        dependenciesContainer.getStylesheets().add(
+                getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
+
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue) {
                 saveChanges();
@@ -267,10 +373,22 @@ public class StoryEditor extends GenericEditor<Story> {
         acceptanceCriteriaTable.getSelectionModel().selectedItemProperty().addListener(c -> refreshPriorityButtons());
         conditionColumn.setCellFactory(param -> new AcceptanceConditionCell());
         conditionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getCondition()));
+
+        //Add all the story states to the choice box
+        storyStateChoiceBox.getItems().clear();
+        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
     }
 
     @Override
     public final void dispose() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the thread loading tasks.");
+            }
+        }
         shortNameTextField.focusedProperty().removeListener(getChangeListener());
         descriptionTextArea.focusedProperty().removeListener(getChangeListener());
         creatorChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -280,6 +398,7 @@ public class StoryEditor extends GenericEditor<Story> {
         searchableComboBoxDecorator.dispose();
         searchableComboBoxDecorator = null;
         dependenciesMap = null;
+        taskContainer.getChildren().clear();
         super.dispose();
     }
 
@@ -301,6 +420,44 @@ public class StoryEditor extends GenericEditor<Story> {
             getModel().setDescription(viewDescription);
         }
 
+        if (estimateChoiceBox.getValue() != null
+                && isNotEqual(getModel().getEstimate(), estimateChoiceBox.getValue())) {
+            // Updates the story state as this gets changed if you set the estimate to Not Estimated
+            if ((estimateChoiceBox.getValue().equals(EstimateType.NOT_ESTIMATED)
+                    || estimateChoiceBox.getValue().equals(EstimateType.INFINITE))
+                    && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> sprintNames = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String actualEstimate = estimateChoiceBox.getValue();
+                estimateChoiceBox.setValue(getModel().getEstimate());
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the Estimate of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n", actualEstimate)
+                        + "This will set the Story State to None.\n\n"
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    getModel().setEstimate(actualEstimate);
+                    estimateChoiceBox.setValue(actualEstimate);
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    assert getModel().getStoryState().equals(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            } else {
+                getModel().setEstimate(estimateChoiceBox.getValue());
+            }
+        }
+
         updateStoryState();
 
         if (getIsCreationWindow()) {
@@ -313,7 +470,10 @@ public class StoryEditor extends GenericEditor<Story> {
         }
 
         if (estimateChoiceBox.getValue() != null && getModel().getEstimate() != estimateChoiceBox.getValue()) {
-            getModel().setEstimate((String) estimateChoiceBox.getValue());
+            String estimate = (String) estimateChoiceBox.getValue();
+            if (!getModel().getEstimate().equals(estimate)) {
+                getModel().setEstimate(estimate);
+            }
             // Updates the story state as this gets changed if you set the estimate to Not Estimated
             storyStateChoiceBox.setValue(getModel().getStoryState());
         }
@@ -342,7 +502,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * displays an error if it isn't.
      */
     private void updateStoryState() {
-        Story.StoryState state = (Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem();
+        Story.StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
         Story model = getModel();
         boolean hasErrors = false;
 
@@ -355,14 +515,44 @@ public class StoryEditor extends GenericEditor<Story> {
                 addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
                 hasErrors = true;
             }
-            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)) {
+            if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)
+                    || model.getEstimate().equals(EstimateType.INFINITE)) {
                 addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
                 hasErrors = true;
             }
         }
+        else if (state == Story.StoryState.None) {
+            hasErrors = true; // So that the story state is not set.
+            if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                storyStateChoiceBox.setValue(getModel().getStoryState());
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to set the State of "
+                        + getModel().toString()
+                        + String.format(" to %s?\n\n", state)
+                        + "The following Sprints will be affected:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Change Story State");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                    getModel().setStoryState(Story.StoryState.None);
+                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+        }
 
         if (!hasErrors && state != null) {
-            getModel().setStoryState((Story.StoryState) storyStateChoiceBox.getSelectionModel().getSelectedItem());
+            getModel().setStoryState(storyStateChoiceBox.getSelectionModel().getSelectedItem());
         }
     }
 
@@ -376,52 +566,132 @@ public class StoryEditor extends GenericEditor<Story> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove the dependency "
-                    + newDependency.getShortName() + "?");
-            popup.setTitleText("Remove Dependency");
-            popup.addYesNoButtons(func -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+                popup.setMessageText("Are you sure you want to remove the dependency "
+                        + newDependency.getShortName() + "?");
+                popup.setTitleText("Remove Dependency");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    searchableComboBoxDecorator.add(newDependency);
+                    Node dependencyNode = dependenciesMap.get(newDependency);
+                    dependenciesContainer.getChildren().remove(dependencyNode);
+                    dependenciesMap.remove(newDependency);
+                    getModel().removeDependency(newDependency);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+            else {
                 searchableComboBoxDecorator.add(newDependency);
                 Node dependencyNode = dependenciesMap.get(newDependency);
                 dependenciesContainer.getChildren().remove(dependencyNode);
                 dependenciesMap.remove(newDependency);
                 getModel().removeDependency(newDependency);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
+        column1.setHgrow(Priority.SOMETIMES);
 
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
+        column2.setHgrow(Priority.ALWAYS);
 
         ColumnConstraints column3 = new ColumnConstraints();
-        column3.setHgrow(Priority.SOMETIMES);
+        column3.setHgrow(Priority.NEVER);
 
         pane.getColumnConstraints().add(column1);
         pane.getColumnConstraints().add(column2);
         pane.getColumnConstraints().add(column3);
 
         if (getIsCreationWindow()) {
-            Text nameText = new Text(newDependency.toString());
+            Label nameText = new Label(newDependency.toString());
             pane.add(nameText, 0, 0);
         }
         else {
             Hyperlink nameLink = new Hyperlink(newDependency.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(newDependency));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(newDependency);
+                } else {
+                    getNavigationManager().navigateTo(newDependency);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
-        String depth = "(" + Integer.toString(DependenciesHelper.dependenciesDepth(newDependency)) + " deep) ";
-        Text depthText = new Text(depth);
-        pane.add(depthText, 1, 0);
+        DependencyTreeInfo treeInfo = DependenciesHelper.dependenciesTreeInformation(newDependency);
+
+        HBox hBox = new HBox();
+        hBox.setAlignment(Pos.CENTER_RIGHT);
+        ObservableList<Node> children = hBox.getChildren();
+        children.add(new Label("["));
+        Label storiesLabel = new Label(Integer.toString(treeInfo.getCount()));
+        storiesLabel.setTooltip(
+                new Tooltip("The number of stories that this story depends on in total (including itself)."));
+        storiesLabel.getStyleClass().add("story-depends-on");
+        children.add(storiesLabel);
+        HBox.setHgrow(storiesLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label immediateLabel = new Label(Integer.toString(treeInfo.getImmediateDepth()));
+        immediateLabel.setTooltip(new Tooltip("The number of stories this story immediately depends on."));
+        immediateLabel.getStyleClass().add("story-depends-direct");
+        children.add(immediateLabel);
+        HBox.setHgrow(immediateLabel, Priority.ALWAYS);
+
+        children.add(new Label(", "));
+        Label deepLabel = new Label(Integer.toString(treeInfo.getMaxDepth()));
+        deepLabel.setTooltip(new Tooltip("The maximum number of stories this story transitively depends on."));
+        deepLabel.getStyleClass().add("story-depends-deep");
+        children.add(deepLabel);
+        HBox.setHgrow(deepLabel, Priority.ALWAYS);
+        children.add(new Label("] "));
+
+        hBox.setOnMouseEntered(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount())
+                        + " stories", immediateLabel, Integer.toString(treeInfo.getImmediateDepth()) + " direct",
+                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " deep"));
+
+        hBox.setOnMouseExited(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount()),
+                immediateLabel, Integer.toString(treeInfo.getImmediateDepth()),
+                deepLabel, Integer.toString(treeInfo.getMaxDepth())));
+
+        pane.add(hBox, 1, 0);
         pane.add(removeButton, 2, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
 
         return pane;
+    }
+
+    /**
+     * Performs a transition to new text on the dependencies detail text.
+     * @param itemsContainer container of the details labels.
+     * @param storiesLabel the label to set to storiesText.
+     * @param storiesText the new text for storiesLabel.
+     * @param immediateLabel the label to set to immediateText.
+     * @param immediateText the new text for immediateLabel.
+     * @param deepLabel the label to set to deepText.
+     * @param deepText the new text for deepLabel.
+     */
+    private void transitionText(final Node itemsContainer, final Label storiesLabel, final String storiesText,
+                                final Label immediateLabel, final String immediateText,
+                                final Label deepLabel, final String deepText) {
+        final Duration transitionTime = Duration.seconds(0.15);
+        FadeTransition fadeOut = new FadeTransition(transitionTime, itemsContainer);
+        fadeOut.setFromValue(itemsContainer.getOpacity());
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(evt -> {
+            storiesLabel.setText(storiesText);
+            immediateLabel.setText(immediateText);
+            deepLabel.setText(deepText);
+            fadeOut.setFromValue(itemsContainer.getOpacity());
+            fadeOut.setToValue(1);
+            fadeOut.setOnFinished(null);
+            fadeOut.play();
+        });
+        fadeOut.play();
     }
 
     /**
@@ -510,17 +780,90 @@ public class StoryEditor extends GenericEditor<Story> {
     }
 
     /**
+     * Injects a task editor tied to the given task.
+     * @param task The task to display
+     * @param creationBox Whether or not this is a creation box
+     */
+    private void injectTaskEditor(final Task task, final boolean creationBox) {
+        try {
+            taskLoader.setRoot(null);
+            TaskEditor controller = new TaskEditor();
+            taskLoader.setController(controller);
+            if (taskLoader == null) {
+                return;
+            }
+            Parent view = taskLoader.load();
+            controller.configure(task, creationBox, view, this);
+            Platform.runLater(() -> {
+                taskContainer.getChildren().add(view);
+            });
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to create new task");
+        }
+    }
+
+    /**
+     * Is called when you click the 'Create Task' button and inserts a new task
+     * fxml into the task container.
+     * @param event The event that caused the function to be called
+     */
+    @FXML
+    private void createTaskClick(final ActionEvent event) {
+        Task task = new Task();
+        if (taskLoader == null) {
+            taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        }
+        injectTaskEditor(task, true);
+    }
+
+    /**
+     * Adds a task to this story.
+     * @param task The task to add
+     */
+    protected final void addTask(final Task task) {
+        try {
+            getModel().addTask(task);
+        }
+        catch (DuplicateObjectException e) {
+            addFormError(taskContainer, e.getMessage());
+        }
+    }
+
+    /**
+     * Removes a task from this story.
+     * @param task The task to remove
+     */
+    protected final void removeTask(final Task task) {
+        if (getModel().getTasks().contains(task)) {
+            getModel().removeTask(task);
+        }
+    }
+
+    /**
+     * Removes the editor of a task.
+     * @param view The parent node of the task editor
+     */
+    protected final void removeTaskEditor(final Parent view) {
+        taskContainer.getChildren().remove(view);
+    }
+
+    /**
      * A cell representing an acceptance condition in the table of conditions.
      */
     private class AcceptanceConditionCell extends TableCell<AcceptanceCondition, String> {
         /**
          * The editable acceptance condition description text field.
          */
-        TextField textField = new TextField();
+        private TextArea textArea = new TextArea();
         /**
          * The acceptance condition description text field.
          */
-        Label textLabel = new Label();
+        private Text textLabel = new Text();
+
+        /**
+         * The listener on the text field.
+         */
+        ChangeListener<String> listener;
 
         @Override
         public void startEdit() {
@@ -528,7 +871,7 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 clearErrors();
                 setGraphic(createCell(true));
-                textField.requestFocus();
+                textArea.requestFocus();
             }
         }
 
@@ -538,13 +881,14 @@ public class StoryEditor extends GenericEditor<Story> {
             if (!isEmpty()) {
                 try {
                     AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
-                    acceptanceCondition.setCondition(textField.getText());
+                    acceptanceCondition.setCondition(newValue);
                     textLabel.setText(acceptanceCondition.getCondition());
+                    textArea.setText(acceptanceCondition.getCondition());
                     setGraphic(createCell(false));
                     clearErrors();
                 } catch (CustomException e) {
                     clearErrors();
-                    addFormError(textField, e.getMessage());
+                    addFormError(textArea, e.getMessage());
                 }
 
             }
@@ -556,6 +900,7 @@ public class StoryEditor extends GenericEditor<Story> {
                 super.cancelEdit();
                 AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
                 textLabel.setText(acceptanceCondition.getCondition());
+                textArea.setText(acceptanceCondition.getCondition());
                 setGraphic(createCell(false));
             }
         }
@@ -563,7 +908,7 @@ public class StoryEditor extends GenericEditor<Story> {
         @Override
         protected void updateItem(final String newCondition, final boolean empty) {
             super.updateItem(newCondition, empty);
-            textField.setText(newCondition);
+            textArea.setText(newCondition);
             textLabel.setText(newCondition);
 
             if (newCondition == null || empty) {
@@ -576,15 +921,19 @@ public class StoryEditor extends GenericEditor<Story> {
                 setGraphic(createCell(false));
             }
 
-            textLabel.setOnMousePressed(event -> startEdit());
-            textField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue) {
-                    commitEdit(textField.getText());
+            setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) { // makes sure it is a double click event to start editing
+                    startEdit();
                 }
             });
-            textField.setOnKeyReleased(t -> {
+            selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    commitEdit(textArea.getText());
+                }
+            });
+            textArea.setOnKeyPressed(t -> {
                 if (t.getCode() == KeyCode.ENTER) {
-                    commitEdit(textField.getText());
+                    commitEdit(textArea.getText().trim());
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
                     cancelEdit();
@@ -601,9 +950,51 @@ public class StoryEditor extends GenericEditor<Story> {
         private Node createCell(final Boolean isEdit) {
             Node node;
             if (isEdit) {
-                node = textField;
+                textArea.setWrapText(true);
+                Platform.runLater(() -> {
+                    ScrollPane scrollPane = (ScrollPane) textArea.lookup(".scroll-pane");
+                    scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                    scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+                });
+
+                if (listener == null) {
+                    listener = (observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height"); // this is necessary to get the height of one row of text
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight(); // the height of one row of text
+                        text.setText(newValue);
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    };
+                    textArea.textProperty().addListener(listener);
+                    widthProperty().addListener((observable, oldValue, newValue) -> {
+                        Text text = new Text("Test Height");
+                        text.setFont(textArea.getFont());
+                        text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                        Double height = text.getLayoutBounds().getHeight();
+                        text.setText(textArea.getText());
+                        textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                    });
+                    textArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                        if (!newValue) {
+                            commitEdit(textArea.getText());
+                        }
+                    });
+                }
+                Text text = new Text("Test Height");
+                text.setFont(textArea.getFont());
+                text.setWrappingWidth(textArea.getWidth() - 7.0 - 7.0 - 4.0); // values sources from Modena.css
+                Double height = text.getLayoutBounds().getHeight();
+                textArea.setText(textArea.getText().trim());
+                text.setText(textArea.getText());
+                textArea.setPrefRowCount((int) ((text.getLayoutBounds().getHeight() / height) + 0.05));
+                node = textArea;
             }
             else {
+                textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0); // 30 - width of button, 14 - get rid of padding
+                widthProperty().addListener((observable, oldValue, newValue) -> {
+                    textLabel.setWrappingWidth(getWidth() - 30.0 - 14.0);
+                });
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
@@ -611,23 +1002,56 @@ public class StoryEditor extends GenericEditor<Story> {
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                GenericPopup popup = new GenericPopup();
-                popup.setTitleText("Are you sure?");
-                popup.setMessageText("Are you sure you wish to remove this acceptance condition?");
-                popup.addYesNoButtons(p -> {
+                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
+                        && getModel().getAcceptanceCriteria().size() <= 1) {
+                    List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                            .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                            .map(m -> (Sprint) m)
+                            .collect(Collectors.toList());
+                    List<String> collect = sprintsWithStory.stream()
+                            .map(Model::toString)
+                            .collect(Collectors.toList());
+                    String[] sprintNames = collect.toArray(new String[collect.size()]);
+                    storyStateChoiceBox.setValue(getModel().getStoryState());
+                    GenericPopup popup = new GenericPopup();
+                    popup.setMessageText("Do you really want to remove the last Acceptance Criteria from "
+                            + getModel().toString()
+                            + " ?\n"
+                            + "This will set the Story Estimate to Not Estimated and the Story State to None.\n\n"
+                            + "The following Sprints will be affected:\n\t"
+                            + String.join("\n\t", sprintNames));
+                    popup.setTitleText("Change Story State");
+                    popup.setWindowTitle("Are you sure?");
+                    popup.addYesNoButtons(() -> {
+                        getModel().setEstimate(EstimateType.NOT_ESTIMATED);
+                        estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
+                        sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
+                        getModel().removeAcceptanceCondition(acceptanceCondition);
+                        updateAcceptanceCriteria();
+                        updateEstimation();
+                        storyStateChoiceBox.setValue(Story.StoryState.None);
+                        getModel().setStoryState(Story.StoryState.None);
+                        popup.close();
+                    }, "danger-will-robinson", "dont-panic");
+                    popup.show();
+                } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);
                     updateAcceptanceCriteria();
-                    popup.close();
-                });
-                popup.show();
+                    updateEstimation();
+                }
             });
-            AnchorPane conditionCell = new AnchorPane();
-            AnchorPane.setLeftAnchor(node, 0.0);
-            if (isEdit) {
-                AnchorPane.setRightAnchor(node, 30.0);
-            }
-            AnchorPane.setRightAnchor(button, 0.0);
-            conditionCell.getChildren().addAll(node, button);
+            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+            fadeButtonOnHover.setupEffect();
+            GridPane conditionCell = new GridPane();
+            conditionCell.add(node, 0, 0);
+            conditionCell.add(button, 1, 0);
+            conditionCell.setMinHeight(30.0);
+            conditionCell.getColumnConstraints().add(0, new ColumnConstraints(USE_COMPUTED_SIZE,
+                    USE_COMPUTED_SIZE, USE_COMPUTED_SIZE,
+                    Priority.SOMETIMES, HPos.LEFT, true));
+            conditionCell.setAlignment(Pos.CENTER);
+            conditionCell.getColumnConstraints().add(1, new ColumnConstraints(30, 30, 30, Priority.NEVER,
+                    HPos.CENTER, true));
             return conditionCell;
         }
     }

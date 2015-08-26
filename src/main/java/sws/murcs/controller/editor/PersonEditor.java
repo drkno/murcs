@@ -9,14 +9,15 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
@@ -112,6 +113,10 @@ public class PersonEditor extends GenericEditor<Person> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     @Override
@@ -182,20 +187,29 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + skill.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Skill from Person");
-            popup.addYesNoButtons(func -> {
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+                popup.setMessageText("Are you sure you want to remove "
+                        + skill.getShortName() + " from "
+                        + getModel().getShortName() + "?");
+                popup.setTitleText("Remove Skill from Person");
+                popup.addYesNoButtons(() -> {
+                    allocatableSkills.add(skill);
+                    Node skillNode = skillNodeIndex.get(skill);
+                    allocatedSkillsContainer.getChildren().remove(skillNode);
+                    skillNodeIndex.remove(skill);
+                    getModel().removeSkill(skill);
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+            else {
                 allocatableSkills.add(skill);
                 Node skillNode = skillNodeIndex.get(skill);
                 allocatedSkillsContainer.getChildren().remove(skillNode);
                 skillNodeIndex.remove(skill);
                 getModel().removeSkill(skill);
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();
@@ -206,8 +220,7 @@ public class PersonEditor extends GenericEditor<Person> {
         ColumnConstraints column2 = new ColumnConstraints();
         column2.setHgrow(Priority.SOMETIMES);
 
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
+        pane.getColumnConstraints().addAll(column1, column2);
 
         if (getIsCreationWindow()) {
             Text nameText = new Text(skill.toString());
@@ -215,12 +228,21 @@ public class PersonEditor extends GenericEditor<Person> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(skill.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(skill));
+            nameLink.setMinWidth(0.0);
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(skill);
+                } else {
+                    getNavigationManager().navigateTo(skill);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         return pane;
     }
 }

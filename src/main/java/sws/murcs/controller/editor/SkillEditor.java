@@ -40,7 +40,6 @@ public class SkillEditor extends GenericEditor<Skill> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -68,9 +67,10 @@ public class SkillEditor extends GenericEditor<Skill> {
                 || modelShortName.equals(Skill.ROLES.SM.toString()))) {
             shortNameTextField.setDisable(true);
         }
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
+        else {
+            shortNameTextField.requestFocus();
         }
+        isLoaded = true;
     }
 
     @Override

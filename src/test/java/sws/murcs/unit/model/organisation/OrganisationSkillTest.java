@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.GenerationHelper;
@@ -27,20 +26,23 @@ import static org.junit.Assert.assertEquals;
 
 public class OrganisationSkillTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
-        generator = new OrganisationGenerator(OrganisationGenerator.Stress.Medium);
+        generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
         UndoRedoManager.setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -56,16 +58,9 @@ public class OrganisationSkillTest {
         return model;
     }
 
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
-    }
-
     @Test
     public void testGetSkillsNotNullOrEmpty() throws Exception {
-        Organisation model = getNeworganisation();
         List<Skill> skills = model.getSkills();
-
         Assert.assertNotNull("getSkills() should return skills but is null.", skills);
         Assert.assertNotEquals("getSkills() should return skills but is empty.", 0, skills.size());
     }
@@ -169,6 +164,8 @@ public class OrganisationSkillTest {
 
     @Test
     public void testDeletionsCascadeSkill() throws Exception {
+        ArrayList<Skill> skillsBackup = new ArrayList<>(model.getSkills());
+        ArrayList<Person> peopleBackup = new ArrayList<>(model.getPeople());
         SkillGenerator skillGenerator = new SkillGenerator();
         PersonGenerator personGenerator = new PersonGenerator(skillGenerator);
         //Make sure we're working from a clean slate
@@ -205,5 +202,7 @@ public class OrganisationSkillTest {
         for (Person p : model.getPeople()) {
             assertEquals("The person should now have no skills", 0, p.getSkills().size());
         }
+        model.addCollection(skillsBackup);
+        model.addCollection(peopleBackup);
     }
 }

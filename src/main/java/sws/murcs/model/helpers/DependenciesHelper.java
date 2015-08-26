@@ -73,13 +73,14 @@ public final class DependenciesHelper {
     }
 
     /**
-     * Determines how deep a dependency graph is on a story.
-     * @param startNode story to find depth from.
-     * @return depth of the dependency graph from the node.
+     * Gets information about about a dependency tree.
+     * @param startNode root story of the dependency tree.
+     * @return information about the dependency tree.
      */
-    public static int dependenciesDepth(final Story startNode) {
+    public static DependencyTreeInfo dependenciesTreeInformation(final Story startNode) {
         Map<Story, Integer> visitedDepth = new HashMap<>();
-        return determineDepth(startNode, visitedDepth);
+        int depth = determineDepth(startNode, visitedDepth) + 1;
+        return new DependencyTreeInfo(depth, visitedDepth.size(), startNode.getDependencies().size());
     }
 
     /**

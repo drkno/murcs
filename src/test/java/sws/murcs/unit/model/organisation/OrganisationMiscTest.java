@@ -2,7 +2,6 @@ package sws.murcs.unit.model.organisation;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
@@ -14,7 +13,7 @@ import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 public class OrganisationMiscTest {
     private static OrganisationGenerator generator;
-    private Organisation model;
+    private static Organisation model;
 
     @BeforeClass
     public static void classSetup() {
@@ -23,11 +22,14 @@ public class OrganisationMiscTest {
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
+        model = getNeworganisation();
     }
 
     @AfterClass
     public static void classTearDown() {
         UndoRedoManager.setDisabled(false);
+        PersistenceManager.getCurrent().setCurrentModel(null);
+        model = null;
     }
 
     /**
@@ -41,11 +43,6 @@ public class OrganisationMiscTest {
         Organisation model = generator.generate();
         PersistenceManager.getCurrent().setCurrentModel(model);
         return model;
-    }
-
-    @Before
-    public void setup() throws Exception {
-        model = getNeworganisation();
     }
 
     @Test

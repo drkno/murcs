@@ -1,9 +1,9 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableObjectValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,9 +22,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Backlog;
@@ -117,7 +118,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
-        highlighted.setValue(!highlighted.getValue());
+        toggleHighlightState(!highlighted.getValue());
+    }
+
+    /**
+     * Sets the state of story highlighting.
+     * @param highlights The highlight state.
+     */
+    public static void toggleHighlightState(final boolean highlights) {
+        highlighted.setValue(highlights);
     }
 
     /**
@@ -351,7 +360,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     @Override
     public final void loadObject() {
         String modelShortName = getModel().getShortName();
-        setIsCreationWindow(modelShortName == null);
         String viewShortName = shortNameTextField.getText();
         if (isNotEqual(modelShortName, viewShortName)) {
             shortNameTextField.setText(modelShortName);
@@ -379,10 +387,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         updateAssignedPO();
         updateAvailableStories();
         updateStoryTable();
+        super.clearErrors();
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
-        super.clearErrors();
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     /**
@@ -692,29 +704,41 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(name);
                 } else {
                     Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.setOnAction(a -> NavigationManager.navigateTo(story));
+                    nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                        if (e.isControlDown()) {
+                            getNavigationManager().navigateToNewTab(story);
+                        } else {
+                            getNavigationManager().navigateTo(story);
+                        }
+                    });
                     container.getChildren().add(nameLink);
                 }
 
                 Button button = new Button("X");
                 button.getStyleClass().add("mdr-button");
                 button.getStyleClass().add("mdrd-button");
-                button.setOpacity(0.0);
                 button.setOnAction(e -> {
-                    GenericPopup popup = new GenericPopup();
-                    popup.setTitleText("Are you sure?");
-                    popup.setMessageText("Are you sure you wish to remove the story \""
-                            + story.getShortName() + "\" from this backlog?");
-                    popup.addYesNoButtons(p -> {
+                    if (!isCreationWindow) {
+                        GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+                        popup.setTitleText("Are you sure?");
+                        popup.setMessageText("Are you sure you wish to remove the story \""
+                                + story.getShortName() + "\" from this backlog?");
+                        popup.addYesNoButtons(() -> {
+                            getModel().removeStory(story);
+                            updateStoryTable();
+                            updateAvailableStories();
+                            popup.close();
+                        }, "danger-will-robinson", "dont-panic");
+                        popup.show();
+                    }
+                    else {
                         getModel().removeStory(story);
                         updateStoryTable();
                         updateAvailableStories();
-                        popup.close();
-                    });
-                    popup.show();
+                    }
                 });
-                getTableRow().setOnMouseEntered(event -> button.setOpacity(1.0));
-                getTableRow().setOnMouseExited(event -> button.setOpacity(0.0));
+                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+                fadeButtonOnHover.setupEffect();
                 AnchorPane.setRightAnchor(button, 0.0);
                 container.getChildren().add(button);
 

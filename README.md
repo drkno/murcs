@@ -12,10 +12,9 @@
 5. Click run. Maven will then pull the dependencies and build the file.
 
 ### Eclipse
-<b>NB:</b> It is <i><b>highly recommended that you do not use this IDE</b></i>, it is outdated, lacks behind other IDE's in it's Maven integration and is no longer supported as an IDE by a number of major projects such as the Android project.</b>
 
 <i>This guide was written using Eclipse Juno. Other versions of the IDE may differ slightly from what is stated in the below instructions.</i>
-1. From the 'Help' menu, select 'Elipse Marketplace'.
+1. From the 'Help' menu, select 'Eclipse Marketplace'.
 2. In the Market Place locate and install the plugin 'Maven integration for eclipse'.
  - If this is already installed, please ensure it is updated to the latest version.
 3. From the 'File' menu, select 'Import'.

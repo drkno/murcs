@@ -9,6 +9,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
@@ -84,6 +85,11 @@ public class OrganisationGenerator implements Generator<Organisation> {
     private final BacklogGenerator backlogGenerator;
 
     /**
+     * The sprint generator.
+     */
+    private final SprintGenerator sprintGenerator;
+
+    /**
      * The stress level.
      */
     private Stress stress;
@@ -92,6 +98,19 @@ public class OrganisationGenerator implements Generator<Organisation> {
      * Set if the last generation had an error.
      */
     private boolean lastWasError;
+
+    /**
+     * Put numbers next to the short names.
+     */
+    private static boolean numbering = false;
+
+    /**
+     * Set numbering on the model objects (short names).
+     * @param isNumbering is numbering on
+     */
+    public static final void isNumbering(final boolean isNumbering) {
+        numbering = isNumbering;
+    }
 
     /**
      * The last generation of an Organisation incurred an error.
@@ -126,6 +145,8 @@ public class OrganisationGenerator implements Generator<Organisation> {
         backlogGenerator.setStoryGenerator(storyGenerator);
 
         workAllocationGenerator = new WorkAllocationGenerator();
+
+        sprintGenerator = new SprintGenerator();
     }
 
     /**
@@ -143,11 +164,13 @@ public class OrganisationGenerator implements Generator<Organisation> {
 
         for (int i = 0; i < count; i++) {
             Model g = generator.generate();
-            try {
-                g.setShortName(g.getShortName() + " (" + i + ")");
-            } catch (CustomException e) {
-                //never here... EVER.
-                ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
+            if (numbering) {
+                try {
+                    g.setShortName(g.getShortName() + " (" + i + ")");
+                } catch (CustomException e) {
+                    //never here... EVER.
+                    ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
+                }
             }
             if (!items.stream().filter(g::equals).findAny().isPresent()) {
                 items.add(g);
@@ -257,20 +280,30 @@ public class OrganisationGenerator implements Generator<Organisation> {
             storyGenerator.setPersonsPool(people);
             min = getMin(stress, StoryGenerator.LOW_STRESS_MIN, StoryGenerator.MEDIUM_STRESS_MIN,
                     StoryGenerator.HIGH_STRESS_MIN);
-            max = getMin(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX,
+            max = getMax(stress, StoryGenerator.LOW_STRESS_MAX, StoryGenerator.MEDIUM_STRESS_MAX,
                     StoryGenerator.HIGH_STRESS_MAX);
             List<Story> stories = generateItems(storyGenerator, min, max)
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
             storyGenerator.addDependencies(stories, max, min);
 
-            backlogGenerator.setStoryPool(new ArrayList<>(stories));
+            backlogGenerator.setStoryPool(stories);
             backlogGenerator.setPersonsPool(people);
             min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
                     BacklogGenerator.HIGH_STRESS_MIN);
-            max = getMin(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
+            max = getMax(stress, BacklogGenerator.LOW_STRESS_MAX, BacklogGenerator.MEDIUM_STRESS_MAX,
                     BacklogGenerator.HIGH_STRESS_MAX);
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
+
+            sprintGenerator.setReleasePool(releases);
+            sprintGenerator.setBacklogPool(backlogs);
+            sprintGenerator.setTeamPool(teams);
+            min = getMin(stress, SprintGenerator.LOW_STRESS_MIN, SprintGenerator.MEDIUM_STRESS_MIN,
+                    SprintGenerator.HIGH_STRESS_MIN);
+            max = getMax(stress, SprintGenerator.LOW_STRESS_MAX, SprintGenerator.MEDIUM_STRESS_MAX,
+                    SprintGenerator.HIGH_STRESS_MAX);
+            List<Sprint> sprints = generateItems(sprintGenerator, min, max).stream()
+                    .map(m -> (Sprint) m).collect(Collectors.toList());
 
             model.addCollection(skills);
             model.addCollection(people);
@@ -280,6 +313,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             model.addCollection(stories);
             model.addCollection(backlogs);
             model.addAllocations(allocations);
+            model.addCollection(sprints);
 
             lastWasError = false;
             return model;

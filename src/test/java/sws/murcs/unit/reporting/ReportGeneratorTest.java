@@ -4,7 +4,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.*;
+import sws.murcs.model.AcceptanceCondition;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Person;
+import sws.murcs.model.Project;
+import sws.murcs.model.Release;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
+import sws.murcs.model.Team;
+import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.reporting.ReportGenerator;
 
@@ -31,6 +45,7 @@ public class ReportGeneratorTest {
     private Person person;
     private Backlog backlog;
     private Story story;
+    private Sprint sprint;
 
     private void adjust(List<String> report) {
         for (int i = 0; i < report.size(); i++) {
@@ -145,12 +160,24 @@ public class ReportGeneratorTest {
         story.setLongName("Revert");
         story.setDescription("Revert to last saved state");
         story.setCreator(person3);
+        story.setEstimate(EstimateType.Fibonacci.getEstimates().get(0));
+        story.setStoryState(Story.StoryState.Ready);
+        AcceptanceCondition condition = new AcceptanceCondition();
+        condition.setCondition("This is a condition");
+        story.addAcceptanceCondition(condition);
+        Task task = new Task();
+        task.setName("Become one with the universe");
+        task.setEstimate(100);
+        task.setState(TaskState.Blocked);
+        task.setDescription("Attempt to absorb the universe, this probably won't work");
+        story.addTask(task);
 
         Story story2 = new Story();
         story2.setShortName("2");
         story2.setLongName("Story Maintenance");
         story2.setDescription("add stories to project");
         story2.setCreator(person4);
+        story.addDependency(story2);
 
         //Backlog
         backlog = new Backlog();
@@ -159,6 +186,16 @@ public class ReportGeneratorTest {
         backlog.setDescription("high five");
         backlog.setAssignedPO(person);
         backlog.addStory(story, 1);
+
+        //Sprint
+        sprint = new Sprint();
+        sprint.setShortName("This is the sprint");
+        sprint.setLongName("This is the sprint's long name");
+        sprint.setDescription("high five");
+        sprint.setBacklog(backlog);
+        sprint.addStory(backlog.getAllStories().get(0));
+        sprint.setAssociatedRelease(release);
+        sprint.setTeam(team);
 
         organisation.add(project);
         organisation.add(team);
@@ -175,6 +212,7 @@ public class ReportGeneratorTest {
         organisation.addAllocation(allocation);
         organisation.add(release);
         organisation.add(backlog);
+        organisation.add(sprint);
     }
 
     @After
@@ -190,8 +228,8 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(organisation, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 
@@ -205,8 +243,8 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(projects, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 
@@ -220,8 +258,8 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(teams, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 
@@ -235,8 +273,8 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(people, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 
@@ -250,8 +288,8 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(backlogs, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 
@@ -265,8 +303,23 @@ public class ReportGeneratorTest {
         ReportGenerator.generate(stories, tempReport);
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
-        for (int i = 0; i < report.size(); i++) {
-            assertEquals(report.get(i).trim(), testReport.get(i).trim());
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+        }
+    }
+
+    @Test
+    public void testGenerateSprint() throws Exception {
+        String reportPath = "./src/test/resources/sws/murcs/reporting/sampleSprintReport.xml";
+        List<String> report = Files.readAllLines(Paths.get(reportPath), StandardCharsets.UTF_8);
+        adjust(report);
+        List<Model> sprints = new ArrayList<>();
+        sprints.add(story);
+        ReportGenerator.generate(sprints, tempReport);
+
+        List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
+        for (int i = 0; i < testReport.size(); i++) {
+            assertEquals(testReport.get(i).trim(), report.get(i).trim());
         }
     }
 }

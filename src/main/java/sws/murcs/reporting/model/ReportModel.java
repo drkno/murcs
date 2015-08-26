@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
         ReportModelTeam.class,
         ReportModelPerson.class,
         ReportModelBacklog.class,
-        ReportModelStory.class})
+        ReportModelStory.class,
+        ReportModelSprint.class})
 public abstract class ReportModel {
 }

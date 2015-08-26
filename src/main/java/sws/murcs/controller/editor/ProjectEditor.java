@@ -1,24 +1,19 @@
 package sws.murcs.controller.editor;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.text.Text;
+import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -34,11 +29,6 @@ import java.time.format.DateTimeFormatter;
  * Since there should only be one instance of this PopUp
  */
 public class ProjectEditor extends GenericEditor<Project> {
-    /**
-     * The labels inside the form.
-     */
-    @FXML
-    private Label shortNameLabel, longNameLabel, descriptionLabel;
 
     /**
      * The shortName, longName for a project.
@@ -85,7 +75,7 @@ public class ProjectEditor extends GenericEditor<Project> {
     /**
      * An observable list of work allocations.
      */
-    private ObservableList<WorkAllocation> observableAllocations;
+    private ObservableList<WorkAllocation> observableAllocations = FXCollections.observableArrayList();
 
     @FXML
     @Override
@@ -108,31 +98,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         tableColumnEndDates.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         tableColumnEndDates.setCellFactory(a -> new NullableLocalDateCell());
         teamsViewer.setItems(observableAllocations);
-        registerFormLabel(shortNameTextField, shortNameLabel);
-        registerFormLabel(longNameTextField, longNameLabel);
-        registerFormLabel(descriptionTextArea, descriptionLabel);
-
-        descriptionTextArea.setWrapText(true);
-        Platform.runLater(() -> {
-            ScrollPane scrollPane = (ScrollPane) descriptionTextArea.lookup(".scroll-pane");
-            if (scrollPane != null) {
-                scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-                scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-            }
-        });
-        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            Text text = new Text();
-            text.setFont(descriptionTextArea.getFont());
-            text.setWrappingWidth(descriptionTextArea.getWidth());
-            text.setText(newValue + ' ');
-            descriptionTextArea.setPrefRowCount((int) text.getLayoutBounds().getHeight() / 18);
-        });
-        descriptionTextArea.setPrefRowCount(1);
     }
 
     @Override
     public final void loadObject() {
-        // todo decouple from model
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
         String modelShortName = getModel().getShortName();
@@ -160,6 +129,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     @Override
@@ -237,9 +210,8 @@ public class ProjectEditor extends GenericEditor<Project> {
             datePickerEndDate.setValue(null);
         }
         catch (CustomException e) {
-            addFormError(e.getMessage());
-            addFormError(datePickerStartDate);
-            addFormError(datePickerEndDate);
+            addFormError(datePickerStartDate, e.getMessage());
+            addFormError(datePickerEndDate, "");
         }
     }
 
@@ -262,11 +234,11 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\" from \""
                 + allocation.getProject()
                 + "\"?");
-        alert.addYesNoButtons(a -> {
+        alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
             observableAllocations.remove(rowNumber);
             alert.close();
-        });
+        }, "danger-will-robinson", "dont-panic");
         alert.show();
     }
 
@@ -284,9 +256,15 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(team.toString());
             }
             else {
-                Hyperlink text = new Hyperlink(team.toString());
-                text.setOnAction(param -> NavigationManager.navigateTo(team));
-                setGraphic(text);
+                Hyperlink nameLink = new Hyperlink(team.toString());
+                nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                    if (e.isControlDown()) {
+                        getNavigationManager().navigateToNewTab(team);
+                    } else {
+                        getNavigationManager().navigateTo(team);
+                    }
+                });
+                setGraphic(nameLink);
             }
         }
     }
@@ -309,23 +287,5 @@ public class ProjectEditor extends GenericEditor<Project> {
                 setText(null);
             }
         }
-    }
-
-    /**
-     * Stuff and things.
-     * @param node Node
-     * @param label Label
-     */
-    public final void registerFormLabel(final Node node, final Label label) {
-        node.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue) {
-                label.getStyleClass().remove("input-label");
-                label.getStyleClass().add("input-label-focused");
-            }
-            else {
-                label.getStyleClass().remove("input-label-focused");
-                label.getStyleClass().add("input-label");
-            }
-        });
     }
 }

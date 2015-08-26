@@ -13,14 +13,15 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.MultipleRolesException;
@@ -139,6 +140,10 @@ public class TeamEditor extends GenericEditor<Team> {
         if (!getIsCreationWindow()) {
             super.setupSaveChangesButton();
         }
+        else {
+            shortNameTextField.requestFocus();
+        }
+        isLoaded = true;
     }
 
     @Override
@@ -329,26 +334,36 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setTitleText("Remove Team Member");
-            String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
-            if (getModel().getScrumMaster() != null && getModel().getScrumMaster().equals(person)) {
-                message += "\nThey are currently the teams Scrum Master.";
+            if (!isCreationWindow) {
+                GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+                popup.setTitleText("Remove Team Member");
+                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                if (person.equals(getModel().getScrumMaster())) {
+                    message += "\nThey are currently the teams Scrum Master.";
+                }
+                if (person.equals(getModel().getProductOwner())) {
+                    message += "\nThey are currently the teams Product Owner.";
+                }
+                popup.setMessageText(message);
+                popup.addYesNoButtons(() -> {
+                    allocatablePeople.add(person);
+                    Node memberNode = memberNodeIndex.get(person);
+                    teamMembersContainer.getChildren().remove(memberNode);
+                    memberNodeIndex.remove(person);
+                    getModel().removeMember(person);
+                    updatePOSM();
+                    popup.close();
+                }, "danger-will-robinson", "dont-panic");
+                popup.show();
             }
-            if (getModel().getProductOwner() != null && getModel().getProductOwner().equals(person)) {
-                message += "\nThey are currently the teams Product Owner.";
-            }
-            popup.setMessageText(message);
-            popup.addYesNoButtons(f -> {
+            else {
                 allocatablePeople.add(person);
                 Node memberNode = memberNodeIndex.get(person);
                 teamMembersContainer.getChildren().remove(memberNode);
                 memberNodeIndex.remove(person);
                 getModel().removeMember(person);
                 updatePOSM();
-                popup.close();
-            });
-            popup.show();
+            }
         });
 
         GridPane pane = new GridPane();
@@ -368,10 +383,18 @@ public class TeamEditor extends GenericEditor<Team> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(person.toString());
-            nameLink.setOnAction(a -> NavigationManager.navigateTo(person));
+            nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            });
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;

@@ -1,3 +1,4 @@
+@Manual
 @ListDisplay
 Feature: List Display
 

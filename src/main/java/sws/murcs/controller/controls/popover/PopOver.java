@@ -21,6 +21,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+
 import static java.util.Objects.requireNonNull;
 import static javafx.scene.input.MouseEvent.MOUSE_CLICKED;
 
@@ -84,6 +85,11 @@ public class PopOver extends PopupControl {
      * Property for if the window is detached.
      */
     private BooleanProperty detached;
+
+    /**
+     * Property for toggling the window close button.
+     */
+    private BooleanProperty detachedCloseButton;
 
     /**
      * Property for the size of an arrow.
@@ -249,9 +255,26 @@ public class PopOver extends PopupControl {
 
     @Override
     public final void show(final Window owner) {
-        super.show(owner);
-        ownerWindow = owner;
-        ownerWindow.setOnHiding(ownerWindowCloseListener);
+        if (getSkin() != null) {
+            Node skinNode = getSkin().getNode();
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
+            fadeOut.setFromValue(skinNode.getOpacity());
+            fadeOut.setToValue(1);
+            fadeOut.setOnFinished(evt -> {
+                if (!isShowing()) {
+                    owner.setOnHiding(null);
+                    super.show(owner);
+                    ownerWindow = owner;
+                    ownerWindow.setOnHiding(ownerWindowCloseListener);
+                }
+            });
+            fadeOut.play();
+        }
+        else {
+            super.show(owner);
+            ownerWindow = owner;
+            ownerWindow.setOnHiding(ownerWindowCloseListener);
+        }
     }
 
     @Override
@@ -324,18 +347,34 @@ public class PopOver extends PopupControl {
         hide();
     }
 
-    @Override
-    public final void hide() {
+    /**
+     * Hides the popOver.
+     * Transitions it to hidden over a given amount of time.
+     * @param seconds Amount of time to fade the popover to hidden.
+     */
+    public final void hide(final double seconds) {
         if (isShowing()) {
             Node skinNode = getSkin().getNode();
-            FadeTransition fadeOut = new FadeTransition(Duration.seconds(fadeDuration), skinNode);
+            FadeTransition fadeOut = new FadeTransition(Duration.seconds(seconds), skinNode);
             fadeOut.setFromValue(skinNode.getOpacity());
             fadeOut.setToValue(0);
             fadeOut.setOnFinished(evt -> {
-                super.hide();
+                try {
+                    super.hide();
+                }
+                catch (IllegalStateException e) {
+                    // caught and ignored to bypass a race condition.
+                    // should not be reported as the outcome will be the same
+                    // ie. the window will be closed
+                }
             });
             fadeOut.play();
         }
+    }
+
+    @Override
+    public final void hide() {
+        hide(fadeDuration);
     }
 
     /**
@@ -459,6 +498,19 @@ public class PopOver extends PopupControl {
             detached = new SimpleBooleanProperty(this, "detached", false);
         }
         return detached;
+    }
+
+    /**
+     * Stores if the PopOver window when detached from its owner will have a close button.
+     * Defaults to true.
+     * Note: value is meaningless if detachableProperty() is not true.
+     * @return the detached close button property.
+     */
+    public final BooleanProperty detachedCloseButtonProperty() {
+        if (detachedCloseButton == null) {
+            detachedCloseButton = new SimpleBooleanProperty(this, "detachedCloseButton", true);
+        }
+        return detachedCloseButton;
     }
 
     /**

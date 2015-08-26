@@ -8,11 +8,13 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.control.MenuBar;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
+import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -47,6 +49,15 @@ public class ShowHideStepDefs extends ApplicationTest {
                 e.printStackTrace();
             }
         });
+
+        // Mac OSX Workaround for testing ONLY!
+        interact(() -> {
+            final String os = System.getProperty("os.name");
+            if (os != null && os.startsWith("Mac")) {
+                MenuBar menuBar = (MenuBar) JavaFXHelpers.getByID(primaryStage.getScene().getRoot(), "menuBar");
+                menuBar.useSystemMenuBarProperty().set(false);
+            }
+        });
     }
 
     @After("@ShowHide")
@@ -60,12 +71,12 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @When("^I click the View menu$")
     public void When_I_click_the_View_menu() throws Throwable {
-        fx.moveTo("#viewMenu").clickOn("#viewMenu");
+        fx.clickOn("View");
     }
 
     @And("^I click the Show/Hide Item list button$")
     public void And_I_click_the_Show_Hide_Item_list_button() throws Throwable {
-        fx.moveTo("#viewShowHide").clickOn("#viewShowHide");
+        fx.clickOn("Show/Hide Item List");
     }
 
     @Given("^the side panel is hidden$")

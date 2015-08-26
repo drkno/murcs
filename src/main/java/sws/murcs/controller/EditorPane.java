@@ -1,20 +1,23 @@
 package sws.murcs.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
+import sws.murcs.view.App;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Creates the editor Pane.
  */
 public class EditorPane {
-
     /**
      * The controller for the editor.
      */
@@ -26,15 +29,27 @@ public class EditorPane {
     private Model model;
 
     /**
+     * The navigation manager.
+     */
+    private Navigable navigationManager;
+
+    /**
      * The editor pane view.
      */
     private Parent view;
 
     /**
+     * Better supported Java version.
+     */
+    private final int betterJavaVersion = 40;
+
+    /**
      * Creates a new Editor pane, and sets the model.
      * @param pModel The model to set
+     * @param navigationManager The navigation manager that the pane should make use of
      */
-    public EditorPane(final Model pModel) {
+    public EditorPane(final Model pModel, final Navigable navigationManager) {
+        this.navigationManager = navigationManager;
         if (pModel != null) {
             model = pModel;
             create();
@@ -77,15 +92,43 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
         fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
+        fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
 
-        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(ModelType.getModelType(model));
+        ModelType type = ModelType.getModelType(model);
+        if (!fxmlPaths.containsKey(type)) {
+            throw new UnsupportedOperationException("We don't seem to have that FXML yet. You should fix this");
+        }
+
+        String fxmlPath = "/sws/murcs/" + fxmlPaths.get(type);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            view = loader.load();
-            controller = loader.getController();
-            controller.setModel(model);
-            controller.loadObject();
+            // This is due to problems between java 8u25 and java 8u40
+            if (App.JAVA_UPDATE_VERSION < betterJavaVersion
+                    && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
+                CountDownLatch latch = new CountDownLatch(1);
+                Platform.runLater(() -> {
+                    try {
+                        view = loader.load();
+                        controller = loader.getController();
+                        controller.setNavigationManager(navigationManager);
+                        controller.setModel(model);
+                        controller.loadObject();
+                        latch.countDown();
+                    } catch (Exception e) {
+                        latch.countDown();
+                        ErrorReporter.get().reportError(e, "Failed to load a new editor");
+                    }
+                });
+                latch.await();
+            }
+            else {
+                view = loader.load();
+                controller = loader.getController();
+                controller.setNavigationManager(navigationManager);
+                controller.setModel(model);
+                controller.loadObject();
+            }
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to create editor");
@@ -110,7 +153,25 @@ public class EditorPane {
         if (pModel != null) {
             model = pModel;
             controller.setModel(pModel);
-            controller.loadObject();
+            // This is because "Java sucks" - Dion
+            // "You guys are dicks" - Dion, Daniel, Jay
+            // It's a bug somewhere in between java 8u25 and 8u40
+            if (App.JAVA_UPDATE_VERSION < betterJavaVersion
+                    && !Thread.currentThread().getName().toLowerCase().contains("fx")) {
+                CountDownLatch latch = new CountDownLatch(1);
+                Platform.runLater(() -> {
+                    controller.loadObject();
+                    latch.countDown();
+                });
+                try {
+                    latch.await();
+                } catch (Exception e1) {
+                    ErrorReporter.get().reportError(e1, "Failed to load editor while retrying");
+                }
+            }
+            else {
+                controller.loadObject();
+            }
         }
     }
 }

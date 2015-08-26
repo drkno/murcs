@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane fx:controller="sws.murcs.controller.editor.SkillEditor" fx:id="editor" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1">
+=======
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane fx:controller="sws.murcs.controller.editor.SkillEditor" fx:id="editor" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+>>>>>>> master
     <children>
         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                   AnchorPane.topAnchor="0.0">
@@ -15,9 +30,13 @@
                 <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER"/>
             </rowConstraints>
             <children>
+<<<<<<< HEAD
                 <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                             AnchorPane.topAnchor="0.0" fitToHeight="true" fitToWidth="true" prefViewportHeight="241.0"
                             prefViewportWidth="220.0" styleClass="edge-to-edge">
+=======
+                <ScrollPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" fitToHeight="true" fitToWidth="true" prefViewportHeight="241.0" prefViewportWidth="220.0" styleClass="edge-to-edge">
+>>>>>>> master
                     <content>
                         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                                   AnchorPane.topAnchor="0.0">
@@ -70,8 +89,12 @@
                         </GridPane>
                     </content>
                 </ScrollPane>
+<<<<<<< HEAD
                 <ScrollPane GridPane.rowIndex="1" fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0"
                             prefViewportWidth="10.0" styleClass="edge-to-edge">
+=======
+                <ScrollPane GridPane.rowIndex="1" fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" styleClass="edge-to-edge">
+>>>>>>> master
                     <content>
                         <GridPane>
                             <children>

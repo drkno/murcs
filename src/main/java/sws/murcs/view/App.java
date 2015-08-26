@@ -1,13 +1,16 @@
 package sws.murcs.view;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import sws.murcs.controller.AppController;
+import sws.murcs.controller.MainController;
+import sws.murcs.controller.windowManagement.ShortcutManager;
+import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
 import sws.murcs.listeners.AppClosingListener;
@@ -16,6 +19,7 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,12 +27,13 @@ import java.util.List;
 /**
  * The main app class.
  */
+@SuppressWarnings("ALL")
 public class App extends Application {
 
     /**
      * Default window title to use.
      */
-    private final String defaultWindowTitle = "- Untitled -";
+    private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
 
     /**
      * The main stage of the application.
@@ -43,12 +48,12 @@ public class App extends Application {
     /**
      * The minimum height of the application.
      */
-    private final int minimumApplicationHeight = 800;
+    private static final int MINIMUM_APPLICATION_HEIGHT = 700;
 
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 900;
+    private static final int MINIMUM_APPLICATION_WIDTH = 900;
 
     /**
      * The subString length to search over, when parsing debugging mode.
@@ -56,16 +61,48 @@ public class App extends Application {
     private static final int SUBSTRINGLENGTH = 3;
 
     /**
-     * The current app controller.
+     * The update version of the current running version of Java. (i.e. if you're on 8u25 this would be 25).
      */
-    private static AppController appController;
+    public static final int JAVA_UPDATE_VERSION = Integer.parseInt(System.getProperty("java.version")
+            .split("_")[1].split("-")[0]);
 
     /**
-     * Gets the app controller that was created.
-     * @return The App Controller
+     * The current main controller.
      */
-    public static AppController getAppController() {
-        return appController;
+    private static MainController mainController;
+
+    /**
+     * The manager for all windows.
+     */
+    private static WindowManager windowManager;
+
+    /**
+     * The manager for global shortcuts.
+     */
+    private static ShortcutManager shortcutManager;
+
+    /**
+     * Gets the shortcut manager.
+     * @return The shortcut manager.
+     */
+    public static ShortcutManager getShortcutManager() {
+        return shortcutManager;
+    }
+
+    /**
+     * Gets the main controller for the App.
+     * @return The main controller
+     */
+    public static MainController getMainController() {
+        return mainController;
+    }
+
+    /**
+     * Gets the window manager.
+     * @return The window manager
+     */
+    public static WindowManager getWindowManager() {
+        return windowManager;
     }
 
     /**
@@ -109,11 +146,14 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) != '*') {
-            title = '*' + title;
-            stage.setTitle(title);
-        }
+        // for off thread rendering
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) != '*') {
+                title = '*' + title;
+                stage.setTitle(title);
+            }
+        });
     }
 
     /**
@@ -124,11 +164,13 @@ public class App extends Application {
         if (stage == null) {
             return;
         }
-        String title = stage.getTitle();
-        if (title.charAt(0) == '*') {
-            title = title.substring(1);
-            stage.setTitle(title);
-        }
+        Platform.runLater(() -> {
+            String title = stage.getTitle();
+            if (title.charAt(0) == '*') {
+                title = title.substring(1);
+                stage.setTitle(title);
+            }
+        });
     }
 
     /***
@@ -138,42 +180,75 @@ public class App extends Application {
      */
     @Override
     public final void start(final Stage primaryStage) throws Exception {
+        primaryStage.setTitle(DEFAULT_WINDOW_TITLE);
+        setStage(primaryStage);
+        mainController = createWindow(primaryStage);
+    }
+
+    /**
+     * Creates a new MainWindow.
+     * @param window The stage to load the window onto
+     * @return The main controller for the window
+     */
+    public static MainController createWindow(final Stage window) {
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
         }
 
-        // Loads the primary fxml and sets appController as its controller
+        if (windowManager == null) {
+            windowManager = new WindowManager();
+        }
+
+        if (shortcutManager == null) {
+            shortcutManager = new ShortcutManager();
+        }
+
+        // Loads the primary fxml and sets mainController as its controller
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/sws/murcs/App.fxml"));
-        Parent parent = loader.load();
-        appController = loader.getController();
+        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            //We should never hit this, if we managed to start the application
+            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
+        }
+        MainController controller = loader.getController();
 
         Scene scene = new Scene(parent);
         scene.getStylesheets()
+<<<<<<< HEAD
                 .add(getClass()
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.setTitle(defaultWindowTitle);
         primaryStage.setOnCloseRequest(App::notifyListeners);
+=======
+                .add(App.class
+                        .getResource("/sws/murcs/styles/global.css")
+                        .toExternalForm());
+        window.setScene(scene);
+        window.setTitle(DEFAULT_WINDOW_TITLE);
+>>>>>>> master
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo_small.png")));
-        primaryStage.getIcons().add(iconImage);
+        Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
+        window.getIcons().add(iconImage);
 
         // Set up max and min dimensions of main window
-        primaryStage.setMinWidth(minimumApplicationWidth);
-        primaryStage.setMinHeight(minimumApplicationHeight);
+        window.setMinWidth(MINIMUM_APPLICATION_WIDTH);
+        window.setMinHeight(MINIMUM_APPLICATION_HEIGHT);
 
-        primaryStage.show();
-        stage = primaryStage;
+        controller.show();
+        return controller;
     }
 
     /**
      * Call quit on all of the event listeners.
      * @param e Window event to consume to avoid the application quitting prematurely
      */
-    private static void notifyListeners(final WindowEvent e) {
+    public static void notifyListeners(final WindowEvent e) {
         listeners.forEach(l -> l.quit(e));
     }
 
@@ -196,7 +271,11 @@ public class App extends Application {
 
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
+        int numbering = argsList.indexOf("numbering");
 
+        if (numbering >= 0) {
+            OrganisationGenerator.isNumbering(true);
+        }
         if (debug >= 0) {
             OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
             if (debug + 1 < args.length) {

@@ -5,6 +5,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -28,6 +29,7 @@ public class Person extends Model {
     /**
      * The user id of a person.
      */
+    @Searchable
     @TrackableValue
     @XmlElement(name = "id")
     private String userId;
@@ -35,6 +37,7 @@ public class Person extends Model {
     /**
      * The list of skills the person has.
      */
+    @Searchable
     @TrackableValue
     @XmlElementWrapper(name = "skills")
     @XmlElement(name = "skill")

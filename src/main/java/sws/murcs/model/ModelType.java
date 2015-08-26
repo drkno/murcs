@@ -39,7 +39,12 @@ public enum ModelType {
     /**
      * Represents the class Backlog.
      */
-    Backlog(6, sws.murcs.model.Backlog.class);
+    Backlog(6, sws.murcs.model.Backlog.class),
+
+    /**
+     * Represents the class Sprint.
+     */
+    Sprint(7, sws.murcs.model.Sprint.class);
 
     /**
      * The index of the model type in the enum.
@@ -79,6 +84,7 @@ public enum ModelType {
      * 4: Release
      * 5: Story
      * 6: Backlog
+     * 7: Task
      * @param type The type of model object.
      * @return The index for selection
      */
@@ -130,5 +136,23 @@ public enum ModelType {
      */
     public static Class<? extends Model> getTypeFromModel(final ModelType type) {
         return type.clazz;
+    }
+
+    /**
+     * Attempts to get a model type from a string. This is calculated
+     * by seeing if the type (as a lower case string) is contained by
+     * the "modelTypeString." If no type matches, the method will return
+     * null.
+     * @param modelTypeString The string to attempt to parse.
+     * @return The parsed type. Null if the method fails.
+     */
+    public static ModelType parseString(final String modelTypeString) {
+        for (ModelType type : values()) {
+            String asString = type.toString().toLowerCase();
+            if (modelTypeString.toLowerCase().contains(asString)) {
+                return type;
+            }
+        }
+        return null;
     }
 }

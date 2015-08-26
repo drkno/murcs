@@ -1,9 +1,11 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -45,6 +47,7 @@ public class Story extends Model {
      * Indicates the current state of the story
      * (e.g. ready, not ready, in progress)
      */
+    @Searchable
     @TrackableValue
     private StoryState storyState;
 
@@ -53,13 +56,26 @@ public class Story extends Model {
      * story can be marked as done. This has been made a list
      * (as opposed to a Collection) as order is important.
      */
+    @Searchable
     @TrackableValue
+    @XmlElementWrapper(name = "acceptanceCriteria")
+    @XmlElement(name = "acceptanceCriterion")
     private List<AcceptanceCondition> acceptanceCriteria;
+
+    /**
+     * The list of tasks associated with this story.
+     */
+    @Searchable
+    @TrackableValue
+    @XmlElementWrapper(name = "tasks")
+    @XmlElement(name = "task")
+    private List<Task> tasks;
 
     /**
      * The person who created this story. This should not be changed after
      * initial creation.
      */
+    @Searchable
     @TrackableValue
     @XmlIDREF
     private Person creator;
@@ -67,6 +83,7 @@ public class Story extends Model {
     /**
      * Stories that must be complete before this story can be worked on.
      */
+    @Searchable
     @XmlElementWrapper(name = "dependencies")
     @XmlElement(name = "dependence")
     @XmlIDREF
@@ -77,6 +94,7 @@ public class Story extends Model {
      */
     public Story() {
         acceptanceCriteria = new ArrayList<>();
+        tasks = new ArrayList<>();
         estimate = EstimateType.NOT_ESTIMATED;
         dependencies = new LinkedHashSet<>();
         storyState = StoryState.None;
@@ -229,15 +247,49 @@ public class Story extends Model {
      * @param newEstimate The estimate.
      */
     public final void setEstimate(final String newEstimate) {
-        if (newEstimate == estimate) {
+        if (newEstimate.equals(estimate)) {
             return;
         }
-        // If you change the estimate type to not estimated, then None is the only valid story state
-        if (newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
-            storyState = StoryState.None;
+        if (newEstimate.equals(EstimateType.INFINITE) || newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
+            // The story state must now be set to None.
+            setStoryState(StoryState.None);
         }
         estimate = newEstimate;
         commit("edit story");
+    }
+
+    /**
+     * Adds a new task to the list of tasks the story has.
+     * @param newTask The new task to add
+     * @throws DuplicateObjectException If there's a duplicate....
+     */
+    public final void addTask(final Task newTask) throws DuplicateObjectException {
+        if (!tasks.contains(newTask)) {
+            tasks.add(newTask);
+            UndoRedoManager.add(newTask);
+        } else {
+            throw new DuplicateObjectException("You can't add two of the same task to a story!");
+        }
+        commit("edit story");
+    }
+
+    /**
+     * Removes the specified task from the list of tasks associated with the story.
+     * @param task The task to be removed.
+     */
+    public final void removeTask(final Task task) {
+        if (tasks.contains(task)) {
+            tasks.remove(task);
+            UndoRedoManager.remove(task);
+        }
+    }
+
+    /**
+     * Gets the list of all the tasks associated with this story.
+     * @return The list of all the tasks associated with this story.
+     */
+    public final List<Task> getTasks() {
+        return Collections.unmodifiableList(tasks);
     }
 
     @Override
@@ -251,7 +303,7 @@ public class Story extends Model {
 
     @Override
     public final boolean equals(final Object object) {
-        if (object == null || !(object instanceof Story)) {
+        if (!(object instanceof Story)) {
             return false;
         }
         String shortNameO = ((Story) object).getShortName();
@@ -259,6 +311,6 @@ public class Story extends Model {
         if (shortName == null || shortNameO == null) {
             return shortName == shortNameO;
         }
-        return shortName.toLowerCase().equals(shortNameO.toLowerCase());
+        return shortName.equalsIgnoreCase(shortNameO);
     }
 }

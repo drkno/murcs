@@ -20,7 +20,7 @@ public class ReportHeaderStory extends ReportHeader {
 
     /**
      * Creates a new Report Header from given stories.
-     * @param stories the projects given.
+     * @param stories the stories given.
      */
     public ReportHeaderStory(final List<Story> stories) {
         reportModel = new ReportModelStory(stories);
