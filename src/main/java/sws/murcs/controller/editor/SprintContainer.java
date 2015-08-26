@@ -71,6 +71,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
         else if (tab == 2) {
             burnDownChartTabSelected();
         }
+        else if (tab == 3) {
+            allTasksTabSelected();
+        }
     }
 
     /**

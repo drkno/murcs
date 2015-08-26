@@ -66,8 +66,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     @FXML
     private VBox tasksVBox;
 
-    private Sprint sprint;
-
     private Thread thread;
 
     private boolean stop;
@@ -105,9 +103,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     }
 
     private void loadTasks() {
+        tasksVBox.getChildren().clear();
         SprintAllTasksController foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
             private List<Task> tasks = allTasks;
+            private Sprint currentSprint = getModel();
             private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
             @Override
@@ -117,14 +117,13 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         break;
                     }
                     try {
-                        //Do not try and make this call injectTask as it doesn't work, I've tried.
                         threadTaskLoader.setRoot(null);
                         TaskEditor controller = new TaskEditor();
                         threadTaskLoader.setController(controller);
                         Parent view = threadTaskLoader.load();
                         controller.configure(task, false, view, foo);
                         Platform.runLater(() -> {
-                            if (!allTasks.equals(tasks)) {
+                            if (!getModel().equals(currentSprint)) {
                                 return;
                             }
                             tasksVBox.getChildren().add(view);

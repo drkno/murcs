@@ -179,11 +179,13 @@ public class TaskEditor {
     }
 
     private void updateAddAssigneesButton() {
-        Backlog backlog = (Backlog) UsageHelper.findUsages(getStory()).stream().filter(model -> model instanceof Backlog).findFirst().orElseGet(() -> null);
-        if (backlog != null) {
-            editAssignedButton.setDisable(false);
-            Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().get();
-            possibleAssignees = team.getMembers();
+        if (getStory() != null) {
+            Backlog backlog = (Backlog) UsageHelper.findUsages(getStory()).stream().filter(model -> model != null && model instanceof Backlog).findFirst().orElseGet(() -> null);
+            if (backlog != null) {
+                editAssignedButton.setDisable(false);
+                Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().get();
+                possibleAssignees = team.getMembers();
+            }
         }
         else {
             editAssignedButton.setDisable(true);
