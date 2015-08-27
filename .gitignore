@@ -85,3 +85,4 @@ release.properties
 *.toc
 *.gz
 doc/user_guide/main.pdf
+*.py

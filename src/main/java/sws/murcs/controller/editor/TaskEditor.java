@@ -7,7 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
@@ -17,14 +22,17 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.*;
+import sws.murcs.model.Person;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -68,7 +76,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     private AnchorPane editor;
 
     /**
-     * The grid pane containing the task
+     * The grid pane containing the task.
      */
     @FXML private GridPane taskGridPane;
 
@@ -176,6 +184,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             stateChoiceBox.getSelectionModel().select(newTask.getState());
             descriptionTextArea.setText(newTask.getDescription());
         }
+        updateStateChoiceBox((TaskState) stateChoiceBox.getValue());
         updateAssigneesLabel();
         updateAddAssigneesButton();
     }
@@ -211,6 +220,7 @@ public class TaskEditor implements UndoRedoChangeListener {
 
         // Check name
         String name = nameTextField.getText();
+        getStory().removeTask(getTask());
         if (name != null && !nameExists(name) && !name.isEmpty()) {
             if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
@@ -220,6 +230,11 @@ public class TaskEditor implements UndoRedoChangeListener {
             nameTextField.setText(task.getName());
             editorController.addFormError("tasks", nameTextField,
                     "Task names must be unique and have at least one character!");
+        }
+        try {
+            getStory().addTask(getTask());
+        } catch (Exception e) {
+            // This should seriously never ever happen
         }
 
         // Check estimate
@@ -238,11 +253,27 @@ public class TaskEditor implements UndoRedoChangeListener {
         if (state != task.getState()) {
             task.setState(state);
         }
+        updateStateChoiceBox(state);
 
         // Check description on maximized description field
         String description = descriptionTextArea.getText();
         if (!Objects.equals(description, task.getDescription())) {
             task.setDescription(description);
+        }
+    }
+
+    private void updateStateChoiceBox(TaskState state) {
+        if (state == TaskState.NotStarted) {
+            stateChoiceBox.getStyleClass().removeAll("in-progress", "done");
+            stateChoiceBox.getStyleClass().add("not-started");
+        }
+        else if (state == TaskState.InProgress) {
+            stateChoiceBox.getStyleClass().removeAll("not-started", "done");
+            stateChoiceBox.getStyleClass().add("in-progress");
+        }
+        else if (state == TaskState.Done) {
+            stateChoiceBox.getStyleClass().removeAll("not-started", "in-progress");
+            stateChoiceBox.getStyleClass().add("done");
         }
     }
 
@@ -252,7 +283,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * @return Whether a task already exists with that name
      */
     private boolean nameExists(final String name) {
-        return editorController.getTasks().stream().anyMatch(t -> t.getName().equals(name) && !t.equals(task));
+        return editorController.getTasks().stream().filter(task1 -> getStory().getTasks().contains(task1)).anyMatch(t -> t.getName().equals(name));
     }
 
     /**

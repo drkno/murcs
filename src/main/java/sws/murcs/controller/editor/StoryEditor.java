@@ -175,7 +175,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
         }
 
-        if (thread != null && thread.isAlive()) {
+        if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
             try {
                 thread.join();
@@ -209,47 +209,49 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        taskContainer.getChildren().clear();
-        StoryEditor foo = this;
-        javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
-            private Story model = getModel();
-            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        if (!isLoaded) {
+            taskContainer.getChildren().clear();
+            StoryEditor foo = this;
+            javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+                private Story model = getModel();
+                private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
-            @Override
-            protected Void call() throws Exception {
-                for (Task task : model.getTasks()) {
-                    if (stop) {
-                        break;
+                @Override
+                protected Void call() throws Exception {
+                    for (Task task : model.getTasks()) {
+                        if (stop) {
+                            break;
+                        }
+                        try {
+                            //Do not try and make this call injectTask as it doesn't work, I've tried.
+                            threadTaskLoader.setRoot(null);
+                            TaskEditor controller = new TaskEditor();
+                            threadTaskLoader.setController(controller);
+                            Parent view = threadTaskLoader.load();
+                            controller.configure(task, false, view, foo);
+                            Platform.runLater(() -> {
+                                if (!getModel().equals(model)) {
+                                    return;
+                                }
+                                taskContainer.getChildren().add(view);
+                            });
+                        }
+                        catch (Exception e) {
+                            ErrorReporter.get().reportError(e, "Unable to create new task");
+                        }
                     }
-                    try {
-                        //Do not try and make this call injectTask as it doesn't work, I've tried.
-                        threadTaskLoader.setRoot(null);
-                        TaskEditor controller = new TaskEditor();
-                        threadTaskLoader.setController(controller);
-                        Parent view = threadTaskLoader.load();
-                        controller.configure(task, false, view, foo);
-                        Platform.runLater(() -> {
-                            if (!getModel().equals(model)) {
-                                return;
-                            }
-                            taskContainer.getChildren().add(view);
-                        });
-                    }
-                    catch (Exception e) {
-                        ErrorReporter.get().reportError(e, "Unable to create new task");
-                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            protected void succeeded() {
-                isLoaded = true;
-            }
-        };
-        thread = new Thread(taskThread);
-        thread.setDaemon(true);
-        thread.start();
+                @Override
+                protected void succeeded() {
+                    isLoaded = true;
+                }
+            };
+            thread = new Thread(taskThread);
+            thread.setDaemon(true);
+            thread.start();
+        }
 
         // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
