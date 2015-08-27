@@ -206,19 +206,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     }
 
     @Override
-    public void removeTaskEditor(final Parent view) {
-    }
-
-    /**
-     * Overrides the addTask method in the TaskEditorParent interface as an empty function as the all
-     * tasks view does not support the addition of tasks.
-     * @param task the task to add, if we supported the adding of tasks.
-     */
-    @Override
-    public void addTask(final Task task) {
-    }
-
-    @Override
     public List<Task> getTasks() {
         return allTasks;
     }
@@ -323,7 +310,13 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      */
     private void addStoryContainers() {
         //Prepare yourself for the best oneliner in history :D
-        storyContainers.keySet().stream().sorted((o1, o2) -> { int o1Priority = getModel().getBacklog().getStoryPriority(o1); int o2Priority = getModel().getBacklog().getStoryPriority(o2); if (o1Priority < o2Priority) return -1; if (o1Priority > o2Priority) return 1; return 0; }).forEach(story -> tasksVBox.getChildren().add(storyContainers.get(story)));
+        storyContainers.keySet().stream().sorted((o1, o2) -> {
+            int o1Priority = getModel().getBacklog().getStoryPriority(o1);
+            int o2Priority = getModel().getBacklog().getStoryPriority(o2);
+            if (o1Priority < o2Priority) return -1;
+            if (o1Priority > o2Priority) return 1;
+            return 0;
+        }).forEach(story -> tasksVBox.getChildren().add(storyContainers.get(story)));
     }
 
     /**
@@ -331,10 +324,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      */
     private void clearStoryContainers() {
         storyContainers.values().forEach(titledPane -> ((VBox) titledPane.getContent()).getChildren().clear());
-    }
-
-    @Override
-    protected void saveChangesAndErrors() {
     }
 
     @FXML
@@ -516,6 +505,10 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             }
         }
         super.dispose();
+    }
+
+    @Override
+    protected void saveChangesAndErrors() {
     }
 
     /**
