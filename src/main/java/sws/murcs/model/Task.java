@@ -133,7 +133,7 @@ public class Task extends TrackableObject implements Serializable {
             //If the estimate date is after our last date and before the day we're looking for
             if ((estimateDate.isBefore(day)
                     && (lastDate == null || lastDate.isBefore(estimateDate)))
-                    || day.isEqual(day)) {
+                    || estimateDate.isEqual(day)) {
                 lastDate = estimateDate;
             }
         }
@@ -166,12 +166,12 @@ public class Task extends TrackableObject implements Serializable {
         for (LocalDate estimateDate : estimates.keySet()) {
             if ((estimateDate.isBefore(day)
                     && (previousEstimateDate == null || previousEstimateDate.isBefore(estimateDate)))
-                    || day.isEqual(day)) {
+                    || estimateDate.isEqual(day)) {
                 previousEstimateDate = estimateDate;
             }
         }
 
-        float difference = 0;
+        float difference = newEstimate;
         if (previousEstimateDate != null) {
             difference = newEstimate - estimates.get(previousEstimateDate);
         }
@@ -183,7 +183,7 @@ public class Task extends TrackableObject implements Serializable {
         for (LocalDate estimateDate : estimates.keySet()) {
             if (estimateDate.isAfter(day)) {
                 float currentEstimate = estimates.get(estimateDate);
-                estimates.put(estimateDate, currentEstimate - difference);
+                estimates.put(estimateDate, Math.max(0, currentEstimate + difference));
             }
         }
 
