@@ -61,6 +61,11 @@ public class TaskEditor implements UndoRedoChangeListener {
 
     private PopOver assigneePopOver;
 
+    /**
+     * The effort popover editor.
+     */
+    private PopOver effortPopOver;
+
     private List<Person> possibleAssignees;
 
     /**
@@ -342,7 +347,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     }
 
     /**
-     * The opens a new popover window to add and remove assigned people.
+     * Opens a new popover window to add and remove assigned people.
      * @param event An event, probably clicking.
      */
     @FXML
@@ -359,12 +364,38 @@ public class TaskEditor implements UndoRedoChangeListener {
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
             }
             catch (IOException e) {
-                ErrorReporter.get().reportError(e, "Could not create a assignee popover");
+                ErrorReporter.get().reportError(e, "Could not create an assignee popover");
             }
         }
 
         assigneePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
         assigneePopOver.show(editAssignedButton);
+    }
+
+    /**
+     * Opens the window for logging effort.
+     * @param event The event that called this method
+     */
+    @FXML
+    private void logEffortButtonClick(final ActionEvent event) {
+        if (effortPopOver == null) {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
+
+            try {
+                Parent parent = loader.load();
+                effortPopOver = new PopOver(parent);
+                EffortController controller = loader.getController();
+                controller.setUp(this, possibleAssignees);
+                effortPopOver.hideOnEscapeProperty().setValue(true);
+            }
+            catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create an effort popover");
+            }
+        }
+
+        effortPopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+        effortPopOver.show(editAssignedButton);
     }
 
     public void addAssignee(Person assignee) {

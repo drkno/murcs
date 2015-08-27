@@ -96,7 +96,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     /**
-     * Loads this sprints burndown chart into the burndown tab.
+     * Loads this sprints burn down chart into the burn down tab.
      */
     @FXML
     private void burnDownChartTabSelected() {
