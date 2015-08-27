@@ -17,17 +17,15 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.
@@ -184,18 +182,15 @@ public class TaskEditor implements UndoRedoChangeListener {
 
     private void updateAddAssigneesButton() {
         if (getStory() != null) {
-            Backlog backlog = (Backlog) UsageHelper.findUsages(getStory()).stream().filter(model -> model instanceof Backlog).findFirst().orElseGet(() -> null);
-            if (backlog != null && backlog.getAssignedPO() != null) {
-                editAssignedButton.setDisable(false);
-                Team team = (Team) UsageHelper.findUsages(backlog.getAssignedPO()).stream().filter(model -> model instanceof Team).findFirst().orElseGet(() -> null);
-                if (team != null) {
-                    possibleAssignees = team.getMembers();
-                    return;
-                }
+            possibleAssignees = new ArrayList<>();
+            List<Sprint> sprints = UsageHelper.findUsages(getStory()).stream().filter(model -> model instanceof Sprint).map(model -> (Sprint) model).collect(Collectors.toList());
+            if (sprints.size() > 0) {
+                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+                return;
             }
         }
         editAssignedButton.setDisable(true);
-        assigneesLabel.setText("To add assignees this story must be in a backlog with an assigned PO");
+        assigneesLabel.setText("To add assignees this story must be in a sprint with a team assigned to it");
     }
 
     private void updateAssigneesLabel() {

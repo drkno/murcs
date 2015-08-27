@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 
@@ -116,6 +117,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 AnchorPane.setBottomAnchor(view, 0.0);
                 allTasksController = loader.getController();
                 allTasksController.setModel(getModel());
+                allTasksController.setNavigationManager(getNavigationManager());
                 allTasksController.loadObject();
             } catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
@@ -148,5 +150,14 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.dispose();
         }
         //Makes sure to add dispose methods for the other tabs.
+    }
+
+    @Override
+    public void setNavigationManager(Navigable navigationManager) {
+        overviewEditor.setNavigationManager(navigationManager);
+        if (allTasksController != null) {
+            allTasksController.setNavigationManager(navigationManager);
+        }
+        super.setNavigationManager(navigationManager);
     }
 }
