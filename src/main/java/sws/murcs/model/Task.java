@@ -183,6 +183,7 @@ public class Task extends TrackableObject implements Serializable {
         for (LocalDate estimateDate : estimates.keySet()) {
             if (estimateDate.isAfter(day)) {
                 float currentEstimate = estimates.get(estimateDate);
+                //Make sure we only have positive or zero estimates
                 estimates.put(estimateDate, Math.max(0, currentEstimate + difference));
             }
         }
