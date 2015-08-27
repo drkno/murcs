@@ -1,17 +1,14 @@
 package sws.murcs.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.apache.commons.collections.map.HashedMap;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 
@@ -47,16 +44,16 @@ public class Task extends TrackableObject implements Serializable {
     private TaskState state;
 
     /**
+     * The estimated time for this task.
+     */
+    @TrackableValue
+    private TimeEstimate estimate = new TimeEstimate();
+
+    /**
      * The people who are assigned to the task. These may just be the people overseeing its
      * completion.
      */
     private Collection<Person> assignees = new ArrayList<>();
-
-    /**
-     * A map of the time remaining on specific days
-     */
-    @TrackableValue
-    private Map<LocalDate, Float> estimates = new HashedMap();
 
     /**
      * The effort people have logged against this task.
@@ -115,88 +112,20 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the estimate for the current day.
-     * @return The estimate for today
+     * Gets the estimated time remaining for the task
+     * at the current date.
+     * @return The estimated time remaining.
      */
-    public final float getEstimate() {
-        return getEstimate(LocalDate.now());
+    public float getEstimate() {
+        return estimate.getEstimate();
     }
 
     /**
-     * Gets the current estimate for the task. This is given in hours.
-     * @param day The day to get the estimate for
-     * @return The current estimate for the task in hours.
+     * Sets the estimated time remaining for the task
+     * @param newEstimate The estimated time remaining
      */
-    public final float getEstimate(final LocalDate day) {
-        LocalDate lastDate = null;
-        for (LocalDate estimateDate : estimates.keySet()) {
-            //If the estimate date is after our last date and before the day we're looking for
-            if ((estimateDate.isBefore(day)
-                    && (lastDate == null || lastDate.isBefore(estimateDate)))
-                    || estimateDate.isEqual(day)) {
-                lastDate = estimateDate;
-            }
-        }
-
-        //If this day is before we have any estimates, return 0. Otherwise return the last
-        //date before the day we asked for
-        if (lastDate != null) {
-            return estimates.get(lastDate);
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * Updates the estimate for the current day.
-     * @param newEstimate The new estimate for today
-     */
-    public final void setEstimate(final float newEstimate) {
-        setEstimate(newEstimate, LocalDate.now());
-    }
-
-    /**
-     * Sets the estimate for the task in hours.
-     * @param newEstimate The new estimate for the task.
-     * @param day The day you want to change the estimate for.
-     */
-    public final void setEstimate(final float newEstimate, final LocalDate day) {
-        LocalDate previousEstimateDate = null;
-
-        for (LocalDate estimateDate : estimates.keySet()) {
-            if ((estimateDate.isBefore(day)
-                    && (previousEstimateDate == null || previousEstimateDate.isBefore(estimateDate)))
-                    || estimateDate.isEqual(day)) {
-                previousEstimateDate = estimateDate;
-            }
-        }
-
-        float difference = newEstimate;
-        if (previousEstimateDate != null) {
-            difference = newEstimate - estimates.get(previousEstimateDate);
-        }
-
-        //Either update the estimate or add in the new estimate
-        estimates.put(day, newEstimate);
-
-        //Update all the estimates after our new one
-        for (LocalDate estimateDate : estimates.keySet()) {
-            if (estimateDate.isAfter(day)) {
-                float currentEstimate = estimates.get(estimateDate);
-                //Make sure we only have positive or zero estimates
-                estimates.put(estimateDate, Math.max(0, currentEstimate + difference));
-            }
-        }
-
-        commit("edit task");
-    }
-
-    /**
-     * Returns a list of all estimates for the task and their associated date.
-     * @return The estimates
-     */
-    public Map<LocalDate, Float> getEstimates() {
-        return estimates;
+    public void setEstimate(final float newEstimate) {
+        this.estimate.setEstimate(newEstimate);
     }
 
     /**

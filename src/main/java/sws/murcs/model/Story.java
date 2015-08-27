@@ -1,23 +1,22 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.CyclicDependencyException;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.helpers.DependenciesHelper;
-import sws.murcs.search.Searchable;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
+import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
 
 /**
  * A class representing a story in the backlog for a project.
