@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 /**
  * A class for keeping track of a Task within a story.
@@ -62,6 +63,13 @@ public class Task extends TrackableObject implements Serializable {
      */
     @TrackableValue
     private List<Effort> effortLogs = new ArrayList<>();
+
+    /**
+     * Creates a new task.
+     */
+    public Task() {
+        UndoRedoManager.add(estimateInfo);
+    }
 
     /**
      * Gets this tasks name.

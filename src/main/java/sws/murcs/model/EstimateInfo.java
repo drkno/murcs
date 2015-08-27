@@ -26,7 +26,7 @@ public class EstimateInfo extends TrackableObject {
      * Creates a new time estimate.
      */
     public EstimateInfo() {
-        UndoRedoManager.add(this);
+
     }
 
     /**
