@@ -66,7 +66,7 @@ public class EstimateInfo extends TrackableObject {
      * Updates the estimate for the current day.
      * @param newEstimate The new estimate for today
      */
-    public final void setEstimateForDay(final float newEstimate) {
+    public final void setCurrentEstimate(final float newEstimate) {
         setEstimateForDay(newEstimate, LocalDate.now());
     }
 
@@ -76,7 +76,8 @@ public class EstimateInfo extends TrackableObject {
      * @param day The day to add the amount to
      */
     public final void addToEstimateForDay(final float amount, final LocalDate day) {
-        setEstimateForDay(amount, day);
+        float newEstimate = getEstimateForDay(day) + amount;
+        setEstimateForDay(newEstimate, day);
     }
 
     /**
@@ -84,7 +85,7 @@ public class EstimateInfo extends TrackableObject {
      * @param newEstimate The new estimate for the task.
      * @param day The day you want to change the estimate for.
      */
-    private final void setEstimateForDay(final float newEstimate, final LocalDate day) {
+    public final void setEstimateForDay(final float newEstimate, final LocalDate day) {
         LocalDate previousEstimateDate = null;
 
         for (LocalDate estimateDate : estimates.keySet()) {

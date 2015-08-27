@@ -16,7 +16,7 @@ public class EstimateInfoTest {
         UndoRedoManager.setDisabled(true);
 
         estimate = new EstimateInfo();
-        estimate.setEstimate(1, LocalDate.of(2001, 1, 1));
+        estimate.setEstimateForDay(1, LocalDate.of(2001, 1, 1));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class EstimateInfoTest {
 
     @Test
     public void setEstimateTest() throws Exception {
-        estimate.setEstimateForDay(5);
+        estimate.setCurrentEstimate(5);
         assertEquals(5, estimate.getCurrentEstimate(), 0.1);
     }
 
@@ -44,23 +44,23 @@ public class EstimateInfoTest {
         assertEquals(1, estimate.getCurrentEstimate(), 0.1);
 
         //Should add ten to all estimates Jan 1, 2000
-        estimate.setEstimate(10, date);
+        estimate.setEstimateForDay(10, date);
 
         assertEquals(10f, estimate.getEstimateForDay(date), 0.1);
         assertEquals(11f, estimate.getEstimateForDay(LocalDate.of(2001, 1, 1)), 0.1);
         assertEquals(11f, estimate.getCurrentEstimate(), 0.1);
 
         //Shouldn't change anything apart from our estimate for today
-        estimate.setEstimateForDay(1);
+        estimate.setCurrentEstimate(1);
         assertEquals(10, estimate.getEstimateForDay(date), 0.1);
         assertEquals(11, estimate.getEstimateForDay(LocalDate.of(2001, 1, 1)), 0.1);
         assertEquals(1, estimate.getCurrentEstimate(), 0.1);
 
-        estimate.setEstimate(6, LocalDate.of(2003, 1, 1));
+        estimate.setEstimateForDay(6, LocalDate.of(2003, 1, 1));
         assertEquals(6, estimate.getEstimateForDay(LocalDate.of(2003, 1, 1)), 0.1);
 
         //Set this to six, meaning we should subtract (6 - 11) from all estimates after this one
-        estimate.setEstimate(6, LocalDate.of(2002, 1, 1));
+        estimate.setEstimateForDay(6, LocalDate.of(2002, 1, 1));
 
         assertEquals(6, estimate.getEstimateForDay(LocalDate.of(2002, 1, 1)), 0.1);
         assertEquals(1, estimate.getEstimateForDay(LocalDate.of(2003, 1, 1)), 0.1);
@@ -83,15 +83,15 @@ public class EstimateInfoTest {
         dates[5] = LocalDate.of(year, month, 6);
 
         EstimateInfo first = new EstimateInfo();
-        first.setEstimate(5, dates[0]);
-        first.setEstimate(7, dates[1]);
-        first.setEstimate(9, dates[4]);
+        first.setEstimateForDay(5, dates[0]);
+        first.setEstimateForDay(7, dates[1]);
+        first.setEstimateForDay(9, dates[4]);
 
         EstimateInfo second = new EstimateInfo();
-        second.setEstimate(7, dates[2]);
-        second.setEstimate(6, dates[3]);
-        second.setEstimate(8, dates[4]);
-        second.setEstimate(3, dates[5]);
+        second.setEstimateForDay(7, dates[2]);
+        second.setEstimateForDay(6, dates[3]);
+        second.setEstimateForDay(8, dates[4]);
+        second.setEstimateForDay(3, dates[5]);
 
         EstimateInfo firstMerged = new EstimateInfo();
         firstMerged.mergeIn(first, second);

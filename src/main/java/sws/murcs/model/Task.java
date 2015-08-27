@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -133,7 +134,7 @@ public class Task extends TrackableObject implements Serializable {
      * @param newEstimate The estimated time remaining
      */
     public void setCurrentEstimate(final float newEstimate) {
-        this.estimateInfo.setEstimateForDay(newEstimate);
+        this.estimateInfo.setEstimateForDay(newEstimate, LocalDate.now());
     }
 
     /**
