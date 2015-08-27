@@ -295,7 +295,6 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     BacklogGenerator.HIGH_STRESS_MAX);
             List<Backlog> backlogs = generateItems(backlogGenerator, min, max)
                     .stream().map(m -> (Backlog) m).collect(Collectors.toList());
-            List<Story> unsafeStories = backlogGenerator.getUnsafeStories();
 
             sprintGenerator.setReleasePool(releases);
             sprintGenerator.setBacklogPool(backlogs);

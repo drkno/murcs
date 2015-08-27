@@ -19,8 +19,6 @@ import sws.murcs.model.ModelType;
 
 import java.util.List;
 
-import java.util.List;
-
 /**
  * Controller for the toolbar.
  */

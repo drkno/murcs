@@ -192,10 +192,18 @@ public class Task extends TrackableObject implements Serializable {
         return state + " (" + estimate + "): " + name + " - " + description;
     }
 
+    /**
+     * Gets the list of all the people assigned to the task.
+     * @return
+     */
     public Collection<Person> getAssignees() {
         return assignees;
     }
 
+    /**
+     * Gets a string representation of all the people assigned to the task.
+     * @return all the people assigned to the task seperated by a comma.
+     */
     public String getAssigneesAsString() {
         return assignees.stream().map(Person::getShortName).collect(Collectors.joining(", "));
     }

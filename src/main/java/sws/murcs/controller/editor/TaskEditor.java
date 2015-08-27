@@ -65,8 +65,14 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     private boolean descriptionVisible;
 
+    /**
+     * The popover that is used for adding and removing assignees.
+     */
     private PopOver assigneePopOver;
 
+    /**
+     * The list of people who can possibly be added as assignees to the task.
+     */
     private List<Person> possibleAssignees;
 
     /**
@@ -190,10 +196,18 @@ public class TaskEditor implements UndoRedoChangeListener {
         updateAddAssigneesButton();
     }
 
+    /**
+     * Updates whether or not you should be able to set assignees for the task, based on if there are any possible
+     * people that you can have as assignees. These are people who are in any of the teams that are assigned to any of
+     * the sprints the story is in.
+     */
     private void updateAddAssigneesButton() {
         if (getStory() != null) {
             possibleAssignees = new ArrayList<>();
-            List<Sprint> sprints = UsageHelper.findUsages(getStory()).stream().filter(model -> model instanceof Sprint).map(model -> (Sprint) model).collect(Collectors.toList());
+            List<Sprint> sprints = UsageHelper.findUsages(getStory())
+                    .stream()
+                    .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
+                    .collect(Collectors.toList());
             if (sprints.size() > 0) {
                 sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
                 return;
@@ -203,6 +217,9 @@ public class TaskEditor implements UndoRedoChangeListener {
         assigneesLabel.setText("To add assignees this story must be in a sprint with a team assigned to it");
     }
 
+    /**
+     * Updates the assignees label to display all the current assigness as a list.
+     */
     private void updateAssigneesLabel() {
         if (task.getAssignees().size() > 0) {
             assigneesLabel.setText(task.getAssigneesAsString());
@@ -263,7 +280,12 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
     }
 
-    private void updateStateChoiceBox(TaskState state) {
+    /**
+     * Updates the style that should be applied to the task state choice box depending on the state that it is
+     * in.
+     * @param state the state that it is in.
+     */
+    private void updateStateChoiceBox(final TaskState state) {
         if (state == TaskState.NotStarted) {
             stateChoiceBox.getStyleClass().removeAll("in-progress", "done");
             stateChoiceBox.getStyleClass().add("not-started");
@@ -284,7 +306,15 @@ public class TaskEditor implements UndoRedoChangeListener {
      * @return Whether a task already exists with that name
      */
     private boolean nameExists(final String name) {
-        return editorController.getTasks().stream().filter(task1 -> getStory().getTasks().contains(task1)).filter(task2 -> !task2.equals(task)).anyMatch(t -> t.getName().equals(name));
+        return editorController.getTasks()
+                .stream()
+                //First filters it down to just the tasks that belong to the same story as the current task.
+                .filter(task1 -> getStory().getTasks().contains(task1))
+                //Now remove the current task from this list using equals (as this checks for complete equality,
+                //not just the name).
+                .filter(task2 -> !task2.equals(task))
+                //Now see if there are any with the same name.
+                .anyMatch(t -> t.getName().equals(name));
     }
 
     /**
@@ -394,28 +424,44 @@ public class TaskEditor implements UndoRedoChangeListener {
         assigneePopOver.show(editAssignedButton);
     }
 
-    public void addAssignee(Person assignee) {
+    /**
+     * Adss an assignee to the task and updates the assignee label to display it.
+     * @param assignee the assignee to add to the task.
+     */
+    public void addAssignee(final Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
         editorController.changesMade(this);
     }
 
-    public void removeAssignee(Person assignee) {
+    /**
+     * Removes the given person from the assignees of the task.
+     * @param assignee the assignee to remove from the task.
+     */
+    public void removeAssignee(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
         editorController.changesMade(this);
     }
 
+    /**
+     * Gets the task that is associated with this task editor.
+     * @return the task associated with this task editor.
+     */
     public Task getTask() {
         return task;
     }
 
+    /**
+     * Gets the story that the task associated with this editor is a part of.
+     * @return The story that this task is a part of.
+     */
     public Story getStory() {
         return editorController.getAssociatedStory(task);
     }
 
     @Override
-    public void undoRedoNotification(ChangeState param) {
+    public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             synchronized (StyleManager.getInstance()) {
                 configure(task, creationBox, parent, editorController);
@@ -423,6 +469,10 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
     }
 
+    /**
+     * Gets the node that is the parent of this editor.
+     * @return the parent of the editor.
+     */
     public Node getParent() {
         return parent;
     }

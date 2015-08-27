@@ -47,6 +47,9 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public static final int HIGH_STRESS_MIN = 6;
 
+    /**
+     * Indicator used for stories that arise with duplicate names.
+     */
     private static int indicator = 0;
 
 
@@ -216,9 +219,5 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public void setUnsafeStories(final List<Story> unsafeStories) {
         unsafeStoryPool = unsafeStories;
-    }
-
-    public List<Story> getUnsafeStories() {
-        return unsafeStoryPool;
     }
 }

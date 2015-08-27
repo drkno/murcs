@@ -1,14 +1,12 @@
 package sws.murcs.controller.editor;
 
-import javafx.event.ActionEvent;
-import javafx.event.Event;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
-import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -34,13 +32,20 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @FXML
     private TabPane containerTabPane;
 
-    @FXML AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
+    /**
+     * The anchor panges where the content for each tab is.
+     */
+    @FXML
+    private AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
 
     /**
      * The editor of the overview.
      */
     private SprintEditor overviewEditor;
 
+    /**
+     * The controller for the all tasks view in the sprint.
+     */
     private SprintAllTasksController allTasksController;
 
     /**
@@ -92,7 +97,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
 
-    private void tabSelectionChanged(Tab tab) {
+    /**
+     * Called when the tab selected is changed.
+     * @param tab the new tab that has been selected.
+     */
+    private void tabSelectionChanged(final Tab tab) {
         if (tab.equals(overviewTab)) {
             overviewTabSelected();
         }
@@ -131,6 +140,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
         // Currently doesn't do anything as there is no burndown chart to load
     }
 
+    /**
+     * Called when the all tasks tab has been selected.
+     */
     private void allTasksTabSelected() {
         if (allTasksController == null) {
             try {
@@ -187,7 +199,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     @Override
-    public void setNavigationManager(Navigable navigationManager) {
+    public void setNavigationManager(final Navigable navigationManager) {
         overviewEditor.setNavigationManager(navigationManager);
         if (allTasksController != null) {
             allTasksController.setNavigationManager(navigationManager);

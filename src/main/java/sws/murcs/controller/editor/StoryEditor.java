@@ -838,12 +838,12 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     }
 
     @Override
-    public Story getAssociatedStory(Task task) {
+    public Story getAssociatedStory(final Task task) {
         return getModel();
     }
 
     @Override
-    public void changesMade(TaskEditor editor) {
+    public void changesMade(final TaskEditor editor) {
         //We do not care if changes are made in this editor.
     }
 
