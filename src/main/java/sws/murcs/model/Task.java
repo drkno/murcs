@@ -1,18 +1,19 @@
 package sws.murcs.model;
 
-import sws.murcs.magic.tracking.TrackableObject;
-import sws.murcs.magic.tracking.TrackableValue;
-
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import org.apache.commons.collections.map.HashedMap;
+import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
 
 /**
  * A class for keeping track of a Task within a story.
@@ -40,12 +41,6 @@ public class Task extends TrackableObject implements Serializable {
     private String description;
 
     /**
-     * The estimate in hours for the time it will take to complete the task.
-     */
-    @TrackableValue
-    private float estimate;
-
-    /**
      * The state that the task is currently in.
      */
     @TrackableValue
@@ -56,6 +51,12 @@ public class Task extends TrackableObject implements Serializable {
      * completion.
      */
     private Collection<Person> assignees = new ArrayList<>();
+
+    /**
+     * A map of the time remaining on specific days
+     */
+    @TrackableValue
+    private Map<LocalDate, Float> estimates = new HashedMap();
 
     /**
      * The effort people have logged against this task.
@@ -114,20 +115,79 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the current estimate for the task. This is given in hours.
-     * @return The current estimate for the task in hours.
+     * Gets the estimate for the current day.
+     * @return The estimate for today
      */
     public final float getEstimate() {
-        return estimate;
+        return getEstimate(LocalDate.now());
+    }
+
+    /**
+     * Gets the current estimate for the task. This is given in hours.
+     * @param day The day to get the estimate for
+     * @return The current estimate for the task in hours.
+     */
+    public final float getEstimate(final LocalDate day) {
+        LocalDate lastDate = null;
+        for (LocalDate estimateDate : estimates.keySet()) {
+            //If the estimate date is after our last date and before the day we're looking for
+            if ((estimateDate.isBefore(day)
+                    && (lastDate == null || lastDate.isBefore(estimateDate)))
+                    || day.isEqual(day)) {
+                lastDate = estimateDate;
+            }
+        }
+
+        //If this day is before we have any estimates, return 0. Otherwise return the last
+        //date before the day we asked for
+        if (lastDate != null) {
+            return estimates.get(lastDate);
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Updates the estimate for the current day.
+     * @param newEstimate The new estimate for today
+     */
+    public final void setEstimate(final float newEstimate) {
+        setEstimate(newEstimate, LocalDate.now());
     }
 
     /**
      * Sets the estimate for the task in hours.
      * @param newEstimate The new estimate for the task.
+     * @param day The day you want to change the estimate for.
      */
-    public final void setEstimate(final float newEstimate) {
-        estimate = newEstimate;
-        commit("edit Task");
+    public final void setEstimate(final float newEstimate, final LocalDate day) {
+        LocalDate previousEstimateDate = null;
+
+        for (LocalDate estimateDate : estimates.keySet()) {
+            if ((estimateDate.isBefore(day)
+                    && (previousEstimateDate == null || previousEstimateDate.isBefore(estimateDate)))
+                    || day.isEqual(day)) {
+                previousEstimateDate = estimateDate;
+            }
+        }
+
+        float difference = 0;
+        if (previousEstimateDate != null) {
+            difference = newEstimate - estimates.get(previousEstimateDate);
+        }
+
+        //Either update the estimate or add in the new estimate
+        estimates.put(day, newEstimate);
+
+        //Update all the estimates after our new one
+        for (LocalDate estimateDate : estimates.keySet()) {
+            if (estimateDate.isAfter(day)) {
+                float currentEstimate = estimates.get(estimateDate);
+                estimates.put(estimateDate, currentEstimate - difference);
+            }
+        }
+
+        commit("edit task");
     }
 
     /**
@@ -182,7 +242,7 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final String toString() {
-        return state + " (" + estimate + "): " + name + " - " + description;
+        return state + " (" + getEstimate() + "): " + name + " - " + description;
     }
 
     public Collection<Person> getAssignees() {
