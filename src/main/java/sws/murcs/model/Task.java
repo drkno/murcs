@@ -48,7 +48,7 @@ public class Task extends TrackableObject implements Serializable {
      * The state that the task is currently in.
      */
     @TrackableValue
-    private TaskState state;
+    private TaskState state = TaskState.NotStarted;
 
     /**
      * The people who are assigned to the task. These may just be the people overseeing its
@@ -170,7 +170,7 @@ public class Task extends TrackableObject implements Serializable {
         if (!same) return same;
         same = ((Task) object).getEstimate() == getEstimate();
         if (!same) return same;
-        same = ((Task) object).getDescription().equals(getDescription());
+        same = Objects.equals(((Task) object).getDescription(), getDescription());
         if (!same) return same;
         same = ((Task) object).getState().equals(getState());
         if (!same) return same;
