@@ -1,16 +1,15 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
+import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
-
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Controller for logging effort on a task.
@@ -51,12 +50,16 @@ public class EffortController {
      */
     private List<Person> eligibleWorkers;
 
+    private Effort effort;
+
     /**
      * Sets up the effort controller.
      * @param parent The parent editor
      * @param people A list of people allowed to log time for this task
      */
     public void setUp(final TaskEditor parent, final List<Person> people) {
+        effort = new Effort();
+
         parentEditor = parent;
         datePicker.setValue(LocalDate.now());
         eligibleWorkers = people;
@@ -68,6 +71,6 @@ public class EffortController {
      */
     @FXML
     private void addButtonClick(final ActionEvent event) {
-        
+        //parentEditor.getTask().logEffort(effort);
     }
 }
