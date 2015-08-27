@@ -192,6 +192,14 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
+     * Returns a list of all estimates for the task and their associated date.
+     * @return The estimates
+     */
+    public Map<LocalDate, Float> getEstimates() {
+        return estimates;
+    }
+
+    /**
      * Adds a given person to the list of people assigned to the task.
      * @param assignee The person to be assigned to the task.
      */
