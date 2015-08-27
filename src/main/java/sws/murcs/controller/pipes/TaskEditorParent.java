@@ -1,6 +1,7 @@
 package sws.murcs.controller.pipes;
 
 import javafx.scene.Parent;
+import sws.murcs.controller.editor.TaskEditor;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
@@ -17,4 +18,6 @@ public interface TaskEditorParent extends FormErrors {
     List<Task> getTasks();
 
     Story getAssociatedStory(Task task);
+
+    void changesMade(TaskEditor editor);
 }

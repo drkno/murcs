@@ -97,7 +97,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * The top toolbar and menu container.
      */
     @FXML
-    private VBox vBoxSideDisplay, titleVBox;
+    private VBox titleVBox;
 
     /**
      * The main tab pane (where everything goes). We have to build

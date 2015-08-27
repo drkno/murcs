@@ -182,8 +182,7 @@ public class Task extends TrackableObject implements Serializable {
     public final int hashCode() {
         int c = 0;
         if (getName() != null) {
-            c = getName().hashCode() + (int) getEstimate() + getAssigneesAsString().hashCode()
-                    + getDescription().hashCode() + getState().hashCode();
+            c = getName().hashCode();
         }
         return hashCodePrime + c;
     }

@@ -218,12 +218,13 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void saveChanges() {
         editorController.clearErrors("tasks");
-
+        boolean changes = false;
         // Check name
         String name = nameTextField.getText();
         if (name != null && !nameExists(name) && !name.isEmpty()) {
             if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
+                changes = true;
             }
         }
         else {
@@ -237,6 +238,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             Float estimate = Float.parseFloat(estimateTextField.getText());
             if (estimate != task.getEstimate()) {
                 task.setEstimate(estimate);
+                changes = true;
             }
         }
         catch (NumberFormatException e) {
@@ -247,12 +249,17 @@ public class TaskEditor implements UndoRedoChangeListener {
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
         if (state != task.getState()) {
             task.setState(state);
+            changes = true;
         }
 
         // Check description on maximized description field
         String description = descriptionTextArea.getText();
         if (!Objects.equals(description, task.getDescription())) {
             task.setDescription(description);
+        }
+
+        if (changes) {
+            editorController.changesMade(this);
         }
     }
 
@@ -390,11 +397,13 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void addAssignee(Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
+        editorController.changesMade(this);
     }
 
     public void removeAssignee(Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
+        editorController.changesMade(this);
     }
 
     public Task getTask() {

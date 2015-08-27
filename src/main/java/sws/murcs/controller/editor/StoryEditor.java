@@ -842,6 +842,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         return getModel();
     }
 
+    @Override
+    public void changesMade(TaskEditor editor) {
+        //We do not care if changes are made in this editor.
+    }
+
     /**
      * Removes a task from this story.
      * @param task The task to remove

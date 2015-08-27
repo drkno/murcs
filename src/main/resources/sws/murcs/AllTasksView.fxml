@@ -31,7 +31,7 @@
             <ChoiceBox fx:id="orderingChoiceBox" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label text="Group By" GridPane.columnIndex="1" />
             <Label text="Order By" GridPane.columnIndex="2" />
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+            <ScrollPane fx:id="tasksScrollPane" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
                <content>
                   <VBox fx:id="tasksVBox" />
                </content>

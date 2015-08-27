@@ -140,7 +140,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Updates the form with an undo redo notification.
      * @param param event arguments.
      */
-    public final void undoRedoNotification(final ChangeState param) {
+    public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             synchronized (StyleManager.getInstance()) {
                 loadObject();

@@ -3,9 +3,11 @@ package sws.murcs.controller.editor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.TaskEditorParent;
@@ -34,7 +36,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         Alphabetical,
         Estimate,
         State,
-        None
+        Obfuscation
     }
 
     private Map<Story, TitledPane> storyContainers;
@@ -56,6 +58,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @FXML
     private VBox tasksVBox;
+
+    @FXML
+    private ScrollPane tasksScrollPane;
 
     private Thread thread;
 
@@ -100,6 +105,25 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         return getModel().getStories().stream().filter(story -> story.getTasks().contains(task)).findFirst().orElseGet(() -> null);
     }
 
+    @Override
+    public void changesMade(TaskEditor editor) {
+        //getChangeListener().changed();
+        tasksVBox.getChildren().clear();
+        clearStoryContainers();
+        sortAllTasks(currentOrderBy);
+        updateAndAddVisibleNodes(currentFilterBy);
+        double yPos;
+        if (currentGroupBy == GroupBy.Story) {
+            addStoryContainers();
+            yPos = editor.getParent().getBoundsInParent().getMinY() + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
+        }
+        else {
+            yPos = editor.getParent().getBoundsInParent().getMinY();
+        }
+        double ratio = yPos / tasksVBox.getBoundsInParent().getMaxY();
+        Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
+    }
+
 
     @Override
     public void loadObject() {
@@ -116,8 +140,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         currentFilterBy = FilterBy.All;
         groupingChoiceBox.setValue(GroupBy.None);
         currentGroupBy = GroupBy.None;
-        orderingChoiceBox.setValue(OrderBy.None);
-        currentOrderBy = OrderBy.None;
+        orderingChoiceBox.setValue(OrderBy.Obfuscation);
+        currentOrderBy = OrderBy.Obfuscation;
         addListeners();
         stop = false;
         allTasks = new ArrayList<>();
@@ -212,22 +236,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             if (isLoaded) {
                 tasksVBox.getChildren().clear();
                 clearStoryContainers();
-                if (newValue == OrderBy.Alphabetical) {
-                    allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
-                }
-                else if (newValue == OrderBy.Estimate) {
-                    allTasks.sort((o1, o2) -> {
-                        if (o1.getEstimate() > o2.getEstimate()) return 1;
-                        if (o1.getEstimate() < o2.getEstimate()) return -1;
-                        return 0;
-                    });
-                }
-                else if (newValue == OrderBy.State) {
-                    allTasks.sort((o1, o2) -> o1.getState().compareTo(o2.getState()));
-                }
-                else {
-                    Collections.shuffle(allTasks);
-                }
+                sortAllTasks(newValue);
                 for (Task task : allTasks) {
                     if (visibleTasks.contains(task)) {
                         addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
@@ -238,6 +247,25 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                     addStoryContainers();
                 }
             }
+        }
+    }
+
+    private void sortAllTasks(OrderBy newValue) {
+        if (newValue == OrderBy.Alphabetical) {
+            allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+        }
+        else if (newValue == OrderBy.Estimate) {
+            allTasks.sort((o1, o2) -> {
+                if (o1.getEstimate() > o2.getEstimate()) return 1;
+                if (o1.getEstimate() < o2.getEstimate()) return -1;
+                return 0;
+            });
+        }
+        else if (newValue == OrderBy.State) {
+            allTasks.sort((o1, o2) -> o1.getState().compareTo(o2.getState()));
+        }
+        else {
+            Collections.shuffle(allTasks);
         }
     }
 
@@ -256,39 +284,36 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             if (isLoaded) {
                 tasksVBox.getChildren().clear();
                 clearStoryContainers();
-                visibleTasks.clear();
-                if (newValue == FilterBy.Allocated) {
-                    allTasks.forEach(task -> {
-                        if (task.isAllocated()) {
-                            visibleTasks.add(task);
-                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
-                        }
-                        else {
-                            visibleTasks.remove(task);
-                        }
-                    });
-                }
-                else if (newValue == FilterBy.Unallocated) {
-                    allTasks.forEach(task -> {
-                        if (!task.isAllocated()) {
-                            visibleTasks.add(task);
-                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
-                        }
-                        else {
-                            visibleTasks.remove(task);
-                        }
-                    });
-                }
-                else {
-                    visibleTasks.clear();
-                    visibleTasks.addAll(allTasks);
-                    allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null));
-                }
+                updateAndAddVisibleNodes(newValue);
 
                 if (currentGroupBy == GroupBy.Story) {
                     addStoryContainers();
                 }
             }
+        }
+    }
+
+    private void updateAndAddVisibleNodes(FilterBy newValue) {
+        visibleTasks.clear();
+        if (newValue == FilterBy.Allocated) {
+            allTasks.forEach(task -> {
+                if (task.isAllocated()) {
+                    visibleTasks.add(task);
+                    addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
+                }
+            });
+        }
+        else if (newValue == FilterBy.Unallocated) {
+            allTasks.forEach(task -> {
+                if (!task.isAllocated()) {
+                    visibleTasks.add(task);
+                    addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
+                }
+            });
+        }
+        else {
+            visibleTasks.addAll(allTasks);
+            allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null));
         }
     }
 
@@ -380,5 +405,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
             }
         }
+    }
+
+    public List<Story> currentStories() {
+        return storyContainers.keySet().stream().collect(Collectors.toList());
     }
 }

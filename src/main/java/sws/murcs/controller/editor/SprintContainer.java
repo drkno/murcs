@@ -1,15 +1,21 @@
 package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+
+import java.util.ArrayList;
 
 /**
  * Controller for SprintContainer.
@@ -20,7 +26,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * The three tabs used to view a sprint.
      */
     @FXML
-    private Tab overviewTab, scrumBoardTab, burnDownChartTab;
+    private Tab overviewTab, scrumBoardTab, burnDownChartTab, allTasksTab;
 
     /**
      * The tab pane that the tabs sit in.
@@ -46,6 +52,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
 
     @Override
     protected final void initialize() {
+        containerTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.equals(oldValue)) {
+                tabSelectionChanged(newValue);
+            }
+        });
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
@@ -73,6 +84,25 @@ public class SprintContainer extends GenericEditor<Sprint> {
             burnDownChartTabSelected();
         }
         else if (tab == 3) {
+            if (!isLoaded) {
+                allTasksTabSelected();
+            }
+        }
+        isLoaded = true;
+    }
+
+
+    private void tabSelectionChanged(Tab tab) {
+        if (tab.equals(overviewTab)) {
+            overviewTabSelected();
+        }
+        else if (tab.equals(scrumBoardTab)) {
+            scrumBoardTabSelected();
+        }
+        else if (tab.equals(burnDownChartTab)) {
+            burnDownChartTabSelected();
+        }
+        else if (tab.equals(allTasksTab)) {
             allTasksTabSelected();
         }
     }
@@ -80,7 +110,6 @@ public class SprintContainer extends GenericEditor<Sprint> {
     /**
      * Loads this sprints overview into the overview tab.
      */
-    @FXML
     private void overviewTabSelected() {
         if (getModel() != null) {
             overviewEditor.setModel(getModel());
@@ -91,7 +120,6 @@ public class SprintContainer extends GenericEditor<Sprint> {
     /**
      * Loads this sprints scrum board into the scrum board tab.
      */
-    @FXML
     private void scrumBoardTabSelected() {
         // Currently doesn't do anything as there is no scrum board chart to load
     }
@@ -99,12 +127,10 @@ public class SprintContainer extends GenericEditor<Sprint> {
     /**
      * Loads this sprints burndown chart into the burndown tab.
      */
-    @FXML
     private void burnDownChartTabSelected() {
         // Currently doesn't do anything as there is no burndown chart to load
     }
 
-    @FXML
     private void allTasksTabSelected() {
         if (allTasksController == null) {
             try {
@@ -126,6 +152,14 @@ public class SprintContainer extends GenericEditor<Sprint> {
         else if (allTasksController.getModel() != getModel()) {
             allTasksController.setModel(getModel());
             allTasksController.loadObject();
+        }
+        else {
+            ArrayList<Story> checkList = new ArrayList<Story>();
+            checkList.addAll(getModel().getStories());
+            checkList.retainAll(allTasksController.currentStories());
+            if (checkList.size() != getModel().getStories().size()) {
+                allTasksController.loadObject();
+            }
         }
     }
 
@@ -159,5 +193,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.setNavigationManager(navigationManager);
         }
         super.setNavigationManager(navigationManager);
+    }
+
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
     }
 }
