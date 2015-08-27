@@ -54,6 +54,7 @@ public class Task extends TrackableObject implements Serializable {
      * The people who are assigned to the task. These may just be the people overseeing its
      * completion.
      */
+    @TrackableValue
     private Collection<Person> assignees = new ArrayList<>();
 
     /**
@@ -157,19 +158,32 @@ public class Task extends TrackableObject implements Serializable {
         if (!(object instanceof Task)) {
             return false;
         }
+        boolean same;
         String shortName = getName();
         String shortNameO = ((Task) object).getName();
         if (shortName == null || shortNameO == null) {
-            return Objects.equals(shortName, shortNameO);
+            same = Objects.equals(shortName, shortNameO);
         }
-        return shortName.equalsIgnoreCase(shortNameO.toLowerCase());
+        else {
+            same = shortName.equalsIgnoreCase(shortNameO.toLowerCase());
+        }
+        if (!same) return same;
+        same = ((Task) object).getEstimate() == getEstimate();
+        if (!same) return same;
+        same = ((Task) object).getDescription().equals(getDescription());
+        if (!same) return same;
+        same = ((Task) object).getState().equals(getState());
+        if (!same) return same;
+        same = ((Task) object).getAssigneesAsString().equals(getAssigneesAsString());
+        return same;
     }
 
     @Override
     public final int hashCode() {
         int c = 0;
         if (getName() != null) {
-            c = getName().hashCode();
+            c = getName().hashCode() + (int) getEstimate() + getAssigneesAsString().hashCode()
+                    + getDescription().hashCode() + getState().hashCode();
         }
         return hashCodePrime + c;
     }

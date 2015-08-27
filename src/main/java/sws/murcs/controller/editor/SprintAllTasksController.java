@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -35,9 +36,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         None
     }
 
+    private Map<Story, TitledPane> storyContainers;
+
     private Map<Task, TaskEditor> allTaskEditors;
 
-    private HashSet<Task> visibleTasks;
+    private List<Task> visibleTasks;
 
     private List<Task> allTasks;
 
@@ -102,9 +105,20 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         stop = false;
         allTasks = new ArrayList<>();
         allTaskEditors = new HashMap<>();
-        visibleTasks = new HashSet<>();
-        getModel().getStories().forEach(story -> allTasks.addAll(story.getTasks()));
+        visibleTasks = new ArrayList<>();
+        storyContainers = new HashMap<>();
+        getModel().getStories().forEach(story -> {
+            generateStoryTitledPane(story);
+            allTasks.addAll(story.getTasks());
+        });
         loadTasks();
+    }
+
+    private void generateStoryTitledPane(Story story) {
+        TitledPane pane = new TitledPane();
+        pane.setText(story.getShortName());
+        pane.setContent(new VBox());
+        storyContainers.put(story, pane);
     }
 
     @Override
@@ -145,6 +159,28 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     private void updateGroupBy(GroupBy newValue) {
         if (currentGroupBy != newValue) {
             currentGroupBy = newValue;
+            if (!isLoaded) {
+                //Todo work out how to order while it's still loading.
+            }
+            else {
+                tasksVBox.getChildren().clear();
+                clearStoryContainers();
+                if (newValue == GroupBy.Story) {
+                    tasksVBox.getChildren().addAll(storyContainers.values());
+                    allTasks.forEach(task -> {
+                        if (visibleTasks.contains(task)) {
+                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
+                        }
+                    });
+                }
+                else {
+                    allTasks.forEach(task -> {
+                        if (visibleTasks.contains(task)) {
+                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -156,6 +192,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             }
             else {
                 tasksVBox.getChildren().clear();
+                clearStoryContainers();
                 if (newValue == OrderBy.Alphabetical) {
                     allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
                 }
@@ -171,11 +208,19 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 }
                 for (Task task : allTasks) {
                     if (visibleTasks.contains(task)) {
-                        addTaskNode(allTaskEditors.get(task).getParent(), null);
+                        addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
                     }
+                }
+
+                if (currentGroupBy == GroupBy.Story) {
+                    tasksVBox.getChildren().addAll(storyContainers.values());
                 }
             }
         }
+    }
+
+    private void clearStoryContainers() {
+        storyContainers.values().forEach(titledPane -> ((VBox) titledPane.getContent()).getChildren().clear());
     }
 
     private void updateFilterBy(FilterBy newValue) {
@@ -186,11 +231,13 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             }
             else {
                 tasksVBox.getChildren().clear();
+                clearStoryContainers();
+                visibleTasks.clear();
                 if (newValue == FilterBy.Allocated) {
                     allTasks.forEach(task -> {
                         if (task.isAllocated()) {
                             visibleTasks.add(task);
-                            addTaskNode(allTaskEditors.get(task).getParent(), null);
+                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
                         }
                         else {
                             visibleTasks.remove(task);
@@ -201,7 +248,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                     allTasks.forEach(task -> {
                         if (!task.isAllocated()) {
                             visibleTasks.add(task);
-                            addTaskNode(allTaskEditors.get(task).getParent(), null);
+                            addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
                         }
                         else {
                             visibleTasks.remove(task);
@@ -211,7 +258,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 else {
                     visibleTasks.clear();
                     visibleTasks.addAll(allTasks);
-                    allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), null));
+                    allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null));
+                }
+
+                if (currentGroupBy == GroupBy.Story) {
+                    tasksVBox.getChildren().addAll(storyContainers.values());
                 }
             }
         }
@@ -219,7 +270,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     private void loadTasks() {
         tasksVBox.getChildren().clear();
-        SprintAllTasksController foo = this;
         TaskLoadingTask<Void> taskThread = new TaskLoadingTask();
         taskThread.setEditor(this);
         taskThread.setTasks(allTasks);
@@ -271,7 +321,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         if (!getModel().equals(currentSprint)) {
                             return;
                         }
-                        addTaskNode(view, controller);
+                        addTaskNode(view, null, controller);
                     });
                 }
                 catch (Exception e) {
@@ -287,7 +337,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
     }
 
-    private void addTaskNode(Node view, TaskEditor editor) {
+    private void addTaskNode(Node view, Story linkedStory, TaskEditor editor) {
         if (currentGroupBy != GroupBy.Story) {
             //So if it's coming from the initial loading.
             if (editor != null) {
@@ -299,7 +349,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             }
         }
         else {
-            //Todo search for the story and then insert into it.
+            if (linkedStory != null) {
+                ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
+            }
         }
     }
 }
