@@ -100,6 +100,9 @@ public class EffortEntryController {
      */
     public void setEffortController(EffortController controller) {
         this.effortController = controller;
+
+        personComboBox.getItems().clear();
+        personComboBox.getItems().addAll(getEligibleWorkers());
     }
 
     /**

@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -66,7 +67,10 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     private PopOver effortPopOver;
 
-    private List<Person> possibleAssignees;
+    /**
+     * All possible assignees for a task.
+     */
+    private List<Person> possibleAssignees = new ArrayList<>();
 
     /**
      * The anchor pane that contains the entire editor.
@@ -378,6 +382,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     @FXML
     private void logEffortButtonClick(final ActionEvent event) {
+        updateAddAssigneesButton();
         if (effortPopOver == null) {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
