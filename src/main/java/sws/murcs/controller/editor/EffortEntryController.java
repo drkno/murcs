@@ -55,11 +55,50 @@ public class EffortEntryController {
     private Effort effort;
 
     /**
+     * Indicates whether the form has errors.
+     */
+    private boolean hasErrors;
+
+    /**
      * Initializes the editor.
      */
     @FXML
     private void initialize() {
         datePicker.setValue(LocalDate.now());
+
+        datePicker.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue && datePicker.getValue() != effort.getDate()) {
+                effort.setDate(datePicker.getValue());
+            }
+        });
+
+        descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue && !descriptionTextArea.getText().equals(effort.getDescription())) {
+                effort.setDescription(descriptionTextArea.getText());
+            }
+        });
+
+        personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != oldValue && newValue != null && !newValue.equals(effort.getPerson())) {
+                effort.setPerson((Person)newValue);
+            }
+        });
+
+        timeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            //If we have selected the form, no need to update
+            if (newValue) {
+                return;
+            }
+
+            try {
+                float time = Float.parseFloat(timeTextField.getText());
+                if (effort.getEffort() != time) {
+                    effort.setEffort(time);
+                }
+            } catch (Exception e) {
+                //TODO display an error.
+            }
+        });
     }
 
     /**
@@ -84,6 +123,11 @@ public class EffortEntryController {
      */
     public void setEffort(final Effort effort) {
         this.effort = effort;
+
+        personComboBox.setValue(effort.getPerson());
+        datePicker.setValue(effort.getDate());
+        descriptionTextArea.setText(effort.getDescription());
+        timeTextField.setText("" + effort.getEffort());
     }
 
     /**
@@ -110,7 +154,7 @@ public class EffortEntryController {
      * @return whether the form is valid.
      */
     public boolean hasErrors() {
-        return false;
+        return hasErrors;
     }
 
     /**
