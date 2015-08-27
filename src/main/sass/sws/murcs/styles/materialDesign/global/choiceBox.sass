@@ -58,12 +58,36 @@
 
 .not-started
   -fx-background-color: red
+
+.not-started .label
   -fx-text-fill: white
+
+.not-started:hover
+  -fx-background-color: darkred
+
+.not-started:focused
+  -fx-background-color: darkred
 
 .in-progress
   -fx-background-color: orange
+
+.in-progress .label
   -fx-text-fill: black
+
+.in-progress:hover
+  -fx-background-color: orangered
+
+.in-progress:focused
+  -fx-background-color: orangered
 
 .done
   -fx-background-color: green
+
+.done:hover
+  -fx-background-color: darkgreen
+
+.done:focused
+  -fx-background-color: darkgreen
+
+.done .label
   -fx-text-fill: black

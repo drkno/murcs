@@ -144,12 +144,14 @@ public class TaskEditor implements UndoRedoChangeListener {
 
         stateChoiceBox.getItems().clear();
         stateChoiceBox.getItems().addAll(TaskState.values());
+        stateChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue != oldValue) {
+                updateStateChoiceBox((TaskState) newValue);
+            }
+        });
 
         nameTextField.focusedProperty().addListener(changeListener);
-        nameTextField.focusedProperty().addListener(changeListener);
         estimateTextField.focusedProperty().addListener(changeListener);
-        estimateTextField.focusedProperty().addListener(changeListener);
-        stateChoiceBox.focusedProperty().addListener(changeListener);
         stateChoiceBox.focusedProperty().addListener(changeListener);
         descriptionTextArea.focusedProperty().addListener(changeListener);
     }
@@ -184,7 +186,6 @@ public class TaskEditor implements UndoRedoChangeListener {
             stateChoiceBox.getSelectionModel().select(newTask.getState());
             descriptionTextArea.setText(newTask.getDescription());
         }
-        updateStateChoiceBox((TaskState) stateChoiceBox.getValue());
         updateAssigneesLabel();
         updateAddAssigneesButton();
     }
@@ -220,7 +221,6 @@ public class TaskEditor implements UndoRedoChangeListener {
 
         // Check name
         String name = nameTextField.getText();
-        getStory().removeTask(getTask());
         if (name != null && !nameExists(name) && !name.isEmpty()) {
             if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
@@ -230,11 +230,6 @@ public class TaskEditor implements UndoRedoChangeListener {
             nameTextField.setText(task.getName());
             editorController.addFormError("tasks", nameTextField,
                     "Task names must be unique and have at least one character!");
-        }
-        try {
-            getStory().addTask(getTask());
-        } catch (Exception e) {
-            // This should seriously never ever happen
         }
 
         // Check estimate
@@ -253,7 +248,6 @@ public class TaskEditor implements UndoRedoChangeListener {
         if (state != task.getState()) {
             task.setState(state);
         }
-        updateStateChoiceBox(state);
 
         // Check description on maximized description field
         String description = descriptionTextArea.getText();
@@ -283,7 +277,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * @return Whether a task already exists with that name
      */
     private boolean nameExists(final String name) {
-        return editorController.getTasks().stream().filter(task1 -> getStory().getTasks().contains(task1)).anyMatch(t -> t.getName().equals(name));
+        return editorController.getTasks().stream().filter(task1 -> getStory().getTasks().contains(task1)).filter(task2 -> !task2.equals(task)).anyMatch(t -> t.getName().equals(name));
     }
 
     /**

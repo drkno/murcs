@@ -33,6 +33,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     enum OrderBy {
         Alphabetical,
         Estimate,
+        State,
         None
     }
 
@@ -158,7 +159,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     protected void saveChangesAndErrors() {
-
     }
 
     @FXML
@@ -189,12 +189,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 tasksVBox.getChildren().clear();
                 clearStoryContainers();
                 if (newValue == GroupBy.Story) {
-                    tasksVBox.getChildren().addAll(storyContainers.values());
+                    addStoryContainers();
                     allTasks.forEach(task -> {
                         if (visibleTasks.contains(task)) {
                             addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
-                        }
-                    });
+                        }});
                 }
                 else {
                     allTasks.forEach(task -> {
@@ -223,6 +222,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         return 0;
                     });
                 }
+                else if (newValue == OrderBy.State) {
+                    allTasks.sort((o1, o2) -> o1.getState().compareTo(o2.getState()));
+                }
                 else {
                     Collections.shuffle(allTasks);
                 }
@@ -233,10 +235,15 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 }
 
                 if (currentGroupBy == GroupBy.Story) {
-                    tasksVBox.getChildren().addAll(storyContainers.values());
+                    addStoryContainers();
                 }
             }
         }
+    }
+
+    private void addStoryContainers() {
+        //Prepare yourself for the best oneliner in history :D
+        storyContainers.keySet().stream().sorted((o1, o2) -> { int o1Priority = getModel().getBacklog().getStoryPriority(o1); int o2Priority = getModel().getBacklog().getStoryPriority(o2); if (o1Priority < o2Priority) return -1; if (o1Priority > o2Priority) return 1; return 0;}).forEach(story -> tasksVBox.getChildren().add(storyContainers.get(story)));
     }
 
     private void clearStoryContainers() {
@@ -279,7 +286,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 }
 
                 if (currentGroupBy == GroupBy.Story) {
-                    tasksVBox.getChildren().addAll(storyContainers.values());
+                    addStoryContainers();
                 }
             }
         }
