@@ -167,7 +167,7 @@ public class ReportGeneratorTest {
         story.addAcceptanceCondition(condition);
         Task task = new Task();
         task.setName("Become one with the universe");
-        task.setEstimate(100);
+        task.setCurrentEstimate(100);
         task.setState(TaskState.Blocked);
         task.setDescription("Attempt to absorb the universe, this probably won't work");
         story.addTask(task);

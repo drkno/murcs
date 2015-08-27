@@ -861,7 +861,7 @@ public class TaskGenerator implements Generator<Task> {
     public final Task generate() {
         Task t = new Task();
         t.setDescription(GenerationHelper.randomElement(defaultDescriptions));
-        t.setEstimate(GenerationHelper.random(MAX_ESTIMATE));
+        t.setCurrentEstimate(GenerationHelper.random(MAX_ESTIMATE));
         t.setState(TaskState.values()[GenerationHelper.random(TaskState.values().length)]);
         t.setName(GenerationHelper.randomElement(taskNames));
         return t;

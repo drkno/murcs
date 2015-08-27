@@ -15,7 +15,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
  * A class representing an estimated time remaining
  * for a task, sprint or story.
  */
-public class TimeEstimate extends TrackableObject {
+public class EstimateInfo extends TrackableObject {
     /**
      * A map of the time remaining on specific days.
      */
@@ -25,7 +25,7 @@ public class TimeEstimate extends TrackableObject {
     /**
      * Creates a new time estimate.
      */
-    public TimeEstimate() {
+    public EstimateInfo() {
         UndoRedoManager.add(this);
     }
 
@@ -33,8 +33,8 @@ public class TimeEstimate extends TrackableObject {
      * Gets the estimate for the current day.
      * @return The estimate for today
      */
-    public final float getEstimate() {
-        return getEstimate(LocalDate.now());
+    public final float getCurrentEstimate() {
+        return getEstimateForDay(LocalDate.now());
     }
 
     /**
@@ -42,7 +42,7 @@ public class TimeEstimate extends TrackableObject {
      * @param day The day to get the estimate for
      * @return The current estimate for the task in hours.
      */
-    public final float getEstimate(final LocalDate day) {
+    public final float getEstimateForDay(final LocalDate day) {
         LocalDate lastDate = null;
         for (LocalDate estimateDate : estimates.keySet()) {
             //If the estimate date is after our last date and before the day we're looking for
@@ -66,8 +66,8 @@ public class TimeEstimate extends TrackableObject {
      * Updates the estimate for the current day.
      * @param newEstimate The new estimate for today
      */
-    public final void setEstimate(final float newEstimate) {
-        setEstimate(newEstimate, LocalDate.now());
+    public final void setEstimateForDay(final float newEstimate) {
+        setEstimateForDay(newEstimate, LocalDate.now());
     }
 
     /**
@@ -75,19 +75,8 @@ public class TimeEstimate extends TrackableObject {
      * @param amount The amount to add to the estimate
      * @param day The day to add the amount to
      */
-    public final void addToEstimate(final float amount, final LocalDate day) {
-        addToEstimate(amount, day, true);
-    }
-
-    /**
-     * Adds an amount to the estimate for a certain day.
-     * @param amount The amount to add to the estimate
-     * @param day The day to add the amount to
-     * @param propagate Whether entries after this should be updated
-     */
-    private final void addToEstimate(final float amount, final LocalDate day, boolean propagate) {
-        float newAmount = getEstimate(day) + amount;
-        setEstimate(newAmount, day, propagate);
+    public final void addToEstimateForDay(final float amount, final LocalDate day) {
+        setEstimateForDay(amount, day);
     }
 
     /**
@@ -95,17 +84,7 @@ public class TimeEstimate extends TrackableObject {
      * @param newEstimate The new estimate for the task.
      * @param day The day you want to change the estimate for.
      */
-    public final void setEstimate(final float newEstimate, final LocalDate day) {
-        setEstimate(newEstimate, day, true);
-    }
-
-    /**
-     * Sets the estimate for the task in hours.
-     * @param newEstimate The new estimate for the task.
-     * @param day The day you want to change the estimate for.
-     * @param propagate Indicates whether entries after this one should be updated
-     */
-    private final void setEstimate(final float newEstimate, final LocalDate day, boolean propagate) {
+    private final void setEstimateForDay(final float newEstimate, final LocalDate day) {
         LocalDate previousEstimateDate = null;
 
         for (LocalDate estimateDate : estimates.keySet()) {
@@ -124,15 +103,12 @@ public class TimeEstimate extends TrackableObject {
         //Either update the estimate or add in the new estimate
         estimates.put(day, newEstimate);
 
-        //If we should update other entries
-        if (propagate) {
-            //Update all the estimates after our new one
-            for (LocalDate estimateDate : estimates.keySet()) {
-                if (estimateDate.isAfter(day)) {
-                    float currentEstimate = estimates.get(estimateDate);
-                    //Make sure we only have positive or zero estimates
-                    estimates.put(estimateDate, Math.max(0, currentEstimate + difference));
-                }
+        //Update all the estimates after our new one
+        for (LocalDate estimateDate : estimates.keySet()) {
+            if (estimateDate.isAfter(day)) {
+                float currentEstimate = estimates.get(estimateDate);
+                //Make sure we only have positive or zero estimates
+                estimates.put(estimateDate, Math.max(0, currentEstimate + difference));
             }
         }
 
@@ -149,9 +125,9 @@ public class TimeEstimate extends TrackableObject {
 
     @Override
     public final boolean equals(Object other) {
-        if (!(other instanceof TimeEstimate)) return false;
+        if (!(other instanceof EstimateInfo)) return false;
 
-        TimeEstimate otherEstimate = (TimeEstimate)other;
+        EstimateInfo otherEstimate = (EstimateInfo)other;
 
         //Check that all the keys in the other have the same value in this and vice versa
         boolean allInFirst = otherEstimate.getEstimates().keySet().stream().allMatch(d -> otherEstimate.getEstimates().get(d).equals(getEstimates().get(d)));
@@ -169,8 +145,8 @@ public class TimeEstimate extends TrackableObject {
      * Merges any number of time estimates into this one.
      * @param estimates The estimates to merge into this one
      */
-    public void mergeIn(TimeEstimate...estimates) {
-        List<TimeEstimate> estimateList = new ArrayList<>();
+    public void mergeIn(EstimateInfo...estimates) {
+        List<EstimateInfo> estimateList = new ArrayList<>();
         Collections.addAll(estimateList, estimates);
 
         mergeIn(estimateList);
@@ -180,7 +156,7 @@ public class TimeEstimate extends TrackableObject {
      * Merges an array of estimates into this estimate.
      * @param estimates The estimates to merge into this one.
      */
-    public void mergeIn(List<TimeEstimate> estimates) {
+    public void mergeIn(List<EstimateInfo> estimates) {
         //Add this estimate to the list, so we don't lose it's data
         estimates.add(this);
 
@@ -194,8 +170,8 @@ public class TimeEstimate extends TrackableObject {
      * @param estimates The estimates to merge
      * @return The resulting time estimate
      */
-    public static final TimeEstimate merge(TimeEstimate...estimates) {
-        List<TimeEstimate> estimateList = new ArrayList<>();
+    public static final EstimateInfo merge(EstimateInfo...estimates) {
+        List<EstimateInfo> estimateList = new ArrayList<>();
         Collections.addAll(estimateList, estimates);
 
         return merge(estimateList);
@@ -206,9 +182,9 @@ public class TimeEstimate extends TrackableObject {
      * @param estimates The estimates to merge
      * @return The resulting time estimate
      */
-    public static final TimeEstimate merge(List<TimeEstimate> estimates){
+    public static final EstimateInfo merge(List<EstimateInfo> estimates){
         Map<LocalDate, Float> map = mergeToMap(estimates);
-        TimeEstimate result = new TimeEstimate();
+        EstimateInfo result = new EstimateInfo();
         result.getEstimates().putAll(map);
 
         return result;
@@ -220,9 +196,9 @@ public class TimeEstimate extends TrackableObject {
      * @param estimates The estimates to merge
      * @return The dates and their estimated times
      */
-    private static final Map<LocalDate, Float> mergeToMap(List<TimeEstimate> estimates) {
+    private static final Map<LocalDate, Float> mergeToMap(List<EstimateInfo> estimates) {
         List<LocalDate> orderedDates = new ArrayList<>();
-        for (TimeEstimate estimate : estimates) {
+        for (EstimateInfo estimate : estimates) {
             estimate.getEstimates().keySet().forEach(orderedDates::add);
         }
 
@@ -235,8 +211,8 @@ public class TimeEstimate extends TrackableObject {
 
         for (LocalDate date : orderedDates) {
             float total = 0;
-            for (TimeEstimate estimate : estimates) {
-                total+= estimate.getEstimate(date);
+            for (EstimateInfo estimate : estimates) {
+                total+= estimate.getEstimateForDay(date);
             }
 
             result.put(date, total);

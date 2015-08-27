@@ -174,7 +174,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         else {
             nameTextField.setText(newTask.getName());
-            estimateTextField.setText(String.valueOf(newTask.getEstimate()));
+            estimateTextField.setText(String.valueOf(newTask.getCurrentEstimate()));
             stateChoiceBox.getSelectionModel().select(newTask.getState());
             descriptionTextArea.setText(newTask.getDescription());
         }
@@ -230,8 +230,8 @@ public class TaskEditor implements UndoRedoChangeListener {
         // Check estimate
         try {
             Float estimate = Float.parseFloat(estimateTextField.getText());
-            if (estimate != task.getEstimate()) {
-                task.setEstimate(estimate);
+            if (estimate != task.getCurrentEstimate()) {
+                task.setCurrentEstimate(estimate);
             }
         }
         catch (NumberFormatException e) {
@@ -281,7 +281,7 @@ public class TaskEditor implements UndoRedoChangeListener {
 
         try {
             float estimate = Float.parseFloat(estimateTextField.getText());
-            task.setEstimate(estimate);
+            task.setCurrentEstimate(estimate);
         }
         catch (NumberFormatException e) {
             acceptable = false;

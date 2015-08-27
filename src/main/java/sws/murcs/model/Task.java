@@ -47,7 +47,7 @@ public class Task extends TrackableObject implements Serializable {
      * The estimated time for this task.
      */
     @TrackableValue
-    private TimeEstimate estimate = new TimeEstimate();
+    private EstimateInfo estimateInfo = new EstimateInfo();
 
     /**
      * The people who are assigned to the task. These may just be the people overseeing its
@@ -112,20 +112,28 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
+     * Gets the estimated time information about this task.
+     * @return The estimateInfo information for this task.
+     */
+    public EstimateInfo getEstimateInfo() {
+        return estimateInfo;
+    }
+
+    /**
      * Gets the estimated time remaining for the task
      * at the current date.
      * @return The estimated time remaining.
      */
-    public float getEstimate() {
-        return estimate.getEstimate();
+    public float getCurrentEstimate() {
+        return estimateInfo.getCurrentEstimate();
     }
 
     /**
      * Sets the estimated time remaining for the task
      * @param newEstimate The estimated time remaining
      */
-    public void setEstimate(final float newEstimate) {
-        this.estimate.setEstimate(newEstimate);
+    public void setCurrentEstimate(final float newEstimate) {
+        this.estimateInfo.setEstimateForDay(newEstimate);
     }
 
     /**
@@ -180,7 +188,7 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final String toString() {
-        return state + " (" + getEstimate() + "): " + name + " - " + description;
+        return state + " (" + getCurrentEstimate() + "): " + name + " - " + description;
     }
 
     public Collection<Person> getAssignees() {

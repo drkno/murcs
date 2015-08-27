@@ -14,7 +14,6 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SprintAllTasksController extends GenericEditor<Sprint> implements TaskEditorParent {
 
@@ -161,8 +160,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 }
                 else if (newValue == OrderBy.Estimate) {
                     allTasks.sort((o1, o2) -> {
-                        if (o1.getEstimate() > o2.getEstimate()) return 1;
-                        if (o1.getEstimate() < o2.getEstimate()) return -1;
+                        if (o1.getCurrentEstimate() > o2.getCurrentEstimate()) return 1;
+                        if (o1.getCurrentEstimate() < o2.getCurrentEstimate()) return -1;
                         return 0;
                     });
                 }

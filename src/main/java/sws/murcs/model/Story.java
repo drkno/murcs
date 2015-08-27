@@ -291,6 +291,18 @@ public class Story extends Model {
         return Collections.unmodifiableList(tasks);
     }
 
+    /**
+     * Gets the estimation info for the story.
+     * @return The estimation info for this task.
+     */
+    public EstimateInfo getEstimationInfo() {
+        EstimateInfo estimatedTimeRemaining = new EstimateInfo();
+        for (Task task : getTasks()) {
+            estimatedTimeRemaining.mergeIn(task.getEstimateInfo());
+        }
+        return estimatedTimeRemaining;
+    }
+
     @Override
     public final int hashCode() {
         int c = 0;

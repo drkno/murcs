@@ -17,7 +17,7 @@ public class TaskTest {
     public void setUp() throws Exception {
         task = new Task();
         task.setName("Need to do this");
-        task.setEstimate(1);
+        task.setCurrentEstimate(1);
         task.setState(TaskState.InProgress);
         task.setDescription("Something I need to do");
         UndoRedoManager.setDisabled(true);
@@ -42,7 +42,7 @@ public class TaskTest {
 
     @Test
     public void estimateTest() {
-        assertEquals(1, task.getEstimate(), 0.1);
+        assertEquals(1, task.getCurrentEstimate(), 0.1);
     }
 
     @Test
