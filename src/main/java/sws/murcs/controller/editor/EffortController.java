@@ -55,6 +55,13 @@ public class EffortController {
         createController.setEffort(new Effort());
 
         contentVBox.getChildren().add(0, createController.getRoot());
+
+        for (Effort e : parentEditor.getTask().getEffort()) {
+            EffortEntryController controller = newEffortEntryController();
+            controller.setEffort(e);
+
+            effortsVBox.getChildren().add(0, controller.getRoot());
+        }
     }
 
     private EffortEntryController newEffortEntryController() {
@@ -86,7 +93,7 @@ public class EffortController {
      */
     @FXML
     private void addButtonClick(final ActionEvent event) {
-        //Perhaps we should grey out the add button?
+        //TODO Perhaps we should grey out the add button? We should also make the "hasErrors" method work...
         if (createController.hasErrors()) return;
 
         parentEditor.getTask().logEffort(createController.getEffort());

@@ -73,7 +73,7 @@ public class EffortEntryController {
         });
 
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue && !descriptionTextArea.getText().equals(effort.getDescription())) {
+            if (!newValue && descriptionTextArea.getText() != null && !descriptionTextArea.getText().equals(effort.getDescription())) {
                 effort.setDescription(descriptionTextArea.getText());
             }
         });
@@ -154,7 +154,7 @@ public class EffortEntryController {
      * @return whether the form is valid.
      */
     public boolean hasErrors() {
-        return hasErrors;
+        return hasErrors || effort.getDate() == null || effort.getPerson() == null;
     }
 
     /**

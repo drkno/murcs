@@ -159,6 +159,14 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
+     * Gets the effort logged against this task.
+     * @return The effort.
+     */
+    public final List<Effort> getEffort() {
+        return effortLogs;
+    }
+
+    /**
      * Logs some effort.
      * @param effort The effort to log
      */
