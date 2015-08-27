@@ -221,12 +221,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * Updates the assignees label to display all the current assigness as a list.
      */
     private void updateAssigneesLabel() {
-        if (task.getAssignees().size() > 0) {
-            assigneesLabel.setText(task.getAssigneesAsString());
-        }
-        else {
-            assigneesLabel.setText("Not assigned!");
-        }
+        assigneesLabel.setText(task.getAssignees().size() > 0 ? task.getAssigneesAsString() : "Not assigned");
     }
 
     /**

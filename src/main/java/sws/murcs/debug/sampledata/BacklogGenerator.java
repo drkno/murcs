@@ -8,6 +8,7 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Story;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -82,12 +83,12 @@ public class BacklogGenerator implements Generator<Backlog> {
     /**
      * A list of stories to use in this backlog, not copied.
      */
-    private List<Story> unsafeStoryPool;
+    private Collection<Story> unsafeStoryPool;
 
     /**
      * A list of people to use in this team.
      */
-    private List<Person> personsPool;
+    private Collection<Person> personsPool;
 
     /**
      * Instantiates a new story generator.
@@ -148,7 +149,7 @@ public class BacklogGenerator implements Generator<Backlog> {
                         indicator++;
                     }
                     catch (Exception e) {
-                        //Suppress because I really don't care.
+                        //Suppress because they are not relevant in this context.
                     }
                 }
             }
@@ -217,7 +218,7 @@ public class BacklogGenerator implements Generator<Backlog> {
      * Sets the stories that should not be used when you're generating stories for the backlogs.
      * @param unsafeStories The stories not to be used when making backlogs.
      */
-    public void setUnsafeStories(final List<Story> unsafeStories) {
+    public void setUnsafeStories(final Collection<Story> unsafeStories) {
         unsafeStoryPool = unsafeStories;
     }
 }

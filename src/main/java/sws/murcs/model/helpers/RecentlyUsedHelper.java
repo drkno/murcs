@@ -3,6 +3,7 @@ package sws.murcs.model.helpers;
 import sws.murcs.model.Person;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A helper to be used for getting recently used items.
@@ -17,7 +18,7 @@ public final class RecentlyUsedHelper {
     /**
      * The recently used people.
      */
-    private static ArrayList<Person> recentPeople;
+    private static List<Person> recentPeople;
 
     /**
      * The maximum number of recently used items to keep a track of.
@@ -28,7 +29,7 @@ public final class RecentlyUsedHelper {
      * A private constructor to make sure that you can only have once instance.
      */
     private RecentlyUsedHelper() {
-        recentPeople = new ArrayList<Person>();
+        recentPeople = new ArrayList<>();
     }
 
     /**
@@ -46,7 +47,7 @@ public final class RecentlyUsedHelper {
      * Gets the list of recently used people.
      * @return the list of recently used people.
      */
-    public static ArrayList<Person> getRecentPeople() {
+    public static List<Person> getRecentPeople() {
         return recentPeople;
     }
 

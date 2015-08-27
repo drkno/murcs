@@ -99,7 +99,7 @@ public class AssigneeController {
      * Adds all of the recent people as button options.
      */
     private void addRecentPeople() {
-        recentAssignees.stream().filter(person -> possibleAssignees.contains(person)).forEach(this::addRecentButton);
+        recentAssignees.stream().filter(possibleAssignees::contains).forEach(this::addRecentButton);
     }
 
     /**
@@ -147,6 +147,4 @@ public class AssigneeController {
         parentEditor.removeAssignee(assignee);
         Platform.runLater(() -> searchableComboBoxDecorator.add(assignee));
     }
-
-
 }

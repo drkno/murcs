@@ -159,22 +159,19 @@ public class Task extends TrackableObject implements Serializable {
             return false;
         }
         boolean same;
+        Task objectTask = (Task) object;
         String shortName = getName();
-        String shortNameO = ((Task) object).getName();
+        String shortNameO = objectTask.getName();
         if (shortName == null || shortNameO == null) {
             same = Objects.equals(shortName, shortNameO);
         }
         else {
-            same = shortName.equalsIgnoreCase(shortNameO.toLowerCase());
+            same = shortName.equalsIgnoreCase(shortNameO);
         }
-        if (!same) return same;
-        same = ((Task) object).getEstimate() == getEstimate();
-        if (!same) return same;
-        same = Objects.equals(((Task) object).getDescription(), getDescription());
-        if (!same) return same;
-        same = ((Task) object).getState().equals(getState());
-        if (!same) return same;
-        same = ((Task) object).getAssigneesAsString().equals(getAssigneesAsString());
+        same = same && objectTask.getEstimate() == getEstimate()
+                && Objects.equals(objectTask.getDescription(), getDescription())
+                && objectTask.getState().equals(getState())
+                && objectTask.getAssigneesAsString().equals(getAssigneesAsString());
         return same;
     }
 
@@ -194,7 +191,7 @@ public class Task extends TrackableObject implements Serializable {
 
     /**
      * Gets the list of all the people assigned to the task.
-     * @return
+     * @return the list of all people assigned to the task.
      */
     public Collection<Person> getAssignees() {
         return assignees;

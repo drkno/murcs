@@ -14,6 +14,7 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for SprintContainer.
@@ -48,13 +49,6 @@ public class SprintContainer extends GenericEditor<Sprint> {
      */
     private SprintAllTasksController allTasksController;
 
-    /**
-     * Creates a new Sprint Container editor.
-     */
-    public SprintContainer() {
-        super();
-    }
-
     @Override
     protected final void initialize() {
         containerTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -79,19 +73,24 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @Override
     public final void loadObject() {
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
-        if (tab == 0) {
-            overviewTabSelected();
-        }
-        else if (tab == 1) {
-            scrumBoardTabSelected();
-        }
-        else if (tab == 2) {
-            burnDownChartTabSelected();
-        }
-        else if (tab == 3) {
-            if (!isLoaded) {
-                allTasksTabSelected();
-            }
+
+        switch (tab) {
+            case 0:
+                overviewTabSelected();
+                break;
+            case 1:
+                scrumBoardTabSelected();
+                break;
+            case 2:
+                burnDownChartTabSelected();
+                break;
+            case 3:
+                if (!isLoaded) {
+                    allTasksTabSelected();
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
         isLoaded = true;
     }
@@ -130,14 +129,14 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
-        // Currently doesn't do anything as there is no scrum board chart to load
+        // todo Currently doesn't do anything as there is no scrum board chart to load
     }
 
     /**
      * Loads this sprints burndown chart into the burndown tab.
      */
     private void burnDownChartTabSelected() {
-        // Currently doesn't do anything as there is no burndown chart to load
+        // todo Currently doesn't do anything as there is no burndown chart to load
     }
 
     /**
@@ -166,7 +165,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.loadObject();
         }
         else {
-            ArrayList<Story> checkList = new ArrayList<Story>();
+            List<Story> checkList = new ArrayList<Story>();
             checkList.addAll(getModel().getStories());
             checkList.retainAll(allTasksController.currentStories());
             if (checkList.size() != getModel().getStories().size()) {

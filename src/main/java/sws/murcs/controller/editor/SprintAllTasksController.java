@@ -15,11 +15,7 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +28,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     /**
      * The filtering options for the all tasks view.
      */
-    enum FilterBy {
+    private enum FilterBy {
 
         /**
          * Filters tasks shown to just be those that have people allocated to them.
@@ -53,7 +49,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     /**
      * The possible ways of grouping tasks together.
      */
-    enum GroupBy {
+    private enum GroupBy {
 
         /**
          * Groups tasks into titledPanes based on the story that they belong to.
@@ -69,7 +65,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     /**
      * The orders by which to sort the tasks.
      */
-    enum OrderBy {
+    private enum OrderBy {
 
         /**
          * Sorts all tasks by name alphabetically.
@@ -225,20 +221,25 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public Story getAssociatedStory(final Task task) {
-        return getModel().getStories().stream().filter(story -> story.getTasks().contains(task)).findFirst().orElseGet(() -> null);
+        return getModel().getStories()
+                .stream()
+                .filter(story -> story.getTasks().contains(task))
+                .findFirst()
+                .orElseGet(() -> null);
     }
 
     @Override
     public void changesMade(final TaskEditor editor) {
-        //getChangeListener().changed();
         tasksVBox.getChildren().clear();
         clearStoryContainers();
         sortAllTasks(currentOrderBy);
         updateAndAddVisibleNodes(currentFilterBy);
+        //Note that this currently does not work at all.
         double yPos;
         if (currentGroupBy == GroupBy.Story) {
             addStoryContainers();
-            yPos = editor.getParent().getBoundsInParent().getMinY() + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
+            yPos = editor.getParent().getBoundsInParent().getMinY()
+                    + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
         }
         else {
             yPos = editor.getParent().getBoundsInParent().getMinY();
@@ -322,8 +323,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      * Adds all the story containers to the taskVBox.
      */
     private void addStoryContainers() {
-        //Prepare yourself for the best oneliner in history :D
-        storyContainers.keySet().stream().sorted((o1, o2) -> { int o1Priority = getModel().getBacklog().getStoryPriority(o1); int o2Priority = getModel().getBacklog().getStoryPriority(o2); if (o1Priority < o2Priority) return -1; if (o1Priority > o2Priority) return 1; return 0; }).forEach(story -> tasksVBox.getChildren().add(storyContainers.get(story)));
+        storyContainers.keySet()
+                .stream()
+                .sorted((o1, o2) -> Integer.compare(getModel().getBacklog().getStoryPriority(o1),
+                        getModel().getBacklog().getStoryPriority(o2)))
+                .forEach(story -> tasksVBox.getChildren().add(storyContainers.get(story)));
     }
 
     /**
@@ -425,11 +429,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
         }
         else if (newValue == OrderBy.Estimate) {
-            allTasks.sort((o1, o2) -> {
-                if (o1.getEstimate() > o2.getEstimate()) return 1;
-                if (o1.getEstimate() < o2.getEstimate()) return -1;
-                return 0;
-            });
+            allTasks.sort((o1, o2) -> Float.compare(o1.getEstimate(), o2.getEstimate()));
         }
         else if (newValue == OrderBy.State) {
             allTasks.sort((o1, o2) -> o1.getState().compareTo(o2.getState()));
@@ -486,7 +486,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         else {
             visibleTasks.addAll(allTasks);
-            allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null));
+            allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
+                    allTaskEditors.get(task).getStory(), null));
         }
     }
 
@@ -497,7 +498,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      */
     private void loadTasks() {
         tasksVBox.getChildren().clear();
-        TaskLoadingTask<Void> taskThread = new TaskLoadingTask();
+        TaskLoadingTask<Void> taskThread = new TaskLoadingTask<>();
         taskThread.setEditor(this);
         taskThread.setTasks(allTasks);
         thread = new Thread(taskThread);
@@ -590,6 +591,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         protected void succeeded() {
             Platform.runLater(() -> {
                 isLoaded = true;
+                if (!getModel().equals(currentSprint)) {
+                    return;
+                }
                 setDisableChoiceBoxes(false);
             });
         }
@@ -612,10 +616,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 tasksVBox.getChildren().add(view);
             }
         }
-        else {
-            if (linkedStory != null) {
-                ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
-            }
+        else if (linkedStory != null) {
+            ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
         }
     }
 
@@ -623,7 +625,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      * Gets all of the stories that are currently in the editor.
      * @return the stories in the editor.
      */
-    public List<Story> currentStories() {
+    public Collection<Story> currentStories() {
         return storyContainers.keySet().stream().collect(Collectors.toList());
     }
 }
