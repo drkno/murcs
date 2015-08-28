@@ -104,22 +104,19 @@ public final class UndoRedoManager {
         findChanges(beforeValues, afterValues);
 
         // no changes made
-        boolean canRevert = canRevert();
-        if (canRevert) {
-            if (afterValues.isEmpty()) {
-                if (!head.getMessage().contains(message)) {
-                    head.modifyMessage(head.getMessage() + ", " + message);
-                }
-                return commitNumber++;
+        if (afterValues.isEmpty() && canRevert()) {
+            if (!head.getMessage().contains(message)) {
+                head.modifyMessage(head.getMessage() + ", " + message);
             }
+            return commitNumber++;
+        }
 
+        if (head != null) {
             // add FieldValuePair so that undo is possible. this is done retrospectively because it is significantly faster
             beforeValues.stream().filter(fvp -> head.getPairs().stream()
                     .noneMatch(rvfp -> Objects.equals(rvfp.getObject(), fvp.getObject())
                             && rvfp.getField().equals(fvp.getField()))).forEach(head::addPair);
-        }
 
-        if (head != null) {
             revertStack.push(head);
         }
 

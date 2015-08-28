@@ -172,53 +172,53 @@ public class TrackingIntegerTest {
         a.setTestInteger(6);
         a.setTestInteger(7);
         a.setTestInteger(8);
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
+        UndoRedoManager.revert();  // 7
+        UndoRedoManager.revert();  // 6
+        UndoRedoManager.revert();  // 5
+        UndoRedoManager.revert();  // 4
+        UndoRedoManager.remake();  // 5
+        UndoRedoManager.remake();  // 6
+        UndoRedoManager.revert();  // 5
+        UndoRedoManager.revert();  // 4
+        UndoRedoManager.revert();  // 3
+        UndoRedoManager.revert();  // 2
+        UndoRedoManager.remake();  // 3
+        UndoRedoManager.remake();  // 4
+        UndoRedoManager.remake();  // 5
+        UndoRedoManager.remake();  // 6
+        UndoRedoManager.remake();  // 7
         Assert.assertEquals(7, a.getTestInteger());
     }
 
     @Test
     public void repetitiveRevertRemakeAddTest() throws Exception {
-        TestInteger a = new TestInteger();
-        a.setTestInteger(1);
-        a.setTestInteger(2);
-        a.setTestInteger(3);
-        a.setTestInteger(4);
-        a.setTestInteger(5);
-        a.setTestInteger(6);
-        a.setTestInteger(7);
-        a.setTestInteger(8);
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.remake();
-        UndoRedoManager.remake();
-        a.setTestInteger(9);
-        UndoRedoManager.revert();
+        TestInteger a = new TestInteger();  // 0
+        a.setTestInteger(1);  // 1
+        a.setTestInteger(2);  // 2
+        a.setTestInteger(3);  // 3
+        a.setTestInteger(4);  // 4
+        a.setTestInteger(5);  // 5
+        a.setTestInteger(6);  // 6
+        a.setTestInteger(7);  // 7
+        a.setTestInteger(8);  // 8
+        UndoRedoManager.revert();  // 7
+        UndoRedoManager.revert();  // 6
+        UndoRedoManager.revert();  // 5
+        UndoRedoManager.revert();  // 4
+        UndoRedoManager.remake();  // 5
+        UndoRedoManager.remake();  // 6
+        a.setTestInteger(9);  // 9
+        UndoRedoManager.revert();  // 6
         Assert.assertEquals(6, a.getTestInteger());
-        UndoRedoManager.remake();
+        UndoRedoManager.remake();  // 9
         Assert.assertEquals(9, a.getTestInteger());
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
+        UndoRedoManager.revert();  // 6
+        UndoRedoManager.revert();  // 5
+        UndoRedoManager.revert();  // 4
+        UndoRedoManager.revert();  // 3
+        UndoRedoManager.revert();  // 2
+        UndoRedoManager.revert();  // 1
+        UndoRedoManager.revert();  // 0
         Assert.assertFalse(UndoRedoManager.canRevert());
         Assert.assertEquals(0, a.getTestInteger());
     }
