@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.listeners.GenericCallback;
@@ -220,7 +221,7 @@ public class GenericPopup extends AnchorPane {
                                 final Action action,
                                 final GenericCallback func,
                                 final String cssStyleClasses) {
-        Button button = new Button(buttonText);
+        Button button = new MaterialDesignButton(buttonText);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.call());
