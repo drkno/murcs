@@ -96,7 +96,7 @@
                                 </VBox>
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <TitledPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" expanded="false" text="Stories">
+                                        <TitledPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" expanded="true" text="Stories">
                                             <content>
                                                 <VBox>
                                                     <padding>

@@ -117,7 +117,7 @@
                                     <children>
                                         <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="SOMETIMES">
                                             <children>
-                                                <TitledPane expanded="false" text="Acceptance Criteria" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS">
+                                                <TitledPane expanded="true" text="Acceptance Criteria" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS">
                                                     <content>
                                                         <GridPane>
                                                             <columnConstraints>
@@ -193,7 +193,7 @@
                                         </AnchorPane>
                                         <AnchorPane>
                                             <children>
-                                                <TitledPane expanded="false" text="Tasks" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <TitledPane expanded="true" text="Tasks" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <content>
                                                         <GridPane>
                                                             <columnConstraints>
@@ -217,7 +217,7 @@
                                         </AnchorPane>
                                         <AnchorPane GridPane.rowIndex="6" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                             <children>
-                                                <TitledPane expanded="false" text="Dependencies" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
+                                                <TitledPane expanded="true" text="Dependencies" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
                                                     <content>
                                                         <GridPane>
                                                             <columnConstraints>

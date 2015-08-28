@@ -148,7 +148,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="8">
                            <children>
-                              <TitledPane expanded="false" animated="false" text="Stories">
+                              <TitledPane expanded="true" animated="false" text="Stories">
                                 <content>
                                   <AnchorPane prefHeight="180.0" prefWidth="200.0">
                                        <children>
