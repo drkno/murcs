@@ -1,5 +1,6 @@
 package sws.murcs.magic.tracking;
 
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeListenerHandler;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -7,11 +8,14 @@ import sws.murcs.model.Organisation;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
+import static java.util.AbstractMap.*;
 
 /**
  * Manages undo and redo operations.
  */
 public final class UndoRedoManager {
+
     /**
      * Un-used constructor as this is a utility class.
      */
@@ -22,10 +26,12 @@ public final class UndoRedoManager {
      * The head object, which represents the current state.
      */
     private static Commit head;
+
     /**
      * The revert stack, represents all states that can be reverted to.
      */
     private static Deque<Commit> revertStack = new ArrayDeque<>();
+
     /**
      * The remake stack, represents all states that can be remaked to.
      */
@@ -35,22 +41,36 @@ public final class UndoRedoManager {
      * The last commit number that was used.
      */
     private static long commitNumber = 0;
+
     /**
      * Maximum number of commits that can be reverted to. -1 for infinity.
      */
     private static long maximumCommits = -1;
+
     /**
      * Listeners that have subscribed to the UndoRedoManager.
      */
     private static List<ChangeListenerHandler> changeListeners = new ArrayList<>();
+
     /**
      * If the UndoRedoManager is disabled.
      */
     private static boolean disabled = false;
 
+    /**
+     * Current state of the model. Using these objects we can search for changes.
+     */
     private static Collection<Map.Entry<TrackableObject, FieldValuePair>> modelState = new ArrayList<>();
 
-    private static Set<TrackableObject> addedObjects = new HashSet<>();
+    /**
+     * Fields that have been added since the last commit.
+     */
+    private static Collection<Map.Entry<TrackableObject, FieldValuePair>> addedFields = new ArrayList<>();
+
+    /**
+     * Fields that have been removed since the last commit.
+     */
+    private static Collection<Map.Entry<TrackableObject, FieldValuePair>> removedFields = new ArrayList<>();
 
     /**
      * Adds an object to be tracked.
@@ -59,11 +79,13 @@ public final class UndoRedoManager {
     public static void add(final TrackableObject object) {
         for (Field field : object.getTrackedFields()) {
             try {
-                modelState.add(new AbstractMap.SimpleEntry(object, new FieldValuePair(field, object)));
-                addedObjects.add(object);
+                Map.Entry<TrackableObject, FieldValuePair> newField
+                        = new SimpleEntry<>(object, new FieldValuePair(field, object));
+                modelState.add(newField);
+                addedFields.add(newField);
             }
             catch (Exception e) {
-                throw new UnsupportedOperationException(e);
+                ErrorReporter.get().reportError(e, "Could not get the field of an object when adding it to Undo/Redo");
             }
         }
     }
@@ -73,14 +95,22 @@ public final class UndoRedoManager {
      * @param object object to be removed from tracking.
      */
     public static void remove(final TrackableObject object) {
-        modelState.removeIf(kvp -> kvp.getKey().equals(object));
-        addedObjects.remove(object);
+        Collection<Map.Entry<TrackableObject, FieldValuePair>> removed
+                = modelState.stream().filter(kvp -> kvp.getKey().equals(object)).collect(Collectors.toList());
+        modelState.removeAll(removed);
+        removedFields.addAll(removed);
     }
 
-    private static void findChanges(Collection<FieldValuePair> beforeValues, Collection<FieldValuePair> afterValues) {
+    /**
+     * Searches for changes to the model.
+     * @param beforeValues values as they were before the model was committed.
+     * @param afterValues values as they are after the model has been committed.
+     */
+    private static void findChanges(final Collection<FieldValuePair> beforeValues,
+                                    final Collection<FieldValuePair> afterValues) {
         modelState.forEach(kvp -> {
             FieldValuePair value = kvp.getValue();
-            FieldValuePair valueChange[] = value.update();
+            FieldValuePair[] valueChange = value.update();
             if (valueChange != null) {
                 beforeValues.add(valueChange[0]);
                 afterValues.add(valueChange[1]);
@@ -120,7 +150,7 @@ public final class UndoRedoManager {
             revertStack.push(head);
         }
 
-        head = new Commit(commitNumber, message, (List<FieldValuePair>) afterValues, null);
+        head = new Commit(commitNumber, message, afterValues, addedFields, removedFields);
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
             revertStack.removeLast();
@@ -175,6 +205,8 @@ public final class UndoRedoManager {
             remakeStack.push(head);
             Commit commit = revertStack.pop();
             commit.apply();
+            modelState.addAll(commit.getAddedFields());
+            modelState.removeAll(commit.getRemovedFields());
             head = commit;
             if (commit.getCommitNumber() == revertCommitNumber) {
                 break;
@@ -223,6 +255,8 @@ public final class UndoRedoManager {
             revertStack.push(head);
             Commit commit = remakeStack.pop();
             commit.apply();
+            modelState.addAll(commit.getAddedFields());
+            modelState.removeAll(commit.getRemovedFields());
             head = commit;
             if (commit.getCommitNumber() == remakeCommitNumber) {
                 break;
@@ -264,6 +298,7 @@ public final class UndoRedoManager {
      * Reverts the current state to the latest commit.
      * @throws Exception if an error occurs during this operation.
      */
+    @SuppressWarnings("unused")
     public static void revertToHead() throws Exception {
         head.apply();
     }
@@ -388,27 +423,18 @@ public final class UndoRedoManager {
     public static void importModel(final Organisation model) throws Exception {
         forget(true);
         UndoRedoManager.add(model);
-        model.getPeople().forEach(p -> UndoRedoManager.add(p));
-        model.getTeams().forEach(t -> UndoRedoManager.add(t));
-        model.getSkills().forEach(k -> UndoRedoManager.add(k));
-        model.getProjects().forEach(l -> UndoRedoManager.add(l));
-        model.getReleases().forEach(r -> UndoRedoManager.add(r));
+        model.getPeople().forEach(UndoRedoManager::add);
+        model.getTeams().forEach(UndoRedoManager::add);
+        model.getSkills().forEach(UndoRedoManager::add);
+        model.getProjects().forEach(UndoRedoManager::add);
+        model.getReleases().forEach(UndoRedoManager::add);
         model.getStories().forEach(s -> {
             UndoRedoManager.add(s);
-            s.getAcceptanceCriteria().forEach(ac -> UndoRedoManager.add(ac));
-            s.getTasks().forEach(task -> UndoRedoManager.add(task));
+            s.getAcceptanceCriteria().forEach(UndoRedoManager::add);
+            s.getTasks().forEach(UndoRedoManager::add);
         });
-        model.getBacklogs().forEach(b -> UndoRedoManager.add(b));
-        model.getSprints().forEach(s -> UndoRedoManager.add(s));
+        model.getBacklogs().forEach(UndoRedoManager::add);
+        model.getSprints().forEach(UndoRedoManager::add);
         commit("open project");
-    }
-
-    /**
-     * Checks if a TrackableObject is currently added to the UndoRedoManager.
-     * @param object TrackableObject to check.
-     * @return true if object is tracked, false otherwise.
-     */
-    public static boolean isAdded(final TrackableObject object) {
-        return addedObjects.contains(object);
     }
 }

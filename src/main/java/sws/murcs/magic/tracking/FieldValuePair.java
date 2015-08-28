@@ -1,6 +1,7 @@
 package sws.murcs.magic.tracking;
 
 import javafx.beans.Observable;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Model;
 
 import java.lang.reflect.Constructor;
@@ -17,19 +18,26 @@ import java.util.Set;
  * and to restore a previous saved value.
  */
 public class FieldValuePair {
+
     /**
      * Field that this FieldValuePair represents.
      */
     private Field field;
+
     /**
      * Value that this FieldValuePair represents.
      */
     private Object value;
+
     /**
      * TrackableObject that this FieldValuePair holds the value/field of.
      */
     private TrackableObject trackableObject;
 
+    /**
+     * Field value pair that created this one.
+     * Used for propagating updates.
+     */
     private FieldValuePair parent;
 
     /**
@@ -38,13 +46,21 @@ public class FieldValuePair {
      * @param source object to get value from.
      * @throws Exception when source does not have the field specified.
      */
-    public FieldValuePair(final Field objectField, final TrackableObject source) throws Exception {
+    protected FieldValuePair(final Field objectField, final TrackableObject source) throws Exception {
         this.field = objectField;
         trackableObject = source;
         value = getValueFromObject(source, objectField);
     }
 
-    private FieldValuePair(Field field, Object objectValue, TrackableObject trackableObject, FieldValuePair parent) {
+    /**
+     * Creates a new field value pair.
+     * @param field field to use.
+     * @param objectValue value of the object.
+     * @param trackableObject object to use.
+     * @param parent field value pair that created this one.
+     */
+    private FieldValuePair(final Field field, final Object objectValue,
+                           final TrackableObject trackableObject, final FieldValuePair parent) {
         this.field = field;
         this.value = objectValue;
         this.trackableObject = trackableObject;
@@ -182,25 +198,40 @@ public class FieldValuePair {
         return value;
     }
 
+    /**
+     * Gets the object that this field value pair represents the value of.
+     * @return the object that this FVP represents.
+     */
     public final TrackableObject getObject() {
         return trackableObject;
     }
 
+    /**
+     * Performs an update of this FVP to the latest model value. Will also update
+     * the creator FVP if applicable.
+     * @return null if this FVP is already up to date.
+     * Otherwise will return an array, 2 elements in size with the following values:
+     * [0] - a FieldValuePair representing the old value of the object.
+     * [1] - a FieldValuePair representing the new value of the object.
+     */
     public FieldValuePair[] update() {
+        Object currentValue = null;
         try {
-            Object currentValue = getValueFromObject(trackableObject, field);
-            if (Objects.equals(value, currentValue)) {
-                return null;
-            }
-            Object oldValue = value;
-            value = currentValue;
-            return new FieldValuePair[] {
-                new FieldValuePair(field, oldValue, trackableObject, this),
-                new FieldValuePair(field, currentValue, trackableObject, this)
-            };
+            currentValue = getValueFromObject(trackableObject, field);
         }
         catch (Exception e) {
-            throw new UnsupportedOperationException(e);
+            ErrorReporter.get().reportError(e, "Could not get value from object even though we have successfully "
+                    + "done so before.");
         }
+
+        if (Objects.equals(value, currentValue)) {
+            return null;
+        }
+        Object oldValue = value;
+        value = currentValue;
+        return new FieldValuePair[] {
+            new FieldValuePair(field, oldValue, trackableObject, this),
+            new FieldValuePair(field, currentValue, trackableObject, this)
+        };
     }
 }

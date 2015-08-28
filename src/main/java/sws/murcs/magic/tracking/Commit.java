@@ -1,49 +1,74 @@
 package sws.murcs.magic.tracking;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
- * Represents a the state of values at a period of time.
+ * Represents a the state of values within the model at a period of time.
+ * Values are represented by storing what they were at a particular point in time.
+ * Only values that have changed or are about to change are stored for efficiency.
  */
 public class Commit {
+
     /**
      * Commit number of this commit.
      */
     private long commitNumber;
+
     /**
      * Message of this commit.
      */
     private String message;
+
     /**
      * Fields and their values associated with this commit.
      */
-    private List<FieldValuePair> fieldValuePairs;
+    private Collection<FieldValuePair> fieldValuePairs;
+
     /**
-     * Trackable objects associated with this commit.
+     * Fields that were added in this commit.
      */
-    private List<TrackableObject> trackableObjects;
+    private Collection<Map.Entry<TrackableObject, FieldValuePair>> added;
+
+    /**
+     * Fields that were removed in this commit.
+     */
+    private Collection<Map.Entry<TrackableObject, FieldValuePair>> removed;
 
     /**
      * Creates a new commit.
      * @param newCommitNumber the unique commit number.
      * @param newMessage the commit message to associate.
      * @param newFieldValuePairs the set of fields and values to set.
-     * @param newTrackableObjects objects that were being tracked.
+     * @param addedFields fields that were added in this commit.
+     * @param removedFields fields that were removed in this commit.
      */
-    protected Commit(final long newCommitNumber, final String newMessage, final List<FieldValuePair> newFieldValuePairs,
-                     final List<TrackableObject> newTrackableObjects) {
-        this.commitNumber = newCommitNumber;
-        this.message = newMessage;
-        this.fieldValuePairs = newFieldValuePairs;
-        this.trackableObjects = newTrackableObjects;
+    protected Commit(final long newCommitNumber, final String newMessage,
+                     final Collection<FieldValuePair> newFieldValuePairs,
+                     final Collection<Map.Entry<TrackableObject, FieldValuePair>> addedFields,
+                     final Collection<Map.Entry<TrackableObject, FieldValuePair>> removedFields) {
+        commitNumber = newCommitNumber;
+        message = newMessage;
+        fieldValuePairs = newFieldValuePairs;
+        added = addedFields;
+        removed = removedFields;
     }
 
     /**
-     * Gets the trackable objects associated with this commit.
-     * @return associated objects.
+     * Gets the fields that were added in this commit.
+     * @return fields that were added.
      */
-    public final List<TrackableObject> getTrackableObjects() {
-        return trackableObjects;
+    public final Collection<Map.Entry<TrackableObject, FieldValuePair>> getAddedFields() {
+        return Collections.unmodifiableCollection(added);
+    }
+
+    /**
+     * Gets the fields that were removed in this commit.
+     * @return fields that were removed.
+     */
+    public final Collection<Map.Entry<TrackableObject, FieldValuePair>> getRemovedFields() {
+        return Collections.unmodifiableCollection(removed);
     }
 
     /**
@@ -73,23 +98,6 @@ public class Commit {
     }
 
     /**
-     * Checks if another commit is identical to this one.
-     * @param other other commit.
-     * @return true if they are the same, false otherwise.
-     */
-    final boolean equals(final Commit other) {
-        if (fieldValuePairs.size() != other.fieldValuePairs.size()) {
-            return false;
-        }
-        for (int i = 0; i < fieldValuePairs.size(); i++) {
-            if (!fieldValuePairs.get(i).equals(other.fieldValuePairs.get(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Adjusts the message contained with this commit.
      * @param newMessage message to replace it with.
      */
@@ -101,11 +109,15 @@ public class Commit {
      * Gets the field value pairs that make up this commit.
      * @return field value pairs.
      */
-    public final List<FieldValuePair> getPairs() {
-        return fieldValuePairs;
+    public final Collection<FieldValuePair> getPairs() {
+        return Collections.unmodifiableCollection(fieldValuePairs);
     }
 
-    public void addPair(FieldValuePair fieldValuePair) {
+    /**
+     * Adds a FieldValuePair to this commit.
+     * @param fieldValuePair pair to add.
+     */
+    public void addPair(final FieldValuePair fieldValuePair) {
         fieldValuePairs.add(fieldValuePair);
     }
 }
