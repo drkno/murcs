@@ -210,4 +210,28 @@ public class TrackingMultipleTest {
         Assert.assertEquals("8", b.getTestString());
         Assert.assertFalse(UndoRedoManager.get().canRemake());
     }
+
+    @Test
+    public void assimilateTest() throws Exception {
+        TestInteger a = new TestInteger();
+        TestString b = new TestString();
+        a.setTestInteger(1);
+        b.setTestString("1");
+        a.setTestInteger(2);
+        b.setTestString("2");
+        long commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
+        a.setTestInteger(3);
+        b.setTestString("3");
+        a.setTestInteger(4);
+        b.setTestString("4");
+        UndoRedoManager.get().assimilate(commitNumber);
+        Assert.assertEquals("Value lost after assimilate", 4, a.getTestInteger());
+        Assert.assertEquals("Value lost after assimilate", "4", b.getTestString());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("Value lost after assimilate", 2, a.getTestInteger());
+        Assert.assertEquals("Value lost after assimilate", "2", b.getTestString());
+        UndoRedoManager.get().remake();
+        Assert.assertEquals("Value lost after assimilate", 4, a.getTestInteger());
+        Assert.assertEquals("Value lost after assimilate", "4", b.getTestString());
+    }
 }

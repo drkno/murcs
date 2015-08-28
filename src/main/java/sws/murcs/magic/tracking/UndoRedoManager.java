@@ -7,9 +7,15 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Organisation;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import static java.util.AbstractMap.*;
+import static java.util.AbstractMap.SimpleEntry;
 
 /**
  * Manages undo and redo operations.
@@ -176,6 +182,8 @@ public final class UndoRedoManager {
         }
 
         head = new Commit(commitNumber, message, afterValues, addedFields, removedFields);
+        addedFields = new ArrayList<>();
+        removedFields = new ArrayList<>();
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
             revertStack.removeLast();
@@ -230,8 +238,8 @@ public final class UndoRedoManager {
             remakeStack.push(head);
             Commit commit = revertStack.pop();
             commit.apply();
-            modelState.addAll(commit.getAddedFields());
             modelState.removeAll(commit.getRemovedFields());
+            modelState.addAll(commit.getAddedFields());
             head = commit;
             if (commit.getCommitNumber() == revertCommitNumber) {
                 break;
@@ -280,8 +288,8 @@ public final class UndoRedoManager {
             revertStack.push(head);
             Commit commit = remakeStack.pop();
             commit.apply();
-            modelState.addAll(commit.getAddedFields());
             modelState.removeAll(commit.getRemovedFields());
+            modelState.addAll(commit.getAddedFields());
             head = commit;
             if (commit.getCommitNumber() == remakeCommitNumber) {
                 break;
@@ -430,10 +438,16 @@ public final class UndoRedoManager {
             if (revertStack.peek().getCommitNumber() == assimilateCommitNumber) {
                 break;
             }
-            revertStack.pop();
-        }
-        if (canRevert()) {
-            head = revertStack.pop();
+            Commit commit = revertStack.pop();
+            Collection<FieldValuePair> addablePairs = commit.getPairs().stream().filter(
+                    p -> !head.getPairs().stream().anyMatch(
+                    o -> o.getField().equals(p.getField())
+                    && o.getObject().equals(p.getObject())))
+                    .collect(Collectors.toList());
+            addablePairs.forEach(head::addPair);
+
+            head.getRemovedFields().addAll(commit.getAddedFields());
+            head.getAddedFields().addAll(commit.getRemovedFields());
         }
         notifyListeners(ChangeState.Assimilate);
     }

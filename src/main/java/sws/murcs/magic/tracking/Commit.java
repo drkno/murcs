@@ -59,16 +59,16 @@ public class Commit {
      * Gets the fields that were added in this commit.
      * @return fields that were added.
      */
-    public final Collection<Map.Entry<TrackableObject, FieldValuePair>> getAddedFields() {
-        return Collections.unmodifiableCollection(added);
+    protected final Collection<Map.Entry<TrackableObject, FieldValuePair>> getAddedFields() {
+        return added;
     }
 
     /**
      * Gets the fields that were removed in this commit.
      * @return fields that were removed.
      */
-    public final Collection<Map.Entry<TrackableObject, FieldValuePair>> getRemovedFields() {
-        return Collections.unmodifiableCollection(removed);
+    protected final Collection<Map.Entry<TrackableObject, FieldValuePair>> getRemovedFields() {
+        return removed;
     }
 
     /**
@@ -91,7 +91,7 @@ public class Commit {
      * Applies the values in this commit to the objects.
      * @throws Exception if something went very wrong.
      */
-    public final void apply() throws Exception {
+    protected final void apply() throws Exception {
         for (FieldValuePair pair : fieldValuePairs) {
             pair.restoreValue();
         }
@@ -109,7 +109,7 @@ public class Commit {
      * Gets the field value pairs that make up this commit.
      * @return field value pairs.
      */
-    public final Collection<FieldValuePair> getPairs() {
+    protected final Collection<FieldValuePair> getPairs() {
         return Collections.unmodifiableCollection(fieldValuePairs);
     }
 
@@ -117,7 +117,7 @@ public class Commit {
      * Adds a FieldValuePair to this commit.
      * @param fieldValuePair pair to add.
      */
-    public void addPair(final FieldValuePair fieldValuePair) {
+    protected void addPair(final FieldValuePair fieldValuePair) {
         fieldValuePairs.add(fieldValuePair);
     }
 }

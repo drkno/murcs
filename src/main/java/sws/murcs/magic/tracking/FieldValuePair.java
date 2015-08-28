@@ -71,7 +71,7 @@ public class FieldValuePair {
      * Restores the saved value to the object.
      * @throws Exception if something goes wrong.
      */
-    public final void restoreValue() throws Exception {
+    protected final void restoreValue() throws Exception {
         if (value instanceof Collection) {
             Collection collection = (Collection) value;
             if (value instanceof Observable) {
@@ -112,7 +112,7 @@ public class FieldValuePair {
      * Gets the stored field value.
      * @return the field.
      */
-    public final Field getField() {
+    protected final Field getField() {
         return field;
     }
 
@@ -128,7 +128,7 @@ public class FieldValuePair {
      * Gets the value of the field.
      * @return value of the field.
      */
-    public final Object getValue() {
+    protected final Object getValue() {
         return value;
     }
 
@@ -202,7 +202,7 @@ public class FieldValuePair {
      * Gets the object that this field value pair represents the value of.
      * @return the object that this FVP represents.
      */
-    public final TrackableObject getObject() {
+    protected final TrackableObject getObject() {
         return trackableObject;
     }
 
@@ -214,7 +214,7 @@ public class FieldValuePair {
      * [0] - a FieldValuePair representing the old value of the object.
      * [1] - a FieldValuePair representing the new value of the object.
      */
-    public FieldValuePair[] update() {
+    protected FieldValuePair[] update() {
         Object currentValue = null;
         try {
             currentValue = getValueFromObject(trackableObject, field);
