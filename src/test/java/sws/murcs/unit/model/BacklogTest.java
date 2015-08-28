@@ -45,7 +45,7 @@ public class BacklogTest {
 
         backlog.addStory(story1, null);
         backlog.addStory(story2, 1);
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @After

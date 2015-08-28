@@ -46,7 +46,7 @@ public class ElementDeletionStepDefs extends ApplicationTest{
 
     @Before("@ElementDeletion")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
 
         try {
             if (PersistenceManager.getCurrent() == null) {
@@ -54,8 +54,8 @@ public class ElementDeletionStepDefs extends ApplicationTest{
             }
             PersistenceManager.getCurrent().setCurrentModel(null);
             model = new Organisation();
-            UndoRedoManager.forget(true);
-            UndoRedoManager.add(model);
+            UndoRedoManager.get().forget(true);
+            UndoRedoManager.get().add(model);
 
             project = new Project();
             project.setShortName("Testing project");
@@ -119,8 +119,8 @@ public class ElementDeletionStepDefs extends ApplicationTest{
     @After("@ElementDeletion")
     public void tearDown() throws Exception {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        UndoRedoManager.forgetListeners();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().forgetListeners();
+        UndoRedoManager.get().setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

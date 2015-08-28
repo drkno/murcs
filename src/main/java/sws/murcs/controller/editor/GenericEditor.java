@@ -108,7 +108,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * A generic editor for editing models.
      */
     public GenericEditor() {
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
     }
 
     /**
@@ -286,7 +286,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     @SuppressWarnings("checkstyle:designforextension")
     public void dispose() {
         setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
+        UndoRedoManager.get().removeChangeListener(this);
         setModel(null);
         clearErrors();
         // don't dispose of errorMessagePopover, as it is a window in its own right

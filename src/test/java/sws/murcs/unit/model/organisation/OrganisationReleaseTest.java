@@ -26,7 +26,7 @@ public class OrganisationReleaseTest {
     @BeforeClass
     public static void classSetup() {
         generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
@@ -35,7 +35,7 @@ public class OrganisationReleaseTest {
 
     @AfterClass
     public static void classTearDown() {
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
         model = null;
     }

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class TrackingMultipleTest {
     public class TestInteger extends TrackableObject {
         public TestInteger() throws Exception {
-            UndoRedoManager.add(this);
+            UndoRedoManager.get().add(this);
             commit("initial state");
         }
 
@@ -35,7 +35,7 @@ public class TrackingMultipleTest {
 
     public class TestString extends TrackableObject {
         public TestString() throws Exception {
-            UndoRedoManager.add(this);
+            UndoRedoManager.get().add(this);
             commit("initial state");
         }
 
@@ -58,19 +58,19 @@ public class TrackingMultipleTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
     }
 
     @Before
     public void setup() throws IllegalAccessException {
-        UndoRedoManager.forget(true);
-        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
-        UndoRedoManager.setMaximumCommits(-1);
+        UndoRedoManager.get().forget(true);
+        listenersField.set(UndoRedoManager.get(), new ArrayList<ChangeListenerHandler>());
+        UndoRedoManager.get().setMaximumCommits(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        UndoRedoManager.forget(true);
+        UndoRedoManager.get().forget(true);
     }
 
     @Test
@@ -83,13 +83,13 @@ public class TrackingMultipleTest {
         b.setTestString("2");
         a.setTestInteger(3);
         b.setTestString("3");
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
     }
@@ -104,20 +104,20 @@ public class TrackingMultipleTest {
         b.setTestString("2");
         a.setTestInteger(3);
         b.setTestString("3");
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().revert();
 
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(1, a.getTestInteger());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertEquals("1", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(2, a.getTestInteger());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertEquals("2", b.getTestString());
         Assert.assertEquals(3, a.getTestInteger());
     }
@@ -130,22 +130,22 @@ public class TrackingMultipleTest {
         b.setTestString("1");
         a.setTestInteger(2);
         b.setTestString("2");
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("initial state", UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("initial state", UndoRedoManager.getRemakeMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("initial state", UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals(null, UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("initial state", UndoRedoManager.get().getRemakeMessage());
     }
 
     @Test
@@ -169,45 +169,45 @@ public class TrackingMultipleTest {
         a.setTestInteger(8);
         b.setTestString("8");
 
-        UndoRedoManager.revert(); // "7"
-        UndoRedoManager.revert(); //  7
-        UndoRedoManager.revert(); // "6"
-        UndoRedoManager.revert(); //  6
-        UndoRedoManager.revert(); // "5"
-        UndoRedoManager.revert(); //  5
-        UndoRedoManager.revert(); // "4"
-        UndoRedoManager.revert(); //  4
-        UndoRedoManager.revert(); // "3"
+        UndoRedoManager.get().revert(); // "7"
+        UndoRedoManager.get().revert(); //  7
+        UndoRedoManager.get().revert(); // "6"
+        UndoRedoManager.get().revert(); //  6
+        UndoRedoManager.get().revert(); // "5"
+        UndoRedoManager.get().revert(); //  5
+        UndoRedoManager.get().revert(); // "4"
+        UndoRedoManager.get().revert(); //  4
+        UndoRedoManager.get().revert(); // "3"
 
         Assert.assertEquals(4, a.getTestInteger());
         Assert.assertEquals("3", b.getTestString());
 
-        UndoRedoManager.remake(); // "4"
-        UndoRedoManager.remake(); //  5
-        UndoRedoManager.remake(); // "5"
-        UndoRedoManager.revert(); // "4"
-        UndoRedoManager.revert(); //  4
-        UndoRedoManager.revert(); // "3"
-        UndoRedoManager.revert(); //  3
-        UndoRedoManager.remake(); //  4
-        UndoRedoManager.remake(); // "4"
-        UndoRedoManager.remake(); //  5
-        UndoRedoManager.remake(); // "5"
-        UndoRedoManager.revert(); // "4"
-        UndoRedoManager.remake(); // "5"
+        UndoRedoManager.get().remake(); // "4"
+        UndoRedoManager.get().remake(); //  5
+        UndoRedoManager.get().remake(); // "5"
+        UndoRedoManager.get().revert(); // "4"
+        UndoRedoManager.get().revert(); //  4
+        UndoRedoManager.get().revert(); // "3"
+        UndoRedoManager.get().revert(); //  3
+        UndoRedoManager.get().remake(); //  4
+        UndoRedoManager.get().remake(); // "4"
+        UndoRedoManager.get().remake(); //  5
+        UndoRedoManager.get().remake(); // "5"
+        UndoRedoManager.get().revert(); // "4"
+        UndoRedoManager.get().remake(); // "5"
 
         Assert.assertEquals(5, a.getTestInteger());
         Assert.assertEquals("5", b.getTestString());
 
-        UndoRedoManager.remake(); //  6
-        UndoRedoManager.remake(); // "6"
-        UndoRedoManager.remake(); //  7
-        UndoRedoManager.remake(); // "7"
-        UndoRedoManager.remake(); //  8
-        UndoRedoManager.remake(); // "8"
+        UndoRedoManager.get().remake(); //  6
+        UndoRedoManager.get().remake(); // "6"
+        UndoRedoManager.get().remake(); //  7
+        UndoRedoManager.get().remake(); // "7"
+        UndoRedoManager.get().remake(); //  8
+        UndoRedoManager.get().remake(); // "8"
 
         Assert.assertEquals(8, a.getTestInteger());
         Assert.assertEquals("8", b.getTestString());
-        Assert.assertFalse(UndoRedoManager.canRemake());
+        Assert.assertFalse(UndoRedoManager.get().canRemake());
     }
 }

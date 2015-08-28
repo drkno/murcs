@@ -27,7 +27,7 @@ public class StoryTest {
         story.setShortName("OMG");
         story2.setShortName("A very good story to have");
         story3.setShortName("Something worth while");
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @After

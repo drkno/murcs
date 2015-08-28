@@ -56,7 +56,7 @@ public abstract class TrackableObject {
      * Stops this object being tracked by the UndoRedoManager.
      */
     public final void stopTracking() {
-        UndoRedoManager.remove(this);
+        UndoRedoManager.get().remove(this);
     }
 
     /**
@@ -66,18 +66,18 @@ public abstract class TrackableObject {
      */
     protected final long commit(final String message) {
         try {
-            return UndoRedoManager.commit(message);
+            return UndoRedoManager.get().commit(message);
         }
         catch (Exception e) {
             // Something is very broken if we reach here
-            UndoRedoManager.forget();
+            UndoRedoManager.get().forget();
             System.err.println("UndoRedoManager broke with error:\n" + e.toString()
                     + "\nAs a precaution all history has been forgotten.");
-            if (UndoRedoManager.getHead() == null) {
+            if (UndoRedoManager.get().getHead() == null) {
                 return 0;
             }
             else {
-                return UndoRedoManager.getHead().getCommitNumber();
+                return UndoRedoManager.get().getHead().getCommitNumber();
             }
         }
     }
@@ -88,11 +88,11 @@ public abstract class TrackableObject {
      * commits have been made yet) when endAssimilation() is used.
      */
     protected final void startAssimilation() {
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             assimilateTo = 0L;
         }
         else {
-            assimilateTo = UndoRedoManager.getHead().getCommitNumber();
+            assimilateTo = UndoRedoManager.get().getHead().getCommitNumber();
         }
     }
 
@@ -105,13 +105,13 @@ public abstract class TrackableObject {
      */
     protected final long endAssimilation(final String commitMessage) {
         try {
-            if (UndoRedoManager.getDisable()) {
+            if (UndoRedoManager.get().getDisable()) {
                 return 0L;
             }
-            UndoRedoManager.assimilate(assimilateTo);
+            UndoRedoManager.get().assimilate(assimilateTo);
             assimilateTo = null;
             commit(commitMessage);
-            return UndoRedoManager.getHead().getCommitNumber();
+            return UndoRedoManager.get().getHead().getCommitNumber();
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
             ErrorReporter.get().reportError(e, "Assimilation failed. Commit was probably not called before using.");
