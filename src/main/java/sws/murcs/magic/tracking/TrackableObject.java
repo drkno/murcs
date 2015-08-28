@@ -66,14 +66,6 @@ public abstract class TrackableObject {
      */
     protected final long commit(final String message) {
         try {
-            if (!UndoRedoManager.isAdded(this)) { // not yet tracked == no change in commit
-                if (UndoRedoManager.getHead() == null) {
-                    return 0;
-                }
-                else {
-                    return UndoRedoManager.getHead().getCommitNumber();
-                }
-            }
             return UndoRedoManager.commit(message);
         }
         catch (Exception e) {

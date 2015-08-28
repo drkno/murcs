@@ -104,4 +104,8 @@ public class Commit {
     public final List<FieldValuePair> getPairs() {
         return fieldValuePairs;
     }
+
+    public void addPair(FieldValuePair fieldValuePair) {
+        fieldValuePairs.add(fieldValuePair);
+    }
 }

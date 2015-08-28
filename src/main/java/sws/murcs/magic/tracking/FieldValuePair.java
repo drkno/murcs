@@ -30,6 +30,8 @@ public class FieldValuePair {
      */
     private TrackableObject trackableObject;
 
+    private FieldValuePair parent;
+
     /**
      * Creates a new field value pair.
      * @param objectField field to use.
@@ -40,6 +42,13 @@ public class FieldValuePair {
         this.field = objectField;
         trackableObject = source;
         value = getValueFromObject(source, objectField);
+    }
+
+    private FieldValuePair(Field field, Object objectValue, TrackableObject trackableObject, FieldValuePair parent) {
+        this.field = field;
+        this.value = objectValue;
+        this.trackableObject = trackableObject;
+        this.parent = parent;
     }
 
     /**
@@ -69,6 +78,7 @@ public class FieldValuePair {
                 Collection newCollection = (Collection) constructor.newInstance(constructorArgs);
                 field.set(trackableObject, newCollection);
             }
+
         }
         else {
             field.set(trackableObject, value);
@@ -79,6 +89,7 @@ public class FieldValuePair {
                 ((Model) trackableObject).getShortNameProperty().notifyChanged();
             }
         }
+        parent.value = value;
     }
 
     /**
@@ -169,5 +180,27 @@ public class FieldValuePair {
             value = ctor.newInstance(value);
         }
         return value;
+    }
+
+    public final TrackableObject getObject() {
+        return trackableObject;
+    }
+
+    public FieldValuePair[] update() {
+        try {
+            Object currentValue = getValueFromObject(trackableObject, field);
+            if (Objects.equals(value, currentValue)) {
+                return null;
+            }
+            Object oldValue = value;
+            value = currentValue;
+            return new FieldValuePair[] {
+                new FieldValuePair(field, oldValue, trackableObject, this),
+                new FieldValuePair(field, currentValue, trackableObject, this)
+            };
+        }
+        catch (Exception e) {
+            throw new UnsupportedOperationException(e);
+        }
     }
 }

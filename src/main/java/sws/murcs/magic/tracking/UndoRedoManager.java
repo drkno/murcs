@@ -6,10 +6,7 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Organisation;
 
 import java.lang.reflect.Field;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 /**
  * Manages undo and redo operations.
@@ -33,10 +30,7 @@ public final class UndoRedoManager {
      * The remake stack, represents all states that can be remaked to.
      */
     private static Deque<Commit> remakeStack = new ArrayDeque<>();
-    /**
-     * List of objects that are currently tracked by the UndoRedoManager.
-     */
-    private static List<TrackableObject> objectsList = new ArrayList<>();
+
     /**
      * The last commit number that was used.
      */
@@ -54,12 +48,24 @@ public final class UndoRedoManager {
      */
     private static boolean disabled = false;
 
+    private static Collection<Map.Entry<TrackableObject, FieldValuePair>> modelState = new ArrayList<>();
+
+    private static Set<TrackableObject> addedObjects = new HashSet<>();
+
     /**
      * Adds an object to be tracked.
      * @param object new object to be tracked.
      */
     public static void add(final TrackableObject object) {
-        objectsList.add(object);
+        for (Field field : object.getTrackedFields()) {
+            try {
+                modelState.add(new AbstractMap.SimpleEntry(object, new FieldValuePair(field, object)));
+                addedObjects.add(object);
+            }
+            catch (Exception e) {
+                throw new UnsupportedOperationException(e);
+            }
+        }
     }
 
     /**
@@ -67,7 +73,19 @@ public final class UndoRedoManager {
      * @param object object to be removed from tracking.
      */
     public static void remove(final TrackableObject object) {
-        objectsList.remove(object);
+        modelState.removeIf(kvp -> kvp.getKey().equals(object));
+        addedObjects.remove(object);
+    }
+
+    private static void findChanges(Collection<FieldValuePair> beforeValues, Collection<FieldValuePair> afterValues) {
+        modelState.forEach(kvp -> {
+            FieldValuePair value = kvp.getValue();
+            FieldValuePair valueChange[] = value.update();
+            if (valueChange != null) {
+                beforeValues.add(valueChange[0]);
+                afterValues.add(valueChange[1]);
+            }
+        });
     }
 
     /**
@@ -81,40 +99,31 @@ public final class UndoRedoManager {
             return -1;
         }
 
-        boolean canRevert = canRevert(); // prevent repetitive calls to canRevert()
-        List<FieldValuePair> lastFieldValuePairs;
+        Collection<FieldValuePair> beforeValues = new ArrayList<>();
+        Collection<FieldValuePair> afterValues = new ArrayList<>();
+        findChanges(beforeValues, afterValues);
+
+        // no changes made
+        boolean canRevert = canRevert();
         if (canRevert) {
-            lastFieldValuePairs = revertStack.peek().getPairs();
-        }
-        else {
-            lastFieldValuePairs = null;
-        }
-        List<FieldValuePair> pairs = new ArrayList<>();
-        List<TrackableObject> trackableObjects = new ArrayList<>();
-        for (TrackableObject object : objectsList) {
-            trackableObjects.add(object);
-            List<Field> fields = object.getTrackedFields();
-            for (Field field : fields) {
-                FieldValuePair pair = new FieldValuePair(field, object);
-                if (canRevert) {
-                    int index = lastFieldValuePairs.indexOf(pair);
-                    if (index >= 0) {
-                        pair = lastFieldValuePairs.get(index);
-                    }
+            if (afterValues.isEmpty()) {
+                if (!head.getMessage().contains(message)) {
+                    head.modifyMessage(head.getMessage() + ", " + message);
                 }
-                pairs.add(pair);
+                return commitNumber++;
             }
+
+            // add FieldValuePair so that undo is possible. this is done retrospectively because it is significantly faster
+            beforeValues.stream().filter(fvp -> head.getPairs().stream()
+                    .noneMatch(rvfp -> Objects.equals(rvfp.getObject(), fvp.getObject())
+                            && rvfp.getField().equals(fvp.getField()))).forEach(head::addPair);
         }
+
         if (head != null) {
             revertStack.push(head);
         }
-        head = new Commit(commitNumber, message, pairs, trackableObjects);
-        if (canRevert() && head.equals(revertStack.peek())) {
-            Commit last = revertStack.pop();
-            if (!last.getMessage().contains(head.getMessage())) {
-                head.modifyMessage(head.getMessage() + ", " + last.getMessage());
-            }
-        }
+
+        head = new Commit(commitNumber, message, (List<FieldValuePair>) afterValues, null);
 
         if (maximumCommits >= 0 && revertStack.size() > maximumCommits) {
             revertStack.removeLast();
@@ -144,7 +153,7 @@ public final class UndoRedoManager {
         revertStack.clear();
         remakeStack.clear();
         if (deleteSavedObjects) {
-            objectsList.clear();
+            modelState.clear();
             head = null;
         }
         notifyListeners(ChangeState.Forget);
@@ -169,7 +178,6 @@ public final class UndoRedoManager {
             remakeStack.push(head);
             Commit commit = revertStack.pop();
             commit.apply();
-            objectsList = commit.getTrackableObjects();
             head = commit;
             if (commit.getCommitNumber() == revertCommitNumber) {
                 break;
@@ -218,7 +226,6 @@ public final class UndoRedoManager {
             revertStack.push(head);
             Commit commit = remakeStack.pop();
             commit.apply();
-            objectsList = commit.getTrackableObjects();
             head = commit;
             if (commit.getCommitNumber() == remakeCommitNumber) {
                 break;
@@ -281,7 +288,7 @@ public final class UndoRedoManager {
      * or greater or equal to zero for a set number.
      */
     public static void setMaximumCommits(final long newMaximumCommits) {
-        UndoRedoManager.maximumCommits = newMaximumCommits;
+        maximumCommits = newMaximumCommits;
     }
 
     /**
@@ -389,8 +396,11 @@ public final class UndoRedoManager {
         model.getSkills().forEach(k -> UndoRedoManager.add(k));
         model.getProjects().forEach(l -> UndoRedoManager.add(l));
         model.getReleases().forEach(r -> UndoRedoManager.add(r));
-        model.getStories().forEach(s -> UndoRedoManager.add(s));
-        model.getStories().forEach(s -> s.getAcceptanceCriteria().forEach(ac -> UndoRedoManager.add(ac)));
+        model.getStories().forEach(s -> {
+            UndoRedoManager.add(s);
+            s.getAcceptanceCriteria().forEach(ac -> UndoRedoManager.add(ac));
+            s.getTasks().forEach(task -> UndoRedoManager.add(task));
+        });
         model.getBacklogs().forEach(b -> UndoRedoManager.add(b));
         model.getSprints().forEach(s -> UndoRedoManager.add(s));
         commit("open project");
@@ -402,6 +412,6 @@ public final class UndoRedoManager {
      * @return true if object is tracked, false otherwise.
      */
     public static boolean isAdded(final TrackableObject object) {
-        return objectsList.contains(object);
+        return addedObjects.contains(object);
     }
 }
