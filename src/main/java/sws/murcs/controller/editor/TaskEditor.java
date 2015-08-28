@@ -344,7 +344,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             creationBox = false;
             createButton.setVisible(false);
             toggleButton.setVisible(true);
-            editorController.addTask(task);
+            ((StoryEditor) editorController).addTask(task);
             toggleButtonClicked(null);
             separator.setVisible(true);
         }
@@ -376,9 +376,10 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     @FXML
     private void deleteButtonClicked(final ActionEvent event) {
+        StoryEditor editor = (StoryEditor) editorController;
         if (creationBox) {
-            editorController.removeTask(task);
-            editorController.removeTaskEditor(parent);
+            editor.removeTask(task);
+            editor.removeTaskEditor(parent);
             return;
         }
 
@@ -386,8 +387,8 @@ public class TaskEditor implements UndoRedoChangeListener {
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {
-            editorController.removeTask(task);
-            editorController.removeTaskEditor(parent);
+            editor.removeTask(task);
+            editor.removeTaskEditor(parent);
             popup.close();
         });
         popup.show();

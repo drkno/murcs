@@ -1,6 +1,5 @@
 package sws.murcs.controller.pipes;
 
-import javafx.scene.Parent;
 import sws.murcs.controller.editor.TaskEditor;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
@@ -18,18 +17,6 @@ public interface TaskEditorParent extends FormErrors {
      * @param task the task to remove.
      */
     void removeTask(Task task);
-
-    /**
-     * Remove the given view/editor from the parent editor.
-     * @param view the view/editor to remove
-     */
-    void removeTaskEditor(Parent view);
-
-    /**
-     * Add a new task to the parent editor.
-     * @param task the task to add.
-     */
-    void addTask(Task task);
 
     /**
      * Get all the tasks in the parent editor.
