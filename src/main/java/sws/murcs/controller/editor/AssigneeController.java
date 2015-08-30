@@ -2,9 +2,11 @@ package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
@@ -64,6 +66,8 @@ public class AssigneeController {
      * @param pPossibleAssignees The list of possible assignees.
      */
     public void setUp(final TaskEditor parent, final List<Person> pPossibleAssignees) {
+        currentAssigneesVBox.setSpacing(5.0);
+        recentlyUsedVBox.setSpacing(5.0);
         parentEditor = parent;
         recentAssignees = RecentlyUsedHelper.get().getRecentPeople();
         possibleAssignees = pPossibleAssignees;
@@ -123,15 +127,15 @@ public class AssigneeController {
      */
     private void addAssignee(final Person assignee) {
         Platform.runLater(() -> searchableComboBoxDecorator.remove(assignee));
-        HBox container = new HBox();
+        AnchorPane container = new AnchorPane();
         Button delete = new Button();
         delete.setText("X");
         delete.getStyleClass().addAll("mdr-button", "mdrd-button");
         delete.setOnAction((event) -> removeAssignee(assignee, container));
         Label personLabel = new Label(assignee.getShortName());
         container.getChildren().addAll(personLabel, delete);
-        //noinspection CheckStyle
-        container.setSpacing(5);
+        AnchorPane.setLeftAnchor(personLabel, 0.0);
+        AnchorPane.setRightAnchor(delete, 0.0);
         currentAssigneesVBox.getChildren().add(container);
         parentEditor.addAssignee(assignee);
         RecentlyUsedHelper.get().addToRecentPeople(assignee);
@@ -142,7 +146,7 @@ public class AssigneeController {
      * @param assignee the assignee to remove.
      * @param container the container to remove from the editor.
      */
-    private void removeAssignee(final Person assignee, final HBox container) {
+    private void removeAssignee(final Person assignee, final AnchorPane container) {
         currentAssigneesVBox.getChildren().remove(container);
         parentEditor.removeAssignee(assignee);
         Platform.runLater(() -> searchableComboBoxDecorator.add(assignee));
