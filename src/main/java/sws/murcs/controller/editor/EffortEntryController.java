@@ -118,6 +118,10 @@ public class EffortEntryController {
      * Updates the model object in memory.
      */
     private void update() {
+        if (effort == null) {
+            return;
+        }
+
         if (datePicker.getValue() != effort.getDate()) {
             effort.setDate(datePicker.getValue());
         }
@@ -233,12 +237,14 @@ public class EffortEntryController {
      * @param effort The effort for this controller to edit.
      */
     public void setEffort(final Effort effort) {
-        this.effort = effort;
+        this.effort = null;
 
         personComboBox.setValue(effort.getPerson());
         datePicker.setValue(effort.getDate());
         descriptionTextArea.setText(effort.getDescription());
         timeTextField.setText("" + effort.getEffort());
+
+        this.effort = effort;
 
         Platform.runLater(() -> updateErrors());
     }
