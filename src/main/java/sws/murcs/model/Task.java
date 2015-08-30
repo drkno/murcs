@@ -1,5 +1,13 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,13 +15,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import sws.murcs.magic.tracking.TrackableObject;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
 
 /**
  * A class for keeping track of a Task within a story.
@@ -44,7 +45,7 @@ public class Task extends TrackableObject implements Serializable {
      * The state that the task is currently in.
      */
     @TrackableValue
-    private TaskState state;
+    private TaskState state = TaskState.NotStarted;
 
     /**
      * The estimated time for this task.
@@ -53,9 +54,9 @@ public class Task extends TrackableObject implements Serializable {
     private EstimateInfo estimateInfo = new EstimateInfo();
 
     /**
-     * The people who are assigned to the task. These may just be the people overseeing its
-     * completion.
+     * The people who are assigned to the task. These may just be the people overseeing its completion.
      */
+    @TrackableValue
     private Collection<Person> assignees = new ArrayList<>();
 
     /**
@@ -140,7 +141,7 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
-     * Sets the estimated time remaining for the task
+     * Sets the estimated time remaining for the task.
      * @param newEstimate The estimated time remaining
      */
     public void setCurrentEstimate(final float newEstimate) {
@@ -178,7 +179,7 @@ public class Task extends TrackableObject implements Serializable {
      * Logs some effort.
      * @param effort The effort to log
      */
-    public final void logEffort(Effort effort) {
+    public final void logEffort(final Effort effort) {
         effortLogs.add(effort);
 
         commit("log effort");
@@ -188,9 +189,8 @@ public class Task extends TrackableObject implements Serializable {
      * Unlogs some effort.
      * @param effort The effort to remove
      */
-    public final void unlogEffort(Effort effort) {
+    public final void unlogEffort(final Effort effort) {
         effortLogs.remove(effort);
-
         commit("remove effort");
     }
 
@@ -208,12 +208,21 @@ public class Task extends TrackableObject implements Serializable {
         if (!(object instanceof Task)) {
             return false;
         }
+        boolean same;
+        Task objectTask = (Task) object;
         String shortName = getName();
-        String shortNameO = ((Task) object).getName();
+        String shortNameO = objectTask.getName();
         if (shortName == null || shortNameO == null) {
-            return Objects.equals(shortName, shortNameO);
+            same = Objects.equals(shortName, shortNameO);
         }
-        return shortName.equalsIgnoreCase(shortNameO.toLowerCase());
+        else {
+            same = shortName.equalsIgnoreCase(shortNameO);
+        }
+        same = same && objectTask.getCurrentEstimate() == getCurrentEstimate()
+                && Objects.equals(objectTask.getDescription(), getDescription())
+                && objectTask.getState().equals(getState())
+                && objectTask.getAssigneesAsString().equals(getAssigneesAsString());
+        return same;
     }
 
     @Override
@@ -230,10 +239,18 @@ public class Task extends TrackableObject implements Serializable {
         return state + " (" + getCurrentEstimate() + "): " + name + " - " + description;
     }
 
+    /**
+     * Gets the list of all the people assigned to the task.
+     * @return the list of all people assigned to the task.
+     */
     public Collection<Person> getAssignees() {
         return assignees;
     }
 
+    /**
+     * Gets a string representation of all the people assigned to the task.
+     * @return all the people assigned to the task seperated by a comma.
+     */
     public String getAssigneesAsString() {
         return assignees.stream().map(Person::getShortName).collect(Collectors.joining(", "));
     }

@@ -168,7 +168,7 @@ public class ReportGeneratorTest {
         Task task = new Task();
         task.setName("Become one with the universe");
         task.setCurrentEstimate(100);
-        task.setState(TaskState.Blocked);
+        task.setState(TaskState.InProgress);
         task.setDescription("Attempt to absorb the universe, this probably won't work");
         story.addTask(task);
 

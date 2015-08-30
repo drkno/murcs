@@ -1,14 +1,20 @@
 package sws.murcs.controller.editor;
 
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for SprintContainer.
@@ -19,7 +25,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * The three tabs used to view a sprint.
      */
     @FXML
-    private Tab overviewTab, scrumBoardTab, burnDownChartTab;
+    private Tab overviewTab, scrumBoardTab, burnDownChartTab, allTasksTab;
 
     /**
      * The tab pane that the tabs sit in.
@@ -27,24 +33,29 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @FXML
     private TabPane containerTabPane;
 
-    @FXML AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
+    /**
+     * The anchor panges where the content for each tab is.
+     */
+    @FXML
+    private AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
 
     /**
      * The editor of the overview.
      */
     private SprintEditor overviewEditor;
 
-    private SprintAllTasksController allTasksController;
-
     /**
-     * Creates a new Sprint Container editor.
+     * The controller for the all tasks view in the sprint.
      */
-    public SprintContainer() {
-        super();
-    }
+    private SprintAllTasksController allTasksController;
 
     @Override
     protected final void initialize() {
+        containerTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.equals(oldValue)) {
+                tabSelectionChanged(newValue);
+            }
+        });
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
@@ -62,16 +73,44 @@ public class SprintContainer extends GenericEditor<Sprint> {
     @Override
     public final void loadObject() {
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
-        if (tab == 0) {
+
+        switch (tab) {
+            case 0:
+                overviewTabSelected();
+                break;
+            case 1:
+                scrumBoardTabSelected();
+                break;
+            case 2:
+                burnDownChartTabSelected();
+                break;
+            case 3:
+                if (!isLoaded) {
+                    allTasksTabSelected();
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
+        }
+        isLoaded = true;
+    }
+
+
+    /**
+     * Called when the tab selected is changed.
+     * @param tab the new tab that has been selected.
+     */
+    private void tabSelectionChanged(final Tab tab) {
+        if (tab.equals(overviewTab)) {
             overviewTabSelected();
         }
-        else if (tab == 1) {
+        else if (tab.equals(scrumBoardTab)) {
             scrumBoardTabSelected();
         }
-        else if (tab == 2) {
+        else if (tab.equals(burnDownChartTab)) {
             burnDownChartTabSelected();
         }
-        else if (tab == 3) {
+        else if (tab.equals(allTasksTab)) {
             allTasksTabSelected();
         }
     }
@@ -79,7 +118,6 @@ public class SprintContainer extends GenericEditor<Sprint> {
     /**
      * Loads this sprints overview into the overview tab.
      */
-    @FXML
     private void overviewTabSelected() {
         if (getModel() != null) {
             overviewEditor.setModel(getModel());
@@ -90,20 +128,20 @@ public class SprintContainer extends GenericEditor<Sprint> {
     /**
      * Loads this sprints scrum board into the scrum board tab.
      */
-    @FXML
     private void scrumBoardTabSelected() {
-        // Currently doesn't do anything as there is no scrum board chart to load
+        // todo Currently doesn't do anything as there is no scrum board chart to load
     }
 
     /**
      * Loads this sprints burn down chart into the burn down tab.
      */
-    @FXML
     private void burnDownChartTabSelected() {
-        // Currently doesn't do anything as there is no burndown chart to load
+        // todo Currently doesn't do anything as there is no burndown chart to load
     }
 
-    @FXML
+    /**
+     * Called when the all tasks tab has been selected.
+     */
     private void allTasksTabSelected() {
         if (allTasksController == null) {
             try {
@@ -116,6 +154,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 AnchorPane.setBottomAnchor(view, 0.0);
                 allTasksController = loader.getController();
                 allTasksController.setModel(getModel());
+                allTasksController.setNavigationManager(getNavigationManager());
                 allTasksController.loadObject();
             } catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
@@ -124,6 +163,14 @@ public class SprintContainer extends GenericEditor<Sprint> {
         else if (allTasksController.getModel() != getModel()) {
             allTasksController.setModel(getModel());
             allTasksController.loadObject();
+        }
+        else {
+            List<Story> checkList = new ArrayList<Story>();
+            checkList.addAll(getModel().getStories());
+            checkList.retainAll(allTasksController.currentStories());
+            if (checkList.size() != getModel().getStories().size()) {
+                allTasksController.loadObject();
+            }
         }
     }
 
@@ -148,5 +195,18 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.dispose();
         }
         //Makes sure to add dispose methods for the other tabs.
+    }
+
+    @Override
+    public void setNavigationManager(final Navigable navigationManager) {
+        overviewEditor.setNavigationManager(navigationManager);
+        if (allTasksController != null) {
+            allTasksController.setNavigationManager(navigationManager);
+        }
+        super.setNavigationManager(navigationManager);
+    }
+
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
     }
 }

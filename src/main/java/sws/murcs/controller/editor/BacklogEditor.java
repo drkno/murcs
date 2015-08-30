@@ -40,10 +40,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * Controller for the model creator popup window.
  * Since there should only be one instance of this PopUp

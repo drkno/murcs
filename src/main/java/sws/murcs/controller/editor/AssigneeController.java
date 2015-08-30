@@ -57,7 +57,13 @@ public class AssigneeController {
      */
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
-    public void setUp(final TaskEditor parent, List<Person> pPossibleAssignees) {
+    /**
+     * Sets up the assignee controller initially with the list of possible assignees and the task editor that the
+     * assignee controller belongs to.
+     * @param parent It's parent controller.
+     * @param pPossibleAssignees The list of possible assignees.
+     */
+    public void setUp(final TaskEditor parent, final List<Person> pPossibleAssignees) {
         parentEditor = parent;
         recentAssignees = RecentlyUsedHelper.get().getRecentPeople();
         possibleAssignees = pPossibleAssignees;
@@ -81,14 +87,25 @@ public class AssigneeController {
         addAssignees(assignees);
     }
 
-    private void addAssignees(Collection<Person> people) {
+    /**
+     * Adds the given list of people to the assignees section.
+     * @param people The people to add.
+     */
+    private void addAssignees(final Collection<Person> people) {
         people.stream().forEach(person -> Platform.runLater(() -> addAssignee(person)));
     }
 
+    /**
+     * Adds all of the recent people as button options.
+     */
     private void addRecentPeople() {
-        recentAssignees.stream().filter(person -> possibleAssignees.contains(person)).forEach(this::addRecentButton);
+        recentAssignees.stream().filter(possibleAssignees::contains).forEach(this::addRecentButton);
     }
 
+    /**
+     * Adds a given person to the list of buttons for recently used people.
+     * @param assignee the person to create the button for.
+     */
     private void addRecentButton(final Person assignee) {
         Button button = new Button();
         button.setText(assignee.getShortName());
@@ -100,7 +117,11 @@ public class AssigneeController {
         recentlyUsedVBox.getChildren().add(button);
     }
 
-    private void addAssignee(Person assignee) {
+    /**
+     * Adds an assignee to the list of assignees and updates the main controller to reflect this as well.
+     * @param assignee the assignee to add to the task.
+     */
+    private void addAssignee(final Person assignee) {
         Platform.runLater(() -> searchableComboBoxDecorator.remove(assignee));
         HBox container = new HBox();
         Button delete = new Button();
@@ -109,17 +130,21 @@ public class AssigneeController {
         delete.setOnAction((event) -> removeAssignee(assignee, container));
         Label personLabel = new Label(assignee.getShortName());
         container.getChildren().addAll(personLabel, delete);
+        //noinspection CheckStyle
         container.setSpacing(5);
         currentAssigneesVBox.getChildren().add(container);
         parentEditor.addAssignee(assignee);
         RecentlyUsedHelper.get().addToRecentPeople(assignee);
     }
 
-    private void removeAssignee(Person assignee, HBox container) {
+    /**
+     * Removes an assignee from the parent task and the assignee editor.
+     * @param assignee the assignee to remove.
+     * @param container the container to remove from the editor.
+     */
+    private void removeAssignee(final Person assignee, final HBox container) {
         currentAssigneesVBox.getChildren().remove(container);
         parentEditor.removeAssignee(assignee);
         Platform.runLater(() -> searchableComboBoxDecorator.add(assignee));
     }
-
-
 }

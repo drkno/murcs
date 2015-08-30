@@ -448,7 +448,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(story.toString());
-            nameLink.setOnAction(a -> getNavigationManager().navigateTo(story));
+            nameLink.setOnAction(a ->
+                    getNavigationManager().navigateTo(story));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);
