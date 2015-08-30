@@ -2,8 +2,11 @@ package sws.murcs.controller.editor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
@@ -40,6 +43,12 @@ public class EffortEntryController {
     private ComboBox personComboBox;
 
     /**
+     * The action button.
+     */
+    @FXML
+    private Button actionButton;
+
+    /**
      * The root node of this editor.
      */
     private Parent root;
@@ -58,6 +67,11 @@ public class EffortEntryController {
      * Indicates whether the form has errors.
      */
     private boolean hasErrors;
+
+    /**
+     * A callback for when the add/remove button is clicked.
+     */
+    private Consumer<EffortEntryController> action;
 
     /**
      * Initializes the editor.
@@ -99,6 +113,16 @@ public class EffortEntryController {
                 //TODO display an error.
             }
         });
+    }
+
+    /**
+     * Called when the action button is clicked.
+     * @param event The event
+     */
+    @FXML
+    private void actionButtonClicked(ActionEvent event) {
+        if (action == null) return;
+        action.accept(this);
     }
 
     /**
@@ -150,6 +174,14 @@ public class EffortEntryController {
     }
 
     /**
+     * Sets the action for when the button is clicked.
+     * @param action The action.
+     */
+    public void setOnAction(Consumer<EffortEntryController> action) {
+        this.action = action;
+    }
+
+    /**
      * Indicates whether the form is valid.
      * @return whether the form is valid.
      */
@@ -162,5 +194,23 @@ public class EffortEntryController {
      */
     private List<Person> getEligibleWorkers() {
         return effortController.getEligibleWorkers();
+    }
+
+    /**
+     * Makes the action button look like an add button.
+     */
+    public void styleAsAddButton() {
+        actionButton.getStyleClass().addAll("mdga-button");
+        actionButton.getStyleClass().removeAll("mdrd-button");
+        actionButton.setText("+");
+    }
+
+    /**
+     * Makes the action button look like a remove button.
+     */
+    public void styleAsRemoveButton() {
+        actionButton.getStyleClass().addAll("mdrd-button");
+        actionButton.getStyleClass().removeAll("mdga-button");
+        actionButton.setText("X");
     }
 }

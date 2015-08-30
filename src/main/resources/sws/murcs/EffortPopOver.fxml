@@ -9,11 +9,14 @@
    <children>
       <ScrollPane hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
-            <VBox fx:id="contentVBox" alignment="TOP_RIGHT" prefHeight="290.0" prefWidth="490.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox fx:id="contentVBox" prefHeight="290.0" prefWidth="490.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#addButtonClick" text="Add" />
+                  <Label text="Log Effort" />
                   <Separator prefWidth="200.0" />
-                  <VBox fx:id="effortsVBox" spacing="10.0" VBox.vgrow="ALWAYS" />
+                  <VBox fx:id="effortsVBox" spacing="10.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label text="Spent Effort" />
+                     </children></VBox>
                </children>
             </VBox>
          </content>

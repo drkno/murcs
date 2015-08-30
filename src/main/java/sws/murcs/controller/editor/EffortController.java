@@ -2,11 +2,11 @@ package sws.murcs.controller.editor;
 
 import java.io.IOException;
 import java.util.List;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
@@ -53,6 +53,8 @@ public class EffortController {
 
         createController = newEffortEntryController();
         createController.setEffort(new Effort());
+        createController.styleAsAddButton();
+        createController.setOnAction(this::add);
 
         contentVBox.getChildren().add(0, createController.getRoot());
 
@@ -72,6 +74,9 @@ public class EffortController {
             EffortEntryController controller = effortEntryControllerLoader.getController();
             controller.setEffortController(this);
             controller.setRoot(root);
+            controller.styleAsRemoveButton();
+            controller.setOnAction(this::remove);
+
             return controller;
         }catch (IOException e) {
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't load EffortEntryController :'(");
@@ -88,22 +93,32 @@ public class EffortController {
     }
 
     /**
-     * Called when the "Add" button is clicked.
-     * @param event The event that called this method
+     * A method handling creation of new effort entries
+     * @param addController The controller that has created the new effort entry
      */
-    @FXML
-    private void addButtonClick(final ActionEvent event) {
+    private void add(final EffortEntryController addController) {
         //TODO Perhaps we should grey out the add button? We should also make the "hasErrors" method work...
-        if (createController.hasErrors()) return;
+        if (addController.hasErrors()) return;
 
-        parentEditor.getTask().logEffort(createController.getEffort());
+        parentEditor.getTask().logEffort(addController.getEffort());
 
         EffortEntryController controller = newEffortEntryController();
-        controller.setEffort(createController.getEffort());
+        controller.setEffort(addController.getEffort());
 
         //Clear the creation controller.
-        createController.setEffort(new Effort());
+        addController.setEffort(new Effort());
 
         effortsVBox.getChildren().add(0, controller.getRoot());
+    }
+
+    /**
+     * Removes effort from the task
+     * @param removeController The controller of the task being removed
+     */
+    private void remove(final EffortEntryController removeController) {
+        GenericPopup confirmPopup = new GenericPopup();
+       // confirmPopup.
+        parentEditor.getTask().unlogEffort(removeController.getEffort());
+        effortsVBox.getChildren().remove(removeController.getRoot());
     }
 }
