@@ -293,6 +293,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             stateChoiceBox.getStyleClass().removeAll("not-started", "in-progress");
             stateChoiceBox.getStyleClass().add("done");
         }
+        editor.requestFocus();
     }
 
     /**
@@ -410,12 +411,16 @@ public class TaskEditor implements UndoRedoChangeListener {
                 AssigneeController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
+                assigneePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        editorController.changesMade(this);
+                    }
+                });
             }
             catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Could not create a assignee popover");
             }
         }
-
         assigneePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
         assigneePopOver.show(editAssignedButton);
     }
@@ -427,7 +432,6 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void addAssignee(final Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
-        editorController.changesMade(this);
     }
 
     /**
@@ -437,7 +441,6 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void removeAssignee(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
-        editorController.changesMade(this);
     }
 
     /**

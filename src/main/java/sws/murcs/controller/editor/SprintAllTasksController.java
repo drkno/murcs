@@ -15,7 +15,12 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -219,20 +224,24 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     public void changesMade(final TaskEditor editor) {
         tasksVBox.getChildren().clear();
         clearStoryContainers();
-        sortAllTasks(currentOrderBy);
+        if (currentOrderBy != OrderBy.Obfuscation) {
+            sortAllTasks(currentOrderBy);
+        }
         updateAndAddVisibleNodes(currentFilterBy);
-        //Note that this currently does not work at all.
-        double yPos;
         if (currentGroupBy == GroupBy.Story) {
             addStoryContainers();
-            yPos = editor.getParent().getBoundsInParent().getMinY()
-                    + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
         }
-        else {
-            yPos = editor.getParent().getBoundsInParent().getMinY();
-        }
-        double ratio = yPos / tasksVBox.getBoundsInParent().getMaxY();
-        Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
+        //This was supposed to scroll to the new location of the task but it doesn't work.
+//        double yPos;
+//        if (currentGroupBy == GroupBy.Story) {
+//            addStoryContainers();
+//            yPos = editor.getParent().getBoundsInParent().getMinY() + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
+//        }
+//        else {
+//            yPos = editor.getParent().getBoundsInParent().getMinY();
+//        }
+//        double ratio = yPos / tasksVBox.getBoundsInParent().getMaxY();
+//        Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
     }
 
 
