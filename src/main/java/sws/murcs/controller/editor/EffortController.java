@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
-import sws.murcs.controller.GenericPopup;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
@@ -55,13 +54,17 @@ public class EffortController {
         createController.setEffort(new Effort());
         createController.styleAsAddButton();
         createController.setOnAction(this::add);
+        createController.getHasErrorsProperty().addListener((observable, oldValue, newValue) -> {
+            createController.setActionDisabled(newValue);
+        });
 
-        contentVBox.getChildren().add(0, createController.getRoot());
+        contentVBox.getChildren().add(1, createController.getRoot());
 
         for (Effort e : parentEditor.getTask().getEffort()) {
             EffortEntryController controller = newEffortEntryController();
             controller.setEffort(e);
-            effortsVBox.getChildren().add(0, controller.getRoot());
+
+            effortsVBox.getChildren().add(1, controller.getRoot());
         }
     }
 
@@ -97,8 +100,7 @@ public class EffortController {
      * @param addController The controller that has created the new effort entry
      */
     private void add(final EffortEntryController addController) {
-        //TODO Perhaps we should grey out the add button? We should also make the "hasErrors" method work...
-        if (addController.hasErrors()) return;
+        if (addController.getHasErrorsProperty().get()) return;
 
         parentEditor.getTask().logEffort(addController.getEffort());
 
@@ -108,7 +110,7 @@ public class EffortController {
         //Clear the creation controller.
         addController.setEffort(new Effort());
 
-        effortsVBox.getChildren().add(0, controller.getRoot());
+        effortsVBox.getChildren().add(1, controller.getRoot());
     }
 
     /**
@@ -116,8 +118,6 @@ public class EffortController {
      * @param removeController The controller of the task being removed
      */
     private void remove(final EffortEntryController removeController) {
-        GenericPopup confirmPopup = new GenericPopup();
-       // confirmPopup.
         parentEditor.getTask().unlogEffort(removeController.getEffort());
         effortsVBox.getChildren().remove(removeController.getRoot());
     }

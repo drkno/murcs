@@ -3,6 +3,8 @@ package sws.murcs.controller.editor;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -66,7 +68,7 @@ public class EffortEntryController {
     /**
      * Indicates whether the form has errors.
      */
-    private boolean hasErrors;
+    private SimpleBooleanProperty hasErrorsProperty = new SimpleBooleanProperty(true);
 
     /**
      * A callback for when the add/remove button is clicked.
@@ -84,18 +86,21 @@ public class EffortEntryController {
             if (!newValue && datePicker.getValue() != effort.getDate()) {
                 effort.setDate(datePicker.getValue());
             }
+            updateErrors();
         });
 
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && descriptionTextArea.getText() != null && !descriptionTextArea.getText().equals(effort.getDescription())) {
                 effort.setDescription(descriptionTextArea.getText());
             }
+            updateErrors();
         });
 
         personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != oldValue && newValue != null && !newValue.equals(effort.getPerson())) {
                 effort.setPerson((Person) newValue);
             }
+            updateErrors();
         });
 
         timeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -110,9 +115,64 @@ public class EffortEntryController {
                     effort.setEffort(time);
                 }
             } catch (Exception e) {
-                //TODO display an error.
+                //Do nothing, we handle this not being a numbe in the "updateErrors" method.
             }
+            updateErrors();
         });
+    }
+
+    private void updateErrors() {
+        boolean notEdited = datePicker.getValue() == null
+                && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
+                && personComboBox.getValue() == null
+                && timeTextField.getText().equals("0.0");
+        //If we haven't touched the form yet, don't highlight errors but set the flag.
+        if (notEdited) {
+            hasErrorsProperty.set(true);
+            return;
+        }
+
+        boolean errors = false;
+
+        if (datePicker.getValue() == null || effort.getDate() == null) {
+            datePicker.getStyleClass().add("error");
+        } else {
+            datePicker.getStyleClass().removeAll("error");
+            errors = true;
+        }
+
+        if (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty()) {
+            descriptionTextArea.getStyleClass().add("error");
+        } else {
+            descriptionTextArea.getStyleClass().removeAll("error");
+            errors = true;
+        }
+
+        if (personComboBox.getValue() == null || effort.getPerson() == null) {
+            personComboBox.getStyleClass().add("error");
+        } else {
+            personComboBox.getStyleClass().removeAll("error");
+            errors = true;
+        }
+
+        boolean validTime = true;
+        try {
+            float time = Float.parseFloat(timeTextField.getText());
+            if (time < 0) {
+                validTime = false;
+            }
+        } catch (Exception e) {
+            validTime = false;
+        }   finally {
+            if (!validTime) {
+                timeTextField.getStyleClass().add("error");
+            } else {
+                timeTextField.getStyleClass().removeAll("error");
+                errors = true;
+            }
+        }
+
+        hasErrorsProperty.set(errors);
     }
 
     /**
@@ -121,6 +181,7 @@ public class EffortEntryController {
      */
     @FXML
     private void actionButtonClicked(ActionEvent event) {
+        updateErrors();
         if (action == null) return;
         action.accept(this);
     }
@@ -152,6 +213,8 @@ public class EffortEntryController {
         datePicker.setValue(effort.getDate());
         descriptionTextArea.setText(effort.getDescription());
         timeTextField.setText("" + effort.getEffort());
+
+        Platform.runLater(() -> updateErrors());
     }
 
     /**
@@ -182,11 +245,19 @@ public class EffortEntryController {
     }
 
     /**
+     * Disables or enables the action button.
+     * @param disableAction Whether the action button should be disabled.
+     */
+    public void setActionDisabled(boolean disableAction) {
+        actionButton.setDisable(disableAction);
+    }
+
+    /**
      * Indicates whether the form is valid.
      * @return whether the form is valid.
      */
-    public boolean hasErrors() {
-        return hasErrors || effort.getDate() == null || effort.getPerson() == null;
+    public SimpleBooleanProperty getHasErrorsProperty() {
+        return hasErrorsProperty;
     }
 
     /**
