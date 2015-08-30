@@ -1,7 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +30,7 @@ import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -95,7 +95,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * The minimise editor, delete task, create and edit assignees buttons.
      */
     @FXML
-    private Button toggleButton, createButton, editAssignedButton;
+    private Button toggleButton, createButton, editAssignedButton, logEffortButton;
 
     /**
      * The state choice boxes.
@@ -198,15 +198,15 @@ public class TaskEditor implements UndoRedoChangeListener {
             descriptionTextArea.setText(newTask.getDescription());
         }
         updateAssigneesLabel();
-        updateAddAssigneesButton();
+        updateAssigneeButtons();
     }
 
     /**
-     * Updates whether or not you should be able to set assignees for the task, based on if there are any possible
-     * people that you can have as assignees. These are people who are in any of the teams that are assigned to any of
-     * the sprints the story is in.
+     * Updates whether or not you should be able to set assignees for the task, and whether you should be able to log
+     * effort, based on if there are any possible people that you can have as assignees. These are people who are in
+     * any of the teams that are assigned to any of the sprints the story is in.
      */
-    private void updateAddAssigneesButton() {
+    private void updateAssigneeButtons() {
         if (getStory() != null) {
             possibleAssignees = new ArrayList<>();
             List<Sprint> sprints = UsageHelper.findUsages(getStory())
@@ -219,6 +219,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             }
         }
         editAssignedButton.setDisable(true);
+        logEffortButton.setDisable(true);
         assigneesLabel.setText("To add assignees this story must be in a sprint with a team assigned to it");
     }
 
@@ -431,7 +432,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     @FXML
     private void logEffortButtonClick(final ActionEvent event) {
-        updateAddAssigneesButton();
+        updateAssigneeButtons();
         if (effortPopOver == null) {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));

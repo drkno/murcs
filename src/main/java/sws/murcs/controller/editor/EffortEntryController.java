@@ -15,7 +15,7 @@ import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
 
 /**
- * A controller for editing effort entries
+ * A controller for editing effort entries.
  */
 public class EffortEntryController {
     /**
@@ -94,7 +94,7 @@ public class EffortEntryController {
 
         personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != oldValue && newValue != null && !newValue.equals(effort.getPerson())) {
-                effort.setPerson((Person)newValue);
+                effort.setPerson((Person) newValue);
             }
         });
 
@@ -166,7 +166,7 @@ public class EffortEntryController {
      * Sets the effort controller.
      * @param controller The effort controller.
      */
-    public void setEffortController(EffortController controller) {
+    public void setEffortController(final EffortController controller) {
         this.effortController = controller;
 
         personComboBox.getItems().clear();
