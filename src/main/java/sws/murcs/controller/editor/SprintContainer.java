@@ -34,7 +34,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private TabPane containerTabPane;
 
     /**
-     * The anchor panges where the content for each tab is.
+     * The anchor panes where the content for each tab is.
      */
     @FXML
     private AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
@@ -48,6 +48,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * The controller for the all tasks view in the sprint.
      */
     private SprintAllTasksController allTasksController;
+
+    /**
+     * The burndown controller.
+     */
+    private BurndownController burndownController;
 
     @Override
     protected final void initialize() {
@@ -136,7 +141,21 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints burn down chart into the burn down tab.
      */
     private void burnDownChartTabSelected() {
-        // todo Currently doesn't do anything as there is no burndown chart to load
+        if (burndownController == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
+                Parent view = loader.load();
+                burnDownChartTab.setContent(view);
+
+                burndownController = loader.getController();
+                burndownController.setModel(getModel());
+                burndownController.setNavigationManager(getNavigationManager());
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Failed to load the burndown tab in sprints.");
+            }
+        }
+
+        burndownController.loadObject();
     }
 
     /**

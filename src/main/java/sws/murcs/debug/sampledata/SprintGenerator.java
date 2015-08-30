@@ -1,5 +1,9 @@
 package sws.murcs.debug.sampledata;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.NotReadyException;
@@ -7,12 +11,8 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.Team;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Generates random Sprints with stories.
@@ -400,7 +400,13 @@ public class SprintGenerator implements Generator<Sprint> {
                 int numStories = GenerationHelper.random(stories.size() + 1);
                 for (int i = 0; i < numStories; i++) {
                     try {
-                        sprint.addStory(stories.remove(GenerationHelper.random(stories.size())));
+                        Story story = stories.remove(GenerationHelper.random(stories.size()));
+                        for (Task task : story.getTasks()) {
+                            Float current = task.getEstimateInfo().getCurrentEstimate();
+                            task.getEstimateInfo().getEstimates().clear();
+                            task.getEstimateInfo().setEstimateForDay(current, sprint.getStartDate());
+                        }
+                        sprint.addStory(story);
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
                     }
