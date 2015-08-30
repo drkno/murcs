@@ -83,44 +83,68 @@ public class EffortEntryController {
         datePicker.setValue(LocalDate.now());
 
         datePicker.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue && datePicker.getValue() != effort.getDate()) {
-                effort.setDate(datePicker.getValue());
-            }
+            if (newValue) return;
+
+            update();
             updateErrors();
         });
 
         descriptionTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue && descriptionTextArea.getText() != null && !descriptionTextArea.getText().equals(effort.getDescription())) {
-                effort.setDescription(descriptionTextArea.getText());
-            }
+            if (newValue) return;
+
+            update();
             updateErrors();
         });
 
         personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != oldValue && newValue != null && !newValue.equals(effort.getPerson())) {
-                effort.setPerson((Person) newValue);
-            }
+            update();
             updateErrors();
         });
 
         timeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            //If we have selected the form, no need to update
-            if (newValue) {
-                return;
-            }
+            if (newValue) return;
 
-            try {
-                float time = Float.parseFloat(timeTextField.getText());
-                if (effort.getEffort() != time) {
-                    effort.setEffort(time);
-                }
-            } catch (Exception e) {
-                //Do nothing, we handle this not being a numbe in the "updateErrors" method.
-            }
+            update();
             updateErrors();
         });
+
+        //Update the errors as we type.
+        descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) ->
+                updateErrors());
+        timeTextField.textProperty().addListener((observable, oldValue, newValue) -> updateErrors());
     }
 
+    /**
+     * Updates the model object in memory.
+     */
+    private void update() {
+        if (datePicker.getValue() != effort.getDate()) {
+            effort.setDate(datePicker.getValue());
+        }
+
+        if (descriptionTextArea.getText() != null
+                && !descriptionTextArea.getText().equals(effort.getDescription())
+                && !descriptionTextArea.getText().isEmpty()) {
+            effort.setDescription(descriptionTextArea.getText());
+        }
+
+        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effort.getPerson())) {
+            effort.setPerson((Person) personComboBox.getValue());
+        }
+
+        try {
+            float time = Float.parseFloat(timeTextField.getText());
+            if (effort.getEffort() != time) {
+                effort.setEffort(time);
+            }
+        } catch (Exception e) {
+            //Do nothing, we handle this not being invalid in the "updateErrors" method.
+        }
+    }
+
+    /**
+     * Updates the errors on the form.
+     */
     private void updateErrors() {
         boolean notEdited = datePicker.getValue() == null
                 && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
@@ -181,7 +205,9 @@ public class EffortEntryController {
      */
     @FXML
     private void actionButtonClicked(ActionEvent event) {
+        update();
         updateErrors();
+
         if (action == null) return;
         action.accept(this);
     }
