@@ -843,7 +843,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     }
 
     @Override
-    public void changesMade(final TaskEditor editor) {
+    public void changesMade() {
         //We do not care if changes are made in this editor.
     }
 

@@ -85,9 +85,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 burnDownChartTabSelected();
                 break;
             case 3:
-                if (!isLoaded) {
-                    allTasksTabSelected();
-                }
+                allTasksTabSelected();
                 break;
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
@@ -170,6 +168,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
             checkList.retainAll(allTasksController.currentStories());
             if (checkList.size() != getModel().getStories().size()) {
                 allTasksController.loadObject();
+            }
+            else {
+                allTasksController.updateEditors();
             }
         }
     }

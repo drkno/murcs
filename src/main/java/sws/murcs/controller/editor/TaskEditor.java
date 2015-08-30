@@ -230,13 +230,11 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void saveChanges() {
         editorController.clearErrors("tasks");
-        boolean changes = false;
         // Check name
         String name = nameTextField.getText();
         if (name != null && !nameExists(name) && !name.isEmpty()) {
             if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
-                changes = true;
             }
         }
         else {
@@ -250,7 +248,6 @@ public class TaskEditor implements UndoRedoChangeListener {
             Float estimate = Float.parseFloat(estimateTextField.getText());
             if (estimate != task.getEstimate()) {
                 task.setEstimate(estimate);
-                changes = true;
             }
         }
         catch (NumberFormatException e) {
@@ -261,17 +258,12 @@ public class TaskEditor implements UndoRedoChangeListener {
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
         if (state != task.getState()) {
             task.setState(state);
-            changes = true;
         }
 
         // Check description on maximized description field
         String description = descriptionTextArea.getText();
         if (!Objects.equals(description, task.getDescription())) {
             task.setDescription(description);
-        }
-
-        if (changes) {
-            editorController.changesMade(this);
         }
     }
 
@@ -377,10 +369,11 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     @FXML
     private void deleteButtonClicked(final ActionEvent event) {
-        StoryEditor editor = (StoryEditor) editorController;
         if (creationBox) {
-            editor.removeTask(task);
-            editor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            if (editorController instanceof StoryEditor) {
+                ((StoryEditor) editorController).removeTaskEditor(parent);
+            }
             return;
         }
 
@@ -388,8 +381,10 @@ public class TaskEditor implements UndoRedoChangeListener {
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {
-            editor.removeTask(task);
-            editor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            if (editorController instanceof StoryEditor) {
+                ((StoryEditor) editorController).removeTaskEditor(parent);
+            }
             popup.close();
         });
         popup.show();
@@ -413,7 +408,7 @@ public class TaskEditor implements UndoRedoChangeListener {
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
                 assigneePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
                     if (!newValue) {
-                        editorController.changesMade(this);
+                        editorController.changesMade();
                     }
                 });
             }
@@ -463,9 +458,17 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             synchronized (StyleManager.getInstance()) {
-                configure(task, creationBox, parent, editorController);
+                update();
             }
         }
+    }
+
+    public void update() {
+        configure(task, creationBox, parent, editorController);
+    }
+
+    public boolean isPopOverOpen() {
+        return assigneePopOver == null ? false : assigneePopOver.isShowing();
     }
 
     /**

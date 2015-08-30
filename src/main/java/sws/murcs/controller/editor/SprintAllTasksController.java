@@ -28,6 +28,27 @@ import java.util.stream.Collectors;
  */
 public class SprintAllTasksController extends GenericEditor<Sprint> implements TaskEditorParent {
 
+    public void updateEditors() {
+        List<Task> tempTasks = new ArrayList<>();
+        getModel().getStories().forEach(story -> tempTasks.addAll(story.getTasks()));
+        tempTasks.retainAll(allTasks);
+        if (allTasks.size() != tempTasks.size()) {
+            loadObject();
+        }
+        else {
+            final boolean[] popoverOpen = {false};
+            allTaskEditors.values().forEach(editor -> {
+                if (editor.isPopOverOpen()) {
+                    popoverOpen[0] = true;
+                }
+                editor.update();
+            });
+            if (!popoverOpen[0]) {
+                changesMade();
+            }
+        }
+    }
+
     //region FiltrationEnums
 
     /**
@@ -221,7 +242,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     }
 
     @Override
-    public void changesMade(final TaskEditor editor) {
+    public void changesMade() {
         tasksVBox.getChildren().clear();
         clearStoryContainers();
         if (currentOrderBy != OrderBy.Obfuscation) {
