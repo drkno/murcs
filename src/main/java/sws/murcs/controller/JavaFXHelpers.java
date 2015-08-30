@@ -11,6 +11,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -130,6 +131,13 @@ public final class JavaFXHelpers {
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
                 }
+            } else if (node instanceof TabPane) {
+                ((TabPane) node).getTabs().forEach(tab -> {
+                    Node content = tab.getContent();
+                    if (content != null) {
+                        findAndDestroyControls((Parent) content);
+                    }
+                });
             }
 
             node.setFocusTraversable(false);

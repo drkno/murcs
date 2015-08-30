@@ -18,5 +18,17 @@ public enum TaskState {
     /**
      * The task is completed.
      */
-    Done
+    Done;
+
+    @Override
+    public String toString() {
+        return super.toString().replaceAll(
+                String.format("%s|%s|%s",
+                        "(?<=[A-Z])(?=[A-Z][a-z])",
+                        "(?<=[^A-Z])(?=[A-Z])",
+                        "(?<=[A-Za-z])(?=[^A-Za-z])"
+                ),
+                " "
+        );
+    }
 }
