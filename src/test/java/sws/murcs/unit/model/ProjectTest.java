@@ -18,7 +18,7 @@ public class ProjectTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         projectGenerator = new ProjectGenerator();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @Before

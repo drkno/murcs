@@ -66,7 +66,7 @@ public class PersistenceManagerTest {
         manager = new PersistenceManager(new TestLoader());
         PersistenceManager.setCurrent(manager);
         generator = new OrganisationGenerator(OrganisationGenerator.Stress.Low);
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @Test
