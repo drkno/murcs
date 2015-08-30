@@ -27,6 +27,11 @@ public class Task extends TrackableObject implements Serializable {
     private final int hashCodePrime = 43;
 
     /**
+     * The hashcode of the object.
+     */
+    private Integer hashCode = null;
+
+    /**
      * The name associated with this Task.
      */
     @TrackableValue
@@ -177,11 +182,18 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final int hashCode() {
-        int c = 0;
-        if (getName() != null) {
-            c = getName().hashCode();
+        if (hashCode == null ) {
+            int c = 0;
+            if (getName() != null) {
+                c = getName().hashCode()
+                        + getDescription().hashCode()
+                        + getState().hashCode()
+                        + Float.hashCode(getEstimate())
+                        + getAssigneesAsString().hashCode();
+            }
+            hashCode = hashCodePrime + c;
         }
-        return hashCodePrime + c;
+        return hashCode;
     }
 
     @Override

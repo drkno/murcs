@@ -478,8 +478,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         else {
             visibleTasks.addAll(allTasks);
-            allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
-                    allTaskEditors.get(task).getStory(), null));
+            allTasks.forEach(task -> {
+                TaskEditor editor = allTaskEditors.get(task);
+                addTaskNode(allTaskEditors.get(task).getParent(),
+                        allTaskEditors.get(task).getStory(), null);
+            });
         }
     }
 
