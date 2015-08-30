@@ -136,23 +136,23 @@ public class EffortEntryController {
 
         if (datePicker.getValue() == null || effort.getDate() == null) {
             datePicker.getStyleClass().add("error");
+            errors = true;
         } else {
             datePicker.getStyleClass().removeAll("error");
-            errors = true;
         }
 
         if (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty()) {
             descriptionTextArea.getStyleClass().add("error");
+            errors = true;
         } else {
             descriptionTextArea.getStyleClass().removeAll("error");
-            errors = true;
         }
 
         if (personComboBox.getValue() == null || effort.getPerson() == null) {
             personComboBox.getStyleClass().add("error");
+            errors = true;
         } else {
             personComboBox.getStyleClass().removeAll("error");
-            errors = true;
         }
 
         boolean validTime = true;
@@ -166,9 +166,9 @@ public class EffortEntryController {
         }   finally {
             if (!validTime) {
                 timeTextField.getStyleClass().add("error");
+                errors = true;
             } else {
                 timeTextField.getStyleClass().removeAll("error");
-                errors = true;
             }
         }
 
