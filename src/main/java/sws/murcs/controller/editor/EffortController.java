@@ -59,7 +59,6 @@ public class EffortController {
         for (Effort e : parentEditor.getTask().getEffort()) {
             EffortEntryController controller = newEffortEntryController();
             controller.setEffort(e);
-
             effortsVBox.getChildren().add(0, controller.getRoot());
         }
     }
@@ -73,7 +72,8 @@ public class EffortController {
             controller.setEffortController(this);
             controller.setRoot(root);
             return controller;
-        }catch (IOException e) {
+        }
+        catch (IOException e) {
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't load EffortEntryController :'(");
         }
         return null;
