@@ -28,27 +28,6 @@ import java.util.stream.Collectors;
  */
 public class SprintAllTasksController extends GenericEditor<Sprint> implements TaskEditorParent {
 
-    public void updateEditors() {
-        List<Task> tempTasks = new ArrayList<>();
-        getModel().getStories().forEach(story -> tempTasks.addAll(story.getTasks()));
-        tempTasks.retainAll(allTasks);
-        if (allTasks.size() != tempTasks.size()) {
-            loadObject();
-        }
-        else {
-            final boolean[] popoverOpen = {false};
-            allTaskEditors.values().forEach(editor -> {
-                if (editor.isPopOverOpen()) {
-                    popoverOpen[0] = true;
-                }
-                editor.update();
-            });
-            if (!popoverOpen[0]) {
-                changesMade();
-            }
-        }
-    }
-
     //region FiltrationEnums
 
     /**
@@ -638,6 +617,30 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         else if (linkedStory != null) {
             ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
+        }
+    }
+
+    /**
+     * Updates all the data in the editors appropriately.
+     */
+    public void updateEditors() {
+        List<Task> tempTasks = new ArrayList<>();
+        getModel().getStories().forEach(story -> tempTasks.addAll(story.getTasks()));
+        tempTasks.retainAll(allTasks);
+        if (allTasks.size() != tempTasks.size()) {
+            loadObject();
+        }
+        else {
+            final boolean[] popoverOpen = {false};
+            allTaskEditors.values().forEach(editor -> {
+                if (editor.isPopOverOpen()) {
+                    popoverOpen[0] = true;
+                }
+                editor.update();
+            });
+            if (!popoverOpen[0]) {
+                changesMade();
+            }
         }
     }
 

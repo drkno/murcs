@@ -198,8 +198,8 @@ public class GenericPopup extends AnchorPane {
      * Sets up a window for the popup.
      */
     private void setupWindow() {
-        popupStage.initModality(Modality.WINDOW_MODAL);
-        popupStage.initOwner(App.getStage());
+        popupStage.initOwner(App.getWindowManager().getTop().getStage());
+        popupStage.initModality(Modality.APPLICATION_MODAL);
         window = new Window(popupStage, this, parentWindow);
         window.register();
     }

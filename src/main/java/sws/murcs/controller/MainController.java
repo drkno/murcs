@@ -274,6 +274,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
+        Window newWindow = new Window(stage, tabbable);
+        App.getWindowManager().addWindow(newWindow);
+
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());

@@ -372,7 +372,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         if (creationBox) {
             editorController.removeTask(task);
             if (editorController instanceof StoryEditor) {
-                ((StoryEditor) editorController).removeTaskEditor(parent);
+                ((StoryEditor) editorController).removeTaskEditor(this);
             }
             return;
         }
@@ -383,7 +383,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         popup.addYesNoButtons(() -> {
             editorController.removeTask(task);
             if (editorController instanceof StoryEditor) {
-                ((StoryEditor) editorController).removeTaskEditor(parent);
+                ((StoryEditor) editorController).removeTaskEditor(this);
             }
             popup.close();
         });

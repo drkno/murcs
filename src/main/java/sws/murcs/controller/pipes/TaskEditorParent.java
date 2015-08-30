@@ -36,4 +36,9 @@ public interface TaskEditorParent extends FormErrors {
      * @param editor the task editor that has had changes happen in it.
      */
     void changesMade();
+
+    /**
+     * Updates all the information in the task editors associated with this task editor parent.
+     */
+    void updateEditors();
 }
