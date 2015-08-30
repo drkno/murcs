@@ -155,7 +155,7 @@ public class EffortEntryController {
                 && personComboBox.getValue() == null
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
-        if (notEdited) {
+        if (notEdited || effort == null) {
             hasErrorsProperty.set(true);
             return;
         }
