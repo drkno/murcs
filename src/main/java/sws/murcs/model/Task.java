@@ -182,7 +182,7 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final int hashCode() {
-        if (hashCode == null ) {
+        if (hashCode == null) {
             int c = 0;
             if (getName() != null) {
                 c = getName().hashCode()

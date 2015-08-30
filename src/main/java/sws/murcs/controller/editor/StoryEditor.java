@@ -892,7 +892,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     /**
      * Removes the editor of a task.
-     * @param view The parent node of the task editor
+     * @param editor The editor of the task
      */
     public final void removeTaskEditor(final TaskEditor editor) {
         taskContainer.getChildren().remove(editor.getParent());

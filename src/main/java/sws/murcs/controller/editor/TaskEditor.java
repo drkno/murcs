@@ -463,10 +463,17 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
     }
 
+    /**
+     * Updates the values in the task editor if there have been external changes.
+     */
     public void update() {
         configure(task, creationBox, parent, editorController);
     }
 
+    /**
+     * Gets whether or not the assignees popover is open for this task editor.
+     * @return whether or not the assignees popover is open for this task editor.
+     */
     public boolean isPopOverOpen() {
         return assigneePopOver == null ? false : assigneePopOver.isShowing();
     }

@@ -2,12 +2,10 @@ package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.model.Person;
@@ -60,14 +58,19 @@ public class AssigneeController {
     private SearchableComboBox<Person> searchableComboBoxDecorator;
 
     /**
+     * Container spacing.
+     */
+    private static final double CONTAINER_SPACING = 5.0;
+
+    /**
      * Sets up the assignee controller initially with the list of possible assignees and the task editor that the
      * assignee controller belongs to.
      * @param parent It's parent controller.
      * @param pPossibleAssignees The list of possible assignees.
      */
     public void setUp(final TaskEditor parent, final List<Person> pPossibleAssignees) {
-        currentAssigneesVBox.setSpacing(5.0);
-        recentlyUsedVBox.setSpacing(5.0);
+        currentAssigneesVBox.setSpacing(CONTAINER_SPACING);
+        recentlyUsedVBox.setSpacing(CONTAINER_SPACING);
         parentEditor = parent;
         recentAssignees = RecentlyUsedHelper.get().getRecentPeople();
         possibleAssignees = pPossibleAssignees;
