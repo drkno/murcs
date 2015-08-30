@@ -1,3 +1,4 @@
+#  Manuel: [to the workman, two of whom are clean-shaven] Please, which one is man with beard?
 @Manual
 Feature: Logging Effort
   # Tests for logging effort
