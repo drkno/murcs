@@ -12,7 +12,7 @@ import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
 
 /**
- * A controller for editing effort entries
+ * A controller for editing effort entries.
  */
 public class EffortEntryController {
     /**
