@@ -1,18 +1,15 @@
 package sws.murcs.debug.sampledata;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.Release;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Generates random Sprints with stories.
@@ -411,14 +408,40 @@ public class SprintGenerator implements Generator<Sprint> {
         else {
             return null;
         }
+        Team team;
         if (teamPool.size() > 0) {
-            Team team = teamPool.get(GenerationHelper.random(teamPool.size()));
+            team = teamPool.get(GenerationHelper.random(teamPool.size()));
             sprint.setTeam(team);
         }
         else {
             return null;
         }
         sprint.setDescription(NameGenerator.randomDescription());
+
+        int numTasks = 0;
+        int numStories = 0;
+        for (Story story : sprint.getStories()) {
+            numStories++;
+            numTasks += story.getTasks().size();
+        }
+
+        int sprintLength = (int) sprint.getStartDate().until(sprint.getEndDate(), ChronoUnit.DAYS);
+        int maxLogEntries = team.getMembers().size() * numTasks;
+        if (maxLogEntries > 0) {
+            int logEntries = GenerationHelper.random(maxLogEntries);
+            for (int i = 0; i < logEntries; i++) {
+                Story story = sprint.getStories().get(GenerationHelper.random(numStories));
+                Task task = story.getTasks().get(GenerationHelper.random(story.getTasks().size()));
+                Person person = team.getMembers().get(GenerationHelper.random(team.getMembers().size()));
+
+                Effort effort = new Effort();
+                effort.setDate(LocalDate.now().plusDays(GenerationHelper.random(sprintLength)));
+                effort.setDescription(GenerationHelper.randomString(10));
+                effort.setPerson(person);
+                effort.setEffort(GenerationHelper.random(1, 5));
+                task.logEffort(effort);
+            }
+        }
 
         return sprint;
     }

@@ -104,15 +104,16 @@ public class BurndownController extends GenericEditor<Sprint> {
     @Override
     protected void initialize() {
         aimedBurndown = new XYChart.Series<>();
-        aimedBurndown.setName("Aimed Burndown");
+        aimedBurndown.setName("Aimed");
 
         burndown = new XYChart.Series<>();
-        burndown.setName("Burndown");
+        burndown.setName("Burndown      ");
 
         burnup = new XYChart.Series<>();
         burnup.setName("Burnup");
 
         burndownChart.setCreateSymbols(false);
         burndownChart.getData().addAll(aimedBurndown, burndown, burnup);
+
     }
 }
