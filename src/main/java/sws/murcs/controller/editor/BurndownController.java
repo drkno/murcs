@@ -40,6 +40,7 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         updateAimedBurndown();
         updateBurnUp();
+        updateBurnDown();
     }
 
     private long getDayNumber(LocalDate date) {
@@ -51,7 +52,7 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         EstimateInfo estimateInfo = getModel().getEstimationInfo();
 
-        aimedBurndown.getData().add(new XYChart.Data<>(getDayNumber(getModel().getStartDate()), estimateInfo.getEstimateForDay(getModel().getStartDate())));
+        aimedBurndown.getData().add(new XYChart.Data<>(0L, estimateInfo.getEstimateForDay(getModel().getStartDate())));
         aimedBurndown.getData().add(new XYChart.Data<>(getDayNumber(getModel().getEndDate()), 0f));
     }
 
@@ -64,36 +65,42 @@ public class BurndownController extends GenericEditor<Sprint> {
             for (Task task : story.getTasks()) {
                 for (Effort effort : task.getEffort()) {
                     if (!dates.containsKey(effort.getDate())) {
-                        dates.put(effort.getDate(), 0f);
+                        dates.put(effort.getDate(), effort.getEffort());
                     }
-
-                    float current = dates.get(effort.getDate());
-                    dates.put(effort.getDate(), effort.getEffort() + current);
+                    else {
+                        float current = dates.get(effort.getDate());
+                        dates.put(effort.getDate(), effort.getEffort() + current);
+                    }
                 }
             }
         }
 
-        List<Map.Entry<LocalDate, Float>> orderedDates = new ArrayList<>();
+        List<XYChart.Data<Long, Float>> orderedDates = new ArrayList<>();
+        orderedDates.add(new XYChart.Data<>(0L, 0f));
         for (LocalDate date : dates.keySet()) {
-            orderedDates.add(new AbstractMap.SimpleEntry<>(date, dates.get(date)));
+            orderedDates.add(new XYChart.Data<>(getDayNumber(date), dates.get(date)));
         }
 
-        orderedDates.sort((o1, o2) -> {
-            if (o1.getKey().isEqual(o2.getKey())) return 0;
-            return o1.getKey().isBefore(o2.getKey()) ? -1 : 1;
-        });
+        orderedDates.sort((o1, o2) -> Long.compare(o1.getXValue(), o2.getXValue()));
 
-        for (int i = orderedDates.size() - 1; i >= 0; i--) {
-            for (int j = 0; j < i; j++) {
-                float toAdd = orderedDates.get(i).getValue();
-                float current = orderedDates.get(j).getValue();
-                orderedDates.get(j).setValue(current + toAdd);
+        float cumulativeEffort = 0;
+        long offset = 0;
+        for (int i = 0; i < orderedDates.size(); i++) {
+            XYChart.Data<Long, Float> dataPoint = orderedDates.get(i);
+            if (dataPoint.getXValue() != i + offset) {
+                orderedDates.add(i, new XYChart.Data<>(dataPoint.getXValue() - 1, cumulativeEffort));
+                i++;
+                offset = dataPoint.getXValue() - i;
             }
+            cumulativeEffort += dataPoint.getYValue();
+            dataPoint.setYValue(cumulativeEffort);
         }
 
-        for (Map.Entry<LocalDate, Float> entry : orderedDates) {
-            burnup.getData().add(new XYChart.Data<>(getDayNumber(entry.getKey()), entry.getValue()));
-        }
+        burnup.getData().addAll(orderedDates);
+    }
+
+    private void updateBurnDown() {
+
     }
 
     @Override
@@ -113,7 +120,6 @@ public class BurndownController extends GenericEditor<Sprint> {
         burnup.setName("Burnup");
 
         burndownChart.setCreateSymbols(false);
-        burndownChart.getData().addAll(aimedBurndown, burndown, burnup);
-
+        burndownChart.getData().addAll(aimedBurndown, burnup, burndown);
     }
 }
