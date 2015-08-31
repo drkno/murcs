@@ -21,8 +21,6 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.ModelViewController;
-import sws.murcs.controller.NavigationManager;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -36,7 +34,6 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
-import sws.murcs.view.App;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -109,6 +106,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         Sprint sprint = getModel();
         //Update the start date picker
@@ -126,45 +124,50 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Fill the description field
         descriptionTextArea.setText(sprint.getDescription());
 
-        //Update the backlog combo box
-        backlogComboBox.getItems().clear();
-        backlogComboBox.getItems().addAll(organisation.getBacklogs());
-        backlogComboBox.setValue(sprint.getBacklog());
+        Platform.runLater(() -> {
+            //Update the backlog combo box
+            backlogComboBox.getItems().clear();
+            backlogComboBox.getItems().addAll(organisation.getBacklogs());
+            backlogComboBox.setValue(sprint.getBacklog());
 
-        //Update the releases combo box
-        releaseComboBox.getItems().clear();
-        releaseComboBox.getItems().addAll(organisation.getReleases());
-        releaseComboBox.setValue(sprint.getAssociatedRelease());
+            //Update the releases combo box
+            releaseComboBox.getItems().clear();
+            releaseComboBox.getItems().addAll(organisation.getReleases());
+            releaseComboBox.setValue(sprint.getAssociatedRelease());
 
-        //Update the team combo box
-        teamComboBox.getItems().clear();
-        teamComboBox.getItems().addAll(organisation.getTeams());
-        teamComboBox.setValue(sprint.getTeam());
+            //Update the team combo box
+            teamComboBox.getItems().clear();
+            teamComboBox.getItems().addAll(organisation.getTeams());
+            teamComboBox.setValue(sprint.getTeam());
+        });
 
         //Update the sprint stories
         updateAllocatableStories();
+        Platform.runLater(() -> isLoaded = true);
     }
 
     /**
      * Updates the list of allocatable stories in a sprint.
      */
     private void updateAllocatableStories() {
-        allocatableStories.clear();
-        if (getModel().getBacklog() != null) {
-            getModel().getBacklog().getAllStories().stream()
-                    .filter(story -> story.getAcceptanceCriteria().size() > 0
-                            && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
-                            || story.getEstimate().equals(EstimateType.INFINITE)))
-                    .forEach(allocatableStories::add);
-            // Remove all the stories already in the sprint
-            getModel().getStories().stream().forEach(allocatableStories::remove);
-        }
+        Platform.runLater(() -> {
+            allocatableStories.clear();
+            if (getModel().getBacklog() != null) {
+                getModel().getBacklog().getAllStories().stream()
+                        .filter(story -> story.getAcceptanceCriteria().size() > 0
+                                && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
+                                || story.getEstimate().equals(EstimateType.INFINITE)))
+                        .forEach(allocatableStories::add);
+                // Remove all the stories already in the sprint
+                getModel().getStories().stream().forEach(allocatableStories::remove);
+            }
 
-        storiesContainer.getChildren().clear();
-        getModel().getStories().forEach(story -> {
-            Node storyNode = generateStoryNode(story);
-            storiesContainer.getChildren().add(storyNode);
-            storyNodeIndex.put(story, storyNode);
+            storiesContainer.getChildren().clear();
+            getModel().getStories().forEach(story -> {
+                Node storyNode = generateStoryNode(story);
+                storiesContainer.getChildren().add(storyNode);
+                storyNodeIndex.put(story, storyNode);
+            });
         });
     }
 
@@ -351,7 +354,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
     @Override
     protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });
@@ -449,7 +452,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
         }
         else {
             Hyperlink nameLink = new Hyperlink(story.toString());
-            nameLink.setOnAction(a -> getNavigationManager().navigateTo(story));
+            nameLink.setOnAction(a ->
+                    getNavigationManager().navigateTo(story));
             pane.add(nameLink, 0, 0);
         }
         pane.add(removeButton, 1, 0);

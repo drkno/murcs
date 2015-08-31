@@ -258,7 +258,7 @@ public class App extends Application {
     public static void main(final String[] args) {
         ErrorReporter.setup(args);
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
 
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
@@ -296,10 +296,10 @@ public class App extends Application {
             }
         }
 
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         try {
-            UndoRedoManager.importModel(model);
+            UndoRedoManager.get().importModel(model);
         }
         catch (Exception e) {
             // There is a BIG problem if this fails

@@ -41,7 +41,7 @@ public class FilePersistenceLoaderTest {
         generator = new OrganisationGenerator(OrganisationGenerator.Stress.Low);
         files = new ArrayList<>();
         random = new Random();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         if (PersistenceManager.getCurrent() != null) {
             PersistenceManager.getCurrent().setCurrentModel(null);
         }

@@ -66,7 +66,7 @@ public enum EstimateType {
             return estimates.get(this);
         }
 
-        String path = "estimates/" + toString() + ".csv";
+        String path = "estimates/" + nonDisplayToString() + ".csv";
         try {
             InputStream input = getClass().getResourceAsStream(path);
             List<String> currentEstimates = new ArrayList<>();
@@ -111,5 +111,25 @@ public enum EstimateType {
         int newIndex = (int) (newEstimates.size() * percent);
 
         return newEstimates.get(newIndex);
+    }
+
+    /**
+     * The normal toString method without spaces to make it readable.
+     * @return the normal toString method.
+     */
+    public String nonDisplayToString() {
+        return super.toString();
+    }
+
+    @Override
+    public String toString() {
+        return super.toString().replaceAll(
+                String.format("%s|%s|%s",
+                        "(?<=[A-Z])(?=[A-Z][a-z])",
+                        "(?<=[^A-Z])(?=[A-Z])",
+                        "(?<=[A-Za-z])(?=[^A-Za-z])"
+                ),
+                " "
+        );
     }
 }

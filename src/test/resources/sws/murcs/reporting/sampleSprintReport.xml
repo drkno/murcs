@@ -18,7 +18,7 @@
                         <name>Become one with the universe</name>
                         <description>Attempt to absorb the universe, this probably won't work</description>
                         <estimate>100.0</estimate>
-                        <state>Blocked</state>
+                        <state>InProgress</state>
                     </task>
                 </tasks>
                 <creator>Haydon</creator>

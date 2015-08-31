@@ -27,7 +27,7 @@ public class SprintTest {
 
     @BeforeClass
     public static void beforeClass() {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @Before

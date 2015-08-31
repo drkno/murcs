@@ -200,6 +200,7 @@ public final class DnDTabPaneFactory {
      * @param data The feedback data
      * @return The marker
      */
+	@SuppressWarnings("checkstyle:magicnumber")
 	private static MarkerFeedback handleMarker(final Pane layoutNode, final FeedbackData data) {
 		PositionMarker marker = null;
 		for (Node n : layoutNode.getChildren()) {
@@ -221,9 +222,7 @@ public final class DnDTabPaneFactory {
 
 		double ratio = data.bounds.getHeight() / h;
 
-		//CHECKSTYLE: OFF
         ratio += 0.1;
-		//CHECKSTYLE: ON
         marker.setScaleX(ratio);
 		marker.setScaleY(ratio);
 
@@ -304,13 +303,13 @@ public final class DnDTabPaneFactory {
         /**
          * The feedback data.
          */
-		public final FeedbackData data;
+		private final FeedbackData data;
 
         /**
          * Creates a new marker from some feedback data.
          * @param data The data
          */
-		public MarkerFeedback(final FeedbackData data) {
+		private MarkerFeedback(final FeedbackData data) {
 			this.data = data;
 		}
 
@@ -359,22 +358,22 @@ public final class DnDTabPaneFactory {
 		/**
 		 * The tab dragged.
 		 */
-		public final Tab draggedTab;
+		private final Tab draggedTab;
 
 		/**
 		 * The reference tab.
 		 */
-		public final Tab targetTab;
+		private final Tab targetTab;
 
 		/**
 		 * The bounds of the reference tab.
 		 */
-		public final Bounds bounds;
+		private final Bounds bounds;
 
 		/**
 		 * The drop type.
 		 */
-		public final DropType dropType;
+		private final DropType dropType;
 
 		/**
 		 * Create a feedback data.
@@ -444,15 +443,15 @@ public final class DnDTabPaneFactory {
 		/**
 		 * The dragged tab.
 		 */
-		public final Tab draggedTab;
+		private final Tab draggedTab;
 		/**
 		 * The reference tab.
 		 */
-		public final Tab targetTab;
+		private final Tab targetTab;
 		/**
 		 * The drop type.
 		 */
-		public final DropType dropType;
+		private final DropType dropType;
 
 		/**
 		 * Create drop data.

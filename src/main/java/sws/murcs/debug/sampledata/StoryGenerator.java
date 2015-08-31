@@ -272,6 +272,7 @@ public class StoryGenerator implements Generator<Story> {
         int count = GenerationHelper.random(TaskGenerator.LOW_STRESS_MIN, TaskGenerator.HIGH_STRESS_MAX);
         for (int i = 0; i < count; i++) {
             Task newTask = taskGenerator.generate();
+            if (tasks.stream().anyMatch(task -> task.getName().equals(newTask.getName()))) continue;
             tasks.add(newTask);
         }
         return tasks;
