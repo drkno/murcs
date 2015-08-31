@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -126,6 +127,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      */
     @FXML
     private ScrollPane tasksScrollPane;
+
+    /**
+     * The main anchor pane for the all tasks view.
+     */
+    @FXML
+    private AnchorPane mainView;
 
     //endregion
 
@@ -327,6 +334,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     @FXML
     @Override
     public void initialize() {
+        mainView.getStyleClass().add("root");
         filteringChoiceBox.getItems().addAll(FilterBy.values());
         groupingChoiceBox.getItems().addAll(GroupBy.values());
         orderingChoiceBox.getItems().addAll(OrderBy.values());
