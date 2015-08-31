@@ -164,7 +164,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.loadObject();
         }
         else {
-            List<Story> checkList = new ArrayList<Story>();
+            List<Story> checkList = new ArrayList<>();
             checkList.addAll(getModel().getStories());
             checkList.retainAll(allTasksController.currentStories());
             if (checkList.size() != getModel().getStories().size()) {
