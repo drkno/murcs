@@ -164,13 +164,16 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
                 .findFirst()
                 .orElse(null);
 
+        Story story = getModel();
         Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
             estimateChoiceBox.getItems().clear();
             estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
             estimateChoiceBox.getItems().add(EstimateType.INFINITE);
@@ -240,7 +243,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
-        updateEstimation();
+        Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
+            updateEstimation();
+        });
         updateAcceptanceCriteria();
         super.clearErrors();
         if (!getIsCreationWindow()) {
@@ -392,7 +398,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });

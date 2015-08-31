@@ -561,10 +561,11 @@ public class SearchController {
                             editorPane = new EditorPane(newValue, App.getMainController());
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
-
-                        while (!editorPane.getController().isLoaded()) {
-                            Thread.sleep(disableDelay);
-                        }
+                    }
+                    while (!editorPane.getController().isLoaded()) {
+                        Thread.sleep(disableDelay);
+                    }
+                    synchronized (StyleManager.getInstance()) {
                         disableControlsAndUpdateButton();
                     }
                 }

@@ -106,6 +106,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         Sprint sprint = getModel();
         //Update the start date picker
@@ -142,6 +143,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         //Update the sprint stories
         updateAllocatableStories();
+        isLoaded = false;
     }
 
     /**
@@ -352,7 +354,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
     @Override
     protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });
