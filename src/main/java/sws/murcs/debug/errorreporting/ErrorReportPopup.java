@@ -139,7 +139,7 @@ public class ErrorReportPopup {
      */
     public final void show() {
         insertMDCheckBox();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initModality(Modality.WINDOW_MODAL);
         window = new Window(popupStage, this);
         window.register();
         window.addGlobalShortcutsToWindow();
@@ -168,7 +168,7 @@ public class ErrorReportPopup {
      */
     public final void setReportListener(final ReportError report) {
         reportButton.setOnAction(a -> {
-            window.close();
+            close();
             report.sendReport(detailTextArea.getText());
         });
     }

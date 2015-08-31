@@ -27,7 +27,7 @@
             <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                <children>
                   <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#close" text="Cancel" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="Report" />
+                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="Submit Feedback" />
                </children>
                <GridPane.margin>
                   <Insets right="10.0" />
