@@ -8,7 +8,10 @@ import sws.murcs.model.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -331,6 +334,16 @@ public class SprintGenerator implements Generator<Sprint> {
     private List<Team> teamPool;
 
     /**
+     * Comparator for finding used stories.
+     */
+    private Comparator<Story> storyComparator = (o1, o2) -> o1.getShortName().compareTo(o2.getShortName());
+
+    /**
+     * Stories that have been already used.
+     */
+    private Set<Story> usedStories = new TreeSet<>(storyComparator);
+
+    /**
      * Sets the pool of releases to assign from. If null, releases will be generated.
      * @param releases The releases pool
      */
@@ -391,13 +404,16 @@ public class SprintGenerator implements Generator<Sprint> {
             Backlog backlog = backlogPool.get(GenerationHelper.random(backlogPool.size()));
             sprint.setBacklog(backlog);
             List<Story> stories = backlog.getAllStories().stream()
-                    .filter(story -> story.getStoryState().equals(Story.StoryState.Ready))
+                    .filter(story -> story.getStoryState().equals(Story.StoryState.Ready)
+                            && !usedStories.contains(story))
                     .collect(Collectors.toList());
             if (stories.size() > 0) {
                 int numStories = GenerationHelper.random(stories.size() + 1);
                 for (int i = 0; i < numStories; i++) {
                     try {
-                        sprint.addStory(stories.remove(GenerationHelper.random(stories.size())));
+                        Story story = stories.remove(GenerationHelper.random(stories.size()));
+                        sprint.addStory(story);
+                        usedStories.add(story);
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
                     }
@@ -435,10 +451,11 @@ public class SprintGenerator implements Generator<Sprint> {
                 Person person = team.getMembers().get(GenerationHelper.random(team.getMembers().size()));
 
                 Effort effort = new Effort();
-                effort.setDate(LocalDate.now().plusDays(GenerationHelper.random(sprintLength)));
+                LocalDate date = sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength));
+                effort.setDate(date);
                 effort.setDescription(GenerationHelper.randomString(10));
                 effort.setPerson(person);
-                effort.setEffort(GenerationHelper.random(1, 5));
+                effort.setEffort(GenerationHelper.random(1, 3));
                 task.logEffort(effort);
             }
         }
