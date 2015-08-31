@@ -13,7 +13,6 @@ import sws.murcs.view.App;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.function.BooleanSupplier;
 
 /**
  * Creates the editor Pane.
