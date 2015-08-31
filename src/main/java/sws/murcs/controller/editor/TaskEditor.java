@@ -143,7 +143,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void initialize() {
         ChangeListener changeListener = (observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
+            if (newValue != null && newValue != oldValue && getStory() != null) {
                 saveChanges();
             }
         };
