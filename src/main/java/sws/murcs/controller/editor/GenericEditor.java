@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -211,23 +212,23 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     public void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
-        boolean hideError = true;
+        final boolean[] hideError = {true};
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        synchronized (StyleManager.getInstance()) {
+        Platform.runLater(() -> {
             for (Map.Entry<Node, String> entry : invalidInSection) {
                 entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
                 entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
                 if (entry.getKey().isFocused()) {
-                    hideError = false;
+                    hideError[0] = false;
                 }
             }
             invalidInSection.clear();
-            if (hideError && errorMessagePopover != null) {
+            if (hideError[0] && errorMessagePopover != null) {
                 errorMessagePopover.hide();
             }
             labelErrorMessage.setText("");
-        }
+        });
     }
 
     /**
