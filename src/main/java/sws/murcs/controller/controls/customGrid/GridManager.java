@@ -133,7 +133,7 @@ public class GridManager extends Group {
     /**
      * Sets up the grid for use.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     private void setupGrid() {
         Tile tile0 = Tile.newDefaultTile();
         List<Location> randomLocs = new ArrayList<>(locations);
@@ -375,7 +375,7 @@ public class GridManager extends Group {
      * @param tile to be animated
      * @return a sequential transition.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     private SequentialTransition animateMergedTile(final Tile tile) {
         final ScaleTransition scale0 = new ScaleTransition(ANIMATION_MERGED_TILE, tile);
         scale0.setToX(1.2);

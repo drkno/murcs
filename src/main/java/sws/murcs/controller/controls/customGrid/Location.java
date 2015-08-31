@@ -55,7 +55,7 @@ public class Location {
         return "Location{" + "x=" + x + ", y=" + y + '}';
     }
 
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     @Override
     public final int hashCode() {
         int hash = 7;

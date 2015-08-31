@@ -255,6 +255,7 @@ public class GridLayout extends Group {
     /**
      * Create labels on the grid.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void createLabels() {
         Label lblTitle = new Label(new String(Base64.getDecoder().decode(GridController.TITLE_HASHCODE)));
         lblTitle.getStyleClass().addAll("grid-label", "grid-title-2");
@@ -263,7 +264,6 @@ public class GridLayout extends Group {
         hFill.setAlignment(Pos.CENTER);
 
         VBox titleSection = new VBox();
-        //noinspection CheckStyle
         HBox innerTitleSection = new HBox(5);
 
         selectionBox.setAlignment(Pos.CENTER);
@@ -274,7 +274,6 @@ public class GridLayout extends Group {
         selectionLabel.textProperty().bind(gridCurrentTilesProperty.asString());
         selectionBox.getChildren().addAll(lblTit, selectionLabel);
 
-        //noinspection CheckStyle
         VBox vRecord = new VBox(-5);
         vRecord.setAlignment(Pos.CENTER);
         vRecord.getStyleClass().add("grid-vbox");
@@ -383,9 +382,9 @@ public class GridLayout extends Group {
      * Sets the toolbar on the grid layout.
      * @param toolbar the toolbar to be set.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void setToolBar(final HBox toolbar) {
         toolbar.disableProperty().bind(layerOnProperty);
-        //noinspection CheckStyle
         toolbar.spacingProperty().bind(Bindings.divide(mainVBox.widthProperty(), 10));
         hToolbar.getChildren().add(toolbar);
     }
@@ -471,6 +470,7 @@ public class GridLayout extends Group {
         }
 
         @Override
+        @SuppressWarnings("checkstyle:magicnumber")
         public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
                             final Boolean newValue) {
             if (newValue) {
@@ -484,7 +484,6 @@ public class GridLayout extends Group {
                 lOvrSubText.setText(warning);
                 lOvrSubText.getStyleClass().setAll("grid-label", "grid-lblWarning");
                 lOvrSubText.setWrapText(true);
-                //noinspection CheckStyle
                 lOvrSubText.setMaxWidth(450);
                 lOvrSubText.setTextAlignment(TextAlignment.CENTER);
                 txtOverlay.getChildren().setAll(lOvrText, lOvrSubText);
@@ -503,6 +502,7 @@ public class GridLayout extends Group {
     /**
      * Initialises the basic buttons and other properties on the grid, such as listeners.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void initGridProperties() {
 
         overlay.setMinSize(gridWidth, gridWidth);
@@ -515,7 +515,6 @@ public class GridLayout extends Group {
         buttonsOverlay.setAlignment(Pos.CENTER);
         buttonsOverlay.setTranslateY(TOP_HEIGHT + GAP_HEIGHT + gridWidth / 2);
         buttonsOverlay.setMinSize(gridWidth, gridWidth / 2);
-        //noinspection CheckStyle
         buttonsOverlay.setSpacing(10);
 
         bTry.getStyleClass().add("grid-button");
@@ -554,7 +553,6 @@ public class GridLayout extends Group {
             }
         });
 
-        //noinspection CheckStyle
         timerPause = new Timeline(new KeyFrame(Duration.seconds(1),
                 e-> time = time.plusNanos(1_000_000_000)));
         timerPause.setCycleCount(Animation.INDEFINITE);
@@ -628,7 +626,7 @@ public class GridLayout extends Group {
     /**
      * Animate the sections of the grid.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void animateSections() {
         if (gridMinTilesProperty.get() == 0) {
             return;

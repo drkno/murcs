@@ -71,6 +71,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void loadObject() {
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
 
