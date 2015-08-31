@@ -69,6 +69,7 @@ public final class TabOutlineMarker extends Group {
 	 *            <code>true</code> to mark the insert point before reference
 	 *            bounds
 	 */
+	@SuppressWarnings("checkstyle:magicnumber")
 	public void updateBounds(final Bounds containerBounds, final Bounds referenceBounds, final boolean before) {
 		if (containerBounds.equals(this.containerBounds)
 				&& referenceBounds.equals(this.referenceBounds)

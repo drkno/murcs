@@ -178,7 +178,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * Builds a new DnDTabPane and returns it's container.
      * @return The container of the DnDTabPane
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     private Pane buildDnDTabPane() {
         DnDTabPane tabPane = new DnDTabPane();
 
@@ -405,7 +405,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
      * @return The newly created tabbable
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
