@@ -13,11 +13,18 @@ import sws.murcs.view.App;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.BooleanSupplier;
 
 /**
  * Creates the editor Pane.
  */
 public class EditorPane {
+
+    /**
+     * Loads a different fzml for search and or creation type.
+     */
+    private Boolean isSearchOrCreation;
+
     /**
      * The controller for the editor.
      */
@@ -49,7 +56,18 @@ public class EditorPane {
      * @param navigationManager The navigation manager that the pane should make use of
      */
     public EditorPane(final Model pModel, final Navigable navigationManager) {
+        this(pModel, navigationManager, false);
+    }
+
+    /**
+     * Creates a new Editor pane, and sets the model.
+     * @param pModel The model to set
+     * @param navigationManager The navigation manager that the pane should make use of
+     * @param pIsSearchOrCreation Loads a different fxml for search or creation window
+     */
+    public EditorPane(final Model pModel, final Navigable navigationManager, final Boolean pIsSearchOrCreation)  {
         this.navigationManager = navigationManager;
+        isSearchOrCreation = pIsSearchOrCreation;
         if (pModel != null) {
             model = pModel;
             create();
@@ -92,7 +110,12 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
         fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
-        fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
+        if (isSearchOrCreation) {
+            fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+        }
+        else {
+            fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
+        }
 
         ModelType type = ModelType.getModelType(model);
         if (!fxmlPaths.containsKey(type)) {

@@ -552,7 +552,7 @@ public class SearchController {
 
                     synchronized (StyleManager.getInstance()) {
                         if (editorPane == null) {
-                            editorPane = new EditorPane(newValue, App.getMainController());
+                            editorPane = new EditorPane(newValue, App.getMainController(), true);
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
                             editorPane.setModel(newValue);
                         }
