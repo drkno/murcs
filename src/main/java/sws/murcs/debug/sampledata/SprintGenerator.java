@@ -400,13 +400,7 @@ public class SprintGenerator implements Generator<Sprint> {
                 int numStories = GenerationHelper.random(stories.size() + 1);
                 for (int i = 0; i < numStories; i++) {
                     try {
-                        Story story = stories.remove(GenerationHelper.random(stories.size()));
-                        for (Task task : story.getTasks()) {
-                            Float current = task.getEstimateInfo().getCurrentEstimate();
-                            task.getEstimateInfo().getEstimates().clear();
-                            task.getEstimateInfo().setEstimateForDay(current, sprint.getStartDate());
-                        }
-                        sprint.addStory(story);
+                        sprint.addStory(stories.remove(GenerationHelper.random(stories.size())));
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
                     }
