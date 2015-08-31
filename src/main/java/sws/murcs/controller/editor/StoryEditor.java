@@ -217,13 +217,6 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        if (!isLoaded) {
-            loadTasks();
-        }
-        else {
-            updateEditors();
-        }
-
         // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
@@ -254,6 +247,15 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         else {
             shortNameTextField.requestFocus();
+        }
+
+        // Make sure this is left at the end as it determines wether or not the editor is loaded in it's
+        // onsuccess function.
+        if (!isLoaded) {
+            loadTasks();
+        }
+        else {
+            updateEditors();
         }
     }
 

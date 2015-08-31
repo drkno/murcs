@@ -202,8 +202,8 @@ public class TaskEditor implements UndoRedoChangeListener {
      * the sprints the story is in.
      */
     private void updateAddAssigneesButton() {
+        possibleAssignees = new ArrayList<>();
         if (getStory() != null) {
-            possibleAssignees = new ArrayList<>();
             List<Sprint> sprints = UsageHelper.findUsages(getStory())
                     .stream()
                     .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)

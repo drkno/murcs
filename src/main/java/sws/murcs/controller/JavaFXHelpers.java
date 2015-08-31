@@ -149,7 +149,7 @@ public final class JavaFXHelpers {
 
             node.setFocusTraversable(false);
             if (!(node instanceof Parent)) {
-                return;
+                continue;
             }
 
             findAndDestroyControls((Parent) node);
