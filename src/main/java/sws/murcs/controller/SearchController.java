@@ -584,6 +584,7 @@ public class SearchController {
                 latch.await();
             }
             catch (Throwable e) {
+                popOverWindow.hide();
                 ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
@@ -622,6 +623,7 @@ public class SearchController {
             searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
+            popOverWindow.hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
     }
