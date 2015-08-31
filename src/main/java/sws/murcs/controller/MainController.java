@@ -97,7 +97,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * The top toolbar and menu container.
      */
     @FXML
-    private VBox vBoxSideDisplay, titleVBox;
+    private VBox titleVBox;
 
     /**
      * The main tab pane (where everything goes). We have to build
@@ -178,7 +178,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * Builds a new DnDTabPane and returns it's container.
      * @return The container of the DnDTabPane
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     private Pane buildDnDTabPane() {
         DnDTabPane tabPane = new DnDTabPane();
 
@@ -274,6 +274,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
+        Window newWindow = new Window(stage, tabbable);
+        App.getWindowManager().addWindow(newWindow);
+
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());
@@ -348,6 +351,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> showCreateWindow(ModelType.Backlog));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
                 () -> showCreateWindow(ModelType.Story));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
+                () -> showCreateWindow(ModelType.Sprint));
 
         //Local shortcuts.
         Map<KeyCombination, Runnable> accelerators = new HashMap<>();
@@ -400,7 +405,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
      * @return The newly created tabbable
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));

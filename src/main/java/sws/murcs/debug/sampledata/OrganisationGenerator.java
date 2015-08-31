@@ -286,7 +286,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
             storyGenerator.addDependencies(stories, max, min);
 
-            backlogGenerator.setStoryPool(stories);
+            backlogGenerator.setUnsafeStories(stories);
             backlogGenerator.setPersonsPool(people);
             min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
                     BacklogGenerator.HIGH_STRESS_MIN);

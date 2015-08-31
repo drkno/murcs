@@ -30,8 +30,9 @@ public final class Tile extends Label {
      * Creates a new default tile with a priority of either 2 or 4.
      * @return The new tile.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public static Tile newDefaultTile() {
-        @SuppressWarnings("CheckStyle") int priority = new Random().nextDouble() < 0.9 ? 2 : 4;
+        int priority = new Random().nextDouble() < 0.9 ? 2 : 4;
         return new Tile(priority);
     }
 

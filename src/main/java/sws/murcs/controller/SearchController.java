@@ -552,7 +552,7 @@ public class SearchController {
 
                     synchronized (StyleManager.getInstance()) {
                         if (editorPane == null) {
-                            editorPane = new EditorPane(newValue, App.getMainController());
+                            editorPane = new EditorPane(newValue, App.getMainController(), true);
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
                             editorPane.setModel(newValue);
                         }
@@ -561,10 +561,11 @@ public class SearchController {
                             editorPane = new EditorPane(newValue, App.getMainController());
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
-
-                        while (!editorPane.getController().isLoaded()) {
-                            Thread.sleep(disableDelay);
-                        }
+                    }
+                    while (!editorPane.getController().isLoaded()) {
+                        Thread.sleep(disableDelay);
+                    }
+                    synchronized (StyleManager.getInstance()) {
                         disableControlsAndUpdateButton();
                     }
                 }
@@ -583,6 +584,7 @@ public class SearchController {
                 latch.await();
             }
             catch (Throwable e) {
+                popOverWindow.hide();
                 ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
@@ -599,12 +601,14 @@ public class SearchController {
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
         MaterialDesignButton saveButton = (MaterialDesignButton) editorPane.getController().getSaveChangesButton();
-        saveButton.getStyleClass().add("button-default");
-        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
-        saveButton.setVisible(true);
-        saveButton.setDisable(false);
-        saveButton.setText("Open In Window");
-        saveButton.setOnAction(selectEvent);
+        if (saveButton != null) {
+            saveButton.getStyleClass().add("button-default");
+            saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
+            saveButton.setVisible(true);
+            saveButton.setDisable(false);
+            saveButton.setText("Open In Window");
+            saveButton.setOnAction(selectEvent);
+        }
     }
 
     /**
@@ -619,6 +623,7 @@ public class SearchController {
             searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
+            popOverWindow.hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
     }

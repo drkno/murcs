@@ -19,6 +19,8 @@ import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.ModelViewController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
@@ -34,7 +36,7 @@ import java.util.concurrent.TimeoutException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ReleaseMaintenanceStepDefs extends ApplicationTest{
+public class ReleaseMaintenanceStepDefs extends ApplicationTest {
 
     private FxRobot fx;
     private Stage primaryStage;

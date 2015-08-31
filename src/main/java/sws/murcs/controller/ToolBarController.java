@@ -201,6 +201,9 @@ public class ToolBarController {
                 case "addStory":
                     type = ModelType.Story;
                     break;
+                case "addSprint":
+                    type = ModelType.Sprint;
+                    break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");
             }

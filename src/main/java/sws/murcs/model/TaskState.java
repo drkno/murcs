@@ -16,27 +16,19 @@ public enum TaskState {
     InProgress,
 
     /**
-     * The task is pending.
-     */
-    Pending,
-
-    /**
-     * The task is blocked by another task.
-     */
-    Blocked,
-
-    /**
-     * The task is ready to be started.
-     */
-    Ready,
-
-    /**
      * The task is completed.
      */
-    Done,
+    Done;
 
-    /**
-     * The task is deferred to a later time.
-     */
-    Deferred
+    @Override
+    public String toString() {
+        return super.toString().replaceAll(
+                String.format("%s|%s|%s",
+                        "(?<=[A-Z])(?=[A-Z][a-z])",
+                        "(?<=[^A-Z])(?=[A-Z])",
+                        "(?<=[A-Za-z])(?=[^A-Za-z])"
+                ),
+                " "
+        );
+    }
 }
