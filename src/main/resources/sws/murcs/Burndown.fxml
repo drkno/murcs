@@ -19,15 +19,25 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane minHeight="400.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BurndownController">
+<AnchorPane minHeight="400.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BurndownController">
    <children>
-      <LineChart fx:id="burndownChart" title="Burndown">
-        <xAxis>
-          <NumberAxis label="Day" side="BOTTOM"/>
-        </xAxis>
-        <yAxis>
-          <NumberAxis label="Hours" side="LEFT" />
-        </yAxis>
-      </LineChart>
+      <GridPane alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <LineChart fx:id="burndownChart" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+              <xAxis>
+                <NumberAxis label="Day" side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis label="Hours" side="LEFT" />
+              </yAxis>
+            </LineChart>
+         </children>
+      </GridPane>
    </children>
 </AnchorPane>

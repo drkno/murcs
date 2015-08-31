@@ -112,6 +112,7 @@ public class BurndownController extends GenericEditor<Sprint> {
         burnup = new XYChart.Series<>();
         burnup.setName("Burnup");
 
+        burndownChart.setCreateSymbols(false);
         burndownChart.getData().addAll(aimedBurndown, burndown, burnup);
     }
 }
