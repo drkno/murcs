@@ -231,17 +231,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         if (currentGroupBy == GroupBy.Story) {
             addStoryContainers();
         }
-        //This was supposed to scroll to the new location of the task but it doesn't work.
-//        double yPos;
-//        if (currentGroupBy == GroupBy.Story) {
-//            addStoryContainers();
-//            yPos = editor.getParent().getBoundsInParent().getMinY() + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
-//        }
-//        else {
-//            yPos = editor.getParent().getBoundsInParent().getMinY();
-//        }
-//        double ratio = yPos / tasksVBox.getBoundsInParent().getMaxY();
-//        Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
     }
 
 
