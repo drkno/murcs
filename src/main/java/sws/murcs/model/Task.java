@@ -182,6 +182,8 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final int hashCode() {
+        //fixme "The hacks are strong with this one" - Dion Vader. This should probably be using a unique id generator
+        //but as it is highly unlikely that a task will be made with exactly the same everything we'll leave it.
         if (hashCode == null) {
             int c = 0;
             if (getName() != null) {
