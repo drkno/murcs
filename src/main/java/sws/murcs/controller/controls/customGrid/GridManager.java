@@ -264,12 +264,12 @@ public class GridManager extends Group {
      * @return a location
      */
     @SuppressWarnings("CheckStyle")
-    private Location findFarthestLocation(final Location location, final GridAlignment gridAlignment) {
+    private Location findFarthestLocation(Location location, final GridAlignment gridAlignment) {
         Location farthest;
 
         do {
             farthest = location;
-            farthest = farthest.offset(gridAlignment);
+            location = farthest.offset(gridAlignment);
         } while (gridOperator.isValidLocation(location) && !optionalTile(location).isPresent());
 
         return farthest;
