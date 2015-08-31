@@ -149,7 +149,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             updateTitle();
         });
 
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
         updateList();
     }
 

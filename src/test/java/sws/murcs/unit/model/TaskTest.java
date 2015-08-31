@@ -21,7 +21,7 @@ public class TaskTest {
         task.setEstimate(1);
         task.setState(TaskState.InProgress);
         task.setDescription("Something I need to do");
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @After
