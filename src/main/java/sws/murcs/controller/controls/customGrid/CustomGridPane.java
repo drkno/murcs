@@ -104,10 +104,10 @@ public class CustomGridPane extends StackPane {
      * Creates a toolbar for the custom grid pane.
      * @return The HBox that contains the toolbar.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private HBox createToolBar() {
         HBox toolbar = new HBox();
         toolbar.setAlignment(Pos.CENTER);
-        //noinspection CheckStyle
         toolbar.setPadding(new Insets(10.0));
         Button btItem = createButtonItem("mStart", "Try Again", t-> gridManager.tryAgain());
         toolbar.getChildren().add(btItem);
@@ -121,9 +121,9 @@ public class CustomGridPane extends StackPane {
      * @param t The event handler for when the button is clicked.
      * @return The new button item.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Button createButtonItem(final String symbol, final String text, final EventHandler<ActionEvent> t) {
         Button g = new Button();
-        //noinspection CheckStyle
         g.setPrefSize(40, 40);
         g.setId(symbol);
         g.setOnAction(t);

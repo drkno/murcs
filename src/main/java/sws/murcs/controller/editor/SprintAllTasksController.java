@@ -220,23 +220,18 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
     }
 
     @Override
-    public void changesMade(final TaskEditor editor) {
-        tasksVBox.getChildren().clear();
-        clearStoryContainers();
-        sortAllTasks(currentOrderBy);
-        updateAndAddVisibleNodes(currentFilterBy);
-        //Note that this currently does not work at all.
-        double yPos;
-        if (currentGroupBy == GroupBy.Story) {
-            addStoryContainers();
-            yPos = editor.getParent().getBoundsInParent().getMinY()
-                    + storyContainers.get(editor.getStory()).getBoundsInParent().getMinY();
-        }
-        else {
-            yPos = editor.getParent().getBoundsInParent().getMinY();
-        }
-        double ratio = yPos / tasksVBox.getBoundsInParent().getMaxY();
-        Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
+    public void changesMade() {
+        Platform.runLater(() -> {
+            tasksVBox.getChildren().clear();
+            clearStoryContainers();
+            if (currentOrderBy != OrderBy.Obfuscation) {
+                sortAllTasks(currentOrderBy);
+            }
+            updateAndAddVisibleNodes(currentFilterBy);
+            if (currentGroupBy == GroupBy.Story) {
+                addStoryContainers();
+            }
+        });
     }
 
 
@@ -473,8 +468,11 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         else {
             visibleTasks.addAll(allTasks);
-            allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
-                    allTaskEditors.get(task).getStory(), null));
+            allTasks.forEach(task -> {
+                TaskEditor editor = allTaskEditors.get(task);
+                addTaskNode(allTaskEditors.get(task).getParent(),
+                        allTaskEditors.get(task).getStory(), null);
+            });
         }
     }
 
@@ -609,6 +607,30 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
         else if (linkedStory != null) {
             ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
+        }
+    }
+
+    /**
+     * Updates all the data in the editors appropriately.
+     */
+    public void updateEditors() {
+        List<Task> tempTasks = new ArrayList<>();
+        getModel().getStories().forEach(story -> tempTasks.addAll(story.getTasks()));
+        tempTasks.retainAll(allTasks);
+        if (allTasks.size() != tempTasks.size()) {
+            loadObject();
+        }
+        else {
+            final boolean[] popoverOpen = {false};
+            allTaskEditors.values().forEach(editor -> {
+                if (editor.isPopOverOpen()) {
+                    popoverOpen[0] = true;
+                }
+                editor.update();
+            });
+            if (!popoverOpen[0]) {
+                changesMade();
+            }
         }
     }
 

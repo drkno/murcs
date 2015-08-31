@@ -294,7 +294,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         popup.show();
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings("checkstyle:finalparameters")
     @Override
     public final void selectItem(Model parameter) {
         ModelType type;

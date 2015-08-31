@@ -280,6 +280,7 @@ public class Story extends Model {
         if (tasks.contains(task)) {
             tasks.remove(task);
             UndoRedoManager.remove(task);
+            commit("edit story");
         }
     }
 

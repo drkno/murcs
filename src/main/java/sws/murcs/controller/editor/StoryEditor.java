@@ -56,9 +56,7 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -155,25 +153,35 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     private Thread thread;
 
     /**
+     * The collection of all the task editors associated with this story.
+     */
+    private Collection<TaskEditor> taskEditors;
+
+    /**
      * Whether or not the thread creating task GUIs should stop.
      */
     private boolean stop;
 
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
-        estimateChoiceBox.getItems().add(EstimateType.INFINITE);
-        estimateChoiceBox.getItems().add(EstimateType.ZERO);
-        if (backlog != null) {
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
-        }
+        Story story = getModel();
+        Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
+            estimateChoiceBox.getItems().clear();
+            estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
+            if (backlog != null) {
+                estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            }
+        });
 
         if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
@@ -210,47 +218,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         });
 
         if (!isLoaded) {
-            taskContainer.getChildren().clear();
-            StoryEditor foo = this;
-            javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
-                private Story model = getModel();
-                private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
-
-                @Override
-                protected Void call() throws Exception {
-                    for (Task task : model.getTasks()) {
-                        if (stop) {
-                            break;
-                        }
-                        try {
-                            //Do not try and make this call injectTask as it doesn't work, I've tried.
-                            threadTaskLoader.setRoot(null);
-                            TaskEditor controller = new TaskEditor();
-                            threadTaskLoader.setController(controller);
-                            Parent view = threadTaskLoader.load();
-                            controller.configure(task, false, view, foo);
-                            Platform.runLater(() -> {
-                                if (!getModel().equals(model)) {
-                                    return;
-                                }
-                                taskContainer.getChildren().add(view);
-                            });
-                        }
-                        catch (Exception e) {
-                            ErrorReporter.get().reportError(e, "Unable to create new task");
-                        }
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void succeeded() {
-                    isLoaded = true;
-                }
-            };
-            thread = new Thread(taskThread);
-            thread.setDaemon(true);
-            thread.start();
+            loadTasks();
+        }
+        else {
+            updateEditors();
         }
 
         // Enable or disable whether you can change the creator
@@ -272,7 +243,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (!getIsCreationWindow()) {
             creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
         }
-        updateEstimation();
+        Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
+            updateEstimation();
+        });
         updateAcceptanceCriteria();
         super.clearErrors();
         if (!getIsCreationWindow()) {
@@ -280,6 +254,71 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         else {
             shortNameTextField.requestFocus();
+        }
+    }
+
+    /**
+     * Loads all of the task for the story.
+     */
+    private void loadTasks() {
+        StoryEditor foo = this;
+        javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
+            private Story model = getModel();
+            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+
+            @Override
+            protected Void call() throws Exception {
+                Platform.runLater(() -> taskContainer.getChildren().clear());
+                for (Task task : model.getTasks()) {
+                    if (stop) {
+                        break;
+                    }
+                    try {
+                        //Do not try and make this call injectTask as it doesn't work, I've tried.
+                        threadTaskLoader.setRoot(null);
+                        TaskEditor controller = new TaskEditor();
+                        taskEditors.add(controller);
+                        threadTaskLoader.setController(controller);
+                        Parent view = threadTaskLoader.load();
+                        controller.configure(task, false, view, foo);
+                        Platform.runLater(() -> {
+                            if (!getModel().equals(model)) {
+                                return;
+                            }
+                            taskContainer.getChildren().add(view);
+                        });
+                    }
+                    catch (Exception e) {
+                        ErrorReporter.get().reportError(e, "Unable to create new task");
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void succeeded() {
+                Platform.runLater(() -> {
+                    if (!getModel().equals(model)) {
+                        return;
+                    }
+                    isLoaded = true;
+                });
+            }
+        };
+        thread = new Thread(taskThread);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    /**
+     * Updates all of the task editors within the story.
+     */
+    public void updateEditors() {
+        if (getTasks().size() != taskEditors.size()) {
+            loadTasks();
+        }
+        else {
+            taskEditors.forEach(editor -> editor.update());
         }
     }
 
@@ -359,12 +398,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });
         searchableComboBoxDecorator = new SearchableComboBox(dependenciesDropDown);
         dependenciesMap = new HashMap<>();
+        taskEditors = new ArrayList<>();
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -791,6 +831,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         try {
             taskLoader.setRoot(null);
             TaskEditor controller = new TaskEditor();
+            taskEditors.add(controller);
             taskLoader.setController(controller);
             if (taskLoader == null) {
                 return;
@@ -843,7 +884,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     }
 
     @Override
-    public void changesMade(final TaskEditor editor) {
+    public void changesMade() {
         //We do not care if changes are made in this editor.
     }
 
@@ -859,10 +900,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     /**
      * Removes the editor of a task.
-     * @param view The parent node of the task editor
+     * @param editor The editor of the task
      */
-    public final void removeTaskEditor(final Parent view) {
-        taskContainer.getChildren().remove(view);
+    public final void removeTaskEditor(final TaskEditor editor) {
+        taskContainer.getChildren().remove(editor.getParent());
+        taskEditors.remove(editor);
     }
 
     /**
