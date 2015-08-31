@@ -112,7 +112,7 @@ public final class JavaFXHelpers {
             return;
         }
 
-        javafx.collections.ObservableList<Node> childrenUnmodifiable = currentNode.getChildrenUnmodifiable();
+        ObservableList<Node> childrenUnmodifiable = currentNode.getChildrenUnmodifiable();
         for (int i = 0; i < childrenUnmodifiable.size(); i++) {
             Node node = childrenUnmodifiable.get(i);
             if (node == null) break;

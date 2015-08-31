@@ -15,7 +15,6 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.JavaFXHelpers;
-import org.testfx.*;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
