@@ -174,6 +174,17 @@ public class ErrorReportPopup {
     }
 
     /**
+     * Sets what will be called when the cancel button is pressed.
+     * @param report the callback.
+     */
+    public final void setCloseListener(final ErrorReporterOpening report) {
+        cancelButton.setOnAction(a -> {
+            close();
+            report.setReporterIsOpen(false);
+        });
+    }
+
+    /**
      * Setups up the default close method.
      */
     @FXML
