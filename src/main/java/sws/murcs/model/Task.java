@@ -126,6 +126,9 @@ public class Task extends TrackableObject implements Serializable {
      * @param newEstimate The new estimate for the task.
      */
     public final void setEstimate(final float newEstimate) {
+        if (newEstimate < 0 || Float.isInfinite(newEstimate)) {
+            throw new NumberFormatException("Can't have a negative or infinite number for an estimate.");
+        }
         estimate = newEstimate;
         commit("edit Task");
     }

@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -238,7 +239,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            updateEstimation();
+            synchronized (StyleManager.getInstance()) {
+                updateEstimation();
+            }
         });
         updateAcceptanceCriteria();
         super.clearErrors();

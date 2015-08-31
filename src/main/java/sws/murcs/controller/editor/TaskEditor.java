@@ -251,7 +251,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             }
         }
         catch (NumberFormatException e) {
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            editorController.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
         }
 
         // Check state
