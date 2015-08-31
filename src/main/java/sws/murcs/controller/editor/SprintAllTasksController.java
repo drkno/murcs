@@ -222,15 +222,17 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void changesMade() {
-        tasksVBox.getChildren().clear();
-        clearStoryContainers();
-        if (currentOrderBy != OrderBy.Obfuscation) {
-            sortAllTasks(currentOrderBy);
-        }
-        updateAndAddVisibleNodes(currentFilterBy);
-        if (currentGroupBy == GroupBy.Story) {
-            addStoryContainers();
-        }
+        Platform.runLater(() -> {
+            tasksVBox.getChildren().clear();
+            clearStoryContainers();
+            if (currentOrderBy != OrderBy.Obfuscation) {
+                sortAllTasks(currentOrderBy);
+            }
+            updateAndAddVisibleNodes(currentFilterBy);
+            if (currentGroupBy == GroupBy.Story) {
+                addStoryContainers();
+            }
+        });
     }
 
 

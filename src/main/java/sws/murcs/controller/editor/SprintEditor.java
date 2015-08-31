@@ -123,20 +123,22 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Fill the description field
         descriptionTextArea.setText(sprint.getDescription());
 
-        //Update the backlog combo box
-        backlogComboBox.getItems().clear();
-        backlogComboBox.getItems().addAll(organisation.getBacklogs());
-        backlogComboBox.setValue(sprint.getBacklog());
+        Platform.runLater(() -> {
+            //Update the backlog combo box
+            backlogComboBox.getItems().clear();
+            backlogComboBox.getItems().addAll(organisation.getBacklogs());
+            backlogComboBox.setValue(sprint.getBacklog());
 
-        //Update the releases combo box
-        releaseComboBox.getItems().clear();
-        releaseComboBox.getItems().addAll(organisation.getReleases());
-        releaseComboBox.setValue(sprint.getAssociatedRelease());
+            //Update the releases combo box
+            releaseComboBox.getItems().clear();
+            releaseComboBox.getItems().addAll(organisation.getReleases());
+            releaseComboBox.setValue(sprint.getAssociatedRelease());
 
-        //Update the team combo box
-        teamComboBox.getItems().clear();
-        teamComboBox.getItems().addAll(organisation.getTeams());
-        teamComboBox.setValue(sprint.getTeam());
+            //Update the team combo box
+            teamComboBox.getItems().clear();
+            teamComboBox.getItems().addAll(organisation.getTeams());
+            teamComboBox.setValue(sprint.getTeam());
+        });
 
         //Update the sprint stories
         updateAllocatableStories();

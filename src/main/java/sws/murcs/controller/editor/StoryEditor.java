@@ -170,13 +170,15 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
-        estimateChoiceBox.getItems().add(EstimateType.INFINITE);
-        estimateChoiceBox.getItems().add(EstimateType.ZERO);
-        if (backlog != null) {
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
-        }
+        Platform.runLater(() -> {
+            estimateChoiceBox.getItems().clear();
+            estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
+            if (backlog != null) {
+                estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            }
+        });
 
         if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
