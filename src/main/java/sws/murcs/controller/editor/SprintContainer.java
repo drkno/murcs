@@ -15,6 +15,7 @@ import sws.murcs.model.Story;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller for SprintContainer.
@@ -147,14 +148,16 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 burnDownChartTab.setContent(view);
 
                 burndownController = loader.getController();
-                burndownController.setModel(getModel());
                 burndownController.setNavigationManager(getNavigationManager());
             } catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Failed to load the burndown tab in sprints.");
             }
         }
 
-        burndownController.loadObject();
+        if (!Objects.equals(burndownController.getModel(), getModel())) {
+            burndownController.setModel(getModel());
+            burndownController.loadObject();
+        }
     }
 
     /**
