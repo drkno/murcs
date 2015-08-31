@@ -235,7 +235,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             if (currentOrderBy != OrderBy.Obfuscation) {
                 sortAllTasks(currentOrderBy);
             }
-            updateAndAddVisibleNodes(currentFilterBy);
+            updateVisibleNodes(currentFilterBy);
+            insertVisibleNodes();
             if (currentGroupBy == GroupBy.Story) {
                 addStoryContainers();
             }
@@ -253,14 +254,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
             }
         }
-        removeListeners();
-        filteringChoiceBox.setValue(FilterBy.All);
-        currentFilterBy = FilterBy.All;
-        groupingChoiceBox.setValue(GroupBy.None);
-        currentGroupBy = GroupBy.None;
-        orderingChoiceBox.setValue(OrderBy.Obfuscation);
-        currentOrderBy = OrderBy.Obfuscation;
-        addListeners();
         stop = false;
         allTasks = new ArrayList<>();
         allTaskEditors = new HashMap<>();
@@ -271,6 +264,13 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             generateStoryTitledPane(story);
             allTasks.addAll(story.getTasks());
         });
+        if (currentGroupBy != null && currentOrderBy != null && currentFilterBy != null) {
+            sortAllTasks(currentOrderBy);
+            updateVisibleNodes(currentFilterBy);
+        }
+        else {
+            visibleTasks.addAll(allTasks);
+        }
         loadTasks();
     }
 
@@ -338,6 +338,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         filteringChoiceBox.getItems().addAll(FilterBy.values());
         groupingChoiceBox.getItems().addAll(GroupBy.values());
         orderingChoiceBox.getItems().addAll(OrderBy.values());
+        filteringChoiceBox.setValue(FilterBy.All);
+        currentFilterBy = FilterBy.All;
+        orderingChoiceBox.setValue(OrderBy.Obfuscation);
+        currentOrderBy = OrderBy.Obfuscation;
+        groupingChoiceBox.setValue(GroupBy.None);
+        currentGroupBy = GroupBy.None;
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (FilterBy.class == newValue.getClass()) {
@@ -351,6 +357,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                 }
             }
         });
+        addListeners();
     }
 
     //region UpdateFiltrationOptions
@@ -442,7 +449,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             if (isLoaded) {
                 tasksVBox.getChildren().clear();
                 clearStoryContainers();
-                updateAndAddVisibleNodes(newValue);
+                updateVisibleNodes(newValue);
+                insertVisibleNodes();
 
                 if (currentGroupBy == GroupBy.Story) {
                     addStoryContainers();
@@ -457,13 +465,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      * containers or tasksVBox.
      * @param newValue the value to filter the visible tasks by.
      */
-    private void updateAndAddVisibleNodes(final FilterBy newValue) {
+    private void updateVisibleNodes(final FilterBy newValue) {
         visibleTasks.clear();
         if (newValue == FilterBy.Allocated) {
             allTasks.forEach(task -> {
                 if (task.isAllocated()) {
                     visibleTasks.add(task);
-                    addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
                 }
             });
         }
@@ -471,18 +478,20 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             allTasks.forEach(task -> {
                 if (!task.isAllocated()) {
                     visibleTasks.add(task);
-                    addTaskNode(allTaskEditors.get(task).getParent(), allTaskEditors.get(task).getStory(), null);
                 }
             });
         }
         else {
             visibleTasks.addAll(allTasks);
-            allTasks.forEach(task -> {
-                TaskEditor editor = allTaskEditors.get(task);
-                addTaskNode(allTaskEditors.get(task).getParent(),
-                        allTaskEditors.get(task).getStory(), null);
-            });
         }
+    }
+
+    /**
+     * Inserts all of the visible nodes into the GUI.
+     */
+    private void insertVisibleNodes() {
+        allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
+                allTaskEditors.get(task).getStory(), null));
     }
 
     //endregion
@@ -561,6 +570,14 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
         @Override
         protected T call() throws Exception {
+            if (currentGroupBy == GroupBy.Story) {
+                Platform.runLater(() -> {
+                    if (!getModel().equals(currentSprint)) {
+                        return;
+                    }
+                    addStoryContainers();
+                });
+            }
             for (Task task : tasks) {
                 if (stop) {
                     break;
@@ -575,7 +592,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
                         if (!getModel().equals(currentSprint)) {
                             return;
                         }
-                        addTaskNode(view, null, controller);
+                        if (visibleTasks.contains(task)) {
+                            addTaskNode(view, controller.getStory(), controller);
+                        }
+                        else {
+                            allTaskEditors.put(task, controller);
+                        }
                     });
                 }
                 catch (Exception e) {
@@ -608,13 +630,15 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             //So if it's coming from the initial loading.
             if (editor != null) {
                 allTaskEditors.put(editor.getTask(), editor);
-                visibleTasks.add(editor.getTask());
             }
             if (!tasksVBox.getChildren().contains(view)) {
                 tasksVBox.getChildren().add(view);
             }
         }
         else if (linkedStory != null) {
+            if (editor != null) {
+                allTaskEditors.put(editor.getTask(), editor);
+            }
             ((VBox) storyContainers.get(linkedStory).getContent()).getChildren().add(view);
         }
     }
