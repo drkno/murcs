@@ -1,6 +1,11 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,18 +27,13 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.
@@ -128,6 +128,12 @@ public class TaskEditor implements UndoRedoChangeListener {
     private Label assigneesLabel;
 
     /**
+     * The label containing spent effort information
+     */
+    @FXML
+    private Label spentEffortLabel;
+
+    /**
      * The height of the window during creation.
      */
     private static final double CREATION_HEIGHT = 270.0;
@@ -199,6 +205,34 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         updateAssigneesLabel();
         updateAssigneeButtons();
+        updateSpentEffort();
+    }
+
+    /**
+     * Updates the spent effort for the task.
+     */
+    private void updateSpentEffort() {
+        int dps = 0;
+        float spent = 0f;
+        String units = "minutes";
+
+        for (EffortEntry entry : task.getEffort()) {
+            spent += entry.getEffort();
+        }
+
+        //If we have more than 60 minutes we should measure in hours.
+        if (spent >= 60) {
+            spent /= 60;
+            units = "hours";
+            dps = 1;
+        }
+
+        //To round to a certain number of dps, we multipy by 10 to the power of the dps we want
+        // 7.8934 to 2 dp: 7.8934 * 10 ^ 2 = 789.34, Round to 0 dps = 789, divide by 10 ^ 2 = 7.89
+        float pow = (float) Math.pow(10, dps);
+        spent = Math.round(spent * pow) / pow;
+
+        spentEffortLabel.setText("(spent " + spent + " " + units + ")");
     }
 
     /**
@@ -443,6 +477,7 @@ public class TaskEditor implements UndoRedoChangeListener {
                 EffortController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 effortPopOver.hideOnEscapeProperty().setValue(true);
+                effortPopOver.setOnHidden(e -> updateSpentEffort());
             }
             catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Could not create an effort popover");

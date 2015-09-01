@@ -91,6 +91,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
+                   <Label text="(spent 0 hours)" fx:id="spentEffortLabel"/>
                </children>
                <padding>
                   <Insets right="10.0" />
