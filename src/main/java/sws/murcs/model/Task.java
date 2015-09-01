@@ -143,6 +143,17 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
+     * Sets the date that this task was completed.
+     * @param date new completion date.
+     * @deprecated Do not use this method. This is only here as a hook for data generation.
+     * Use of this method could result in unforeseen consequences.
+     */
+    @Deprecated
+    public void setCompletedDate(final LocalDate date) {
+        completedDate = date;
+    }
+
+    /**
      * Gets the estimated time information about this task.
      * @return The estimateInfo information for this task.
      */

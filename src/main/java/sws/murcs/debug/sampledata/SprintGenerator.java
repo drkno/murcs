@@ -400,6 +400,8 @@ public class SprintGenerator implements Generator<Sprint> {
         catch (CustomException e) {
             ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting release failed");
         }
+
+        int sprintLength = (int) sprint.getStartDate().until(sprint.getEndDate(), ChronoUnit.DAYS);
         if (backlogPool.size() > 0) {
             Backlog backlog = backlogPool.get(GenerationHelper.random(backlogPool.size()));
             sprint.setBacklog(backlog);
@@ -413,6 +415,10 @@ public class SprintGenerator implements Generator<Sprint> {
                     try {
                         Story story = stories.remove(GenerationHelper.random(stories.size()));
                         sprint.addStory(story);
+                        story.getTasks().stream().filter(t -> t.getState() == TaskState.Done)
+                            .forEach(task -> task.setCompletedDate(
+                                    sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength))));
+
                         usedStories.add(story);
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
@@ -441,7 +447,6 @@ public class SprintGenerator implements Generator<Sprint> {
             numTasks += story.getTasks().size();
         }
 
-        int sprintLength = (int) sprint.getStartDate().until(sprint.getEndDate(), ChronoUnit.DAYS);
         int maxLogEntries = team.getMembers().size() * numTasks;
         if (maxLogEntries > 0) {
             int logEntries = GenerationHelper.random(maxLogEntries);

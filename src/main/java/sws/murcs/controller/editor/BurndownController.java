@@ -1,21 +1,13 @@
 package sws.murcs.controller.editor;
 
-import java.time.LocalDate;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import sws.murcs.model.Effort;
-import sws.murcs.model.EstimateInfo;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
+import sws.murcs.model.*;
+
 import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -128,39 +120,27 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Updates the burndown line with the data from the from the model.
      */
     private void updateBurnDown() {
-        /*List<Effort> effortEntries = getModel().getStories().stream()
-                .map(Story::getTasks).flatMap(Collection::stream)
-                .map(Task::getEffort).flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        effortEntries.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
-
-        List<XYChart.Data<Long, Float>> chartData = new ArrayList<>();
-        for (int i = 0; i < effortEntries.size(); i++) {
-            Effort effort = effortEntries.get(i);
-            if (i != 0) {
-                Effort last = effortEntries.get(effortEntries.size() - 1);
-                if (last.getDate().equals(effort.getDate())) {
-                    XYChart.Data<Long, Float> data = chartData.get(chartData.size() - 1);
-                    data.setYValue(data.getYValue() + effort.getEffort());
-                    continue;
-                }
-            }
-            chartData.add(new XYChart.Data<>(getDayNumber(effort.getDate()), effort.getEffort()));
-        }*/
-
-        /*List<Task> stories = getModel().getStories().stream()
-                .map(Story::getTasks).flatMap(Collection::stream)
-                .collect(Collectors.toList());*/
-
         List<Task> completedTasks = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
                 .filter(t -> t.getState() == TaskState.Done)
                 .collect(Collectors.toList());
+
+        float incompleteTaskTotal = getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getCurrentEstimate)
+                .reduce(0F, (a, b) -> a + b);
+
         completedTasks.sort((o1, o2) -> o1.getCompletedDate().compareTo(o2.getCompletedDate()));
         List<XYChart.Data<Long, Float>> chartData = new ArrayList<>();
-        completedTasks.stream()
-
-
+        float accumulator = incompleteTaskTotal;
+        for (int i = completedTasks.size() - 1; i >= 0; i--) {
+            Task current = completedTasks.get(i);
+            if (i == completedTasks.size() - 1
+                    || !completedTasks.get(i + 1).getCompletedDate().equals(current.getCompletedDate())) {
+                chartData.add(0, new XYChart.Data<>(getDayNumber(current.getCompletedDate()), accumulator));
+            }
+            accumulator += current.getCurrentEstimate();
+        }
 
         burndown.getData().addAll(chartData);
     }
