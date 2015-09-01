@@ -161,7 +161,7 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 	 * A method that handles a drag starting on the tab header.
 	 * @param event The mouse event
 	 */
-	@SuppressWarnings("all")
+	@SuppressWarnings("checkstyle:magicnumber")
 	void tabPaneHandleDragStart(final MouseEvent event) {
 		try {
 			Field fTab = event.getSource().getClass().getDeclaredField("tab"); //$NON-NLS-1$
@@ -204,7 +204,6 @@ public class DnDTabPaneSkin extends TabPaneSkin implements DragSetup {
 					h++;
 				}
 
-				//TODO make a cooler screen shot
 				db.setDragView(image, image.getWidth() * 0.5, 0);
 
 				ClipboardContent content = new ClipboardContent();

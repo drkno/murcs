@@ -133,7 +133,7 @@ public class GridManager extends Group {
     /**
      * Sets up the grid for use.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     private void setupGrid() {
         Tile tile0 = Tile.newDefaultTile();
         List<Location> randomLocs = new ArrayList<>(locations);
@@ -263,13 +263,13 @@ public class GridManager extends Group {
      * @param gridAlignment of movement
      * @return a location
      */
-    @SuppressWarnings("CheckStyle")
-    private Location findFarthestLocation(final Location location, final GridAlignment gridAlignment) {
+    @SuppressWarnings("checkstyle:finalparameters")
+    private Location findFarthestLocation(Location location, final GridAlignment gridAlignment) {
         Location farthest;
 
         do {
             farthest = location;
-            farthest = farthest.offset(gridAlignment);
+            location = farthest.offset(gridAlignment);
         } while (gridOperator.isValidLocation(location) && !optionalTile(location).isPresent());
 
         return farthest;
@@ -375,7 +375,7 @@ public class GridManager extends Group {
      * @param tile to be animated
      * @return a sequential transition.
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:magicnumber")
     private SequentialTransition animateMergedTile(final Tile tile) {
         final ScaleTransition scale0 = new ScaleTransition(ANIMATION_MERGED_TILE, tile);
         scale0.setToX(1.2);

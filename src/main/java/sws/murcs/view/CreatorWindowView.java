@@ -124,7 +124,7 @@ public class CreatorWindowView {
             controller.setModel(model);
             controller.setCreateClicked(createAction);
             controller.setCancelClicked(cancelAction);
-            EditorPane editorPane = new EditorPane(model, App.getMainController());
+            EditorPane editorPane = new EditorPane(model, App.getMainController(), true);
             controller.setEditorPane(editorPane);
 
             // Set up the stage
@@ -134,7 +134,6 @@ public class CreatorWindowView {
             stage.setMinWidth(minimumApplicationWidth);
             controller.setStage(stage);
             if (root == null) {
-                stage.setResizable(false);
                 return;
             }
             Scene scene = new Scene(root);
@@ -156,7 +155,6 @@ public class CreatorWindowView {
             controller.setupWindow();
             controller.show();
             stage.sizeToScene();
-            stage.setResizable(false);
         }
         catch (Exception e) {
             ErrorReporter.get().reportError(e, "Something went wrong loading the creation window");

@@ -30,7 +30,7 @@ public class TeamTest {
     public static void oneTimeSetUp() {
         teamGenerator = new TeamGenerator();
         personGenerator = new PersonGenerator();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         PersistenceManager.setCurrent(null);
     }
 

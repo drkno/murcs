@@ -61,7 +61,7 @@ public class ReportGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         if (PersistenceManager.getCurrent() != null) {
             PersistenceManager.getCurrent().setCurrentModel(null);
         }

@@ -1,6 +1,5 @@
 package sws.murcs.controller.pipes;
 
-import sws.murcs.controller.editor.TaskEditor;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
@@ -33,7 +32,11 @@ public interface TaskEditorParent extends FormErrors {
 
     /**
      * Called when changes have been made in the task editor that require an update in the parent editor.
-     * @param editor the task editor that has had changes happen in it.
      */
-    void changesMade(TaskEditor editor);
+    void changesMade();
+
+    /**
+     * Updates all the information in the task editors associated with this task editor parent.
+     */
+    void updateEditors();
 }

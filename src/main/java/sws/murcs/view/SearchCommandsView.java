@@ -50,6 +50,7 @@ public class SearchCommandsView {
             ((Parent) popOver.getSkin().getNode()).getStylesheets()
                     .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         } catch (Exception e) {
+            hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands popOver");
         }
     }

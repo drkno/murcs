@@ -64,28 +64,28 @@ public class TrackingListenerTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
     }
 
     @Before
     public void setup() {
-        UndoRedoManager.setMaximumCommits(-1);
+        UndoRedoManager.get().setMaximumCommits(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        UndoRedoManager.forget(true);
-        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
+        UndoRedoManager.get().forget(true);
+        listenersField.set(UndoRedoManager.get(), new ArrayList<ChangeListenerHandler>());
     }
 
     @Test
     public void commitListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.addChangeListener(listener);
-        UndoRedoManager.add(testInteger);
+        UndoRedoManager.get().addChangeListener(listener);
+        UndoRedoManager.get().add(testInteger);
         Assert.assertFalse(listener.getCalled());
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().commit("test commit");
         Assert.assertTrue(listener.getCalled());
         Assert.assertEquals(ChangeState.Commit, listener.getState());
     }
@@ -94,12 +94,12 @@ public class TrackingListenerTest {
     public void revertListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.add(testInteger);
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().add(testInteger);
+        UndoRedoManager.get().commit("test commit");
         testInteger.setTestInteger(42);
-        UndoRedoManager.addChangeListener(listener);
+        UndoRedoManager.get().addChangeListener(listener);
         Assert.assertFalse(listener.getCalled());
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertTrue(listener.getCalled());
         Assert.assertEquals(ChangeState.Revert, listener.getState());
     }
@@ -108,13 +108,13 @@ public class TrackingListenerTest {
     public void remakeListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.add(testInteger);
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().add(testInteger);
+        UndoRedoManager.get().commit("test commit");
         testInteger.setTestInteger(42);
-        UndoRedoManager.revert();
-        UndoRedoManager.addChangeListener(listener);
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().addChangeListener(listener);
         Assert.assertFalse(listener.getCalled());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertTrue(listener.getCalled());
         Assert.assertEquals(ChangeState.Remake, listener.getState());
     }
@@ -123,14 +123,14 @@ public class TrackingListenerTest {
     public void forgetListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.add(testInteger);
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().add(testInteger);
+        UndoRedoManager.get().commit("test commit");
         testInteger.setTestInteger(42);
         testInteger.setTestInteger(41);
-        UndoRedoManager.revert();
-        UndoRedoManager.addChangeListener(listener);
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().addChangeListener(listener);
         Assert.assertFalse(listener.getCalled());
-        UndoRedoManager.forget();
+        UndoRedoManager.get().forget();
         Assert.assertTrue(listener.getCalled());
         Assert.assertEquals(ChangeState.Forget, listener.getState());
     }
@@ -139,15 +139,15 @@ public class TrackingListenerTest {
     public void automaticRemoveListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.addChangeListener(listener);
-        UndoRedoManager.add(testInteger);
-        ArrayList<ChangeListenerHandler> handlers = (ArrayList<ChangeListenerHandler>) listenersField.get(null);
+        UndoRedoManager.get().addChangeListener(listener);
+        UndoRedoManager.get().add(testInteger);
+        ArrayList<ChangeListenerHandler> handlers = (ArrayList<ChangeListenerHandler>) listenersField.get(UndoRedoManager.get());
         Assert.assertTrue(handlers.get(0).equals(listener));
         Assert.assertFalse(listener.getCalled());
         listener = null;
         ChangeListenerHandler.performGC();
         Thread.sleep(1000);
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().commit("test commit");
         Assert.assertTrue(handlers.size() == 0);
     }
 
@@ -155,15 +155,15 @@ public class TrackingListenerTest {
     public void manualRemoveListenerTest() throws Exception {
         TestListener listener = new TestListener();
         TestInteger testInteger = new TestInteger();
-        UndoRedoManager.addChangeListener(listener);
-        UndoRedoManager.add(testInteger);
-        ArrayList<ChangeListenerHandler> handlers = (ArrayList<ChangeListenerHandler>) listenersField.get(null);
+        UndoRedoManager.get().addChangeListener(listener);
+        UndoRedoManager.get().add(testInteger);
+        ArrayList<ChangeListenerHandler> handlers = (ArrayList<ChangeListenerHandler>) listenersField.get(UndoRedoManager.get());
         int numHandlers = handlers.size();
         Assert.assertTrue(handlers.get(0).equals(listener));
         Assert.assertFalse(listener.getCalled());
-        UndoRedoManager.removeChangeListener(listener);
+        UndoRedoManager.get().removeChangeListener(listener);
         Assert.assertEquals(numHandlers - 1, handlers.size());
-        UndoRedoManager.commit("test commit");
+        UndoRedoManager.get().commit("test commit");
         Assert.assertFalse(listener.getCalled());
     }
 }
