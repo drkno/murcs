@@ -167,6 +167,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     private boolean stop;
 
+    /**
+     * The last selected story.
+     */
     private Story lastSelectedStory;
 
     @Override

@@ -321,6 +321,7 @@ public class GridLayout extends Group {
      * @param y y position in the grid.
      * @return the new cell
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Rectangle createCell(final int x, final int y) {
         final double arcSize = CELL_SIZE / 6d;
         Rectangle cell = new Rectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -554,7 +555,7 @@ public class GridLayout extends Group {
         });
 
         timerPause = new Timeline(new KeyFrame(Duration.seconds(1),
-                e-> time = time.plusNanos(1_000_000_000)));
+                e-> { time = time.plusNanos(1_000_000_000); }));
         timerPause.setCycleCount(Animation.INDEFINITE);
 
         gridSuccessLoadingProperty.addListener(closedListener);
