@@ -239,7 +239,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         Platform.runLater(() -> tasksScrollPane.vvalueProperty().setValue(ratio));
     }
 
-
     @Override
     public void loadObject() {
         if (thread != null && thread.isAlive()) {
