@@ -121,6 +121,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(true);
 
     /**
+     * A flag if a popup is already active to prevent duplicates.
+     */
+    private boolean popUpIsActive = false;
+
+    /**
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
@@ -348,6 +353,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private void changeStoryStateToNone(final Story story, final GenericCallback callback) {
         if (story.getStoryState() == Story.StoryState.Ready) {
             if (UsageHelper.findUsages(story).stream().anyMatch(m -> m instanceof Sprint)) {
+                popUpIsActive = true;
                 List<Sprint> sprintsWithStory = UsageHelper.findUsages(story).stream()
                         .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                         .map(m -> (Sprint) m)
@@ -365,9 +371,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 popup.setTitleText("Un-prioritise story");
                 popup.setWindowTitle("Are you sure?");
                 popup.addYesNoButtons(() -> {
+                    popUpIsActive = false;
                     callback.call();
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(story));
                     story.setStoryState(Story.StoryState.None);
+                    popup.close();
+                }, () -> {
+                    popUpIsActive = false;
                     popup.close();
                 }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
@@ -689,16 +699,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                         commitEdit(priority);
                                     }
                                     catch (NumberFormatException e) {
-                                        if (Objects.equals(textField.getText(), "-")) {
+                                        if (Objects.equals(textField.getText(), "-") && !popUpIsActive) {
                                             commitEdit(null);
                                         }
                                         else {
                                             addFormError(textField, "Priority must be a number");
                                         }
                                     }
-                                }
-                                else {
-                                    commitEdit(null);
                                 }
                             }
                         });
