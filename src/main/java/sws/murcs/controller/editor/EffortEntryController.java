@@ -27,7 +27,7 @@ public class EffortEntryController {
      * The column labels. We have ids for them because we add and remove them.
      */
     @FXML
-    public Label dateLabel, personLabel, timeLabel;
+    private Label dateLabel, personLabel, timeLabel;
     /**
      * The text field containing time spent.
      */
@@ -156,6 +156,7 @@ public class EffortEntryController {
             }
         } catch (Exception e) {
             //Do nothing, we handle this not being invalid in the "updateErrors" method.
+            int foo = 0; //Because checkstyle
         }
     }
 
@@ -202,9 +203,11 @@ public class EffortEntryController {
             if (time < 0) {
                 validTime = false;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             validTime = false;
-        }   finally {
+        }
+        finally {
             if (!validTime) {
                 timeTextField.getStyleClass().add("error");
                 errors = true;
@@ -221,7 +224,7 @@ public class EffortEntryController {
      * @param event The event
      */
     @FXML
-    private void actionButtonClicked(ActionEvent event) {
+    private void actionButtonClicked(final ActionEvent event) {
         update();
         updateErrors();
 
@@ -285,7 +288,7 @@ public class EffortEntryController {
      * Sets the action for when the button is clicked.
      * @param action The action.
      */
-    public void setOnAction(Consumer<EffortEntryController> action) {
+    public void setOnAction(final Consumer<EffortEntryController> action) {
         this.action = action;
     }
 
@@ -293,7 +296,7 @@ public class EffortEntryController {
      * Disables or enables the action button.
      * @param disableAction Whether the action button should be disabled.
      */
-    public void setActionDisabled(boolean disableAction) {
+    public void setActionDisabled(final boolean disableAction) {
         actionButton.setDisable(disableAction);
     }
 
@@ -307,6 +310,7 @@ public class EffortEntryController {
 
     /**
      * Gets the eligible workers.
+     * @return The eligible workers
      */
     private List<Person> getEligibleWorkers() {
         return effortController.getEligibleWorkers();

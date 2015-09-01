@@ -147,6 +147,7 @@ public class BacklogGenerator implements Generator<Backlog> {
                     }
                     catch (Exception e) {
                         //Suppress because they are not relevant in this context.
+                        int foo = 0; //because checkstyle
                     }
                 }
             }
@@ -162,6 +163,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final Backlog generate() {
         final int longNameMax = 10;
         final int minStories = 10;

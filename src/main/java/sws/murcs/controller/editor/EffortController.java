@@ -68,6 +68,10 @@ public class EffortController {
         }
     }
 
+    /**
+     * Creates a new effort entry controller.
+     * @return The new effort entry controller.
+     */
     private EffortEntryController newEffortEntryController() {
         try {
             effortEntryControllerLoader.setRoot(null);
@@ -96,7 +100,7 @@ public class EffortController {
     }
 
     /**
-     * A method handling creation of new effort entries
+     * A method handling creation of new effort entries.
      * @param addController The controller that has created the new effort entry
      */
     private void add(final EffortEntryController addController) {
@@ -114,7 +118,7 @@ public class EffortController {
     }
 
     /**
-     * Removes effort from the task
+     * Removes effort from the task.
      * @param removeController The controller of the task being removed
      */
     private void remove(final EffortEntryController removeController) {
