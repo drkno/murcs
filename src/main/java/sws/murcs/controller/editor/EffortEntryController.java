@@ -13,7 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import sws.murcs.model.Effort;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
 /**
@@ -63,7 +63,7 @@ public class EffortEntryController {
     /**
      * The effort being edited by this controller.
      */
-    private Effort effort;
+    private EffortEntry effortEntry;
 
     /**
      * Indicates whether the form has errors.
@@ -118,28 +118,28 @@ public class EffortEntryController {
      * Updates the model object in memory.
      */
     private void update() {
-        if (effort == null) {
+        if (effortEntry == null) {
             return;
         }
 
-        if (datePicker.getValue() != effort.getDate()) {
-            effort.setDate(datePicker.getValue());
+        if (datePicker.getValue() != effortEntry.getDate()) {
+            effortEntry.setDate(datePicker.getValue());
         }
 
         if (descriptionTextArea.getText() != null
-                && !descriptionTextArea.getText().equals(effort.getDescription())
+                && !descriptionTextArea.getText().equals(effortEntry.getDescription())
                 && !descriptionTextArea.getText().isEmpty()) {
-            effort.setDescription(descriptionTextArea.getText());
+            effortEntry.setDescription(descriptionTextArea.getText());
         }
 
-        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effort.getPerson())) {
-            effort.setPerson((Person) personComboBox.getValue());
+        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPerson())) {
+            effortEntry.setPerson((Person) personComboBox.getValue());
         }
 
         try {
             float time = Float.parseFloat(timeTextField.getText());
-            if (effort.getEffort() != time) {
-                effort.setEffort(time);
+            if (effortEntry.getEffort() != time) {
+                effortEntry.setEffort(time);
             }
         } catch (Exception e) {
             //Do nothing, we handle this not being invalid in the "updateErrors" method.
@@ -155,14 +155,14 @@ public class EffortEntryController {
                 && personComboBox.getValue() == null
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
-        if (notEdited || effort == null) {
+        if (notEdited || effortEntry == null) {
             hasErrorsProperty.set(true);
             return;
         }
 
         boolean errors = false;
 
-        if (datePicker.getValue() == null || effort.getDate() == null) {
+        if (datePicker.getValue() == null || effortEntry.getDate() == null) {
             datePicker.getStyleClass().add("error");
             errors = true;
         } else {
@@ -176,7 +176,7 @@ public class EffortEntryController {
             descriptionTextArea.getStyleClass().removeAll("error");
         }
 
-        if (personComboBox.getValue() == null || effort.getPerson() == null) {
+        if (personComboBox.getValue() == null || effortEntry.getPerson() == null) {
             personComboBox.getStyleClass().add("error");
             errors = true;
         } else {
@@ -234,17 +234,17 @@ public class EffortEntryController {
 
     /**
      * Sets the effort this controller is editing.
-     * @param effort The effort for this controller to edit.
+     * @param effortEntry The effort for this controller to edit.
      */
-    public void setEffort(final Effort effort) {
-        this.effort = null;
+    public void setEffortEntry(final EffortEntry effortEntry) {
+        this.effortEntry = null;
 
-        personComboBox.setValue(effort.getPerson());
-        datePicker.setValue(effort.getDate());
-        descriptionTextArea.setText(effort.getDescription());
-        timeTextField.setText("" + effort.getEffort());
+        personComboBox.setValue(effortEntry.getPerson());
+        datePicker.setValue(effortEntry.getDate());
+        descriptionTextArea.setText(effortEntry.getDescription());
+        timeTextField.setText("" + effortEntry.getEffort());
 
-        this.effort = effort;
+        this.effortEntry = effortEntry;
 
         Platform.runLater(() -> updateErrors());
     }
@@ -253,8 +253,8 @@ public class EffortEntryController {
      * The effort this controller edits.
      * @return The effort.
      */
-    public Effort getEffort() {
-        return effort;
+    public EffortEntry getEffortEntry() {
+        return effortEntry;
     }
 
     /**

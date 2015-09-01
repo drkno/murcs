@@ -1,5 +1,6 @@
 package sws.murcs.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,13 +10,17 @@ import java.util.Map;
 import org.apache.commons.collections.map.HashedMap;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
 
 /**
  * A class representing an estimated time remaining
  * for a task, sprint or story.
  */
-public class EstimateInfo extends TrackableObject {
+public class EstimateInfo extends TrackableObject implements Serializable {
+    /**
+     * The serialization UID, for serialization.
+     */
+    private static final long serialVersionUID = 42L;
+
     /**
      * A map of the time remaining on specific days.
      */
