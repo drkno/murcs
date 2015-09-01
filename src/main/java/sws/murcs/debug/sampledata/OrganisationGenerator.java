@@ -302,9 +302,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
             List<Sprint> sprints = generateItems(sprintGenerator, min, max).stream()
                     .map(m -> (Sprint) m).collect(Collectors.toList());
 
-//            stories.stream().filter(story -> story.getStoryState() == Story.StoryState.Ready
-// && !backlogs.stream().anyMatch(backlog -> backlog.getAllStories().contains(backlog)))
-// .forEach(story1 -> story1.setStoryState(Story.StoryState.None));
+            stories.stream().filter(story -> story.getStoryState() == Story.StoryState.Ready && !backlogs.stream().anyMatch(backlog -> backlog.getAllStories().contains(backlog))).forEach(story1 -> story1.setStoryState(Story.StoryState.None));
 
             model.addCollection(skills);
             model.addCollection(people);
