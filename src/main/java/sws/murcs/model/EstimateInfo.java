@@ -7,10 +7,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections.map.HashedMap;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
+
+import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * A class representing an estimated time remaining
@@ -27,13 +28,12 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * A map of the time remaining on specific days.
      */
     @TrackableValue
-    private Map<LocalDate, Float> estimates = new HashedMap();
+    private Map<LocalDate, Float> estimates = new HashMap<>();
 
     /**
      * Creates a new time estimate.
      */
     public EstimateInfo() {
-
     }
 
     /**
@@ -132,10 +132,10 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     }
 
     @Override
-    public final boolean equals(Object other) {
+    public final boolean equals(final Object other) {
         if (!(other instanceof EstimateInfo)) return false;
 
-        EstimateInfo otherEstimate = (EstimateInfo)other;
+        EstimateInfo otherEstimate = (EstimateInfo) other;
 
         //Check that all the keys in the other have the same value in this and vice versa
         boolean allInFirst = otherEstimate.getEstimates().keySet().stream().allMatch(d -> otherEstimate.getEstimates().get(d).equals(getEstimates().get(d)));
@@ -153,7 +153,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * Merges any number of time estimates into this one.
      * @param estimates The estimates to merge into this one
      */
-    public void mergeIn(EstimateInfo...estimates) {
+    public void mergeIn(final EstimateInfo... estimates) {
         List<EstimateInfo> estimateList = new ArrayList<>();
         Collections.addAll(estimateList, estimates);
 
@@ -164,7 +164,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * Merges an array of estimates into this estimate.
      * @param estimates The estimates to merge into this one.
      */
-    public void mergeIn(List<EstimateInfo> estimates) {
+    public void mergeIn(final List<EstimateInfo> estimates) {
         //Add this estimate to the list, so we don't lose it's data
         estimates.add(this);
 
@@ -178,7 +178,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * @param estimates The estimates to merge
      * @return The resulting time estimate
      */
-    public static final EstimateInfo merge(EstimateInfo...estimates) {
+    public static EstimateInfo merge(final EstimateInfo... estimates) {
         List<EstimateInfo> estimateList = new ArrayList<>();
         Collections.addAll(estimateList, estimates);
 
@@ -190,7 +190,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * @param estimates The estimates to merge
      * @return The resulting time estimate
      */
-    public static final EstimateInfo merge(List<EstimateInfo> estimates){
+    public static EstimateInfo merge(final List<EstimateInfo> estimates) {
         Map<LocalDate, Float> map = mergeToMap(estimates);
         EstimateInfo result = new EstimateInfo();
         result.getEstimates().putAll(map);
@@ -204,7 +204,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * @param estimates The estimates to merge
      * @return The dates and their estimated times
      */
-    private static final Map<LocalDate, Float> mergeToMap(List<EstimateInfo> estimates) {
+    private static Map<LocalDate, Float> mergeToMap(final List<EstimateInfo> estimates) {
         List<LocalDate> orderedDates = new ArrayList<>();
         for (EstimateInfo estimate : estimates) {
             estimate.getEstimates().keySet().forEach(orderedDates::add);
@@ -220,7 +220,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
         for (LocalDate date : orderedDates) {
             float total = 0;
             for (EstimateInfo estimate : estimates) {
-                total+= estimate.getEstimateForDay(date);
+                total += estimate.getEstimateForDay(date);
             }
 
             result.put(date, total);

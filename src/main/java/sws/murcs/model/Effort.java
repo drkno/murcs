@@ -88,9 +88,9 @@ public class Effort extends TrackableObject implements Serializable {
 
     /**
      * Sets the date this effort should be logged for.
-     * @param date The date this effort should be logged for.
+     * @param theDate The date this effort should be logged for.
      */
-    public void setDate(final LocalDate date) {
-        this.date = date;
+    public void setDate(final LocalDate theDate) {
+        date = theDate;
     }
 }

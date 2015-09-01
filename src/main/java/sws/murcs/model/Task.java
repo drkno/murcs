@@ -71,6 +71,11 @@ public class Task extends TrackableObject implements Serializable {
     private List<Effort> effortLogs = new ArrayList<>();
 
     /**
+     * Date this task was marked as done.
+     */
+    private LocalDate completedDate;
+
+    /**
      * Creates a new task.
      */
     public Task() {
@@ -124,8 +129,17 @@ public class Task extends TrackableObject implements Serializable {
      * @param newState The state that it's being changed to.
      */
     public final void setState(final TaskState newState) {
+        completedDate = newState == TaskState.Done ? LocalDate.now() : null;
         state = newState;
         commit("edit Task");
+    }
+
+    /**
+     * Gets the date that this task was completed.
+     * @return the date the task was completed or null if not completed.
+     */
+    public final LocalDate getCompletedDate() {
+        return completedDate;
     }
 
     /**

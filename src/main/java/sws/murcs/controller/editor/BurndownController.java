@@ -15,24 +15,38 @@ import sws.murcs.model.EstimateInfo;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 /**
- * A controller for the burndown tab on sprints
+ * A controller for the burndown tab on sprints.
  */
 public class BurndownController extends GenericEditor<Sprint> {
+
     /**
      * The chart representing the burndown.
      */
     @FXML
     private LineChart burndownChart;
 
+    /**
+     * Burndown line that is aimed for.
+     */
     private XYChart.Series<Long, Float> aimedBurndown;
+
+    /**
+     * Actual burndown line.
+     */
     private XYChart.Series<Long, Float> burndown;
+
+    /**
+     * Burnup line showing effort spent.
+     */
     private XYChart.Series<Long, Float> burnup;
 
     @Override
     public void loadObject() {
-        NumberAxis xAxis = (NumberAxis)burndownChart.getXAxis();
+        NumberAxis xAxis = (NumberAxis) burndownChart.getXAxis();
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(1);
         xAxis.setUpperBound(getDayNumber(getModel().getEndDate()));
@@ -43,10 +57,18 @@ public class BurndownController extends GenericEditor<Sprint> {
         updateBurnDown();
     }
 
-    private long getDayNumber(LocalDate date) {
+    /**
+     * Gets the number of the day relative to the start of the sprint.
+     * @param date date to get day number of.
+     * @return the 1-based day number of the date in the sprint.
+     */
+    private long getDayNumber(final LocalDate date) {
         return date.toEpochDay() - getModel().getStartDate().toEpochDay() + 1;
     }
 
+    /**
+     * Updates the aimed burndown line with the data from the model.
+     */
     private void updateAimedBurndown() {
         aimedBurndown.getData().clear();
 
@@ -56,6 +78,9 @@ public class BurndownController extends GenericEditor<Sprint> {
         aimedBurndown.getData().add(new XYChart.Data<>(getDayNumber(getModel().getEndDate()), 0f));
     }
 
+    /**
+     * Updates the burnup line with the data from the model.
+     */
     private void updateBurnUp() {
         burnup.getData().clear();
 
@@ -99,8 +124,45 @@ public class BurndownController extends GenericEditor<Sprint> {
         burnup.getData().addAll(orderedDates);
     }
 
+    /**
+     * Updates the burndown line with the data from the from the model.
+     */
     private void updateBurnDown() {
+        /*List<Effort> effortEntries = getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        effortEntries.sort((o1, o2) -> o1.getDate().compareTo(o2.getDate()));
 
+        List<XYChart.Data<Long, Float>> chartData = new ArrayList<>();
+        for (int i = 0; i < effortEntries.size(); i++) {
+            Effort effort = effortEntries.get(i);
+            if (i != 0) {
+                Effort last = effortEntries.get(effortEntries.size() - 1);
+                if (last.getDate().equals(effort.getDate())) {
+                    XYChart.Data<Long, Float> data = chartData.get(chartData.size() - 1);
+                    data.setYValue(data.getYValue() + effort.getEffort());
+                    continue;
+                }
+            }
+            chartData.add(new XYChart.Data<>(getDayNumber(effort.getDate()), effort.getEffort()));
+        }*/
+
+        /*List<Task> stories = getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .collect(Collectors.toList());*/
+
+        List<Task> completedTasks = getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .filter(t -> t.getState() == TaskState.Done)
+                .collect(Collectors.toList());
+        completedTasks.sort((o1, o2) -> o1.getCompletedDate().compareTo(o2.getCompletedDate()));
+        List<XYChart.Data<Long, Float>> chartData = new ArrayList<>();
+        completedTasks.stream()
+
+
+
+        burndown.getData().addAll(chartData);
     }
 
     @Override
