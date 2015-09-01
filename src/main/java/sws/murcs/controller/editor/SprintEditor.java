@@ -22,6 +22,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -456,6 +457,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     getNavigationManager().navigateTo(story));
             pane.add(nameLink, 0, 0);
         }
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         pane.add(removeButton, 1, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 

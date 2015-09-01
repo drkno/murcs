@@ -38,6 +38,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -528,7 +529,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         public void commitEdit(final Integer priority) {
             if (!isEmpty()) {
-                if (priority < 1) {
+                if (priority == null) {
+                    super.commitEdit(null);
+                    setPriority(null);
+                    updateStoryTable();
+                }
+                else if (priority < 1) {
                     addFormError(textField, "Priority cannot be less than 1");
                 }
                 else {
@@ -613,7 +619,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                         commitEdit(priority);
                                     }
                                     catch (NumberFormatException e) {
-                                        addFormError(textField, "Priority must be a number");
+                                        if (Objects.equals(textField.getText(), "-")) {
+                                            commitEdit(null);
+                                        }
+                                        else {
+                                            addFormError(textField, "Priority must be a number");
+                                        }
                                     }
                                 }
                             }
@@ -628,7 +639,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                             commitEdit(priority);
                         }
                         catch (NumberFormatException e) {
-                            addFormError(textField, "Priority must be a number");
+                            if (Objects.equals(textField.getText(), "-")) {
+                                commitEdit(null);
+                            }
+                            else {
+                                addFormError(textField, "Priority must be a number");
+                            }
                         }
                     }
                 }
@@ -655,6 +671,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priority != -1) {
                     priorityString = priority.toString();
                 }
+                else {
+                    priorityString = "-";
+                }
             }
 
             return priorityString;
@@ -677,6 +696,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             else {
                 try {
                     getModel().changeStoryPriority(story, null);
+                    story.setStoryState(Story.StoryState.None);
                 }
                 catch (CustomException e) {
                     ErrorReporter.get().reportError(e, "Failed to set priority");
