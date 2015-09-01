@@ -28,12 +28,17 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.Collection;
@@ -261,7 +266,19 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 storyPriority++;
             }
             try {
-                getModel().modifyStory(story, storyPriority);
+                if (storyPriority != null) {
+                    getModel().modifyStory(story, storyPriority);
+                }
+                else {
+                    changeStoryStateToNone(story, () -> {
+                        try {
+                            getModel().modifyStory(story, null);
+                        } catch (CustomException e) {
+                            //Should not ever happen, this should be handled by the GUI
+                            ErrorReporter.get().reportError(e, "Failed to modify the priority of the story");
+                        }
+                    });
+                }
             }
             catch (CustomException e) {
                 //Should not ever happen, this should be handled by the GUI
@@ -303,15 +320,65 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
             if (storyPriority != -1) {
-                try {
-                    getModel().modifyStory(story, null);
-                }
-                catch (CustomException e) {
-                    //Should not ever happen, this should be handled by the GUI
-                    ErrorReporter.get().reportError(e, "Cannot decrease priority");
-                }
+                changeStoryStateToNone(story, () -> {
+                    try {
+                        getModel().modifyStory(story, null);
+                    } catch (CustomException e) {
+                        //Should not ever happen, this should be handled by the GUI
+                        ErrorReporter.get().reportError(e, "Cannot decrease priority");
+                    }
+                });
                 updateStoryTable();
             }
+        }
+    }
+
+    /**
+     * Change the story state from none to ready and informs the user if this will effect any sprints.
+     * @param story The story to change the state of.
+     */
+    private void changeStoryStateToNone(final Story story) {
+        changeStoryStateToNone(story, () -> { });
+    }
+    /**
+     * Change the story state from none to ready and informs the user if this will effect any sprints.
+     * @param story The story to change the state of.
+     * @param callback A callback to call once the state change has happened.
+     */
+    private void changeStoryStateToNone(final Story story, final GenericCallback callback) {
+        if (story.getStoryState() == Story.StoryState.Ready) {
+            if (UsageHelper.findUsages(story).stream().anyMatch(m -> m instanceof Sprint)) {
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(story).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("Do you really want to make the story "
+                        + story.toString() + " non-prioritised\n\n"
+                        + "This will cause the story state to be set to NONE"
+                        + " and effect the following sprints:\n\t"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("Un-prioritise story");
+                popup.setWindowTitle("Are you sure?");
+                popup.addYesNoButtons(() -> {
+                    callback.call();
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(story));
+                    story.setStoryState(Story.StoryState.None);
+                    popup.close();
+                }, "danger-will-robinson", "everything-is-fine");
+                popup.show();
+            }
+            else {
+                story.setStoryState(Story.StoryState.None);
+                callback.call();
+            }
+        }
+        else {
+            callback.call();
         }
     }
 
@@ -532,14 +599,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priority == null) {
                     super.commitEdit(null);
                     setPriority(null);
+                    textField.setTooltip(new Tooltip("This is a non-prioritised story"));
                     updateStoryTable();
                 }
                 else if (priority < 1) {
+                    textField.setTooltip(null);
                     addFormError(textField, "Priority cannot be less than 1");
                 }
                 else {
                     super.commitEdit(priority);
                     setPriority(priority);
+                    textField.setTooltip(null);
                     updateStoryTable();
                 }
             }
@@ -627,6 +697,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                         }
                                     }
                                 }
+                                else {
+                                    commitEdit(null);
+                                }
                             }
                         });
 
@@ -646,6 +719,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                 addFormError(textField, "Priority must be a number");
                             }
                         }
+                    }
+                    else {
+                        commitEdit(null);
                     }
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
@@ -694,13 +770,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 }
             }
             else {
-                try {
-                    getModel().changeStoryPriority(story, null);
-                    story.setStoryState(Story.StoryState.None);
-                }
-                catch (CustomException e) {
-                    ErrorReporter.get().reportError(e, "Failed to set priority");
-                }
+                changeStoryStateToNone(story, () -> {
+                    try {
+                        getModel().changeStoryPriority(story, null);
+                    } catch (CustomException e) {
+                        ErrorReporter.get().reportError(e, "Failed to set priority");
+                    }
+                });
             }
         }
     }
