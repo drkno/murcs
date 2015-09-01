@@ -7,12 +7,10 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import sws.murcs.model.Effort;
 import sws.murcs.model.Person;
 
@@ -20,6 +18,11 @@ import sws.murcs.model.Person;
  * A controller for editing effort entries.
  */
 public class EffortEntryController {
+    /**
+     * The column labels. We have ids for them because we add and remove them.
+     */
+    @FXML
+    public Label dateLabel, personLabel, timeLabel;
     /**
      * The text field containing time spent.
      */
@@ -49,6 +52,11 @@ public class EffortEntryController {
      */
     @FXML
     private Button actionButton;
+
+    /**
+     * The main grid.
+     */
+    @FXML private GridPane mainGrid;
 
     /**
      * The root node of this editor.
@@ -306,6 +314,9 @@ public class EffortEntryController {
         actionButton.getStyleClass().addAll("mdga-button");
         actionButton.getStyleClass().removeAll("mdrd-button");
         actionButton.setText("+");
+
+        mainGrid.getRowConstraints().get(0).setPrefHeight(Control.USE_COMPUTED_SIZE);
+        mainGrid.getChildren().addAll(dateLabel, personLabel, timeLabel);
     }
 
     /**
@@ -315,5 +326,8 @@ public class EffortEntryController {
         actionButton.getStyleClass().addAll("mdrd-button");
         actionButton.getStyleClass().removeAll("mdga-button");
         actionButton.setText("X");
+
+        mainGrid.getRowConstraints().get(0).setPrefHeight(0);
+        mainGrid.getChildren().removeAll(dateLabel, personLabel, timeLabel);
     }
 }

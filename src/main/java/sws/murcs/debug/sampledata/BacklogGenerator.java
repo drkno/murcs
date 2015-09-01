@@ -2,10 +2,7 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -197,12 +194,17 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         try {
             for (Story story : stories.subList(0, prioritised)) {
+                if (story.getAcceptanceCriteria().size() == 0) {
+                    AcceptanceCondition ac = new AcceptanceCondition();
+                    ac.setCondition(GenerationHelper.randomString(300));
+                    story.addAcceptanceCondition(ac);
+                }
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
                 story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
                 story.setStoryState(Story.StoryState.Ready);
                 backlog.addStory(story, 1);
             }
-            for (Story story : stories.subList(prioritised, size)) {
+            for (Story story : stories.subList(prioritised + 1, size)) {
                 backlog.addStory(story, null);
             }
         } catch (CustomException e) {

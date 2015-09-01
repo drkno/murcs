@@ -167,6 +167,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     private boolean stop;
 
+    private Story lastSelectedStory;
+
     @Override
     public final void loadObject() {
         isLoaded = false;
@@ -256,7 +258,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             shortNameTextField.requestFocus();
         }
 
-        // Make sure this is left at the end as it determines wether or not the editor is loaded in it's
+        if (getModel() != lastSelectedStory) {
+            taskEditors.clear();
+        }
+        // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
         // onsuccess function.
         if (!isLoaded) {
             loadTasks();
@@ -264,6 +269,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         else {
             updateEditors();
         }
+        lastSelectedStory = getModel();
     }
 
     /**

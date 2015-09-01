@@ -64,7 +64,7 @@ public class EffortController {
             EffortEntryController controller = newEffortEntryController();
             controller.setEffort(e);
 
-            effortsVBox.getChildren().add(1, controller.getRoot());
+            effortsVBox.getChildren().add(0, controller.getRoot());
         }
     }
 
@@ -110,7 +110,7 @@ public class EffortController {
         //Clear the creation controller.
         addController.setEffort(new Effort());
 
-        effortsVBox.getChildren().add(1, controller.getRoot());
+        effortsVBox.getChildren().add(0, controller.getRoot());
     }
 
     /**

@@ -48,7 +48,7 @@ public class Story extends Model {
      */
     @Searchable
     @TrackableValue
-    private StoryState storyState;
+    private StoryState storyState = StoryState.None;
 
     /**
      * A list of the conditions that have to be met before this
