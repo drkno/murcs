@@ -1,6 +1,5 @@
 package sws.murcs.debug.errorreporting;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -82,6 +81,7 @@ public class ErrorReportPopup {
     private void setStage(final Stage stage) {
         popupStage = stage;
         popupStage.setResizable(true);
+        popupStage.setTitle("Feedback");
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
@@ -144,7 +144,7 @@ public class ErrorReportPopup {
         window.register();
         window.addGlobalShortcutsToWindow();
         window.show();
-        Platform.runLater(messageTitleLabel::requestFocus);
+        detailTextArea.requestFocus();
     }
 
     /**
