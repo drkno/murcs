@@ -113,6 +113,12 @@ public class BurndownController extends GenericEditor<Sprint> {
             dataPoint.setYValue(cumulativeEffort);
         }
 
+        long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
+        long lastNumber = orderedDates.get(orderedDates.size() - 1).getXValue();
+        if (lastNumber < currentNumber) {
+            orderedDates.add(new XYChart.Data<>(currentNumber, orderedDates.get(orderedDates.size() - 1).getYValue()));
+        }
+
         burnup.getData().addAll(orderedDates);
     }
 
@@ -120,6 +126,8 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Updates the burndown line with the data from the from the model.
      */
     private void updateBurnDown() {
+        burndown.getData().clear();
+
         List<Task> completedTasks = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
                 .filter(t -> t.getState() == TaskState.Done)
@@ -140,6 +148,13 @@ public class BurndownController extends GenericEditor<Sprint> {
                 chartData.add(0, new XYChart.Data<>(getDayNumber(current.getCompletedDate()), accumulator));
             }
             accumulator += current.getCurrentEstimate();
+        }
+        chartData.add(0, new XYChart.Data<>(0L, accumulator));
+
+        long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
+        long lastNumber = chartData.get(chartData.size() - 1).getXValue();
+        if (lastNumber < currentNumber) {
+            chartData.add(new XYChart.Data<>(currentNumber, chartData.get(chartData.size() - 1).getYValue()));
         }
 
         burndown.getData().addAll(chartData);
