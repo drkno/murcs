@@ -34,7 +34,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private TabPane containerTabPane;
 
     /**
-     * The anchor panges where the content for each tab is.
+     * The anchor panes where the content for each tab is.
      */
     @FXML
     private AnchorPane overviewAnchorPane, burnDownChartAnchorPane, allTasksAnchorPane, scrumBoardAnchorPane;
@@ -43,6 +43,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * The editor of the overview.
      */
     private SprintEditor overviewEditor;
+
+    /**
+     * The scrum board editor.
+     */
+    private ScrumBoard scrumBoard;
 
     /**
      * The controller for the all tasks view in the sprint.
@@ -56,6 +61,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 tabSelectionChanged(newValue);
             }
         });
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
@@ -65,6 +71,19 @@ public class SprintContainer extends GenericEditor<Sprint> {
             AnchorPane.setTopAnchor(view, 0.0);
             AnchorPane.setBottomAnchor(view, 0.0);
             overviewEditor = loader.getController();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
+            Parent view = loader.load();
+            scrumBoardAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            scrumBoard = loader.getController();
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load sprint overview");
         }
@@ -129,14 +148,17 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
-        // todo Currently doesn't do anything as there is no scrum board chart to load
+        if (getModel() != null) {
+            scrumBoard.setModel(getModel());
+            scrumBoard.loadObject();
+        }
     }
 
     /**
      * Loads this sprints burn down chart into the burn down tab.
      */
     private void burnDownChartTabSelected() {
-        // todo Currently doesn't do anything as there is no burndown chart to load
+        // TODO: Load burn down chart
     }
 
     /**
@@ -165,7 +187,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             allTasksController.loadObject();
         }
         else {
-            List<Story> checkList = new ArrayList<Story>();
+            List<Story> checkList = new ArrayList<>();
             checkList.addAll(getModel().getStories());
             checkList.retainAll(allTasksController.currentStories());
             if (checkList.size() != getModel().getStories().size()) {
@@ -194,7 +216,10 @@ public class SprintContainer extends GenericEditor<Sprint> {
         if (allTasksController != null) {
             allTasksController.dispose();
         }
-        //Makes sure to add dispose methods for the other tabs.
+        if (scrumBoard != null) {
+            scrumBoard.dispose();
+        }
+        // TODO: Dispose of burn down chart
     }
 
     @Override
