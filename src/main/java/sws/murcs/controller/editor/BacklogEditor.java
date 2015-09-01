@@ -728,7 +728,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                             updateStoryTable();
                             updateAvailableStories();
                             popup.close();
-                        }, "danger-will-robinson", "dont-panic");
+                        }, "danger-will-robinson", "everything-is-fine");
                         popup.show();
                     }
                     else {

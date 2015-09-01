@@ -503,7 +503,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     assert getModel().getStoryState().equals(Story.StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             } else {
                 getModel().setEstimate(estimateChoiceBox.getValue());
@@ -598,7 +598,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     getModel().setStoryState(Story.StoryState.None);
                     storyStateChoiceBox.setValue(Story.StoryState.None);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
         }
@@ -631,7 +631,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     dependenciesMap.remove(newDependency);
                     getModel().removeDependency(newDependency);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
             else {
@@ -1101,7 +1101,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                         storyStateChoiceBox.setValue(Story.StoryState.None);
                         getModel().setStoryState(Story.StoryState.None);
                         popup.close();
-                    }, "danger-will-robinson", "dont-panic");
+                    }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
                 } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);

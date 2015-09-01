@@ -200,7 +200,7 @@ public class PersonEditor extends GenericEditor<Person> {
                     skillNodeIndex.remove(skill);
                     getModel().removeSkill(skill);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
             else {

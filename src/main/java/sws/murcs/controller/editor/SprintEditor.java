@@ -221,7 +221,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         storyNodeIndex.clear();
                         updateAllocatableStories();
                         popup.close();
-                    }, "danger-will-robinson", "dont-panic");
+                    }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
                 }
                 else {
@@ -275,7 +275,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     finally {
                         popup.close();
                     }
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
         }
@@ -431,7 +431,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 storyNodeIndex.remove(story);
                 getModel().removeStory(story);
                 popup.close();
-            }, "danger-will-robinson", "dont-panic");
+            }, "danger-will-robinson", "everything-is-fine");
             popup.show();
         });
 
