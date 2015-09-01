@@ -172,6 +172,9 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
                 }
             }
+            if (!items.stream().filter(g::equals).findAny().isPresent()) {
+                items.add(g);
+            }
         }
         return items;
     }
