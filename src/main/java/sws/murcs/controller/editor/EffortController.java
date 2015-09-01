@@ -7,7 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.Effort;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
 /**
@@ -51,7 +51,7 @@ public class EffortController {
         eligibleWorkers = people;
 
         createController = newEffortEntryController();
-        createController.setEffort(new Effort());
+        createController.setEffortEntry(new EffortEntry());
         createController.styleAsAddButton();
         createController.setOnAction(this::add);
         createController.getHasErrorsProperty().addListener((observable, oldValue, newValue) -> {
@@ -60,9 +60,9 @@ public class EffortController {
 
         contentVBox.getChildren().add(1, createController.getRoot());
 
-        for (Effort e : parentEditor.getTask().getEffort()) {
+        for (EffortEntry e : parentEditor.getTask().getEffort()) {
             EffortEntryController controller = newEffortEntryController();
-            controller.setEffort(e);
+            controller.setEffortEntry(e);
 
             effortsVBox.getChildren().add(0, controller.getRoot());
         }
@@ -102,13 +102,13 @@ public class EffortController {
     private void add(final EffortEntryController addController) {
         if (addController.getHasErrorsProperty().get()) return;
 
-        parentEditor.getTask().logEffort(addController.getEffort());
+        parentEditor.getTask().logEffort(addController.getEffortEntry());
 
         EffortEntryController controller = newEffortEntryController();
-        controller.setEffort(addController.getEffort());
+        controller.setEffortEntry(addController.getEffortEntry());
 
         //Clear the creation controller.
-        addController.setEffort(new Effort());
+        addController.setEffortEntry(new EffortEntry());
 
         effortsVBox.getChildren().add(0, controller.getRoot());
     }
@@ -118,7 +118,7 @@ public class EffortController {
      * @param removeController The controller of the task being removed
      */
     private void remove(final EffortEntryController removeController) {
-        parentEditor.getTask().unlogEffort(removeController.getEffort());
+        parentEditor.getTask().unlogEffort(removeController.getEffortEntry());
         effortsVBox.getChildren().remove(removeController.getRoot());
     }
 }

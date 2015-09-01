@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -68,7 +67,7 @@ public class Task extends TrackableObject implements Serializable {
      * The effort people have logged against this task.
      */
     @TrackableValue
-    private List<Effort> effortLogs = new ArrayList<>();
+    private List<EffortEntry> effortEntryLogs = new ArrayList<>();
 
     /**
      * Creates a new task.
@@ -179,26 +178,26 @@ public class Task extends TrackableObject implements Serializable {
      * Gets the effort logged against this task.
      * @return The effort.
      */
-    public final List<Effort> getEffort() {
-        return effortLogs;
+    public final List<EffortEntry> getEffort() {
+        return effortEntryLogs;
     }
 
     /**
      * Logs some effort.
-     * @param effort The effort to log
+     * @param effortEntry The effort to log
      */
-    public final void logEffort(final Effort effort) {
-        effortLogs.add(effort);
+    public final void logEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.add(effortEntry);
 
         commit("log effort");
     }
 
     /**
      * Unlogs some effort.
-     * @param effort The effort to remove
+     * @param effortEntry The effort to remove
      */
-    public final void unlogEffort(final Effort effort) {
-        effortLogs.remove(effort);
+    public final void unlogEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.remove(effortEntry);
         commit("remove effort");
     }
 

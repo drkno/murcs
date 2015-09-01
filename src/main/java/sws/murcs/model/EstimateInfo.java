@@ -1,21 +1,33 @@
 package sws.murcs.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.collections.map.HashedMap;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
 
 /**
  * A class representing an estimated time remaining
  * for a task, sprint or story.
  */
-public class EstimateInfo extends TrackableObject {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class EstimateInfo extends TrackableObject implements Serializable {
+    /**
+     * The serialization UID, for serialization.
+     */
+    @XmlTransient
+    private static final long serialVersionUID = 42L;
+
     /**
      * A map of the time remaining on specific days.
      */
