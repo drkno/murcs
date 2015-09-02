@@ -644,6 +644,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * @param newDependency story to generate a node for.
      * @return a JavaFX node representing the dependency.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateStoryNode(final Story newDependency) {
         MaterialDesignButton removeButton = new MaterialDesignButton(null);
         removeButton.setPrefHeight(15);

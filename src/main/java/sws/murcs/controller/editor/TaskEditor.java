@@ -1,11 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -13,13 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
@@ -29,13 +18,14 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.EffortEntry;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.
@@ -130,7 +120,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     private Label assigneesLabel;
 
     /**
-     * The label containing spent effort information
+     * The label containing spent effort information.
      */
     @FXML
     private Label spentEffortLabel;
@@ -218,6 +208,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     /**
      * Updates the spent effort for the task.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void updateSpentEffort() {
         int dps = 0;
         float spent = 0f;
