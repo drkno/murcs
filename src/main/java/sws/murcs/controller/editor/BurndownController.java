@@ -168,7 +168,11 @@ public class BurndownController extends GenericEditor<Sprint> {
             Task current = completedTasks.get(i);
             if (i == completedTasks.size() - 1
                     || !completedTasks.get(i + 1).getCompletedDate().equals(current.getCompletedDate())) {
-                chartData.add(0, new Data<>(getDayNumber(current.getCompletedDate()), accumulator));
+                long currentDay = getDayNumber(current.getCompletedDate());
+                if (chartData.size() > 0 && chartData.get(0).getXValue() - currentDay > 1) {
+                    chartData.add(0, new Data<>(chartData.get(0).getXValue() - 1, accumulator));
+                }
+                chartData.add(0, new Data<>(currentDay, accumulator));
             }
             accumulator += current.getCurrentEstimate();
         }
