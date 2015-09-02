@@ -1,17 +1,17 @@
 @import "../../globalStyles"
 
 .date-picker > .arrow-button
-  -fx-background-color: white
+  -fx-background-color: $white
   -fx-background-insets: 1 1 1 0, 1, 2
   -fx-background-radius: 0
   -fx-border-color: none
 
 
 .date-picker > .text-field
-  -fx-background-color: white
-  -fx-background-insets: 1 0 1 1
+  -fx-background-color: $white
+  -fx-background-insets: 0
   -fx-background-radius: 0
-  -fx-border-color: white
+  -fx-border-color: $white
 
 
 .date-picker:contains-focus
@@ -22,7 +22,7 @@
 
 .date-picker:editable
   -fx-background-radius: 0
-  -fx-border-color: white
+  -fx-border-color: $white
 
 
 
@@ -34,20 +34,20 @@
 
 
 .date-cell:focused
-  -fx-background-color: white
+  -fx-background-color: $white
 
 
 .date-picker:focused > .date-picker-display-node
   -fx-effect: none
   -fx-border-color: none
-  -fx-background-color: white
-  -fx-highlight-fill: white
+  -fx-background-color: $white
+  -fx-highlight-fill: $white
 
 
 .date-picker:focused .text-field,
 .date-picker .text-field:focused
   -fx-border-color: none
-  -fx-background-color: white
+  -fx-background-color: $white
   -fx-effect: none
 
 
@@ -57,7 +57,7 @@
 
 .date-picker:focused
   -fx-effect: none
-  -fx-background-color: white
+  -fx-background-color: $white
 
 
 .date-cell:focused
@@ -67,15 +67,15 @@
 
 
 .date-picker:contains-focus > .arrow-button
-  -fx-background-color: white
+  -fx-background-color: $white
   -fx-background-insets: 1, 2, 1, 2.6
   -fx-background-radius: 0
 
 
 .date-picker:editable > .arrow-button,
 .date-picker > .arrow-button
-  -fx-text-fill: black
-  -fx-background-color: gray
+  -fx-text-fill: $black
+  -fx-background-color: $primary-500
   -fx-background-insets: 0
   -fx-padding: 6 12
   -fx-background-radius: 2px
@@ -85,7 +85,7 @@
 /*Popup styles*/
 
 .date-picker > .arrow-button > .arrow
-  -fx-background-color: white
+  -fx-background-color: $white
   -fx-background-insets: 1 0 -1 0, 0
   -fx-padding: 0.416667em 0.416667em 0.333333em 0.333333em /* 5 5 4 4 */
   -fx-scale-shape: true
@@ -104,7 +104,7 @@
 
 .date-picker-popup > .month-year-pane
   -fx-padding: 0.588883em 0.5em 0.666667em 0.5em /* 7 6 8 6 */
-  -fx-background-color: gray
+  -fx-background-color: $primary-500
   -fx-background-insets: 0 0 0 0, 0 0 1 0
 
 .date-picker-popup > * > .spinner
@@ -114,14 +114,14 @@
   -fx-text-fill: white
 
 .date-picker-popup > * > .spinner > .button
-  -fx-background-color: gray
+  -fx-background-color: $primary-500
   -fx-background-insets: 0, 1, 2
   -fx-color: transparent
   -fx-background-radius: 0
-  -fx-text-fill: white
+  -fx-text-fill: $white
 
 .date-picker-popup > * > .spinner > .button:focused
-  -fx-background-color: gray
+  -fx-background-color: $primary-500
   -fx-color: -fx-hover-base
   -fx-background-insets: -0.2, 1, 2, -1.4, 2.6
 
@@ -139,18 +139,18 @@
 
 .date-picker-popup > * > .spinner > .button > .left-arrow,
 .date-picker-popup > * > .spinner > .button > .right-arrow
-  -fx-background-color: gray
+  -fx-background-color: $primary-500
   -fx-background-insets: 1 0 -1 0, 0
   -fx-padding: 0.333333em 0.166667em 0.333333em 0.166667em /* 4 2 4 2 */
   -fx-effect: dropshadow(two-pass-box , -fx-shadow-highlight-color, 1, 0.0 , 0, 1.4)
 
 .date-picker-popup > * > .spinner > .button:hover > .left-arrow,
 .date-picker-popup > * > .spinner > .button:hover > .right-arrow
-  -fx-background-color: white
+  -fx-background-color: $white
 
 .date-picker-popup > * > .spinner > .button:pressed > .left-arrow,
 .date-picker-popup > * > .spinner > .button:pressed > .right-arrow
-  -fx-background-color: gray
+  -fx-background-color: $primary-500
 
 .date-picker-popup > * > .spinner > .button > .left-arrow
   -fx-padding: 0.333333em 0.25em 0.333333em 0.166667em /* 4 3 4 2 */
@@ -161,13 +161,13 @@
   -fx-scale-shape: true
 
 .date-picker-popup > * > .spinner > .label
-  -fx-text-fill: white
+  -fx-text-fill: $white
   -fx-alignment: CENTER
 
 .date-picker-popup > .month-year-pane > .secondary-label
   -fx-alignment: BASELINE_CENTER
   -fx-padding: 0.5em 0 0 0 /* 6 0 0 0 */
-  -fx-text-fill: white
+  -fx-text-fill: $white
 
 
 .date-picker-popup > .calendar-grid
@@ -209,7 +209,7 @@
   -fx-cell-size: 2.75em
 
 .date-picker-popup > * > .day-cell > .secondary-text
-  -fx-fill: #f3622d
+  -fx-fill: $secondary-300
 
 .date-picker-popup > * > .today
   -fx-background-color: -fx-control-inner-background, derive(-fx-selection-bar-non-focused, -20%), -fx-control-inner-background
@@ -236,9 +236,12 @@
 
 .date-picker-popup > * > .day-cell:focused:hover,
 .date-picker-popup > * > .today:focused:hover,
+.date-picker-popup > * > .day-cell:hover,
+.date-picker-popup > * > .today:hover,
 .date-picker-popup > * > .selected:focused,
 .date-picker-popup > * > .today.selected:focused
-  -fx-background-color: blue
+  -fx-background-color: $secondary-500
+  -fx-text-fill: $white-text
 
 .date-picker-popup > * > .previous-month,
 .date-picker-popup > * > .next-month
@@ -248,7 +251,8 @@
 .date-picker-popup > * > .previous-month > .secondary-text,
 .date-picker-popup > * > .next-month > .secondary-text,
 .date-picker-popup > * > .selected > .secondary-text
-  -fx-fill: -fx-text-background-color
+  -fx-fill: $white-text
+  -fx-text-fill: $white-text
 
 .date-picker-popup > * > .previous-month.today,
 .date-picker-popup > * > .next-month.today
