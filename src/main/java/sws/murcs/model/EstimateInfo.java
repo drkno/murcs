@@ -1,5 +1,8 @@
 package sws.murcs.model;
 
+import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.magic.tracking.TrackableValue;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,11 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import sws.murcs.magic.tracking.TrackableObject;
-import sws.murcs.magic.tracking.TrackableValue;
-
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * A class representing an estimated time remaining
@@ -29,12 +27,6 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      */
     @TrackableValue
     private Map<LocalDate, Float> estimates = new HashMap<>();
-
-    /**
-     * Creates a new time estimate.
-     */
-    public EstimateInfo() {
-    }
 
     /**
      * Gets the estimate for the current day.
@@ -62,11 +54,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
 
         //If this day is before we have any estimates, return 0. Otherwise return the last
         //date before the day we asked for
-        if (lastDate != null) {
-            return estimates.get(lastDate);
-        } else {
-            return 0;
-        }
+        return lastDate != null ? estimates.get(lastDate) : 0;
     }
 
     /**
