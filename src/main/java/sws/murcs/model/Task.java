@@ -12,7 +12,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -179,14 +181,20 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
-     * Sets the date that this task was first estimated.
+     * Sets the date that this task was estimated.
      * @deprecated This method is so that data generation can produce valid and useful data.
      * It should not be used for any other purpose. If it is, the behaviour is undefined.
      * @param estimationDate the new estimation date.
      */
     @Deprecated
     public void setEstimationDate(final LocalDate estimationDate) {
-        estimateInfo.setEstimateForDay(estimateInfo.getCurrentEstimate(), estimationDate);
+        Map<LocalDate, Float> estimates = estimateInfo.getEstimates();
+        Map<LocalDate, Float> newEstimates = new HashMap<>();
+        estimates.forEach((date, estimate) -> {
+            newEstimates.put(estimationDate, estimate);
+        });
+        estimates.clear();
+        estimates.putAll(newEstimates);
     }
 
     /**
