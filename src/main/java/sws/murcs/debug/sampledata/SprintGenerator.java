@@ -415,10 +415,14 @@ public class SprintGenerator implements Generator<Sprint> {
                     try {
                         Story story = stories.remove(GenerationHelper.random(stories.size()));
                         sprint.addStory(story);
-                        story.getTasks().stream().filter(t -> t.getState() == TaskState.Done)
-                            .forEach(task -> task.setCompletedDate(
-                                    sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength))));
 
+                        // alter tasks to make sure they are useful for the sprint
+                        story.getTasks().stream().filter(t -> t.getState() == TaskState.Done)
+                            .forEach(task -> {
+                                task.setCompletedDate(sprint.getStartDate()
+                                        .plusDays(GenerationHelper.random(sprintLength)));
+                                task.setEstimationDate(LocalDate.MIN);
+                            });
                         usedStories.add(story);
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
