@@ -75,7 +75,7 @@ public class Backlog extends Model {
      * @return a list of all the stories attached to this backlog.
      */
     public final List<Story> getAllStories() {
-        final List<Story> allStories = new ArrayList<>();
+        List<Story> allStories = new ArrayList<>();
         allStories.addAll(prioritisedStories);
         allStories.addAll(unprioritisedStories);
         return allStories;

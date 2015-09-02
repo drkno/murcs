@@ -30,7 +30,7 @@ public abstract class Token {
     private static BangCommand[] specialTokens = new BangCommand[] {
         new BangCommand("regex", "reg", "Enables regular expressions.", SearchToken::setIsRegex),
         new BangCommand("case", "ca", "Enables case sensitivity.", SearchToken::setIsCaseSensitive),
-        new BangCommand("name", "na", "Searches using display names only.", v -> displayNamesOnly = v),
+        new BangCommand("name", "na", "Searches using display names only.", v -> { displayNamesOnly = v; }),
         new BangCommand("backlog", "ba", "Searches backlogs.", v -> addSearchType(v, ModelType.Backlog)),
         new BangCommand("people", "pe", "Searches people.", v -> addSearchType(v, ModelType.Person)),
         new BangCommand("project", "pr", "Searches projects.", v -> addSearchType(v, ModelType.Project)),

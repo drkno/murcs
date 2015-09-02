@@ -66,24 +66,37 @@
                   <String fx:value="mdrd-button" />
                </styleClass>
             </Button>
-            <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
-                  <Label text="Assignees:" />
-                  <Label fx:id="assigneesLabel" text="Placeholder Text" wrapText="true" />
+                  <Label text="Assignees:" HBox.hgrow="NEVER" />
+                  <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="assigneesLabel" text="Placeholder Text" wrapText="true" VBox.vgrow="SOMETIMES" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="editAssignedButton" mnemonicParsing="false" onAction="#editAssignedButtonClicked" style="-fx-padding: 0;" HBox.hgrow="NEVER">
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                           <image>
+                              <Image url="@icons/edit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="logEffortButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#logEffortButtonClick" style="-fx-padding: 0;" HBox.hgrow="NEVER">
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                           <image>
+                              <Image url="@icons/log.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                   <Label text="(spent 0 hours)" fx:id="spentEffortLabel"/>
                </children>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
             </HBox>
-            <Button fx:id="editAssignedButton" mnemonicParsing="false" onAction="#editAssignedButtonClicked" style="-fx-padding: 0;" GridPane.columnIndex="2" GridPane.rowIndex="1">
-               <GridPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-               </GridPane.margin>
-               <graphic>
-                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
-                     <image>
-                        <Image url="@icons/edit.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
             <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>

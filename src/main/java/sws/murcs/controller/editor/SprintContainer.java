@@ -92,7 +92,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        Platform.runLater(() -> isLoaded = true);
+        Platform.runLater(() -> { isLoaded = true; });
     }
 
 
@@ -133,7 +133,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     /**
-     * Loads this sprints burndown chart into the burndown tab.
+     * Loads this sprints burn down chart into the burn down tab.
      */
     private void burnDownChartTabSelected() {
         // todo Currently doesn't do anything as there is no burndown chart to load
