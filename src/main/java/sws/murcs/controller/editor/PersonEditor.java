@@ -9,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -182,8 +184,18 @@ public class PersonEditor extends GenericEditor<Person> {
      * @param skill The skill
      * @return the node representing the skill
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateSkillNode(final Skill skill) {
-        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton(null);
+        removeButton.setPrefHeight(15);
+        removeButton.setPrefWidth(15);
+        Image image = new Image("sws/murcs/icons/removeWhite.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        imageView.setPreserveRatio(true);
+        imageView.setPickOnBounds(true);
+        removeButton.setGraphic(imageView);
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
