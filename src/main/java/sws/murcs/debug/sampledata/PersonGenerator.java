@@ -163,6 +163,7 @@ public class PersonGenerator implements Generator<Person> {
             }
         }
         catch (Exception e) {
+            e.printStackTrace();
             ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator adding PO SM skills failed");
             return null;
             // thrown if you try to set the short name as null/empty
