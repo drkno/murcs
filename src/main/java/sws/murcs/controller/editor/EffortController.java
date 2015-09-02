@@ -15,7 +15,8 @@ import sws.murcs.model.Person;
  */
 public class EffortController {
     /**
-     * The VBox that contains all effort entries.
+     * The VBox that contains all effort entries and the vBox
+     * containing the creation form.
      */
     @FXML
     private VBox effortsVBox, contentVBox;
