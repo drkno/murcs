@@ -28,6 +28,7 @@ public class EffortEntryController {
      */
     @FXML
     private Label dateLabel, personLabel, timeLabel;
+
     /**
      * The text field containing time spent.
      */
