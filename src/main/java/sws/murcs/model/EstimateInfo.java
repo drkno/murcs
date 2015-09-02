@@ -35,13 +35,6 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     private Map<LocalDate, Float> estimates = new HashedMap();
 
     /**
-     * Creates a new time estimate.
-     */
-    public EstimateInfo() {
-
-    }
-
-    /**
      * Gets the estimate for the current day.
      * @return The estimate for today
      */

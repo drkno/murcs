@@ -86,7 +86,7 @@ public class EffortController {
             return controller;
         }
         catch (IOException e) {
-            ErrorReporter.get().reportErrorSecretly(e, "Couldn't load EffortEntryController :'(");
+            ErrorReporter.get().reportError(e, "Couldn't load EffortEntryController :'(");
         }
         return null;
     }
@@ -95,7 +95,7 @@ public class EffortController {
      * Gets eligible workers for this task.
      * @return The eligible workers.
      */
-    public List<Person> getEligibleWorkers() {
+    public final List<Person> getEligibleWorkers() {
         return eligibleWorkers;
     }
 
