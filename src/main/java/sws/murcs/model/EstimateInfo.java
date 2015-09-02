@@ -43,9 +43,9 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the current estimate for the task. This is given in hours.
+     * Gets the current estimate for the task. This is given in minutes.
      * @param day The day to get the estimate for
-     * @return The current estimate for the task in hours.
+     * @return The current estimate for the task in minutes.
      */
     public final float getEstimateForDay(final LocalDate day) {
         LocalDate lastDate = null;
@@ -86,7 +86,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     }
 
     /**
-     * Sets the estimate for the task in hours.
+     * Sets the estimate for the task in minutes.
      * @param newEstimate The new estimate for the task.
      * @param day The day you want to change the estimate for.
      */
