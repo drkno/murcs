@@ -26,6 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -68,6 +70,12 @@ import java.util.stream.Collectors;
  * An editor for the story model.
  */
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
+
+    /**
+     * Button to navigate to the creator of the story.
+     */
+    @FXML
+    private Button navigateToCreatorButton;
 
     /**
      * The short name of the story.
@@ -234,12 +242,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             creatorChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getPeople());
             if (modelCreator != null) {
                 creatorChoiceBox.getSelectionModel().select(modelCreator);
+                navigateToCreatorButton.setDisable(false);
             }
         }
         else {
             creatorChoiceBox.getItems().clear();
             creatorChoiceBox.getItems().add(getModel().getCreator());
             creatorChoiceBox.setDisable(true);
+            navigateToCreatorButton.setDisable(false);
         }
 
         storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
@@ -438,6 +448,18 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
         storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+
+        navigateToCreatorButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (creatorChoiceBox.getSelectionModel().getSelectedItem() != null) {
+                Person person = creatorChoiceBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
+        navigateToCreatorButton.setDisable(true);
     }
 
     @Override
@@ -512,7 +534,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     assert getModel().getStoryState().equals(Story.StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             } else {
                 getModel().setEstimate(estimateChoiceBox.getValue());
@@ -607,7 +629,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     getModel().setStoryState(Story.StoryState.None);
                     storyStateChoiceBox.setValue(Story.StoryState.None);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
         }
@@ -622,8 +644,18 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * @param newDependency story to generate a node for.
      * @return a JavaFX node representing the dependency.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateStoryNode(final Story newDependency) {
-        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton(null);
+        removeButton.setPrefHeight(15);
+        removeButton.setPrefWidth(15);
+        Image image = new Image("sws/murcs/icons/removeWhite.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        imageView.setPreserveRatio(true);
+        imageView.setPickOnBounds(true);
+        removeButton.setGraphic(imageView);
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
@@ -640,7 +672,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     dependenciesMap.remove(newDependency);
                     getModel().removeDependency(newDependency);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
             else {
@@ -1076,7 +1108,16 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
-            Button button = new Button("X");
+            MaterialDesignButton button = new MaterialDesignButton(null);
+            button.setPrefHeight(15);
+            button.setPrefWidth(15);
+            Image image = new Image("sws/murcs/icons/removeWhite.png");
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(20);
+            imageView.setFitWidth(20);
+            imageView.setPreserveRatio(true);
+            imageView.setPickOnBounds(true);
+            button.setGraphic(imageView);
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
@@ -1110,7 +1151,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                         storyStateChoiceBox.setValue(Story.StoryState.None);
                         getModel().setStoryState(Story.StoryState.None);
                         popup.close();
-                    }, "danger-will-robinson", "dont-panic");
+                    }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
                 } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);

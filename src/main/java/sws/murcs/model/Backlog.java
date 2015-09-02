@@ -26,6 +26,11 @@ import java.util.Objects;
 public class Backlog extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The PO who is assigned to the backlog.
      */
     @Searchable

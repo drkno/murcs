@@ -290,7 +290,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             model.remove(item);
             toolBarController.updateBackForwardButtons();
         }, "danger-will-robinson");
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "dont-panic");
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
         popup.show();
     }
 

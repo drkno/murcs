@@ -19,6 +19,11 @@ import java.time.LocalDate;
 public class WorkAllocation implements Serializable, Comparable<WorkAllocation> {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The project that belongs to this work allocation.
      */
     @Searchable

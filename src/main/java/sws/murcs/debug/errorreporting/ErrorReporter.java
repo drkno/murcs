@@ -233,6 +233,11 @@ public final class ErrorReporter {
                             }
                             performReporting(pThread, pThrowable, description, pProgDescription);
                         });
+                        popup.setCloseListener(windowIsOpen -> {
+                            synchronized (ErrorReporter.class) {
+                                reporterIsOpen = windowIsOpen;
+                            }
+                        });
                         reporterIsOpen = true;
                         popup.show();
                     }

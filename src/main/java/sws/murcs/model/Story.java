@@ -26,6 +26,11 @@ import sws.murcs.search.Searchable;
 public class Story extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * Represents the current state of a story.
      */
     public enum StoryState {

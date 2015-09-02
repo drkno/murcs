@@ -15,6 +15,11 @@ import java.util.List;
 public class Project extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The releases associated with the project.
      */
     @Searchable
