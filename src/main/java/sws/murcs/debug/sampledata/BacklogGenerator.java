@@ -203,14 +203,16 @@ public class BacklogGenerator implements Generator<Backlog> {
                 }
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
                 story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
-                story.setStoryState(Story.StoryState.Ready);
                 backlog.addStory(story, 1);
+                story.setStoryState(Story.StoryState.Ready);
+                assert backlog.getPrioritisedStories().contains(story);
             }
-            for (Story story : stories.subList(prioritised + 1, size)) {
+            for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.
+            e.printStackTrace();
             ErrorReporter.get().reportErrorSecretly(e, "BacklogGenerator: adding stories to backlog failed");
         }
         backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);

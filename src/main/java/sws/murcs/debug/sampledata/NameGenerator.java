@@ -990,7 +990,15 @@ public final class NameGenerator {
             "Jenae",
             "Everett",
             "Delta",
-            "Dorinda"
+            "Dorinda",
+            "Fredrickson",
+            "Fairbairn",
+            "Harris",
+            "Baddock",
+            "Woolley",
+            "Knox",
+            "van Wichen",
+            "No I didn't"
     };
 
     /**
@@ -1050,7 +1058,18 @@ public final class NameGenerator {
             "Mccormick",
             "Ross",
             "Sutton",
-            "Gonzalez"
+            "Gonzalez",
+            "Jay",
+            "Haydon",
+            "James",
+            "Dion",
+            "Matt",
+            "Matthew",
+            "Hayden",
+            "Dan",
+            "Daniel",
+            "Doin",
+            "J"
     };
 
     /**

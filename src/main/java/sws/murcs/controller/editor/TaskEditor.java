@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
@@ -171,6 +173,11 @@ public class TaskEditor implements UndoRedoChangeListener {
         estimateTextField.focusedProperty().addListener(changeListener);
         stateChoiceBox.focusedProperty().addListener(changeListener);
         descriptionTextArea.focusedProperty().addListener(changeListener);
+
+        Platform.runLater(() -> {
+            editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
+            logEffortButton.setTooltip(new Tooltip("Log Effort"));
+        });
     }
 
     /**
