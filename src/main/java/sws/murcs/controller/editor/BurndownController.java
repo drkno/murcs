@@ -90,6 +90,14 @@ public class BurndownController extends GenericEditor<Sprint> {
     private void updateAimedBurndown() {
         EstimateInfo estimateInfo = getModel().getEstimationInfo();
         float initialEstimate = estimateInfo.getEstimateForDay(getModel().getStartDate());
+        if (initialEstimate == 0) {
+            // attempt to find the first non-zero estimate
+            initialEstimate = new ArrayList<>(estimateInfo.getEstimates().entrySet()) // get all the keys
+                    .stream().sorted((a, b) -> a.getKey().compareTo(b.getKey())) // sort by date
+                    .filter(e -> e.getValue() != 0) // find only where estimate is not zero
+                    .map(Map.Entry::getValue)   // extract estimate
+                    .findFirst().orElse(0F);    // get value or default to 0
+        }
         aimedBurndown.getData().add(new Data<>(0L, initialEstimate));
         aimedBurndown.getData().add(new Data<>(getDayNumber(getModel().getEndDate()), 0f));
     }
@@ -150,40 +158,58 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Updates the burndown line with the data from the from the model.
      */
     private void updateBurnDown() {
+        // get all the tasks that have been completed in order
         List<Task> completedTasks = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
                 .filter(t -> t.getState() == TaskState.Done)
+                .sorted((o1, o2) -> o1.getCompletedDate().compareTo(o2.getCompletedDate()))
                 .collect(Collectors.toList());
 
+        // get the estimate total for incomplete tasks
         float incompleteTaskTotal = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
                 .filter(t -> t.getState() != TaskState.Done)
                 .map(Task::getCurrentEstimate)
                 .reduce(0F, (a, b) -> a + b);
 
-        completedTasks.sort((o1, o2) -> o1.getCompletedDate().compareTo(o2.getCompletedDate()));
+        // detect where estimations have changed so we can add spikes into the graph
+        List<Map.Entry<LocalDate, Float>> estimationChange =
+                new ArrayList<>(getModel().getEstimationInfo().getEstimates().entrySet()) // get all the keys
+                .stream().sorted((a, b) -> a.getKey().compareTo(b.getKey())) // sort by date
+                .filter(e -> e.getValue() != 0) // find only where estimate is not zero
+                .collect(Collectors.toList());
+        int currEstChange = estimationChange.size() - 1;
+
         List<Data<Long, Float>> chartData = new ArrayList<>();
+        // end of graph
+        chartData.add(new Data<>(getDayNumber(LocalDate.now()), incompleteTaskTotal));
         float accumulator = incompleteTaskTotal;
         for (int i = completedTasks.size() - 1; i >= 0; i--) {
             Task current = completedTasks.get(i);
             if (i == completedTasks.size() - 1
                     || !completedTasks.get(i + 1).getCompletedDate().equals(current.getCompletedDate())) {
                 long currentDay = getDayNumber(current.getCompletedDate());
+                // flat lines where no work has been done
                 if (chartData.size() > 0 && chartData.get(0).getXValue() - currentDay > 1) {
                     chartData.add(0, new Data<>(chartData.get(0).getXValue() - 1, accumulator));
                 }
                 chartData.add(0, new Data<>(currentDay, accumulator));
             }
             accumulator += current.getCurrentEstimate();
-        }
-        chartData.add(0, new Data<>(0L, accumulator));
-        chartData.add(new Data<>(getDayNumber(LocalDate.now()), incompleteTaskTotal));
 
-        long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
-        long lastNumber = chartData.get(chartData.size() - 1).getXValue();
-        if (lastNumber < currentNumber) {
-            chartData.add(new Data<>(currentNumber, chartData.get(chartData.size() - 1).getYValue()));
+            // add spike in graph if required due to change in estimation
+            if (currEstChange >= 0
+                    && estimationChange.get(currEstChange).getKey().compareTo(current.getCompletedDate()) > 0) {
+                chartData.add(0, new Data<>(getDayNumber(estimationChange.get(currEstChange).getKey()),
+                        estimationChange.get(currEstChange).getValue()));
+                float oldEstimate = getModel().getEstimationInfo()
+                        .getEstimateForDay(estimationChange.get(currEstChange).getKey().minusDays(1));
+                chartData.add(0, new Data<>(getDayNumber(estimationChange.get(currEstChange).getKey()), oldEstimate));
+                currEstChange--;
+            }
         }
+        // add beginning of graph
+        chartData.add(0, new Data<>(0L, accumulator));
 
         burndown.getData().addAll(chartData);
     }

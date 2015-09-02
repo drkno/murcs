@@ -25,6 +25,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -272,10 +273,22 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     catch (NotReadyException e1) {
                         ErrorReporter.get().reportError(e1, "Stuff turned to custard. Yum.");
                     }
+                    catch (MultipleSprintsException e1) {
+                        GenericPopup mpopup = new GenericPopup();
+                        mpopup.setMessageText("The selected story is already in another sprint. "
+                                + "Please remove it from that one first.");
+                        mpopup.show();
+                    }
                     finally {
                         popup.close();
                     }
                 }, "danger-will-robinson", "dont-panic");
+                popup.show();
+            }
+            catch (MultipleSprintsException e) {
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("The selected story is already in another sprint. "
+                        + "Please remove it from that one first.");
                 popup.show();
             }
         }

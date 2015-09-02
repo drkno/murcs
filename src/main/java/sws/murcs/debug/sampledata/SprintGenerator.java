@@ -2,6 +2,7 @@ package sws.murcs.debug.sampledata;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.*;
 
@@ -424,9 +425,11 @@ public class SprintGenerator implements Generator<Sprint> {
                     } catch (NotReadyException e) {
                         ErrorReporter.get().reportErrorSecretly(e, "SprintGenerator: setting stories failed");
                     }
+                    catch (MultipleSprintsException e) {
+                        // do nothing. we don't care about it in this context
+                    }
                 }
             }
-
         }
         else {
             return null;
