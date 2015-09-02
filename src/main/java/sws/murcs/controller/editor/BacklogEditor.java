@@ -369,7 +369,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * @param story The story to change the state of.
      */
     private void changeStoryStateToNone(final Story story) {
-        changeStoryStateToNone(story, () -> { });
+        changeStoryStateToNone(story, null);
     }
     /**
      * Change the story state from none to ready and informs the user if this will effect any sprints.
@@ -398,7 +398,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 popup.setWindowTitle("Are you sure?");
                 popup.addYesNoButtons(() -> {
                     popUpIsActive = false;
-                    callback.call();
+                    if (callback != null) {
+                        callback.call();
+                    }
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(story));
                     story.setStoryState(Story.StoryState.None);
                     popup.close();
@@ -410,11 +412,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
             else {
                 story.setStoryState(Story.StoryState.None);
-                callback.call();
+                if (callback != null) {
+                    callback.call();
+                }
             }
         }
         else {
-            callback.call();
+            if (callback != null) {
+                callback.call();
+            }
         }
     }
 
