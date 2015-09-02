@@ -241,7 +241,7 @@ public class SearchController {
         searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             final String placeholderLabel = "42";
             String search = searchText.getText();
-            if (Objects.equals(search, "") || search.matches("^(![0-9a-zA-Z]*\\s+)+$")) {
+            if (Objects.equals(search, "") || search.matches("^(![a-zA-Z]*\\s+)+$")) {
                 if (searchCommandButtonActive) {
                     hideSearchList();
                 }
