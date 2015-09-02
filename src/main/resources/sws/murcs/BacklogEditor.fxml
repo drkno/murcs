@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -42,7 +43,7 @@
                                 <RowConstraints vgrow="NEVER" />
                                 <RowConstraints vgrow="NEVER" />
                                 <RowConstraints vgrow="SOMETIMES" />
-                                <RowConstraints vgrow="NEVER" />
+                                <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                                 <RowConstraints vgrow="NEVER" />
                                 <RowConstraints vgrow="ALWAYS" />
                             </rowConstraints>
@@ -77,11 +78,37 @@
                                 <VBox GridPane.rowIndex="3">
                                     <children>
                                         <Label text="Product Owner" GridPane.rowIndex="1" />
-                                        <AnchorPane>
-                                            <children>
-                                                <ComboBox fx:id="poComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                            </children>
-                                        </AnchorPane>
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" vgrow="NEVER" />
+                                 </rowConstraints>
+                                 <children>
+                                    <Button fx:id="navigateToPOButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="Navigate to the PO" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                              <AnchorPane>
+                                                  <children>
+                                                      <ComboBox fx:id="poComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                  </children>
+                                              </AnchorPane>
+                                 </children>
+                              </GridPane>
                                     </children>
                                     <padding>
                                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -102,7 +129,7 @@
                                 </VBox>
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <TitledPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" expanded="true" text="Stories">
+                                        <TitledPane expanded="true" text="Stories" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <content>
                                                 <VBox>
                                                     <padding>
@@ -120,10 +147,50 @@
                                                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                                                     </columnResizePolicy>
                                                                 </TableView>
-                                                                <Button fx:id="jumpPriorityButton" layoutX="206.0" layoutY="14.0" mnemonicParsing="false" onAction="#jumpPriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" text="⇑" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                                <Button fx:id="increasePriorityButton" mnemonicParsing="false" onAction="#increasePriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" text="↑" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" />
-                                                                <Button fx:id="decreasePriorityButton" mnemonicParsing="false" onAction="#decreasePriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" text="↓" AnchorPane.bottomAnchor="100.0" AnchorPane.rightAnchor="0.0" />
-                                                                <Button fx:id="dropPriorityButton" layoutX="216.0" layoutY="24.0" mnemonicParsing="false" onAction="#dropPriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" text="⇓" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0" />
+                                                                <Button fx:id="jumpPriorityButton" layoutX="206.0" layoutY="14.0" mnemonicParsing="false" onAction="#jumpPriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <graphic>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@icons/jumpToTopBlack.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                   <tooltip>
+                                                      <Tooltip text="Move a story to be the 1st prioritised story" />
+                                                   </tooltip></Button>
+                                                                <Button fx:id="increasePriorityButton" mnemonicParsing="false" onAction="#increasePriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                                                   <graphic>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@icons/upBlack.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                   <tooltip>
+                                                      <Tooltip text="Move a story up in priority" />
+                                                   </tooltip></Button>
+                                                                <Button fx:id="decreasePriorityButton" mnemonicParsing="false" onAction="#decreasePriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" AnchorPane.bottomAnchor="100.0" AnchorPane.rightAnchor="0.0">
+                                                   <graphic>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@icons/downBlack.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                   <tooltip>
+                                                      <Tooltip text="Move a story down in priority" />
+                                                   </tooltip></Button>
+                                                                <Button fx:id="dropPriorityButton" layoutX="216.0" layoutY="24.0" mnemonicParsing="false" onAction="#dropPriority" prefHeight="30.0" prefWidth="30.0" styleClass="mdr-button" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="0.0">
+                                                   <graphic>
+                                                      <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@icons/jumpToBottomBlack.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                   <tooltip>
+                                                      <Tooltip text="Deprioritsed a story " />
+                                                   </tooltip></Button>
                                                                 <GridPane layoutY="150.0" prefHeight="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                                                     <columnConstraints>
                                                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />

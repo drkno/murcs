@@ -425,6 +425,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
 
         GenericPopup popup = new GenericPopup();
+        popup.setWindowTitle("Delete Task");
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {

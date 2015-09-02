@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -71,11 +72,14 @@
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints vgrow="NEVER" />
+                              <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                               <RowConstraints minHeight="25.0" vgrow="ALWAYS" />
                            </rowConstraints>
                            <children>
-                                    <Label text="Description" />
+                                    <Label text="Description">
+                                 <GridPane.margin>
+                                    <Insets bottom="5.0" />
+                                 </GridPane.margin></Label>
                               <TextArea fx:id="descriptionTextArea" wrapText="true" GridPane.rowIndex="1" />
                            </children>
                            <GridPane.margin>
@@ -85,11 +89,37 @@
                         <VBox GridPane.rowIndex="6">
                            <children>
                               <Label text="Team" />
-                              <AnchorPane>
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="teamComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button fx:id="navigateToTeamButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="Navigate to the Team the sprint is assigned to" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="teamComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <GridPane.margin>
                               <Insets bottom="5.0" left="10.0" right="10.0" />
@@ -98,11 +128,37 @@
                         <VBox GridPane.rowIndex="7">
                            <children>
                               <Label text="Release" />
-                              <AnchorPane>
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="releaseComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button fx:id="navigateToReleaseButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="Navigate to the Release the sprint is assigned to" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="releaseComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="10.0" right="10.0" />
@@ -114,11 +170,37 @@
                         <VBox GridPane.rowIndex="5">
                            <children>
                               <Label text="Backlog" />
-                              <AnchorPane>
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="backlogComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="backlogComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <Button fx:id="navigateToBacklogButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="Navigate to the Backlog the sprint is apart of" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />

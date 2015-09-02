@@ -21,10 +21,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -55,6 +58,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * The fixed height of rows in the table view for stories.
      */
     private static final Double FIXED_ROW_HEIGHT_STORY_TABLE = 30.0;
+
+    /**
+     * The Button for navigating to the PO.
+     */
+    @FXML
+    private Button navigateToPOButton;
 
     /**
      * Text fields for displaying short name, long name and priority.
@@ -220,6 +229,23 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             return storyPriority1.compareTo(storyPriority2);
         });
         storyColumn.setComparator(String::compareTo);
+
+        navigateToPOButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (poComboBox.getSelectionModel().getSelectedItem() != null) {
+                Person person = poComboBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
+        navigateToPOButton.setDisable(true);
+
+        jumpPriorityButton.setDisable(true);
+        dropPriorityButton.setDisable(true);
+        decreasePriorityButton.setDisable(true);
+        increasePriorityButton.setDisable(true);
     }
 
     /**
@@ -495,6 +521,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         poComboBox.getItems().addAll(productOwners);
         if (poComboBox != null) {
             poComboBox.getSelectionModel().select(productOwner);
+            if (!isCreationWindow) {
+                navigateToPOButton.setDisable(false);
+            }
         }
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -791,6 +820,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     /**
      * A TableView cell that contains a link to the story it represents and a button to remove it.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private class RemovableHyperlinkCell extends TableCell<Story, String> {
         @Override
         protected void updateItem(final String storyName, final boolean empty) {
@@ -817,7 +847,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     container.getChildren().add(nameLink);
                 }
 
-                Button button = new Button("X");
+                MaterialDesignButton button = new MaterialDesignButton(null);
+                button.setPrefHeight(15);
+                button.setPrefWidth(15);
+                Image image = new Image("sws/murcs/icons/removeWhite.png");
+                ImageView imageView = new ImageView(image);
+                imageView.setFitHeight(20);
+                imageView.setFitWidth(20);
+                imageView.setPreserveRatio(true);
+                imageView.setPickOnBounds(true);
+                button.setGraphic(imageView);
                 button.getStyleClass().add("mdr-button");
                 button.getStyleClass().add("mdrd-button");
                 button.setOnAction(e -> {
