@@ -146,24 +146,35 @@ public class PersonGenerator implements Generator<Person> {
         List<Skill> skills = generateSkills(0, maxSkills);
 
         try {
-            if (!skills.stream().filter(s -> s.getShortName().equals("PO")).findAny().isPresent()) {
+            if (!skills
+                    .stream()
+                    .filter(s -> s.getShortName().equals("PO"))
+                    .findAny()
+                    .isPresent()) {
                 Skill productOwner = new Skill();
                 productOwner.setShortName("PO");
                 productOwner.setLongName("Product Owner");
                 productOwner.setDescription("has ability to insult design teams efforts");
-                skills.add(productOwner);
+                if (!skills.stream().filter(productOwner::equals).findAny().isPresent()) {
+                    skills.add(productOwner);
+                }
             }
 
-            if (!skills.stream().filter(s -> s.getShortName().equals("SM")).findAny().isPresent()) {
+            if (!skills
+                    .stream()
+                    .filter(s -> s.getShortName().equals("SM"))
+                    .findAny()
+                    .isPresent()) {
                 Skill scrumMaster = new Skill();
                 scrumMaster.setShortName("SM");
                 scrumMaster.setLongName("Scrum Master");
                 scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
-                skills.add(scrumMaster);
+                if (!skills.stream().filter(scrumMaster::equals).findAny().isPresent()) {
+                    skills.add(scrumMaster);
+                }
             }
         }
         catch (Exception e) {
-            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator adding PO SM skills failed");
             return null;
             // thrown if you try to set the short name as null/empty
         }
