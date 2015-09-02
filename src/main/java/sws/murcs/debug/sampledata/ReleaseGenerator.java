@@ -771,7 +771,7 @@ public class ReleaseGenerator implements Generator<Release> {
         try {
             projects.get(GenerationHelper.random(projects.size())).addRelease(r);
         } catch (Exception e) {
-            return null;
+            int foo = 0;
         }
 
         r.setDescription(description);
