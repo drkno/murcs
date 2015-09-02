@@ -1,13 +1,24 @@
 package sws.murcs.controller.editor;
 
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import sws.murcs.model.*;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
+import sws.murcs.model.Effort;
+import sws.murcs.model.EstimateInfo;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,29 +35,39 @@ public class BurndownController extends GenericEditor<Sprint> {
     /**
      * Burndown line that is aimed for.
      */
-    private XYChart.Series<Long, Float> aimedBurndown;
+    private Series<Long, Float> aimedBurndown;
 
     /**
      * Actual burndown line.
      */
-    private XYChart.Series<Long, Float> burndown;
+    private Series<Long, Float> burndown;
 
     /**
      * Burnup line showing effort spent.
      */
-    private XYChart.Series<Long, Float> burnup;
+    private Series<Long, Float> burnup;
 
     @Override
     public void loadObject() {
         NumberAxis xAxis = (NumberAxis) burndownChart.getXAxis();
         xAxis.setAutoRanging(false);
-        xAxis.setLowerBound(1);
+        xAxis.setLowerBound(0);
         xAxis.setUpperBound(getDayNumber(getModel().getEndDate()));
         xAxis.setTickUnit(1);
 
-        updateAimedBurndown();
-        updateBurnUp();
-        updateBurnDown();
+        burndownChart.getData().clear();
+
+        long taskCount = getModel().getStories().stream().map(Story::getTasks).flatMap(Collection::stream).count();
+        if (taskCount > 0) {
+            // cant use clear due to an IllegalArgumentException
+            aimedBurndown = new Series<>("Aimed", FXCollections.<Data<Long, Float>>observableArrayList());
+            burndown = new Series<>("Burndown      ", FXCollections.<Data<Long, Float>>observableArrayList());
+            burnup = new Series<>("Burnup", FXCollections.<Data<Long, Float>>observableArrayList());
+            updateAimedBurndown();
+            updateBurnUp();
+            updateBurnDown();
+            burndownChart.getData().setAll(aimedBurndown, burnup, burndown);
+        }
     }
 
     /**
@@ -62,12 +83,10 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Updates the aimed burndown line with the data from the model.
      */
     private void updateAimedBurndown() {
-        aimedBurndown.getData().clear();
-
         EstimateInfo estimateInfo = getModel().getEstimationInfo();
-
-        aimedBurndown.getData().add(new XYChart.Data<>(0L, estimateInfo.getEstimateForDay(getModel().getStartDate())));
-        aimedBurndown.getData().add(new XYChart.Data<>(getDayNumber(getModel().getEndDate()), 0f));
+        float initialEstimate = estimateInfo.getEstimateForDay(getModel().getStartDate());
+        aimedBurndown.getData().add(new Data<>(0L, initialEstimate));
+        aimedBurndown.getData().add(new Data<>(getDayNumber(getModel().getEndDate()), 0f));
     }
 
     /**
@@ -92,10 +111,10 @@ public class BurndownController extends GenericEditor<Sprint> {
             }
         }
 
-        List<XYChart.Data<Long, Float>> orderedDates = new ArrayList<>();
-        orderedDates.add(new XYChart.Data<>(0L, 0f));
+        List<Data<Long, Float>> orderedDates = new ArrayList<>();
+        orderedDates.add(new Data<>(0L, 0f));
         for (LocalDate date : dates.keySet()) {
-            orderedDates.add(new XYChart.Data<>(getDayNumber(date), dates.get(date)));
+            orderedDates.add(new Data<>(getDayNumber(date), dates.get(date)));
         }
 
         orderedDates.sort((o1, o2) -> Long.compare(o1.getXValue(), o2.getXValue()));
@@ -103,9 +122,9 @@ public class BurndownController extends GenericEditor<Sprint> {
         float cumulativeEffort = 0;
         long offset = 0;
         for (int i = 0; i < orderedDates.size(); i++) {
-            XYChart.Data<Long, Float> dataPoint = orderedDates.get(i);
+            Data<Long, Float> dataPoint = orderedDates.get(i);
             if (dataPoint.getXValue() != i + offset) {
-                orderedDates.add(i, new XYChart.Data<>(dataPoint.getXValue() - 1, cumulativeEffort));
+                orderedDates.add(i, new Data<>(dataPoint.getXValue() - 1, cumulativeEffort));
                 i++;
                 offset = dataPoint.getXValue() - i;
             }
@@ -116,7 +135,7 @@ public class BurndownController extends GenericEditor<Sprint> {
         long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
         long lastNumber = orderedDates.get(orderedDates.size() - 1).getXValue();
         if (lastNumber < currentNumber) {
-            orderedDates.add(new XYChart.Data<>(currentNumber, orderedDates.get(orderedDates.size() - 1).getYValue()));
+            orderedDates.add(new Data<>(currentNumber, orderedDates.get(orderedDates.size() - 1).getYValue()));
         }
 
         burnup.getData().addAll(orderedDates);
@@ -126,8 +145,6 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Updates the burndown line with the data from the from the model.
      */
     private void updateBurnDown() {
-        burndown.getData().clear();
-
         List<Task> completedTasks = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
                 .filter(t -> t.getState() == TaskState.Done)
@@ -135,26 +152,27 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         float incompleteTaskTotal = getModel().getStories().stream()
                 .map(Story::getTasks).flatMap(Collection::stream)
+                .filter(t -> t.getState() != TaskState.Done)
                 .map(Task::getCurrentEstimate)
                 .reduce(0F, (a, b) -> a + b);
 
         completedTasks.sort((o1, o2) -> o1.getCompletedDate().compareTo(o2.getCompletedDate()));
-        List<XYChart.Data<Long, Float>> chartData = new ArrayList<>();
+        List<Data<Long, Float>> chartData = new ArrayList<>();
         float accumulator = incompleteTaskTotal;
         for (int i = completedTasks.size() - 1; i >= 0; i--) {
             Task current = completedTasks.get(i);
             if (i == completedTasks.size() - 1
                     || !completedTasks.get(i + 1).getCompletedDate().equals(current.getCompletedDate())) {
-                chartData.add(0, new XYChart.Data<>(getDayNumber(current.getCompletedDate()), accumulator));
+                chartData.add(0, new Data<>(getDayNumber(current.getCompletedDate()), accumulator));
             }
             accumulator += current.getCurrentEstimate();
         }
-        chartData.add(0, new XYChart.Data<>(0L, accumulator));
+        chartData.add(0, new Data<>(0L, accumulator));
 
         long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
         long lastNumber = chartData.get(chartData.size() - 1).getXValue();
         if (lastNumber < currentNumber) {
-            chartData.add(new XYChart.Data<>(currentNumber, chartData.get(chartData.size() - 1).getYValue()));
+            chartData.add(new Data<>(currentNumber, chartData.get(chartData.size() - 1).getYValue()));
         }
 
         burndown.getData().addAll(chartData);
@@ -162,21 +180,12 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     protected void saveChangesAndErrors() {
-        //Do nothing, we never make changes in this tab
+        // Do nothing, we never make changes in this tab, errors should never occur in this tab and
+        // we do not need to listen for updates in this tab (they will be forced with a loadObject())
     }
 
     @Override
     protected void initialize() {
-        aimedBurndown = new XYChart.Series<>();
-        aimedBurndown.setName("Aimed");
-
-        burndown = new XYChart.Series<>();
-        burndown.setName("Burndown      ");
-
-        burnup = new XYChart.Series<>();
-        burnup.setName("Burnup");
-
         burndownChart.setCreateSymbols(false);
-        burndownChart.getData().addAll(aimedBurndown, burnup, burndown);
     }
 }
