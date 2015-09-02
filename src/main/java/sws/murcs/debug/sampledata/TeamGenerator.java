@@ -910,7 +910,7 @@ public class TeamGenerator implements Generator<Team> {
         if (personPool == null) {
             for (int i = 0; i < personCount; i++) {
                 Person newPerson = personGenerator.generate();
-                if (!generated.stream().filter(newPerson::equals).findAny().isPresent()) {
+                if (newPerson != null && !generated.stream().filter(newPerson::equals).findAny().isPresent()) {
                     generated.add(newPerson);
                 }
             }

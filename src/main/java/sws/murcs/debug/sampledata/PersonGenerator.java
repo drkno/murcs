@@ -107,7 +107,7 @@ public class PersonGenerator implements Generator<Person> {
         if (skillPool == null) {
             for (int i = 0; i < skillCount; i++) {
                 Skill newSkill = skillGenerator.generate();
-                if (!generated.stream().filter(newSkill::equals).findAny().isPresent()) {
+                if (newSkill != null && !generated.stream().filter(newSkill::equals).findAny().isPresent()) {
                     generated.add(newSkill);
                 }
             }
