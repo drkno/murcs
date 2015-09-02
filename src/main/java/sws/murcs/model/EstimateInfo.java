@@ -2,7 +2,6 @@ package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,23 +9,35 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * A class representing an estimated time remaining
  * for a task, sprint or story.
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class EstimateInfo extends TrackableObject implements Serializable {
-
     /**
-     * ID for serialization.
+     * The serialization UID, for serialization.
      */
-    private static final long serialVersionUID = 0;
+    @XmlTransient
+    private static final long serialVersionUID = 42L;
 
     /**
      * A map of the time remaining on specific days.
      */
     @TrackableValue
     private Map<LocalDate, Float> estimates = new HashMap<>();
+
+    /**
+     * Creates a new time estimate.
+     */
+    public EstimateInfo() {
+    }
 
     /**
      * Gets the estimate for the current day.
@@ -37,9 +48,9 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the current estimate for the task. This is given in hours.
+     * Gets the current estimate for the task. This is given in minutes.
      * @param day The day to get the estimate for
-     * @return The current estimate for the task in hours.
+     * @return The current estimate for the task in minutes.
      */
     public final float getEstimateForDay(final LocalDate day) {
         LocalDate lastDate = null;
@@ -76,7 +87,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
     }
 
     /**
-     * Sets the estimate for the task in hours.
+     * Sets the estimate for the task in minutes.
      * @param newEstimate The new estimate for the task.
      * @param day The day you want to change the estimate for.
      */
@@ -141,7 +152,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * Merges any number of time estimates into this one.
      * @param estimates The estimates to merge into this one
      */
-    public void mergeIn(final EstimateInfo... estimates) {
+    public void mergeIn(final EstimateInfo...estimates) {
         List<EstimateInfo> estimateList = new ArrayList<>();
         Collections.addAll(estimateList, estimates);
 
@@ -178,7 +189,7 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * @param estimates The estimates to merge
      * @return The resulting time estimate
      */
-    public static EstimateInfo merge(final List<EstimateInfo> estimates) {
+    public static final EstimateInfo merge(final List<EstimateInfo> estimates) {
         Map<LocalDate, Float> map = mergeToMap(estimates);
         EstimateInfo result = new EstimateInfo();
         result.getEstimates().putAll(map);

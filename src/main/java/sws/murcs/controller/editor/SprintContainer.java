@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -97,7 +98,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        isLoaded = true;
+        Platform.runLater(() -> { isLoaded = true; });
     }
 
 

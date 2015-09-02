@@ -3,7 +3,6 @@ package sws.murcs.model;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -70,7 +69,7 @@ public class Task extends TrackableObject implements Serializable {
      * The effort people have logged against this task.
      */
     @TrackableValue
-    private List<Effort> effortLogs = new ArrayList<>();
+    private List<EffortEntry> effortEntryLogs = new ArrayList<>();
 
     /**
      * Date this task was marked as done.
@@ -81,7 +80,7 @@ public class Task extends TrackableObject implements Serializable {
      * Creates a new task.
      */
     public Task() {
-        UndoRedoManager.add(estimateInfo);
+        UndoRedoManager.get().add(estimateInfo);
     }
 
     /**
@@ -177,7 +176,10 @@ public class Task extends TrackableObject implements Serializable {
      * @param newEstimate The estimated time remaining
      */
     public void setCurrentEstimate(final float newEstimate) {
-        estimateInfo.setEstimateForDay(newEstimate, LocalDate.now());
+        if (newEstimate < 0 || Float.isInfinite(newEstimate)) {
+            throw new NumberFormatException("Can't have a negative or infinite number for an estimate.");
+        }
+        this.estimateInfo.setCurrentEstimate(newEstimate);
     }
 
     /**
@@ -220,26 +222,26 @@ public class Task extends TrackableObject implements Serializable {
      * Gets the effort logged against this task.
      * @return The effort.
      */
-    public final List<Effort> getEffort() {
-        return effortLogs;
+    public final List<EffortEntry> getEffort() {
+        return effortEntryLogs;
     }
 
     /**
      * Logs some effort.
-     * @param effort The effort to log
+     * @param effortEntry The effort to log
      */
-    public final void logEffort(final Effort effort) {
-        effortLogs.add(effort);
+    public final void logEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.add(effortEntry);
 
         commit("log effort");
     }
 
     /**
      * Unlogs some effort.
-     * @param effort The effort to remove
+     * @param effortEntry The effort to remove
      */
-    public final void unlogEffort(final Effort effort) {
-        effortLogs.remove(effort);
+    public final void unlogEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.remove(effortEntry);
         commit("remove effort");
     }
 

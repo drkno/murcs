@@ -49,6 +49,7 @@ public final class Tile extends Label {
      * Constructor for the tile.
      * @param pPriority The priority of how important the tile is to show.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Tile(final Integer pPriority) {
         final int squareSize = GridLayout.CELL_SIZE - 13;
         setMinSize(squareSize, squareSize);

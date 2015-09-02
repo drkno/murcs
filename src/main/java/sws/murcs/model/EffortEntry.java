@@ -8,7 +8,7 @@ import java.time.LocalDate;
 /**
  * Model object for effort spent on a Task.
  */
-public class Effort extends TrackableObject implements Serializable {
+public class EffortEntry extends TrackableObject implements Serializable {
 
     /**
      * The Person who logged the effort.

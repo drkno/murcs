@@ -141,7 +141,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (editorPane != null && newValue != null) {
+                if (editorPane != null && newValue != null && editorPane.getController().isLoaded()) {
                     editorPane.getController().saveChanges();
                 }
                 updateDisplayListSelection(newValue, oldValue);
@@ -149,7 +149,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             updateTitle();
         });
 
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
         updateList();
     }
 

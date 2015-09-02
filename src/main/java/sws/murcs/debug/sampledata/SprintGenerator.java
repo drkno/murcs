@@ -406,9 +406,8 @@ public class SprintGenerator implements Generator<Sprint> {
         if (backlogPool.size() > 0) {
             Backlog backlog = backlogPool.get(GenerationHelper.random(backlogPool.size()));
             sprint.setBacklog(backlog);
-            List<Story> stories = backlog.getAllStories().stream()
-                    .filter(story -> story.getStoryState().equals(Story.StoryState.Ready)
-                            && !usedStories.contains(story))
+            List<Story> stories = backlog.getPrioritisedStories().stream()
+                    .filter(story -> !usedStories.contains(story))
                     .collect(Collectors.toList());
             if (stories.size() > 0) {
                 int numStories = GenerationHelper.random(stories.size() + 1);
@@ -459,7 +458,7 @@ public class SprintGenerator implements Generator<Sprint> {
                 Task task = story.getTasks().get(GenerationHelper.random(story.getTasks().size()));
                 Person person = team.getMembers().get(GenerationHelper.random(team.getMembers().size()));
 
-                Effort effort = new Effort();
+                EffortEntry effort = new EffortEntry();
                 LocalDate date = sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength));
                 effort.setDate(date);
                 effort.setDescription(GenerationHelper.randomString(10));

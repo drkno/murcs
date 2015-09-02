@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,7 +57,11 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -162,6 +167,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     private boolean stop;
 
+    /**
+     * The last selected story.
+     */
+    private Story lastSelectedStory;
+
     @Override
     public final void loadObject() {
         isLoaded = false;
@@ -217,13 +227,6 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        if (!isLoaded) {
-            loadTasks();
-        }
-        else {
-            updateEditors();
-        }
-
         // Enable or disable whether you can change the creator
         if (getIsCreationWindow()) {
             Person modelCreator = getModel().getCreator();
@@ -245,7 +248,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            updateEstimation();
+            synchronized (StyleManager.getInstance()) {
+                updateEstimation();
+            }
         });
         updateAcceptanceCriteria();
         super.clearErrors();
@@ -255,6 +260,19 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         else {
             shortNameTextField.requestFocus();
         }
+
+        if (getModel() != lastSelectedStory) {
+            taskEditors.clear();
+        }
+        // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
+        // onsuccess function.
+        if (!isLoaded) {
+            loadTasks();
+        }
+        else {
+            updateEditors();
+        }
+        lastSelectedStory = getModel();
     }
 
     /**

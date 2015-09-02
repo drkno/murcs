@@ -6,12 +6,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import sws.murcs.model.Effort;
-import sws.murcs.model.EstimateInfo;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -112,7 +107,7 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         for (Story story : getModel().getStories()) {
             for (Task task : story.getTasks()) {
-                for (Effort effort : task.getEffort()) {
+                for (EffortEntry effort : task.getEffort()) {
                     if (!dates.containsKey(effort.getDate())) {
                         dates.put(effort.getDate(), effort.getEffort());
                     }

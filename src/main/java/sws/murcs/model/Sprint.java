@@ -4,16 +4,10 @@ import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.reporting.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -160,12 +154,12 @@ public class Sprint extends Model {
             throw new NotReadyException();
         }
 
-        List<Sprint> usages = UsageHelper.findBy(
+        /*todo:List<Sprint> usages = UsageHelper.findBy(
                 ModelType.Sprint, model -> ((Sprint) model).getStories().contains(story));
         usages.remove(this);
         if (usages.size() > 0) {
             throw new MultipleSprintsException();
-        }
+        }*/
 
         if (!stories.contains(story)) {
             stories.add(story);

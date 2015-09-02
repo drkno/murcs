@@ -263,7 +263,7 @@ public class GridManager extends Group {
      * @param gridAlignment of movement
      * @return a location
      */
-    @SuppressWarnings("CheckStyle")
+    @SuppressWarnings("checkstyle:finalparameters")
     private Location findFarthestLocation(Location location, final GridAlignment gridAlignment) {
         Location farthest;
 

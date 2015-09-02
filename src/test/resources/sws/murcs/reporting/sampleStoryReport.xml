@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
     <projectVersion>0.0.5</projectVersion>
-    <dateGenerated>2015-08-13</dateGenerated>
+    <dateGenerated>2015-09-01</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelStory">
         <stories>
             <story shortName="1">
@@ -17,8 +17,15 @@
                     <task>
                         <name>Become one with the universe</name>
                         <description>Attempt to absorb the universe, this probably won't work</description>
-                        <estimate>100.0</estimate>
                         <state>InProgress</state>
+                        <estimateInfo>
+                            <estimates>
+                                <entry>
+                                    <key/>
+                                    <value>100.0</value>
+                                </entry>
+                            </estimates>
+                        </estimateInfo>
                     </task>
                 </tasks>
                 <creator>Haydon</creator>

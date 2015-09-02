@@ -272,7 +272,7 @@ public class SearchController {
                 hideSearchCommandsPopOver();
             }
         });
-        searchIcon.setOnMouseClicked(event -> commandsPopOverStayOpen = !commandsPopOverStayOpen);
+        searchIcon.setOnMouseClicked(event -> { commandsPopOverStayOpen = !commandsPopOverStayOpen; });
         Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
@@ -402,7 +402,7 @@ public class SearchController {
                 shouldDelay = true;
                 param.getSelectionModel().select(cell.getIndex());
             });
-            cell.setOnMouseExited(event -> shouldDelay = false);
+            cell.setOnMouseExited(event -> { shouldDelay = false; });
             cell.setOnMouseClicked(selectEvent);
 
             return cell;
@@ -552,7 +552,7 @@ public class SearchController {
 
                     synchronized (StyleManager.getInstance()) {
                         if (editorPane == null) {
-                            editorPane = new EditorPane(newValue, App.getMainController());
+                            editorPane = new EditorPane(newValue, App.getMainController(), true);
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
                             editorPane.setModel(newValue);
                         }
@@ -584,6 +584,7 @@ public class SearchController {
                 latch.await();
             }
             catch (Throwable e) {
+                popOverWindow.hide();
                 ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
@@ -622,6 +623,7 @@ public class SearchController {
             searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
+            popOverWindow.hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
     }

@@ -7,7 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.Effort;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
 /**
@@ -15,7 +15,8 @@ import sws.murcs.model.Person;
  */
 public class EffortController {
     /**
-     * The VBox that contains all effort entries.
+     * The VBox that contains all effort entries and the vBox
+     * containing the creation form.
      */
     @FXML
     private VBox effortsVBox, contentVBox;
@@ -51,7 +52,7 @@ public class EffortController {
         eligibleWorkers = people;
 
         createController = newEffortEntryController();
-        createController.setEffort(new Effort());
+        createController.setEffortEntry(new EffortEntry());
         createController.styleAsAddButton();
         createController.setOnAction(this::add);
         createController.getHasErrorsProperty().addListener((observable, oldValue, newValue) -> {
@@ -60,14 +61,18 @@ public class EffortController {
 
         contentVBox.getChildren().add(1, createController.getRoot());
 
-        for (Effort e : parentEditor.getTask().getEffort()) {
+        for (EffortEntry e : parentEditor.getTask().getEffort()) {
             EffortEntryController controller = newEffortEntryController();
-            controller.setEffort(e);
+            controller.setEffortEntry(e);
 
-            effortsVBox.getChildren().add(1, controller.getRoot());
+            effortsVBox.getChildren().add(0, controller.getRoot());
         }
     }
 
+    /**
+     * Creates a new effort entry controller.
+     * @return The new effort entry controller.
+     */
     private EffortEntryController newEffortEntryController() {
         try {
             effortEntryControllerLoader.setRoot(null);
@@ -82,7 +87,7 @@ public class EffortController {
             return controller;
         }
         catch (IOException e) {
-            ErrorReporter.get().reportErrorSecretly(e, "Couldn't load EffortEntryController :'(");
+            ErrorReporter.get().reportError(e, "Couldn't load EffortEntryController :'(");
         }
         return null;
     }
@@ -91,34 +96,34 @@ public class EffortController {
      * Gets eligible workers for this task.
      * @return The eligible workers.
      */
-    public List<Person> getEligibleWorkers() {
+    public final List<Person> getEligibleWorkers() {
         return eligibleWorkers;
     }
 
     /**
-     * A method handling creation of new effort entries
+     * A method handling creation of new effort entries.
      * @param addController The controller that has created the new effort entry
      */
     private void add(final EffortEntryController addController) {
         if (addController.getHasErrorsProperty().get()) return;
 
-        parentEditor.getTask().logEffort(addController.getEffort());
+        parentEditor.getTask().logEffort(addController.getEffortEntry());
 
         EffortEntryController controller = newEffortEntryController();
-        controller.setEffort(addController.getEffort());
+        controller.setEffortEntry(addController.getEffortEntry());
 
         //Clear the creation controller.
-        addController.setEffort(new Effort());
+        addController.setEffortEntry(new EffortEntry());
 
-        effortsVBox.getChildren().add(1, controller.getRoot());
+        effortsVBox.getChildren().add(0, controller.getRoot());
     }
 
     /**
-     * Removes effort from the task
+     * Removes effort from the task.
      * @param removeController The controller of the task being removed
      */
     private void remove(final EffortEntryController removeController) {
-        parentEditor.getTask().unlogEffort(removeController.getEffort());
+        parentEditor.getTask().unlogEffort(removeController.getEffortEntry());
         effortsVBox.getChildren().remove(removeController.getRoot());
     }
 }
