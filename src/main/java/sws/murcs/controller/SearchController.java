@@ -272,7 +272,7 @@ public class SearchController {
                 hideSearchCommandsPopOver();
             }
         });
-        searchIcon.setOnMouseClicked(event -> commandsPopOverStayOpen = !commandsPopOverStayOpen);
+        searchIcon.setOnMouseClicked(event -> { commandsPopOverStayOpen = !commandsPopOverStayOpen; });
         Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
         injectSearchCommands();
 
@@ -402,7 +402,7 @@ public class SearchController {
                 shouldDelay = true;
                 param.getSelectionModel().select(cell.getIndex());
             });
-            cell.setOnMouseExited(event -> shouldDelay = false);
+            cell.setOnMouseExited(event -> { shouldDelay = false; });
             cell.setOnMouseClicked(selectEvent);
 
             return cell;

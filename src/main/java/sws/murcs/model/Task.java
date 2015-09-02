@@ -2,6 +2,7 @@ package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -10,6 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -44,23 +46,35 @@ public class Task extends TrackableObject implements Serializable {
     private String description;
 
     /**
-     * The estimate in hours for the time it will take to complete the task.
-     */
-    @TrackableValue
-    private float estimate;
-
-    /**
      * The state that the task is currently in.
      */
     @TrackableValue
     private TaskState state = TaskState.NotStarted;
 
     /**
-     * The people who are assigned to the task. These may just be the people overseeing its
-     * completion.
+     * The estimated time for this task.
+     */
+    @TrackableValue
+    private EstimateInfo estimateInfo = new EstimateInfo();
+
+    /**
+     * The people who are assigned to the task. These may just be the people overseeing its completion.
      */
     @TrackableValue
     private Collection<Person> assignees = new ArrayList<>();
+
+    /**
+     * The effort people have logged against this task.
+     */
+    @TrackableValue
+    private List<EffortEntry> effortEntryLogs = new ArrayList<>();
+
+    /**
+     * Creates a new task.
+     */
+    public Task() {
+        UndoRedoManager.get().add(estimateInfo);
+    }
 
     /**
      * Gets this tasks name.
@@ -114,23 +128,31 @@ public class Task extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the current estimate for the task. This is given in hours.
-     * @return The current estimate for the task in hours.
+     * Gets the estimated time information about this task.
+     * @return The estimateInfo information for this task.
      */
-    public final float getEstimate() {
-        return estimate;
+    public EstimateInfo getEstimateInfo() {
+        return estimateInfo;
     }
 
     /**
-     * Sets the estimate for the task in hours.
-     * @param newEstimate The new estimate for the task.
+     * Gets the estimated time remaining for the task
+     * at the current date.
+     * @return The estimated time remaining.
      */
-    public final void setEstimate(final float newEstimate) {
+    public float getCurrentEstimate() {
+        return estimateInfo.getCurrentEstimate();
+    }
+
+    /**
+     * Sets the estimated time remaining for the task.
+     * @param newEstimate The estimated time remaining
+     */
+    public void setCurrentEstimate(final float newEstimate) {
         if (newEstimate < 0 || Float.isInfinite(newEstimate)) {
             throw new NumberFormatException("Can't have a negative or infinite number for an estimate.");
         }
-        estimate = newEstimate;
-        commit("edit Task");
+        this.estimateInfo.setCurrentEstimate(newEstimate);
     }
 
     /**
@@ -150,6 +172,33 @@ public class Task extends TrackableObject implements Serializable {
         if (assignees.contains(assignee)) {
             assignees.remove(assignee);
         }
+    }
+
+    /**
+     * Gets the effort logged against this task.
+     * @return The effort.
+     */
+    public final List<EffortEntry> getEffort() {
+        return effortEntryLogs;
+    }
+
+    /**
+     * Logs some effort.
+     * @param effortEntry The effort to log
+     */
+    public final void logEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.add(effortEntry);
+
+        commit("log effort");
+    }
+
+    /**
+     * Unlogs some effort.
+     * @param effortEntry The effort to remove
+     */
+    public final void unlogEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.remove(effortEntry);
+        commit("remove effort");
     }
 
     /**
@@ -176,7 +225,7 @@ public class Task extends TrackableObject implements Serializable {
         else {
             same = shortName.equalsIgnoreCase(shortNameO);
         }
-        same = same && objectTask.getEstimate() == getEstimate()
+        same = same && objectTask.getCurrentEstimate() == getCurrentEstimate()
                 && Objects.equals(objectTask.getDescription(), getDescription())
                 && objectTask.getState().equals(getState())
                 && objectTask.getAssigneesAsString().equals(getAssigneesAsString());
@@ -193,7 +242,7 @@ public class Task extends TrackableObject implements Serializable {
                 c = getName().hashCode()
                         + getDescription().hashCode()
                         + getState().hashCode()
-                        + Float.hashCode(getEstimate())
+                        + Float.hashCode(getCurrentEstimate())
                         + getAssigneesAsString().hashCode();
             }
             hashCode = hashCodePrime + c;
@@ -203,7 +252,7 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final String toString() {
-        return state + " (" + estimate + "): " + name + " - " + description;
+        return state + " (" + getCurrentEstimate() + "): " + name + " - " + description;
     }
 
     /**

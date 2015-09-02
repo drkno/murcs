@@ -136,6 +136,18 @@ public class Sprint extends Model {
     }
 
     /**
+     * Gets estimation info for the sprint.
+     * @return The estimation info for the sprint.
+     */
+    public final EstimateInfo getEstimationInfo() {
+        EstimateInfo info = new EstimateInfo();
+        for (Story story : getStories()) {
+            info.mergeIn(story.getEstimationInfo());
+        }
+        return info;
+    }
+
+    /**
      * Add a story to this sprint.
      * @param story The story to be added
      * @throws NotReadyException If the story added was not ready

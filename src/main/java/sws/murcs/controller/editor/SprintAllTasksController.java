@@ -427,7 +427,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
             allTasks.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
         }
         else if (newValue == OrderBy.Estimate) {
-            allTasks.sort((o1, o2) -> Float.compare(o1.getEstimate(), o2.getEstimate()));
+            allTasks.sort((o1, o2) -> Float.compare(o1.getCurrentEstimate(), o2.getCurrentEstimate()));
         }
         else if (newValue == OrderBy.State) {
             allTasks.sort((o1, o2) -> o1.getState().compareTo(o2.getState()));
@@ -490,7 +490,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      * Inserts all of the visible nodes into the GUI.
      */
     private void insertVisibleNodes() {
-        allTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
+        visibleTasks.forEach(task -> addTaskNode(allTaskEditors.get(task).getParent(),
                 allTaskEditors.get(task).getStory(), null));
     }
 
