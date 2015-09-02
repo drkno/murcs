@@ -29,6 +29,11 @@ import java.util.stream.Collectors;
 public class Organisation extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The list of projects currently loaded in the application.
      */
     @Searchable

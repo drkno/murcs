@@ -32,6 +32,11 @@ public enum EstimateType {
     MovieClassification;
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * A list of all the already loaded estimate types.
      */
     private static Map<EstimateType, List<String>> estimates = new HashMap<>();

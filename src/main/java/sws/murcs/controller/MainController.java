@@ -598,7 +598,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 try {
@@ -624,7 +624,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -632,7 +632,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -668,7 +668,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 if (openFile()) {
                     popup.close();
@@ -686,7 +686,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -694,7 +694,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -753,7 +753,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 App.getWindowManager().cleanUp();
@@ -769,7 +769,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -779,7 +779,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                                 App.getWindowManager().bringToTop(openWindow, true);
                             });
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -867,9 +867,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     public final void revert(final ActionEvent event) {
         if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
+            popup.setWindowTitle("Revert");
             popup.setTitleText("Revert changes?");
-            popup.setMessageText("Look like you are still working on something"
-                    + "\nChanges will be lost if you continue.");
+            popup.setMessageText("Looks like you are still working on something"
+                    + "\nUnsaved changes will be lost if you revert.");
             popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.get().revert(0);
@@ -882,7 +883,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 }
             }, "danger-will-robinson");
             if (UndoRedoManager.get().canRevert()) {
-                popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                popup.addButton("Save changes as new", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (saveAs(null, false)) {
                         try {
@@ -897,7 +898,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -905,7 +906,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
     }

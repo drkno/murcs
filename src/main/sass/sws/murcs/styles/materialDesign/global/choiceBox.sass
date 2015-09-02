@@ -91,3 +91,25 @@
 
 .done .label
   -fx-text-fill: $white-text
+
+.model-selector, .model-selector:focused, .model-selector:selected
+  -fx-background-color: $secondary-300
+
+.model-selector:hover
+  -fx-background-color: $secondary-500
+
+.model-selector .label
+  -fx-text-fill: $white-text
+
+.model-selector .context-menu .menu-item:focused .label
+  -fx-text-fill: $white-text
+
+.model-selector .context-menu .menu-item:focused, .model-selector .context-menu .menu-item:selected, .model-selector .context-menu .menu-item:hover
+  -fx-background-color: $secondary-500
+
+.model-selector .arrow
+  -fx-background-color: $white
+
+// Suppost to make the check mark white, not currently working
+.model-selector .context-menu .menu-item > .left-container > .check
+  -fx-background-color: $white-text

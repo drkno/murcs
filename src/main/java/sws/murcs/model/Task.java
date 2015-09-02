@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 public class Task extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * A prime number used in the hash code.
      */
     @XmlTransient

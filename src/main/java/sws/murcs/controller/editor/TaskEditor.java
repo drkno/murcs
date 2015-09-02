@@ -1,11 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -36,6 +31,12 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.
@@ -130,7 +131,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     private Label assigneesLabel;
 
     /**
-     * The label containing spent effort information
+     * The label containing spent effort information.
      */
     @FXML
     private Label spentEffortLabel;
@@ -218,6 +219,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     /**
      * Updates the spent effort for the task.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void updateSpentEffort() {
         int dps = 0;
         float spent = 0f;
@@ -425,6 +427,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
 
         GenericPopup popup = new GenericPopup();
+        popup.setWindowTitle("Delete Task");
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {

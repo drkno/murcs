@@ -35,17 +35,25 @@
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="45.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="toggleButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleButtonClicked" text="+">
+            <Button fx:id="toggleButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleButtonClicked" prefHeight="40.0" prefWidth="40.0">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <styleClass>
                   <String fx:value="mdge-button" />
                   <String fx:value="mdr-button" />
+                   <String fx:value="icon-button" />
                </styleClass>
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/collapseExpandWhite.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
             </Button>
             <HBox fx:id="minimisedHBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
@@ -57,14 +65,22 @@
                   <Insets />
                </GridPane.margin>
             </HBox>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#deleteButtonClicked" text="X" GridPane.columnIndex="2">
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="40.0" prefWidth="40.0" GridPane.columnIndex="2">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <styleClass>
                   <String fx:value="mdr-button" />
                   <String fx:value="mdrd-button" />
+                   <String fx:value="icon-button" />
                </styleClass>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/removeWhite.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
             </Button>
             <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
@@ -91,7 +107,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                   <Label text="(spent 0 hours)" fx:id="spentEffortLabel"/>
+                   <Label fx:id="spentEffortLabel" text="(spent 0 hours)" />
                </children>
                <padding>
                   <Insets right="10.0" />

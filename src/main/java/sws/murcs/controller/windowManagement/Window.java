@@ -70,7 +70,7 @@ public class Window {
     }
 
     /**
-     * Override for when we don't want to pass a callback.
+     * Ensures that the window is closed properly.
      */
     public final void close() {
         stage.close();

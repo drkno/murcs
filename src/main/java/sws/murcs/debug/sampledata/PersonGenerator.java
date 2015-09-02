@@ -146,26 +146,36 @@ public class PersonGenerator implements Generator<Person> {
         List<Skill> skills = generateSkills(0, maxSkills);
 
         try {
-            Skill productOwner = new Skill();
-            productOwner.setShortName("PO");
-            productOwner.setLongName("Product Owner");
-            productOwner.setDescription("has ability to insult design teams efforts");
-            if (!skills.stream().filter(productOwner::equals).findAny().isPresent()) {
-                skills.add(productOwner);
+            if (!skills
+                    .stream()
+                    .filter(s -> s.getShortName().equals("PO"))
+                    .findAny()
+                    .isPresent()) {
+                Skill productOwner = new Skill();
+                productOwner.setShortName("PO");
+                productOwner.setLongName("Product Owner");
+                productOwner.setDescription("has ability to insult design teams efforts");
+                if (!skills.stream().filter(productOwner::equals).findAny().isPresent()) {
+                    skills.add(productOwner);
+                }
             }
 
-            Skill scrumMaster = new Skill();
-            scrumMaster.setShortName("SM");
-            scrumMaster.setLongName("Scrum Master");
-            scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
-            if (!skills.stream().filter(scrumMaster::equals).findAny().isPresent()) {
-                skills.add(scrumMaster);
+            if (!skills
+                    .stream()
+                    .filter(s -> s.getShortName().equals("SM"))
+                    .findAny()
+                    .isPresent()) {
+                Skill scrumMaster = new Skill();
+                scrumMaster.setShortName("SM");
+                scrumMaster.setLongName("Scrum Master");
+                scrumMaster.setDescription("is able to manage the efforts of a team and resolve difficulties");
+                if (!skills.stream().filter(scrumMaster::equals).findAny().isPresent()) {
+                    skills.add(scrumMaster);
+                }
             }
         }
         catch (Exception e) {
-            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: adding PO/SM skills failed");
             return null;
-            // Will never ever happen. ever. an exception is only
             // thrown if you try to set the short name as null/empty
         }
 
@@ -173,14 +183,14 @@ public class PersonGenerator implements Generator<Person> {
             p.setUserId(userId);
         }
         catch (Exception e) {
-            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: setting user ID failed");
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator setting user ID failed");
             return null;
         }
         try {
             p.setShortName(shortName);
         }
         catch (Exception e) {
-            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: setting short name failed");
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator setting short name failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
@@ -192,7 +202,7 @@ public class PersonGenerator implements Generator<Person> {
             p.addSkills(skills);
         }
         catch (CustomException e) {
-            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator: adding skills failed");
+            ErrorReporter.get().reportErrorSecretly(e, "PersonGenerator adding skills failed");
             return null;
             // Do nothing, don't have to deal with the exception
             // if only generating test data.
