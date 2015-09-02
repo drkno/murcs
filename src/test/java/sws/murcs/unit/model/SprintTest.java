@@ -38,9 +38,17 @@ public class SprintTest {
         sprint.setDescription("description");
         sprint.setStartDate(LocalDate.now());
         sprint.setEndDate(LocalDate.now().plus(10, ChronoUnit.DAYS));
-        sprint.setTeam((new TeamGenerator()).generate());
 
-        Release release = (new ReleaseGenerator()).generate();
+        Team team = null;
+        while (team == null) {
+            team = (new TeamGenerator()).generate();
+        }
+        sprint.setTeam(team);
+
+        Release release = null;
+        while (release == null) {
+             release = (new ReleaseGenerator()).generate();
+        }
         release.setReleaseDate(sprint.getEndDate().plus(1, ChronoUnit.DAYS));
         sprint.setAssociatedRelease(release);
     }
