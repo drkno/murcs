@@ -722,7 +722,7 @@ public class ReleaseGenerator implements Generator<Release> {
         if (projectPool == null) {
             for (int i = 0; i < projectCount; i++) {
                 Project newProject = projectGenerator.generate();
-                if (!generated.stream().filter(newProject::equals).findAny().isPresent()) {
+                if (newProject != null && !generated.stream().filter(newProject::equals).findAny().isPresent()) {
                     generated.add(newProject);
                 }
             }
