@@ -173,6 +173,7 @@ public class BurndownController extends GenericEditor<Sprint> {
             accumulator += current.getCurrentEstimate();
         }
         chartData.add(0, new Data<>(0L, accumulator));
+        chartData.add(new Data<>(getDayNumber(LocalDate.now()), incompleteTaskTotal));
 
         long currentNumber = Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate()));
         long lastNumber = chartData.get(chartData.size() - 1).getXValue();
