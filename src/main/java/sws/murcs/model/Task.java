@@ -175,7 +175,18 @@ public class Task extends TrackableObject implements Serializable {
      * @param newEstimate The estimated time remaining
      */
     public void setCurrentEstimate(final float newEstimate) {
-        this.estimateInfo.setEstimateForDay(newEstimate, LocalDate.now());
+        estimateInfo.setEstimateForDay(newEstimate, LocalDate.now());
+    }
+
+    /**
+     * Sets the date that this task was first estimated.
+     * @deprecated This method is so that data generation can produce valid and useful data.
+     * It should not be used for any other purpose. If it is, the behaviour is undefined.
+     * @param estimationDate the new estimation date.
+     */
+    @Deprecated
+    public void setEstimationDate(final LocalDate estimationDate) {
+        estimateInfo.setEstimateForDay(estimateInfo.getCurrentEstimate(), estimationDate);
     }
 
     /**
