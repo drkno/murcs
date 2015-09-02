@@ -29,7 +29,17 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <LineChart fx:id="burndownChart" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label text="Oh Fiddlesticks!">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label text="You must have started a sprint and it must have tasks before a burndown graph can be generated." textAlignment="CENTER" wrapText="true" />
+               </children>
+            </VBox>
+            <LineChart fx:id="burndownChart" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
               <xAxis>
                 <NumberAxis label="Day" side="BOTTOM" />
               </xAxis>

@@ -58,8 +58,10 @@ public class BurndownController extends GenericEditor<Sprint> {
         burndownChart.getData().clear();
 
         long taskCount = getModel().getStories().stream().map(Story::getTasks).flatMap(Collection::stream).count();
-        if (taskCount > 0) {
-            // cant use clear due to an IllegalArgumentException
+        if (getDayNumber(LocalDate.now()) >= 0 && taskCount > 0) {
+            burndownChart.setVisible(true);
+            // cant use clear due to an IllegalArgumentException when re-adding
+            // readding done because of weird issues with graphs
             aimedBurndown = new Series<>("Aimed", FXCollections.<Data<Long, Float>>observableArrayList());
             burndown = new Series<>("Burndown      ", FXCollections.<Data<Long, Float>>observableArrayList());
             burnup = new Series<>("Burnup", FXCollections.<Data<Long, Float>>observableArrayList());
@@ -67,6 +69,9 @@ public class BurndownController extends GenericEditor<Sprint> {
             updateBurnUp();
             updateBurnDown();
             burndownChart.getData().setAll(aimedBurndown, burnup, burndown);
+        }
+        else {
+            burndownChart.setVisible(false);
         }
     }
 
