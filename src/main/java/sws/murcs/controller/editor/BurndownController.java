@@ -30,12 +30,6 @@ import java.util.stream.Collectors;
 public class BurndownController extends GenericEditor<Sprint> {
 
     /**
-     * The tab view containing the burndown chart.
-     */
-    @FXML
-    private AnchorPane mainView;
-
-    /**
      * The chart representing the burndown.
      */
     @FXML
@@ -242,7 +236,6 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     protected void initialize() {
-        mainView.getStyleClass().add("root");
         burndownChart.setCreateSymbols(false);
 
         if (PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData() && !hasShownGeneratedDataWarning) {
