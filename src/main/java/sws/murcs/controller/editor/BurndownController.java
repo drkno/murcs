@@ -13,6 +13,8 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
+import sws.murcs.controller.GenericPopup;
+import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -59,6 +61,11 @@ public class BurndownController extends GenericEditor<Sprint> {
      * Burnup line showing effort spent.
      */
     private Series<Long, Float> burnup;
+
+    /**
+     * Has the warning about generated data been shown?
+     */
+    private static boolean hasShownGeneratedDataWarning = false;
 
     @Override
     public void loadObject() {
@@ -237,5 +244,14 @@ public class BurndownController extends GenericEditor<Sprint> {
     protected void initialize() {
         mainView.getStyleClass().add("root");
         burndownChart.setCreateSymbols(false);
+
+        if (PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData() && !hasShownGeneratedDataWarning) {
+            hasShownGeneratedDataWarning = true;
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Looks like you are using sample data.");
+            popup.setMessageText("Sample data can generate some very odd looking burndown graphs. Please only treat "
+                    + "these graphs as samples, and not as real burn downs.");
+            popup.show();
+        }
     }
 }
