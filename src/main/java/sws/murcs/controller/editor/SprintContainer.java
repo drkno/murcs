@@ -138,20 +138,16 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints overview into the overview tab.
      */
     private void overviewTabSelected() {
-        if (getModel() != null) {
-            overviewEditor.setModel(getModel());
-            overviewEditor.loadObject();
-        }
+        overviewEditor.setModel(getModel());
+        overviewEditor.loadObject();
     }
 
     /**
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
-        if (getModel() != null) {
-            scrumBoard.setModel(getModel());
-            scrumBoard.loadObject();
-        }
+        scrumBoard.setModel(getModel());
+        scrumBoard.loadObject();
     }
 
     /**

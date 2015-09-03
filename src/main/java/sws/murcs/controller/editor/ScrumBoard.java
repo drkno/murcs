@@ -1,22 +1,24 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
-
-import java.util.Objects;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.model.*;
+import sws.murcs.model.Story.StoryState;
 
 /**
  * Scrum Board controller.
@@ -38,12 +40,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     /**
      * The task currently being dragged.
      */
-    private static Task draggingTask;
+    private Task draggingTask;
 
     /**
      * The story of the currently dragging task.
      */
-    private static Story draggingStory;
+    private Story draggingStory;
 
     @Override
     protected void initialize() {
@@ -67,6 +69,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
         // Create the grid pane and define its columns and properties
         GridPane storyPane = new GridPane();
+        vBox.getChildren().add(storyPane);
         storyPane.setGridLinesVisible(true);
         ColumnConstraints col1 = new ColumnConstraints();
         ColumnConstraints col2 = new ColumnConstraints();
@@ -78,11 +81,27 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         col4.setPercentWidth(25);
         storyPane.getColumnConstraints().addAll(col1, col2, col3, col4);
 
-        // Add the name of the story to the left column
+        // Add the nodes of the story column
         col1.setHalignment(HPos.CENTER);
-        Label storyNameLabel = new Label(story.getShortName());
-        GridPane.setColumnIndex(storyNameLabel, 0);
-        storyPane.getChildren().add(storyNameLabel);
+        VBox detailsVBox = new VBox();
+        GridPane.setColumnIndex(detailsVBox, 0);
+        detailsVBox.setFillWidth(true);
+        detailsVBox.setAlignment(Pos.CENTER);
+        detailsVBox.setSpacing(5);
+        detailsVBox.setPadding(new Insets(5));
+        Hyperlink storyNameLink = new Hyperlink(story.getShortName());
+        storyNameLink.setOnAction(event -> getNavigationManager().navigateTo(story));
+        Label doneLabel = new Label("Done:");
+        CheckBox doneCheckBox = new CheckBox();
+        updateDoneCheckBox(doneCheckBox, story);
+        doneCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            story.setStoryState(newValue ? StoryState.Done : StoryState.Ready);
+        });
+        HBox doneBox = new HBox(doneLabel, doneCheckBox);
+        doneBox.setSpacing(10);
+        doneBox.setAlignment(Pos.CENTER);
+        detailsVBox.getChildren().addAll(storyNameLink, doneBox);
+        storyPane.getChildren().add(detailsVBox);
 
         // Create the VBoxes that will populate the grid pane
         VBox notStartedVBox = new VBox();
@@ -97,15 +116,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
             GridPane.setColumnIndex(places[i], i + 1);
             addDragOverHandler(places[i], story);
             addDragEnteredHandler(places[i], story);
-            addDragExitedHandler(places[i], story);
-            addDragDroppedHandler(places[i], story, TaskState.values()[i]);
+            addDragExitedHandler(places[i]);
+            addDragDroppedHandler(places[i], TaskState.values()[i], story, doneCheckBox);
         }
         for (Task task : story.getTasks()) {
             insertTask(places, task, story);
         }
-
-        // Add the grid pane to the story VBox
-        vBox.getChildren().add(storyPane);
     }
 
     /**
@@ -114,11 +130,45 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * @param task The task to add to the list
      * @param story The story from which that task came
      */
-    private void insertTask(final VBox[] stateBoxes, final Task task, final Story story) {
+    private void insertTask(final Pane[] stateBoxes, final Task task, final Story story) {
         Label label = new Label(task.getName());
-        addDragDetectedHandler(label, task, story);
-        addDragDoneHandler(label, stateBoxes[task.getState().ordinal()]);
         stateBoxes[task.getState().ordinal()].getChildren().add(label);
+        addDragDetectedHandler(label, task, story);
+        addDragDoneHandler(label, task, stateBoxes[task.getState().ordinal()], stateBoxes);
+        addDoubleClickHandler(label, story);
+    }
+
+    /**
+     * Updates the disabled state of the doneCheckBox.
+     * @param doneCheckBox The check box to update
+     * @param story The story relating to this checkbox
+     */
+    private void updateDoneCheckBox(final CheckBox doneCheckBox, final Story story) {
+        for (Task task : story.getTasks()) {
+            if (task.getState() != TaskState.Done) {
+                doneCheckBox.setSelected(false);
+                doneCheckBox.setDisable(true);
+                story.setStoryState(StoryState.Ready);
+                return;
+            }
+        }
+        doneCheckBox.setDisable(false);
+        if (story.getStoryState() == StoryState.Done) {
+            doneCheckBox.setSelected(true);
+        }
+    }
+
+    /**
+     * Adds a double click handler to a node that loads a TaskEditor into a new window.
+     * @param node The node to apply the handler to
+     * @param story The story to load
+     */
+    private void addDoubleClickHandler(final Node node, final Story story) {
+        node.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                getNavigationManager().navigateToNewTab(story);
+            }
+        });
     }
 
     /**
@@ -146,7 +196,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * @param target The node to add the handler to
      * @param story The story from which this node is a part
      */
-    private void addDragOverHandler(final Node target, final Story story) {
+    private void addDragOverHandler(final Pane target, final Story story) {
         target.setOnDragOver(event -> {
             if (story == draggingStory && event.getGestureSource() != target && event.getDragboard().hasString()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -160,10 +210,10 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * @param target The node to add the handler to
      * @param story The story from which this node is a part
      */
-    private void addDragEnteredHandler(final Node target, final Story story) {
+    private void addDragEnteredHandler(final Pane target, final Story story) {
         target.setOnDragEntered(event -> {
             if (story == draggingStory && event.getGestureSource() != target && event.getDragboard().hasString()) {
-                // TODO: Properly style the target element
+                // TODO: Style target with drop prompt
                 //target.getStyleClass().add("-fx-border-color: red; -fx-border-width: 7px;");
                 //target.applyCss();
             }
@@ -174,9 +224,8 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     /**
      * Adds a drag exited handler to the node.
      * @param target The node to add the handler to
-     * @param story The story from which this node is a part
      */
-    private void addDragExitedHandler(final Node target, final Story story) {
+    private void addDragExitedHandler(final Pane target) {
         target.setOnDragExited(event -> {
             // TODO: Return style to normal
             event.consume();
@@ -186,27 +235,15 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     /**
      * Adds a drag dropped handler to the node.
      * @param target The node to add the handler to
-     * @param story The story from which this node is a part
      * @param newState The new state to set the task to
+     * @param story The story from which this node is a part
+     * @param doneCheckBox The check box that sets the state of this story
      */
-    private void addDragDroppedHandler(final VBox target, final Story story, final TaskState newState) {
+    private void addDragDroppedHandler(final Pane target, final TaskState newState, final Story story, final CheckBox doneCheckBox) {
         target.setOnDragDropped(event -> {
-            Dragboard dragboard = event.getDragboard();
-            boolean success = false;
-            if (dragboard.hasString()) {
-                String taskName = dragboard.getString();
-                for (Task task : story.getTasks()) {
-                    if (Objects.equals(task.getName(), taskName)) {
-                        task.setState(newState);
-                        Label label = new Label(task.getName());
-                        addDragDetectedHandler(label, task, story);
-                        addDragDoneHandler(label, target);
-                        target.getChildren().add(label);
-                        success = true;
-                    }
-                }
-            }
-            event.setDropCompleted(success);
+            draggingTask.setState(newState);
+            updateDoneCheckBox(doneCheckBox, story);
+            event.setDropCompleted(true);
             event.consume();
         });
     }
@@ -214,12 +251,15 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     /**
      * Adds a drag done handler to the node.
      * @param source The node to add the handler to
-     * @param initialPosition The position on the scrum board where the task originated
+     * @param task The task represented by the node
+     * @param initialPane The VBox on the scrum board where the task originated
+     * @param places Array of Panes where the node can be dropped
      */
-    private void addDragDoneHandler(final Node source, final VBox initialPosition) {
+    private void addDragDoneHandler(final Node source, final Task task, final Pane initialPane, final Pane[] places) {
         source.setOnDragDone(event -> {
             if (event.getTransferMode() == TransferMode.MOVE) {
-                initialPosition.getChildren().remove(source);
+                initialPane.getChildren().remove(source);
+                places[task.getState().ordinal()].getChildren().add(source);
             }
             event.consume();
         });
@@ -227,5 +267,9 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
     @Override
     protected void saveChangesAndErrors() {
+    }
+
+    @Override
+    public void dispose() {
     }
 }
