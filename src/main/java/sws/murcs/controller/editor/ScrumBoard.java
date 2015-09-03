@@ -1,5 +1,7 @@
 package sws.murcs.controller.editor;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
@@ -8,21 +10,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -140,13 +135,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         VBox notStartedVBox = new VBox();
         VBox inProgressVBox = new VBox();
         VBox doneVBox = new VBox();
-        notStartedVBox.setPadding(new Insets(5));
-        inProgressVBox.setPadding(new Insets(5));
-        doneVBox.setPadding(new Insets(5));
         VBox[] places = new VBox[] {notStartedVBox, inProgressVBox, doneVBox};
         storyPane.getChildren().addAll(places);
         for (int i = 0; i < places.length; i++) {
             GridPane.setColumnIndex(places[i], i + 1);
+            places[i].setSpacing(5);
+            places[i].setPadding(new Insets(5));
             addDragOverHandler(places[i], story);
             addDragEnteredHandler(places[i], story);
             addDragExitedHandler(places[i]);
@@ -168,6 +162,23 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         Label nameLabel = new Label(task.getName());
         nameLabel.setWrapText(true);
         nameLabel.setPrefWidth(1000);
+
+        TextField estimateTextField = new TextField();
+        estimateTextField.setText(Float.toString(task.getCurrentEstimate()));
+        estimateTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                try {
+                    Float estimate = Float.parseFloat(estimateTextField.getText());
+                    if (estimate != task.getCurrentEstimate()) {
+                        task.setCurrentEstimate(estimate);
+                    }
+                }
+                catch (NumberFormatException e) {
+                    estimateTextField.setText("" + task.getCurrentEstimate());
+                    //this.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
+                }
+            }
+        });
         
         ImageView editImage = new ImageView("sws/murcs/icons/edit.png");
         editImage.setFitHeight(25);
@@ -208,9 +219,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         assigneeButton.setOnAction(event -> assigneesButtonClicked(assigneeButton, story, task));
         effortButton.setOnAction(event -> effortButtonClicked(effortButton, story, task));
 
-        HBox details = new HBox(assigneeButton, effortButton);
+        HBox details = new HBox(estimateTextField, assigneeButton, effortButton);
         VBox node = new VBox(nameLabel, details);
         stateBoxes[task.getState().ordinal()].getChildren().add(node);
+
+        HBox.setHgrow(assigneeButton, Priority.NEVER);
+        HBox.setHgrow(effortButton, Priority.NEVER);
 
         addDragDetectedHandler(node, task, story);
         addDragDoneHandler(node, task, stateBoxes[task.getState().ordinal()], stateBoxes);
