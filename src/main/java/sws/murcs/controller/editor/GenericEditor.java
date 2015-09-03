@@ -212,23 +212,30 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     public void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
-        final boolean[] hideError = {true};
+        boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        Platform.runLater(() -> {
-            for (Map.Entry<Node, String> entry : invalidInSection) {
-                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-                if (entry.getKey().isFocused()) {
-                    hideError[0] = false;
-                }
+        clearNonSynchronized(invalidInSection, true);
+    }
+
+    /**
+     * Clears form errors dangerously (in a non synchronized manner).
+     * @param invalidInSection The nodes that are invalid
+     * @param hideError Whether the error should be hidden
+     */
+    private void clearNonSynchronized(Collection<Map.Entry<Node, String>> invalidInSection, boolean hideError) {
+        for (Map.Entry<Node, String> entry : invalidInSection) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+            if (entry.getKey().isFocused()) {
+                hideError = false;
             }
-            invalidInSection.clear();
-            if (hideError[0] && errorMessagePopover != null) {
-                errorMessagePopover.hide();
-            }
-            labelErrorMessage.setText("");
-        });
+        }
+        invalidInSection.clear();
+        if (hideError && errorMessagePopover != null) {
+            errorMessagePopover.hide();
+        }
+        labelErrorMessage.setText("");
     }
 
     /**
