@@ -195,7 +195,7 @@ public class BacklogGenerator implements Generator<Backlog> {
         }
 
         int size = stories.size();
-        int prioritised = size / 2;
+        int prioritised = size - size / 4;
 
         try {
             for (Story story : stories.subList(0, prioritised)) {

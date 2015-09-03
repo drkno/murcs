@@ -302,22 +302,22 @@ public class SprintGenerator implements Generator<Sprint> {
     /**
      * The max number of sprints to generate at medium stress.
      */
-    public static final int MEDIUM_STRESS_MAX = 20;
+    public static final int MEDIUM_STRESS_MAX = 15;
 
     /**
      * The min number of sprints to generate at medium stress.
      */
-    public static final int MEDIUM_STRESS_MIN = 10;
+    public static final int MEDIUM_STRESS_MIN = 5;
 
     /**
      * The max number of sprints to generate at high stress.
      */
-    public static final int HIGH_STRESS_MAX = 100;
+    public static final int HIGH_STRESS_MAX = 40;
 
     /**
      * The min number of sprints to generate at high stress.
      */
-    public static final int HIGH_STRESS_MIN = 50;
+    public static final int HIGH_STRESS_MIN = 15;
 
     /**
      * A pool of releases to choose from when creating a sprint.
@@ -410,7 +410,7 @@ public class SprintGenerator implements Generator<Sprint> {
                     .filter(story -> !usedStories.contains(story))
                     .collect(Collectors.toList());
             if (stories.size() > 0) {
-                int numStories = GenerationHelper.random(stories.size() + 1);
+                int numStories = GenerationHelper.random(1, stories.size() / 6 + 2);
                 for (int i = 0; i < numStories; i++) {
                     try {
                         Story story = stories.remove(GenerationHelper.random(stories.size()));
