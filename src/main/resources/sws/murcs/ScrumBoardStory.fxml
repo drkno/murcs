@@ -6,20 +6,20 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
+<AnchorPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
    <children>
-      <GridPane fx:id="StoryMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="StoryMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="NEVER" percentWidth="22.0" />
-          <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
+          <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="0.0" percentWidth="22.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="0.0" percentWidth="26.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="0.0" percentWidth="26.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="0.0" percentWidth="26.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <VBox fx:id="StoryOuterVBox">
+            <VBox fx:id="StoryOuterVBox" minWidth="0.0">
                <children>
                   <VBox fx:id="storyStaticControlsVBox">
                      <children>
@@ -85,9 +85,9 @@
                   <VBox fx:id="toDoMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
                </children>
             </VBox>
-            <VBox fx:id="inProgressOuterVBox" GridPane.columnIndex="2">
+            <VBox fx:id="inProgressOuterVBox" minWidth="0.0" GridPane.columnIndex="2">
                <children>
-                  <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
+                  <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="0.0">
                      <children>
                         <Label fx:id="inProgressBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>

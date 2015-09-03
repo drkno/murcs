@@ -111,7 +111,12 @@ public class ScrumBoardStoryController {
         float pow = (float) Math.pow(10, dps);
         summary = Math.round(summary * pow) / pow;
 
-        return summary + " " + units;
+        if (dps == 0) {
+            return (int) summary + " " + units;
+        }
+        else {
+            return summary + " " + units;
+        }
     }
 
     private void setupTaskMinInfo() {
@@ -158,6 +163,21 @@ public class ScrumBoardStoryController {
         }
         else {
             inProgressBaseInfoLabel.setText("No tasks are in progress");
+        }
+
+        if (tasksDone.size() > 0) {
+            DoubleSummaryStatistics timeSpent = tasksDone
+                    .stream()
+                    .collect(Collectors.summarizingDouble(t -> t.getEffort()
+                            .stream()
+                            .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
+                            .getSum()));
+            String[] timeSpentString = calculateTime((float) timeSpent.getSum()).split(" ");
+            doneBaseInfoLabel.setText(tasksDone.size() + " tasks are done "
+                    + "with " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
+        }
+        else {
+            doneBaseInfoLabel.setText("No tasks are done");
         }
 
     }
