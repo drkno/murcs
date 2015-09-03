@@ -109,6 +109,11 @@ public class Organisation extends TrackableObject implements Serializable {
     private static final String VERSION = "0.0.5";
 
     /**
+     * Is this organisation using generated data?
+     */
+    private boolean usingGeneratedData = false;
+
+    /**
      * Sets up a new organisation.
      */
     public Organisation() {
@@ -141,6 +146,22 @@ public class Organisation extends TrackableObject implements Serializable {
             // if you try to set the shortName as null or empty.
             ErrorReporter.get().reportError(e, "Adding PO and SM skills to Organisation failed");
         }
+    }
+
+    /**
+     * Gets whether this organisation is using generated data.
+     * @return is using generated data?
+     */
+    public final boolean isUsingGeneratedData() {
+        return usingGeneratedData;
+    }
+
+    /**
+     * Sets wheather this organisation is using generated data.
+     * @param generatedData is using generated data.
+     */
+    public final void setIsUsingGeneratedData(final boolean generatedData) {
+        usingGeneratedData = generatedData;
     }
 
     /**

@@ -15,7 +15,6 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

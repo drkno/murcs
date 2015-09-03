@@ -85,7 +85,7 @@ public class AssigneeController {
                     Platform.runLater(() -> {
                         assigneeComboBox.getSelectionModel().clearSelection();
                     });
-                    addAssignee(selectedPerson);
+                    addAssignee(selectedPerson, true);
                 }
             }
         });
@@ -99,7 +99,7 @@ public class AssigneeController {
      * @param people The people to add.
      */
     private void addAssignees(final Collection<Person> people) {
-        people.stream().forEach(person -> Platform.runLater(() -> addAssignee(person)));
+        people.stream().forEach(person -> Platform.runLater(() -> addAssignee(person, false)));
     }
 
     /**
@@ -118,7 +118,7 @@ public class AssigneeController {
         button.setText(assignee.getShortName());
         button.setOnAction((event) -> {
             if (!parentEditor.getTask().getAssignees().contains(assignee)) {
-                addAssignee(assignee);
+                addAssignee(assignee, true);
             }
         });
         recentlyUsedVBox.getChildren().add(button);
@@ -127,8 +127,9 @@ public class AssigneeController {
     /**
      * Adds an assignee to the list of assignees and updates the main controller to reflect this as well.
      * @param assignee the assignee to add to the task.
+     * @param newAssignee if the person is a new assignee or not
      */
-    private void addAssignee(final Person assignee) {
+    private void addAssignee(final Person assignee, final boolean newAssignee) {
         Platform.runLater(() -> searchableComboBoxDecorator.remove(assignee));
         AnchorPane container = new AnchorPane();
         Button delete = new Button();
@@ -140,8 +141,10 @@ public class AssigneeController {
         AnchorPane.setLeftAnchor(personLabel, 0.0);
         AnchorPane.setRightAnchor(delete, 0.0);
         currentAssigneesVBox.getChildren().add(container);
-        parentEditor.addAssignee(assignee);
-        RecentlyUsedHelper.get().addToRecentPeople(assignee);
+        if (newAssignee) {
+            parentEditor.addAssignee(assignee);
+            RecentlyUsedHelper.get().addToRecentPeople(assignee);
+        }
     }
 
     /**

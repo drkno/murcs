@@ -3,6 +3,7 @@ package sws.murcs.debug.sampledata;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -864,6 +865,7 @@ public class TaskGenerator implements Generator<Task> {
         t.setCurrentEstimate(GenerationHelper.random(MAX_ESTIMATE));
         t.setState(TaskState.values()[GenerationHelper.random(TaskState.values().length)]);
         t.setName(GenerationHelper.randomElement(taskNames));
+        t.setEstimationDate(LocalDate.MIN);
         return t;
     }
 }
