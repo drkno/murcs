@@ -1,17 +1,15 @@
 package sws.murcs.unit.model;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import sws.murcs.debug.sampledata.ReleaseGenerator;
 import sws.murcs.debug.sampledata.TeamGenerator;
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.Release;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
+import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -28,6 +26,12 @@ public class SprintTest {
     @BeforeClass
     public static void beforeClass() {
         UndoRedoManager.get().setDisabled(true);
+        PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        PersistenceManager.setCurrent(null);
     }
 
     @Before
@@ -51,6 +55,17 @@ public class SprintTest {
         }
         release.setReleaseDate(sprint.getEndDate().plus(1, ChronoUnit.DAYS));
         sprint.setAssociatedRelease(release);
+
+        Organisation organisation = new Organisation();
+        PersistenceManager.getCurrent().setCurrentModel(organisation);
+        organisation.add(sprint);
+        organisation.add(release);
+        organisation.add(team);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        PersistenceManager.getCurrent().setCurrentModel(null);
     }
 
 
@@ -127,9 +142,15 @@ public class SprintTest {
         Story story = new Story();
         story.setStoryState(Story.StoryState.Ready);
         sprint.addStory(story);
-        // Check that you cannot add the same story twice.
-        sprint.addStory(story);
         assertTrue(sprint.getStories().size() == 1);
+    }
+
+    @Test(expected = MultipleSprintsException.class)
+    public void testAddStoryTwice() throws Exception {
+        Story story = new Story();
+        story.setStoryState(Story.StoryState.Ready);
+        sprint.addStory(story);
+        sprint.addStory(story);
     }
 
     @Test
@@ -139,5 +160,42 @@ public class SprintTest {
         sprint.addStory(story);
         sprint.removeStory(story);
         assertTrue(sprint.getStories().isEmpty());
+    }
+
+    @Test(expected = MultipleSprintsException.class)
+    public void storyInMultipleSprints() throws Exception {
+        Sprint sprint2 = new Sprint();
+        sprint2.setShortName("name1");
+        sprint2.setLongName("long name");
+        sprint2.setDescription("description");
+        sprint2.setStartDate(LocalDate.now());
+        sprint2.setEndDate(LocalDate.now().plus(10, ChronoUnit.DAYS));
+
+        Team team = null;
+        while (team == null) {
+            team = (new TeamGenerator()).generate();
+        }
+        sprint.setTeam(team);
+
+        Release release = null;
+        while (release == null) {
+            release = (new ReleaseGenerator()).generate();
+        }
+        release.setReleaseDate(sprint.getEndDate().plus(1, ChronoUnit.DAYS));
+        sprint.setAssociatedRelease(release);
+
+        Story story = new Story();
+        story.setShortName("blah");
+        Task task = new Task();
+        task.setName("hello world");
+        task.setDescription("blah");
+        task.setCurrentEstimate(10);
+        task.setState(TaskState.InProgress);
+        story.addTask(task);
+        story.setStoryState(Story.StoryState.Ready);
+        PersistenceManager.getCurrent().getCurrentModel().add(sprint2);
+
+        sprint.addStory(story);
+        sprint2.addStory(story);
     }
 }
