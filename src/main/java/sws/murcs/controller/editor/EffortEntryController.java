@@ -99,6 +99,7 @@ public class EffortEntryController {
     /**
      * Initializes the editor.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     @FXML
     private void initialize() {
         datePicker.setValue(LocalDate.now());
