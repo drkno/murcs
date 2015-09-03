@@ -1,8 +1,10 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.reporting.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
@@ -157,10 +159,16 @@ public class Sprint extends Model {
      * Add a story to this sprint.
      * @param story The story to be added
      * @throws NotReadyException If the story added was not ready
+     * @throws MultipleSprintsException when this story is already in another sprint
      */
-    public final void addStory(final Story story) throws NotReadyException {
+    public final void addStory(final Story story) throws NotReadyException, MultipleSprintsException {
         if (story.getStoryState() != Story.StoryState.Ready) {
             throw new NotReadyException();
+        }
+
+        Sprint usage = UsageHelper.findBy(ModelType.Sprint, model -> model.getStories().contains(story));
+        if (usage != null) {
+            throw new MultipleSprintsException(usage, story);
         }
         if (!stories.contains(story)) {
             stories.add(story);

@@ -323,7 +323,12 @@ public final class ErrorReporter {
 
         try {
             reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (NullPointerException e) {
+            // user description is null.
+            reportFields.put("userDescription", null);
+        }
+        catch (UnsupportedEncodingException e) {
             // encoding is hard coded so can never happen. But because check style, stack trace
             e.printStackTrace();
         }
@@ -390,7 +395,7 @@ public final class ErrorReporter {
      */
     private String getScreenshots() {
         try {
-            if (popup.submitScreenShots() && App.getWindowManager().getAllWindows().size() > 0) {
+            if (popup != null && popup.submitScreenShots() && App.getWindowManager().getAllWindows().size() > 0) {
                 Collection<String> images = new ArrayList<>();
                 for (Window window : App.getWindowManager().getAllWindows()) {
                     // Don't include an instance of the feedback window as a screenshot.

@@ -552,16 +552,16 @@ public class SearchController {
                         }
                     }
 
+                    if (editorPane == null) {
+                        editorPane = new EditorPane(newValue, App.getMainController(), true);
+                    } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                        editorPane.setModel(newValue);
+                    }
+                    else {
+                        editorPane.dispose();
+                        editorPane = new EditorPane(newValue, App.getMainController());
+                    }
                     synchronized (StyleManager.getInstance()) {
-                        if (editorPane == null) {
-                            editorPane = new EditorPane(newValue, App.getMainController(), true);
-                        } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                            editorPane.setModel(newValue);
-                        }
-                        else {
-                            editorPane.dispose();
-                            editorPane = new EditorPane(newValue, App.getMainController());
-                        }
                         editorPane.getView().getStyleClass().add("search-preview");
                     }
                     while (!editorPane.getController().isLoaded()) {

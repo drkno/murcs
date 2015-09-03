@@ -3,15 +3,17 @@ package sws.murcs.model;
 import sws.murcs.magic.tracking.TrackableObject;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -75,6 +77,11 @@ public class Task extends TrackableObject implements Serializable {
     private List<EffortEntry> effortEntryLogs = new ArrayList<>();
 
     /**
+     * Date this task was marked as done.
+     */
+    private LocalDate completedDate;
+
+    /**
      * Creates a new task.
      */
     public Task() {
@@ -128,8 +135,28 @@ public class Task extends TrackableObject implements Serializable {
      * @param newState The state that it's being changed to.
      */
     public final void setState(final TaskState newState) {
+        completedDate = newState == TaskState.Done ? LocalDate.now() : null;
         state = newState;
         commit("edit Task");
+    }
+
+    /**
+     * Gets the date that this task was completed.
+     * @return the date the task was completed or null if not completed.
+     */
+    public final LocalDate getCompletedDate() {
+        return completedDate;
+    }
+
+    /**
+     * Sets the date that this task was completed.
+     * @param date new completion date.
+     * @deprecated Do not use this method. This is only here as a hook for data generation.
+     * Use of this method could result in unforeseen consequences.
+     */
+    @Deprecated
+    public void setCompletedDate(final LocalDate date) {
+        completedDate = date;
     }
 
     /**
@@ -158,6 +185,23 @@ public class Task extends TrackableObject implements Serializable {
             throw new NumberFormatException("Can't have a negative or infinite number for an estimate.");
         }
         this.estimateInfo.setCurrentEstimate(newEstimate);
+    }
+
+    /**
+     * Sets the date that this task was estimated.
+     * @deprecated This method is so that data generation can produce valid and useful data.
+     * It should not be used for any other purpose. If it is, the behaviour is undefined.
+     * @param estimationDate the new estimation date.
+     */
+    @Deprecated
+    public void setEstimationDate(final LocalDate estimationDate) {
+        Map<LocalDate, Float> estimates = estimateInfo.getEstimates();
+        Map<LocalDate, Float> newEstimates = new HashMap<>();
+        estimates.forEach((date, estimate) -> {
+            newEstimates.put(estimationDate, estimate);
+        });
+        estimates.clear();
+        estimates.putAll(newEstimates);
     }
 
     /**

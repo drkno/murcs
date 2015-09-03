@@ -232,6 +232,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
     public final Organisation generate() {
         try {
             Organisation model = new Organisation();
+            model.setIsUsingGeneratedData(true);
 
             int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN,
                     SkillGenerator.HIGH_STRESS_MIN);
