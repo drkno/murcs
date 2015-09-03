@@ -204,12 +204,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         Story story = getModel();
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            estimateChoiceBox.getItems().clear();
-            estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
-            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
-            estimateChoiceBox.getItems().add(EstimateType.ZERO);
-            if (backlog != null) {
-                estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            synchronized (StyleManager.getInstance()) {
+                estimateChoiceBox.getItems().clear();
+                estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+                estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+                estimateChoiceBox.getItems().add(EstimateType.ZERO);
+                if (backlog != null) {
+                    estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+                }
             }
         });
 

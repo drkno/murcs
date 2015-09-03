@@ -207,26 +207,24 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Clears the errors on the form.
      * @param sectionName The name of the section to clear the errors on
      */
-    public void clearErrors(final String sectionName) {
+    public synchronized void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
         boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        synchronized (StyleManager.getInstance()) {
-            for (Map.Entry<Node, String> entry : invalidInSection) {
-                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-                if (entry.getKey().isFocused()) {
-                    hideError = false;
-                }
+        for (Map.Entry<Node, String> entry : invalidInSection) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+            if (entry.getKey().isFocused()) {
+                hideError = false;
             }
-            invalidInSection.clear();
-            if (hideError && errorMessagePopover != null) {
-                errorMessagePopover.hide();
-            }
-            labelErrorMessage.setText("");
         }
+        invalidInSection.clear();
+        if (hideError && errorMessagePopover != null) {
+            errorMessagePopover.hide();
+        }
+        labelErrorMessage.setText("");
     }
 
     /**
