@@ -6,8 +6,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.layout.AnchorPane;
-import sws.murcs.model.EffortEntry;
 import sws.murcs.model.EstimateInfo;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -111,7 +109,7 @@ public class BurndownController extends GenericEditor<Sprint> {
                     .map(Map.Entry::getValue)   // extract estimate
                     .findFirst().orElse(0F);    // get value or default to 0
         }
-        aimedBurndown.getData().add(new Data<>(0L, initialEstimate));
+        aimedBurndown.getData().add(new Data<>(0L, initialEstimate / 60));
         aimedBurndown.getData().add(new Data<>(getDayNumber(getModel().getEndDate()), 0f));
     }
 
@@ -163,6 +161,7 @@ public class BurndownController extends GenericEditor<Sprint> {
             orderedDates.add(new Data<>(currentNumber, orderedDates.get(orderedDates.size() - 1).getYValue()));
         }
 
+        orderedDates.forEach(d -> d.setYValue(d.getYValue() / 60));
         burnup.getData().addAll(orderedDates);
     }
 
@@ -195,7 +194,8 @@ public class BurndownController extends GenericEditor<Sprint> {
         List<Data<Long, Float>> chartData = new ArrayList<>();
         // end of graph
         chartData.add(new Data<>(
-                Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate())), incompleteTaskTotal));
+                Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate())),
+                incompleteTaskTotal));
         float accumulator = incompleteTaskTotal;
         for (int i = completedTasks.size() - 1; i >= 0; i--) {
             Task current = completedTasks.get(i);
@@ -225,6 +225,7 @@ public class BurndownController extends GenericEditor<Sprint> {
         // add beginning of graph
         chartData.add(0, new Data<>(0L, accumulator));
 
+        chartData.forEach(d -> d.setYValue(d.getYValue() / 60));
         burndown.getData().addAll(chartData);
     }
 

@@ -26,7 +26,7 @@
                   <Label text="A sprint must have tasks before a burndown graph can be generated." textAlignment="CENTER" wrapText="true" />
                </children>
             </VBox>
-            <LineChart fx:id="burndownChart" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+            <LineChart fx:id="burndownChart" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" animated="false">
               <xAxis>
                 <NumberAxis label="Day" side="BOTTOM" fx:id="xAxis" />
               </xAxis>
