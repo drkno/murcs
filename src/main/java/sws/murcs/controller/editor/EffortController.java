@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
+import sws.murcs.model.Task;
 
 /**
  * Controller for logging effort on a task.
@@ -22,9 +23,9 @@ public class EffortController {
     private VBox effortsVBox, contentVBox;
 
     /**
-     * The parent editor of this editor.
+     * The task associated with this popover.
      */
-    private TaskEditor parentEditor;
+    private Task task;
 
     /**
      * The eligible workers.
@@ -44,11 +45,29 @@ public class EffortController {
 
     /**
      * Sets up the effort controller.
+     * @param pTask The task associated with this popover
+     * @param people The list of people
+     */
+    public void setUp(final Task pTask, final List<Person> people) {
+        task = pTask;
+        setUp(people);
+    }
+
+    /**
+     * Sets up the effort controller.
      * @param parent The parent editor
      * @param people A list of people allowed to log time for this task
      */
     public void setUp(final TaskEditor parent, final List<Person> people) {
-        parentEditor = parent;
+        task = parent.getTask();
+        setUp(people);
+    }
+
+    /**
+     * Sets up the effort controller.
+     * @param people A list of people allowed to log time for this task
+     */
+    private void setUp(final List<Person> people) {
         eligibleWorkers = people;
 
         createController = newEffortEntryController();
@@ -61,7 +80,7 @@ public class EffortController {
 
         contentVBox.getChildren().add(1, createController.getRoot());
 
-        for (EffortEntry e : parentEditor.getTask().getEffort()) {
+        for (EffortEntry e : task.getEffort()) {
             EffortEntryController controller = newEffortEntryController();
             controller.setEffortEntry(e);
 
@@ -107,7 +126,7 @@ public class EffortController {
     private void add(final EffortEntryController addController) {
         if (addController.getHasErrorsProperty().get()) return;
 
-        parentEditor.getTask().logEffort(addController.getEffortEntry());
+        task.logEffort(addController.getEffortEntry());
 
         EffortEntryController controller = newEffortEntryController();
         controller.setEffortEntry(addController.getEffortEntry());
@@ -123,7 +142,7 @@ public class EffortController {
      * @param removeController The controller of the task being removed
      */
     private void remove(final EffortEntryController removeController) {
-        parentEditor.getTask().unlogEffort(removeController.getEffortEntry());
+        task.unlogEffort(removeController.getEffortEntry());
         effortsVBox.getChildren().remove(removeController.getRoot());
     }
 }

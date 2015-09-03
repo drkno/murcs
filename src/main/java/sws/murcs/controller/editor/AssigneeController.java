@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.model.Person;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.RecentlyUsedHelper;
 
 import java.util.Collection;
@@ -37,6 +38,11 @@ public class AssigneeController {
     private TaskEditor parentEditor;
 
     /**
+     * The task the popover is linked.
+     */
+    private Task task;
+
+    /**
      * The recent assignees (this is only updated when the popover is opened otherwise you'd get
      * people turning up in here that you'd literally just added).
      */
@@ -63,15 +69,36 @@ public class AssigneeController {
     private static final double CONTAINER_SPACING = 5.0;
 
     /**
+     * Sets up the assignee controller initially with the list of possible assignees and the task that the assignee
+     * controller is asscoiated with.
+     * @param pTask The task this popover is associated with.
+     * @param pPossibleAssignees The list of possible assignees.
+     */
+    public void setUp(final Task pTask, final List<Person> pPossibleAssignees) {
+        task = pTask;
+        setUp(pPossibleAssignees);
+    }
+
+    /**
      * Sets up the assignee controller initially with the list of possible assignees and the task editor that the
      * assignee controller belongs to.
      * @param parent It's parent controller.
      * @param pPossibleAssignees The list of possible assignees.
      */
     public void setUp(final TaskEditor parent, final List<Person> pPossibleAssignees) {
+        parentEditor = parent;
+        task = parent.getTask();
+        setUp(pPossibleAssignees);
+    }
+
+    /**
+     * Sets up the assignee controller initially with the list of possible assignees and the task editor that the
+     * assignee controller belongs to.
+     * @param pPossibleAssignees The list of possible assignees.
+     */
+    private void setUp(final List<Person> pPossibleAssignees) {
         currentAssigneesVBox.setSpacing(CONTAINER_SPACING);
         recentlyUsedVBox.setSpacing(CONTAINER_SPACING);
-        parentEditor = parent;
         recentAssignees = RecentlyUsedHelper.get().getRecentPeople();
         possibleAssignees = pPossibleAssignees;
         if (recentAssignees != null) {
@@ -90,7 +117,7 @@ public class AssigneeController {
             }
         });
         searchableComboBoxDecorator.addAll(possibleAssignees);
-        assignees = parentEditor.getTask().getAssignees();
+        assignees = task.getAssignees();
         addAssignees(assignees);
     }
 
@@ -117,7 +144,7 @@ public class AssigneeController {
         Button button = new Button();
         button.setText(assignee.getShortName());
         button.setOnAction((event) -> {
-            if (!parentEditor.getTask().getAssignees().contains(assignee)) {
+            if (!task.getAssignees().contains(assignee)) {
                 addAssignee(assignee);
             }
         });
@@ -140,7 +167,12 @@ public class AssigneeController {
         AnchorPane.setLeftAnchor(personLabel, 0.0);
         AnchorPane.setRightAnchor(delete, 0.0);
         currentAssigneesVBox.getChildren().add(container);
-        parentEditor.addAssignee(assignee);
+        if (task != null) {
+            task.addAssignee(assignee);
+        }
+        else {
+            parentEditor.addAssignee(assignee);
+        }
         RecentlyUsedHelper.get().addToRecentPeople(assignee);
     }
 
@@ -151,7 +183,12 @@ public class AssigneeController {
      */
     private void removeAssignee(final Person assignee, final AnchorPane container) {
         currentAssigneesVBox.getChildren().remove(container);
-        parentEditor.removeAssignee(assignee);
+        if (task != null) {
+            task.removeAssignee(assignee);
+        }
+        else {
+            parentEditor.removeAssignee(assignee);
+        }
         Platform.runLater(() -> searchableComboBoxDecorator.add(assignee));
     }
 }

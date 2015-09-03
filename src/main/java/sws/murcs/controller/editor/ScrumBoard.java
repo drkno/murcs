@@ -8,10 +8,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -116,7 +115,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         storyNameLink.setOnAction(event -> parent.getNavigationManager().navigateTo(story));
         Label doneLabel = new Label("Done:");
         CheckBox doneCheckBox = new CheckBox();
-        updateDoneCheckBox(doneCheckBox, story);
+        updateToggleStatus(doneCheckBox, story);
         doneCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             story.setStoryState(newValue ? StoryState.Done : StoryState.Ready);
         });
@@ -154,15 +153,29 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * @param story The story from which that task came
      */
     private void insertTask(final Pane[] stateBoxes, final Task task, final Story story) {
+
         Label nameLabel = new Label(task.getName());
         nameLabel.setWrapText(true);
         nameLabel.setPrefWidth(1000);
-        Button editButton = new Button("");
-        editButton.setOnAction(event -> {
-            editButtonClicked(editButton, story, task);
-        });
-        HBox node = new HBox(nameLabel, editButton);
+        
+        ImageView editImage = new ImageView("sws/murcs/icons/edit.png");
+        ImageView logImage = new ImageView("sws/murcs/icon/log.png");
+        editImage.setFitHeight(25);
+        editImage.setFitWidth(25);
+        editImage.setPreserveRatio(true);
+        editImage.setPickOnBounds(true);
+        editImage.getStyleClass().add("mdr-button");
+        Button assigneeButton = new Button();
+        assigneeButton.getStyleClass().add("-fx-padding: 0;");
+        assigneeButton.setGraphic(editImage);
+        Button effortButton = new Button("");
+        assigneeButton.setOnAction(event -> assigneesButtonClicked(assigneeButton, story, task));
+        effortButton.setOnAction(event -> effortButtonClicked(effortButton, story, task));
+
+        HBox details = new HBox(assigneeButton, effortButton);
+        VBox node = new VBox(nameLabel, details);
         stateBoxes[task.getState().ordinal()].getChildren().add(node);
+
         addDragDetectedHandler(node, task, story);
         addDragDoneHandler(node, task, stateBoxes[task.getState().ordinal()], stateBoxes);
         addDoubleClickHandler(node, story);
@@ -171,25 +184,18 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     /**
      * Loads the task popover when an edit button is clicked.
      * @param button The button that was clicked
-     * @param story The story assoiated with the button
+     * @param story The story associated with the button
      * @param task The task associated with the button
      */
-    private void editButtonClicked(final Button button, final Story story, final Task task) {
+    private void assigneesButtonClicked(final Button button, final Story story, final Task task) {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/TaskPopover.fxml"));
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
             Parent parent = loader.load();
             PopOver taskPopover = new PopOver(parent);
-            TaskPopoverController controller = loader.getController();
+            AssigneeController controller = loader.getController();
             taskPopover.hideOnEscapeProperty().setValue(true);
-            List<Person> possibleAssignees = new ArrayList<>();
-            List<Sprint> sprints = UsageHelper.findUsages(story)
-                    .stream()
-                    .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
-                    .collect(Collectors.toList());
-            if (sprints.size() > 0) {
-                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
-            }
+            List<Person> possibleAssignees = getPossibleAssignees(story);
             controller.setUp(task, possibleAssignees);
             taskPopover.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
             taskPopover.show(button);
@@ -200,11 +206,52 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     }
 
     /**
+     * Loads the effort popover when a log button is clicked.
+     * @param button The button that was clicked
+     * @param story The story associated with the button
+     * @param task The task associated with the button
+     */
+    private void effortButtonClicked(final Button button, final Story story, final Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
+            Parent parent = loader.load();
+            PopOver effortPopOver = new PopOver(parent);
+            EffortController controller = loader.getController();
+            List<Person> possibleAssignees = getPossibleAssignees(story);
+            controller.setUp(task, possibleAssignees);
+            effortPopOver.hideOnEscapeProperty().setValue(true);
+            effortPopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            effortPopOver.show(button);
+        }
+        catch (IOException e) {
+            ErrorReporter.get().reportError(e, "Could not create an effort popover");
+        }
+    }
+
+    /**
+     * Gets all possible assignees to a task.
+     * @param story The story that the task is a part of
+     * @return The list of possible assignees
+     */
+    private List<Person> getPossibleAssignees(final Story story) {
+        List<Person> possibleAssignees = new ArrayList<>();
+        List<Sprint> sprints = UsageHelper.findUsages(story)
+                .stream()
+                .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
+                .collect(Collectors.toList());
+        if (sprints.size() > 0) {
+            sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+        }
+        return possibleAssignees;
+    }
+
+    /**
      * Updates the disabled state of the doneCheckBox.
      * @param doneCheckBox The check box to update
      * @param story The story relating to this checkbox
      */
-    private void updateDoneCheckBox(final CheckBox doneCheckBox, final Story story) {
+    private void updateToggleStatus(final CheckBox doneCheckBox, final Story story) {
         for (Task task : story.getTasks()) {
             if (task.getState() != TaskState.Done) {
                 doneCheckBox.setSelected(false);
@@ -303,7 +350,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     private void addDragDroppedHandler(final Pane target, final TaskState newState, final Story story, final CheckBox doneCheckBox) {
         target.setOnDragDropped(event -> {
             draggingTask.setState(newState);
-            updateDoneCheckBox(doneCheckBox, story);
+            updateToggleStatus(doneCheckBox, story);
             event.setDropCompleted(true);
             event.consume();
         });
