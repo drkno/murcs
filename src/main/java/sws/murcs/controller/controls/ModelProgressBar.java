@@ -19,11 +19,6 @@ import sws.murcs.model.Task;
 public class ModelProgressBar extends GridPane {
 
     /**
-     * The panes that contain progress.
-     */
-    private Pane completePane, progressPane, notStartedPane;
-
-    /**
      * Tooltips that will be shown on the progress bar.
      */
     private Tooltip completedTooltip, progressTooltip, notStartedTooltip;
@@ -59,30 +54,28 @@ public class ModelProgressBar extends GridPane {
 
         getRowConstraints().add(rowConstraints);
 
-        completePane = new Pane();
-        completePane.getStyleClass().add("completePane");
+        Pane completePane = new Pane();
         setVgrow(completePane, Priority.ALWAYS);
+        Pane progressPane = new Pane();
+        setVgrow(progressPane, Priority.ALWAYS);
+        Pane notStartedPane = new Pane();
+        setVgrow(notStartedPane, Priority.ALWAYS);
+
+        // tooltips and adding styles should be synchronised < u60
         synchronized (StyleManager.getInstance()) {
+            completePane.getStyleClass().add("completePane");
             if (hasTooltips) {
                 completedTooltip = new Tooltip("Completed");
                 Tooltip.install(completePane, completedTooltip);
             }
-        }
 
-        progressPane = new Pane();
-        progressPane.getStyleClass().add("progressPane");
-        setVgrow(progressPane, Priority.ALWAYS);
-        synchronized (StyleManager.getInstance()) {
+            progressPane.getStyleClass().add("progressPane");
             if (hasTooltips) {
                 progressTooltip = new Tooltip("Completed");
                 Tooltip.install(progressPane, progressTooltip);
             }
-        }
 
-        notStartedPane = new Pane();
-        notStartedPane.getStyleClass().add("notstartedPane");
-        setVgrow(notStartedPane, Priority.ALWAYS);
-        synchronized (StyleManager.getInstance()) {
+            notStartedPane.getStyleClass().add("notstartedPane");
             if (hasTooltips) {
                 notStartedTooltip = new Tooltip("Completed");
                 Tooltip.install(notStartedPane, notStartedTooltip);
@@ -118,14 +111,7 @@ public class ModelProgressBar extends GridPane {
             }
         }
 
-        float total = done + inProgress + notStarted;
-        double completedWidth = (done / total) * getWidth();
-        double inProgressWidth = (inProgress / total) * getWidth();
-        double notStartedWidth = (notStarted / total) * getWidth();
-
-        getColumnConstraints().get(0).setPrefWidth(completedWidth);
-        getColumnConstraints().get(1).setPrefWidth(inProgressWidth);
-        getColumnConstraints().get(2).setPrefWidth(notStartedWidth);
+        updateDisplay(done, inProgress, notStarted);
     }
 
     /**
@@ -154,8 +140,19 @@ public class ModelProgressBar extends GridPane {
             }
         }
 
+        updateDisplay(done, inProgress, notStarted);
+    }
+
+    /**
+     * Updates the progress bar to reflect the relative percentages of the totals.
+     * @param done total done.
+     * @param inProgress total in progress.
+     * @param notStarted total complete.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private void updateDisplay(final float done, final float inProgress, final float notStarted) {
         float total = done + inProgress + notStarted;
-        if (total == 0) {
+        if (total == 0) {   // divide by zero
             total = 1;
         }
         float completedPercentage = done / total;
@@ -165,7 +162,7 @@ public class ModelProgressBar extends GridPane {
         if (completedTooltip != null) {
             completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% complete.");
             progressTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% in progress.");
-            notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% started.");
+            notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% not started.");
         }
 
         getColumnConstraints().get(0).setPrefWidth(Math.floor(completedPercentage * getWidth()));

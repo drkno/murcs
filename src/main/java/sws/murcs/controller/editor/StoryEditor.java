@@ -77,7 +77,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     @FXML
     private VBox completenessContainer;
-    
+
     /**
      * Progress bar to show progress of story completion.
      */
@@ -256,6 +256,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 creatorChoiceBox.getSelectionModel().select(modelCreator);
                 navigateToCreatorButton.setDisable(false);
             }
+            completenessContainer.setVisible(false);
         }
         else {
             creatorChoiceBox.getItems().clear();
@@ -361,7 +362,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             loadTasks();
         }
         else {
-            taskEditors.forEach(editor -> editor.update());
+            taskEditors.forEach(TaskEditor::update);
         }
     }
 
