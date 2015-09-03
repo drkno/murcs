@@ -6,17 +6,17 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
    <children>
-      <GridPane fx:id="StoryMainGridPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="StoryMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="NEVER" percentWidth="22.0" />
+          <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
             <VBox fx:id="StoryOuterVBox">
@@ -26,7 +26,7 @@
                         <GridPane fx:id="storyStaticControlsGridPane" alignment="CENTER">
                            <columnConstraints>
                               <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
-                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" />
+                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="-Infinity" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
@@ -52,11 +52,19 @@
                               <Hyperlink fx:id="storyHyperLink" text="Hyperlink" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
-                        <Slider fx:id="storyStateSlider" blockIncrement="1.0" majorTickUnit="1.0" max="1.0" minorTickCount="0" snapToTicks="true">
+                        <HBox alignment="CENTER">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
-                        </Slider>
+                           <children>
+                              <Slider fx:id="storyStateSlider" blockIncrement="1.0" majorTickUnit="1.0" max="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" minorTickCount="0" prefWidth="50.0" snapToTicks="true" />
+                              <Label fx:id="storyStateLabel" text="Ready">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                   <VBox fx:id="storyBaseInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
@@ -67,7 +75,7 @@
                <children>
                   <VBox fx:id="toDoBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <Label fx:id="toDoBaseInfoLabel" text="Label">
+                        <Label fx:id="toDoBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -81,7 +89,7 @@
                <children>
                   <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <Label fx:id="inProgressBaseInfoLabel" text="Label">
+                        <Label fx:id="inProgressBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -95,7 +103,7 @@
                <children>
                   <VBox fx:id="doneBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
-                        <Label fx:id="doneBaseInfoLabel" text="Label">
+                        <Label fx:id="doneBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
