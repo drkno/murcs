@@ -1,8 +1,10 @@
 package sws.murcs.controller.controls;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
@@ -31,17 +33,18 @@ public class StoryProgressBar extends GridPane {
         getColumnConstraints().addAll(firstColumn, secondColumn, thirdColumn);
 
         RowConstraints rowConstraints = new RowConstraints();
-        rowConstraints.setMinHeight(10);
-        rowConstraints.setPrefHeight(30);
+        rowConstraints.setMinHeight(5);
+        rowConstraints.setPrefHeight(5);
         rowConstraints.setVgrow(Priority.SOMETIMES);
 
         getRowConstraints().add(rowConstraints);
 
-        setPadding(new Insets(10));
-
         completePane = new Pane();
         completePane.getStyleClass().add("completePane");
         setVgrow(completePane, Priority.ALWAYS);
+        synchronized (StyleManager.getInstance()) {
+            Tooltip.install(completePane, new Tooltip("Completed"));
+        }
 
         progressPane = new Pane();
         progressPane.getStyleClass().add("progressPane");
