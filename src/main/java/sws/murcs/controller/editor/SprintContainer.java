@@ -84,6 +84,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             AnchorPane.setTopAnchor(view, 0.0);
             AnchorPane.setBottomAnchor(view, 0.0);
             scrumBoard = loader.getController();
+            scrumBoard.setParent(this);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load sprint overview");
         }

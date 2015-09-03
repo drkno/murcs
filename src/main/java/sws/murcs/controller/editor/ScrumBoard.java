@@ -1,24 +1,26 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.*;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
 import sws.murcs.model.Story.StoryState;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 
 /**
  * Scrum Board controller.
@@ -38,6 +40,11 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     private AnchorPane mainView;
 
     /**
+     * The parent SprintContainer of this view.
+     */
+    private SprintContainer parent;
+
+    /**
      * The task currently being dragged.
      */
     private Task draggingTask;
@@ -50,6 +57,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     @Override
     protected void initialize() {
         mainView.getStyleClass().add("root");
+    }
+
+    /**
+     * Sets the parent SprintContainer of this view.
+     * @param container The parent of this view
+     */
+    protected void setParent(final SprintContainer container) {
+        parent = container;
     }
 
     @Override
@@ -90,7 +105,8 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         detailsVBox.setSpacing(5);
         detailsVBox.setPadding(new Insets(5));
         Hyperlink storyNameLink = new Hyperlink(story.getShortName());
-        storyNameLink.setOnAction(event -> getNavigationManager().navigateTo(story));
+        storyNameLink.setWrapText(true);
+        storyNameLink.setOnAction(event -> parent.getNavigationManager().navigateTo(story));
         Label doneLabel = new Label("Done:");
         CheckBox doneCheckBox = new CheckBox();
         updateDoneCheckBox(doneCheckBox, story);
@@ -131,11 +147,15 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * @param story The story from which that task came
      */
     private void insertTask(final Pane[] stateBoxes, final Task task, final Story story) {
-        Label label = new Label(task.getName());
-        stateBoxes[task.getState().ordinal()].getChildren().add(label);
-        addDragDetectedHandler(label, task, story);
-        addDragDoneHandler(label, task, stateBoxes[task.getState().ordinal()], stateBoxes);
-        addDoubleClickHandler(label, story);
+        Label nameLabel = new Label(task.getName());
+        nameLabel.setWrapText(true);
+        nameLabel.setPrefWidth(1000);
+        Button editButton = new Button("");
+        HBox node = new HBox(nameLabel, editButton);
+        stateBoxes[task.getState().ordinal()].getChildren().add(node);
+        addDragDetectedHandler(node, task, story);
+        addDragDoneHandler(node, task, stateBoxes[task.getState().ordinal()], stateBoxes);
+        addDoubleClickHandler(node, story);
     }
 
     /**
@@ -166,7 +186,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     private void addDoubleClickHandler(final Node node, final Story story) {
         node.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
-                getNavigationManager().navigateToNewTab(story);
+                parent.getNavigationManager().navigateToNewTab(story);
             }
         });
     }
