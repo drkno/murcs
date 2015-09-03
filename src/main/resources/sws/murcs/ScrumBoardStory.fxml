@@ -23,7 +23,7 @@
                <children>
                   <VBox fx:id="storyStaticControlsVBox">
                      <children>
-                        <VBox fx:id="progressBarContainer" maxWidth="-Infinity" prefHeight="5.0" />
+                        <VBox fx:id="progressBarContainer" prefHeight="5.0"/>
                         <GridPane fx:id="storyStaticControlsGridPane" alignment="CENTER">
                            <columnConstraints>
                               <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
