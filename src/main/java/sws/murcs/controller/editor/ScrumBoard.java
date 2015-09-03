@@ -185,10 +185,25 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
         Button assigneeButton = new Button();
         assigneeButton.setText(null);
-        //assigneeButton.getStyleClass().add("-fx-padding: 0;");
+        assigneeButton.setPrefWidth(25);
+        assigneeButton.setPrefHeight(25);
+        assigneeButton.setMaxHeight(25);
+        assigneeButton.setMaxWidth(25);
+        assigneeButton.setMinHeight(25);
+        assigneeButton.setMinWidth(25);
+        assigneeButton.getStyleClass().add("-fx-padding: 0;");
+
         assigneeButton.setGraphic(editImage);
         Button effortButton = new Button();
         effortButton.setText(null);
+        effortButton.setPrefWidth(25);
+        effortButton.setPrefHeight(25);
+        effortButton.setMaxHeight(25);
+        effortButton.setMaxWidth(25);
+        effortButton.setMinHeight(25);
+        effortButton.setMinWidth(25);
+        effortButton.getStyleClass().add("-fx-padding: 0;");
+
         effortButton.setGraphic(logImage);
         assigneeButton.setOnAction(event -> assigneesButtonClicked(assigneeButton, story, task));
         effortButton.setOnAction(event -> effortButtonClicked(effortButton, story, task));
