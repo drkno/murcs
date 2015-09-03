@@ -34,6 +34,7 @@ import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
@@ -41,7 +42,6 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
