@@ -30,7 +30,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
@@ -68,9 +72,15 @@ import java.util.stream.Collectors;
  */
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
 
+    /**
+     * Container for the completeness progress bar.
+     */
     @FXML
     private VBox completenessContainer;
 
+    /**
+     * Progress bar to show progress of story completion.
+     */
     private StoryProgressBar progressBar;
 
     /**
@@ -430,7 +440,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
-        progressBar = new StoryProgressBar();
+        progressBar = new StoryProgressBar(true);
         completenessContainer.getChildren().add(progressBar);
 
         setChangeListener((observable, oldValue, newValue) -> {

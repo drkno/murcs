@@ -2,18 +2,37 @@ package sws.murcs.controller.controls;
 
 import com.sun.javafx.css.StyleManager;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
+/**
+ * A progress bar control for stories.
+ */
 public class StoryProgressBar extends GridPane {
 
-    Pane completePane, progressPane, notStartedPane;
+    /**
+     * The panes that contain progress.
+     */
+    private Pane completePane, progressPane, notStartedPane;
 
-    public StoryProgressBar() {
+    /**
+     * Tooltips that will be shown on the progress bar.
+     */
+    private Tooltip completedTooltip, progressTooltip, notStartedTooltip;
+
+    /**
+     * Creates a new progress bar for stories.
+     * @param hasTooltips sets wheather the progressbar will have tooltips.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    public StoryProgressBar(final boolean hasTooltips) {
         getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/completeness.css").toExternalForm());
 
@@ -43,16 +62,31 @@ public class StoryProgressBar extends GridPane {
         completePane.getStyleClass().add("completePane");
         setVgrow(completePane, Priority.ALWAYS);
         synchronized (StyleManager.getInstance()) {
-            Tooltip.install(completePane, new Tooltip("Completed"));
+            if (hasTooltips) {
+                completedTooltip = new Tooltip("Completed");
+                Tooltip.install(completePane, completedTooltip);
+            }
         }
 
         progressPane = new Pane();
         progressPane.getStyleClass().add("progressPane");
         setVgrow(progressPane, Priority.ALWAYS);
+        synchronized (StyleManager.getInstance()) {
+            if (hasTooltips) {
+                progressTooltip = new Tooltip("Completed");
+                Tooltip.install(progressPane, progressTooltip);
+            }
+        }
 
         notStartedPane = new Pane();
         notStartedPane.getStyleClass().add("notstartedPane");
         setVgrow(notStartedPane, Priority.ALWAYS);
+        synchronized (StyleManager.getInstance()) {
+            if (hasTooltips) {
+                notStartedTooltip = new Tooltip("Completed");
+                Tooltip.install(notStartedPane, notStartedTooltip);
+            }
+        }
 
         add(completePane, 0, 0);
         add(progressPane, 1, 0);
@@ -63,6 +97,7 @@ public class StoryProgressBar extends GridPane {
      * Sets the story for the progress bar.
      * @param story the story to set.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void setStory(final Story story) {
         float done = 0, inProgress = 0, notStarted = 0;
 
@@ -83,12 +118,21 @@ public class StoryProgressBar extends GridPane {
         }
 
         float total = done + inProgress + notStarted;
-        double completedWidth = (done / total) * getWidth();
-        double inProgressWidth = (inProgress / total) * getWidth();
-        double notStartedWidth = (notStarted / total) * getWidth();
+        if (total == 0) {
+            total = 1;
+        }
+        float completedPercentage = done / total;
+        float inProgressPercentage = inProgress / total;
+        float notStartedPrecentage = notStarted / total;
 
-        getColumnConstraints().get(0).setPrefWidth(completedWidth);
-        getColumnConstraints().get(1).setPrefWidth(inProgressWidth);
-        getColumnConstraints().get(2).setPrefWidth(notStartedWidth);
+        if (completedTooltip != null) {
+            completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% complete.");
+            progressTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% in progress.");
+            notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% started.");
+        }
+
+        getColumnConstraints().get(0).setPrefWidth(completedPercentage * getWidth());
+        getColumnConstraints().get(1).setPrefWidth(inProgressPercentage * getWidth());
+        getColumnConstraints().get(2).setPrefWidth(notStartedPrecentage * getWidth());
     }
 }
