@@ -67,7 +67,6 @@ import java.util.stream.Collectors;
  * An editor for the story model.
  */
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
-
     @FXML
     private VBox completenessContainer;
 
