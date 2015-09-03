@@ -1,26 +1,33 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
+import sws.murcs.controller.controls.popover.ArrowLocation;
+import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.model.*;
 import sws.murcs.model.Story.StoryState;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.helpers.UsageHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Scrum Board controller.
@@ -151,11 +158,45 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         nameLabel.setWrapText(true);
         nameLabel.setPrefWidth(1000);
         Button editButton = new Button("");
+        editButton.setOnAction(event -> {
+            editButtonClicked(editButton, story, task);
+        });
         HBox node = new HBox(nameLabel, editButton);
         stateBoxes[task.getState().ordinal()].getChildren().add(node);
         addDragDetectedHandler(node, task, story);
         addDragDoneHandler(node, task, stateBoxes[task.getState().ordinal()], stateBoxes);
         addDoubleClickHandler(node, story);
+    }
+
+    /**
+     * Loads the task popover when an edit button is clicked.
+     * @param button The button that was clicked
+     * @param story The story assoiated with the button
+     * @param task The task associated with the button
+     */
+    private void editButtonClicked(final Button button, final Story story, final Task task) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/TaskPopover.fxml"));
+            Parent parent = loader.load();
+            PopOver taskPopover = new PopOver(parent);
+            TaskPopoverController controller = loader.getController();
+            taskPopover.hideOnEscapeProperty().setValue(true);
+            List<Person> possibleAssignees = new ArrayList<>();
+            List<Sprint> sprints = UsageHelper.findUsages(story)
+                    .stream()
+                    .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
+                    .collect(Collectors.toList());
+            if (sprints.size() > 0) {
+                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+            }
+            controller.setUp(task, possibleAssignees);
+            taskPopover.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            taskPopover.show(button);
+        }
+        catch (IOException e) {
+            ErrorReporter.get().reportError(e, "Could not create an assignee popover");
+        }
     }
 
     /**
