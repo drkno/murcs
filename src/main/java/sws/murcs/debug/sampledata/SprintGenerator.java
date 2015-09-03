@@ -4,7 +4,15 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EffortEntry;
+import sws.murcs.model.Person;
+import sws.murcs.model.Release;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
+import sws.murcs.model.Team;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -410,6 +418,7 @@ public class SprintGenerator implements Generator<Sprint> {
                     .filter(story -> !usedStories.contains(story))
                     .collect(Collectors.toList());
             if (stories.size() > 0) {
+                // ensures an appropriate (not too many or few) stories are added to a sprint
                 int numStories = GenerationHelper.random(1, stories.size() / 6 + 2);
                 for (int i = 0; i < numStories; i++) {
                     try {

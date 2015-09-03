@@ -6,7 +6,13 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import sws.murcs.model.*;
+import javafx.scene.layout.AnchorPane;
+import sws.murcs.model.EffortEntry;
+import sws.murcs.model.EstimateInfo;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,10 +28,22 @@ import java.util.stream.Collectors;
 public class BurndownController extends GenericEditor<Sprint> {
 
     /**
+     * The tab view containing the burndown chart.
+     */
+    @FXML
+    private AnchorPane mainView;
+
+    /**
      * The chart representing the burndown.
      */
     @FXML
     private LineChart burndownChart;
+
+    /**
+     * The axies of the chart.
+     */
+    @FXML
+    private NumberAxis xAxis;
 
     /**
      * Burndown line that is aimed for.
@@ -44,7 +62,6 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     public void loadObject() {
-        NumberAxis xAxis = (NumberAxis) burndownChart.getXAxis();
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
         xAxis.setUpperBound(getDayNumber(getModel().getEndDate()));
@@ -52,8 +69,8 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         burndownChart.getData().clear();
 
-        long taskCount = getModel().getStories().stream().map(Story::getTasks).flatMap(Collection::stream).count();
-        if (taskCount > 0) {
+        // if has any tasks
+        if (getModel().getStories().stream().anyMatch(story -> story.getTasks().size() > 0)) {
             burndownChart.setVisible(true);
             // cant use clear due to an IllegalArgumentException when re-adding
             // readding done because of weird issues with graphs
@@ -105,9 +122,10 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         Map<LocalDate, Float> dates = new HashMap<>();
 
-        for (Story story : getModel().getStories()) {
-            for (Task task : story.getTasks()) {
-                for (EffortEntry effort : task.getEffort()) {
+        getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
+                .forEach(effort -> {
                     if (!dates.containsKey(effort.getDate())) {
                         dates.put(effort.getDate(), effort.getEffort());
                     }
@@ -115,9 +133,7 @@ public class BurndownController extends GenericEditor<Sprint> {
                         float current = dates.get(effort.getDate());
                         dates.put(effort.getDate(), effort.getEffort() + current);
                     }
-                }
-            }
-        }
+        });
 
         List<Data<Long, Float>> orderedDates = new ArrayList<>();
         orderedDates.add(new Data<>(0L, 0f));
@@ -217,6 +233,7 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     protected void initialize() {
+        mainView.getStyleClass().add("root");
         burndownChart.setCreateSymbols(false);
     }
 }

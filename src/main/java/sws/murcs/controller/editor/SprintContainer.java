@@ -233,5 +233,8 @@ public class SprintContainer extends GenericEditor<Sprint> {
 
     @Override
     public void undoRedoNotification(final ChangeState param) {
+        if (burnDownChartTab.equals(containerTabPane.getSelectionModel().selectedItemProperty().get())) {
+            burndownController.loadObject();
+        }
     }
 }
