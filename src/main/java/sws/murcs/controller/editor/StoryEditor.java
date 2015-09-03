@@ -71,6 +71,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private VBox completenessContainer;
 
+    private StoryProgressBar progressBar;
+
     /**
      * Button to navigate to the creator of the story.
      */
@@ -275,6 +277,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             taskEditors.clear();
         }
 
+        progressBar.setStory(getModel());
+
         // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
         // onsuccess function.
         if (!isLoaded) {
@@ -426,7 +430,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
-        completenessContainer.getChildren().add(new StoryProgressBar());
+        progressBar = new StoryProgressBar();
+        completenessContainer.getChildren().add(progressBar);
 
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {

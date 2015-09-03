@@ -56,6 +56,10 @@ public class StoryProgressBar extends GridPane {
         add(notStartedPane, 2, 0);
     }
 
+    /**
+     * Sets the story for the progress bar.
+     * @param story the story to set.
+     */
     public final void setStory(final Story story) {
         float done = 0, inProgress = 0, notStarted = 0;
 
