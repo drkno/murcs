@@ -29,6 +29,11 @@ import java.util.stream.Collectors;
 public class Organisation extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The list of projects currently loaded in the application.
      */
     @Searchable
@@ -104,6 +109,11 @@ public class Organisation extends TrackableObject implements Serializable {
     private static final String VERSION = "0.0.5";
 
     /**
+     * Is this organisation using generated data?
+     */
+    private boolean usingGeneratedData = false;
+
+    /**
      * Sets up a new organisation.
      */
     public Organisation() {
@@ -136,6 +146,22 @@ public class Organisation extends TrackableObject implements Serializable {
             // if you try to set the shortName as null or empty.
             ErrorReporter.get().reportError(e, "Adding PO and SM skills to Organisation failed");
         }
+    }
+
+    /**
+     * Gets whether this organisation is using generated data.
+     * @return is using generated data?
+     */
+    public final boolean isUsingGeneratedData() {
+        return usingGeneratedData;
+    }
+
+    /**
+     * Sets wheather this organisation is using generated data.
+     * @param generatedData is using generated data.
+     */
+    public final void setIsUsingGeneratedData(final boolean generatedData) {
+        usingGeneratedData = generatedData;
     }
 
     /**
@@ -466,16 +492,16 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     public final void addAllocations(final List<WorkAllocation> allocationsToAdd) throws Exception {
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
         for (WorkAllocation allocation : allocationsToAdd) {
             addAllocation(allocation);
         }
-        UndoRedoManager.assimilate(commitNumber);
+        UndoRedoManager.get().assimilate(commitNumber);
         commit("edit project");
     }
 
@@ -623,11 +649,11 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
         switch (type) {
             case Project:
@@ -659,13 +685,13 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         try {
-            UndoRedoManager.assimilate(commitNumber);
+            UndoRedoManager.get().assimilate(commitNumber);
         }
         catch (Exception e) {
             // This will never happen  because we have called commit before calling assimilate
             ErrorReporter.get().reportError(e, "Could not assimilate while adding");
         }
-        UndoRedoManager.add(model);
+        UndoRedoManager.get().add(model);
         commit("create " + type.toString().toLowerCase());
     }
 
@@ -676,11 +702,11 @@ public class Organisation extends TrackableObject implements Serializable {
     public final void remove(final Model model) {
         ModelType type = ModelType.getModelType(model);
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
 
         switch (type) {
@@ -715,12 +741,12 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         try {
-            UndoRedoManager.assimilate(commitNumber);
+            UndoRedoManager.get().assimilate(commitNumber);
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
             ErrorReporter.get().reportError(e, "Could not assimilate while removing");
         }
-        UndoRedoManager.remove(model);
+        UndoRedoManager.get().remove(model);
         commit("remove " + type.toString().toLowerCase());
     }
 

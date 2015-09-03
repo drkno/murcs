@@ -26,6 +26,11 @@ import java.util.Objects;
 public class Backlog extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The PO who is assigned to the backlog.
      */
     @Searchable
@@ -70,7 +75,7 @@ public class Backlog extends Model {
      * @return a list of all the stories attached to this backlog.
      */
     public final List<Story> getAllStories() {
-        final List<Story> allStories = new ArrayList<>();
+        List<Story> allStories = new ArrayList<>();
         allStories.addAll(prioritisedStories);
         allStories.addAll(unprioritisedStories);
         return allStories;

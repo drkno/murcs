@@ -97,7 +97,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * The top toolbar and menu container.
      */
     @FXML
-    private VBox vBoxSideDisplay, titleVBox;
+    private VBox titleVBox;
 
     /**
      * The main tab pane (where everything goes). We have to build
@@ -169,7 +169,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         toolBarController.setNavigable(this);
 
         undoRedoNotification(ChangeState.Commit);
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
 
         addModelViewTab(mainTabPane);
     }
@@ -178,7 +178,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * Builds a new DnDTabPane and returns it's container.
      * @return The container of the DnDTabPane
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     private Pane buildDnDTabPane() {
         DnDTabPane tabPane = new DnDTabPane();
 
@@ -274,6 +274,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
+        Window newWindow = new Window(stage, tabbable);
+        App.getWindowManager().addWindow(newWindow);
+
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());
@@ -348,6 +351,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> showCreateWindow(ModelType.Backlog));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
                 () -> showCreateWindow(ModelType.Story));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
+                () -> showCreateWindow(ModelType.Sprint));
 
         //Local shortcuts.
         Map<KeyCombination, Runnable> accelerators = new HashMap<>();
@@ -400,7 +405,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
      * @return The newly created tabbable
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -493,7 +498,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @Override
     public final void undoRedoNotification(final ChangeState change) {
-        if (!UndoRedoManager.canRevert()) {
+        if (!UndoRedoManager.get().canRevert()) {
             revert.setDisable(true);
             toolBarController.updateRevertButton(true);
             String undoPrompt = "Undo...";
@@ -505,14 +510,14 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         else {
             revert.setDisable(false);
             toolBarController.updateRevertButton(false);
-            String undoPrompt = "Undo " + UndoRedoManager.getRevertMessage();
+            String undoPrompt = "Undo " + UndoRedoManager.get().getRevertMessage();
             undoMenuItem.setDisable(false);
             undoMenuItem.setText(undoPrompt);
             toolBarController.updateUndoButton(false, undoPrompt);
             App.addTitleStar();
         }
 
-        if (!UndoRedoManager.canRemake()) {
+        if (!UndoRedoManager.get().canRemake()) {
             redoMenuItem.setDisable(true);
             String redoPrompt = "Redo...";
             redoMenuItem.setText(redoPrompt);
@@ -520,7 +525,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         }
         else {
             redoMenuItem.setDisable(false);
-            String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
+            String redoPrompt = "Redo " + UndoRedoManager.get().getRemakeMessage();
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(false, redoPrompt);
         }
@@ -589,11 +594,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     private void newModel(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 try {
@@ -604,7 +609,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
+            if (UndoRedoManager.get().canRevert()) {
                 popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
@@ -619,7 +624,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -627,7 +632,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -647,7 +652,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         PersistenceManager.getCurrent().setCurrentModel(null);
         Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
-        UndoRedoManager.importModel(model);
+        UndoRedoManager.get().importModel(model);
 
         //We need to reset.
         reset();
@@ -659,11 +664,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     public final void open(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 if (openFile()) {
                     popup.close();
@@ -671,7 +676,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     App.getWindowManager().cleanUp();
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
+            if (UndoRedoManager.get().canRevert()) {
                 popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save() && openFile()) {
@@ -681,7 +686,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -689,7 +694,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -716,8 +721,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     throw new Exception("Organisation was not opened.");
                 }
                 PersistenceManager.getCurrent().setCurrentModel(model);
-                UndoRedoManager.forget(true);
-                UndoRedoManager.importModel(model);
+                UndoRedoManager.get().forget(true);
+                UndoRedoManager.get().importModel(model);
 
                 reset();
                 return true;
@@ -744,17 +749,17 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     private void fileQuitPress(final ActionEvent event) {
         mainTabPane.requestFocus();
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
             popup.setWindowTitle("Still working on something?");
             popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
+            popup.setMessageText("Do you want to");
             popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 App.getWindowManager().cleanUp();
                 Platform.exit();
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
+            if (UndoRedoManager.get().canRevert()) {
                 popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
@@ -764,7 +769,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -774,7 +779,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                                 App.getWindowManager().bringToTop(openWindow, true);
                             });
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -829,11 +834,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void undo(final ActionEvent event) {
         try {
-            UndoRedoManager.revert();
+            UndoRedoManager.get().revert();
         }
         catch (Exception e) {
             // Something went very wrong
-            UndoRedoManager.forget();
+            UndoRedoManager.get().forget();
             ErrorReporter.get().reportError(e, "Undo-redo failed to revert");
         }
     }
@@ -845,11 +850,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void redo(final ActionEvent event) {
         try {
-            UndoRedoManager.remake();
+            UndoRedoManager.get().remake();
         }
         catch (Exception e) {
             // something went terribly wrong....
-            UndoRedoManager.forget();
+            UndoRedoManager.get().forget();
             ErrorReporter.get().reportError(e, "Undo-redo failed to remake");
         }
     }
@@ -860,14 +865,15 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     public final void revert(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
+            popup.setWindowTitle("Revert");
             popup.setTitleText("Revert changes?");
-            popup.setMessageText("Look like you are still working on something"
-                    + "\nChanges will be lost if you continue.");
+            popup.setMessageText("Looks like you are still working on something"
+                    + "\nUnsaved changes will be lost if you revert.");
             popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
-                    UndoRedoManager.revert(0);
+                    UndoRedoManager.get().revert(0);
                     popup.close();
                     // Close all windows which are not the main app.
                     App.getWindowManager().cleanUp();
@@ -876,12 +882,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
-                popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            if (UndoRedoManager.get().canRevert()) {
+                popup.addButton("Save changes as new", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (saveAs(null, false)) {
                         try {
-                            UndoRedoManager.revert(0);
+                            UndoRedoManager.get().revert(0);
                             popup.close();
                             // Close all windows which are not the main app.
                             App.getWindowManager().cleanUp();
@@ -892,7 +898,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -900,7 +906,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
     }
@@ -923,7 +929,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
-                UndoRedoManager.forget();
+                UndoRedoManager.get().forget();
                 return true;
             }
             else {
@@ -968,7 +974,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 PersistenceManager.getCurrent().saveModel(fileName);
                 if (forgetHistory) {
-                    UndoRedoManager.forget();
+                    UndoRedoManager.get().forget();
                 }
                 return true;
             }

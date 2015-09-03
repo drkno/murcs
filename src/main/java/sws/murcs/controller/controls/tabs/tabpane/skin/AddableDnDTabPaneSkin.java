@@ -66,6 +66,7 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
      * The bounding width for the add button.
      * @return The bounding width
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private double widthBound() {
         return tabPane.getWidth() - TAB_OFFSET - addTabButton.getWidth() * 0.5 - addTabButton.getWidth()
                 - CONTROLS_DROPDOWN_WIDTH;
@@ -137,6 +138,7 @@ public class AddableDnDTabPaneSkin  extends DnDTabPaneSkin {
     /**
      * Recalculates and updates the add button position.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void recalculateAddPosition() {
         Bounds b = headerPane.getBoundsInLocal();
         b = headerPane.localToScene(b);

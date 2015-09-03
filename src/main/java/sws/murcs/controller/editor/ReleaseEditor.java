@@ -1,10 +1,12 @@
 package sws.murcs.controller.editor;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Project;
@@ -18,6 +20,12 @@ import java.util.Optional;
  * An editor for editing/creating a release.
  */
 public class ReleaseEditor extends GenericEditor<Release> {
+
+    /**
+     * Button for navigating to project.
+     */
+    @FXML
+    private Button navigateToProjectButton;
 
     /**
      * The shortName of a Release.
@@ -61,6 +69,18 @@ public class ReleaseEditor extends GenericEditor<Release> {
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         releaseDatePicker.focusedProperty().addListener(getChangeListener());
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+
+        navigateToProjectButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (projectChoiceBox.getSelectionModel().getSelectedItem() != null) {
+                Project project = projectChoiceBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(project);
+                } else {
+                    getNavigationManager().navigateTo(project);
+                }
+            }
+        });
+        navigateToProjectButton.setDisable(true);
     }
 
 
@@ -82,6 +102,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         projectChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getProjects());
         if (associatedProject != null) {
             projectChoiceBox.getSelectionModel().select(associatedProject);
+            navigateToProjectButton.setDisable(false);
         }
         projectChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 

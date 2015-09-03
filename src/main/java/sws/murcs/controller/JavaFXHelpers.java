@@ -1,5 +1,6 @@
 package sws.murcs.controller;
 
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -11,6 +12,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -109,7 +112,10 @@ public final class JavaFXHelpers {
             return;
         }
 
-        currentNode.getChildrenUnmodifiable().forEach(node -> {
+        ObservableList<Node> childrenUnmodifiable = currentNode.getChildrenUnmodifiable();
+        for (int i = 0; i < childrenUnmodifiable.size(); i++) {
+            Node node = childrenUnmodifiable.get(i);
+            if (node == null) break;
             if (Button.class.isAssignableFrom(node.getClass()) || node instanceof MaterialDesignButton) {
                 node.setVisible(false);
             } else if (node instanceof Hyperlink) {
@@ -130,14 +136,23 @@ public final class JavaFXHelpers {
                 if (content != null) {
                     findAndDestroyControls((Parent) content);
                 }
+            } else if (node instanceof TabPane) {
+                //This means if it's a tabpane only the first tab will be displayed and the rest will be destroyed
+                //potentially needs to be refactored but will work for now.
+                ObservableList<Tab> tabs = ((TabPane) node).getTabs();
+                Node content = tabs.get(0).getContent();
+                if (content != null) {
+                    findAndDestroyControls((Parent) content);
+                }
+                tabs.remove(1, tabs.size());
             }
 
             node.setFocusTraversable(false);
             if (!(node instanceof Parent)) {
-                return;
+                continue;
             }
 
             findAndDestroyControls((Parent) node);
-        });
+        }
     }
 }

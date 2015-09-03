@@ -1,14 +1,15 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Generates random Backlogs with stories.
@@ -47,6 +48,11 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public static final int HIGH_STRESS_MIN = 6;
 
+    /**
+     * Indicator used for stories that arise with duplicate names.
+     */
+    private static int indicator = 0;
+
 
     /**
      * A list of backlog names.
@@ -77,18 +83,18 @@ public class BacklogGenerator implements Generator<Backlog> {
     /**
      * A list of stories to use in this backlog, not copied.
      */
-    private List<Story> unsafeStoryPool;
+    private Collection<Story> unsafeStoryPool;
 
     /**
      * A list of people to use in this team.
      */
-    private List<Person> personsPool;
+    private Collection<Person> personsPool;
 
     /**
      * Instantiates a new story generator.
      */
     public BacklogGenerator() {
-        storyGenerator = new StoryGenerator();
+        this(new StoryGenerator());
     }
 
     /**
@@ -97,6 +103,8 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public BacklogGenerator(final Generator<Story> generator) {
         this.storyGenerator = generator;
+        storyPool = new ArrayList<>();
+        unsafeStoryPool = new ArrayList<>();
     }
 
     /**
@@ -105,15 +113,6 @@ public class BacklogGenerator implements Generator<Backlog> {
      */
     public final void setStoryGenerator(final Generator<Story> generator) {
         this.storyGenerator = generator;
-    }
-
-    /**
-     * Sets the story pool. If null, stories will be randomly generated.
-     * @param stories The story pool
-     */
-    public final void setStoryPool(final List<Story> stories) {
-        unsafeStoryPool = stories;
-        storyPool = new ArrayList<>(stories);
     }
 
     /**
@@ -138,11 +137,21 @@ public class BacklogGenerator implements Generator<Backlog> {
         if (storyCount > storyPool.size()) {
             while (storyCount != storyPool.size()) {
                 Story newStory = storyGenerator.generate();
-                if (!storyPool.stream().filter(newStory::equals).findAny().isPresent()) {
-                    if (!unsafeStoryPool.contains(newStory)) {
-                        unsafeStoryPool.add(newStory);
-                    }
+                if (!unsafeStoryPool.contains(newStory)) {
+                    unsafeStoryPool.add(newStory);
                     storyPool.add(newStory);
+                }
+                else {
+                    try {
+                        newStory.setShortName(newStory.getShortName() + " (" + indicator + ")");
+                        unsafeStoryPool.add(newStory);
+                        storyPool.add(newStory);
+                        indicator++;
+                    }
+                    catch (Exception e) {
+                        //Suppress because they are not relevant in this context.
+                        int foo = 0; //because checkstyle
+                    }
                 }
             }
         }
@@ -157,6 +166,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final Backlog generate() {
         final int longNameMax = 10;
         final int minStories = 10;
@@ -185,24 +195,39 @@ public class BacklogGenerator implements Generator<Backlog> {
         }
 
         int size = stories.size();
-        int prioritised = size / 2;
+        int prioritised = size - size / 4;
 
         try {
             for (Story story : stories.subList(0, prioritised)) {
+                if (story.getAcceptanceCriteria().size() == 0) {
+                    AcceptanceCondition ac = new AcceptanceCondition();
+                    ac.setCondition(GenerationHelper.randomString(300));
+                    story.addAcceptanceCondition(ac);
+                }
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
                 story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
-                story.setStoryState(Story.StoryState.Ready);
                 backlog.addStory(story, 1);
+                story.setStoryState(Story.StoryState.Ready);
+                assert backlog.getPrioritisedStories().contains(story);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.
+            e.printStackTrace();
             ErrorReporter.get().reportErrorSecretly(e, "BacklogGenerator: adding stories to backlog failed");
         }
         backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);
 
         return backlog;
+    }
+
+    /**
+     * Sets the stories that should not be used when you're generating stories for the backlogs.
+     * @param unsafeStories The stories not to be used when making backlogs.
+     */
+    public void setUnsafeStories(final Collection<Story> unsafeStories) {
+        unsafeStoryPool = unsafeStories;
     }
 }

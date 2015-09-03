@@ -85,3 +85,7 @@ release.properties
 *.toc
 *.gz
 doc/user_guide/main.pdf
+
+### Logging Tools ###
+*.py
+*.ini

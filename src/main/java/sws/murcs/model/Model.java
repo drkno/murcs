@@ -25,6 +25,11 @@ import java.io.Serializable;
 public abstract class Model extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The short name of a model object.
      */
     @Searchable(SearchPriority.Ultra)

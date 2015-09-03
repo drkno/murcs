@@ -1,6 +1,5 @@
 package sws.murcs.debug.errorreporting;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -82,6 +81,7 @@ public class ErrorReportPopup {
     private void setStage(final Stage stage) {
         popupStage = stage;
         popupStage.setResizable(true);
+        popupStage.setTitle("Feedback");
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
@@ -139,12 +139,12 @@ public class ErrorReportPopup {
      */
     public final void show() {
         insertMDCheckBox();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initModality(Modality.WINDOW_MODAL);
         window = new Window(popupStage, this);
         window.register();
         window.addGlobalShortcutsToWindow();
         window.show();
-        Platform.runLater(messageTitleLabel::requestFocus);
+        detailTextArea.requestFocus();
     }
 
     /**
@@ -168,8 +168,19 @@ public class ErrorReportPopup {
      */
     public final void setReportListener(final ReportError report) {
         reportButton.setOnAction(a -> {
-            window.close();
+            close();
             report.sendReport(detailTextArea.getText());
+        });
+    }
+
+    /**
+     * Sets what will be called when the cancel button is pressed.
+     * @param report the callback.
+     */
+    public final void setCloseListener(final ErrorReporterOpening report) {
+        cancelButton.setOnAction(a -> {
+            close();
+            report.setReporterIsOpen(false);
         });
     }
 

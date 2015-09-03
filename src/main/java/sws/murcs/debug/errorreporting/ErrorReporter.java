@@ -99,6 +99,11 @@ public final class ErrorReporter {
     private boolean shouldShowPopover;
 
     /**
+     * Check variable to prevent multiple instances of the reporter window.
+     */
+    private boolean reporterIsOpen;
+
+    /**
      * Creates a new ErrorReporter and binds unhandled exceptions to this class.
      * @param args the arguments the program was started with.
      */
@@ -219,12 +224,23 @@ public final class ErrorReporter {
         Platform.runLater(() -> {
             try {
                 popup = ErrorReportPopup.newErrorReporter();
-                if (popup != null) {
-                    popup.setType(dialogType);
-                    popup.setReportListener(description -> {
-                        performReporting(pThread, pThrowable, description, pProgDescription);
-                    });
-                    popup.show();
+                synchronized (ErrorReporter.class) {
+                    if (popup != null && !reporterIsOpen) {
+                        popup.setType(dialogType);
+                        popup.setReportListener(description -> {
+                            synchronized (ErrorReporter.class) {
+                                reporterIsOpen = false;
+                            }
+                            performReporting(pThread, pThrowable, description, pProgDescription);
+                        });
+                        popup.setCloseListener(windowIsOpen -> {
+                            synchronized (ErrorReporter.class) {
+                                reporterIsOpen = windowIsOpen;
+                            }
+                        });
+                        reporterIsOpen = true;
+                        popup.show();
+                    }
                 }
             } catch (Exception e) {
                 performReporting(pThread, pThrowable,
@@ -307,7 +323,12 @@ public final class ErrorReporter {
 
         try {
             reportFields.put("userDescription", URLEncoder.encode(pUserDescription, "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (NullPointerException e) {
+            // user description is null.
+            reportFields.put("userDescription", null);
+        }
+        catch (UnsupportedEncodingException e) {
             // encoding is hard coded so can never happen. But because check style, stack trace
             e.printStackTrace();
         }
@@ -321,8 +342,8 @@ public final class ErrorReporter {
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
         reportFields.put("javaVersion", System.getProperty("java.version"));
-        reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
-        reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
+        reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.get().canRevert()));
+        reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.get().canRemake()));
 
         StringBuilder builder = new StringBuilder(reportFields.size() * multiplier + 2);
         builder.append("{");
@@ -374,7 +395,7 @@ public final class ErrorReporter {
      */
     private String getScreenshots() {
         try {
-            if (popup.submitScreenShots() && App.getWindowManager().getAllWindows().size() > 0) {
+            if (popup != null && popup.submitScreenShots() && App.getWindowManager().getAllWindows().size() > 0) {
                 Collection<String> images = new ArrayList<>();
                 for (Window window : App.getWindowManager().getAllWindows()) {
                     // Don't include an instance of the feedback window as a screenshot.

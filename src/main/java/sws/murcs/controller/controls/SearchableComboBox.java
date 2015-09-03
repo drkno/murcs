@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -258,6 +259,19 @@ public class SearchableComboBox<T> {
         comboBox.getEditor().setText("");
         comboBox.setItems(data);
         comboBox.setVisibleRowCount(data.size());
+        return result;
+    }
+
+    /**
+     * Adds a collection of items to the combobox.
+     * @param items the items to add
+     * @return if the items were successfully added.
+     */
+    public final boolean addAll(final Collection<T> items) {
+        boolean result = true;
+        for (T item : items) {
+            result = result && add(item);
+        }
         return result;
     }
 

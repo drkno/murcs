@@ -102,6 +102,8 @@ public class ToolBarController {
         sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
         generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
         searchButton.getTooltip().setText("Search (" + shortCutKey + "+F Or " + shortCutKey + "+Space)");
+        forwardButton.getTooltip().setText("Navigate Forward (" + shortCutKey + "+Period)");
+        backButton.getTooltip().setText("Navigate Back (" + shortCutKey + "+Comma)");
     }
 
     /**
@@ -200,6 +202,9 @@ public class ToolBarController {
                     break;
                 case "addStory":
                     type = ModelType.Story;
+                    break;
+                case "addSprint":
+                    type = ModelType.Sprint;
                     break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");

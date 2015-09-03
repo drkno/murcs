@@ -1,8 +1,10 @@
 package sws.murcs.model;
 
 import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.reporting.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
@@ -24,6 +26,12 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Sprint extends Model {
+
+    /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
     /**
      * The start and end dates for the sprint.
      */
@@ -136,13 +144,31 @@ public class Sprint extends Model {
     }
 
     /**
+     * Gets estimation info for the sprint.
+     * @return The estimation info for the sprint.
+     */
+    public final EstimateInfo getEstimationInfo() {
+        EstimateInfo info = new EstimateInfo();
+        for (Story story : getStories()) {
+            info.mergeIn(story.getEstimationInfo());
+        }
+        return info;
+    }
+
+    /**
      * Add a story to this sprint.
      * @param story The story to be added
      * @throws NotReadyException If the story added was not ready
+     * @throws MultipleSprintsException when this story is already in another sprint
      */
-    public final void addStory(final Story story) throws NotReadyException {
+    public final void addStory(final Story story) throws NotReadyException, MultipleSprintsException {
         if (story.getStoryState() != Story.StoryState.Ready) {
             throw new NotReadyException();
+        }
+
+        Sprint usage = UsageHelper.findBy(ModelType.Sprint, model -> model.getStories().contains(story));
+        if (usage != null) {
+            throw new MultipleSprintsException(usage, story);
         }
         if (!stories.contains(story)) {
             stories.add(story);

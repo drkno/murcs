@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Separator?>
@@ -13,9 +18,11 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.String?>
-<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="50.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="80.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-      <GridPane minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane fx:id="taskGridPane" minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" />
           <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="260.0" />
@@ -23,43 +30,91 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="45.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints vgrow="SOMETIMES" />
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="45.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="toggleButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleButtonClicked" text="+">
+            <Button fx:id="toggleButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleButtonClicked" prefHeight="40.0" prefWidth="40.0">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <styleClass>
                   <String fx:value="mdge-button" />
                   <String fx:value="mdr-button" />
+                   <String fx:value="icon-button" />
                </styleClass>
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/collapseExpandWhite.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
             </Button>
             <HBox fx:id="minimisedHBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
                   <TextField fx:id="nameTextField" minWidth="-Infinity" prefWidth="50.0" promptText="Name" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="estimateTextField" minWidth="60.0" prefWidth="70.0" promptText="Estimate" />
+                  <TextField fx:id="estimateTextField" minWidth="40.0" prefWidth="60.0" promptText="Estimate" />
                   <ChoiceBox fx:id="stateChoiceBox" minWidth="80.0" prefWidth="100.0" />
                </children>
                <GridPane.margin>
                   <Insets />
                </GridPane.margin>
             </HBox>
-            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#deleteButtonClicked" text="X" GridPane.columnIndex="2">
+            <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#deleteButtonClicked" prefHeight="40.0" prefWidth="40.0" GridPane.columnIndex="2">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin>
                <styleClass>
                   <String fx:value="mdr-button" />
                   <String fx:value="mdrd-button" />
+                   <String fx:value="icon-button" />
                </styleClass>
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icons/removeWhite.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
             </Button>
-            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+               <children>
+                  <Label text="Assignees:" HBox.hgrow="NEVER" />
+                  <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="assigneesLabel" text="Placeholder Text" wrapText="true" VBox.vgrow="SOMETIMES" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="editAssignedButton" mnemonicParsing="false" onAction="#editAssignedButtonClicked" style="-fx-padding: 0;" HBox.hgrow="NEVER">
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                           <image>
+                              <Image url="@icons/edit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="logEffortButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#logEffortButtonClick" style="-fx-padding: 0;" HBox.hgrow="NEVER">
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                           <image>
+                              <Image url="@icons/log.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
+                   <Label fx:id="spentEffortLabel" text="(spent 0 hours)" />
+               </children>
+               <padding>
+                  <Insets right="10.0" />
+               </padding>
+            </HBox>
+            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
                   <Button fx:id="createButton" alignment="BOTTOM_LEFT" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <GridPane.margin>

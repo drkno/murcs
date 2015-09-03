@@ -1,5 +1,12 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -10,6 +17,7 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.FormErrors;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -18,18 +26,11 @@ import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * A generic class for making editing easier.
  * @param <T> The type of the editor (linked to the model)
  */
-public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener {
+public abstract class GenericEditor<T extends Model> implements UndoRedoChangeListener, FormErrors {
     /**
      * The name for the default section of the form.
      */
@@ -108,7 +109,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * A generic editor for editing models.
      */
     public GenericEditor() {
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
     }
 
     /**
@@ -120,7 +121,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
             isLoaded = false;
             model = pModel;
             setIsCreationWindow(pModel.getShortName() == null);
-            setupSaveChangesButton();
+            if (bottomBar != null) {
+                setupSaveChangesButton();
+            }
         }
     }
 
@@ -136,9 +139,11 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Updates the form with an undo redo notification.
      * @param param event arguments.
      */
-    public final void undoRedoNotification(final ChangeState param) {
+    public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            loadObject();
+            synchronized (StyleManager.getInstance()) {
+                loadObject();
+            }
         }
     }
 
@@ -202,24 +207,26 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Clears the errors on the form.
      * @param sectionName The name of the section to clear the errors on
      */
-    public final void clearErrors(final String sectionName) {
+    public void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
         boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        for (Map.Entry<Node, String> entry : invalidInSection) {
-            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-            if (entry.getKey().isFocused()) {
-                hideError = false;
+        synchronized (StyleManager.getInstance()) {
+            for (Map.Entry<Node, String> entry : invalidInSection) {
+                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+                if (entry.getKey().isFocused()) {
+                    hideError = false;
+                }
             }
+            invalidInSection.clear();
+            if (hideError && errorMessagePopover != null) {
+                errorMessagePopover.hide();
+            }
+            labelErrorMessage.setText("");
         }
-        invalidInSection.clear();
-        if (hideError && errorMessagePopover != null) {
-            errorMessagePopover.hide();
-        }
-        labelErrorMessage.setText("");
     }
 
     /**
@@ -260,7 +267,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * @throws UnsupportedOperationException when an unhelpful error message is provided or
      * when no node is provided to work with.
      */
-    protected final void addFormError(final String sectionName, final Node invalidNode, final String helpfulMessage) {
+    public final void addFormError(final String sectionName, final Node invalidNode, final String helpfulMessage) {
         ensureSectionExists(sectionName);
 
         if (invalidNode == null) {
@@ -272,7 +279,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
         invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
-        showErrors(sectionName);
+        synchronized (StyleManager.class) {
+            showErrors(sectionName);
+        }
     }
 
     /**
@@ -284,9 +293,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Cleans up event handlers and stuff. (Please ignore the CheckStyle error here, it's wrong).
      */
     @SuppressWarnings("checkstyle:designforextension")
-    public void dispose() {
+    public synchronized void dispose() {
         setChangeListener(null);
-        UndoRedoManager.removeChangeListener(this);
+        UndoRedoManager.get().removeChangeListener(this);
         setModel(null);
         clearErrors();
         // don't dispose of errorMessagePopover, as it is a window in its own right
@@ -363,7 +372,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Adds a save changes placebo button to the editor panes.
      * Will not add a new button if one already exists.
      */
-    public final void setupSaveChangesButton() {
+    public synchronized void setupSaveChangesButton() {
         if (saveChangesButtonExists || getIsCreationWindow()) {
             return; // prevent an existing button being added.
         }

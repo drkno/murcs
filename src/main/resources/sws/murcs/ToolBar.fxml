@@ -25,7 +25,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Back (Alt+Left)" />
+                  <Tooltip />
                </tooltip>
                <HBox.margin>
                   <Insets />
@@ -40,7 +40,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Forward (Alt+Right)" />
+                  <Tooltip />
                </tooltip>
             </Button>
          </children>

@@ -3,6 +3,7 @@ package sws.murcs.debug.sampledata;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,12 +55,12 @@ public class TaskGenerator implements Generator<Task> {
     /**
      * An array of strings used for generated task names.
      */
-    private String[] taskNames;
+    private static String[] taskNames;
 
     /**
      * An array of nouns used for creating task names.
      */
-    private String[] nouns = {
+    private static String[] nouns = {
             "able",
             "achieve",
             "acoustics",
@@ -160,7 +161,7 @@ public class TaskGenerator implements Generator<Task> {
     /**
      * And array of verbs used for creating task names.
      */
-    private String[] verbs = {
+    private static String[] verbs = {
             "accept",
             "add",
             "admire",
@@ -832,14 +833,16 @@ public class TaskGenerator implements Generator<Task> {
      * Sets up a new task generator.
      */
     public TaskGenerator() {
-        setUpNameList();
+        if (taskNames == null) {
+            setUpNameList();
+        }
     }
 
     /**
      * Sets up the list of names used for task names.
      */
     @SuppressWarnings("checkstyle:avoidinlineconditionals")
-    private void setUpNameList() {
+    private static void setUpNameList() {
         List<String> names = new ArrayList<>();
         String verb;
         String noun;
@@ -859,9 +862,10 @@ public class TaskGenerator implements Generator<Task> {
     public final Task generate() {
         Task t = new Task();
         t.setDescription(GenerationHelper.randomElement(defaultDescriptions));
-        t.setEstimate(GenerationHelper.random(MAX_ESTIMATE));
+        t.setCurrentEstimate(GenerationHelper.random(MAX_ESTIMATE));
         t.setState(TaskState.values()[GenerationHelper.random(TaskState.values().length)]);
         t.setName(GenerationHelper.randomElement(taskNames));
+        t.setEstimationDate(LocalDate.MIN);
         return t;
     }
 }

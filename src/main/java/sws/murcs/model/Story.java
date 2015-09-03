@@ -1,5 +1,16 @@
 package sws.murcs.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.magic.tracking.TrackableValue;
@@ -7,24 +18,17 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.search.Searchable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-
 /**
  * A class representing a story in the backlog for a project.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
+
+    /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
 
     /**
      * Represents the current state of a story.
@@ -164,7 +168,7 @@ public class Story extends Model {
             acceptanceCriteria.add(condition);
 
             //Make sure the new condition is tracked by UndoRedo
-            UndoRedoManager.add(condition);
+            UndoRedoManager.get().add(condition);
         }
         commit("edit acceptance criteria");
     }
@@ -266,7 +270,7 @@ public class Story extends Model {
     public final void addTask(final Task newTask) throws DuplicateObjectException {
         if (!tasks.contains(newTask)) {
             tasks.add(newTask);
-            UndoRedoManager.add(newTask);
+            UndoRedoManager.get().add(newTask);
         } else {
             throw new DuplicateObjectException("You can't add two of the same task to a story!");
         }
@@ -280,7 +284,8 @@ public class Story extends Model {
     public final void removeTask(final Task task) {
         if (tasks.contains(task)) {
             tasks.remove(task);
-            UndoRedoManager.remove(task);
+            UndoRedoManager.get().remove(task);
+            commit("edit story");
         }
     }
 
@@ -290,6 +295,18 @@ public class Story extends Model {
      */
     public final List<Task> getTasks() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Gets the estimation info for the story.
+     * @return The estimation info for this task.
+     */
+    public EstimateInfo getEstimationInfo() {
+        EstimateInfo estimatedTimeRemaining = new EstimateInfo();
+        for (Task task : getTasks()) {
+            estimatedTimeRemaining.mergeIn(task.getEstimateInfo());
+        }
+        return estimatedTimeRemaining;
     }
 
     @Override

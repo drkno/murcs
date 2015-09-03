@@ -288,8 +288,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     managementList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type "
-                            + "has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
         }
     }
@@ -319,8 +319,8 @@ public class ReportGeneratorController {
                     break;
                 default:
                     workflowList.setVisible(false);
-                    throw new UnsupportedOperationException("Reporting on this model type "
-                            + "has not yet been implemented.");
+                    throw new UnsupportedOperationException(
+                            "Reporting on this model type has not yet been implemented.");
             }
         }
     }
@@ -408,7 +408,8 @@ public class ReportGeneratorController {
                 if (file != null) {
                     file.delete();
                 }
-                ErrorReporter.get().reportError(e, "Failed to generate report");
+                ErrorReporter.get().reportError(e,
+                        "Something went wrong creating a report, probably to do with saving the file");
             }
         }
     }

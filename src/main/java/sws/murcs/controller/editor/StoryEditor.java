@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +26,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -38,6 +41,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
@@ -55,6 +59,8 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +69,13 @@ import java.util.stream.Collectors;
 /**
  * An editor for the story model.
  */
-public class StoryEditor extends GenericEditor<Story> {
+public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
+
+    /**
+     * Button to navigate to the creator of the story.
+     */
+    @FXML
+    private Button navigateToCreatorButton;
 
     /**
      * The short name of the story.
@@ -154,27 +166,42 @@ public class StoryEditor extends GenericEditor<Story> {
     private Thread thread;
 
     /**
+     * The collection of all the task editors associated with this story.
+     */
+    private Collection<TaskEditor> taskEditors;
+
+    /**
      * Whether or not the thread creating task GUIs should stop.
      */
     private boolean stop;
 
+    /**
+     * The last selected story.
+     */
+    private Story lastSelectedStory;
+
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
                 .findFirst()
                 .orElse(null);
 
-        estimateChoiceBox.getItems().clear();
-        estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
-        estimateChoiceBox.getItems().add(EstimateType.INFINITE);
-        estimateChoiceBox.getItems().add(EstimateType.ZERO);
-        if (backlog != null) {
-            estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
-        }
+        Story story = getModel();
+        Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
+            estimateChoiceBox.getItems().clear();
+            estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
+            if (backlog != null) {
+                estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            }
+        });
 
-        if (thread != null && thread.isAlive()) {
+        if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
             try {
                 thread.join();
@@ -208,7 +235,60 @@ public class StoryEditor extends GenericEditor<Story> {
             dependenciesMap.put(dependency, dependencyNode);
         });
 
-        taskContainer.getChildren().clear();
+        // Enable or disable whether you can change the creator
+        if (getIsCreationWindow()) {
+            Person modelCreator = getModel().getCreator();
+            creatorChoiceBox.getItems().clear();
+            creatorChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getPeople());
+            if (modelCreator != null) {
+                creatorChoiceBox.getSelectionModel().select(modelCreator);
+                navigateToCreatorButton.setDisable(false);
+            }
+        }
+        else {
+            creatorChoiceBox.getItems().clear();
+            creatorChoiceBox.getItems().add(getModel().getCreator());
+            creatorChoiceBox.setDisable(true);
+            navigateToCreatorButton.setDisable(false);
+        }
+
+        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
+        if (!getIsCreationWindow()) {
+            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
+        }
+        Platform.runLater(() -> {
+            if (!getModel().equals(story)) return;
+            synchronized (StyleManager.getInstance()) {
+                updateEstimation();
+            }
+        });
+        updateAcceptanceCriteria();
+        super.clearErrors();
+        if (!getIsCreationWindow()) {
+            super.setupSaveChangesButton();
+        }
+        else {
+            shortNameTextField.requestFocus();
+        }
+
+        if (getModel() != lastSelectedStory) {
+            taskEditors.clear();
+        }
+        // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
+        // onsuccess function.
+        if (!isLoaded) {
+            loadTasks();
+        }
+        else {
+            updateEditors();
+        }
+        lastSelectedStory = getModel();
+    }
+
+    /**
+     * Loads all of the task for the story.
+     */
+    private void loadTasks() {
         StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
             private Story model = getModel();
@@ -216,6 +296,7 @@ public class StoryEditor extends GenericEditor<Story> {
 
             @Override
             protected Void call() throws Exception {
+                Platform.runLater(() -> taskContainer.getChildren().clear());
                 for (Task task : model.getTasks()) {
                     if (stop) {
                         break;
@@ -224,6 +305,7 @@ public class StoryEditor extends GenericEditor<Story> {
                         //Do not try and make this call injectTask as it doesn't work, I've tried.
                         threadTaskLoader.setRoot(null);
                         TaskEditor controller = new TaskEditor();
+                        taskEditors.add(controller);
                         threadTaskLoader.setController(controller);
                         Parent view = threadTaskLoader.load();
                         controller.configure(task, false, view, foo);
@@ -243,40 +325,28 @@ public class StoryEditor extends GenericEditor<Story> {
 
             @Override
             protected void succeeded() {
-                isLoaded = true;
+                Platform.runLater(() -> {
+                    if (!getModel().equals(model)) {
+                        return;
+                    }
+                    isLoaded = true;
+                });
             }
         };
         thread = new Thread(taskThread);
         thread.setDaemon(true);
         thread.start();
+    }
 
-        // Enable or disable whether you can change the creator
-        if (getIsCreationWindow()) {
-            Person modelCreator = getModel().getCreator();
-            creatorChoiceBox.getItems().clear();
-            creatorChoiceBox.getItems().addAll(PersistenceManager.getCurrent().getCurrentModel().getPeople());
-            if (modelCreator != null) {
-                creatorChoiceBox.getSelectionModel().select(modelCreator);
-            }
+    /**
+     * Updates all of the task editors within the story.
+     */
+    public void updateEditors() {
+        if (getTasks().size() != taskEditors.size()) {
+            loadTasks();
         }
         else {
-            creatorChoiceBox.getItems().clear();
-            creatorChoiceBox.getItems().add(getModel().getCreator());
-            creatorChoiceBox.setDisable(true);
-        }
-
-        storyStateChoiceBox.getSelectionModel().select(getModel().getStoryState());
-        if (!getIsCreationWindow()) {
-            creatorChoiceBox.getSelectionModel().select(getModel().getCreator());
-        }
-        updateEstimation();
-        updateAcceptanceCriteria();
-        super.clearErrors();
-        if (!getIsCreationWindow()) {
-            super.setupSaveChangesButton();
-        }
-        else {
-            shortNameTextField.requestFocus();
+            taskEditors.forEach(editor -> editor.update());
         }
     }
 
@@ -356,12 +426,13 @@ public class StoryEditor extends GenericEditor<Story> {
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });
         searchableComboBoxDecorator = new SearchableComboBox(dependenciesDropDown);
         dependenciesMap = new HashMap<>();
+        taskEditors = new ArrayList<>();
 
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
@@ -377,6 +448,18 @@ public class StoryEditor extends GenericEditor<Story> {
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
         storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+
+        navigateToCreatorButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (creatorChoiceBox.getSelectionModel().getSelectedItem() != null) {
+                Person person = creatorChoiceBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
+        navigateToCreatorButton.setDisable(true);
     }
 
     @Override
@@ -451,7 +534,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     assert getModel().getStoryState().equals(Story.StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             } else {
                 getModel().setEstimate(estimateChoiceBox.getValue());
@@ -546,7 +629,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     getModel().setStoryState(Story.StoryState.None);
                     storyStateChoiceBox.setValue(Story.StoryState.None);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
         }
@@ -561,8 +644,18 @@ public class StoryEditor extends GenericEditor<Story> {
      * @param newDependency story to generate a node for.
      * @return a JavaFX node representing the dependency.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateStoryNode(final Story newDependency) {
-        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton(null);
+        removeButton.setPrefHeight(15);
+        removeButton.setPrefWidth(15);
+        Image image = new Image("sws/murcs/icons/removeWhite.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        imageView.setPreserveRatio(true);
+        imageView.setPickOnBounds(true);
+        removeButton.setGraphic(imageView);
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
@@ -579,7 +672,7 @@ public class StoryEditor extends GenericEditor<Story> {
                     dependenciesMap.remove(newDependency);
                     getModel().removeDependency(newDependency);
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
             else {
@@ -788,6 +881,7 @@ public class StoryEditor extends GenericEditor<Story> {
         try {
             taskLoader.setRoot(null);
             TaskEditor controller = new TaskEditor();
+            taskEditors.add(controller);
             taskLoader.setController(controller);
             if (taskLoader == null) {
                 return;
@@ -820,7 +914,7 @@ public class StoryEditor extends GenericEditor<Story> {
      * Adds a task to this story.
      * @param task The task to add
      */
-    protected final void addTask(final Task task) {
+    public final void addTask(final Task task) {
         try {
             getModel().addTask(task);
         }
@@ -829,11 +923,26 @@ public class StoryEditor extends GenericEditor<Story> {
         }
     }
 
+    @Override
+    public List<Task> getTasks() {
+        return getModel().getTasks();
+    }
+
+    @Override
+    public Story getAssociatedStory(final Task task) {
+        return getModel();
+    }
+
+    @Override
+    public void changesMade() {
+        //We do not care if changes are made in this editor.
+    }
+
     /**
      * Removes a task from this story.
      * @param task The task to remove
      */
-    protected final void removeTask(final Task task) {
+    public final void removeTask(final Task task) {
         if (getModel().getTasks().contains(task)) {
             getModel().removeTask(task);
         }
@@ -841,10 +950,11 @@ public class StoryEditor extends GenericEditor<Story> {
 
     /**
      * Removes the editor of a task.
-     * @param view The parent node of the task editor
+     * @param editor The editor of the task
      */
-    protected final void removeTaskEditor(final Parent view) {
-        taskContainer.getChildren().remove(view);
+    public final void removeTaskEditor(final TaskEditor editor) {
+        taskContainer.getChildren().remove(editor.getParent());
+        taskEditors.remove(editor);
     }
 
     /**
@@ -998,7 +1108,16 @@ public class StoryEditor extends GenericEditor<Story> {
                 node = textLabel;
             }
             AcceptanceCondition acceptanceCondition = (AcceptanceCondition) getTableRow().getItem();
-            Button button = new Button("X");
+            MaterialDesignButton button = new MaterialDesignButton(null);
+            button.setPrefHeight(15);
+            button.setPrefWidth(15);
+            Image image = new Image("sws/murcs/icons/removeWhite.png");
+            ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(20);
+            imageView.setFitWidth(20);
+            imageView.setPreserveRatio(true);
+            imageView.setPickOnBounds(true);
+            button.setGraphic(imageView);
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
@@ -1032,7 +1151,7 @@ public class StoryEditor extends GenericEditor<Story> {
                         storyStateChoiceBox.setValue(Story.StoryState.None);
                         getModel().setStoryState(Story.StoryState.None);
                         popup.close();
-                    }, "danger-will-robinson", "dont-panic");
+                    }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
                 } else {
                     getModel().removeAcceptanceCondition(acceptanceCondition);

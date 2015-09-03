@@ -141,7 +141,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (editorPane != null && newValue != null) {
+                if (editorPane != null && newValue != null && editorPane.getController().isLoaded()) {
                     editorPane.getController().saveChanges();
                 }
                 updateDisplayListSelection(newValue, oldValue);
@@ -149,7 +149,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             updateTitle();
         });
 
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
         updateList();
     }
 
@@ -290,11 +290,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             model.remove(item);
             toolBarController.updateBackForwardButtons();
         }, "danger-will-robinson");
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "dont-panic");
+        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
         popup.show();
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings("checkstyle:finalparameters")
     @Override
     public final void selectItem(Model parameter) {
         ModelType type;

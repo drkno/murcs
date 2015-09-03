@@ -20,6 +20,11 @@ public class ModelObservableArrayList<T extends Model>
         extends ObservableArrayList<T> implements Serializable, Comparator<T> {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * Serializable backing field.
      * Required because JavaFX observable lists are not serializable.
      */
