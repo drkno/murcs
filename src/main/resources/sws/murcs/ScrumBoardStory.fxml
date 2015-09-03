@@ -19,7 +19,7 @@
           <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <VBox fx:id="StoryOuterVBox">
+            <VBox fx:id="StoryOuterVBox" GridPane.valignment="TOP">
                <children>
                   <VBox fx:id="storyStaticControlsVBox">
                      <children>
@@ -72,7 +72,7 @@
                   <VBox fx:id="storyExtraInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
                </children>
             </VBox>
-            <VBox fx:id="toDoOuterVBox" GridPane.columnIndex="1">
+            <VBox fx:id="toDoOuterVBox" GridPane.columnIndex="1" GridPane.valignment="TOP">
                <children>
                   <VBox fx:id="toDoBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
@@ -86,7 +86,7 @@
                   <VBox fx:id="toDoMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
                </children>
             </VBox>
-            <VBox fx:id="inProgressOuterVBox" GridPane.columnIndex="2">
+            <VBox fx:id="inProgressOuterVBox" GridPane.columnIndex="2" GridPane.valignment="TOP">
                <children>
                   <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
@@ -100,7 +100,7 @@
                   <VBox fx:id="inProgressMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
                </children>
             </VBox>
-            <VBox fx:id="doneOuterVBox" GridPane.columnIndex="3">
+            <VBox fx:id="doneOuterVBox" GridPane.columnIndex="3" GridPane.valignment="TOP">
                <children>
                   <VBox fx:id="doneBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
                      <children>
