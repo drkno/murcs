@@ -184,11 +184,43 @@ public class ScrumBoard extends GenericEditor<Sprint> {
                 }
             }
         });
+        
+        ImageView editImage = new ImageView("sws/murcs/icons/edit.png");
+        editImage.setFitHeight(25);
+        editImage.setFitWidth(25);
+        editImage.setPreserveRatio(true);
+        editImage.setPickOnBounds(true);
+        editImage.getStyleClass().add("mdr-button");
 
-        //ImageView editImage = new ImageView(new Image("sws/murcs/icons/edit.png"));
-        //ImageView logImage = new ImageView(new Image("sws/murcs/icons/log.png"));
-        Button assigneeButton = new Button("1");
-        Button effortButton = new Button("2");
+        ImageView logImage = new ImageView("sws/murcs/icons/log.png");
+        logImage.setFitHeight(25);
+        logImage.setFitWidth(25);
+        logImage.setPreserveRatio(true);
+        logImage.setPickOnBounds(true);
+        logImage.getStyleClass().add("mdr-button");
+
+        Button assigneeButton = new Button();
+        assigneeButton.setText(null);
+        assigneeButton.setPrefWidth(25);
+        assigneeButton.setPrefHeight(25);
+        assigneeButton.setMaxHeight(25);
+        assigneeButton.setMaxWidth(25);
+        assigneeButton.setMinHeight(25);
+        assigneeButton.setMinWidth(25);
+        assigneeButton.getStyleClass().add("-fx-padding: 0;");
+
+        assigneeButton.setGraphic(editImage);
+        Button effortButton = new Button();
+        effortButton.setText(null);
+        effortButton.setPrefWidth(25);
+        effortButton.setPrefHeight(25);
+        effortButton.setMaxHeight(25);
+        effortButton.setMaxWidth(25);
+        effortButton.setMinHeight(25);
+        effortButton.setMinWidth(25);
+        effortButton.getStyleClass().add("-fx-padding: 0;");
+
+        effortButton.setGraphic(logImage);
         assigneeButton.setOnAction(event -> assigneesButtonClicked(assigneeButton, story, task));
         effortButton.setOnAction(event -> effortButtonClicked(effortButton, story, task));
 
