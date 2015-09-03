@@ -6,7 +6,13 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import sws.murcs.model.*;
+import javafx.scene.layout.AnchorPane;
+import sws.murcs.model.EffortEntry;
+import sws.murcs.model.EstimateInfo;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,10 +28,22 @@ import java.util.stream.Collectors;
 public class BurndownController extends GenericEditor<Sprint> {
 
     /**
+     * The tab view containing the burndown chart.
+     */
+    @FXML
+    private AnchorPane mainView;
+
+    /**
      * The chart representing the burndown.
      */
     @FXML
     private LineChart burndownChart;
+
+    /**
+     * The axies of the chart.
+     */
+    @FXML
+    private NumberAxis xAxis;
 
     /**
      * Burndown line that is aimed for.
@@ -44,7 +62,6 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     public void loadObject() {
-        NumberAxis xAxis = (NumberAxis) burndownChart.getXAxis();
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
         xAxis.setUpperBound(getDayNumber(getModel().getEndDate()));
@@ -217,6 +234,7 @@ public class BurndownController extends GenericEditor<Sprint> {
 
     @Override
     protected void initialize() {
+        mainView.getStyleClass().add("root");
         burndownChart.setCreateSymbols(false);
     }
 }
