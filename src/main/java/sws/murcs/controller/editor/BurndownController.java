@@ -193,7 +193,8 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         List<Data<Long, Float>> chartData = new ArrayList<>();
         // end of graph
-        chartData.add(new Data<>(getDayNumber(LocalDate.now()), incompleteTaskTotal));
+        chartData.add(new Data<>(
+                Math.min(getDayNumber(LocalDate.now()), getDayNumber(getModel().getEndDate())), incompleteTaskTotal));
         float accumulator = incompleteTaskTotal;
         for (int i = completedTasks.size() - 1; i >= 0; i--) {
             Task current = completedTasks.get(i);
@@ -216,6 +217,7 @@ public class BurndownController extends GenericEditor<Sprint> {
                 float oldEstimate = getModel().getEstimationInfo()
                         .getEstimateForDay(estimationChange.get(currEstChange).getKey().minusDays(1));
                 chartData.add(0, new Data<>(getDayNumber(estimationChange.get(currEstChange).getKey()), oldEstimate));
+                accumulator += oldEstimate - estimationChange.get(currEstChange).getValue();
                 currEstChange--;
             }
         }
