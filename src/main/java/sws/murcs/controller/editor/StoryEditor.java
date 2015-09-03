@@ -35,6 +35,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.SearchableComboBox;
+import sws.murcs.controller.controls.StoryProgressBar;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.controller.pipes.TaskEditorParent;
@@ -68,10 +69,7 @@ import java.util.stream.Collectors;
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
 
     @FXML
-    private Pane completenessCompletePane, completenessInProgressPane, completenessNotStartedPane;
-
-    @FXML
-    private GridPane completenessGridpane;
+    private VBox completenessContainer;
 
     /**
      * Button to navigate to the creator of the story.
@@ -277,8 +275,6 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             taskEditors.clear();
         }
 
-        getModel().getTasks().stream().
-
         // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
         // onsuccess function.
         if (!isLoaded) {
@@ -430,8 +426,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
-        completenessGridpane.getStylesheets().add(
-                getClass().getResource("/sws/murcs/styles/materialDesign/completeness.css").toExternalForm());
+        completenessContainer.getChildren().add(new StoryProgressBar());
 
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {
