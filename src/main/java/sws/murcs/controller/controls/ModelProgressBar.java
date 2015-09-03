@@ -23,7 +23,6 @@ public class ModelProgressBar extends GridPane {
      */
     private Pane completePane, progressPane, notStartedPane;
 
-    public ModelProgressBar() {
     /**
      * Tooltips that will be shown on the progress bar.
      */
@@ -34,7 +33,7 @@ public class ModelProgressBar extends GridPane {
      * @param hasTooltips sets wheather the progressbar will have tooltips.
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    public StoryProgressBar(final boolean hasTooltips) {
+    public ModelProgressBar(final boolean hasTooltips) {
         getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/completeness.css").toExternalForm());
 
@@ -169,8 +168,8 @@ public class ModelProgressBar extends GridPane {
             notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% started.");
         }
 
-        getColumnConstraints().get(0).setPrefWidth(completedPercentage * getWidth());
-        getColumnConstraints().get(1).setPrefWidth(inProgressPercentage * getWidth());
-        getColumnConstraints().get(2).setPrefWidth(notStartedPrecentage * getWidth());
+        getColumnConstraints().get(0).setPrefWidth(Math.floor(completedPercentage * getWidth()));
+        getColumnConstraints().get(1).setPrefWidth(Math.floor(inProgressPercentage * getWidth()));
+        getColumnConstraints().get(2).setPrefWidth(Math.floor(notStartedPrecentage * getWidth()));
     }
 }
