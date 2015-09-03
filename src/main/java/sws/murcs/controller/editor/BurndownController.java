@@ -53,7 +53,7 @@ public class BurndownController extends GenericEditor<Sprint> {
         burndownChart.getData().clear();
 
         long taskCount = getModel().getStories().stream().map(Story::getTasks).flatMap(Collection::stream).count();
-        if (getDayNumber(LocalDate.now()) >= 0 && taskCount > 0) {
+        if (taskCount > 0) {
             burndownChart.setVisible(true);
             // cant use clear due to an IllegalArgumentException when re-adding
             // readding done because of weird issues with graphs
