@@ -69,8 +69,8 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         burndownChart.getData().clear();
 
-        long taskCount = getModel().getStories().stream().map(Story::getTasks).flatMap(Collection::stream).count();
-        if (taskCount > 0) {
+        // if has any tasks
+        if (getModel().getStories().stream().anyMatch(story -> story.getTasks().size() > 0)) {
             burndownChart.setVisible(true);
             // cant use clear due to an IllegalArgumentException when re-adding
             // readding done because of weird issues with graphs
@@ -122,9 +122,10 @@ public class BurndownController extends GenericEditor<Sprint> {
 
         Map<LocalDate, Float> dates = new HashMap<>();
 
-        for (Story story : getModel().getStories()) {
-            for (Task task : story.getTasks()) {
-                for (EffortEntry effort : task.getEffort()) {
+        getModel().getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
+                .forEach(effort -> {
                     if (!dates.containsKey(effort.getDate())) {
                         dates.put(effort.getDate(), effort.getEffort());
                     }
@@ -132,9 +133,7 @@ public class BurndownController extends GenericEditor<Sprint> {
                         float current = dates.get(effort.getDate());
                         dates.put(effort.getDate(), effort.getEffort() + current);
                     }
-                }
-            }
-        }
+        });
 
         List<Data<Long, Float>> orderedDates = new ArrayList<>();
         orderedDates.add(new Data<>(0L, 0f));
