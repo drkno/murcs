@@ -1,8 +1,12 @@
 package sws.murcs.controller.controls.cells;
 
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.layout.VBox;
+import sws.murcs.controller.controls.StoryProgressBar;
 import sws.murcs.model.Model;
+import sws.murcs.model.Story;
 
 /**
  * A class representing a display list cell.
@@ -13,17 +17,27 @@ public class DisplayListCell extends ListCell<Model> {
      * It's okay for this to be static, as we can only ever hover over
      * one item.
      */
-    private static Model hoveringOver;
+    protected static Model hoveringOver;
 
     /**
      * The root node for the list cell.
      */
-    private Label root;
+    protected VBox root = new VBox();
+
+    /**
+     * The label for the name of the story
+     */
+    protected Label nameLabel = new Label();
+
+    /**
+     * The progress bar for the story. Only displayed if the current model is a story.
+     */
+    protected StoryProgressBar progressBar = new StoryProgressBar();
 
     /**
      * The model item this cell points at.
      */
-    private Model model;
+    protected Model model;
 
     /**
      * Initializes a new display list cell.
@@ -37,6 +51,8 @@ public class DisplayListCell extends ListCell<Model> {
                 hoveringOver = null;
             }
         });
+
+        root.getChildren().add(nameLabel);
     }
 
     @Override
@@ -52,11 +68,24 @@ public class DisplayListCell extends ListCell<Model> {
             return;
         }
 
-        if (root == null) {
-            root = new Label();
-        }
-        root.textProperty().bind(model.getShortNameProperty());
+        if (model instanceof Story) {
+            progressBar.setStory((Story) model);
 
+            if (!root.getChildren().contains(progressBar)) {
+                root.getChildren().add(progressBar);
+                progressBar.setPrefHeight(2);
+                progressBar.setMaxHeight(2);
+                progressBar.getRowConstraints().get(0).setMinHeight(2);
+                progressBar.getRowConstraints().get(0).setPrefHeight(2);
+                progressBar.getRowConstraints().get(0).setMaxHeight(2);
+                root.setMargin(progressBar, new Insets(0, -5, 0, -5));
+
+            }
+        } else {
+            root.getChildren().remove(progressBar);
+        }
+
+        nameLabel.textProperty().bind(model.getShortNameProperty());
         setGraphic(root);
     }
 
