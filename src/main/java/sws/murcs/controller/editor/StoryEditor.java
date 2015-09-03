@@ -30,11 +30,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
@@ -70,6 +66,12 @@ import java.util.stream.Collectors;
  * An editor for the story model.
  */
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
+
+    @FXML
+    private Pane completenessCompletePane, completenessInProgressPane, completenessNotStartedPane;
+
+    @FXML
+    private GridPane completenessGridpane;
 
     /**
      * Button to navigate to the creator of the story.
@@ -274,6 +276,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (getModel() != lastSelectedStory) {
             taskEditors.clear();
         }
+
+        getModel().getTasks().stream().
+
         // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
         // onsuccess function.
         if (!isLoaded) {
@@ -424,6 +429,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     public final void initialize() {
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
+
+        completenessGridpane.getStylesheets().add(
+                getClass().getResource("/sws/murcs/styles/materialDesign/completeness.css").toExternalForm());
 
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {
