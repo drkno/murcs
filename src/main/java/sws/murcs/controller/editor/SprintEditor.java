@@ -39,6 +39,7 @@ import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
@@ -187,8 +188,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 getModel().getBacklog().getAllStories().stream()
                         .filter(story -> story.getAcceptanceCriteria().size() > 0
                                 && !(story.getEstimate().equals(EstimateType.NOT_ESTIMATED)
-                                || story.getEstimate().equals(EstimateType.INFINITE)))
-                        .forEach(allocatableStories::add);
+                                || story.getEstimate().equals(EstimateType.INFINITE))
+                                && UsageHelper.findBy(ModelType.Sprint,
+                                s -> ((Sprint) s).getStories().contains(story)) == null)
+                                .forEach(allocatableStories::add);
                 // Remove all the stories already in the sprint
                 getModel().getStories().stream().forEach(allocatableStories::remove);
             }
@@ -301,10 +304,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         });
                     }
                     catch (NotReadyException e1) {
-                        ErrorReporter.get().reportError(e1, "Stuff turned to custard. Yum.");
+                        ErrorReporter.get().reportError(e1, "A story was added to a sprint when it was not ready.");
                     }
                     catch (MultipleSprintsException e1) {
                         GenericPopup mpopup = new GenericPopup();
+                        popup.setTitleText("Story in another sprint");
                         mpopup.setMessageText("The selected story is already in another sprint. "
                                 + "Please remove it from that one first.");
                         mpopup.show();
@@ -317,6 +321,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             }
             catch (MultipleSprintsException e) {
                 GenericPopup popup = new GenericPopup();
+                popup.setTitleText("Story in another sprint");
                 popup.setMessageText("The selected story is already in another sprint. "
                         + "Please remove it from that one first.");
                 popup.show();

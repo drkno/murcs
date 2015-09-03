@@ -4,6 +4,7 @@ import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.reporting.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
@@ -160,13 +161,10 @@ public class Sprint extends Model {
             throw new NotReadyException();
         }
 
-        /*todo:List<Sprint> usages = UsageHelper.findBy(
-                ModelType.Sprint, model -> ((Sprint) model).getStories().contains(story));
-        usages.remove(this);
-        if (usages.size() > 0) {
-            throw new MultipleSprintsException();
-        }*/
-
+        Sprint usage = UsageHelper.findBy(ModelType.Sprint, model -> model.getStories().contains(story));
+        if (usage != null) {
+            throw new MultipleSprintsException(usage, story);
+        }
         if (!stories.contains(story)) {
             stories.add(story);
             commit("edit sprint");
