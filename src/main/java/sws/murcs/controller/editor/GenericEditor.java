@@ -1,7 +1,12 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import javafx.application.Platform;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -20,13 +25,6 @@ import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
-
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -212,23 +210,23 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     public void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
-        final boolean[] hideError = {true};
+        boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        Platform.runLater(() -> {
+        synchronized (StyleManager.getInstance()) {
             for (Map.Entry<Node, String> entry : invalidInSection) {
                 entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
                 entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
                 if (entry.getKey().isFocused()) {
-                    hideError[0] = false;
+                    hideError = false;
                 }
             }
             invalidInSection.clear();
-            if (hideError[0] && errorMessagePopover != null) {
+            if (hideError && errorMessagePopover != null) {
                 errorMessagePopover.hide();
             }
             labelErrorMessage.setText("");
-        });
+        }
     }
 
     /**
