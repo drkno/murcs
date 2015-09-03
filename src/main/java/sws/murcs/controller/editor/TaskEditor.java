@@ -401,13 +401,11 @@ public class TaskEditor implements UndoRedoChangeListener {
         if (descriptionVisible) {
             descriptionTextArea.setVisible(false);
             editor.setPrefHeight(COLLAPSED_HEIGHT);
-            toggleButton.setText("+");
             descriptionVisible = false;
         }
         else {
             descriptionTextArea.setVisible(true);
             editor.setPrefHeight(EXPANDED_HEIGHT);
-            toggleButton.setText("-");
             descriptionVisible = true;
         }
     }

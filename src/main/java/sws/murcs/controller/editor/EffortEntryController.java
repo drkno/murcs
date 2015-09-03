@@ -1,8 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
@@ -15,9 +12,15 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A controller for editing effort entries.
@@ -89,6 +92,10 @@ public class EffortEntryController {
      */
     private Consumer<EffortEntryController> action;
 
+    private ImageView addIcon = new ImageView(new Image("sws/murcs/icons/addWhite.png"));
+
+    private ImageView removeIcon = new ImageView(new Image("sws/murcs/icons/removeWhite.png"));
+
     /**
      * Initializes the editor.
      */
@@ -126,6 +133,16 @@ public class EffortEntryController {
         descriptionTextArea.textProperty().addListener((observable, oldValue, newValue) ->
                 updateErrors());
         timeTextField.textProperty().addListener((observable, oldValue, newValue) -> updateErrors());
+
+        addIcon.setFitHeight(25);
+        addIcon.setFitWidth(25);
+        addIcon.setPreserveRatio(true);
+        addIcon.setPickOnBounds(true);
+
+        removeIcon.setFitHeight(25);
+        removeIcon.setFitWidth(25);
+        removeIcon.setPreserveRatio(true);
+        removeIcon.setPickOnBounds(true);
     }
 
     /**
@@ -323,7 +340,7 @@ public class EffortEntryController {
     public void styleAsAddButton() {
         actionButton.getStyleClass().addAll("mdga-button");
         actionButton.getStyleClass().removeAll("mdrd-button");
-        actionButton.setText("+");
+        actionButton.setGraphic(addIcon);
 
         mainGrid.getRowConstraints().get(0).setPrefHeight(Control.USE_COMPUTED_SIZE);
         mainGrid.getChildren().addAll(dateLabel, personLabel, timeLabel);
@@ -335,7 +352,7 @@ public class EffortEntryController {
     public void styleAsRemoveButton() {
         actionButton.getStyleClass().addAll("mdrd-button");
         actionButton.getStyleClass().removeAll("mdga-button");
-        actionButton.setText("X");
+        actionButton.setGraphic(removeIcon);
 
         mainGrid.getRowConstraints().get(0).setPrefHeight(0);
         mainGrid.getChildren().removeAll(dateLabel, personLabel, timeLabel);
