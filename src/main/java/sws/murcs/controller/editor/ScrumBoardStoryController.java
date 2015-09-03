@@ -1,5 +1,8 @@
 package sws.murcs.controller.editor;
 
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,14 +13,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
-
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 3/09/2015
@@ -50,6 +50,16 @@ public class ScrumBoardStoryController {
     public AnchorPane mainPane;
     public Label storyStateLabel;
 
+    /**
+     * A container that shows where the progress bar will go on the screen.
+     */
+    public VBox progressBarContainer;
+
+    /**
+     * A progress bar that indicates sprint progress.
+     */
+    private ModelProgressBar progressBar;
+
     private Story story;
 
     private Boolean infoViewStateMore = true;
@@ -71,10 +81,15 @@ public class ScrumBoardStoryController {
 
     @FXML
     public final void initialize() {
+
         mainPane.getStyleClass().add("root");
+        progressBar = new ModelProgressBar(true);
+        progressBarContainer.getChildren().addAll(progressBar);
     }
 
     protected void loadStory() {
+        progressBar.setStory(story);
+
         storyBaseInfoVBox.setVisible(true);
         storyExtraInfoVBox.setVisible(false);
         toDoBaseInfoVBox.setVisible(true);
