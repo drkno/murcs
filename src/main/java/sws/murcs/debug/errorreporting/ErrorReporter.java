@@ -233,6 +233,11 @@ public final class ErrorReporter {
                             }
                             performReporting(pThread, pThrowable, description, pProgDescription);
                         });
+                        popup.setCloseListener(windowIsOpen -> {
+                            synchronized (ErrorReporter.class) {
+                                reporterIsOpen = windowIsOpen;
+                            }
+                        });
                         reporterIsOpen = true;
                         popup.show();
                     }
@@ -332,8 +337,8 @@ public final class ErrorReporter {
         reportFields.put("osName", System.getProperty("os.name"));
         reportFields.put("osVersion", System.getProperty("os.version"));
         reportFields.put("javaVersion", System.getProperty("java.version"));
-        reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.canRevert()));
-        reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.canRemake()));
+        reportFields.put("histUndoPossible", Boolean.toString(UndoRedoManager.get().canRevert()));
+        reportFields.put("histRedoPossible", Boolean.toString(UndoRedoManager.get().canRemake()));
 
         StringBuilder builder = new StringBuilder(reportFields.size() * multiplier + 2);
         builder.append("{");

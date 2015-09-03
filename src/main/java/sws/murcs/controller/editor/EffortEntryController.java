@@ -10,16 +10,25 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import sws.murcs.model.Effort;
+import javafx.scene.layout.GridPane;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
 /**
  * A controller for editing effort entries.
  */
 public class EffortEntryController {
+    /**
+     * The column labels. We have ids for them because we add and remove them.
+     */
+    @FXML
+    private Label dateLabel, personLabel, timeLabel;
+
     /**
      * The text field containing time spent.
      */
@@ -51,6 +60,11 @@ public class EffortEntryController {
     private Button actionButton;
 
     /**
+     * The main grid.
+     */
+    @FXML private GridPane mainGrid;
+
+    /**
      * The root node of this editor.
      */
     private Parent root;
@@ -63,7 +77,7 @@ public class EffortEntryController {
     /**
      * The effort being edited by this controller.
      */
-    private Effort effort;
+    private EffortEntry effortEntry;
 
     /**
      * Indicates whether the form has errors.
@@ -118,31 +132,32 @@ public class EffortEntryController {
      * Updates the model object in memory.
      */
     private void update() {
-        if (effort == null) {
+        if (effortEntry == null) {
             return;
         }
 
-        if (datePicker.getValue() != effort.getDate()) {
-            effort.setDate(datePicker.getValue());
+        if (datePicker.getValue() != effortEntry.getDate()) {
+            effortEntry.setDate(datePicker.getValue());
         }
 
         if (descriptionTextArea.getText() != null
-                && !descriptionTextArea.getText().equals(effort.getDescription())
+                && !descriptionTextArea.getText().equals(effortEntry.getDescription())
                 && !descriptionTextArea.getText().isEmpty()) {
-            effort.setDescription(descriptionTextArea.getText());
+            effortEntry.setDescription(descriptionTextArea.getText());
         }
 
-        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effort.getPerson())) {
-            effort.setPerson((Person) personComboBox.getValue());
+        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPerson())) {
+            effortEntry.setPerson((Person) personComboBox.getValue());
         }
 
         try {
             float time = Float.parseFloat(timeTextField.getText());
-            if (effort.getEffort() != time) {
-                effort.setEffort(time);
+            if (effortEntry.getEffort() != time) {
+                effortEntry.setEffort(time);
             }
         } catch (Exception e) {
             //Do nothing, we handle this not being invalid in the "updateErrors" method.
+            int foo = 0; //Because checkstyle
         }
     }
 
@@ -155,14 +170,14 @@ public class EffortEntryController {
                 && personComboBox.getValue() == null
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
-        if (notEdited || effort == null) {
+        if (notEdited || effortEntry == null) {
             hasErrorsProperty.set(true);
             return;
         }
 
         boolean errors = false;
 
-        if (datePicker.getValue() == null || effort.getDate() == null) {
+        if (datePicker.getValue() == null || effortEntry.getDate() == null) {
             datePicker.getStyleClass().add("error");
             errors = true;
         } else {
@@ -176,7 +191,7 @@ public class EffortEntryController {
             descriptionTextArea.getStyleClass().removeAll("error");
         }
 
-        if (personComboBox.getValue() == null || effort.getPerson() == null) {
+        if (personComboBox.getValue() == null || effortEntry.getPerson() == null) {
             personComboBox.getStyleClass().add("error");
             errors = true;
         } else {
@@ -189,9 +204,11 @@ public class EffortEntryController {
             if (time < 0) {
                 validTime = false;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             validTime = false;
-        }   finally {
+        }
+        finally {
             if (!validTime) {
                 timeTextField.getStyleClass().add("error");
                 errors = true;
@@ -208,7 +225,7 @@ public class EffortEntryController {
      * @param event The event
      */
     @FXML
-    private void actionButtonClicked(ActionEvent event) {
+    private void actionButtonClicked(final ActionEvent event) {
         update();
         updateErrors();
 
@@ -234,17 +251,17 @@ public class EffortEntryController {
 
     /**
      * Sets the effort this controller is editing.
-     * @param effort The effort for this controller to edit.
+     * @param effortEntry The effort for this controller to edit.
      */
-    public void setEffort(final Effort effort) {
-        this.effort = null;
+    public void setEffortEntry(final EffortEntry effortEntry) {
+        this.effortEntry = null;
 
-        personComboBox.setValue(effort.getPerson());
-        datePicker.setValue(effort.getDate());
-        descriptionTextArea.setText(effort.getDescription());
-        timeTextField.setText("" + effort.getEffort());
+        personComboBox.setValue(effortEntry.getPerson());
+        datePicker.setValue(effortEntry.getDate());
+        descriptionTextArea.setText(effortEntry.getDescription());
+        timeTextField.setText("" + effortEntry.getEffort());
 
-        this.effort = effort;
+        this.effortEntry = effortEntry;
 
         Platform.runLater(() -> updateErrors());
     }
@@ -253,8 +270,8 @@ public class EffortEntryController {
      * The effort this controller edits.
      * @return The effort.
      */
-    public Effort getEffort() {
-        return effort;
+    public EffortEntry getEffortEntry() {
+        return effortEntry;
     }
 
     /**
@@ -272,7 +289,7 @@ public class EffortEntryController {
      * Sets the action for when the button is clicked.
      * @param action The action.
      */
-    public void setOnAction(Consumer<EffortEntryController> action) {
+    public void setOnAction(final Consumer<EffortEntryController> action) {
         this.action = action;
     }
 
@@ -280,7 +297,7 @@ public class EffortEntryController {
      * Disables or enables the action button.
      * @param disableAction Whether the action button should be disabled.
      */
-    public void setActionDisabled(boolean disableAction) {
+    public void setActionDisabled(final boolean disableAction) {
         actionButton.setDisable(disableAction);
     }
 
@@ -294,6 +311,7 @@ public class EffortEntryController {
 
     /**
      * Gets the eligible workers.
+     * @return The eligible workers
      */
     private List<Person> getEligibleWorkers() {
         return effortController.getEligibleWorkers();
@@ -306,6 +324,9 @@ public class EffortEntryController {
         actionButton.getStyleClass().addAll("mdga-button");
         actionButton.getStyleClass().removeAll("mdrd-button");
         actionButton.setText("+");
+
+        mainGrid.getRowConstraints().get(0).setPrefHeight(Control.USE_COMPUTED_SIZE);
+        mainGrid.getChildren().addAll(dateLabel, personLabel, timeLabel);
     }
 
     /**
@@ -315,5 +336,8 @@ public class EffortEntryController {
         actionButton.getStyleClass().addAll("mdrd-button");
         actionButton.getStyleClass().removeAll("mdga-button");
         actionButton.setText("X");
+
+        mainGrid.getRowConstraints().get(0).setPrefHeight(0);
+        mainGrid.getChildren().removeAll(dateLabel, personLabel, timeLabel);
     }
 }

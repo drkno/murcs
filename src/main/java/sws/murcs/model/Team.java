@@ -22,6 +22,11 @@ import java.util.List;
 public class Team extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * A list of members in the team.
      */
     @Searchable

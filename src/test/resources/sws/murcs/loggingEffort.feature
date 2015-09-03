@@ -11,7 +11,7 @@ Feature: Logging Effort
     And a person
 
   Scenario: Logging Effort (seeing errors)
-    When I try to log no valid effort
+    When I try to log some invalid valid effort
     Then the parts of the form that aren't valid are highlighted in red
 
   Scenario: Logging Effort: Seeing past effort

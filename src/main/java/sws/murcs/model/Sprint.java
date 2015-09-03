@@ -24,6 +24,12 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Sprint extends Model {
+
+    /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
     /**
      * The start and end dates for the sprint.
      */

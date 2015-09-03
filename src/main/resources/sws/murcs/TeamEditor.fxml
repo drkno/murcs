@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
+<?import java.lang.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+
 <AnchorPane prefHeight="475.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -26,7 +21,7 @@
             <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER" />
          </rowConstraints>
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="380.0" prefViewportWidth="169.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="380.0" prefViewportWidth="169.0" styleClass="edge-to-edge" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <GridPane>
                      <columnConstraints>
@@ -114,6 +109,7 @@
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                     <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                                    <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
                                  </columnConstraints>
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" vgrow="NEVER" />
@@ -124,11 +120,36 @@
                                           <ChoiceBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearPOButton" mnemonicParsing="false" onAction="#clearPO" styleClass="mdr-button" text="X" GridPane.columnIndex="1">
+                                    <Button fx:id="clearPOButton" mnemonicParsing="false" onAction="#clearPO" styleClass="button-round" GridPane.columnIndex="1" prefHeight="30.0" prefWidth="30.0" minHeight="-Infinity" minWidth="-Infinity">
+                                        <graphic>
+                                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                <image>
+                                                    <Image url="@icons/removeBlack.png" />
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip text="Clear current PO" />
+                                        </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
                                        </GridPane.margin>
                                     </Button>
+                                     <Button fx:id="navigateToPOButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" styleClass="button-round">
+                                     <graphic>
+                                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                 <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                         </ImageView>
+                                     </graphic>
+                                     <tooltip>
+                                         <Tooltip text="Navigate to selected PO" />
+                                     </tooltip>
+                                     <GridPane.margin>
+                                         <Insets left="5.0" />
+                                     </GridPane.margin>
+                                     </Button>
                                  </children>
                               </GridPane>
                            </children>
@@ -153,11 +174,36 @@
                                           <ChoiceBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearSMButton" mnemonicParsing="false" onAction="#clearSM" styleClass="mdr-button" text="X" GridPane.columnIndex="1">
+                                    <Button fx:id="clearSMButton" mnemonicParsing="false" onAction="#clearSM" styleClass="button-round" GridPane.columnIndex="1" prefHeight="30.0" prefWidth="30.0" minHeight="-Infinity" minWidth="-Infinity">
+                                        <graphic>
+                                            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                <image>
+                                                    <Image url="@icons/removeBlack.png" />
+                                                </image>
+                                            </ImageView>
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip text="Clear current SM" />
+                                        </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
                                        </GridPane.margin>
                                     </Button>
+                                     <Button fx:id="navigateToSMButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" styleClass="button-round">
+                                         <graphic>
+                                             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                                 <image>
+                                                     <Image url="@icons/navigateBlack.png" />
+                                                 </image>
+                                             </ImageView>
+                                         </graphic>
+                                         <tooltip>
+                                             <Tooltip text="Navigate to selected SM" />
+                                         </tooltip>
+                                         <GridPane.margin>
+                                             <Insets left="5.0" />
+                                         </GridPane.margin>
+                                     </Button>
                                  </children>
                               </GridPane>
                            </children>
@@ -169,7 +215,7 @@
                   </GridPane>
                </content>
             </ScrollPane>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" styleClass="edge-to-edge" GridPane.rowIndex="1">
                <content>
                   <GridPane>
                      <children>

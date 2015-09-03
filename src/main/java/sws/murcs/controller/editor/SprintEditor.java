@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Hyperlink;
@@ -13,6 +14,9 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -22,6 +26,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
+import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -46,6 +51,25 @@ import java.util.Map;
  * The controller for editing sprints.
  */
 public class SprintEditor extends GenericEditor<Sprint> {
+
+    /**
+     * The Button to navigate to the associated team.
+     */
+    @FXML
+    private Button navigateToTeamButton;
+
+    /**
+     * The Button to navigate to the associated release.
+     */
+    @FXML
+    private Button navigateToReleaseButton;
+
+    /**
+     * The button to navigate to the associated backlog.
+     */
+    @FXML
+    private Button navigateToBacklogButton;
+
     /**
      * Text fields for the short and long name of the sprint.
      */
@@ -106,6 +130,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
     @Override
     public final void loadObject() {
+        isLoaded = false;
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
         Sprint sprint = getModel();
         //Update the start date picker
@@ -123,23 +148,32 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Fill the description field
         descriptionTextArea.setText(sprint.getDescription());
 
-        //Update the backlog combo box
-        backlogComboBox.getItems().clear();
-        backlogComboBox.getItems().addAll(organisation.getBacklogs());
-        backlogComboBox.setValue(sprint.getBacklog());
+        Platform.runLater(() -> {
+            //Update the backlog combo box
+            backlogComboBox.getItems().clear();
+            backlogComboBox.getItems().addAll(organisation.getBacklogs());
+            backlogComboBox.setValue(sprint.getBacklog());
 
-        //Update the releases combo box
-        releaseComboBox.getItems().clear();
-        releaseComboBox.getItems().addAll(organisation.getReleases());
-        releaseComboBox.setValue(sprint.getAssociatedRelease());
+            //Update the releases combo box
+            releaseComboBox.getItems().clear();
+            releaseComboBox.getItems().addAll(organisation.getReleases());
+            releaseComboBox.setValue(sprint.getAssociatedRelease());
 
-        //Update the team combo box
-        teamComboBox.getItems().clear();
-        teamComboBox.getItems().addAll(organisation.getTeams());
-        teamComboBox.setValue(sprint.getTeam());
+            //Update the team combo box
+            teamComboBox.getItems().clear();
+            teamComboBox.getItems().addAll(organisation.getTeams());
+            teamComboBox.setValue(sprint.getTeam());
+
+            if (!isCreationWindow) {
+                navigateToReleaseButton.setDisable(false);
+                navigateToTeamButton.setDisable(false);
+                navigateToBacklogButton.setDisable(false);
+            }
+        });
 
         //Update the sprint stories
         updateAllocatableStories();
+        Platform.runLater(() -> { isLoaded = true; });
     }
 
     /**
@@ -217,7 +251,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         storyNodeIndex.clear();
                         updateAllocatableStories();
                         popup.close();
-                    }, "danger-will-robinson", "dont-panic");
+                    }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
                 }
                 else {
@@ -271,7 +305,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     finally {
                         popup.close();
                     }
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
         }
@@ -350,7 +384,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
     @Override
     protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
+            if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
             }
         });
@@ -403,6 +437,40 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 return cell;
             }
         });
+
+        navigateToBacklogButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (backlogComboBox.getSelectionModel().getSelectedItem() != null) {
+                Backlog backlog = backlogComboBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(backlog);
+                } else {
+                    getNavigationManager().navigateTo(backlog);
+                }
+            }
+        });
+        navigateToReleaseButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (releaseComboBox.getSelectionModel().getSelectedItem() != null) {
+                Release release = releaseComboBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(release);
+                } else {
+                    getNavigationManager().navigateTo(release);
+                }
+            }
+        });
+        navigateToTeamButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (teamComboBox.getSelectionModel().getSelectedItem() != null) {
+                Team team = teamComboBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(team);
+                } else {
+                    getNavigationManager().navigateTo(team);
+                }
+            }
+        });
+        navigateToReleaseButton.setDisable(true);
+        navigateToTeamButton.setDisable(true);
+        navigateToBacklogButton.setDisable(true);
     }
 
     /**
@@ -410,8 +478,18 @@ public class SprintEditor extends GenericEditor<Sprint> {
      * @param story The story
      * @return the node representing the story
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateStoryNode(final Story story) {
-        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton(null);
+        removeButton.setPrefHeight(15);
+        removeButton.setPrefWidth(15);
+        Image image = new Image("sws/murcs/icons/removeWhite.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        imageView.setPreserveRatio(true);
+        imageView.setPickOnBounds(true);
+        removeButton.setGraphic(imageView);
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
@@ -427,7 +505,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 storyNodeIndex.remove(story);
                 getModel().removeStory(story);
                 popup.close();
-            }, "danger-will-robinson", "dont-panic");
+            }, "danger-will-robinson", "everything-is-fine");
             popup.show();
         });
 
@@ -452,6 +530,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     getNavigationManager().navigateTo(story));
             pane.add(nameLink, 0, 0);
         }
+        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
+        fadeButtonOnHover.setupEffect();
         pane.add(removeButton, 1, 0);
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 

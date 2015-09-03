@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -90,6 +91,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final void loadObject() {
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
 
@@ -104,14 +106,12 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 burnDownChartTabSelected();
                 break;
             case 3:
-                if (!isLoaded) {
-                    allTasksTabSelected();
-                }
+                allTasksTabSelected();
                 break;
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        isLoaded = true;
+        Platform.runLater(() -> { isLoaded = true; });
     }
 
 
@@ -188,6 +188,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
             checkList.retainAll(allTasksController.currentStories());
             if (checkList.size() != getModel().getStories().size()) {
                 allTasksController.loadObject();
+            }
+            else {
+                allTasksController.updateEditors();
             }
         }
     }

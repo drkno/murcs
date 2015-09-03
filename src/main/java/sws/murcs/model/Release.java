@@ -18,6 +18,11 @@ import java.time.LocalDate;
 public class Release extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The date the release is due.
      */
     @Searchable
