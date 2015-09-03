@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -22,6 +24,12 @@ import java.util.Objects;
  * Controller for SprintContainer.
  */
 public class SprintContainer extends GenericEditor<Sprint> {
+
+    /**
+     * The container for the progress bar.
+     */
+    @FXML
+    private VBox progressContainer;
 
     /**
      * The three tabs used to view a sprint.
@@ -61,6 +69,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
      */
     private BurndownController burndownController;
 
+    /**
+     * The progress bar for the sprint.
+     */
+    private ModelProgressBar progressBar;
+
     @Override
     protected final void initialize() {
         containerTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -95,11 +108,16 @@ public class SprintContainer extends GenericEditor<Sprint> {
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load sprint overview");
         }
+
+        progressBar = new ModelProgressBar(true);
+        progressContainer.getChildren().add(progressBar);
     }
 
     @Override
     @SuppressWarnings("checkstyle:magicnumber")
     public final void loadObject() {
+        progressBar.setSprint(getModel());
+
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
 
         switch (tab) {
