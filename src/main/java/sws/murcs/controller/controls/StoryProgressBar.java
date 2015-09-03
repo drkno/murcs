@@ -5,8 +5,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 
 public class StoryProgressBar extends GridPane {
+
+    Pane completePane, progressPane, notStartedPane;
 
     public StoryProgressBar() {
         getStylesheets().add(
@@ -36,15 +39,15 @@ public class StoryProgressBar extends GridPane {
 
         setPadding(new Insets(10));
 
-        Pane completePane = new Pane();
+        completePane = new Pane();
         completePane.getStyleClass().add("completePane");
         setVgrow(completePane, Priority.ALWAYS);
 
-        Pane progressPane = new Pane();
+        progressPane = new Pane();
         progressPane.getStyleClass().add("progressPane");
         setVgrow(progressPane, Priority.ALWAYS);
 
-        Pane notStartedPane = new Pane();
+        notStartedPane = new Pane();
         notStartedPane.getStyleClass().add("notstartedPane");
         setVgrow(notStartedPane, Priority.ALWAYS);
 
@@ -53,7 +56,32 @@ public class StoryProgressBar extends GridPane {
         add(notStartedPane, 2, 0);
     }
 
-    public void setStory(Story story) {
+    public final void setStory(final Story story) {
+        float done = 0, inProgress = 0, notStarted = 0;
 
+        for (Task task : story.getTasks()) {
+            switch (task.getState()) {
+                case Done:
+                    done += task.getCurrentEstimate();
+                    break;
+                case InProgress:
+                    inProgress += task.getCurrentEstimate();
+                    break;
+                case NotStarted:
+                    notStarted += task.getCurrentEstimate();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        float total = done + inProgress + notStarted;
+        double completedWidth = (done / total) * getWidth();
+        double inProgressWidth = (inProgress / total) * getWidth();
+        double notStartedWidth = (notStarted / total) * getWidth();
+
+        getColumnConstraints().get(0).setPrefWidth(completedWidth);
+        getColumnConstraints().get(1).setPrefWidth(inProgressWidth);
+        getColumnConstraints().get(2).setPrefWidth(notStartedWidth);
     }
 }
