@@ -170,16 +170,26 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         nameLabel.setPrefWidth(1000);
         
         ImageView editImage = new ImageView("sws/murcs/icons/edit.png");
-        ImageView logImage = new ImageView("sws/murcs/icons/log.png");
         editImage.setFitHeight(25);
         editImage.setFitWidth(25);
         editImage.setPreserveRatio(true);
         editImage.setPickOnBounds(true);
         editImage.getStyleClass().add("mdr-button");
+
+        ImageView logImage = new ImageView("sws/murcs/icons/log.png");
+        logImage.setFitHeight(25);
+        logImage.setFitWidth(25);
+        logImage.setPreserveRatio(true);
+        logImage.setPickOnBounds(true);
+        logImage.getStyleClass().add("mdr-button");
+
         Button assigneeButton = new Button();
-        assigneeButton.getStyleClass().add("-fx-padding: 0;");
+        assigneeButton.setText(null);
+        //assigneeButton.getStyleClass().add("-fx-padding: 0;");
         assigneeButton.setGraphic(editImage);
-        Button effortButton = new Button("");
+        Button effortButton = new Button();
+        effortButton.setText(null);
+        effortButton.setGraphic(logImage);
         assigneeButton.setOnAction(event -> assigneesButtonClicked(assigneeButton, story, task));
         effortButton.setOnAction(event -> effortButtonClicked(effortButton, story, task));
 
