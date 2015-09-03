@@ -35,7 +35,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.SearchableComboBox;
-import sws.murcs.controller.controls.StoryProgressBar;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.controller.pipes.TaskEditorParent;
@@ -71,7 +71,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private VBox completenessContainer;
 
-    private StoryProgressBar progressBar;
+    private ModelProgressBar progressBar;
 
     /**
      * Button to navigate to the creator of the story.
@@ -430,7 +430,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
-        progressBar = new StoryProgressBar();
+        progressBar = new ModelProgressBar();
         completenessContainer.getChildren().add(progressBar);
 
         setChangeListener((observable, oldValue, newValue) -> {
