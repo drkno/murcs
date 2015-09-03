@@ -1,18 +1,14 @@
 package sws.murcs.controller.editor;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -21,12 +17,8 @@ import javafx.scene.layout.*;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
+import sws.murcs.model.*;
 import sws.murcs.model.Story.StoryState;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
@@ -83,72 +75,85 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     public void loadObject() {
         storiesVBox.getChildren().clear();
         for (Story story : getModel().getStories()) {
-            insertStory(storiesVBox, story);
+            insertStory(story);
         }
     }
 
     /**
      * Adds a story to the list.
-     * @param vBox The VBox to add the story to
      * @param story The story to add to the VBox
      */
-    private void insertStory(final VBox vBox, final Story story) {
+    private void insertStory(final Story story) {
 
-        // Create the grid pane and define its columns and properties
-        GridPane storyPane = new GridPane();
-        vBox.getChildren().add(storyPane);
-        storyPane.setGridLinesVisible(true);
-        ColumnConstraints col1 = new ColumnConstraints();
-        ColumnConstraints col2 = new ColumnConstraints();
-        ColumnConstraints col3 = new ColumnConstraints();
-        ColumnConstraints col4 = new ColumnConstraints();
-        col1.setPercentWidth(25);
-        col2.setPercentWidth(25);
-        col3.setPercentWidth(25);
-        col4.setPercentWidth(25);
-        storyPane.getColumnConstraints().addAll(col1, col2, col3, col4);
-
-        // Add the nodes of the story column
-        col1.setHalignment(HPos.CENTER);
-        VBox detailsVBox = new VBox();
-        GridPane.setColumnIndex(detailsVBox, 0);
-        detailsVBox.setFillWidth(true);
-        detailsVBox.setAlignment(Pos.CENTER);
-        detailsVBox.setSpacing(5);
-        detailsVBox.setPadding(new Insets(5));
-        Hyperlink storyNameLink = new Hyperlink(story.getShortName());
-        storyNameLink.setWrapText(true);
-        storyNameLink.setOnAction(event -> parent.getNavigationManager().navigateTo(story));
-        Label doneLabel = new Label("Done:");
-        CheckBox doneCheckBox = new CheckBox();
-        updateToggleStatus(doneCheckBox, story);
-        doneCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            story.setStoryState(newValue ? StoryState.Done : StoryState.Ready);
-        });
-        HBox doneBox = new HBox(doneLabel, doneCheckBox);
-        doneBox.setSpacing(10);
-        doneBox.setAlignment(Pos.CENTER);
-        detailsVBox.getChildren().addAll(storyNameLink, doneBox);
-        storyPane.getChildren().add(detailsVBox);
-
-        // Create the VBoxes that will populate the grid pane
-        VBox notStartedVBox = new VBox();
-        VBox inProgressVBox = new VBox();
-        VBox doneVBox = new VBox();
-        VBox[] places = new VBox[] {notStartedVBox, inProgressVBox, doneVBox};
-        storyPane.getChildren().addAll(places);
-        for (int i = 0; i < places.length; i++) {
-            GridPane.setColumnIndex(places[i], i + 1);
-            places[i].setSpacing(5);
-            places[i].setPadding(new Insets(5));
-            addDragOverHandler(places[i], story);
-            addDragEnteredHandler(places[i], story);
-            addDragExitedHandler(places[i]);
-            addDragDroppedHandler(places[i], TaskState.values()[i], story, doneCheckBox);
+        FXMLLoader loader = new FXMLLoader(ScrumBoardStoryController.class.getResource("/sws/murcs/ScrumBoardStory.fxml"));
+        try {
+            Parent root = loader.load();
+            ScrumBoardStoryController controller = loader.getController();
+            controller.setup(story, parent);
+            controller.setStory(story);
+            controller.loadStory();
+            storiesVBox.getChildren().add(root);
+        } catch (IOException e) {
+            ErrorReporter.get().reportError(e, "Failed to load story in scrumBoard");
         }
-        for (Task task : story.getTasks()) {
-            insertTask(places, task, story);
-        }
+
+
+
+//        // Create the grid pane and define its columns and properties
+//        GridPane storyPane = new GridPane();
+//        parent.getChildren().add(storyPane);
+//        storyPane.setGridLinesVisible(true);
+//        ColumnConstraints col1 = new ColumnConstraints();
+//        ColumnConstraints col2 = new ColumnConstraints();
+//        ColumnConstraints col3 = new ColumnConstraints();
+//        ColumnConstraints col4 = new ColumnConstraints();
+//        col1.setPercentWidth(25);
+//        col2.setPercentWidth(25);
+//        col3.setPercentWidth(25);
+//        col4.setPercentWidth(25);
+//        storyPane.getColumnConstraints().addAll(col1, col2, col3, col4);
+//
+//        // Add the nodes of the story column
+//        col1.setHalignment(HPos.CENTER);
+//        VBox detailsVBox = new VBox();
+//        GridPane.setColumnIndex(detailsVBox, 0);
+//        detailsVBox.setFillWidth(true);
+//        detailsVBox.setAlignment(Pos.CENTER);
+//        detailsVBox.setSpacing(5);
+//        detailsVBox.setPadding(new Insets(5));
+//        Hyperlink storyNameLink = new Hyperlink(story.getShortName());
+//        storyNameLink.setWrapText(true);
+//        storyNameLink.setOnAction(event -> this.parent.getNavigationManager().navigateTo(story));
+//        Label doneLabel = new Label("Done:");
+//        CheckBox doneCheckBox = new CheckBox();
+//        updateToggleStatus(doneCheckBox, story);
+//        doneCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
+//            story.setStoryState(newValue ? StoryState.Done : StoryState.Ready);
+//        });
+//        HBox doneBox = new HBox(doneLabel, doneCheckBox);
+//        doneBox.setSpacing(10);
+//        doneBox.setAlignment(Pos.CENTER);
+//        detailsVBox.getChildren().addAll(storyNameLink, doneBox);
+//        storyPane.getChildren().add(detailsVBox);
+//
+//        // Create the VBoxes that will populate the grid pane
+//        VBox notStartedVBox = new VBox();
+//        VBox inProgressVBox = new VBox();
+//        VBox doneVBox = new VBox();
+//        VBox[] places = new VBox[] {notStartedVBox, inProgressVBox, doneVBox};
+//        storyPane.getChildren().addAll(places);
+//        for (int i = 0; i < places.length; i++) {
+//            GridPane.setColumnIndex(places[i], i + 1);
+//            places[i].setSpacing(5);
+//            places[i].setPadding(new Insets(5));
+//            addDragOverHandler(places[i], story);
+//            addDragEnteredHandler(places[i], story);
+//            addDragExitedHandler(places[i]);
+//            addDragDroppedHandler(places[i], TaskState.values()[i], story, doneCheckBox);
+//        }
+//        for (Task task : story.getTasks()) {
+//            insertTask(places, task, story);
+//        }
     }
 
     /**
