@@ -7,13 +7,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 
 import java.io.IOException;
@@ -35,6 +33,11 @@ public class ScrumTaskController {
      * The story that this task is a part of.
      */
     private Story story;
+
+    /**
+     * The VBox that this form is contained within.
+     */
+    private VBox currentColumn;
 
     /**
      * The label that displays the name of this task.
@@ -78,7 +81,7 @@ public class ScrumTaskController {
     /**
      * Configures this task card.
      * @param pTask The task to display
-     * @param pStory the story that this task is a part of
+     * @param pStory The story that this task is a part of
      */
     public void configure(final Task pTask, final Story pStory) {
         task = pTask;
