@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,10 +23,20 @@ import java.util.stream.Collectors;
 public class Task extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * A prime number used in the hash code.
      */
     @XmlTransient
     private final int hashCodePrime = 43;
+
+    /**
+     * The hashcode of the object.
+     */
+    private Integer hashCode = null;
 
     /**
      * The name associated with this Task.
@@ -63,13 +72,13 @@ public class Task extends TrackableObject implements Serializable {
      * The effort people have logged against this task.
      */
     @TrackableValue
-    private List<Effort> effortLogs = new ArrayList<>();
+    private List<EffortEntry> effortEntryLogs = new ArrayList<>();
 
     /**
      * Creates a new task.
      */
     public Task() {
-        UndoRedoManager.add(estimateInfo);
+        UndoRedoManager.get().add(estimateInfo);
     }
 
     /**
@@ -145,7 +154,10 @@ public class Task extends TrackableObject implements Serializable {
      * @param newEstimate The estimated time remaining
      */
     public void setCurrentEstimate(final float newEstimate) {
-        this.estimateInfo.setEstimateForDay(newEstimate, LocalDate.now());
+        if (newEstimate < 0 || Float.isInfinite(newEstimate)) {
+            throw new NumberFormatException("Can't have a negative or infinite number for an estimate.");
+        }
+        this.estimateInfo.setCurrentEstimate(newEstimate);
     }
 
     /**
@@ -171,26 +183,26 @@ public class Task extends TrackableObject implements Serializable {
      * Gets the effort logged against this task.
      * @return The effort.
      */
-    public final List<Effort> getEffort() {
-        return effortLogs;
+    public final List<EffortEntry> getEffort() {
+        return effortEntryLogs;
     }
 
     /**
      * Logs some effort.
-     * @param effort The effort to log
+     * @param effortEntry The effort to log
      */
-    public final void logEffort(final Effort effort) {
-        effortLogs.add(effort);
+    public final void logEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.add(effortEntry);
 
         commit("log effort");
     }
 
     /**
      * Unlogs some effort.
-     * @param effort The effort to remove
+     * @param effortEntry The effort to remove
      */
-    public final void unlogEffort(final Effort effort) {
-        effortLogs.remove(effort);
+    public final void unlogEffort(final EffortEntry effortEntry) {
+        effortEntryLogs.remove(effortEntry);
         commit("remove effort");
     }
 
@@ -227,11 +239,20 @@ public class Task extends TrackableObject implements Serializable {
 
     @Override
     public final int hashCode() {
-        int c = 0;
-        if (getName() != null) {
-            c = getName().hashCode();
+        //fixme "The hacks are strong with this one" - Dion Vader. This should probably be using a unique id generator
+        //but as it is highly unlikely that a task will be made with exactly the same everything we'll leave it.
+        if (hashCode == null) {
+            int c = 0;
+            if (getName() != null) {
+                c = getName().hashCode()
+                        + getDescription().hashCode()
+                        + getState().hashCode()
+                        + Float.hashCode(getCurrentEstimate())
+                        + getAssigneesAsString().hashCode();
+            }
+            hashCode = hashCodePrime + c;
         }
-        return hashCodePrime + c;
+        return hashCode;
     }
 
     @Override

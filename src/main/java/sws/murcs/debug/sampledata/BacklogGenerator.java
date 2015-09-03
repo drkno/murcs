@@ -1,15 +1,15 @@
 package sws.murcs.debug.sampledata;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Story;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Generates random Backlogs with stories.
@@ -150,6 +150,7 @@ public class BacklogGenerator implements Generator<Backlog> {
                     }
                     catch (Exception e) {
                         //Suppress because they are not relevant in this context.
+                        int foo = 0; //because checkstyle
                     }
                 }
             }
@@ -165,6 +166,7 @@ public class BacklogGenerator implements Generator<Backlog> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final Backlog generate() {
         final int longNameMax = 10;
         final int minStories = 10;
@@ -197,16 +199,23 @@ public class BacklogGenerator implements Generator<Backlog> {
 
         try {
             for (Story story : stories.subList(0, prioritised)) {
+                if (story.getAcceptanceCriteria().size() == 0) {
+                    AcceptanceCondition ac = new AcceptanceCondition();
+                    ac.setCondition(GenerationHelper.randomString(300));
+                    story.addAcceptanceCondition(ac);
+                }
                 List<String> estimates = EstimateType.Fibonacci.getEstimates();
                 story.setEstimate(estimates.get(GenerationHelper.random(estimates.size())));
-                story.setStoryState(Story.StoryState.Ready);
                 backlog.addStory(story, 1);
+                story.setStoryState(Story.StoryState.Ready);
+                assert backlog.getPrioritisedStories().contains(story);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.
+            e.printStackTrace();
             ErrorReporter.get().reportErrorSecretly(e, "BacklogGenerator: adding stories to backlog failed");
         }
         backlog.setEstimateType(EstimateType.values()[GenerationHelper.random(EstimateType.values().length)]);

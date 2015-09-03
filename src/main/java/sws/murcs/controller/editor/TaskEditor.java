@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
@@ -22,6 +24,7 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -128,6 +131,12 @@ public class TaskEditor implements UndoRedoChangeListener {
     private Label assigneesLabel;
 
     /**
+     * The label containing spent effort information.
+     */
+    @FXML
+    private Label spentEffortLabel;
+
+    /**
      * The height of the window during creation.
      */
     private static final double CREATION_HEIGHT = 270.0;
@@ -148,7 +157,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void initialize() {
         ChangeListener changeListener = (observable, oldValue, newValue) -> {
-            if (newValue != null && newValue != oldValue) {
+            if (newValue != null && newValue != oldValue && getStory() != null) {
                 saveChanges();
             }
         };
@@ -165,6 +174,11 @@ public class TaskEditor implements UndoRedoChangeListener {
         estimateTextField.focusedProperty().addListener(changeListener);
         stateChoiceBox.focusedProperty().addListener(changeListener);
         descriptionTextArea.focusedProperty().addListener(changeListener);
+
+        Platform.runLater(() -> {
+            editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
+            logEffortButton.setTooltip(new Tooltip("Log Effort"));
+        });
     }
 
     /**
@@ -199,6 +213,35 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         updateAssigneesLabel();
         updateAssigneeButtons();
+        updateSpentEffort();
+    }
+
+    /**
+     * Updates the spent effort for the task.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private void updateSpentEffort() {
+        int dps = 0;
+        float spent = 0f;
+        String units = "minutes";
+
+        for (EffortEntry entry : task.getEffort()) {
+            spent += entry.getEffort();
+        }
+
+        //If we have more than 60 minutes we should measure in hours.
+        if (spent >= 60) {
+            spent /= 60;
+            units = "hours";
+            dps = 1;
+        }
+
+        //To round to a certain number of dps, we multipy by 10 to the power of the dps we want
+        // 7.8934 to 2 dp: 7.8934 * 10 ^ 2 = 789.34, Round to 0 dps = 789, divide by 10 ^ 2 = 7.89
+        float pow = (float) Math.pow(10, dps);
+        spent = Math.round(spent * pow) / pow;
+
+        spentEffortLabel.setText("(spent " + spent + " " + units + ")");
     }
 
     /**
@@ -208,7 +251,6 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     private void updateAssigneeButtons() {
         if (getStory() != null) {
-            possibleAssignees = new ArrayList<>();
             List<Sprint> sprints = UsageHelper.findUsages(getStory())
                     .stream()
                     .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
@@ -236,13 +278,11 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void saveChanges() {
         editorController.clearErrors("tasks");
-        boolean changes = false;
         // Check name
         String name = nameTextField.getText();
         if (name != null && !nameExists(name) && !name.isEmpty()) {
             if (!Objects.equals(name, task.getName())) {
                 task.setName(name);
-                changes = true;
             }
         }
         else {
@@ -256,28 +296,23 @@ public class TaskEditor implements UndoRedoChangeListener {
             Float estimate = Float.parseFloat(estimateTextField.getText());
             if (estimate != task.getCurrentEstimate()) {
                 task.setCurrentEstimate(estimate);
-                changes = true;
             }
         }
         catch (NumberFormatException e) {
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            estimateTextField.setText("" + task.getCurrentEstimate());
+            editorController.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
         }
 
         // Check state
         TaskState state = (TaskState) stateChoiceBox.getSelectionModel().getSelectedItem();
         if (state != task.getState()) {
             task.setState(state);
-            changes = true;
         }
 
         // Check description on maximized description field
         String description = descriptionTextArea.getText();
         if (!Objects.equals(description, task.getDescription())) {
             task.setDescription(description);
-        }
-
-        if (changes) {
-            editorController.changesMade(this);
         }
     }
 
@@ -299,6 +334,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             stateChoiceBox.getStyleClass().removeAll("not-started", "in-progress");
             stateChoiceBox.getStyleClass().add("done");
         }
+        editor.requestFocus();
     }
 
     /**
@@ -382,19 +418,23 @@ public class TaskEditor implements UndoRedoChangeListener {
      */
     @FXML
     private void deleteButtonClicked(final ActionEvent event) {
-        StoryEditor editor = (StoryEditor) editorController;
         if (creationBox) {
-            editor.removeTask(task);
-            editor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            if (editorController instanceof StoryEditor) {
+                ((StoryEditor) editorController).removeTaskEditor(this);
+            }
             return;
         }
 
         GenericPopup popup = new GenericPopup();
+        popup.setWindowTitle("Delete Task");
         popup.setTitleText("Really?");
         popup.setMessageText("Are you sure you wish to remove this task?");
         popup.addYesNoButtons(() -> {
-            editor.removeTask(task);
-            editor.removeTaskEditor(parent);
+            editorController.removeTask(task);
+            if (editorController instanceof StoryEditor) {
+                ((StoryEditor) editorController).removeTaskEditor(this);
+            }
             popup.close();
         });
         popup.show();
@@ -416,12 +456,16 @@ public class TaskEditor implements UndoRedoChangeListener {
                 AssigneeController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
+                assigneePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        editorController.changesMade();
+                    }
+                });
             }
             catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Could not create an assignee popover");
             }
         }
-
         assigneePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
         assigneePopOver.show(editAssignedButton);
     }
@@ -443,6 +487,7 @@ public class TaskEditor implements UndoRedoChangeListener {
                 EffortController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 effortPopOver.hideOnEscapeProperty().setValue(true);
+                effortPopOver.setOnHidden(e -> updateSpentEffort());
             }
             catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Could not create an effort popover");
@@ -460,7 +505,6 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void addAssignee(final Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
-        editorController.changesMade(this);
     }
 
     /**
@@ -470,7 +514,6 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void removeAssignee(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
-        editorController.changesMade(this);
     }
 
     /**
@@ -493,9 +536,24 @@ public class TaskEditor implements UndoRedoChangeListener {
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
             synchronized (StyleManager.getInstance()) {
-                configure(task, creationBox, parent, editorController);
+                update();
             }
         }
+    }
+
+    /**
+     * Updates the values in the task editor if there have been external changes.
+     */
+    public void update() {
+        configure(task, creationBox, parent, editorController);
+    }
+
+    /**
+     * Gets whether or not the assignees popover is open for this task editor.
+     * @return whether or not the assignees popover is open for this task editor.
+     */
+    public boolean isPopOverOpen() {
+        return assigneePopOver == null ? false : assigneePopOver.isShowing();
     }
 
     /**

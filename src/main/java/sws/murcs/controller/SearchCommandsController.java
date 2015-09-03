@@ -25,10 +25,16 @@ import java.util.Objects;
 public class SearchCommandsController {
 
     /**
+     * Helper text for search commands.
+     */
+    @FXML
+    private Label helpText;
+
+    /**
      * The Tile pane for each command tile.
      */
     @FXML
-    private TilePane commandsTitlePane;
+    private TilePane commandsTilePane;
 
     /**
      * The outer container of the search commands.
@@ -94,8 +100,10 @@ public class SearchCommandsController {
             vbox.getChildren().addAll(hBox1, hbox2);
             vbox.setPadding(new Insets(7.2));
             vbox.getStyleClass().add("search-command");
-            commandsTitlePane.getChildren().add(vbox);
+            commandsTilePane.getChildren().add(vbox);
         });
+        helpText.setText("For more advanced commands see the user guide");
+        helpText.getStyleClass().add("search-help-text");
     }
 
     /**
@@ -112,6 +120,7 @@ public class SearchCommandsController {
                 searchText.setText(command + " ");
             }
             int length = searchText.getText().length();
+            searchText.requestFocus();
             searchText.positionCaret(length);
         });
     }

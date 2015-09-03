@@ -26,6 +26,11 @@ import sws.murcs.search.Searchable;
 public class Story extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * Represents the current state of a story.
      */
     public enum StoryState {
@@ -167,7 +172,7 @@ public class Story extends Model {
             acceptanceCriteria.add(condition);
 
             //Make sure the new condition is tracked by UndoRedo
-            UndoRedoManager.add(condition);
+            UndoRedoManager.get().add(condition);
         }
         commit("edit acceptance criteria");
     }
@@ -269,7 +274,7 @@ public class Story extends Model {
     public final void addTask(final Task newTask) throws DuplicateObjectException {
         if (!tasks.contains(newTask)) {
             tasks.add(newTask);
-            UndoRedoManager.add(newTask);
+            UndoRedoManager.get().add(newTask);
         } else {
             throw new DuplicateObjectException("You can't add two of the same task to a story!");
         }
@@ -283,7 +288,8 @@ public class Story extends Model {
     public final void removeTask(final Task task) {
         if (tasks.contains(task)) {
             tasks.remove(task);
-            UndoRedoManager.remove(task);
+            UndoRedoManager.get().remove(task);
+            commit("edit story");
         }
     }
 

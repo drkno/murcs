@@ -15,7 +15,6 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit.ApplicationTest;
 import sws.murcs.controller.JavaFXHelpers;
-import org.testfx.*;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -33,7 +32,7 @@ public class ShowHideStepDefs extends ApplicationTest {
 
     @Before("@ShowHide")
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
         primaryStage = FxToolkit.registerPrimaryStage();
         app = FxToolkit.setupApplication(App.class);
         fx = new FxRobot();
@@ -43,8 +42,8 @@ public class ShowHideStepDefs extends ApplicationTest {
             try {
                 model = new Organisation();
                 PersistenceManager.getCurrent().setCurrentModel(model);
-                UndoRedoManager.forget(true);
-                UndoRedoManager.add(model);
+                UndoRedoManager.get().forget(true);
+                UndoRedoManager.get().add(model);
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -64,8 +63,8 @@ public class ShowHideStepDefs extends ApplicationTest {
     @After("@ShowHide")
     public void tearDown() throws Exception {
         PersistenceManager.getCurrent().setCurrentModel(null);
-        UndoRedoManager.forgetListeners();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().forgetListeners();
+        UndoRedoManager.get().setDisabled(true);
         FxToolkit.cleanupStages();
         FxToolkit.cleanupApplication(app);
     }

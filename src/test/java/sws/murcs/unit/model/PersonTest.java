@@ -26,7 +26,7 @@ public class PersonTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         skillGenerator = new SkillGenerator();
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @Before

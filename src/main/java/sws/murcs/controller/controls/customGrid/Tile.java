@@ -30,8 +30,9 @@ public final class Tile extends Label {
      * Creates a new default tile with a priority of either 2 or 4.
      * @return The new tile.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public static Tile newDefaultTile() {
-        @SuppressWarnings("CheckStyle") int priority = new Random().nextDouble() < 0.9 ? 2 : 4;
+        int priority = new Random().nextDouble() < 0.9 ? 2 : 4;
         return new Tile(priority);
     }
 
@@ -48,6 +49,7 @@ public final class Tile extends Label {
      * Constructor for the tile.
      * @param pPriority The priority of how important the tile is to show.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Tile(final Integer pPriority) {
         final int squareSize = GridLayout.CELL_SIZE - 13;
         setMinSize(squareSize, squareSize);

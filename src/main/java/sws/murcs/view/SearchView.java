@@ -36,10 +36,10 @@ public final class SearchView {
         if (instance == null) {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(SearchView.class.getResource("/sws/murcs/Search.fxml"));
-
+            PopOver popOver = null;
             try {
                 Parent parent = loader.load();
-                PopOver popOver = new PopOver(parent);
+                popOver = new PopOver(parent);
                 SearchController controller = loader.getController();
                 controller.setPopOver(popOver);
                 popOver.detachableProperty().setValue(true);
@@ -49,6 +49,9 @@ public final class SearchView {
                 instance = new SearchView(popOver, controller);
             }
             catch (IOException e) {
+                if (popOver != null) {
+                    popOver.hide();
+                }
                 ErrorReporter.get().reportError(e, "Could not create a search dialog");
             }
         }

@@ -13,7 +13,7 @@ public class EstimateInfoTest {
 
     @Before
     public void setUp() {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
 
         estimate = new EstimateInfo();
         estimate.setEstimateForDay(1, LocalDate.of(2001, 1, 1));

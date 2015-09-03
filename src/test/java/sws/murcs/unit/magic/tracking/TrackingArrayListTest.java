@@ -18,7 +18,7 @@ public class TrackingArrayListTest {
         public TestArrayList() throws Exception {
             testArrayList = new ArrayList<Integer>();
             testArrayList.add(0);
-            UndoRedoManager.add(this);
+            UndoRedoManager.get().add(this);
             commit("initial state");
         }
 
@@ -41,19 +41,19 @@ public class TrackingArrayListTest {
     public static void setupClass() throws Exception {
         listenersField = UndoRedoManager.class.getDeclaredField("changeListeners");
         listenersField.setAccessible(true);
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
     }
 
     @Before
     public void setup() throws IllegalAccessException {
-        UndoRedoManager.forget(true);
-        listenersField.set(null, new ArrayList<ChangeListenerHandler>());
-        UndoRedoManager.setMaximumCommits(-1);
+        UndoRedoManager.get().forget(true);
+        listenersField.set(UndoRedoManager.get(), new ArrayList<ChangeListenerHandler>());
+        UndoRedoManager.get().setMaximumCommits(-1);
     }
 
     @After
     public void tearDown() throws Exception {
-        UndoRedoManager.forget(true);
+        UndoRedoManager.get().forget(true);
     }
 
     @Test
@@ -62,9 +62,9 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals(2, a.getLastValue());
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals(1, a.getLastValue());
     }
 
@@ -74,12 +74,12 @@ public class TrackingArrayListTest {
         a.addValue(1);
         a.addValue(2);
         a.addValue(3);
-        UndoRedoManager.revert();
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
+        UndoRedoManager.get().revert();
         Assert.assertEquals(1, a.getLastValue());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertEquals(2, a.getLastValue());
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
         Assert.assertEquals(3, a.getLastValue());
     }
 
@@ -88,32 +88,32 @@ public class TrackingArrayListTest {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
         a.addValue(2);
-        Assert.assertEquals(null, UndoRedoManager.getRemakeMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("test desc.", UndoRedoManager.getRevertMessage());
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        UndoRedoManager.revert();
-        Assert.assertEquals("test desc.", UndoRedoManager.getRemakeMessage());
-        Assert.assertEquals(null, UndoRedoManager.getRevertMessage());
+        Assert.assertEquals(null, UndoRedoManager.get().getRemakeMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
+        Assert.assertEquals(null, UndoRedoManager.get().getRevertMessage());
     }
 
     @Test(expected = Exception.class)
     public void cannotUndoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        UndoRedoManager.revert();
-        Assert.assertFalse(UndoRedoManager.canRevert());
+        UndoRedoManager.get().revert();
+        Assert.assertFalse(UndoRedoManager.get().canRevert());
 
-        UndoRedoManager.revert();
+        UndoRedoManager.get().revert();
     }
 
     @Test(expected = Exception.class)
     public void cannotRedoTest() throws Exception {
         TestArrayList a = new TestArrayList();
         a.addValue(1);
-        Assert.assertFalse(UndoRedoManager.canRemake());
+        Assert.assertFalse(UndoRedoManager.get().canRemake());
 
-        UndoRedoManager.remake();
+        UndoRedoManager.get().remake();
     }
 }

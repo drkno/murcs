@@ -61,7 +61,7 @@ public class ReportGeneratorTest {
 
     @Before
     public void setUp() throws Exception {
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         if (PersistenceManager.getCurrent() != null) {
             PersistenceManager.getCurrent().setCurrentModel(null);
         }
@@ -229,7 +229,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -244,7 +244,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -259,7 +259,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -274,7 +274,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -289,7 +289,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -304,7 +304,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 
@@ -319,7 +319,7 @@ public class ReportGeneratorTest {
 
         List<String> testReport = Files.readAllLines(tempReport.toPath(), StandardCharsets.UTF_8);
         for (int i = 0; i < testReport.size(); i++) {
-            assertEquals(testReport.get(i).trim(), report.get(i).trim());
+            assertEquals(report.get(i).trim(), testReport.get(i).trim());
         }
     }
 }

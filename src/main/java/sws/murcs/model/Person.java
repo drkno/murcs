@@ -27,6 +27,11 @@ import java.util.List;
 public class Person extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The user id of a person.
      */
     @Searchable
