@@ -1,7 +1,12 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import javafx.application.Platform;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -20,13 +25,6 @@ import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
-
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -215,27 +213,20 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        clearNonSynchronized(invalidInSection, true);
-    }
-
-    /**
-     * Clears form errors dangerously (in a non synchronized manner).
-     * @param invalidInSection The nodes that are invalid
-     * @param hideError Whether the error should be hidden
-     */
-    private void clearNonSynchronized(Collection<Map.Entry<Node, String>> invalidInSection, boolean hideError) {
-        for (Map.Entry<Node, String> entry : invalidInSection) {
-            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-            if (entry.getKey().isFocused()) {
-                hideError = false;
+        synchronized (StyleManager.getInstance()) {
+            for (Map.Entry<Node, String> entry : invalidInSection) {
+                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+                if (entry.getKey().isFocused()) {
+                    hideError = false;
+                }
             }
+            invalidInSection.clear();
+            if (hideError && errorMessagePopover != null) {
+                errorMessagePopover.hide();
+            }
+            labelErrorMessage.setText("");
         }
-        invalidInSection.clear();
-        if (hideError && errorMessagePopover != null) {
-            errorMessagePopover.hide();
-        }
-        labelErrorMessage.setText("");
     }
 
     /**
