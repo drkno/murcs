@@ -141,7 +141,7 @@ public class ScrumTaskController {
 
     /**
      * Gets a list of all people that can be assigned to this story.
-     * @return The list of possible assignees.
+     * @return The possible assigness
      */
     private List<Person> getPossibleAssignees() {
         List<Person> possibleAssignees = new ArrayList<>();
