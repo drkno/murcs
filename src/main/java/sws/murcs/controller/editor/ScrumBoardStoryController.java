@@ -351,7 +351,7 @@ public class ScrumBoardStoryController {
      * a nice string that we can display in
      * the application. For example "10 minutes"
      * or 3 hours.
-     * @param minutes The number of minutes to convert
+     * @param startMinutes The number of minutes to convert
      * @return The formatted string
      */
     @SuppressWarnings("checkstyle:magicnumber")
