@@ -77,12 +77,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
     private TextField shortNameTextField, longNameTextField;
 
     /**
-     * The container for stories that have been brought into this sprint.
-     */
-    @FXML
-    private VBox storiesContainer;
-
-    /**
      * The list of stories able to be brought into a sprint derived from the backlog.
      */
     @FXML
@@ -122,11 +116,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
      * The list of stories brought into this sprint.
      */
     private List<Story> allocatableStories;
-
-    /**
-     * Maps the story to the node it is displayed in.
-     */
-    private Map<Story, Node> storyNodeIndex;
 
     @Override
     public final void loadObject() {
@@ -240,7 +229,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Save the backlog
         if (isNullOrNotEqual(sprint.getBacklog(), backlogComboBox.getValue())) {
             if (backlogComboBox.getValue() != null) {
-                if (storiesContainer.getChildren().size() > 0) {
+                if (storiesTable.getItems().size() > 0) {
                     GenericPopup popup = new GenericPopup();
                     popup.setMessageText("Do you really want to change the Sprint Backlog? "
                             + "All added stories will be cleared");
@@ -251,7 +240,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
                         allocatableStories.clear();
                         allocatableStories.addAll(sprint.getBacklog().getAllStories());
-                        storyNodeIndex.clear();
                         updateAllocatableStories();
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
@@ -263,7 +251,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
                     allocatableStories.clear();
                     allocatableStories.addAll(sprint.getBacklog().getAllStories());
-                    storyNodeIndex.clear();
                     updateAllocatableStories();
                 }
             }
@@ -277,9 +264,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (selectedStory != null) {
             try {
                 getModel().addStory(selectedStory);
-                Node skillNode = generateStoryNode(selectedStory);
-                storiesContainer.getChildren().add(skillNode);
-                storyNodeIndex.put(selectedStory, skillNode);
+                storiesTable.getItems().add(selectedStory);
                 Platform.runLater(() -> {
                     storiesList.getSelectionModel().clearSelection();
                     allocatableStories.remove(selectedStory);
@@ -294,9 +279,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     try {
                         selectedStory.setStoryState(Story.StoryState.Ready);
                         getModel().addStory(selectedStory);
-                        Node skillNode = generateStoryNode(selectedStory);
-                        storiesContainer.getChildren().add(skillNode);
-                        storyNodeIndex.put(selectedStory, skillNode);
+                        storiesTable.getItems().addAll(selectedStory);
                         Platform.runLater(() -> {
                             storiesList.getSelectionModel().clearSelection();
                             allocatableStories.remove(selectedStory);
@@ -408,7 +391,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         allocatableStories = FXCollections.observableArrayList();
         storiesList.setItems((ObservableList<Story>) allocatableStories);
-        storyNodeIndex = new HashMap<>();
         storiesList.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
@@ -513,9 +495,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         popup.setTitleText("Remove Story from Sprint");
         popup.addYesNoButtons(() -> {
             allocatableStories.add(story);
-            Node storyNode = storyNodeIndex.get(story);
-            storiesContainer.getChildren().remove(storyNode);
-            storyNodeIndex.remove(story);
+            storiesTable.getItems().remove(story);
             getModel().removeStory(story);
             popup.close();
         }, "danger-will-robinson", "everything-is-fine");
@@ -550,9 +530,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             popup.setTitleText("Remove Story from Sprint");
             popup.addYesNoButtons(() -> {
                 allocatableStories.add(story);
-                Node storyNode = storyNodeIndex.get(story);
-                storiesContainer.getChildren().remove(storyNode);
-                storyNodeIndex.remove(story);
+                storiesTable.getItems().remove(story);
                 getModel().removeStory(story);
                 popup.close();
             }, "danger-will-robinson", "everything-is-fine");
