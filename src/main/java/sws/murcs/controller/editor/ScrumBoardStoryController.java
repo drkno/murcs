@@ -236,7 +236,15 @@ public class ScrumBoardStoryController {
     }
 
     /**
-     *
+     * Loads or refreshes the story
+     * that this controller is responsible
+     * for. Note: This method will likely be
+     * called far more often than you expect,
+     * and for the story that is currently loaded.
+     * As such, you should be sure it only loads
+     * what it has to (e.g. no point setting the
+     * title of the story again if it hasn't
+     * changed).
      */
     protected void loadStory() {
         updateToggleStatus();
