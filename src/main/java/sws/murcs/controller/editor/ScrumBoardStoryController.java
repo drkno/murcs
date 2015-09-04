@@ -184,12 +184,14 @@ public class ScrumBoardStoryController {
      * current state of the
      * story.
      */
-    public Label storyStateLabel;
+    @FXML
+    private Label storyStateLabel;
 
     /**
      * A container that shows where the progress bar will go on the screen.
      */
-    public VBox progressBarContainer;
+    @FXML
+    private VBox progressBarContainer;
 
     /**
      * A progress bar that indicates sprint progress.
