@@ -126,9 +126,29 @@ public class ScrumBoardStoryController {
      * The Vbox containing in progress tasks.
      */
     public VBox inProgressMoreInfoVBox;
+
+    /**
+     * The vbox representing the done column
+     * of the scrum board.
+     */
     public VBox doneOuterVBox;
+
+    /**
+     * The vbox containing an overview of the done
+     * tasks.
+     */
     public VBox doneBaseInfoVBox;
+
+    /**
+     * The label with a textual overview of
+     * the finished tasks.
+     */
     public Label doneBaseInfoLabel;
+
+    /**
+     * The vbox containing the
+     * tasks that are done.
+     */
     public VBox doneMoreInfoVBox;
     public BorderPane mainPane;
     public Label storyStateLabel;
