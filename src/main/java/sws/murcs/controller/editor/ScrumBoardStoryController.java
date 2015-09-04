@@ -38,59 +38,70 @@ public class ScrumBoardStoryController {
     /**
      * The main grid pane for the story.
      */
-    public GridPane StoryMainGridPane;
+    @FXML
+    private GridPane StoryMainGridPane;
 
     /**
      * The outer Vbox for the story column.
      */
-    public VBox storyOuterVBox;
+    @FXML
+    private VBox storyOuterVBox;
 
     /**
      * A container for static controls on the story.
      */
-    public VBox storyStaticControlsVBox;
+    @FXML
+    private VBox storyStaticControlsVBox;
 
     /**
      * The grid pane containing static controls for the story.
      */
-    public GridPane storyStaticControlsGridPane;
+    @FXML
+    private GridPane storyStaticControlsGridPane;
 
     /**
      * A button for expanding/collapsing the row.
      */
-    public Button storyCollapseExpandButton;
+    @FXML
+    private Button storyCollapseExpandButton;
 
     /**
      * The image used on the expand/collapse button.
      */
-    public ImageView collapseExpandStoryButton;
+    @FXML
+    private ImageView collapseExpandStoryButton;
 
     /**
      * The hyperlink for navigating to the story view.
      */
-    public Hyperlink storyHyperLink;
+    @FXML
+    private Hyperlink storyHyperLink;
 
     /**
      * The slider for controlling story state. This is disabled until all tasks in the story are
      * marked as done.
      */
-    public Slider storyStateSlider;
+    @FXML
+    private Slider storyStateSlider;
 
     /**
      * A Vbox containing extra information about the story.
      */
-    public VBox storyExtraInfoVBox;
+    @FXML
+    private VBox storyExtraInfoVBox;
 
     /**
      * The vbox representing the to do column
      */
-    public VBox toDoOuterVBox;
+    @FXML
+    private VBox toDoOuterVBox;
 
     /**
      * A vbox containing information about the
      * to do column (x tasks have not been started).
      */
-    public VBox toDoBaseInfoVBox;
+    @FXML
+    private VBox toDoBaseInfoVBox;
 
     /**
      * The label containing information about the not started tasks.
