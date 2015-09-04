@@ -263,7 +263,8 @@ public class OrganisationGenerator implements Generator<Organisation> {
                 dionVader.addSkill(allOfThem);
                 skills.add(allOfThem);
             } catch (Exception e) {
-                //Never. Ever. Dion wouldn't let it.
+                //Never. Ever. Dion wouldn't let it. He is the dark lord. He is all powerful.
+                e.printStackTrace(); //Because checkstyle.
             }
 
 
