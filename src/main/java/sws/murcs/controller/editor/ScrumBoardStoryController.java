@@ -436,12 +436,17 @@ public class ScrumBoardStoryController {
         }
         else {
             hideMoreInfo();
-            ShowLessInfo();
+            showLessInfo();
             infoViewStateMore = true;
         }
     }
 
-    private void ShowLessInfo() {
+    /**
+     * Tells the story that it should only
+     * show an overview of its tasks, not
+     * a list of all tasks.
+     */
+    private void showLessInfo() {
         toDoOuterVBox.getChildren().add(toDoBaseInfoVBox);
         inProgressOuterVBox.getChildren().add(inProgressBaseInfoVBox);
         doneOuterVBox.getChildren().add(doneBaseInfoVBox);
