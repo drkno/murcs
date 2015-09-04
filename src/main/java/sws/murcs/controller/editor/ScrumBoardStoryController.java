@@ -39,7 +39,7 @@ public class ScrumBoardStoryController {
      * The main grid pane for the story.
      */
     @FXML
-    private GridPane StoryMainGridPane;
+    private GridPane storyMainGridPane;
 
     /**
      * The outer Vbox for the story column.
@@ -91,7 +91,7 @@ public class ScrumBoardStoryController {
     private VBox storyExtraInfoVBox;
 
     /**
-     * The vbox representing the to do column
+     * The vbox representing the to do column.
      */
     @FXML
     private VBox toDoOuterVBox;
@@ -111,7 +111,7 @@ public class ScrumBoardStoryController {
     private Label toDoBaseInfoLabel;
 
     /**
-     * A Vbox containing more information about the not started tasks
+     * A Vbox containing more information about the not started tasks.
      */
     @FXML
     private VBox toDoMoreInfoVBox;
@@ -228,6 +228,9 @@ public class ScrumBoardStoryController {
      */
     private static Story draggingStory;
 
+    /**
+     * Initializes the controller.
+     */
     @FXML
     public final void initialize() {
 
@@ -671,5 +674,3 @@ public class ScrumBoardStoryController {
         progressBar.setStory(story);
     }
 }
-
-
