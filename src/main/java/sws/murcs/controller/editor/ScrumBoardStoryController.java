@@ -174,8 +174,19 @@ public class ScrumBoardStoryController {
      */
     private ModelProgressBar progressBar;
 
+    /**
+     * The story that this controller
+     * is responsible for.
+     */
     private Story story;
 
+    /**
+     * A boolean indicating whether or
+     * not the scrum board is currently
+     * expanded, that is, whether or not
+     * all the tasks should be displayed,
+     * or just an overview.
+     */
     private Boolean infoViewStateMore = true;
 
     /**
@@ -224,6 +235,9 @@ public class ScrumBoardStoryController {
         });
     }
 
+    /**
+     *
+     */
     protected void loadStory() {
         updateToggleStatus();
 
