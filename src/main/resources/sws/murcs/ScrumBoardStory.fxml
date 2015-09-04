@@ -8,7 +8,7 @@
 
 <BorderPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
    <center>
-      <GridPane fx:id="StoryMainGridPane" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0">
+      <GridPane fx:id="storyMainGridPane" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0">
         <columnConstraints>
           <ColumnConstraints hgrow="NEVER" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
           <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
@@ -36,9 +36,9 @@
                               <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Button fx:id="storyCollapseExpandButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleInfoView" prefHeight="30.0" prefWidth="30.0">
+                              <Button fx:id="resizeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleInfoView" prefHeight="30.0" prefWidth="30.0">
                                  <graphic>
-                                    <ImageView fx:id="collapseExpandStoryButton" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                    <ImageView fx:id="resizeImage" fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@icons/collapseExpandWhite.png" />
                                        </image>

@@ -32,34 +32,59 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 3/09/2015
- *
- * @author Dion
+ * Controller for a story within a scrum board.
  */
 public class ScrumBoardStoryController {
-    public GridPane StoryMainGridPane;
-    public VBox storyOuterVBox;
-    public VBox storyStaticControlsVBox;
-    public GridPane storyStaticControlsGridPane;
-    public Button storyCollapseExpandButton;
-    public ImageView collapseExpandStoryButton;
-    public Hyperlink storyHyperLink;
-    public Slider storyStateSlider;
-    public VBox storyExtraInfoVBox;
-    public VBox toDoOuterVBox;
-    public VBox toDoBaseInfoVBox;
-    public Label toDoBaseInfoLabel;
-    public VBox toDoMoreInfoVBox;
-    public VBox inProgressOuterVBox;
-    public VBox inProgressBaseInfoVBox;
-    public Label inProgressBaseInfoLabel;
-    public VBox inProgressMoreInfoVBox;
-    public VBox doneOuterVBox;
-    public VBox doneBaseInfoVBox;
-    public Label doneBaseInfoLabel;
-    public VBox doneMoreInfoVBox;
-    public BorderPane mainPane;
-    public Label storyStateLabel;
+
+    /**
+     * Some important grid panes.
+     */
+    @FXML
+    private GridPane storyMainGridPane, storyStaticControlsGridPane;
+
+    /**
+     * Some important VBoxes.
+     */
+    @FXML
+    private VBox storyOuterVBox, storyStaticControlsVBox, storyExtraInfoVBox, toDoOuterVBox,
+            toDoBaseInfoVBox, toDoMoreInfoVBox, inProgressOuterVBox, inProgressBaseInfoVBox,
+            inProgressMoreInfoVBox, doneOuterVBox, doneBaseInfoVBox, doneMoreInfoVBox;
+
+    /**
+     * The expand/collapse button.
+     */
+    @FXML
+    private Button resizeButton;
+
+    /**
+     * The image that goes on the resizeButton.
+     */
+    @FXML
+    private ImageView resizeImage;
+
+    /**
+     * The story name that doubles as a hyperlink.
+     */
+    @FXML
+    private Hyperlink storyHyperLink;
+
+    /**
+     * The Done slider.
+     */
+    @FXML
+    private Slider storyStateSlider;
+
+    /**
+     * The informative labels at the top of each column.
+     */
+    @FXML
+    private Label toDoBaseInfoLabel, inProgressBaseInfoLabel, doneBaseInfoLabel, storyStateLabel;
+
+    /**
+     * The primary pane in the form.
+     */
+    @FXML
+    private BorderPane mainPane;
 
     /**
      * A container that shows where the progress bar will go on the screen.
@@ -71,10 +96,19 @@ public class ScrumBoardStoryController {
      */
     private ModelProgressBar progressBar;
 
+    /**
+     * The story that this form represents.
+     */
     private Story story;
 
+    /**
+     * Whether or not the form is displaying more info.
+     */
     private Boolean infoViewStateMore = true;
 
+    /**
+     * The state of the done slider.
+     */
     private double storyStateSliderValue = 0;
 
     /**
@@ -92,15 +126,20 @@ public class ScrumBoardStoryController {
      */
     private static Story draggingStory;
 
+    /**
+     * Sets up the form.
+     */
     @FXML
     public final void initialize() {
-
         mainPane.getStyleClass().add("root");
         mainPane.getStyleClass().add("scrumBoard-story");
         progressBar = new ModelProgressBar(true);
         progressBarContainer.getChildren().addAll(progressBar);
     }
 
+    /**
+     * Loads the story into the form.
+     */
     protected void loadStory() {
         updateToggleStatus();
 
@@ -150,9 +189,6 @@ public class ScrumBoardStoryController {
         setupTaskMinInfo();
     }
 
-    /**
-     *
-     */
     @SuppressWarnings("checkstyle:magicnumber")
     private String calculateTime(float summary) {
         int dps = 0;
@@ -178,6 +214,9 @@ public class ScrumBoardStoryController {
         }
     }
 
+    /**
+     * Sets the info on the minimised screen.
+     */
     private void setupTaskMinInfo() {
         List<Task> tasksToDo = story.getTasks()
                 .stream()
@@ -241,15 +280,27 @@ public class ScrumBoardStoryController {
 
     }
 
-    public void setStory(Story pStory) {
+    /**
+     * Sets the story that this form represents.
+     * @param pStory The new story
+     */
+    public void setStory(final Story pStory) {
         story = pStory;
     }
 
-    public void setSprintContainer(SprintContainer pSprintContainer) {
+    /**
+     * Sets the SprintContainer that houses this scrum board.
+     * @param pSprintContainer The SprintContainer
+     */
+    public void setSprintContainer(final SprintContainer pSprintContainer) {
         sprintContainer = pSprintContainer;
     }
 
-    public void toggleInfoView(ActionEvent actionEvent) {
+    /**
+     * Toggles the expanded state of the story.
+     * @param event The event that called this method
+     */
+    public void toggleInfoView(final ActionEvent event) {
         if (infoViewStateMore) {
             hideLessInfo();
             showMoreInfo();
@@ -257,12 +308,15 @@ public class ScrumBoardStoryController {
         }
         else {
             hideMoreInfo();
-            ShowLessInfo();
+            showLessInfo();
             infoViewStateMore = true;
         }
     }
 
-    private void ShowLessInfo() {
+    /**
+     * Shows the informative labels.
+     */
+    private void showLessInfo() {
         toDoOuterVBox.getChildren().add(toDoBaseInfoVBox);
         inProgressOuterVBox.getChildren().add(inProgressBaseInfoVBox);
         doneOuterVBox.getChildren().add(doneBaseInfoVBox);
@@ -272,6 +326,9 @@ public class ScrumBoardStoryController {
         setupTaskMinInfo();
     }
 
+    /**
+     * Hides the tasks.
+     */
     private void hideMoreInfo() {
         toDoOuterVBox.getChildren().remove(toDoMoreInfoVBox);
         inProgressOuterVBox.getChildren().remove(inProgressMoreInfoVBox);
@@ -283,6 +340,9 @@ public class ScrumBoardStoryController {
         doneMoreInfoVBox.setVisible(false);
     }
 
+    /**
+     * Shows the tasks.
+     */
     private void showMoreInfo() {
         toDoOuterVBox.getChildren().add(toDoMoreInfoVBox);
         inProgressOuterVBox.getChildren().add(inProgressMoreInfoVBox);
@@ -294,6 +354,9 @@ public class ScrumBoardStoryController {
         doneMoreInfoVBox.setVisible(true);
     }
 
+    /**
+     * Hides the informative labels.
+     */
     private void hideLessInfo() {
         toDoOuterVBox.getChildren().remove(toDoBaseInfoVBox);
         inProgressOuterVBox.getChildren().remove(inProgressBaseInfoVBox);
@@ -303,7 +366,12 @@ public class ScrumBoardStoryController {
         doneBaseInfoVBox.setVisible(false);
     }
 
-    public void setup(Story pStory, SprintContainer pSprintContainer) {
+    /**
+     * Sets tup the form with some necessary details.
+     * @param pStory The story to display
+     * @param pSprintContainer The parent SprintContainer
+     */
+    public void setup(final Story pStory, final SprintContainer pSprintContainer) {
         story = pStory;
         sprintContainer = pSprintContainer;
     }
@@ -340,6 +408,9 @@ public class ScrumBoardStoryController {
         }
     }
 
+    /**
+     * Updates the state of the story.
+     */
     @FXML
     private void updateStoryState() {
         if (storyStateSliderValue != storyStateSlider.getValue()) {
@@ -444,9 +515,10 @@ public class ScrumBoardStoryController {
         });
     }
 
+    /**
+     * Updates the form.
+     */
     protected void update() {
         progressBar.setStory(story);
     }
 }
-
-
