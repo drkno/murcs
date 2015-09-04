@@ -328,6 +328,9 @@ public class ScrumBoardStoryController {
         }
     }
 
+    /**
+     * Sets up the minute info for a task, such as to do, doing and done.
+     */
     private void setupTaskMinInfo() {
         List<Task> tasksToDo = story.getTasks()
                 .stream()
@@ -391,6 +394,16 @@ public class ScrumBoardStoryController {
 
     }
 
+    /**
+     * Sets the story for the controller.
+     * Note: You need to manually call the
+     * loadStory method if you want this to
+     * have an immediate result. If you don't
+     * we can't guarantee when the update
+     * will happen.
+     *
+     * @param pStory The story
+     */
     public void setStory(Story pStory) {
         story = pStory;
     }
