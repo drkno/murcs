@@ -300,15 +300,17 @@ public class ScrumBoardStoryController {
      * a nice string that we can display in
      * the application. For example "10 minutes"
      * or 3 hours.
+     * @param minutes The number of minutes to convert
+     * @return The formatted string
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private String calculateTime(float summary) {
+    private String formatTime(float minutes) {
         int dps = 0;
         String units = "minutes";
 
         //If we have more than 60 minutes we should measure in hours.
-        if (summary >= 60) {
-            summary /= 60;
+        if (minutes >= 60) {
+            minutes /= 60;
             units = "hours";
             dps = 1;
         }
@@ -316,13 +318,13 @@ public class ScrumBoardStoryController {
         //To round to a certain number of dps, we multipy by 10 to the power of the dps we want
         // 7.8934 to 2 dp: 7.8934 * 10 ^ 2 = 789.34, Round to 0 dps = 789, divide by 10 ^ 2 = 7.89
         float pow = (float) Math.pow(10, dps);
-        summary = Math.round(summary * pow) / pow;
+        minutes = Math.round(minutes * pow) / pow;
 
         if (dps == 0) {
-            return (int) summary + " " + units;
+            return (int) minutes + " " + units;
         }
         else {
-            return summary + " " + units;
+            return minutes + " " + units;
         }
     }
 
@@ -344,7 +346,7 @@ public class ScrumBoardStoryController {
             DoubleSummaryStatistics timeLeft = tasksToDo
                     .stream()
                     .collect(Collectors.summarizingDouble(Task::getCurrentEstimate));
-            String[] timeLeftString = calculateTime((float) timeLeft.getSum()).split(" ");
+            String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
             toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started "
             + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
         }
@@ -362,8 +364,8 @@ public class ScrumBoardStoryController {
                             .stream()
                             .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
                             .getSum()));
-            String[] timeLeftString = calculateTime((float) timeLeft.getSum()).split(" ");
-            String[] timeSpentString = calculateTime((float) timeSpent.getSum()).split(" ");
+            String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
+            String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
             inProgressBaseInfoLabel.setText(tasksInProgress.size() + " tasks are in progress "
                     + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
                     + "and " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
@@ -379,7 +381,7 @@ public class ScrumBoardStoryController {
                             .stream()
                             .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
                             .getSum()));
-            String[] timeSpentString = calculateTime((float) timeSpent.getSum()).split(" ");
+            String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
             doneBaseInfoLabel.setText(tasksDone.size() + " tasks are done "
                     + "with " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
