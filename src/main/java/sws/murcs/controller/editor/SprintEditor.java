@@ -1,19 +1,13 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +19,7 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -32,16 +27,10 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Organisation;
-import sws.murcs.model.Release;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Team;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -53,6 +42,15 @@ import java.util.Map;
  * The controller for editing sprints.
  */
 public class SprintEditor extends GenericEditor<Sprint> {
+
+    @FXML
+    private TableColumn<Story, String> estimateColumn;
+
+    @FXML
+    private TableColumn<Story, String> storyColumn;
+
+    @FXML
+    private TableView<Story> storiesTable;
 
     /**
      * The Button to navigate to the associated team.
@@ -175,7 +173,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         //Update the sprint stories
         updateAllocatableStories();
-        Platform.runLater(() -> { isLoaded = true; });
+        Platform.runLater(() -> isLoaded = true);
     }
 
     /**
@@ -196,12 +194,13 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 getModel().getStories().stream().forEach(allocatableStories::remove);
             }
 
-            storiesContainer.getChildren().clear();
-            getModel().getStories().forEach(story -> {
+            //storiesContainer.getChildren().clear();
+            storiesTable.setItems(FXCollections.observableArrayList(getModel().getStories()));
+            /*getModel().getStories().forEach(story -> {
                 Node storyNode = generateStoryNode(story);
                 storiesContainer.getChildren().add(storyNode);
                 storyNodeIndex.put(story, storyNode);
-            });
+            });*/
         });
     }
 
@@ -489,6 +488,38 @@ public class SprintEditor extends GenericEditor<Sprint> {
         navigateToReleaseButton.setDisable(true);
         navigateToTeamButton.setDisable(true);
         navigateToBacklogButton.setDisable(true);
+        storyColumn.setCellValueFactory(param -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            property.set(param.getValue().getShortName());
+            return property;
+        });
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        estimateColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getEstimate()));
+        estimateColumn.setComparator((o1, o2) -> {
+            EstimateType type = getModel().getBacklog().getEstimateType();
+            return Integer.compare(type.getSortIndex(o1), type.getSortIndex(o2));
+        });
+    }
+
+    /**
+     * Removes a story from the sprint.
+     * @param story the story to remove.
+     */
+    private void removeStory(final Story story) {
+        GenericPopup popup = new GenericPopup();
+        popup.setMessageText("Are you sure you want to remove "
+                + story.getShortName() + " from "
+                + getModel().getShortName() + "?");
+        popup.setTitleText("Remove Story from Sprint");
+        popup.addYesNoButtons(() -> {
+            allocatableStories.add(story);
+            Node storyNode = storyNodeIndex.get(story);
+            storiesContainer.getChildren().remove(storyNode);
+            storyNodeIndex.remove(story);
+            getModel().removeStory(story);
+            popup.close();
+        }, "danger-will-robinson", "everything-is-fine");
+        popup.show();
     }
 
     /**
@@ -498,6 +529,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
      */
     @SuppressWarnings("checkstyle:magicnumber")
     private Node generateStoryNode(final Story story) {
+
         MaterialDesignButton removeButton = new MaterialDesignButton(null);
         removeButton.setPrefHeight(15);
         removeButton.setPrefWidth(15);
