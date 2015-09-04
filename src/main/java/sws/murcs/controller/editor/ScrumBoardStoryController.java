@@ -1,9 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,6 +26,11 @@ import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
+
+import java.io.IOException;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A controller for stories on the scrum board. Handles dragging and dropping.
@@ -192,6 +193,24 @@ public class ScrumBoardStoryController {
      */
     @FXML
     private VBox progressBarContainer;
+
+    /**
+     * The to do task number in the task summary view.
+     */
+    @FXML
+    private Label todoTaskNumberLabel;
+
+    /**
+     * The in progress task number in the task summary view.
+     */
+    @FXML
+    private Label inProgressTaskNumberLabel;
+
+    /**
+     * The done task number in the task summary view.
+     */
+    @FXML
+    private Label doneTaskNumberLabel;
 
     /**
      * A progress bar that indicates sprint progress.
@@ -373,18 +392,19 @@ public class ScrumBoardStoryController {
                 .filter(t -> t.getState().equals(TaskState.Done))
                 .collect(Collectors.toList());
 
+        todoTaskNumberLabel.setText(String.valueOf(tasksToDo.size()));
         if (tasksToDo.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksToDo
                     .stream()
                     .collect(Collectors.summarizingDouble(Task::getCurrentEstimate));
             String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
-            toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started "
-            + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
+            toDoBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
         }
         else {
             toDoBaseInfoLabel.setText("No tasks left to start :)");
         }
 
+        inProgressTaskNumberLabel.setText(String.valueOf(tasksInProgress.size()));
         if (tasksInProgress.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksInProgress
                     .stream()
@@ -397,14 +417,14 @@ public class ScrumBoardStoryController {
                             .getSum()));
             String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
             String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
-            inProgressBaseInfoLabel.setText(tasksInProgress.size() + " tasks are in progress "
-                    + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
+            inProgressBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
                     + "and " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
             inProgressBaseInfoLabel.setText("No tasks are in progress");
         }
 
+        doneTaskNumberLabel.setText(String.valueOf(tasksDone.size()));
         if (tasksDone.size() > 0) {
             DoubleSummaryStatistics timeSpent = tasksDone
                     .stream()
@@ -413,11 +433,10 @@ public class ScrumBoardStoryController {
                             .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
                             .getSum()));
             String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
-            doneBaseInfoLabel.setText(tasksDone.size() + " tasks are done "
-                    + "with " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
+            doneBaseInfoLabel.setText(timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
-            doneBaseInfoLabel.setText("No tasks are done");
+            doneBaseInfoLabel.setText("No tasks are done :(");
         }
 
     }
