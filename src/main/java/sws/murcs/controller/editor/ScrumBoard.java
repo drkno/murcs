@@ -1,5 +1,8 @@
 package sws.murcs.controller.editor;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -11,10 +14,6 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Scrum Board controller. This consists of several story

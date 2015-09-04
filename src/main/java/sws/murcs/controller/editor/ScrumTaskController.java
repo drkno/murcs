@@ -1,5 +1,9 @@
 package sws.murcs.controller.editor;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,13 +15,11 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.model.*;
+import sws.murcs.model.Person;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.helpers.UsageHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for a task within a scrum board.
@@ -138,6 +140,7 @@ public class ScrumTaskController {
 
     /**
      * Gets a list of all people that can be assigned to this story.
+     * @return The possible assigness
      */
     private List<Person> getPossibleAssignees() {
         List<Person> possibleAssignees = new ArrayList<>();

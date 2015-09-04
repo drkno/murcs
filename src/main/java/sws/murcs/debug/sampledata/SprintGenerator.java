@@ -435,6 +435,8 @@ public class SprintGenerator implements Generator<Sprint> {
                     }
                     catch (MultipleSprintsException e) {
                         // do nothing. we don't care about it in this context
+                        // Dion Vader assures us he doesn't feel a disturbance in the force
+                        e.printStackTrace(); //Because even Dion Vader must bow to the Dark Lord checkstyle
                     }
                 }
             }

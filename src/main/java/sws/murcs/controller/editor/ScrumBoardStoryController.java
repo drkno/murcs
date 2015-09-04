@@ -1,9 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,6 +27,11 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
+import java.io.IOException;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * A controller for stories on the scrum board. Handles dragging and dropping.
  */
@@ -39,7 +40,7 @@ public class ScrumBoardStoryController {
      * The main grid pane for the story.
      */
     @FXML
-    private GridPane StoryMainGridPane;
+    private GridPane storyMainGridPane;
 
     /**
      * The outer Vbox for the story column.
@@ -91,7 +92,7 @@ public class ScrumBoardStoryController {
     private VBox storyExtraInfoVBox;
 
     /**
-     * The vbox representing the to do column
+     * The vbox representing the to do column.
      */
     @FXML
     private VBox toDoOuterVBox;
@@ -111,7 +112,7 @@ public class ScrumBoardStoryController {
     private Label toDoBaseInfoLabel;
 
     /**
-     * A Vbox containing more information about the not started tasks
+     * A Vbox containing more information about the not started tasks.
      */
     @FXML
     private VBox toDoMoreInfoVBox;
@@ -194,6 +195,24 @@ public class ScrumBoardStoryController {
     private VBox progressBarContainer;
 
     /**
+     * The to do task number in the task summary view.
+     */
+    @FXML
+    private Label todoTaskNumberLabel;
+
+    /**
+     * The in progress task number in the task summary view.
+     */
+    @FXML
+    private Label inProgressTaskNumberLabel;
+
+    /**
+     * The done task number in the task summary view.
+     */
+    @FXML
+    private Label doneTaskNumberLabel;
+
+    /**
      * A progress bar that indicates sprint progress.
      */
     private ModelProgressBar progressBar;
@@ -232,9 +251,9 @@ public class ScrumBoardStoryController {
      * The pane that the draggingTask originated from.
      */
     private static Pane sourcePane;
-
+    
     /**
-     * Sets up the form by adding css styling and listeners.
+     * Initializes the controller.
      */
     @FXML
     public final void initialize() {
@@ -336,7 +355,8 @@ public class ScrumBoardStoryController {
      * @return The formatted string
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private String formatTime(float minutes) {
+    private String formatTime(final float startMinutes) {
+        float minutes = startMinutes;
         int dps = 0;
         String units = "minutes";
 
@@ -377,18 +397,19 @@ public class ScrumBoardStoryController {
                 .filter(t -> t.getState().equals(TaskState.Done))
                 .collect(Collectors.toList());
 
+        todoTaskNumberLabel.setText(String.valueOf(tasksToDo.size()));
         if (tasksToDo.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksToDo
                     .stream()
                     .collect(Collectors.summarizingDouble(Task::getCurrentEstimate));
             String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
-            toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started "
-            + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
+            toDoBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
         }
         else {
             toDoBaseInfoLabel.setText("No tasks left to start :)");
         }
 
+        inProgressTaskNumberLabel.setText(String.valueOf(tasksInProgress.size()));
         if (tasksInProgress.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksInProgress
                     .stream()
@@ -401,14 +422,14 @@ public class ScrumBoardStoryController {
                             .getSum()));
             String[] timeLeftString = formatTime((float) timeLeft.getSum()).split(" ");
             String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
-            inProgressBaseInfoLabel.setText(tasksInProgress.size() + " tasks are in progress "
-                    + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
+            inProgressBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
                     + "and " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
             inProgressBaseInfoLabel.setText("No tasks are in progress");
         }
 
+        doneTaskNumberLabel.setText(String.valueOf(tasksDone.size()));
         if (tasksDone.size() > 0) {
             DoubleSummaryStatistics timeSpent = tasksDone
                     .stream()
@@ -417,11 +438,10 @@ public class ScrumBoardStoryController {
                             .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
                             .getSum()));
             String[] timeSpentString = formatTime((float) timeSpent.getSum()).split(" ");
-            doneBaseInfoLabel.setText(tasksDone.size() + " tasks are done "
-                    + "with " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
+            doneBaseInfoLabel.setText(timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
-            doneBaseInfoLabel.setText("No tasks are done");
+            doneBaseInfoLabel.setText("No tasks are done :(");
         }
 
     }
@@ -436,7 +456,7 @@ public class ScrumBoardStoryController {
      *
      * @param pStory The story
      */
-    public void setStory(Story pStory) {
+    public void setStory(final Story pStory) {
         story = pStory;
     }
 
@@ -447,7 +467,7 @@ public class ScrumBoardStoryController {
      *
      * @param pSprintContainer The container controller
      */
-    public void setSprintContainer(SprintContainer pSprintContainer) {
+    public void setSprintContainer(final SprintContainer pSprintContainer) {
         sprintContainer = pSprintContainer;
     }
 
@@ -460,7 +480,7 @@ public class ScrumBoardStoryController {
      * @param actionEvent The event from the button in the UI.
      */
     @FXML
-    private void toggleInfoView(ActionEvent actionEvent) {
+    private void toggleInfoView(final ActionEvent actionEvent) {
         if (infoViewStateMore) {
             hideLessInfo();
             showMoreInfo();
@@ -547,7 +567,7 @@ public class ScrumBoardStoryController {
      * @param pStory           The story
      * @param pSprintContainer The sprint container.
      */
-    public void setup(Story pStory, SprintContainer pSprintContainer) {
+    public void setup(final Story pStory, final SprintContainer pSprintContainer) {
         story = pStory;
         sprintContainer = pSprintContainer;
     }
@@ -588,6 +608,7 @@ public class ScrumBoardStoryController {
      * @param task The task that the dragged node represents
      * @param story The story that the task is from
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void addDragDetectedHandler(final Node source, final Task task, final Story story) {
         source.setOnDragDetected(event -> {
             draggingTask = task;
