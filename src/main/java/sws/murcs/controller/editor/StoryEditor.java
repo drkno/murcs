@@ -46,15 +46,8 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.model.AcceptanceCondition;
-import sws.murcs.model.Backlog;
-import sws.murcs.model.EstimateType;
-import sws.murcs.model.Model;
-import sws.murcs.model.ModelType;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
+import sws.murcs.model.*;
+import sws.murcs.model.Story.StoryState;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
@@ -117,7 +110,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * A choice box for changing the story state.
      */
     @FXML
-    private ChoiceBox<Story.StoryState> storyStateChoiceBox;
+    private ChoiceBox<StoryState> storyStateChoiceBox;
 
     /**
      * Drop down with dependencies that can be added to this story.
@@ -468,7 +461,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
-        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+        storyStateChoiceBox.getItems().addAll(StoryState.values());
 
         navigateToCreatorButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (creatorChoiceBox.getSelectionModel().getSelectedItem() != null) {
@@ -552,7 +545,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     getModel().setEstimate(actualEstimate);
                     estimateChoiceBox.setValue(actualEstimate);
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
-                    assert getModel().getStoryState().equals(Story.StoryState.None);
+                    assert getModel().getStoryState().equals(StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
                 }, "danger-will-robinson", "everything-is-fine");
@@ -606,11 +599,27 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * displays an error if it isn't.
      */
     private void updateStoryState() {
-        Story.StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
-        Story model = getModel();
+        StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
         boolean hasErrors = false;
 
-        if (state == Story.StoryState.Ready) {
+        if (state == StoryState.Done) {
+            for (Task task : getModel().getTasks()) {
+                if (task.getState() != TaskState.Done) {
+                    addFormError(storyStateChoiceBox, "Every task must be set to Done to set the story to Done");
+                    hasErrors = true;
+                    break;
+                }
+            }
+            List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                    .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                    .map(m -> (Sprint) m)
+                    .collect(Collectors.toList());
+            if (sprintsWithStory.size() == 0) {
+                addFormError(storyStateChoiceBox, "The story must be part of a sprint to set the state to Done");
+                hasErrors = true;
+            }
+        }
+        else if (state == StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
                 addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
                 hasErrors = true;
@@ -625,7 +634,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 hasErrors = true;
             }
         }
-        else if (state == Story.StoryState.None) {
+        else if (state == StoryState.None) {
             hasErrors = true; // So that the story state is not set.
             if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
                 List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
@@ -647,8 +656,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 popup.setWindowTitle("Are you sure?");
                 popup.addYesNoButtons(() -> {
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
-                    getModel().setStoryState(Story.StoryState.None);
-                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    getModel().setStoryState(StoryState.None);
+                    storyStateChoiceBox.setValue(StoryState.None);
                     popup.close();
                 }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
@@ -1169,8 +1178,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
                         updateEstimation();
-                        storyStateChoiceBox.setValue(Story.StoryState.None);
-                        getModel().setStoryState(Story.StoryState.None);
+                        storyStateChoiceBox.setValue(StoryState.None);
+                        getModel().setStoryState(StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
