@@ -296,7 +296,7 @@ public class ScrumBoardStoryController {
                 loader.setRoot(null);
                 loader.setController(null);
                 Parent root = loader.load();
-                root.getStyleClass().add("scrumBoard-story");
+                root.getStyleClass().add("scrumBoard-task");
                 ScrumTaskController controller = loader.getController();
                 controller.configure(task, story, this);
                 VBox initialVBox = null;
