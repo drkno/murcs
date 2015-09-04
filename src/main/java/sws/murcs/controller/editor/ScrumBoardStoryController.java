@@ -292,7 +292,7 @@ public class ScrumBoardStoryController {
             }
         }
 
-        setupTaskMinInfo();
+        updateTaskOverviews();
     }
 
     /**
@@ -331,7 +331,7 @@ public class ScrumBoardStoryController {
     /**
      * Sets up the minute info for a task, such as to do, doing and done.
      */
-    private void setupTaskMinInfo() {
+    private void updateTaskOverviews() {
         List<Task> tasksToDo = story.getTasks()
                 .stream()
                 .filter(t -> t.getState().equals(TaskState.NotStarted))
@@ -432,7 +432,7 @@ public class ScrumBoardStoryController {
         toDoBaseInfoVBox.setVisible(true);
         inProgressBaseInfoVBox.setVisible(true);
         doneBaseInfoVBox.setVisible(true);
-        setupTaskMinInfo();
+        updateTaskOverviews();
     }
 
     private void hideMoreInfo() {
