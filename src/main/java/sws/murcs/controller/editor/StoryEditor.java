@@ -52,6 +52,7 @@ import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -195,9 +196,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 .orElse(null);
 
         Story story = getModel();
-        Platform.runLater(() -> {
-            if (!getModel().equals(story)) return;
+        if (!App.onStyleManagerThread) {
             synchronized (StyleManager.getInstance()) {
+                App.onStyleManagerThread = true;
                 estimateChoiceBox.getItems().clear();
                 estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
                 estimateChoiceBox.getItems().add(EstimateType.INFINITE);
@@ -205,8 +206,17 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 if (backlog != null) {
                     estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
                 }
+                App.onStyleManagerThread = false;
             }
-        });
+        } else {
+            estimateChoiceBox.getItems().clear();
+            estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+            estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+            estimateChoiceBox.getItems().add(EstimateType.ZERO);
+            if (backlog != null) {
+                estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+            }
+        }
 
         if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
@@ -266,7 +276,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            synchronized (StyleManager.getInstance()) {
+            if (!App.onStyleManagerThread) {
+                synchronized (StyleManager.getInstance()) {
+                    App.onStyleManagerThread = true;
+                    updateEstimation();
+                    App.onStyleManagerThread = false;
+                }
+            } else {
                 updateEstimation();
             }
         });

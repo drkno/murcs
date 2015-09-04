@@ -12,6 +12,7 @@ import javafx.scene.layout.RowConstraints;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
+import sws.murcs.view.App;
 
 /**
  * A progress bar control for stories.
@@ -62,7 +63,29 @@ public class ModelProgressBar extends GridPane {
         setVgrow(notStartedPane, Priority.ALWAYS);
 
         // tooltips and adding styles should be synchronised < u60
-        synchronized (StyleManager.getInstance()) {
+        if (!App.onStyleManagerThread) {
+            synchronized (StyleManager.getInstance()) {
+                App.onStyleManagerThread = true;
+                completePane.getStyleClass().add("completePane");
+                if (hasTooltips) {
+                    completedTooltip = new Tooltip("Completed");
+                    Tooltip.install(completePane, completedTooltip);
+                }
+
+                progressPane.getStyleClass().add("progressPane");
+                if (hasTooltips) {
+                    progressTooltip = new Tooltip("Completed");
+                    Tooltip.install(progressPane, progressTooltip);
+                }
+
+                notStartedPane.getStyleClass().add("notstartedPane");
+                if (hasTooltips) {
+                    notStartedTooltip = new Tooltip("Completed");
+                    Tooltip.install(notStartedPane, notStartedTooltip);
+                }
+                App.onStyleManagerThread = false;
+            }
+        } else  {
             completePane.getStyleClass().add("completePane");
             if (hasTooltips) {
                 completedTooltip = new Tooltip("Completed");
