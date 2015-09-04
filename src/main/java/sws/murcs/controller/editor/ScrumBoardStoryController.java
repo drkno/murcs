@@ -408,6 +408,13 @@ public class ScrumBoardStoryController {
         story = pStory;
     }
 
+    /**
+     * Set the sprint container for this story.
+     * You should do this before trying to use
+     * this controller.
+     *
+     * @param pSprintContainer The container controller
+     */
     public void setSprintContainer(SprintContainer pSprintContainer) {
         sprintContainer = pSprintContainer;
     }
