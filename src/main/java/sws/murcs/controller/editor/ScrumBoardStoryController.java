@@ -107,66 +107,77 @@ public class ScrumBoardStoryController {
      * The label containing information about the not started tasks.
      * x tasks not started ect.
      */
-    public Label toDoBaseInfoLabel;
+    @FXML
+    private Label toDoBaseInfoLabel;
 
     /**
      * A Vbox containing more information about the not started tasks
      */
-    public VBox toDoMoreInfoVBox;
+    @FXML
+    private VBox toDoMoreInfoVBox;
 
     /**
      * A vbox representing the in progress column.
      */
-    public VBox inProgressOuterVBox;
+    @FXML
+    private VBox inProgressOuterVBox;
 
     /**
      * The vbox that contains information about the in progress tasks,
      * providing an overview, so to
      * speak.
      */
-    public VBox inProgressBaseInfoVBox;
+    @FXML
+    private VBox inProgressBaseInfoVBox;
 
     /**
      * The label containing a textual
      * overview of the in progress
      * tasks.
      */
-    public Label inProgressBaseInfoLabel;
+    @FXML
+    private Label inProgressBaseInfoLabel;
 
     /**
      * The Vbox containing in progress tasks.
      */
-    public VBox inProgressMoreInfoVBox;
+    @FXML
+    private VBox inProgressMoreInfoVBox;
 
     /**
      * The vbox representing the done column
      * of the scrum board.
      */
-    public VBox doneOuterVBox;
+    @FXML
+    private VBox doneOuterVBox;
 
     /**
      * The vbox containing an overview of the done
      * tasks.
      */
-    public VBox doneBaseInfoVBox;
+    @FXML
+    private VBox doneBaseInfoVBox;
 
     /**
      * The label with a textual overview of
      * the finished tasks.
      */
-    public Label doneBaseInfoLabel;
+    @FXML
+    private Label doneBaseInfoLabel;
 
     /**
      * The vbox containing the
      * tasks that are done.
      */
-    public VBox doneMoreInfoVBox;
+    @FXML
+    private VBox doneMoreInfoVBox;
 
     /**
      * The main border pane representing the
      * story on the scrum board.
      */
-    public BorderPane mainPane;
+    @FXML
+    private BorderPane mainPane;
 
     /**
      * A label containing the
