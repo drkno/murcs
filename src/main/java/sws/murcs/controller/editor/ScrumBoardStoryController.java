@@ -296,7 +296,7 @@ public class ScrumBoardStoryController {
                 loader.setController(null);
                 Parent root = loader.load();
                 ScrumTaskController controller = loader.getController();
-                controller.configure(task, story);
+                controller.configure(task, story, this);
                 VBox initialVBox = null;
                 switch (task.getState()) {
                     case NotStarted:

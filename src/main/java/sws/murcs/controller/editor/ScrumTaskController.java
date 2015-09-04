@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,9 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Person;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -25,7 +29,7 @@ import java.util.stream.Collectors;
 /**
  * Controller for a task within a scrum board.
  */
-public class ScrumTaskController {
+public class ScrumTaskController implements UndoRedoChangeListener {
 
     /**
      * The task that this GUI element represents.
@@ -41,6 +45,11 @@ public class ScrumTaskController {
      * The VBox that this form is contained within.
      */
     private VBox currentColumn;
+
+    /**
+     * The parent of this form.
+     */
+    private ScrumBoardStoryController parent;
 
     /**
      * The label that displays the name of this task.
@@ -65,6 +74,8 @@ public class ScrumTaskController {
      */
     @FXML
     private void initialize() {
+        UndoRedoManager.get().addChangeListener(this);
+
         estimateTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 try {
@@ -74,11 +85,13 @@ public class ScrumTaskController {
                     }
                     else if (estimate != task.getCurrentEstimate()) {
                         task.setCurrentEstimate(estimate);
+                        // Hacky fix to force the completeness bar to update
+                        // Ideally this would go through the UndoRedoManager
+                        parent.update();
                         estimateTextField.getStyleClass().removeAll("error");
                     }
                 }
                 catch (NumberFormatException e) {
-                    //estimateTextField.setText("" + task.getCurrentEstimate());
                     estimateTextField.getStyleClass().add("error");
                 }
             }
@@ -89,10 +102,12 @@ public class ScrumTaskController {
      * Configures this task card.
      * @param pTask The task to display
      * @param pStory The story that this task is a part of
+     * @param pParent The parent controller of this form.
      */
-    public void configure(final Task pTask, final Story pStory) {
+    public void configure(final Task pTask, final Story pStory, final ScrumBoardStoryController pParent) {
         task = pTask;
         story = pStory;
+        parent = pParent;
         nameLabel.setText(task.getName());
         estimateTextField.setText(Float.toString(task.getCurrentEstimate()));
     }
@@ -157,5 +172,14 @@ public class ScrumTaskController {
             sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
         }
         return possibleAssignees;
+    }
+
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert) {
+            synchronized (StyleManager.getInstance()) {
+                parent.update();
+            }
+        }
     }
 }
