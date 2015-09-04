@@ -256,6 +256,7 @@ public class App extends Application {
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
+        System.setProperty("prism.lcdtext", "false");
         ErrorReporter.setup(args);
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.get().setDisabled(true);

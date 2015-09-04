@@ -427,7 +427,7 @@ public class GridLayout extends Group {
     /**
      * Class used to creat the overlay on the grid.
      */
-    private class Overlay implements ChangeListener<Boolean> {
+    private final class Overlay implements ChangeListener<Boolean> {
 
         /**
          * The buttons on the overlay.

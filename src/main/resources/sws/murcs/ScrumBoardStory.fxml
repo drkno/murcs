@@ -77,17 +77,12 @@
             </VBox>
             <VBox fx:id="toDoOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="toDoBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
+                  <VBox fx:id="toDoBaseInfoVBox" alignment="CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Label fx:id="todoTaskNumberLabel" styleClass="scrumBoard-toDo" text="0">
                            <font>
-                              <Font size="22.0" />
+                              <Font size="48.0" />
                            </font>
-                        </Label>
-                        <Label fx:id="toDoBaseInfoLabel" wrapText="true">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
                         </Label>
                      </children>
                   </VBox>
@@ -96,17 +91,12 @@
             </VBox>
             <VBox fx:id="inProgressOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="inProgressBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
+                  <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Label fx:id="inProgressTaskNumberLabel" styleClass="scrumBoard-inProgress" text="0">
                            <font>
-                              <Font size="22.0" />
+                              <Font size="48.0" />
                            </font>
-                        </Label>
-                        <Label fx:id="inProgressBaseInfoLabel" wrapText="true">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
                         </Label>
                      </children>
                   </VBox>
@@ -115,17 +105,12 @@
             </VBox>
             <VBox fx:id="doneOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="doneBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
+                  <VBox fx:id="doneBaseInfoVBox" alignment="CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="ALWAYS">
                      <children>
                         <Label fx:id="doneTaskNumberLabel" styleClass="scrumBoard-done" text="0">
                            <font>
-                              <Font size="22.0" />
+                              <Font size="48.0" />
                            </font>
-                        </Label>
-                        <Label fx:id="doneBaseInfoLabel" wrapText="true">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
                         </Label>
                      </children>
                   </VBox>

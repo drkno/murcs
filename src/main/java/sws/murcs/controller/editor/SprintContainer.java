@@ -259,7 +259,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
         if (scrumBoard != null) {
             scrumBoard.dispose();
         }
-        // TODO: Dispose of burn down chart
+        if (burndownController != null) {
+            burndownController.dispose();
+        }
     }
 
     @Override

@@ -168,8 +168,9 @@ public class BurndownController extends GenericEditor<Sprint> {
     }
 
     /**
-     * Updates the burndown line with the data from the from the model.
+     * Updates the burn down line with the data from the from the model.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void updateBurnDown() {
         // get all the tasks that have been completed in order
         List<Task> completedTasks = getModel().getStories().stream()
