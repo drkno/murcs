@@ -5,50 +5,61 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
-import sws.murcs.controller.controls.md.MaterialDesignButton;
-import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.model.*;
+import sws.murcs.model.Backlog;
+import sws.murcs.model.EstimateType;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Organisation;
+import sws.murcs.model.Release;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The controller for editing sprints.
  */
 public class SprintEditor extends GenericEditor<Sprint> {
 
+    /**
+     * Column containing story estimates.
+     */
     @FXML
     private TableColumn<Story, String> estimateColumn;
 
+    /**
+     * Column containing story names and hyperlinks.
+     */
     @FXML
     private TableColumn<Story, String> storyColumn;
 
+    /**
+     * Table containing stories.
+     */
     @FXML
     private TableView<Story> storiesTable;
 
@@ -183,13 +194,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 getModel().getStories().stream().forEach(allocatableStories::remove);
             }
 
-            //storiesContainer.getChildren().clear();
             storiesTable.setItems(FXCollections.observableArrayList(getModel().getStories()));
-            /*getModel().getStories().forEach(story -> {
-                Node storyNode = generateStoryNode(story);
-                storiesContainer.getChildren().add(storyNode);
-                storyNodeIndex.put(story, storyNode);
-            });*/
         });
     }
 
@@ -382,6 +387,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
     @FXML
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {
@@ -476,6 +482,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             return property;
         });
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        storyColumn.prefWidthProperty().bind(storiesTable.widthProperty().subtract(estimateColumn.widthProperty()).subtract(10));
         estimateColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getEstimate()));
         estimateColumn.setComparator((o1, o2) -> {
             EstimateType type = getModel().getBacklog().getEstimateType();
@@ -500,69 +507,5 @@ public class SprintEditor extends GenericEditor<Sprint> {
             popup.close();
         }, "danger-will-robinson", "everything-is-fine");
         popup.show();
-    }
-
-    /**
-     * Generates a node for a story.
-     * @param story The story
-     * @return the node representing the story
-     */
-    @SuppressWarnings("checkstyle:magicnumber")
-    private Node generateStoryNode(final Story story) {
-
-        MaterialDesignButton removeButton = new MaterialDesignButton(null);
-        removeButton.setPrefHeight(15);
-        removeButton.setPrefWidth(15);
-        Image image = new Image("sws/murcs/icons/removeWhite.png");
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        imageView.setPreserveRatio(true);
-        imageView.setPickOnBounds(true);
-        removeButton.setGraphic(imageView);
-        removeButton.getStyleClass().add("mdr-button");
-        removeButton.getStyleClass().add("mdrd-button");
-        removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + story.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Story from Sprint");
-            popup.addYesNoButtons(() -> {
-                allocatableStories.add(story);
-                storiesTable.getItems().remove(story);
-                getModel().removeStory(story);
-                popup.close();
-            }, "danger-will-robinson", "everything-is-fine");
-            popup.show();
-        });
-
-        GridPane pane = new GridPane();
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
-
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
-
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
-
-        if (getIsCreationWindow()) {
-            Text nameText = new Text(story.toString());
-            pane.add(nameText, 0, 0);
-        }
-        else {
-            Hyperlink nameLink = new Hyperlink(story.toString());
-            nameLink.setOnAction(a ->
-                    getNavigationManager().navigateTo(story));
-            pane.add(nameLink, 0, 0);
-        }
-        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
-        fadeButtonOnHover.setupEffect();
-        pane.add(removeButton, 1, 0);
-        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
-
-        return pane;
     }
 }
