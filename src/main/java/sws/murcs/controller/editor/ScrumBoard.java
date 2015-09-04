@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Scrum Board controller.
+ * The Scrum Board controller. This consists of several story
+ * controllers.
  */
 public class ScrumBoard extends GenericEditor<Sprint> {
 
@@ -33,6 +34,9 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     @FXML
     private AnchorPane mainView;
 
+    /**
+     * The header grid pane.
+     */
     @FXML
     private GridPane header;
 
@@ -51,8 +55,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      */
     private Story draggingStory;
 
+    /**
+     * The sprint this scrum board is displaying.
+     */
     private Sprint currentSprint;
 
+    /**
+     * The list of controllers for the stories on the scrum board.
+     */
     private List<ScrumBoardStoryController> scrumBoardStories;
 
     @Override
