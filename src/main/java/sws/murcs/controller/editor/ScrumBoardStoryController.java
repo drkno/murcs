@@ -283,6 +283,7 @@ public class ScrumBoardStoryController {
             addDragEnteredHandler(positions[i]);
             addDragExitedHandler(positions[i]);
             addDragDroppedHandler(positions[i], TaskState.values()[i]);
+            positions[i].getStyleClass().add("scrumBoard-story-base");
         }
 
         storyHyperLink.setText(story.getShortName());
@@ -295,6 +296,7 @@ public class ScrumBoardStoryController {
                 loader.setRoot(null);
                 loader.setController(null);
                 Parent root = loader.load();
+                root.getStyleClass().add("scrumBoard-story");
                 ScrumTaskController controller = loader.getController();
                 controller.configure(task, story, this);
                 VBox initialVBox = null;
@@ -543,9 +545,9 @@ public class ScrumBoardStoryController {
         target.setOnDragEntered(event -> {
             if (event.getGestureSource() != target && event.getDragboard().hasString()) {
                 if (story == draggingStory) {
-                    // TODO: Style target with drop prompt
+                    target.getStyleClass().add("scrumBoard-story-legal");
                 } else {
-                    // TODO: Potentially style it to indicate that you cannot drop here
+                    target.getStyleClass().add("scrumBoard-story-illegal");
                 }
             }
             event.consume();
@@ -558,7 +560,7 @@ public class ScrumBoardStoryController {
      */
     private void addDragExitedHandler(final Pane target) {
         target.setOnDragExited(event -> {
-            // TODO: Return style to normal
+            target.getStyleClass().removeAll("scrumBoard-story-legal", "scrumBoard-story-illegal");
             event.consume();
         });
     }

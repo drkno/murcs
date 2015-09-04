@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
+<BorderPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
    <center>
       <GridPane fx:id="storyMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0">
         <columnConstraints>
@@ -86,7 +86,10 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="toDoMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES" />
+                  <VBox fx:id="toDoMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" spacing="5.0" VBox.vgrow="SOMETIMES">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></VBox>
                </children>
             </VBox>
             <VBox fx:id="inProgressOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
@@ -100,7 +103,10 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="inProgressMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="SOMETIMES" />
+                  <VBox fx:id="inProgressMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0" VBox.vgrow="SOMETIMES">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></VBox>
                </children>
             </VBox>
             <VBox fx:id="doneOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
@@ -114,7 +120,10 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="doneMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES" />
+                  <VBox fx:id="doneMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" spacing="5.0" VBox.vgrow="SOMETIMES">
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding></VBox>
                </children>
             </VBox>
          </children>
