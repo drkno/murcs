@@ -98,6 +98,7 @@ public class BurndownController extends GenericEditor<Sprint> {
     /**
      * Updates the aimed burndown line with the data from the model.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void updateAimedBurndown() {
         EstimateInfo estimateInfo = getModel().getEstimationInfo();
         float initialEstimate = estimateInfo.getEstimateForDay(getModel().getStartDate());
@@ -116,6 +117,7 @@ public class BurndownController extends GenericEditor<Sprint> {
     /**
      * Updates the burnup line with the data from the model.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void updateBurnUp() {
         burnup.getData().clear();
 

@@ -459,7 +459,7 @@ public class GridLayout extends Group {
          * @param secondStyle the second style to be applied to the overlay
          * @param pPause whether or no it should pause items on the grid.
          */
-        public Overlay(final String pMessage, final String pWarning, final Button leftButton, final Button rightButton,
+        private Overlay(final String pMessage, final String pWarning, final Button leftButton, final Button rightButton,
                        final String firstStyle, final String secondStyle, final boolean pPause) {
             this.message = pMessage;
             this.warning = pWarning;

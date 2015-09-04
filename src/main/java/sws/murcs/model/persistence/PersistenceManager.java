@@ -127,8 +127,7 @@ public final class PersistenceManager {
      * @param persistence Persistence to save.
      * @throws Exception When a model fails to save.
      */
-    public void saveModel(final String name, final Organisation persistence) throws Exception
-    {
+    public void saveModel(final String name, final Organisation persistence) throws Exception {
         // saves the model using the default directory
         persistenceLoader.saveModel(name, persistence);
     }

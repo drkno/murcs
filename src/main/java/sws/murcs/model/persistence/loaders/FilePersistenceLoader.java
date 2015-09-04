@@ -151,14 +151,12 @@ public class FilePersistenceLoader implements PersistenceLoader {
      * @param directory Directory to search
      * @return list of models
      */
-    public static List<String> getModelList(final String fileExtension, final String directory)
-    {
+    public static List<String> getModelList(final String fileExtension, final String directory) {
         List<String> persistentList = new ArrayList<>();
         File dir = new File(directory); // create handle to directory
         for (File f : dir.listFiles()) {
             String name = f.getName();
-            if (name.endsWith(fileExtension)) // check if it ends with the correct ext
-            {
+            if (name.endsWith(fileExtension)) { // check if it ends with the correct ext
                 // if it does add
                 persistentList.add(name.substring(0, name.indexOf(fileExtension)));
             }
