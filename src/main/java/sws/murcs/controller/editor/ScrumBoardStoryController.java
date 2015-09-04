@@ -475,6 +475,9 @@ public class ScrumBoardStoryController {
     /**
      * Hides the complete list of tasks
      * from view.
+     * Note: Calling this method alone will
+     * not show the "Less Info" view,
+     * you have to do that manually.
      */
     private void hideMoreInfo() {
         toDoOuterVBox.getChildren().remove(toDoMoreInfoVBox);
@@ -487,6 +490,12 @@ public class ScrumBoardStoryController {
         doneMoreInfoVBox.setVisible(false);
     }
 
+    /**
+     * Shows the "More Info" view.
+     * Note: When you use this method you
+     * should also all "hideLessInfo" to
+     * hide the little overview.
+     */
     private void showMoreInfo() {
         toDoOuterVBox.getChildren().add(toDoMoreInfoVBox);
         inProgressOuterVBox.getChildren().add(inProgressMoreInfoVBox);
