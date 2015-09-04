@@ -69,13 +69,17 @@ public class ScrumTaskController {
             if (newValue != null) {
                 try {
                     Float estimate = Float.parseFloat(estimateTextField.getText());
-                    if (estimate != task.getCurrentEstimate()) {
+                    if (estimate < 0) {
+                        throw new NumberFormatException("estimate cannot be negative");
+                    }
+                    else if (estimate != task.getCurrentEstimate()) {
                         task.setCurrentEstimate(estimate);
+                        estimateTextField.getStyleClass().removeAll("error");
                     }
                 }
                 catch (NumberFormatException e) {
-                    estimateTextField.setText("" + task.getCurrentEstimate());
-                    //this.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
+                    //estimateTextField.setText("" + task.getCurrentEstimate());
+                    estimateTextField.getStyleClass().add("error");
                 }
             }
         });
