@@ -441,10 +441,18 @@ public class ScrumBoardStoryController {
         }
     }
 
+    private void hideLessInfo() {
+        toDoOuterVBox.getChildren().remove(toDoBaseInfoVBox);
+        inProgressOuterVBox.getChildren().remove(inProgressBaseInfoVBox);
+        doneOuterVBox.getChildren().remove(doneBaseInfoVBox);
+        toDoBaseInfoVBox.setVisible(false);
+        inProgressBaseInfoVBox.setVisible(false);
+        doneBaseInfoVBox.setVisible(false);
+    }
+
     /**
-     * Tells the story that it should only
-     * show an overview of its tasks, not
-     * a list of all tasks.
+     * Tells the story that it should
+     * show an overview of its tasks.
      */
     private void showLessInfo() {
         toDoOuterVBox.getChildren().add(toDoBaseInfoVBox);
@@ -456,6 +464,10 @@ public class ScrumBoardStoryController {
         updateTaskOverviews();
     }
 
+    /**
+     * Hides the complete list of tasks
+     * from view.
+     */
     private void hideMoreInfo() {
         toDoOuterVBox.getChildren().remove(toDoMoreInfoVBox);
         inProgressOuterVBox.getChildren().remove(inProgressMoreInfoVBox);
@@ -476,15 +488,6 @@ public class ScrumBoardStoryController {
         toDoMoreInfoVBox.setVisible(true);
         inProgressMoreInfoVBox.setVisible(true);
         doneMoreInfoVBox.setVisible(true);
-    }
-
-    private void hideLessInfo() {
-        toDoOuterVBox.getChildren().remove(toDoBaseInfoVBox);
-        inProgressOuterVBox.getChildren().remove(inProgressBaseInfoVBox);
-        doneOuterVBox.getChildren().remove(doneBaseInfoVBox);
-        toDoBaseInfoVBox.setVisible(false);
-        inProgressBaseInfoVBox.setVisible(false);
-        doneBaseInfoVBox.setVisible(false);
     }
 
     public void setup(Story pStory, SprintContainer pSprintContainer) {
