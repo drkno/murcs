@@ -400,18 +400,18 @@ public class SearchController {
                                 App.onStyleManagerThread = false;
                             }
                         } else {
-                                List<String> matches = item.getMatches();
-                                for (int i = 0; i < matches.size(); i++) {
-                                    Label matchLabel = new Label(matches.get(i));
-                                    if (i % 2 == 0) {
-                                        matchLabel.getStyleClass().add("search-result");
-                                    }
-                                    children.add(matchLabel);
+                            List<String> matches = item.getMatches();
+                            for (int i = 0; i < matches.size(); i++) {
+                                Label matchLabel = new Label(matches.get(i));
+                                if (i % 2 == 0) {
+                                    matchLabel.getStyleClass().add("search-result");
                                 }
-                                context.getStyleClass().add("search-result-context");
-                                Label selectionAfter = new Label(item.selectionAfter());
-                                children.add(selectionAfter);
-                                setGraphic(vbox);
+                                children.add(matchLabel);
+                            }
+                            context.getStyleClass().add("search-result-context");
+                            Label selectionAfter = new Label(item.selectionAfter());
+                            children.add(selectionAfter);
+                            setGraphic(vbox);
                         }
                     }
                 }
