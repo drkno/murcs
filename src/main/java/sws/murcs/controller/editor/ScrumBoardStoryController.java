@@ -75,6 +75,8 @@ public class ScrumBoardStoryController {
 
     private Boolean infoViewStateMore = true;
 
+    private double storyStateSliderValue = 0;
+
     /**
      * The parent SprintContainer of this view.
      */
@@ -94,6 +96,7 @@ public class ScrumBoardStoryController {
     public final void initialize() {
 
         mainPane.getStyleClass().add("root");
+        mainPane.getStyleClass().add("scrumBoard-story");
         progressBar = new ModelProgressBar(true);
         progressBarContainer.getChildren().addAll(progressBar);
     }
@@ -145,7 +148,6 @@ public class ScrumBoardStoryController {
         }
 
         setupTaskMinInfo();
-        update();
     }
 
     /**
@@ -313,7 +315,10 @@ public class ScrumBoardStoryController {
         for (Task task : story.getTasks()) {
             if (task.getState() != TaskState.Done) {
                 storyStateSlider.setValue(0);
+                storyStateSliderValue = 0;
                 storyStateSlider.setDisable(true);
+                storyStateSlider.getStyleClass().remove("alt");
+                storyStateLabel.setText("Story is ongoing");
                 story.setStoryState(Story.StoryState.Ready);
                 return;
             }
@@ -321,6 +326,31 @@ public class ScrumBoardStoryController {
         storyStateSlider.setDisable(false);
         if (story.getStoryState() == Story.StoryState.Done) {
             storyStateSlider.setValue(1);
+            storyStateSliderValue = 1;
+            if (!storyStateLabel.getStyleClass().contains("alt")) {
+                storyStateSlider.getStyleClass().add("alt");
+            }
+            storyStateLabel.setText("Story Done :)");
+        }
+        else {
+            storyStateLabel.setText("Mark story as Done");
+            if (!storyStateLabel.getStyleClass().contains("alt")) {
+                storyStateSlider.getStyleClass().add("alt");
+            }
+        }
+    }
+
+    @FXML
+    private void updateStoryState() {
+        if (storyStateSliderValue != storyStateSlider.getValue()) {
+            storyStateSliderValue = storyStateSlider.getValue();
+            if (storyStateSliderValue == 1) {
+                story.setStoryState(Story.StoryState.Done);
+            }
+            else {
+                story.setStoryState(Story.StoryState.Ready);
+            }
+            updateToggleStatus();
         }
     }
 

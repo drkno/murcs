@@ -157,7 +157,7 @@ public class ModelProgressBar extends GridPane {
         }
         float completedPercentage = done / total;
         float inProgressPercentage = inProgress / total;
-        float notStartedPrecentage = notStarted / total;
+        float notStartedPercentage = notStarted / total;
 
         if (completedTooltip != null) {
             completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% complete.");
@@ -165,8 +165,8 @@ public class ModelProgressBar extends GridPane {
             notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% not started.");
         }
 
-        getColumnConstraints().get(0).setPrefWidth(Math.floor(completedPercentage * getWidth()));
-        getColumnConstraints().get(1).setPrefWidth(Math.floor(inProgressPercentage * getWidth()));
-        getColumnConstraints().get(2).setPrefWidth(Math.floor(notStartedPrecentage * getWidth()));
+        getColumnConstraints().get(0).setPercentWidth(Math.floor(completedPercentage * 100));
+        getColumnConstraints().get(1).setPercentWidth(Math.floor(inProgressPercentage * 100));
+        getColumnConstraints().get(2).setPercentWidth(Math.floor(notStartedPercentage * 100));
     }
 }
