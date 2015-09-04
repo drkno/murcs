@@ -569,7 +569,7 @@ public class SearchController {
                         }
                     }
 
-                    if (!App.onStyleManagerThread) {
+//                    if (!App.onStyleManagerThread) {
                         synchronized (StyleManager.getInstance()) {
                             App.onStyleManagerThread = true;
                             if (editorPane == null) {
@@ -584,18 +584,18 @@ public class SearchController {
                             editorPane.getView().getStyleClass().add("search-preview");
                             App.onStyleManagerThread = false;
                         }
-                    } else {
-                            if (editorPane == null) {
-                                editorPane = new EditorPane(newValue, App.getMainController(), true);
-                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                                editorPane.setModel(newValue);
-                            }
-                            else {
-                                editorPane.dispose();
-                                editorPane = new EditorPane(newValue, App.getMainController());
-                            }
-                            editorPane.getView().getStyleClass().add("search-preview");
-                    }
+//                    } else {
+//                            if (editorPane == null) {
+//                                editorPane = new EditorPane(newValue, App.getMainController(), true);
+//                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+//                                editorPane.setModel(newValue);
+//                            }
+//                            else {
+//                                editorPane.dispose();
+//                                editorPane = new EditorPane(newValue, App.getMainController());
+//                            }
+//                            editorPane.getView().getStyleClass().add("search-preview");
+//                    }
                     while (!editorPane.getController().isLoaded()) {
                         Thread.sleep(disableDelay);
                     }

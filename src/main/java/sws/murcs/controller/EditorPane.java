@@ -47,7 +47,7 @@ public class EditorPane {
     /**
      * Better supported Java version.
      */
-    private final int betterJavaVersion = 40;
+    private final int betterJavaVersion = 60;
 
     /**
      * Creates a new Editor pane, and sets the model.
