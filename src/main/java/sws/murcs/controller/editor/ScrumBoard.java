@@ -12,6 +12,8 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Scrum Board controller.
@@ -45,9 +47,15 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      */
     private Story draggingStory;
 
+    private Sprint currentSprint;
+
+    private List<ScrumBoardStoryController> scrumBoardStories;
+
     @Override
     protected void initialize() {
+        scrumBoardStories = new ArrayList<>();
         mainView.getStyleClass().add("root");
+        currentSprint = getModel();
     }
 
     /**
@@ -60,10 +68,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
     @Override
     public void loadObject() {
-        storiesVBox.getChildren().clear();
-        for (Story story : getModel().getStories()) {
-            insertStory(story);
+        if (getModel() != currentSprint) {
+            currentSprint = getModel();
+            storiesVBox.getChildren().clear();
+            for (Story story : getModel().getStories()) {
+                insertStory(story);
+            }
         }
+        scrumBoardStories.stream().forEach(ScrumBoardStoryController::update);
     }
 
     /**
@@ -79,6 +91,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
             controller.setup(story, parent);
             controller.setStory(story);
             controller.loadStory();
+            scrumBoardStories.add(controller);
             storiesVBox.getChildren().add(root);
         } catch (IOException e) {
             ErrorReporter.get().reportError(e, "Failed to load story in scrumBoard");

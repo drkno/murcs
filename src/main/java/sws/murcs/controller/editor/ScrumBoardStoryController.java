@@ -100,7 +100,6 @@ public class ScrumBoardStoryController {
 
     protected void loadStory() {
         updateToggleStatus();
-        progressBar.setStory(story);
 
         hideMoreInfo();
         VBox[] positions = new VBox[] {toDoMoreInfoVBox, inProgressMoreInfoVBox, doneMoreInfoVBox};
@@ -146,6 +145,7 @@ public class ScrumBoardStoryController {
         }
 
         setupTaskMinInfo();
+        update();
     }
 
     /**
@@ -267,6 +267,7 @@ public class ScrumBoardStoryController {
         toDoBaseInfoVBox.setVisible(true);
         inProgressBaseInfoVBox.setVisible(true);
         doneBaseInfoVBox.setVisible(true);
+        setupTaskMinInfo();
     }
 
     private void hideMoreInfo() {
@@ -412,4 +413,10 @@ public class ScrumBoardStoryController {
             event.consume();
         });
     }
+
+    protected void update() {
+        progressBar.setStory(story);
+    }
 }
+
+
