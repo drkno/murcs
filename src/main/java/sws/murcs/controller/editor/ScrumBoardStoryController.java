@@ -507,6 +507,14 @@ public class ScrumBoardStoryController {
         doneMoreInfoVBox.setVisible(true);
     }
 
+    /**
+     * Sets up the ScrumBoardStoryController with a sprint container
+     * and a story. You can also these individually with setStory and
+     * setScrumBoardContainer methods.
+     *
+     * @param pStory           The story
+     * @param pSprintContainer The sprint container.
+     */
     public void setup(Story pStory, SprintContainer pSprintContainer) {
         story = pStory;
         sprintContainer = pSprintContainer;
