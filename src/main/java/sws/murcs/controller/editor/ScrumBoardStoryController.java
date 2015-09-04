@@ -102,9 +102,29 @@ public class ScrumBoardStoryController {
      * A Vbox containing more information about the not started tasks
      */
     public VBox toDoMoreInfoVBox;
+
+    /**
+     * A vbox representing the in progress column.
+     */
     public VBox inProgressOuterVBox;
+
+    /**
+     * The vbox that contains information about the in progress tasks,
+     * providing an overview, so to
+     * speak.
+     */
     public VBox inProgressBaseInfoVBox;
+
+    /**
+     * The label containing a textual
+     * overview of the in progress
+     * tasks.
+     */
     public Label inProgressBaseInfoLabel;
+
+    /**
+     * The Vbox containing in progress tasks.
+     */
     public VBox inProgressMoreInfoVBox;
     public VBox doneOuterVBox;
     public VBox doneBaseInfoVBox;
