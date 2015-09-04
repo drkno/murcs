@@ -296,7 +296,10 @@ public class ScrumBoardStoryController {
     }
 
     /**
-     *
+     * Converts a number (in minutes) into
+     * a nice string that we can display in
+     * the application. For example "10 minutes"
+     * or 3 hours.
      */
     @SuppressWarnings("checkstyle:magicnumber")
     private String calculateTime(float summary) {
