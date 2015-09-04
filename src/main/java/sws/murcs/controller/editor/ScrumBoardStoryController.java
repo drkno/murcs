@@ -331,7 +331,7 @@ public class ScrumBoardStoryController {
      * @return The formatted string
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private String formatTime(float minutes) {
+    private String formatTime(final float minutes) {
         int dps = 0;
         String units = "minutes";
 
@@ -431,7 +431,7 @@ public class ScrumBoardStoryController {
      *
      * @param pStory The story
      */
-    public void setStory(Story pStory) {
+    public void setStory(final Story pStory) {
         story = pStory;
     }
 
@@ -442,7 +442,7 @@ public class ScrumBoardStoryController {
      *
      * @param pSprintContainer The container controller
      */
-    public void setSprintContainer(SprintContainer pSprintContainer) {
+    public void setSprintContainer(final SprintContainer pSprintContainer) {
         sprintContainer = pSprintContainer;
     }
 
@@ -455,7 +455,7 @@ public class ScrumBoardStoryController {
      * @param actionEvent The event from the button in the UI.
      */
     @FXML
-    private void toggleInfoView(ActionEvent actionEvent) {
+    private void toggleInfoView(final ActionEvent actionEvent) {
         if (infoViewStateMore) {
             hideLessInfo();
             showMoreInfo();
@@ -542,7 +542,7 @@ public class ScrumBoardStoryController {
      * @param pStory           The story
      * @param pSprintContainer The sprint container.
      */
-    public void setup(Story pStory, SprintContainer pSprintContainer) {
+    public void setup(final Story pStory, final SprintContainer pSprintContainer) {
         story = pStory;
         sprintContainer = pSprintContainer;
     }
@@ -583,6 +583,7 @@ public class ScrumBoardStoryController {
      * @param task The task that the dragged node represents
      * @param story The story that the task is from
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void addDragDetectedHandler(final Node source, final Task task, final Story story) {
         source.setOnDragDetected(event -> {
             draggingTask = task;
