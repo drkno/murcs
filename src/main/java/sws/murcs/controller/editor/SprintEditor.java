@@ -183,7 +183,9 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         //Update the sprint stories
         updateAllocatableStories();
-        Platform.runLater(() -> isLoaded = true);
+        Platform.runLater(() -> {
+            isLoaded = true;
+        });
     }
 
     /**
