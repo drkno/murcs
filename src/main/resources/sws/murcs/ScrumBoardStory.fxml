@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -78,7 +79,12 @@
                <children>
                   <VBox fx:id="toDoBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <Label fx:id="toDoBaseInfoLabel" text="Label" wrapText="true">
+                        <Label fx:id="todoTaskNumberLabel" styleClass="scrumBoard-toDo" text="0">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="toDoBaseInfoLabel" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -92,7 +98,12 @@
                <children>
                   <VBox fx:id="inProgressBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <Label fx:id="inProgressBaseInfoLabel" text="Label" wrapText="true">
+                        <Label fx:id="inProgressTaskNumberLabel" styleClass="scrumBoard-inProgress" text="0">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="inProgressBaseInfoLabel" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -106,7 +117,12 @@
                <children>
                   <VBox fx:id="doneBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <Label fx:id="doneBaseInfoLabel" text="Label" wrapText="true">
+                        <Label fx:id="doneTaskNumberLabel" styleClass="scrumBoard-done" text="0">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="doneBaseInfoLabel" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>

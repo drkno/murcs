@@ -65,6 +65,9 @@ public class ScrumBoardStoryController {
      * A container that shows where the progress bar will go on the screen.
      */
     public VBox progressBarContainer;
+    public Label todoTaskNumberLabel;
+    public Label inProgressTaskNumberLabel;
+    public Label doneTaskNumberLabel;
 
     /**
      * A progress bar that indicates sprint progress.
@@ -195,18 +198,19 @@ public class ScrumBoardStoryController {
                 .filter(t -> t.getState().equals(TaskState.Done))
                 .collect(Collectors.toList());
 
+        todoTaskNumberLabel.setText(String.valueOf(tasksToDo.size()));
         if (tasksToDo.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksToDo
                     .stream()
                     .collect(Collectors.summarizingDouble(Task::getCurrentEstimate));
             String[] timeLeftString = calculateTime((float) timeLeft.getSum()).split(" ");
-            toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started "
-            + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
+            toDoBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
         }
         else {
             toDoBaseInfoLabel.setText("No tasks left to start :)");
         }
 
+        inProgressTaskNumberLabel.setText(String.valueOf(tasksInProgress.size()));
         if (tasksInProgress.size() > 0) {
             DoubleSummaryStatistics timeLeft = tasksInProgress
                     .stream()
@@ -219,14 +223,14 @@ public class ScrumBoardStoryController {
                             .getSum()));
             String[] timeLeftString = calculateTime((float) timeLeft.getSum()).split(" ");
             String[] timeSpentString = calculateTime((float) timeSpent.getSum()).split(" ");
-            inProgressBaseInfoLabel.setText(tasksInProgress.size() + " tasks are in progress "
-                    + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
+            inProgressBaseInfoLabel.setText("Estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining "
                     + "and " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
             inProgressBaseInfoLabel.setText("No tasks are in progress");
         }
 
+        doneTaskNumberLabel.setText(String.valueOf(tasksDone.size()));
         if (tasksDone.size() > 0) {
             DoubleSummaryStatistics timeSpent = tasksDone
                     .stream()
@@ -235,11 +239,10 @@ public class ScrumBoardStoryController {
                             .collect(Collectors.summarizingDouble(EffortEntry::getEffort))
                             .getSum()));
             String[] timeSpentString = calculateTime((float) timeSpent.getSum()).split(" ");
-            doneBaseInfoLabel.setText(tasksDone.size() + " tasks are done "
-                    + "with " + timeSpentString[0] + " " + timeSpentString[1] + " spent");
+            doneBaseInfoLabel.setText(timeSpentString[0] + " " + timeSpentString[1] + " spent");
         }
         else {
-            doneBaseInfoLabel.setText("No tasks are done");
+            doneBaseInfoLabel.setText("No tasks are done :(");
         }
 
     }
