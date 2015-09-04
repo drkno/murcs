@@ -135,6 +135,9 @@ public class ScrumBoardStoryController {
         mainPane.getStyleClass().add("scrumBoard-story");
         progressBar = new ModelProgressBar(true);
         progressBarContainer.getChildren().addAll(progressBar);
+        storyOuterVBox.getStyleClass().add("scrumBoard-separators");
+        toDoOuterVBox.getStyleClass().add("scrumBoard-separators");
+        inProgressOuterVBox.getStyleClass().add("scrumBoard-separators");
     }
 
     /**
@@ -385,7 +388,7 @@ public class ScrumBoardStoryController {
                 storyStateSlider.setValue(0);
                 storyStateSliderValue = 0;
                 storyStateSlider.setDisable(true);
-                storyStateSlider.getStyleClass().remove("alt");
+                storyStateSlider.getStyleClass().removeAll("alt");
                 storyStateLabel.setText("Story is ongoing");
                 story.setStoryState(Story.StoryState.Ready);
                 return;
