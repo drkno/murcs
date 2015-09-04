@@ -419,7 +419,16 @@ public class ScrumBoardStoryController {
         sprintContainer = pSprintContainer;
     }
 
-    public void toggleInfoView(ActionEvent actionEvent) {
+    /**
+     * Toggles between showing a brief overview
+     * of the state of tasks within the story
+     * and all the tasks in the draggable
+     * scrum board view.
+     *
+     * @param actionEvent The event from the button in the UI.
+     */
+    @FXML
+    private void toggleInfoView(ActionEvent actionEvent) {
         if (infoViewStateMore) {
             hideLessInfo();
             showMoreInfo();
