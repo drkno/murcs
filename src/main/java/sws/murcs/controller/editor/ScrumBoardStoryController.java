@@ -150,7 +150,18 @@ public class ScrumBoardStoryController {
      * tasks that are done.
      */
     public VBox doneMoreInfoVBox;
+
+    /**
+     * The main border pane representing the
+     * story on the scrum board.
+     */
     public BorderPane mainPane;
+
+    /**
+     * A label containing the
+     * current state of the
+     * story.
+     */
     public Label storyStateLabel;
 
     /**
