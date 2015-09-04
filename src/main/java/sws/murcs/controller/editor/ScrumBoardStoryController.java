@@ -1,5 +1,9 @@
 package sws.murcs.controller.editor;
 
+import java.io.IOException;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -25,11 +30,6 @@ import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
-
-import java.io.IOException;
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 3/09/2015
@@ -75,8 +75,6 @@ public class ScrumBoardStoryController {
 
     private Boolean infoViewStateMore = true;
 
-    private double storyStateSliderValue = 0;
-
     /**
      * The parent SprintContainer of this view.
      */
@@ -102,6 +100,25 @@ public class ScrumBoardStoryController {
         storyOuterVBox.getStyleClass().add("scrumBoard-separators");
         toDoOuterVBox.getStyleClass().add("scrumBoard-separators");
         inProgressOuterVBox.getStyleClass().add("scrumBoard-separators");
+
+        storyStateSlider.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (storyStateSlider.getValue() == 1) {
+                storyStateSlider.setValue(0);
+            } else {
+                storyStateSlider.setValue(1);
+            }
+        });
+
+        storyStateSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            long currentValue = story.getStoryState() == Story.StoryState.Done ? 1L : 0L;
+            if (newValue.longValue() != currentValue) {
+                Story.StoryState newState = newValue.longValue() == 1L
+                        ? Story.StoryState.Done : Story.StoryState.Ready;
+                story.setStoryState(newState);
+
+                updateToggleStatus();
+            }
+        });
     }
 
     protected void loadStory() {
@@ -318,7 +335,6 @@ public class ScrumBoardStoryController {
         for (Task task : story.getTasks()) {
             if (task.getState() != TaskState.Done) {
                 storyStateSlider.setValue(0);
-                storyStateSliderValue = 0;
                 storyStateSlider.setDisable(true);
                 storyStateSlider.getStyleClass().removeAll("alt");
                 storyStateLabel.setText("Story is ongoing");
@@ -329,7 +345,6 @@ public class ScrumBoardStoryController {
         storyStateSlider.setDisable(false);
         if (story.getStoryState() == Story.StoryState.Done) {
             storyStateSlider.setValue(1);
-            storyStateSliderValue = 1;
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }
@@ -340,20 +355,6 @@ public class ScrumBoardStoryController {
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }
-        }
-    }
-
-    @FXML
-    private void updateStoryState() {
-        if (storyStateSliderValue != storyStateSlider.getValue()) {
-            storyStateSliderValue = storyStateSlider.getValue();
-            if (storyStateSliderValue == 1) {
-                story.setStoryState(Story.StoryState.Done);
-            }
-            else {
-                story.setStoryState(Story.StoryState.Ready);
-            }
-            updateToggleStatus();
         }
     }
 
