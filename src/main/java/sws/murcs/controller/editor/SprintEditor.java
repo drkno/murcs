@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,6 +11,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -18,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
@@ -31,10 +34,11 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -56,6 +60,12 @@ public class SprintEditor extends GenericEditor<Sprint> {
      */
     @FXML
     private TableColumn<Story, String> storyColumn;
+
+    /**
+     * Column containing story completeness.
+     */
+    @FXML
+    private TableColumn<Story, Float> completenessColumn;
 
     /**
      * Table containing stories.
@@ -482,7 +492,33 @@ public class SprintEditor extends GenericEditor<Sprint> {
             return property;
         });
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
-        storyColumn.prefWidthProperty().bind(storiesTable.widthProperty().subtract(estimateColumn.widthProperty()).subtract(10));
+        storyColumn.prefWidthProperty().bind(
+                storiesTable.widthProperty().subtract(estimateColumn.widthProperty())
+                        .subtract(completenessColumn.widthProperty()).subtract(10));
+        completenessColumn.setCellValueFactory(param -> {
+            float done = 0, total = 0;
+            for (Task task : param.getValue().getTasks()) {
+                if (task.getState() == TaskState.Done) {
+                    done += task.getCurrentEstimate();
+                }
+                total += task.getCurrentEstimate();
+            }
+            return new SimpleObjectProperty<>(done / total);
+        });
+        completenessColumn.setCellFactory(param -> new TableCell<Story, Float>() {
+            @Override
+            protected void updateItem(final Float completeness, final boolean empty) {
+                super.updateItem(completeness, empty);
+                setText(null);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                ModelProgressBar modelProgressBar = new ModelProgressBar(true);
+                modelProgressBar.setStory((Story) getTableRow().getItem());
+                setGraphic(modelProgressBar);
+            }
+        });
         estimateColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getEstimate()));
         estimateColumn.setComparator((o1, o2) -> {
             EstimateType type = getModel().getBacklog().getEstimateType();
