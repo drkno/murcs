@@ -228,6 +228,14 @@ public class ScrumBoardStoryController {
      */
     private static Story draggingStory;
 
+    /**
+     * The pane that the draggingTask originated from.
+     */
+    private static Pane sourcePane;
+
+    /**
+     * Sets up the form by adding css styling and listeners.
+     */
     @FXML
     public final void initialize() {
 
@@ -310,7 +318,7 @@ public class ScrumBoardStoryController {
                 }
                 initialVBox.getChildren().add(root);
                 addDragDetectedHandler(root, task, story);
-                addDragDoneHandler(root, task, initialVBox, positions);
+                addDragDoneHandler(root, task, positions);
             } catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Failed to load task in scrumBoard");
             }
@@ -601,6 +609,7 @@ public class ScrumBoardStoryController {
     private void addDragOverHandler(final Pane target) {
         target.setOnDragOver(event -> {
             if (story == draggingStory && event.getGestureSource() != target && event.getDragboard().hasString()) {
+                sourcePane = target;
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
             event.consume();
@@ -613,10 +622,12 @@ public class ScrumBoardStoryController {
      */
     private void addDragEnteredHandler(final Pane target) {
         target.setOnDragEntered(event -> {
-            if (story == draggingStory && event.getGestureSource() != target && event.getDragboard().hasString()) {
-                // TODO: Style target with drop prompt
-                //target.getStyleClass().add("-fx-border-color: red; -fx-border-width: 7px;");
-                //target.applyCss();
+            if (event.getGestureSource() != target && event.getDragboard().hasString()) {
+                if (story == draggingStory) {
+                    // TODO: Style target with drop prompt
+                } else {
+                    // TODO: Potentially style it to indicate that you cannot drop here
+                }
             }
             event.consume();
         });
@@ -651,13 +662,12 @@ public class ScrumBoardStoryController {
      * Adds a drag done handler to the node.
      * @param source The node to add the handler to
      * @param task The task represented by the node
-     * @param initialPane The VBox on the scrum board where the task originated
      * @param places Array of Panes where the node can be dropped
      */
-    private void addDragDoneHandler(final Node source, final Task task, final Pane initialPane, final Pane[] places) {
+    private void addDragDoneHandler(final Node source, final Task task, final Pane[] places) {
         source.setOnDragDone(event -> {
             if (event.getTransferMode() == TransferMode.MOVE) {
-                initialPane.getChildren().remove(source);
+                sourcePane.getChildren().remove(source);
                 places[task.getState().ordinal()].getChildren().add(source);
             }
             event.consume();
@@ -671,5 +681,3 @@ public class ScrumBoardStoryController {
         progressBar.setStory(story);
     }
 }
-
-
