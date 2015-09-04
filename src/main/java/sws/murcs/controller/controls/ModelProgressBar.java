@@ -25,7 +25,7 @@ public class ModelProgressBar extends GridPane {
 
     /**
      * Creates a new progress bar for stories.
-     * @param hasTooltips sets wheather the progressbar will have tooltips.
+     * @param hasTooltips sets whether the progressbar will have tooltips.
      */
     @SuppressWarnings("checkstyle:magicnumber")
     public ModelProgressBar(final boolean hasTooltips) {
@@ -157,16 +157,16 @@ public class ModelProgressBar extends GridPane {
         }
         float completedPercentage = done / total;
         float inProgressPercentage = inProgress / total;
-        float notStartedPercentage = notStarted / total;
+        float notStartedPrecentage = notStarted / total;
 
         if (completedTooltip != null) {
             completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% complete.");
-            progressTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% in progress.");
-            notStartedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% not started.");
+            progressTooltip.setText(Math.round(inProgressPercentage * 1000) / 10 + "% in progress.");
+            notStartedTooltip.setText(Math.round(notStartedPrecentage * 1000) / 10 + "% not started.");
         }
 
         getColumnConstraints().get(0).setPercentWidth(Math.floor(completedPercentage * 100));
         getColumnConstraints().get(1).setPercentWidth(Math.floor(inProgressPercentage * 100));
-        getColumnConstraints().get(2).setPercentWidth(Math.floor(notStartedPercentage * 100));
+        getColumnConstraints().get(2).setPercentWidth(Math.floor(notStartedPrecentage * 100));
     }
 }
