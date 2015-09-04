@@ -331,7 +331,8 @@ public class ScrumBoardStoryController {
      * @return The formatted string
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private String formatTime(final float minutes) {
+    private String formatTime(final float startMinutes) {
+        float minutes = startMinutes;
         int dps = 0;
         String units = "minutes";
 
