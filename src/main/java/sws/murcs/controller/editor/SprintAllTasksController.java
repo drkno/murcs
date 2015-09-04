@@ -526,7 +526,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     /**
      * The task used to load all the tasks into the editor.
-     * @param <T> The type that you want the call function to reaturn. (Void in this case).
+     * @param <T> The type that you want the call function to return. (Void in this case).
      */
     private class TaskLoadingTask<T> extends javafx.concurrent.Task {
 
@@ -554,12 +554,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
          * Sets the list of tasks to load.
          * @param newTasks the tasks to load.
          */
-        protected void setTasks(final List newTasks) {
+        protected void setTasks(final List<Task> newTasks) {
             tasks = newTasks;
         }
 
         /**
-         * The editor that all the taks editors generated belong to.
+         * The editor that all the tasks editors generated belong to.
          * @param parent the parent editor of all the task editors generated.
          */
         protected void setEditor(final TaskEditorParent parent) {

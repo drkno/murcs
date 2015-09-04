@@ -1,8 +1,8 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -10,9 +10,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
-import sws.murcs.model.Task;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,21 +39,6 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     private GridPane header;
 
     /**
-     * The parent SprintContainer of this view.
-     */
-    private SprintContainer parent;
-
-    /**
-     * The task currently being dragged.
-     */
-    private Task draggingTask;
-
-    /**
-     * The story of the currently dragging task.
-     */
-    private Story draggingStory;
-
-    /**
      * The sprint this scrum board is displaying.
      */
     private Sprint currentSprint;
@@ -64,6 +47,16 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * The list of controllers for the stories on the scrum board.
      */
     private List<ScrumBoardStoryController> scrumBoardStories;
+
+    /**
+     * The thread used for loading stories.
+     */
+    private Thread thread;
+
+    /**
+     * Whether or not the thread that is loading stories should stop.
+     */
+    private boolean stop;
 
     @Override
     protected void initialize() {
@@ -74,58 +67,114 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         currentSprint = getModel();
     }
 
-    /**
-     * Sets the parent SprintContainer of this view.
-     * @param container The parent of this view
-     */
-    protected void setParent(final SprintContainer container) {
-        parent = container;
-    }
-
     @Override
     public void loadObject() {
         if (currentSprint == null || !getModel().equals(currentSprint) || !(currentSprint.getStories().size() == scrumBoardStories.size())) {
-            currentSprint = getModel();
-            storiesVBox.getChildren().clear();
-            scrumBoardStories.clear();
-            for (Story story : getModel().getStories()) {
-                insertStory(story);
-            }
+            loadStories();
         }
         scrumBoardStories.stream().forEach(ScrumBoardStoryController::update);
     }
 
     /**
-     * Adds a story to the list.
-     * @param story The story to add to the VBox
+     * Starts the thread for loading all the stories.
      */
-    private void insertStory(final Story story) {
-
-        FXMLLoader loader = new FXMLLoader(ScrumBoardStoryController.class.getResource("/sws/murcs/ScrumBoardStory.fxml"));
-        try {
-            Parent root = loader.load();
-            ScrumBoardStoryController controller = loader.getController();
-            controller.setup(story, parent);
-            controller.setStory(story);
-            controller.loadStory();
-            scrumBoardStories.add(controller);
-            storiesVBox.getChildren().add(root);
-        } catch (IOException e) {
-            ErrorReporter.get().reportError(e, "Failed to load story in scrumBoard");
-        }
+    private void loadStories() {
+        storiesVBox.getChildren().clear();
+        scrumBoardStories.clear();
+        StoryLoadingTask<Void> storyThread = new StoryLoadingTask<>();
+        storyThread.setEditor(this);
+        storyThread.setStories(getModel().getStories());
+        thread = new Thread(storyThread);
+        thread.setDaemon(true);
+        thread.start();
     }
 
     /**
-     * Adds a double click handler to a node that loads a TaskEditor into a new window.
-     * @param node The node to apply the handler to
-     * @param story The story to load
+     * The task used to load all the stories into the editor.
+     * @param <T> The type that you want the call function to return. (Void in this case).
      */
-    private void addDoubleClickHandler(final Node node, final Story story) {
-        node.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2) {
-                parent.getNavigationManager().navigateToNewTab(story);
+    private class StoryLoadingTask<T> extends javafx.concurrent.Task {
+
+        /**
+         * The stories to load.
+         */
+        private List<Story> stories;
+
+        /**
+         * The parent editor that the task editors belong to.
+         */
+        private ScrumBoard editor;
+
+        /**
+         * The current sprint, this is used to determine whether or not to add editors into the view.
+         */
+        private Sprint currentSprint = getModel();
+
+        /**
+         * The loader that is used to load all of the stories.
+         */
+        private FXMLLoader threadStoryLoader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoardStory.fxml"));
+
+        /**
+         * Sets the list of stories to load.
+         * @param newStories the stories to load.
+         */
+        protected void setStories(final List<Story> newStories) {
+            stories = newStories;
+        }
+
+        /**
+         * The editor that all the story editors generated belong to.
+         * @param parent the parent editor of all the story editors generated.
+         */
+        protected void setEditor(final ScrumBoard parent) {
+            editor = parent;
+        }
+
+        @Override
+        protected T call() throws Exception {
+            Platform.runLater(() -> {
+                if (!getModel().equals(currentSprint)) {
+                    return;
+                }
+            });
+            for (Story story : stories) {
+                if (stop) {
+                    break;
+                }
+                try {
+                    threadStoryLoader.setRoot(null);
+                    ScrumBoardStoryController controller = new ScrumBoardStoryController();
+                    threadStoryLoader.setController(controller);
+                    Parent view = threadStoryLoader.load();
+                    controller.setStory(story);
+                    controller.loadStory();
+                    Platform.runLater(() -> {
+                        if (!getModel().equals(currentSprint)) {
+                            return;
+                        }
+                        else {
+                            scrumBoardStories.add(controller);
+                            storiesVBox.getChildren().add(view);
+                        }
+                    });
+                }
+                catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Unable to create new story in scrumBoard");
+                }
             }
-        });
+            return null;
+        }
+
+        @Override
+        protected void succeeded() {
+            Platform.runLater(() -> {
+                isLoaded = true;
+                if (!getModel().equals(currentSprint)) {
+                    return;
+                }
+            });
+        }
     }
 
     @Override
@@ -134,5 +183,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
     @Override
     public void dispose() {
+        if (thread != null && thread.isAlive()) {
+            stop = true;
+            try {
+                thread.join();
+            } catch (Throwable t) {
+                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+            }
+        }
+        super.dispose();
     }
 }
