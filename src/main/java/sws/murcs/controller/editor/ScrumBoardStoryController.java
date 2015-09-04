@@ -441,6 +441,13 @@ public class ScrumBoardStoryController {
         }
     }
 
+    /**
+     * Hides the "Less Info" view of
+     * the story.
+     * Note: Calling this alone will
+     * not show the "More Info"
+     * view.
+     */
     private void hideLessInfo() {
         toDoOuterVBox.getChildren().remove(toDoBaseInfoVBox);
         inProgressOuterVBox.getChildren().remove(inProgressBaseInfoVBox);
@@ -451,8 +458,9 @@ public class ScrumBoardStoryController {
     }
 
     /**
-     * Tells the story that it should
-     * show an overview of its tasks.
+     * Shows the "Less Info" view of the story.
+     * Note: That calling this alone doesn't
+     * hide the "More Info" view.
      */
     private void showLessInfo() {
         toDoOuterVBox.getChildren().add(toDoBaseInfoVBox);
