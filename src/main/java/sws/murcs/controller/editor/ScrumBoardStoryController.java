@@ -32,23 +32,75 @@ import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
 /**
- * 3/09/2015
- *
- * @author Dion
+ * A controller for stories on the scrum board. Handles dragging and dropping.
  */
 public class ScrumBoardStoryController {
+    /**
+     * The main grid pane for the story.
+     */
     public GridPane StoryMainGridPane;
+
+    /**
+     * The outer Vbox for the story column.
+     */
     public VBox storyOuterVBox;
+
+    /**
+     * A container for static controls on the story.
+     */
     public VBox storyStaticControlsVBox;
+
+    /**
+     * The grid pane containing static controls for the story.
+     */
     public GridPane storyStaticControlsGridPane;
+
+    /**
+     * A button for expanding/collapsing the row.
+     */
     public Button storyCollapseExpandButton;
+
+    /**
+     * The image used on the expand/collapse button.
+     */
     public ImageView collapseExpandStoryButton;
+
+    /**
+     * The hyperlink for navigating to the story view.
+     */
     public Hyperlink storyHyperLink;
+
+    /**
+     * The slider for controlling story state. This is disabled until all tasks in the story are
+     * marked as done.
+     */
     public Slider storyStateSlider;
+
+    /**
+     * A Vbox containing extra information about the story.
+     */
     public VBox storyExtraInfoVBox;
+
+    /**
+     * The vbox representing the to do column
+     */
     public VBox toDoOuterVBox;
+
+    /**
+     * A vbox containing information about the
+     * to do column (x tasks have not been started).
+     */
     public VBox toDoBaseInfoVBox;
+
+    /**
+     * The label containing information about the not started tasks.
+     * x tasks not started ect.
+     */
     public Label toDoBaseInfoLabel;
+
+    /**
+     * A Vbox containing more information about the not started tasks
+     */
     public VBox toDoMoreInfoVBox;
     public VBox inProgressOuterVBox;
     public VBox inProgressBaseInfoVBox;
