@@ -6,31 +6,32 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
-   <children>
-      <GridPane fx:id="StoryMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+<BorderPane fx:id="mainPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoardStoryController">
+   <center>
+      <GridPane fx:id="StoryMainGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="NEVER" percentWidth="22.0" />
-          <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="26.0" />
+          <ColumnConstraints hgrow="NEVER" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
+          <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="25.0" prefWidth="150.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="-Infinity" vgrow="ALWAYS" />
         </rowConstraints>
          <children>
-            <VBox fx:id="StoryOuterVBox" GridPane.valignment="TOP">
+            <VBox fx:id="storyOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="storyStaticControlsVBox">
+                  <VBox fx:id="storyStaticControlsVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
-                        <VBox fx:id="progressBarContainer" prefHeight="5.0"/>
-                        <GridPane fx:id="storyStaticControlsGridPane" alignment="CENTER">
+                        <VBox fx:id="progressBarContainer" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="5.0" minWidth="0.0" prefHeight="5.0" prefWidth="150.0" VBox.vgrow="NEVER" />
+                        <GridPane fx:id="storyStaticControlsGridPane" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="NEVER">
                            <columnConstraints>
-                              <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
-                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="-Infinity" />
+                              <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="45.0" />
+                              <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="0.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="-Infinity" valignment="CENTER" vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
                               <Button fx:id="storyCollapseExpandButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleInfoView" prefHeight="30.0" prefWidth="30.0">
@@ -50,10 +51,10 @@
                                       <String fx:value="icon-button" />
                                   </styleClass>
                               </Button>
-                              <Hyperlink fx:id="storyHyperLink" text="Hyperlink" GridPane.columnIndex="1" />
+                              <Hyperlink fx:id="storyHyperLink" text="Hyperlink" wrapText="true" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
-                        <HBox alignment="CENTER">
+                        <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="NEVER">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
@@ -68,13 +69,12 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <VBox fx:id="storyBaseInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
-                  <VBox fx:id="storyExtraInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
+                  <VBox fx:id="storyExtraInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES" />
                </children>
             </VBox>
-            <VBox fx:id="toDoOuterVBox" GridPane.columnIndex="1" GridPane.valignment="TOP">
+            <VBox fx:id="toDoOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="toDoBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
+                  <VBox fx:id="toDoBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
                         <Label fx:id="toDoBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
@@ -83,12 +83,12 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="toDoMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
+                  <VBox fx:id="toDoMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES" />
                </children>
             </VBox>
-            <VBox fx:id="inProgressOuterVBox" GridPane.columnIndex="2" GridPane.valignment="TOP">
+            <VBox fx:id="inProgressOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="inProgressBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
+                  <VBox fx:id="inProgressBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
                         <Label fx:id="inProgressBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
@@ -97,12 +97,12 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="inProgressMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
+                  <VBox fx:id="inProgressMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="SOMETIMES" />
                </children>
             </VBox>
-            <VBox fx:id="doneOuterVBox" GridPane.columnIndex="3" GridPane.valignment="TOP">
+            <VBox fx:id="doneOuterVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="SOMETIMES" GridPane.valignment="TOP" GridPane.vgrow="SOMETIMES">
                <children>
-                  <VBox fx:id="doneBaseInfoVBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity">
+                  <VBox fx:id="doneBaseInfoVBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES">
                      <children>
                         <Label fx:id="doneBaseInfoLabel" text="Label" wrapText="true">
                            <VBox.margin>
@@ -111,10 +111,10 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox fx:id="doneMoreInfoVBox" minHeight="-Infinity" minWidth="-Infinity" />
+                  <VBox fx:id="doneMoreInfoVBox" maxHeight="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="SOMETIMES" />
                </children>
             </VBox>
          </children>
       </GridPane>
-   </children>
-</AnchorPane>
+   </center>
+</BorderPane>

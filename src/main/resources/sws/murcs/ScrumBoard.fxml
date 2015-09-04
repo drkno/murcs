@@ -6,53 +6,65 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="mainView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoard">
+
+<AnchorPane fx:id="mainView" maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumBoard">
    <children>
-      <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="5.0" layoutY="5.0" prefViewportHeight="390.0" prefViewportWidth="590.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <content>
-            <AnchorPane>
+      <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="25.0" valignment="CENTER" vgrow="NEVER" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="0.0" vgrow="ALWAYS" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+              <columnConstraints>
+                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
+                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
+                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
+                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
+              </columnConstraints>
+              <rowConstraints>
+                 <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
+              </rowConstraints>
                <children>
-                  <GridPane AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <columnConstraints>
-                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
-                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
-                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
-                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="25.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                       <RowConstraints vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Label text="Story">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label text="Not Started" GridPane.columnIndex="1">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label text="In Progress" GridPane.columnIndex="2">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                        </Label>
-                        <Label text="Done" GridPane.columnIndex="3">
-                           <font>
-                              <Font name="System Bold" size="14.0" />
-                           </font>
-                         </Label>
-                     </children>
-                  </GridPane>
-                  <VBox fx:id="storiesVBox" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
-                     <padding>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </padding>
-                  </VBox>
+                  <Label text="Story">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Not Started" GridPane.columnIndex="1">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="In Progress" GridPane.columnIndex="2">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Done" GridPane.columnIndex="3">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                   </Label>
                </children>
-            </AnchorPane>
-         </content>
-      </ScrollPane>
+            </GridPane>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" GridPane.rowIndex="1">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <VBox fx:id="storiesVBox" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </GridPane>
    </children>
 </AnchorPane>

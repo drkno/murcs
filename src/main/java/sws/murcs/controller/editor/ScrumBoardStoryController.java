@@ -1,30 +1,35 @@
 package sws.murcs.controller.editor;
 
-import java.util.DoubleSummaryStatistics;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.controller.controls.ModelProgressBar;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
 import java.io.IOException;
+import java.util.DoubleSummaryStatistics;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 3/09/2015
@@ -33,14 +38,13 @@ import java.io.IOException;
  */
 public class ScrumBoardStoryController {
     public GridPane StoryMainGridPane;
-    public VBox StoryOuterVBox;
+    public VBox storyOuterVBox;
     public VBox storyStaticControlsVBox;
     public GridPane storyStaticControlsGridPane;
     public Button storyCollapseExpandButton;
     public ImageView collapseExpandStoryButton;
     public Hyperlink storyHyperLink;
     public Slider storyStateSlider;
-    public VBox storyBaseInfoVBox;
     public VBox storyExtraInfoVBox;
     public VBox toDoOuterVBox;
     public VBox toDoBaseInfoVBox;
@@ -54,7 +58,7 @@ public class ScrumBoardStoryController {
     public VBox doneBaseInfoVBox;
     public Label doneBaseInfoLabel;
     public VBox doneMoreInfoVBox;
-    public AnchorPane mainPane;
+    public BorderPane mainPane;
     public Label storyStateLabel;
 
     /**
@@ -98,14 +102,7 @@ public class ScrumBoardStoryController {
         updateToggleStatus();
         progressBar.setStory(story);
 
-        storyBaseInfoVBox.setVisible(true);
-        storyExtraInfoVBox.setVisible(false);
-        toDoBaseInfoVBox.setVisible(true);
-        toDoMoreInfoVBox.setVisible(false);
-        inProgressBaseInfoVBox.setVisible(true);
-        inProgressMoreInfoVBox.setVisible(false);
-        doneBaseInfoVBox.setVisible(true);
-        doneMoreInfoVBox.setVisible(false);
+        hideMoreInfo();
         VBox[] positions = new VBox[] {toDoMoreInfoVBox, inProgressMoreInfoVBox, doneMoreInfoVBox};
         for (int i = 0; i < positions.length; i++) {
             addDragOverHandler(positions[i]);
@@ -198,8 +195,8 @@ public class ScrumBoardStoryController {
                     .stream()
                     .collect(Collectors.summarizingDouble(Task::getCurrentEstimate));
             String[] timeLeftString = calculateTime((float) timeLeft.getSum()).split(" ");
-            toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started\n"
-            + "with " + timeLeftString[0] + " " + timeLeftString[1] + " estimate left");
+            toDoBaseInfoLabel.setText(tasksToDo.size() + " tasks are ready to be started "
+            + "with an estimated " + timeLeftString[0] + " " + timeLeftString[1] + " remaining");
         }
         else {
             toDoBaseInfoLabel.setText("No tasks left to start :)");
@@ -264,13 +261,19 @@ public class ScrumBoardStoryController {
     }
 
     private void ShowLessInfo() {
-        storyBaseInfoVBox.setVisible(true);
+        toDoOuterVBox.getChildren().add(toDoBaseInfoVBox);
+        inProgressOuterVBox.getChildren().add(inProgressBaseInfoVBox);
+        doneOuterVBox.getChildren().add(doneBaseInfoVBox);
         toDoBaseInfoVBox.setVisible(true);
         inProgressBaseInfoVBox.setVisible(true);
         doneBaseInfoVBox.setVisible(true);
     }
 
     private void hideMoreInfo() {
+        toDoOuterVBox.getChildren().remove(toDoMoreInfoVBox);
+        inProgressOuterVBox.getChildren().remove(inProgressMoreInfoVBox);
+        doneOuterVBox.getChildren().remove(doneMoreInfoVBox);
+        storyOuterVBox.getChildren().remove(storyExtraInfoVBox);
         storyExtraInfoVBox.setVisible(false);
         toDoMoreInfoVBox.setVisible(false);
         inProgressMoreInfoVBox.setVisible(false);
@@ -278,6 +281,10 @@ public class ScrumBoardStoryController {
     }
 
     private void showMoreInfo() {
+        toDoOuterVBox.getChildren().add(toDoMoreInfoVBox);
+        inProgressOuterVBox.getChildren().add(inProgressMoreInfoVBox);
+        doneOuterVBox.getChildren().add(doneMoreInfoVBox);
+        storyOuterVBox.getChildren().add(storyExtraInfoVBox);
         storyExtraInfoVBox.setVisible(true);
         toDoMoreInfoVBox.setVisible(true);
         inProgressMoreInfoVBox.setVisible(true);
@@ -285,7 +292,9 @@ public class ScrumBoardStoryController {
     }
 
     private void hideLessInfo() {
-        storyBaseInfoVBox.setVisible(false);
+        toDoOuterVBox.getChildren().remove(toDoBaseInfoVBox);
+        inProgressOuterVBox.getChildren().remove(inProgressBaseInfoVBox);
+        doneOuterVBox.getChildren().remove(doneBaseInfoVBox);
         toDoBaseInfoVBox.setVisible(false);
         inProgressBaseInfoVBox.setVisible(false);
         doneBaseInfoVBox.setVisible(false);
