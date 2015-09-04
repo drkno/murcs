@@ -382,19 +382,36 @@ public class SearchController {
                         vbox.getChildren().add(box);
                         VBox.setVgrow(box, Priority.ALWAYS);
 
-                        synchronized (StyleManager.getInstance()) {
-                            List<String> matches = item.getMatches();
-                            for (int i = 0; i < matches.size(); i++) {
-                                Label matchLabel = new Label(matches.get(i));
-                                if (i % 2 == 0) {
-                                    matchLabel.getStyleClass().add("search-result");
+                        if (!App.onStyleManagerThread) {
+                            synchronized (StyleManager.getInstance()) {
+                                App.onStyleManagerThread = true;
+                                List<String> matches = item.getMatches();
+                                for (int i = 0; i < matches.size(); i++) {
+                                    Label matchLabel = new Label(matches.get(i));
+                                    if (i % 2 == 0) {
+                                        matchLabel.getStyleClass().add("search-result");
+                                    }
+                                    children.add(matchLabel);
                                 }
-                                children.add(matchLabel);
+                                context.getStyleClass().add("search-result-context");
+                                Label selectionAfter = new Label(item.selectionAfter());
+                                children.add(selectionAfter);
+                                setGraphic(vbox);
+                                App.onStyleManagerThread = false;
                             }
-                            context.getStyleClass().add("search-result-context");
-                            Label selectionAfter = new Label(item.selectionAfter());
-                            children.add(selectionAfter);
-                            setGraphic(vbox);
+                        } else {
+                                List<String> matches = item.getMatches();
+                                for (int i = 0; i < matches.size(); i++) {
+                                    Label matchLabel = new Label(matches.get(i));
+                                    if (i % 2 == 0) {
+                                        matchLabel.getStyleClass().add("search-result");
+                                    }
+                                    children.add(matchLabel);
+                                }
+                                context.getStyleClass().add("search-result-context");
+                                Label selectionAfter = new Label(item.selectionAfter());
+                                children.add(selectionAfter);
+                                setGraphic(vbox);
                         }
                     }
                 }
@@ -552,22 +569,43 @@ public class SearchController {
                         }
                     }
 
-                    if (editorPane == null) {
-                        editorPane = new EditorPane(newValue, App.getMainController(), true);
-                    } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                        editorPane.setModel(newValue);
-                    }
-                    else {
-                        editorPane.dispose();
-                        editorPane = new EditorPane(newValue, App.getMainController());
-                    }
-                    synchronized (StyleManager.getInstance()) {
-                        editorPane.getView().getStyleClass().add("search-preview");
+                    if (!App.onStyleManagerThread) {
+                        synchronized (StyleManager.getInstance()) {
+                            App.onStyleManagerThread = true;
+                            if (editorPane == null) {
+                                editorPane = new EditorPane(newValue, App.getMainController(), true);
+                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                                editorPane.setModel(newValue);
+                            }
+                            else {
+                                editorPane.dispose();
+                                editorPane = new EditorPane(newValue, App.getMainController());
+                            }
+                            editorPane.getView().getStyleClass().add("search-preview");
+                            App.onStyleManagerThread = false;
+                        }
+                    } else {
+                            if (editorPane == null) {
+                                editorPane = new EditorPane(newValue, App.getMainController(), true);
+                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                                editorPane.setModel(newValue);
+                            }
+                            else {
+                                editorPane.dispose();
+                                editorPane = new EditorPane(newValue, App.getMainController());
+                            }
+                            editorPane.getView().getStyleClass().add("search-preview");
                     }
                     while (!editorPane.getController().isLoaded()) {
                         Thread.sleep(disableDelay);
                     }
-                    synchronized (StyleManager.getInstance()) {
+                    if (!App.onStyleManagerThread) {
+                        synchronized (StyleManager.getInstance()) {
+                            App.onStyleManagerThread = true;
+                            disableControlsAndUpdateButton();
+                            App.onStyleManagerThread = false;
+                        }
+                    } else {
                         disableControlsAndUpdateButton();
                     }
                 }

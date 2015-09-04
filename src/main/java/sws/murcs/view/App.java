@@ -30,6 +30,8 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class App extends Application {
 
+    public static boolean onStyleManagerThread = false;
+
     /**
      * Default window title to use.
      */

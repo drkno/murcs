@@ -142,7 +142,13 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      */
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            synchronized (StyleManager.getInstance()) {
+            if (!App.onStyleManagerThread) {
+                synchronized (StyleManager.getInstance()) {
+                    App.onStyleManagerThread = true;
+                    loadObject();
+                    App.onStyleManagerThread = false;
+                }
+            } else {
                 loadObject();
             }
         }
@@ -280,7 +286,13 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
         invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
-        synchronized (StyleManager.class) {
+        if (!App.onStyleManagerThread) {
+            synchronized (StyleManager.class) {
+                App.onStyleManagerThread = true;
+                showErrors(sectionName);
+                App.onStyleManagerThread = false;
+            }
+        } else {
             showErrors(sectionName);
         }
     }

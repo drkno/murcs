@@ -31,6 +31,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.view.App;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -533,7 +534,14 @@ public class TaskEditor implements UndoRedoChangeListener {
     @Override
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            synchronized (StyleManager.getInstance()) {
+            if (!App.onStyleManagerThread) {
+                synchronized (StyleManager.getInstance()) {
+                    App.onStyleManagerThread = true;
+                    update();
+                    App.onStyleManagerThread = false;
+                }
+            }
+            else {
                 update();
             }
         }
