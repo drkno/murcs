@@ -1,12 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -25,6 +19,13 @@ import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -224,7 +225,9 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         if (hideError && errorMessagePopover != null) {
             errorMessagePopover.hide();
         }
-        labelErrorMessage.setText("");
+        if (labelErrorMessage != null) {
+            labelErrorMessage.setText("");
+        }
     }
 
     /**
