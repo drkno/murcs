@@ -640,6 +640,9 @@ public class ScrumBoardStoryController {
         });
     }
 
+    /**
+     * Updates the progress bar for the story.
+     */
     protected void update() {
         progressBar.setStory(story);
     }
