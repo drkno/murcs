@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
@@ -32,6 +33,9 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     @FXML
     private AnchorPane mainView;
 
+    @FXML
+    private GridPane header;
+
     /**
      * The parent SprintContainer of this view.
      */
@@ -55,6 +59,8 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     protected void initialize() {
         scrumBoardStories = new ArrayList<>();
         mainView.getStyleClass().add("root");
+        mainView.getStyleClass().add("scrumBoard");
+        header.getStyleClass().add("scrumBoard-header");
         currentSprint = getModel();
     }
 
