@@ -139,6 +139,8 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     @FXML
     private void editAssignedButtonClicked(final ActionEvent event) {
         try {
+            assigneesPopOverFxml.setRoot(null);
+            assigneesPopOverFxml.setController(null);
             Parent parent = assigneesPopOverFxml.load();
             PopOver taskPopover = new PopOver(parent);
             AssigneeController controller = assigneesPopOverFxml.getController();
@@ -160,6 +162,8 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     @FXML
     private void logEffortButtonClick(final ActionEvent event) {
         try {
+            effortPopOverFxml.setRoot(null);
+            effortPopOverFxml.setController(null);
             Parent parent = effortPopOverFxml.load();
             PopOver effortPopOver = new PopOver(parent);
             EffortController controller = effortPopOverFxml.getController();
