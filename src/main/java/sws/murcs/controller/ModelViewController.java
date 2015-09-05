@@ -442,7 +442,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
     @Override
     public void update() {
-        if (editorPane != null) {
+        if (editorPane != null && PersistenceManager.getCurrent().getCurrentModel() != null) {
             editorPane.getController().loadObject();
         }
     }
