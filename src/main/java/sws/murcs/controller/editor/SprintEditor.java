@@ -1,32 +1,31 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.List;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.controls.md.MaterialDesignButton;
-import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.controller.controls.ModelProgressBar;
+import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -39,20 +38,40 @@ import sws.murcs.model.Organisation;
 import sws.murcs.model.Release;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The controller for editing sprints.
  */
 public class SprintEditor extends GenericEditor<Sprint> {
+
+    /**
+     * Column containing story estimates.
+     */
+    @FXML
+    private TableColumn<Story, String> estimateColumn;
+
+    /**
+     * Column containing story names and hyperlinks.
+     */
+    @FXML
+    private TableColumn<Story, String> storyColumn;
+
+    /**
+     * Column containing story completeness.
+     */
+    @FXML
+    private TableColumn<Story, Float> completenessColumn;
+
+    /**
+     * Table containing stories.
+     */
+    @FXML
+    private TableView<Story> storiesTable;
 
     /**
      * The Button to navigate to the associated team.
@@ -77,12 +96,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
      */
     @FXML
     private TextField shortNameTextField, longNameTextField;
-
-    /**
-     * The container for stories that have been brought into this sprint.
-     */
-    @FXML
-    private VBox storiesContainer;
 
     /**
      * The list of stories able to be brought into a sprint derived from the backlog.
@@ -124,11 +137,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
      * The list of stories brought into this sprint.
      */
     private List<Story> allocatableStories;
-
-    /**
-     * Maps the story to the node it is displayed in.
-     */
-    private Map<Story, Node> storyNodeIndex;
 
     @Override
     public final void loadObject() {
@@ -175,7 +183,9 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         //Update the sprint stories
         updateAllocatableStories();
-        Platform.runLater(() -> { isLoaded = true; });
+        Platform.runLater(() -> {
+            isLoaded = true;
+        });
     }
 
     /**
@@ -196,12 +206,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 getModel().getStories().stream().forEach(allocatableStories::remove);
             }
 
-            storiesContainer.getChildren().clear();
-            getModel().getStories().forEach(story -> {
-                Node storyNode = generateStoryNode(story);
-                storiesContainer.getChildren().add(storyNode);
-                storyNodeIndex.put(story, storyNode);
-            });
+            storiesTable.setItems(FXCollections.observableArrayList(getModel().getStories()));
         });
     }
 
@@ -241,7 +246,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         //Save the backlog
         if (isNullOrNotEqual(sprint.getBacklog(), backlogComboBox.getValue())) {
             if (backlogComboBox.getValue() != null) {
-                if (storiesContainer.getChildren().size() > 0) {
+                if (storiesTable.getItems().size() > 0) {
                     GenericPopup popup = new GenericPopup();
                     popup.setMessageText("Do you really want to change the Sprint Backlog? "
                             + "All added stories will be cleared");
@@ -252,7 +257,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
                         storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
                         allocatableStories.clear();
                         allocatableStories.addAll(sprint.getBacklog().getAllStories());
-                        storyNodeIndex.clear();
                         updateAllocatableStories();
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
@@ -264,7 +268,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     storiesList.getItems().addAll(sprint.getBacklog().getAllStories());
                     allocatableStories.clear();
                     allocatableStories.addAll(sprint.getBacklog().getAllStories());
-                    storyNodeIndex.clear();
                     updateAllocatableStories();
                 }
             }
@@ -278,9 +281,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (selectedStory != null) {
             try {
                 getModel().addStory(selectedStory);
-                Node skillNode = generateStoryNode(selectedStory);
-                storiesContainer.getChildren().add(skillNode);
-                storyNodeIndex.put(selectedStory, skillNode);
+                storiesTable.getItems().add(selectedStory);
                 Platform.runLater(() -> {
                     storiesList.getSelectionModel().clearSelection();
                     allocatableStories.remove(selectedStory);
@@ -295,9 +296,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     try {
                         selectedStory.setStoryState(Story.StoryState.Ready);
                         getModel().addStory(selectedStory);
-                        Node skillNode = generateStoryNode(selectedStory);
-                        storiesContainer.getChildren().add(skillNode);
-                        storyNodeIndex.put(selectedStory, skillNode);
+                        storiesTable.getItems().addAll(selectedStory);
                         Platform.runLater(() -> {
                             storiesList.getSelectionModel().clearSelection();
                             allocatableStories.remove(selectedStory);
@@ -400,6 +399,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
     @FXML
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     protected final void initialize() {
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {
@@ -409,7 +409,6 @@ public class SprintEditor extends GenericEditor<Sprint> {
 
         allocatableStories = FXCollections.observableArrayList();
         storiesList.setItems((ObservableList<Story>) allocatableStories);
-        storyNodeIndex = new HashMap<>();
         storiesList.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         shortNameTextField.focusedProperty().addListener(getChangeListener());
         longNameTextField.focusedProperty().addListener(getChangeListener());
@@ -489,70 +488,62 @@ public class SprintEditor extends GenericEditor<Sprint> {
         navigateToReleaseButton.setDisable(true);
         navigateToTeamButton.setDisable(true);
         navigateToBacklogButton.setDisable(true);
+        storyColumn.setCellValueFactory(param -> {
+            SimpleStringProperty property = new SimpleStringProperty();
+            property.set(param.getValue().getShortName());
+            return property;
+        });
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        storyColumn.prefWidthProperty().bind(
+                storiesTable.widthProperty().subtract(estimateColumn.widthProperty())
+                        .subtract(completenessColumn.widthProperty()).subtract(10));
+        completenessColumn.setCellValueFactory(param -> {
+            float done = 0, total = 0;
+            for (Task task : param.getValue().getTasks()) {
+                if (task.getState() == TaskState.Done) {
+                    done += task.getCurrentEstimate();
+                }
+                total += task.getCurrentEstimate();
+            }
+            return new SimpleObjectProperty<>(done / total);
+        });
+        completenessColumn.setCellFactory(param -> new TableCell<Story, Float>() {
+            @Override
+            protected void updateItem(final Float completeness, final boolean empty) {
+                super.updateItem(completeness, empty);
+                setText(null);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                ModelProgressBar modelProgressBar = new ModelProgressBar(true);
+                modelProgressBar.setStory((Story) getTableRow().getItem());
+                setGraphic(modelProgressBar);
+            }
+        });
+        estimateColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getEstimate()));
+        estimateColumn.setComparator((o1, o2) -> {
+            EstimateType type = getModel().getBacklog().getEstimateType();
+            return Integer.compare(type.getSortIndex(o1), type.getSortIndex(o2));
+        });
     }
 
     /**
-     * Generates a node for a story.
-     * @param story The story
-     * @return the node representing the story
+     * Removes a story from the sprint.
+     * @param story the story to remove.
      */
-    @SuppressWarnings("checkstyle:magicnumber")
-    private Node generateStoryNode(final Story story) {
-        MaterialDesignButton removeButton = new MaterialDesignButton(null);
-        removeButton.setPrefHeight(15);
-        removeButton.setPrefWidth(15);
-        Image image = new Image("sws/murcs/icons/removeWhite.png");
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(20);
-        imageView.setFitWidth(20);
-        imageView.setPreserveRatio(true);
-        imageView.setPickOnBounds(true);
-        removeButton.setGraphic(imageView);
-        removeButton.getStyleClass().add("mdr-button");
-        removeButton.getStyleClass().add("mdrd-button");
-        removeButton.setOnAction(event -> {
-            GenericPopup popup = new GenericPopup();
-            popup.setMessageText("Are you sure you want to remove "
-                    + story.getShortName() + " from "
-                    + getModel().getShortName() + "?");
-            popup.setTitleText("Remove Story from Sprint");
-            popup.addYesNoButtons(() -> {
-                allocatableStories.add(story);
-                Node storyNode = storyNodeIndex.get(story);
-                storiesContainer.getChildren().remove(storyNode);
-                storyNodeIndex.remove(story);
-                getModel().removeStory(story);
-                popup.close();
-            }, "danger-will-robinson", "everything-is-fine");
-            popup.show();
-        });
-
-        GridPane pane = new GridPane();
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setHgrow(Priority.ALWAYS);
-        column1.fillWidthProperty().setValue(true);
-
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setHgrow(Priority.SOMETIMES);
-
-        pane.getColumnConstraints().add(column1);
-        pane.getColumnConstraints().add(column2);
-
-        if (getIsCreationWindow()) {
-            Text nameText = new Text(story.toString());
-            pane.add(nameText, 0, 0);
-        }
-        else {
-            Hyperlink nameLink = new Hyperlink(story.toString());
-            nameLink.setOnAction(a ->
-                    getNavigationManager().navigateTo(story));
-            pane.add(nameLink, 0, 0);
-        }
-        FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(removeButton, pane);
-        fadeButtonOnHover.setupEffect();
-        pane.add(removeButton, 1, 0);
-        GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
-
-        return pane;
+    private void removeStory(final Story story) {
+        GenericPopup popup = new GenericPopup();
+        popup.setMessageText("Are you sure you want to remove "
+                + story.getShortName() + " from "
+                + getModel().getShortName() + "?");
+        popup.setTitleText("Remove Story from Sprint");
+        popup.addYesNoButtons(() -> {
+            allocatableStories.add(story);
+            storiesTable.getItems().remove(story);
+            getModel().removeStory(story);
+            popup.close();
+        }, "danger-will-robinson", "everything-is-fine");
+        popup.show();
     }
 }

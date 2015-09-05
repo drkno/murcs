@@ -1,12 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -25,6 +19,13 @@ import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Model;
 import sws.murcs.view.App;
+
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A generic class for making editing easier.
@@ -141,7 +142,13 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      */
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            synchronized (StyleManager.getInstance()) {
+            if (!App.getOnStyleManagerThread()) {
+                synchronized (StyleManager.getInstance()) {
+                    App.setOnStyleManagerThread(true);
+                    loadObject();
+                    App.setOnStyleManagerThread(false);
+                }
+            } else {
                 loadObject();
             }
         }
@@ -207,24 +214,24 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
      * Clears the errors on the form.
      * @param sectionName The name of the section to clear the errors on
      */
-    public void clearErrors(final String sectionName) {
+    public synchronized void clearErrors(final String sectionName) {
         ensureSectionExists(sectionName);
 
         boolean hideError = true;
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
 
-        synchronized (StyleManager.getInstance()) {
-            for (Map.Entry<Node, String> entry : invalidInSection) {
-                entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
-                entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
-                if (entry.getKey().isFocused()) {
-                    hideError = false;
-                }
+        for (Map.Entry<Node, String> entry : invalidInSection) {
+            entry.getKey().getStyleClass().removeAll(Collections.singleton("error"));
+            entry.getKey().focusedProperty().removeListener(errorMessagePopoverListener);
+            if (entry.getKey().isFocused()) {
+                hideError = false;
             }
-            invalidInSection.clear();
-            if (hideError && errorMessagePopover != null) {
-                errorMessagePopover.hide();
-            }
+        }
+        invalidInSection.clear();
+        if (hideError && errorMessagePopover != null) {
+            errorMessagePopover.hide();
+        }
+        if (labelErrorMessage != null) {
             labelErrorMessage.setText("");
         }
     }
@@ -279,7 +286,13 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
         invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
-        synchronized (StyleManager.class) {
+        if (!App.getOnStyleManagerThread()) {
+            synchronized (StyleManager.class) {
+                App.setOnStyleManagerThread(true);
+                showErrors(sectionName);
+                App.setOnStyleManagerThread(false);
+            }
+        } else {
             showErrors(sectionName);
         }
     }

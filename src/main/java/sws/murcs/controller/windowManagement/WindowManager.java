@@ -1,7 +1,7 @@
 package sws.murcs.controller.windowManagement;
 
 import javafx.collections.FXCollections;
-import sws.murcs.controller.ModelViewController;
+import sws.murcs.controller.MainController;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -216,7 +216,7 @@ public class WindowManager {
      */
     public final void cleanUp() {
         for (int i = 0; i < windows.size(); i++) {
-            if (windows.get(i).getController().getClass() != ModelViewController.class) {
+            if (windows.get(i).getController().getClass() != MainController.class) {
                 windows.get(i).close();
                 i--;
             }

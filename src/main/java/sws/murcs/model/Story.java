@@ -41,10 +41,14 @@ public class Story extends Model {
         None,
 
         /**
-         * Indicates that a story is not yet ready to
-         * be pulled into a sprint.
+         * Indicates that a story is ready to be pulled into a sprint.
          */
-        Ready
+        Ready,
+
+        /**
+         * Indicates that this story has been completed.
+         */
+        Done
     }
 
     /**

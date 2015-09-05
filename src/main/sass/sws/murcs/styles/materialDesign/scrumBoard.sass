@@ -1,0 +1,48 @@
+@import "../globalStyles"
+
+.scrumBoard
+  -fx-background-color: $primary-100
+
+.scrumBoard-story
+  -fx-border-width: 1px
+  -fx-border-colour: $primary-300
+  -fx-background-color: $primary-100
+  -fx-background-radius: 5px
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.4), 8, 0.0, 0, 3)
+
+.scrumBoard-task
+  -fx-border-width: 1px
+  -fx-border-colour: $primary-300
+  -fx-background-color: $primary-100
+  -fx-effect: dropshadow(two-pass-box, rgba(0,0,0,0.4), 8, 0.0, 0, 3)
+
+.scrumBoard-header
+  -fx-background-color: $primary-100
+
+
+.scrumBoard-header .label
+  -fx-text-fill: $black-text
+
+.scrumBoard-separators
+  -fx-border-width: 0 2px 0 0
+  -fx-border-color: $primary-300
+
+.scrumBoard-toDo
+  -fx-text-fill: $scrumBoard-toDo-color
+
+.scrumBoard-inProgress
+  -fx-text-fill: $scrumBoard-inProgress-color
+
+.scrumBoard-done
+  -fx-text-fill: $scrumBoard-done-color
+
+.scrumBoard-story-base
+  -fx-border-width: 2px
+  -fx-border-radius: 5px
+  -fx-border-color: transparent
+
+.scrumBoard-story-legal
+  -fx-border-color: $scrumBoard-done-color
+
+.scrumBoard-story-illegal
+  -fx-border-color: $scrumBoard-toDo-color

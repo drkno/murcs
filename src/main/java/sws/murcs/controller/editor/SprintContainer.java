@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -22,6 +24,12 @@ import java.util.Objects;
  * Controller for SprintContainer.
  */
 public class SprintContainer extends GenericEditor<Sprint> {
+
+    /**
+     * The container for the progress bar.
+     */
+    @FXML
+    private VBox progressContainer;
 
     /**
      * The three tabs used to view a sprint.
@@ -47,6 +55,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private SprintEditor overviewEditor;
 
     /**
+     * The scrum board editor.
+     */
+    private ScrumBoard scrumBoard;
+
+    /**
      * The controller for the all tasks view in the sprint.
      */
     private SprintAllTasksController allTasksController;
@@ -56,6 +69,11 @@ public class SprintContainer extends GenericEditor<Sprint> {
      */
     private BurndownController burndownController;
 
+    /**
+     * The progress bar for the sprint.
+     */
+    private ModelProgressBar progressBar;
+
     @Override
     protected final void initialize() {
         containerTabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -63,6 +81,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
                 tabSelectionChanged(newValue);
             }
         });
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
@@ -75,11 +94,30 @@ public class SprintContainer extends GenericEditor<Sprint> {
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load sprint overview");
         }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
+            Parent view = loader.load();
+            scrumBoardAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            scrumBoard = loader.getController();
+            scrumBoard.setSprintContainer(this);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
+        }
+
+        progressBar = new ModelProgressBar(true);
+        progressContainer.getChildren().add(progressBar);
     }
 
     @Override
     @SuppressWarnings("checkstyle:magicnumber")
     public final void loadObject() {
+        progressBar.setSprint(getModel());
+
         int tab = containerTabPane.getSelectionModel().getSelectedIndex();
 
         switch (tab) {
@@ -125,17 +163,16 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints overview into the overview tab.
      */
     private void overviewTabSelected() {
-        if (getModel() != null) {
-            overviewEditor.setModel(getModel());
-            overviewEditor.loadObject();
-        }
+        overviewEditor.setModel(getModel());
+        overviewEditor.loadObject();
     }
 
     /**
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
-        // todo Currently doesn't do anything as there is no scrum board chart to load
+        scrumBoard.setModel(getModel());
+        scrumBoard.loadObject();
     }
 
     /**
@@ -219,7 +256,12 @@ public class SprintContainer extends GenericEditor<Sprint> {
         if (allTasksController != null) {
             allTasksController.dispose();
         }
-        //Makes sure to add dispose methods for the other tabs.
+        if (scrumBoard != null) {
+            scrumBoard.dispose();
+        }
+        if (burndownController != null) {
+            burndownController.dispose();
+        }
     }
 
     @Override

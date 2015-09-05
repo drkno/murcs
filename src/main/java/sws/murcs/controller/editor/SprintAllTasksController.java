@@ -242,7 +242,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         });
     }
 
-
     @Override
     public void loadObject() {
         if (thread != null && thread.isAlive()) {
@@ -500,7 +499,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
      */
     private void loadTasks() {
         tasksVBox.getChildren().clear();
-        TaskLoadingTask<Void> taskThread = new TaskLoadingTask<>();
+        TaskLoadingTask taskThread = new TaskLoadingTask();
         taskThread.setEditor(this);
         taskThread.setTasks(allTasks);
         thread = new Thread(taskThread);
@@ -527,9 +526,8 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     /**
      * The task used to load all the tasks into the editor.
-     * @param <T> The type that you want the call function to reaturn. (Void in this case).
      */
-    private class TaskLoadingTask<T> extends javafx.concurrent.Task {
+    private class TaskLoadingTask extends javafx.concurrent.Task {
 
         /**
          * The tasks to load.
@@ -555,12 +553,12 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
          * Sets the list of tasks to load.
          * @param newTasks the tasks to load.
          */
-        protected void setTasks(final List newTasks) {
+        protected void setTasks(final List<Task> newTasks) {
             tasks = newTasks;
         }
 
         /**
-         * The editor that all the taks editors generated belong to.
+         * The editor that all the tasks editors generated belong to.
          * @param parent the parent editor of all the task editors generated.
          */
         protected void setEditor(final TaskEditorParent parent) {
@@ -568,7 +566,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
 
         @Override
-        protected T call() throws Exception {
+        protected Task call() throws Exception {
             if (currentGroupBy == GroupBy.Story) {
                 Platform.runLater(() -> {
                     if (!getModel().equals(currentSprint)) {

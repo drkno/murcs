@@ -12,8 +12,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -21,14 +19,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.controls.md.MaterialDesignButton;
-import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.GenericCallback;
@@ -54,6 +48,7 @@ import java.util.stream.Collectors;
  * Since there should only be one instance of this PopUp
  */
 public class BacklogEditor extends GenericEditor<Backlog> {
+
     /**
      * The fixed height of rows in the table view for stories.
      */
@@ -198,7 +193,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
         priorityColumn.setCellValueFactory(param -> {
             SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
             Integer priority = getModel().getStoryPriority(param.getValue());
@@ -246,6 +241,31 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         dropPriorityButton.setDisable(true);
         decreasePriorityButton.setDisable(true);
         increasePriorityButton.setDisable(true);
+    }
+
+    /**
+     * Method for managing the removal of stories from the backlog.
+     * @param story story to remove.
+     */
+    private void removeStory(final Story story) {
+        if (!isCreationWindow) {
+            GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+            popup.setTitleText("Are you sure?");
+            popup.setMessageText("Are you sure you wish to remove the story \""
+                    + story.getShortName() + "\" from this backlog?");
+            popup.addYesNoButtons(() -> {
+                getModel().removeStory(story);
+                updateStoryTable();
+                updateAvailableStories();
+                popup.close();
+            }, "danger-will-robinson", "everything-is-fine");
+            popup.show();
+        }
+        else {
+            getModel().removeStory(story);
+            updateStoryTable();
+            updateAvailableStories();
+        }
     }
 
     /**
@@ -819,80 +839,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         ErrorReporter.get().reportError(e, "Failed to set priority");
                     }
                 });
-            }
-        }
-    }
-
-    /**
-     * A TableView cell that contains a link to the story it represents and a button to remove it.
-     */
-    @SuppressWarnings("checkstyle:magicnumber")
-    private class RemovableHyperlinkCell extends TableCell<Story, String> {
-        @Override
-        protected void updateItem(final String storyName, final boolean empty) {
-            super.updateItem(storyName, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                Story story = (Story) getTableRow().getItem();
-                AnchorPane container = new AnchorPane();
-                if (getIsCreationWindow()) {
-                    Label name = new Label(storyName);
-                    container.getChildren().add(name);
-                } else {
-                    Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
-                        if (e.isControlDown()) {
-                            getNavigationManager().navigateToNewTab(story);
-                        } else {
-                            getNavigationManager().navigateTo(story);
-                        }
-                    });
-                    container.getChildren().add(nameLink);
-                }
-
-                MaterialDesignButton button = new MaterialDesignButton(null);
-                button.setPrefHeight(15);
-                button.setPrefWidth(15);
-                Image image = new Image("sws/murcs/icons/removeWhite.png");
-                ImageView imageView = new ImageView(image);
-                imageView.setFitHeight(20);
-                imageView.setFitWidth(20);
-                imageView.setPreserveRatio(true);
-                imageView.setPickOnBounds(true);
-                button.setGraphic(imageView);
-                button.getStyleClass().add("mdr-button");
-                button.getStyleClass().add("mdrd-button");
-                button.setOnAction(e -> {
-                    if (!isCreationWindow) {
-                        GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                        popup.setTitleText("Are you sure?");
-                        popup.setMessageText("Are you sure you wish to remove the story \""
-                                + story.getShortName() + "\" from this backlog?");
-                        popup.addYesNoButtons(() -> {
-                            getModel().removeStory(story);
-                            updateStoryTable();
-                            updateAvailableStories();
-                            popup.close();
-                        }, "danger-will-robinson", "everything-is-fine");
-                        popup.show();
-                    }
-                    else {
-                        getModel().removeStory(story);
-                        updateStoryTable();
-                        updateAvailableStories();
-                    }
-                });
-                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
-                fadeButtonOnHover.setupEffect();
-                AnchorPane.setRightAnchor(button, 0.0);
-                container.getChildren().add(button);
-
-                container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);
-                setGraphic(container);
-                setAlignment(Pos.CENTER);
             }
         }
     }

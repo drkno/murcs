@@ -38,6 +38,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.SearchableComboBox;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
@@ -53,11 +54,14 @@ import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.Story.StoryState;
 import sws.murcs.model.Task;
+import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.DependenciesHelper;
 import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
+import sws.murcs.view.App;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,6 +74,17 @@ import java.util.stream.Collectors;
  * An editor for the story model.
  */
 public class StoryEditor extends GenericEditor<Story> implements TaskEditorParent {
+
+    /**
+     * Container for the completeness progress bar.
+     */
+    @FXML
+    private VBox completenessContainer;
+
+    /**
+     * Progress bar to show progress of story completion.
+     */
+    private ModelProgressBar progressBar;
 
     /**
      * Button to navigate to the creator of the story.
@@ -105,7 +120,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * A choice box for changing the story state.
      */
     @FXML
-    private ChoiceBox<Story.StoryState> storyStateChoiceBox;
+    private ChoiceBox<StoryState> storyStateChoiceBox;
 
     /**
      * Drop down with dependencies that can be added to this story.
@@ -182,7 +197,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     @Override
     public final void loadObject() {
-        isLoaded = false;
+        if (getModel() != null && !getModel().equals(lastSelectedStory)) {
+            isLoaded = false;
+        }
+
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
@@ -190,8 +208,19 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 .orElse(null);
 
         Story story = getModel();
-        Platform.runLater(() -> {
-            if (!getModel().equals(story)) return;
+        if (!App.getOnStyleManagerThread()) {
+            synchronized (StyleManager.getInstance()) {
+                App.setOnStyleManagerThread(true);
+                estimateChoiceBox.getItems().clear();
+                estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
+                estimateChoiceBox.getItems().add(EstimateType.INFINITE);
+                estimateChoiceBox.getItems().add(EstimateType.ZERO);
+                if (backlog != null) {
+                    estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
+                }
+                App.setOnStyleManagerThread(false);
+            }
+        } else {
             estimateChoiceBox.getItems().clear();
             estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
             estimateChoiceBox.getItems().add(EstimateType.INFINITE);
@@ -199,7 +228,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             if (backlog != null) {
                 estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
             }
-        });
+        }
 
         if (!isLoaded && thread != null && thread.isAlive()) {
             stop = true;
@@ -244,6 +273,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 creatorChoiceBox.getSelectionModel().select(modelCreator);
                 navigateToCreatorButton.setDisable(false);
             }
+            completenessContainer.setVisible(false);
         }
         else {
             creatorChoiceBox.getItems().clear();
@@ -258,7 +288,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            synchronized (StyleManager.getInstance()) {
+            if (!App.getOnStyleManagerThread()) {
+                synchronized (StyleManager.getInstance()) {
+                    App.setOnStyleManagerThread(true);
+                    updateEstimation();
+                    App.setOnStyleManagerThread(false);
+                }
+            } else {
                 updateEstimation();
             }
         });
@@ -274,6 +310,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (getModel() != lastSelectedStory) {
             taskEditors.clear();
         }
+
+        progressBar.setStory(getModel());
+
         // Make sure this is left at the end as it determines whether or not the editor is loaded in it's
         // onsuccess function.
         if (!isLoaded) {
@@ -346,7 +385,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             loadTasks();
         }
         else {
-            taskEditors.forEach(editor -> editor.update());
+            taskEditors.forEach(TaskEditor::update);
         }
     }
 
@@ -425,6 +464,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         dependenciesContainer.getStylesheets().add(
                 getClass().getResource("/sws/murcs/styles/materialDesign/dependencies.css").toExternalForm());
 
+        progressBar = new ModelProgressBar(true);
+        completenessContainer.getChildren().add(progressBar);
+
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue != oldValue && isLoaded) {
                 saveChanges();
@@ -447,7 +489,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         //Add all the story states to the choice box
         storyStateChoiceBox.getItems().clear();
-        storyStateChoiceBox.getItems().addAll(Story.StoryState.values());
+        storyStateChoiceBox.getItems().addAll(StoryState.values());
 
         navigateToCreatorButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (creatorChoiceBox.getSelectionModel().getSelectedItem() != null) {
@@ -531,7 +573,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     getModel().setEstimate(actualEstimate);
                     estimateChoiceBox.setValue(actualEstimate);
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
-                    assert getModel().getStoryState().equals(Story.StoryState.None);
+                    assert getModel().getStoryState().equals(StoryState.None);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     popup.close();
                 }, "danger-will-robinson", "everything-is-fine");
@@ -585,11 +627,27 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * displays an error if it isn't.
      */
     private void updateStoryState() {
-        Story.StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
-        Story model = getModel();
+        StoryState state = storyStateChoiceBox.getSelectionModel().getSelectedItem();
         boolean hasErrors = false;
 
-        if (state == Story.StoryState.Ready) {
+        if (state == StoryState.Done) {
+            for (Task task : getModel().getTasks()) {
+                if (task.getState() != TaskState.Done) {
+                    addFormError(storyStateChoiceBox, "Every task must be set to Done to set the story to Done");
+                    hasErrors = true;
+                    break;
+                }
+            }
+            List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
+                    .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                    .map(m -> (Sprint) m)
+                    .collect(Collectors.toList());
+            if (sprintsWithStory.size() == 0) {
+                addFormError(storyStateChoiceBox, "The story must be part of a sprint to set the state to Done");
+                hasErrors = true;
+            }
+        }
+        else if (state == StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
                 addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
                 hasErrors = true;
@@ -604,7 +662,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 hasErrors = true;
             }
         }
-        else if (state == Story.StoryState.None) {
+        else if (state == StoryState.None) {
             hasErrors = true; // So that the story state is not set.
             if (UsageHelper.findUsages(model).stream().anyMatch(m -> m instanceof Sprint)) {
                 List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
@@ -626,8 +684,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 popup.setWindowTitle("Are you sure?");
                 popup.addYesNoButtons(() -> {
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
-                    getModel().setStoryState(Story.StoryState.None);
-                    storyStateChoiceBox.setValue(Story.StoryState.None);
+                    getModel().setStoryState(StoryState.None);
+                    storyStateChoiceBox.setValue(StoryState.None);
                     popup.close();
                 }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
@@ -1148,8 +1206,8 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
                         updateEstimation();
-                        storyStateChoiceBox.setValue(Story.StoryState.None);
-                        getModel().setStoryState(Story.StoryState.None);
+                        storyStateChoiceBox.setValue(StoryState.None);
+                        getModel().setStoryState(StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
                     popup.show();

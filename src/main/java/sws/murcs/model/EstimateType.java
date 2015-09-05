@@ -114,6 +114,15 @@ public enum EstimateType {
     }
 
     /**
+     * Gets the sort index of an estimate.
+     * @param estimate estimate to get sort index of.
+     * @return the sort index.
+     */
+    public final int getSortIndex(final String estimate) {
+        return getEstimates().indexOf(estimate);
+    }
+
+    /**
      * The normal toString method without spaces to make it readable.
      * @return the normal toString method.
      */

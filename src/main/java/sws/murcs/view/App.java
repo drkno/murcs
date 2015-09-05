@@ -31,6 +31,11 @@ import java.util.List;
 public class App extends Application {
 
     /**
+     * If the application is on the style manager thread.
+     */
+    private static boolean onStyleManagerThread = false;
+
+    /**
      * Default window title to use.
      */
     private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
@@ -80,6 +85,22 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Gets if the app is running on the style manager thread.
+     * @return if on style manager thread
+     */
+    public static boolean getOnStyleManagerThread() {
+        return onStyleManagerThread;
+    }
+
+    /**
+     * Sets if on the style manager thread.
+     * @param pOnStyleMangerThread if on the style manager thread
+     */
+    public static void setOnStyleManagerThread(final boolean pOnStyleMangerThread) {
+        onStyleManagerThread = pOnStyleMangerThread;
+    }
 
     /**
      * Gets the shortcut manager.
@@ -256,6 +277,7 @@ public class App extends Application {
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
+        System.setProperty("prism.lcdtext", "false");
         ErrorReporter.setup(args);
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.get().setDisabled(true);

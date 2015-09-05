@@ -31,6 +31,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.view.App;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * The state choice boxes.
      */
     @FXML
-    private ChoiceBox stateChoiceBox;
+    private ChoiceBox<TaskState> stateChoiceBox;
 
     /**
      * The separator between tasks.
@@ -236,7 +237,7 @@ public class TaskEditor implements UndoRedoChangeListener {
             dps = 1;
         }
 
-        //To round to a certain number of dps, we multipy by 10 to the power of the dps we want
+        //To round to a certain number of dps, we multiply by 10 to the power of the dps we want
         // 7.8934 to 2 dp: 7.8934 * 10 ^ 2 = 789.34, Round to 0 dps = 789, divide by 10 ^ 2 = 7.89
         float pow = (float) Math.pow(10, dps);
         spent = Math.round(spent * pow) / pow;
@@ -533,7 +534,14 @@ public class TaskEditor implements UndoRedoChangeListener {
     @Override
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            synchronized (StyleManager.getInstance()) {
+            if (!App.getOnStyleManagerThread()) {
+                synchronized (StyleManager.getInstance()) {
+                    App.setOnStyleManagerThread(true);
+                    update();
+                    App.setOnStyleManagerThread(false);
+                }
+            }
+            else {
                 update();
             }
         }
