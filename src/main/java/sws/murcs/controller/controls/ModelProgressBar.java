@@ -182,12 +182,12 @@ public class ModelProgressBar extends GridPane {
         }
 
         float totalPercent = completedPercentage + inProgressPercentage + notStartedPrecentage;
-        if (totalPercent != 100.0 && 100 - totalPercent >= 0) {
-            notStartedPrecentage += 100 - totalPercent;
+        if (totalPercent != 1.0 && 1.0 - totalPercent >= 0) {
+            notStartedPrecentage += 1.0 - totalPercent;
         }
 
-        getColumnConstraints().get(0).setPercentWidth(Math.floor(completedPercentage * 100));
-        getColumnConstraints().get(1).setPercentWidth(Math.floor(inProgressPercentage * 100));
-        getColumnConstraints().get(2).setPercentWidth(Math.floor(notStartedPrecentage * 100));
+        getColumnConstraints().get(0).setPercentWidth(completedPercentage * 100);
+        getColumnConstraints().get(1).setPercentWidth(inProgressPercentage * 100);
+        getColumnConstraints().get(2).setPercentWidth(notStartedPrecentage * 100);
     }
 }
