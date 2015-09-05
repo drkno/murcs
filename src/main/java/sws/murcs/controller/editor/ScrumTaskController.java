@@ -102,30 +102,25 @@ public class ScrumTaskController implements UndoRedoChangeListener {
         };
 
         estimateTextField.focusedProperty().addListener(changeListener);
-        estimateTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                try {
-                    Float estimate = Float.parseFloat(estimateTextField.getText());
-                    if (estimate < 0) {
-                        throw new NumberFormatException("estimate cannot be negative");
-                    }
-                    else if (estimate != task.getCurrentEstimate()) {
-                        task.setCurrentEstimate(estimate);
-                        // Hacky fix to force the completeness bar to update
-                        // Ideally this would go through the UndoRedoManager
-                        parent.update();
-                        estimateTextField.getStyleClass().removeAll("error");
-                    }
-                }
-                catch (NumberFormatException e) {
-                    estimateTextField.getStyleClass().add("error");
-                }
-            }
-        });
     }
 
+    /**
+     * Called when changes to a task field is made.
+     */
     private void saveChanges() {
-
+        try {
+            Float estimate = Float.parseFloat(estimateTextField.getText());
+            if (estimate < 0) {
+                throw new NumberFormatException("estimate cannot be negative");
+            }
+            else if (estimate != task.getCurrentEstimate()) {
+                task.setCurrentEstimate(estimate);
+                estimateTextField.getStyleClass().removeAll("error");
+            }
+        }
+        catch (NumberFormatException e) {
+            estimateTextField.getStyleClass().add("error");
+        }
     }
 
     /**

@@ -222,6 +222,7 @@ public class Task extends TrackableObject implements Serializable {
         if (assignees.contains(assignee)) {
             assignees.remove(assignee);
         }
+        commit("edit Task");
     }
 
     /**

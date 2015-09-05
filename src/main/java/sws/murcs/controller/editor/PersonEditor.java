@@ -1,8 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,6 +25,10 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Allows you to model a model.
@@ -136,7 +137,7 @@ public class PersonEditor extends GenericEditor<Person> {
                     allocatableSkills.remove(selectedSkill);
                     try {
                         getModel().addSkill(selectedSkill);
-                    }catch (CustomException e) {
+                    } catch (CustomException e) {
                         //This should never occur, we should be populating the
                         //list with valid items
                         ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
