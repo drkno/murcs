@@ -79,6 +79,7 @@ public class Task extends TrackableObject implements Serializable {
     /**
      * Date this task was marked as done.
      */
+    @TrackableValue
     private LocalDate completedDate;
 
     /**
