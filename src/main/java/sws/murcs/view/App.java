@@ -156,7 +156,10 @@ public class App extends Application {
         if (index >= 0) {
             title = newTitle.substring(0, index);
         }
-        stage.setTitle(title);
+        final String finalTitle = title;
+        Platform.runLater(() -> {
+            stage.setTitle(finalTitle);
+        });
     }
 
     /**
