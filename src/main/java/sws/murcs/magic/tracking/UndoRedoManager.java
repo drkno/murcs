@@ -114,6 +114,9 @@ public final class UndoRedoManager {
                         = new SimpleEntry<>(object, new FieldValuePair(field, object));
                 modelState.add(newField);
                 addedFields.add(newField);
+                if (modelState.size() != addedFields.size()) {
+                    throw new UnsupportedOperationException("help");
+                }
             }
             catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Could not get the field of an object when adding it to Undo/Redo");
@@ -214,6 +217,8 @@ public final class UndoRedoManager {
         remakeStack.clear();
         if (deleteSavedObjects) {
             modelState.clear();
+            addedFields.clear();
+            removedFields.clear();
             head = null;
         }
         notifyListeners(ChangeState.Forget);
@@ -460,7 +465,7 @@ public final class UndoRedoManager {
      * @throws Exception when committing the changes fail.
      */
     public void importModel(final Organisation model) throws Exception {
-        forget(true);
+        forget(false);
         add(model);
         model.getPeople().forEach(this::add);
         model.getTeams().forEach(this::add);
@@ -470,7 +475,10 @@ public final class UndoRedoManager {
         model.getStories().forEach(s -> {
             add(s);
             s.getAcceptanceCriteria().forEach(this::add);
-            s.getTasks().forEach(this::add);
+            s.getTasks().forEach(t -> {
+                add(t);
+                add(t.getEstimateInfo());
+            });
         });
         model.getBacklogs().forEach(this::add);
         model.getSprints().forEach(this::add);
