@@ -1,3 +1,5 @@
+# Manuel: [after Manuel loses Basil's money by "knowing nothing"] See, I know nothing!
+# Basil Fawlty: I'm gonna sell you to a vivisectionist!
 @Manual
 Feature: Highlighting Story States
 
