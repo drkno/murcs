@@ -336,6 +336,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             @Override
             protected Void call() throws Exception {
                 Platform.runLater(() -> taskContainer.getChildren().clear());
+                taskEditors.clear();
                 for (Task task : model.getTasks()) {
                     if (stop) {
                         break;

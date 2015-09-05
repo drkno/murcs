@@ -349,28 +349,28 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> search(null));
         addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Project));
+                () -> showCreateWindow(ModelType.Project, ((ModelViewController) currentTabbable)::selectItem));
         addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Team));
+                () -> showCreateWindow(ModelType.Team, ((ModelViewController) currentTabbable)::selectItem));
         addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Person));
+                () -> showCreateWindow(ModelType.Person, ((ModelViewController) currentTabbable)::selectItem));
         addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Skill));
+                () -> showCreateWindow(ModelType.Skill, ((ModelViewController) currentTabbable)::selectItem));
         addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Release));
+                () -> showCreateWindow(ModelType.Release, ((ModelViewController) currentTabbable)::selectItem));
         addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Backlog));
+                () -> showCreateWindow(ModelType.Backlog, ((ModelViewController) currentTabbable)::selectItem));
         addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Story));
+                () -> showCreateWindow(ModelType.Story, ((ModelViewController) currentTabbable)::selectItem));
         addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Sprint));
+                () -> showCreateWindow(ModelType.Sprint, ((ModelViewController) currentTabbable)::selectItem));
 
         //Local shortcuts.
         Map<KeyCombination, Runnable> accelerators = new HashMap<>();
@@ -605,7 +605,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             type = ModelType.parseString(source.getText());
         }
 
-        showCreateWindow(type);
+        showCreateWindow(type, ((ModelViewController) currentTabbable)::selectItem);
     }
 
     /**
