@@ -188,7 +188,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     @Override
     public final void loadObject() {
-        isLoaded = false;
+        if (getModel() != null && !getModel().equals(lastSelectedStory)) {
+            isLoaded = false;
+        }
+
         Backlog backlog = (Backlog) UsageHelper.findUsages(getModel())
                 .stream()
                 .filter(model -> model instanceof Backlog)
