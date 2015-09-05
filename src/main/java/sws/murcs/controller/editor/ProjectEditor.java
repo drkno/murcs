@@ -252,8 +252,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         @Override
         protected void updateItem(final Team team, final boolean empty) {
             super.updateItem(team, empty);
-            if (team == null) {
-                setText("");
+            if (team == null || empty) {
+                setText(null);
+                setGraphic(null);
             }
             else if (getIsCreationWindow()) {
                 setText(team.toString());
