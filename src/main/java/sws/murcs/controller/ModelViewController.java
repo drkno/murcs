@@ -32,6 +32,7 @@ import sws.murcs.view.CreatorWindowView;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Model View controller. Controls the main tabs.
@@ -194,7 +195,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
      */
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        displayList.getSelectionModel().clearSelection();
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
@@ -223,8 +223,25 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                     + "please correct this so that the display list is shown correctly.");
         }
 
-        displayList.setItems((ObservableList) arrayList);
-        displayList.getSelectionModel().select(0);
+        boolean selectionCleared = false;
+        if (displayList.getSelectionModel().getSelectedIndex() < 0) {
+            selectionCleared = true;
+        }
+
+        if (editorPane == null || editorPane.getModel() == null || !arrayList.contains(editorPane.getModel())) {
+            displayList.getSelectionModel().clearSelection();
+            selectionCleared = true;
+        }
+
+        if (!Objects.equals(displayList.getItems(), arrayList)) {
+            displayList.getSelectionModel().clearSelection();
+            displayList.setItems((ObservableList) arrayList);
+            selectionCleared = true;
+        }
+
+        if (selectionCleared && arrayList.size() > 0) {
+            displayList.getSelectionModel().select(0);
+        }
     }
 
     @Override
