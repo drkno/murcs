@@ -653,6 +653,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.get().importModel(model);
+        UndoRedoManager.get().forget();
 
         //We need to reset.
         reset();
