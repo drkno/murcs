@@ -93,13 +93,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         storiesVBox.getChildren().clear();
         scrumBoardStories.clear();
         currentSprint = getModel();
-        StoryLoadingTask<Void> storyThread = new StoryLoadingTask<>();
+        StoryLoadingTask storyThread = new StoryLoadingTask();
         storyThread.setEditor(this);
         storyThread.setStories(getModel().getStories());
         thread = new Thread(storyThread);
         thread.setDaemon(true);
         thread.start();
-
     }
 
     /**
@@ -112,9 +111,8 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
     /**
      * The task used to load all the stories into the editor.
-     * @param <T> The type that you want the call function to return. (Void in this case).
      */
-    private class StoryLoadingTask<T> extends javafx.concurrent.Task {
+    private class StoryLoadingTask extends javafx.concurrent.Task {
 
         /**
          * The stories to load.
@@ -122,7 +120,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         private List<Story> stories;
 
         /**
-         * The parent editor that the task editors belong to.
+         * The parent editor that the scrumBoard story editors belong to.
          */
         private ScrumBoard editor;
 
@@ -153,7 +151,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         }
 
         @Override
-        protected T call() throws Exception {
+        protected Story call() throws Exception {
 
             if (getModel() == null || !getModel().equals(currentSprintLoading)) {
                 disposeOfStories();
@@ -193,6 +191,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
                     ErrorReporter.get().reportError(e, "Unable to create new story in scrumBoard");
                 }
             }
+            // If the thread should stop because the story or sprint changed then return to halt execution.
             return null;
         }
 

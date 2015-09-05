@@ -28,6 +28,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -233,7 +234,8 @@ public class ScrumBoardStoryController {
     /**
      * Task fxml loader.
      */
-    private FXMLLoader taskLoader = new FXMLLoader(ScrumBoardStoryController.class.getResource("/sws/murcs/ScrumTask.fxml"));
+    private FXMLLoader taskLoader = new FXMLLoader(ScrumBoardStoryController.class
+            .getResource("/sws/murcs/ScrumTask.fxml"));
 
     /**
      * The story state slider change listener.
@@ -245,7 +247,6 @@ public class ScrumBoardStoryController {
      */
     @FXML
     private void initialize() {
-
         mainPane.getStyleClass().add("root");
         mainPane.getStyleClass().add("scrumBoard-story");
         progressBar = new ModelProgressBar(true);
@@ -304,9 +305,7 @@ public class ScrumBoardStoryController {
         storyHyperLink.setWrapText(true);
         storyHyperLink.setOnAction(event -> sprintContainer.getNavigationManager().navigateTo(story));
 
-        updateTasks();
-        updateTaskOverviews();
-        progressBar.setStory(story);
+        update();
     }
 
     /**
@@ -336,12 +335,12 @@ public class ScrumBoardStoryController {
                         initialVBox = doneMoreInfoVBox;
                         break;
                     default:
-                        break;
+                        throw new OperationNotSupportedException("Task state not recognised");
                 }
                 initialVBox.getChildren().add(root);
                 addDragDetectedHandler(root, task, story);
                 addDragDoneHandler(root);
-            } catch (IOException e) {
+            } catch (OperationNotSupportedException | IOException e) {
                 ErrorReporter.get().reportError(e, "Failed to load task in scrumBoard");
             }
         }

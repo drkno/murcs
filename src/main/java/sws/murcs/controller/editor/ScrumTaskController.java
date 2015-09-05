@@ -69,6 +69,18 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     private Button editAssignedButton, logEffortButton;
 
     /**
+     * The effort popover fxml.
+     */
+    private FXMLLoader effortPopOverFxml = new FXMLLoader(TaskEditor.class
+            .getResource("/sws/murcs/EffortPopOver.fxml"));
+
+    /**
+     * The assignees popover fxml.
+     */
+    private FXMLLoader assigneesPopOverFxml = new FXMLLoader(TaskEditor.class
+            .getResource("/sws/murcs/AssigneesPopOver.fxml"));
+
+    /**
      * Sets up the form.
      */
     @FXML
@@ -127,11 +139,9 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     @FXML
     private void editAssignedButtonClicked(final ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
-            Parent parent = loader.load();
+            Parent parent = assigneesPopOverFxml.load();
             PopOver taskPopover = new PopOver(parent);
-            AssigneeController controller = loader.getController();
+            AssigneeController controller = assigneesPopOverFxml.getController();
             taskPopover.hideOnEscapeProperty().setValue(true);
             List<Person> possibleAssignees = getPossibleAssignees();
             controller.setUp(task, possibleAssignees);
@@ -150,11 +160,9 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     @FXML
     private void logEffortButtonClick(final ActionEvent event) {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
-            Parent parent = loader.load();
+            Parent parent = effortPopOverFxml.load();
             PopOver effortPopOver = new PopOver(parent);
-            EffortController controller = loader.getController();
+            EffortController controller = effortPopOverFxml.getController();
             List<Person> possibleAssignees = getPossibleAssignees();
             controller.setUp(task, possibleAssignees);
             effortPopOver.hideOnEscapeProperty().setValue(true);
