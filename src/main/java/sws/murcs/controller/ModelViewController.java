@@ -242,6 +242,9 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         if (selectionCleared && arrayList.size() > 0) {
             displayList.getSelectionModel().select(0);
         }
+        else if (arrayList.size() > 0) {
+            displayList.getSelectionModel().select(editorPane.getModel());
+        }
     }
 
     @Override
