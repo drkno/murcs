@@ -168,7 +168,7 @@ public class BurndownController extends GenericEditor<Sprint> {
     }
 
     /**
-     * Updates the burn down line with the data from the from the model.
+     * Updates the burnDown line with the data from the from the model.
      */
     @SuppressWarnings("checkstyle:magicnumber")
     private void updateBurnDown() {

@@ -1,5 +1,5 @@
 @Manual
-  Feature: The unfinished one
+  Feature: ScrumBoard
 
     Scenario: Dragging Tasks
       Given you are in the scrum board view of the sprint editor

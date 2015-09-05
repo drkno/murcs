@@ -69,8 +69,8 @@ public class AssigneeController {
     private static final double CONTAINER_SPACING = 5.0;
 
     /**
-     * Sets up the assignee controller initially with the list of possible assignees and the task that the assignee
-     * controller is associated with.
+     * Sets up the assignee controller.
+     * With a list of possible assignees and the task that the assignee controller is associated with.
      * @param pTask The task this popover is associated with.
      * @param pPossibleAssignees The list of possible assignees.
      */
@@ -80,8 +80,8 @@ public class AssigneeController {
     }
 
     /**
-     * Sets up the assignee controller initially with the list of possible assignees and the task editor that the
-     * assignee controller belongs to.
+     * Sets up the assignee controller.
+     * With the list of possible assignees and the task editor that the assignee controller belongs to.
      * @param parent It's parent controller.
      * @param pPossibleAssignees The list of possible assignees.
      */

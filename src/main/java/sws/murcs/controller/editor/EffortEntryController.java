@@ -93,12 +93,12 @@ public class EffortEntryController {
     private Consumer<EffortEntryController> action;
 
     /**
-     * Add icon.
+     * Add icon for button.
      */
     private ImageView addIcon = new ImageView(new Image("sws/murcs/icons/addWhite.png"));
 
     /**
-     * Remove icon.
+     * Remove icon for button.
      */
     private ImageView removeIcon = new ImageView(new Image("sws/murcs/icons/removeWhite.png"));
 
