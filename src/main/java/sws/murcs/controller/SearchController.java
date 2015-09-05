@@ -382,9 +382,9 @@ public class SearchController {
                         vbox.getChildren().add(box);
                         VBox.setVgrow(box, Priority.ALWAYS);
 
-                        if (!App.onStyleManagerThread) {
+                        if (!App.getOnStyleManagerThread()) {
                             synchronized (StyleManager.getInstance()) {
-                                App.onStyleManagerThread = true;
+                                App.setOnStyleManagerThread(true);
                                 List<String> matches = item.getMatches();
                                 for (int i = 0; i < matches.size(); i++) {
                                     Label matchLabel = new Label(matches.get(i));
@@ -397,7 +397,7 @@ public class SearchController {
                                 Label selectionAfter = new Label(item.selectionAfter());
                                 children.add(selectionAfter);
                                 setGraphic(vbox);
-                                App.onStyleManagerThread = false;
+                                App.setOnStyleManagerThread(false);
                             }
                         } else {
                             List<String> matches = item.getMatches();
@@ -569,41 +569,28 @@ public class SearchController {
                         }
                     }
 
-//                    if (!App.onStyleManagerThread) {
-                        synchronized (StyleManager.getInstance()) {
-                            App.onStyleManagerThread = true;
-                            if (editorPane == null) {
-                                editorPane = new EditorPane(newValue, App.getMainController(), true);
-                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-                                editorPane.setModel(newValue);
-                            }
-                            else {
-                                editorPane.dispose();
-                                editorPane = new EditorPane(newValue, App.getMainController());
-                            }
-                            editorPane.getView().getStyleClass().add("search-preview");
-                            App.onStyleManagerThread = false;
+                    synchronized (StyleManager.getInstance()) {
+                        App.setOnStyleManagerThread(true);
+                        if (editorPane == null) {
+                            editorPane = new EditorPane(newValue, App.getMainController(), true);
+                        } else if (editorPane.getModel().getClass() == newValue.getClass()) {
+                            editorPane.setModel(newValue);
                         }
-//                    } else {
-//                            if (editorPane == null) {
-//                                editorPane = new EditorPane(newValue, App.getMainController(), true);
-//                            } else if (editorPane.getModel().getClass() == newValue.getClass()) {
-//                                editorPane.setModel(newValue);
-//                            }
-//                            else {
-//                                editorPane.dispose();
-//                                editorPane = new EditorPane(newValue, App.getMainController());
-//                            }
-//                            editorPane.getView().getStyleClass().add("search-preview");
-//                    }
+                        else {
+                            editorPane.dispose();
+                            editorPane = new EditorPane(newValue, App.getMainController());
+                        }
+                        editorPane.getView().getStyleClass().add("search-preview");
+                        App.setOnStyleManagerThread(false);
+                    }
                     while (!editorPane.getController().isLoaded()) {
                         Thread.sleep(disableDelay);
                     }
-                    if (!App.onStyleManagerThread) {
+                    if (!App.getOnStyleManagerThread()) {
                         synchronized (StyleManager.getInstance()) {
-                            App.onStyleManagerThread = true;
+                            App.setOnStyleManagerThread(true);
                             disableControlsAndUpdateButton();
-                            App.onStyleManagerThread = false;
+                            App.setOnStyleManagerThread(false);
                         }
                     } else {
                         disableControlsAndUpdateButton();

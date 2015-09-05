@@ -251,8 +251,8 @@
                                              <children>
                                                 <TableView fx:id="storiesTable" minHeight="0.0" minWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                                   <columns>
+                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="Completeness" />
                                                     <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="Estimate" />
-                                                    <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="Completeness" />
                                                     <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="400.0" text="Story" />
                                                   </columns>
                                                 </TableView>

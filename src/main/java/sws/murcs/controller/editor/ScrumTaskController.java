@@ -1,6 +1,5 @@
 package sws.murcs.controller.editor;
 
-import com.sun.javafx.css.StyleManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -177,9 +176,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     @Override
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            synchronized (StyleManager.getInstance()) {
-                parent.update();
-            }
+            parent.update();
         }
     }
 }

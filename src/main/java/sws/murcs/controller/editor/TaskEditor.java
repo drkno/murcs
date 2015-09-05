@@ -105,7 +105,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * The state choice boxes.
      */
     @FXML
-    private ChoiceBox stateChoiceBox;
+    private ChoiceBox<TaskState> stateChoiceBox;
 
     /**
      * The separator between tasks.
@@ -534,11 +534,11 @@ public class TaskEditor implements UndoRedoChangeListener {
     @Override
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            if (!App.onStyleManagerThread) {
+            if (!App.getOnStyleManagerThread()) {
                 synchronized (StyleManager.getInstance()) {
-                    App.onStyleManagerThread = true;
+                    App.setOnStyleManagerThread(true);
                     update();
-                    App.onStyleManagerThread = false;
+                    App.setOnStyleManagerThread(false);
                 }
             }
             else {

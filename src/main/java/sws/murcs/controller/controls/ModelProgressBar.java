@@ -63,9 +63,9 @@ public class ModelProgressBar extends GridPane {
         setVgrow(notStartedPane, Priority.ALWAYS);
 
         // tooltips and adding styles should be synchronised < u60
-        if (!App.onStyleManagerThread) {
+        if (!App.getOnStyleManagerThread()) {
             synchronized (StyleManager.getInstance()) {
-                App.onStyleManagerThread = true;
+                App.setOnStyleManagerThread(true);
                 completePane.getStyleClass().add("completePane");
                 if (hasTooltips) {
                     completedTooltip = new Tooltip("Completed");
@@ -83,7 +83,7 @@ public class ModelProgressBar extends GridPane {
                     notStartedTooltip = new Tooltip("Completed");
                     Tooltip.install(notStartedPane, notStartedTooltip);
                 }
-                App.onStyleManagerThread = false;
+                App.setOnStyleManagerThread(false);
             }
         } else  {
             completePane.getStyleClass().add("completePane");

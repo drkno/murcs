@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.view.App;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,12 +83,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     private void loadStories() {
         storiesVBox.getChildren().clear();
         scrumBoardStories.clear();
+        currentSprint = getModel();
         StoryLoadingTask<Void> storyThread = new StoryLoadingTask<>();
         storyThread.setEditor(this);
         storyThread.setStories(getModel().getStories());
         thread = new Thread(storyThread);
         thread.setDaemon(true);
         thread.start();
+
     }
 
     /**
@@ -106,9 +110,9 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         private ScrumBoard editor;
 
         /**
-         * The current sprint, this is used to determine whether or not to add editors into the view.
+         * The current loading sprint.
          */
-        private Sprint currentSprint = getModel();
+        private Sprint currentSprintLoading = getModel();
 
         /**
          * The loader that is used to load all of the stories.
@@ -133,11 +137,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
         @Override
         protected T call() throws Exception {
-            Platform.runLater(() -> {
-                if (!getModel().equals(currentSprint)) {
-                    return;
-                }
-            });
+
+            if (getModel() == null || !getModel().equals(currentSprintLoading)) {
+                disposeOfStories();
+                return null;
+            }
+
             for (Story story : stories) {
                 if (stop) {
                     break;
@@ -146,16 +151,23 @@ public class ScrumBoard extends GenericEditor<Sprint> {
                     threadStoryLoader.setRoot(null);
                     ScrumBoardStoryController controller = new ScrumBoardStoryController();
                     threadStoryLoader.setController(controller);
-                    Parent view = threadStoryLoader.load();
+                    Parent view;
+                    view = threadStoryLoader.load();
                     controller.setStory(story);
                     controller.loadStory();
                     Platform.runLater(() -> {
-                        if (!getModel().equals(currentSprint)) {
+                        if (getModel() == null || !getModel().equals(currentSprintLoading)) {
+                            disposeOfStories();
                             return;
                         }
                         else {
                             scrumBoardStories.add(controller);
-                            storiesVBox.getChildren().add(view);
+                                synchronized (StyleManager.getInstance()) {
+                                    App.setOnStyleManagerThread(true);
+                                    storiesVBox.getChildren().add(view);
+                                    App.setOnStyleManagerThread(false);
+                                }
+
                         }
                     });
                 }
@@ -168,12 +180,11 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
         @Override
         protected void succeeded() {
-            Platform.runLater(() -> {
-                isLoaded = true;
-                if (!getModel().equals(currentSprint)) {
+                if (getModel() == null || !getModel().equals(currentSprintLoading)) {
+                    disposeOfStories();
                     return;
                 }
-            });
+                isLoaded = true;
         }
     }
 
@@ -181,8 +192,10 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     protected void saveChangesAndErrors() {
     }
 
-    @Override
-    public void dispose() {
+    /**
+     * Disposes of stories in a sprint.
+     */
+    public void disposeOfStories() {
         if (thread != null && thread.isAlive()) {
             stop = true;
             try {
@@ -191,6 +204,16 @@ public class ScrumBoard extends GenericEditor<Sprint> {
                 ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
             }
         }
+        stop = false;
+        for (ScrumBoardStoryController storyController: scrumBoardStories) {
+            storyController.dispose();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        disposeOfStories();
+        stop = true;
         super.dispose();
     }
 }

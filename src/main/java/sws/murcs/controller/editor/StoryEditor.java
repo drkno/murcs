@@ -196,9 +196,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 .orElse(null);
 
         Story story = getModel();
-        if (!App.onStyleManagerThread) {
+        if (!App.getOnStyleManagerThread()) {
             synchronized (StyleManager.getInstance()) {
-                App.onStyleManagerThread = true;
+                App.setOnStyleManagerThread(true);
                 estimateChoiceBox.getItems().clear();
                 estimateChoiceBox.getItems().add(EstimateType.NOT_ESTIMATED);
                 estimateChoiceBox.getItems().add(EstimateType.INFINITE);
@@ -206,7 +206,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 if (backlog != null) {
                     estimateChoiceBox.getItems().addAll(backlog.getEstimateType().getEstimates());
                 }
-                App.onStyleManagerThread = false;
+                App.setOnStyleManagerThread(false);
             }
         } else {
             estimateChoiceBox.getItems().clear();
@@ -276,11 +276,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         }
         Platform.runLater(() -> {
             if (!getModel().equals(story)) return;
-            if (!App.onStyleManagerThread) {
+            if (!App.getOnStyleManagerThread()) {
                 synchronized (StyleManager.getInstance()) {
-                    App.onStyleManagerThread = true;
+                    App.setOnStyleManagerThread(true);
                     updateEstimation();
-                    App.onStyleManagerThread = false;
+                    App.setOnStyleManagerThread(false);
                 }
             } else {
                 updateEstimation();

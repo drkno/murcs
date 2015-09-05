@@ -30,7 +30,10 @@ import java.util.List;
 @SuppressWarnings("ALL")
 public class App extends Application {
 
-    public static boolean onStyleManagerThread = false;
+    /**
+     * If the application is on the style manager thread.
+     */
+    private static boolean onStyleManagerThread = false;
 
     /**
      * Default window title to use.
@@ -82,6 +85,22 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Gets if the app is running on the style manager thread.
+     * @return if on style manager thread
+     */
+    public static boolean getOnStyleManagerThread() {
+        return onStyleManagerThread;
+    }
+
+    /**
+     * Sets if on the style manager thread.
+     * @param pOnStyleMangerThread if on the style manager thread
+     */
+    public static void setOnStyleManagerThread(final boolean pOnStyleMangerThread) {
+        onStyleManagerThread = pOnStyleMangerThread;
+    }
 
     /**
      * Gets the shortcut manager.

@@ -1,6 +1,8 @@
 package sws.murcs.controller.editor;
 
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -224,9 +226,19 @@ public class ScrumBoardStoryController {
     private static Story draggingStory;
 
     /**
-     * The pane that the draggingTask originated from.
+     * The vBox positions for loading tasks into.
      */
-    private static Pane sourcePane;
+    private VBox[] positions;
+
+    /**
+     * Task fxml loader.
+     */
+    private FXMLLoader taskLoader = new FXMLLoader(ScrumBoardStoryController.class.getResource("/sws/murcs/ScrumTask.fxml"));
+
+    /**
+     * The story state slider change listener.
+     */
+    private ChangeListener<Number> storyStateSliderChangeListener;
 
     /**
      * Initializes the controller.
@@ -250,7 +262,7 @@ public class ScrumBoardStoryController {
             }
         });
 
-        storyStateSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+        storyStateSliderChangeListener = ((observable, oldValue, newValue) -> {
             long currentValue = story.getStoryState() == Story.StoryState.Done ? 1L : 0L;
             if (newValue.longValue() != currentValue) {
                 Story.StoryState newState = newValue.longValue() == 1L
@@ -260,6 +272,8 @@ public class ScrumBoardStoryController {
                 updateToggleStatus();
             }
         });
+
+        storyStateSlider.valueProperty().addListener(storyStateSliderChangeListener);
     }
 
     /**
@@ -277,7 +291,7 @@ public class ScrumBoardStoryController {
         updateToggleStatus();
 
         hideMoreInfo();
-        VBox[] positions = new VBox[] {toDoMoreInfoVBox, inProgressMoreInfoVBox, doneMoreInfoVBox};
+        positions = new VBox[] {toDoMoreInfoVBox, inProgressMoreInfoVBox, doneMoreInfoVBox};
         for (int i = 0; i < positions.length; i++) {
             addDragOverHandler(positions[i]);
             addDragEnteredHandler(positions[i]);
@@ -290,14 +304,25 @@ public class ScrumBoardStoryController {
         storyHyperLink.setWrapText(true);
         storyHyperLink.setOnAction(event -> sprintContainer.getNavigationManager().navigateTo(story));
 
-        FXMLLoader loader = new FXMLLoader(ScrumBoardStoryController.class.getResource("/sws/murcs/ScrumTask.fxml"));
+        updateTasks();
+
+        updateTaskOverviews();
+    }
+
+    /**
+     * Reloads the tasks on the story.
+     */
+    private void updateTasks() {
+        for (VBox position : positions) {
+            position.getChildren().clear();
+        }
         for (Task task : story.getTasks()) {
             try {
-                loader.setRoot(null);
-                loader.setController(null);
-                Parent root = loader.load();
+                taskLoader.setRoot(null);
+                taskLoader.setController(null);
+                Parent root = taskLoader.load();
                 root.getStyleClass().add("scrumBoard-task");
-                ScrumTaskController controller = loader.getController();
+                ScrumTaskController controller = taskLoader.getController();
                 controller.configure(task, story, this);
                 VBox initialVBox = null;
                 switch (task.getState()) {
@@ -315,13 +340,11 @@ public class ScrumBoardStoryController {
                 }
                 initialVBox.getChildren().add(root);
                 addDragDetectedHandler(root, task, story);
-                addDragDoneHandler(root, task, positions);
+                addDragDoneHandler(root);
             } catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Failed to load task in scrumBoard");
             }
         }
-
-        updateTaskOverviews();
     }
 
     /**
@@ -530,7 +553,6 @@ public class ScrumBoardStoryController {
     private void addDragOverHandler(final Pane target) {
         target.setOnDragOver(event -> {
             if (story == draggingStory && event.getGestureSource() != target && event.getDragboard().hasString()) {
-                sourcePane = target;
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             }
             event.consume();
@@ -582,23 +604,33 @@ public class ScrumBoardStoryController {
     /**
      * Adds a drag done handler to the node.
      * @param source The node to add the handler to
-     * @param task The task represented by the node
-     * @param places Array of Panes where the node can be dropped
      */
-    private void addDragDoneHandler(final Node source, final Task task, final Pane[] places) {
-        source.setOnDragDone(event -> {
-            if (event.getTransferMode() == TransferMode.MOVE) {
-                sourcePane.getChildren().remove(source);
-                places[task.getState().ordinal()].getChildren().add(source);
-            }
-            event.consume();
-        });
+    private void addDragDoneHandler(final Node source) {
+        source.setOnDragDone(Event::consume);
     }
 
     /**
      * Updates the progress bar for the story.
      */
     protected void update() {
+        updateTasks();
         progressBar.setStory(story);
+        updateTaskOverviews();
+        updateToggleStatus();
+    }
+
+    /**
+     * Disposes of the story.
+     */
+    protected void dispose() {
+        storyStateSliderChangeListener = null;
+        progressBar = null;
+        story = null;
+        infoViewStateMore = null;
+        sprintContainer = null;
+        draggingTask = null;
+        draggingStory = null;
+        positions = null;
+        taskLoader = null;
     }
 }
