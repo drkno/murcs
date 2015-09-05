@@ -54,7 +54,7 @@
                                       <String fx:value="icon-button" />
                                   </styleClass>
                               </Button>
-                              <Hyperlink fx:id="storyHyperLink" text="Hyperlink" wrapText="true" GridPane.columnIndex="1" />
+                              <Hyperlink fx:id="storyHyperLink" styleClass="zero-border" text="Hyperlink" wrapText="true" GridPane.columnIndex="1" />
                            </children>
                         </GridPane>
                         <HBox maxHeight="-Infinity" minHeight="0.0" minWidth="0.0" prefWidth="150.0" VBox.vgrow="NEVER">

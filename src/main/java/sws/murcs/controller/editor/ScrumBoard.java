@@ -60,6 +60,11 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      */
     private boolean stop;
 
+    /**
+     * The controller of the container of the scrum board.
+     */
+    private SprintContainer sprintContainer;
+
     @Override
     protected void initialize() {
         scrumBoardStories = new ArrayList<>();
@@ -91,6 +96,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         thread.setDaemon(true);
         thread.start();
 
+    }
+
+    /**
+     * Sets the sprint container for the scrum board.
+     * @param pSprintContainer The new sprint container.
+     */
+    public void setSprintContainer(final SprintContainer pSprintContainer) {
+        sprintContainer = pSprintContainer;
     }
 
     /**
@@ -153,6 +166,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
                     threadStoryLoader.setController(controller);
                     Parent view;
                     view = threadStoryLoader.load();
+                    controller.setSprintContainer(sprintContainer);
                     controller.setStory(story);
                     controller.loadStory();
                     Platform.runLater(() -> {
@@ -214,6 +228,9 @@ public class ScrumBoard extends GenericEditor<Sprint> {
     public void dispose() {
         disposeOfStories();
         stop = true;
+        scrumBoardStories = null;
+        thread = null;
+        sprintContainer = null;
         super.dispose();
     }
 }
