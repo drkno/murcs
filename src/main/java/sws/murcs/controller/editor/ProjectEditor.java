@@ -103,6 +103,9 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        if (organisation == null) {
+            return;
+        }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
