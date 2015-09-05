@@ -15,7 +15,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 
 /**
- * A progress bar control for stories.
+ * A progress bar control for stories and sprints.
  */
 public class ModelProgressBar extends GridPane {
 
@@ -168,7 +168,7 @@ public class ModelProgressBar extends GridPane {
     @SuppressWarnings("checkstyle:magicnumber")
     private void updateDisplay(final float done, final float inProgress, final float notStarted) {
         float total = done + inProgress + notStarted;
-        if (total == 0) {   // divide by zero
+        if (total == 0) {   // to avoid divide by zero
             total = 1;
         }
         float completedPercentage = done / total;

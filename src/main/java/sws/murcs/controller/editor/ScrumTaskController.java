@@ -1,5 +1,6 @@
 package sws.murcs.controller.editor;
 
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,7 +12,6 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Person;
@@ -73,8 +73,13 @@ public class ScrumTaskController implements UndoRedoChangeListener {
      */
     @FXML
     private void initialize() {
-        UndoRedoManager.get().addChangeListener(this);
+        ChangeListener changeListener = (observable, oldValue, newValue) -> {
+            if (newValue != null && newValue != oldValue && task != null) {
+                saveChanges();
+            }
+        };
 
+        estimateTextField.focusedProperty().addListener(changeListener);
         estimateTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 try {
@@ -95,6 +100,10 @@ public class ScrumTaskController implements UndoRedoChangeListener {
                 }
             }
         });
+    }
+
+    private void saveChanges() {
+
     }
 
     /**

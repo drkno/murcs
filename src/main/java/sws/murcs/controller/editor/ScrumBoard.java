@@ -76,10 +76,14 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
     @Override
     public void loadObject() {
-        if (currentSprint == null || !getModel().equals(currentSprint) || !(currentSprint.getStories().size() == scrumBoardStories.size())) {
-            loadStories();
+        if (getModel() != null) {
+            if (currentSprint == null
+                    || !getModel().equals(currentSprint)
+                    || !(currentSprint.getStories().size() == scrumBoardStories.size())) {
+                loadStories();
+            }
+            scrumBoardStories.stream().forEach(ScrumBoardStoryController::update);
         }
-        scrumBoardStories.stream().forEach(ScrumBoardStoryController::update);
     }
 
     /**

@@ -38,7 +38,7 @@ public class AssigneeController {
     private TaskEditor parentEditor;
 
     /**
-     * The task the popover is linked.
+     * The task the popover is linked to.
      */
     private Task task;
 
@@ -70,7 +70,7 @@ public class AssigneeController {
 
     /**
      * Sets up the assignee controller initially with the list of possible assignees and the task that the assignee
-     * controller is asscoiated with.
+     * controller is associated with.
      * @param pTask The task this popover is associated with.
      * @param pPossibleAssignees The list of possible assignees.
      */
