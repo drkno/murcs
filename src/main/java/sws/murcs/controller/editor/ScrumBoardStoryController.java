@@ -1,5 +1,8 @@
 package sws.murcs.controller.editor;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -27,10 +30,6 @@ import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A controller for stories on the scrum board. Handles dragging and dropping.
@@ -305,8 +304,8 @@ public class ScrumBoardStoryController {
         storyHyperLink.setOnAction(event -> sprintContainer.getNavigationManager().navigateTo(story));
 
         updateTasks();
-
         updateTaskOverviews();
+        progressBar.setStory(story);
     }
 
     /**

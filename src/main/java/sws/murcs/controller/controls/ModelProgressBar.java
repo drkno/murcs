@@ -1,6 +1,6 @@
 package sws.murcs.controller.controls;
 
-import com.sun.javafx.css.StyleManager;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tooltip;
@@ -9,10 +9,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+import sws.murcs.model.Model;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
-import sws.murcs.view.App;
 
 /**
  * A progress bar control for stories.
@@ -23,6 +23,11 @@ public class ModelProgressBar extends GridPane {
      * Tooltips that will be shown on the progress bar.
      */
     private Tooltip completedTooltip, progressTooltip, notStartedTooltip;
+
+    /**
+     * The model the progress bar was last set to.
+     */
+    private Model lastSetTo;
 
     /**
      * Creates a new progress bar for stories.
@@ -62,30 +67,7 @@ public class ModelProgressBar extends GridPane {
         Pane notStartedPane = new Pane();
         setVgrow(notStartedPane, Priority.ALWAYS);
 
-        // tooltips and adding styles should be synchronised < u60
-        if (!App.getOnStyleManagerThread()) {
-            synchronized (StyleManager.getInstance()) {
-                App.setOnStyleManagerThread(true);
-                completePane.getStyleClass().add("completePane");
-                if (hasTooltips) {
-                    completedTooltip = new Tooltip("Completed");
-                    Tooltip.install(completePane, completedTooltip);
-                }
-
-                progressPane.getStyleClass().add("progressPane");
-                if (hasTooltips) {
-                    progressTooltip = new Tooltip("Completed");
-                    Tooltip.install(progressPane, progressTooltip);
-                }
-
-                notStartedPane.getStyleClass().add("notstartedPane");
-                if (hasTooltips) {
-                    notStartedTooltip = new Tooltip("Completed");
-                    Tooltip.install(notStartedPane, notStartedTooltip);
-                }
-                App.setOnStyleManagerThread(false);
-            }
-        } else  {
+        Platform.runLater(() -> {
             completePane.getStyleClass().add("completePane");
             if (hasTooltips) {
                 completedTooltip = new Tooltip("Completed");
@@ -103,7 +85,16 @@ public class ModelProgressBar extends GridPane {
                 notStartedTooltip = new Tooltip("Completed");
                 Tooltip.install(notStartedPane, notStartedTooltip);
             }
-        }
+
+            //Just in case we set the story before we reached the end of the platform.runLater
+            if (lastSetTo != null) {
+                if (lastSetTo instanceof Story) {
+                    setStory((Story) lastSetTo);
+                } else {
+                    setSprint((Sprint) lastSetTo);
+                }
+            }
+        });
 
         add(completePane, 0, 0);
         add(progressPane, 1, 0);
@@ -134,6 +125,7 @@ public class ModelProgressBar extends GridPane {
             }
         }
 
+        lastSetTo = story;
         updateDisplay(done, inProgress, notStarted);
     }
 
@@ -163,6 +155,7 @@ public class ModelProgressBar extends GridPane {
             }
         }
 
+        lastSetTo = sprint;
         updateDisplay(done, inProgress, notStarted);
     }
 
