@@ -38,7 +38,7 @@ public class App extends Application {
     /**
      * Default window title to use.
      */
-    private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
+    public static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
 
     /**
      * The main stage of the application.
