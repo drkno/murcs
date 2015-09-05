@@ -114,9 +114,6 @@ public final class UndoRedoManager {
                         = new SimpleEntry<>(object, new FieldValuePair(field, object));
                 modelState.add(newField);
                 addedFields.add(newField);
-                if (modelState.size() != addedFields.size()) {
-                    throw new UnsupportedOperationException("help");
-                }
             }
             catch (Exception e) {
                 ErrorReporter.get().reportError(e, "Could not get the field of an object when adding it to Undo/Redo");
