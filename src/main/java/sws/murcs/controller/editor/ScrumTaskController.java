@@ -51,6 +51,16 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     private ScrumBoardStoryController parent;
 
     /**
+     * Assignees popover window for adding and removing assignees.
+     */
+    private PopOver taskPopover;
+
+    /**
+     * Effort spent popover window for adding, removing and editing effort spent.
+     */
+    private PopOver effortPopOver;
+
+    /**
      * The label that displays the name of this task.
      */
     @FXML
@@ -138,21 +148,20 @@ public class ScrumTaskController implements UndoRedoChangeListener {
      */
     @FXML
     private void editAssignedButtonClicked(final ActionEvent event) {
-        try {
-            assigneesPopOverFxml.setRoot(null);
-            assigneesPopOverFxml.setController(null);
-            Parent parent = assigneesPopOverFxml.load();
-            PopOver taskPopover = new PopOver(parent);
-            AssigneeController controller = assigneesPopOverFxml.getController();
-            taskPopover.hideOnEscapeProperty().setValue(true);
-            List<Person> possibleAssignees = getPossibleAssignees();
-            controller.setUp(task, possibleAssignees);
-            taskPopover.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
-            taskPopover.show(editAssignedButton);
+        if (taskPopover == null) {
+            try {
+                Parent parent = assigneesPopOverFxml.load();
+                taskPopover = new PopOver(parent);
+                AssigneeController controller = assigneesPopOverFxml.getController();
+                taskPopover.hideOnEscapeProperty().setValue(true);
+                List<Person> possibleAssignees = getPossibleAssignees();
+                controller.setUp(task, possibleAssignees);
+                taskPopover.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            } catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create an assignee popover");
+            }
         }
-        catch (IOException e) {
-            ErrorReporter.get().reportError(e, "Could not create an assignee popover");
-        }
+        taskPopover.show(editAssignedButton);
     }
 
     /**
@@ -161,21 +170,20 @@ public class ScrumTaskController implements UndoRedoChangeListener {
      */
     @FXML
     private void logEffortButtonClick(final ActionEvent event) {
-        try {
-            effortPopOverFxml.setRoot(null);
-            effortPopOverFxml.setController(null);
-            Parent parent = effortPopOverFxml.load();
-            PopOver effortPopOver = new PopOver(parent);
-            EffortController controller = effortPopOverFxml.getController();
-            List<Person> possibleAssignees = getPossibleAssignees();
-            controller.setUp(task, possibleAssignees);
-            effortPopOver.hideOnEscapeProperty().setValue(true);
-            effortPopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
-            effortPopOver.show(logEffortButton);
+        if (effortPopOver == null) {
+            try {
+                Parent parent = effortPopOverFxml.load();
+                effortPopOver = new PopOver(parent);
+                EffortController controller = effortPopOverFxml.getController();
+                List<Person> possibleAssignees = getPossibleAssignees();
+                controller.setUp(task, possibleAssignees);
+                effortPopOver.hideOnEscapeProperty().setValue(true);
+                effortPopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            } catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create an effort popover");
+            }
         }
-        catch (IOException e) {
-            ErrorReporter.get().reportError(e, "Could not create an effort popover");
-        }
+        effortPopOver.show(logEffortButton);
     }
 
     /**
