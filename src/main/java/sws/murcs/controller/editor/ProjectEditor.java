@@ -239,7 +239,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\"?");
         alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
-            observableAllocations.remove(rowNumber);
+            observableAllocations.remove(allocation);
             alert.close();
         }, "danger-will-robinson", "everything-is-fine");
         alert.show();
