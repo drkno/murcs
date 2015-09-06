@@ -119,7 +119,7 @@
                                         <Label text="Estimation Method" GridPane.rowIndex="1" />
                                         <AnchorPane>
                                             <children>
-                                                <ComboBox fx:id="estimationMethodComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <ChoiceBox fx:id="estimationMethodChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                             </children>
                                         </AnchorPane>
                                     </children>

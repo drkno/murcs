@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -82,7 +83,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A choice box for choosing the estimation method for a backlog.
      */
     @FXML
-    private ComboBox<EstimateType> estimationMethodComboBox;
+    private ChoiceBox<EstimateType> estimationMethodChoiceBox;
 
     /**
      * A ChoiceBox for adding a story to the backlog.
@@ -168,7 +169,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
@@ -514,11 +515,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         EstimateType current = getModel().getEstimateType();
-        estimationMethodComboBox.getItems().clear();
-        estimationMethodComboBox.getItems().addAll(EstimateType.values());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        estimationMethodChoiceBox.getItems().clear();
+        estimationMethodChoiceBox.getItems().addAll(EstimateType.values());
         if (current != null) {
-            estimationMethodComboBox.getSelectionModel().select(current);
+            estimationMethodChoiceBox.getSelectionModel().select(current);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         updateAssignedPO();
         updateAvailableStories();
@@ -637,10 +640,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             addFormError(poComboBox, "There must be a PO");
         }
 
-        EstimateType newEstimateType = estimationMethodComboBox.getValue();
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        EstimateType newEstimateType = estimationMethodChoiceBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**
