@@ -1,13 +1,17 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import javafx.animation.FadeTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -21,6 +25,24 @@ import java.util.List;
  * controllers.
  */
 public class ScrumBoard extends GenericEditor<Sprint> {
+
+    /**
+     * The container of the no stories message.
+     */
+    @FXML
+    private VBox noStoriesMessageVBox;
+
+    /**
+     * The container of the loading indicator.
+     */
+    @FXML
+    private VBox loadingIndicatorVBox;
+
+    /**
+     * The container of the stories.
+     */
+    @FXML
+    private ScrollPane storiesScrollPane;
 
     /**
      * The VBox to add the stories to.
@@ -65,6 +87,17 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      */
     private SprintContainer sprintContainer;
 
+    /**
+     * The duration of the fade time.
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private Duration fadeDuration = Duration.millis(500);
+
+    /**
+     * The transition for fading in the stories after loading.
+     */
+    private SequentialTransition fadeInStoriesWhenLoaded;
+
     @Override
     protected void initialize() {
         scrumBoardStories = new ArrayList<>();
@@ -72,6 +105,24 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         mainView.getStyleClass().add("scrumBoard");
         header.getStyleClass().add("scrumBoard-header");
         currentSprint = getModel();
+        setupFadeAnimations();
+    }
+
+    /**
+     * Sets up the fade animation for loading stories onto the scrum board.
+     */
+    private void setupFadeAnimations() {
+        FadeTransition fadeInStories = new FadeTransition(fadeDuration, storiesScrollPane);
+        fadeInStories.setAutoReverse(false);
+        fadeInStories.setFromValue(0);
+        fadeInStories.setToValue(1);
+
+        FadeTransition fadeOutLoadingIndicator = new FadeTransition(fadeDuration, loadingIndicatorVBox);
+        fadeOutLoadingIndicator.setAutoReverse(false);
+        fadeOutLoadingIndicator.setFromValue(1);
+        fadeOutLoadingIndicator.setToValue(0);
+
+        fadeInStoriesWhenLoaded = new SequentialTransition(fadeOutLoadingIndicator, fadeInStories);
     }
 
     @Override
@@ -90,15 +141,29 @@ public class ScrumBoard extends GenericEditor<Sprint> {
      * Starts the thread for loading all the stories.
      */
     private void loadStories() {
-        storiesVBox.getChildren().clear();
+        Platform.runLater(() -> {
+            storiesVBox.getChildren().clear();
+        });
         scrumBoardStories.clear();
         currentSprint = getModel();
-        StoryLoadingTask storyThread = new StoryLoadingTask();
-        storyThread.setEditor(this);
-        storyThread.setStories(getModel().getStories());
-        thread = new Thread(storyThread);
-        thread.setDaemon(true);
-        thread.start();
+        loadingIndicatorVBox.setOpacity(1);
+        storiesScrollPane.setOpacity(0);
+        storiesScrollPane.setVisible(false);
+        noStoriesMessageVBox.setVisible(false);
+        loadingIndicatorVBox.setVisible(false);
+        if (currentSprint.getStories().size() != 0) {
+            loadingIndicatorVBox.setVisible(true);
+            storiesScrollPane.setVisible(true);
+            StoryLoadingTask storyThread = new StoryLoadingTask();
+            storyThread.setEditor(this);
+            storyThread.setStories(getModel().getStories());
+            thread = new Thread(storyThread);
+            thread.setDaemon(true);
+            thread.start();
+        }
+        else {
+            noStoriesMessageVBox.setVisible(true);
+        }
     }
 
     /**
@@ -197,12 +262,20 @@ public class ScrumBoard extends GenericEditor<Sprint> {
 
         @Override
         protected void succeeded() {
-                if (getModel() == null || !getModel().equals(currentSprintLoading)) {
-                    disposeOfStories();
-                    return;
-                }
-                isLoaded = true;
+            if (getModel() == null || !getModel().equals(currentSprintLoading)) {
+                disposeOfStories();
+                return;
+            }
+            isLoaded = true;
+            showStories();
         }
+    }
+
+    /**
+     * Shows the stories when finished loading them.
+     */
+    private void showStories() {
+        fadeInStoriesWhenLoaded.play();
     }
 
     @Override

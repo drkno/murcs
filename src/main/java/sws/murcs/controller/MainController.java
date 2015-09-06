@@ -79,7 +79,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle, addSprint,
+            reportBug;
 
     /**
      * The menu item for hiding the sidebar.
@@ -319,48 +320,67 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         ShortcutManager shortcutManager = App.getShortcutManager();
 
         //Global shortcuts
+        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
                 KeyCombination.SHIFT_DOWN), () -> revert(null));
+        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN),
                 () -> newModel(null));
+        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN),
                 this::save);
+        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
                 KeyCombination.SHIFT_DOWN), () -> saveAs(null));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN),
                 () -> open(null));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
                 () -> generateReport(null));
+        reportBug.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
                 () -> ErrorReporter.get().reportManually());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Project));
+                () -> showCreateWindow(ModelType.Project, ((ModelViewController) currentTabbable)::selectItem));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Team));
+                () -> showCreateWindow(ModelType.Team, ((ModelViewController) currentTabbable)::selectItem));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Person));
+                () -> showCreateWindow(ModelType.Person, ((ModelViewController) currentTabbable)::selectItem));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Skill));
+                () -> showCreateWindow(ModelType.Skill, ((ModelViewController) currentTabbable)::selectItem));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Release));
+                () -> showCreateWindow(ModelType.Release, ((ModelViewController) currentTabbable)::selectItem));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Backlog));
+                () -> showCreateWindow(ModelType.Backlog, ((ModelViewController) currentTabbable)::selectItem));
+        addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Story));
+                () -> showCreateWindow(ModelType.Story, ((ModelViewController) currentTabbable)::selectItem));
+        addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Sprint));
+                () -> showCreateWindow(ModelType.Sprint, ((ModelViewController) currentTabbable)::selectItem));
 
         //Local shortcuts.
         Map<KeyCombination, Runnable> accelerators = new HashMap<>();
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
         accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
                 () -> undo(null));
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
         accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
                 () -> redo(null));
-
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
         accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
                 () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
         accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
@@ -585,7 +605,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             type = ModelType.parseString(source.getText());
         }
 
-        showCreateWindow(type);
+        showCreateWindow(type, ((ModelViewController) currentTabbable)::selectItem);
     }
 
     /**
@@ -653,6 +673,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.get().importModel(model);
+        UndoRedoManager.get().forget();
 
         //We need to reset.
         reset();

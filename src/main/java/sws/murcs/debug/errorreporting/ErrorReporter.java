@@ -64,11 +64,6 @@ public final class ErrorReporter {
     private ErrorReportPopup popup;
 
     /**
-     * The submission thread for submitting the report.
-     */
-    private Thread submissionThread;
-
-    /**
      * The thread which the error was reported on.
      */
     private Thread thread;

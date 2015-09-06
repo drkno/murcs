@@ -73,7 +73,7 @@ Feature: Sprint Maintenance
     And I remove a Sprint from the Story
     Then I am asked to confirm
 
-  Scenario: Create a Story with invalid start end dates
+  Scenario: Create a Sprint with invalid start end dates
     Given I have a Sprint creation window open
     And the end date is before the start date
     Then an error message will be displayed

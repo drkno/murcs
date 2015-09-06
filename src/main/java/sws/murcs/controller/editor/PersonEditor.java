@@ -26,8 +26,8 @@ import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,7 +56,7 @@ public class PersonEditor extends GenericEditor<Person> {
     /**
      * List of skill that can be added to the person.
      */
-    private List<Skill> allocatableSkills;
+    private ObservableList<Skill> allocatableSkills;
 
     /**
      * A map of skills to their nodes in the skill list on the view.
@@ -78,7 +78,7 @@ public class PersonEditor extends GenericEditor<Person> {
         skillComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         allocatableSkills = FXCollections.observableArrayList();
-        skillComboBox.setItems((ObservableList<Skill>) allocatableSkills);
+        skillComboBox.setItems(allocatableSkills);
         skillNodeIndex = new HashMap<>();
     }
 
@@ -102,8 +102,11 @@ public class PersonEditor extends GenericEditor<Person> {
             userIdTextField.setText(modelUserId);
         }
 
-        allocatableSkills.clear();
-        allocatableSkills.addAll(PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel()));
+        Collection<Skill> available = PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel());
+        if (allocatableSkills.size() != available.size() || allocatableSkills.stream().allMatch(s -> available.contains(s))) {
+            allocatableSkills.clear();
+            allocatableSkills.addAll(available);
+        }
 
         allocatedSkillsContainer.getChildren().clear();
         getModel().getSkills().forEach(skill -> {
@@ -125,20 +128,21 @@ public class PersonEditor extends GenericEditor<Person> {
     protected final void saveChangesAndErrors() {
         Skill selectedSkill = skillComboBox.getValue();
         if (selectedSkill != null) {
-            try {
-                getModel().addSkill(selectedSkill);
+
                 Node skillNode = generateSkillNode(selectedSkill);
                 allocatedSkillsContainer.getChildren().add(skillNode);
                 skillNodeIndex.put(selectedSkill, skillNode);
                 Platform.runLater(() -> {
                     skillComboBox.getSelectionModel().clearSelection();
                     allocatableSkills.remove(selectedSkill);
+                    try {
+                        getModel().addSkill(selectedSkill);
+                    } catch (CustomException e) {
+                        //This should never occur, we should be populating the
+                        //list with valid items
+                        ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
+                    }
                 });
-            } catch (CustomException e) {
-                //This should never occur, we should be populating the
-                //list with valid items
-                ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
-            }
         }
 
         String modelShortName = getModel().getShortName();

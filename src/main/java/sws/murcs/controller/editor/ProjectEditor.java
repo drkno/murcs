@@ -103,6 +103,9 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        if (organisation == null) {
+            return;
+        }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -236,7 +239,7 @@ public class ProjectEditor extends GenericEditor<Project> {
                 + "\"?");
         alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
-            observableAllocations.remove(rowNumber);
+            observableAllocations.remove(allocation);
             alert.close();
         }, "danger-will-robinson", "everything-is-fine");
         alert.show();
@@ -249,8 +252,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         @Override
         protected void updateItem(final Team team, final boolean empty) {
             super.updateItem(team, empty);
-            if (team == null) {
-                setText("");
+            if (team == null || empty) {
+                setText(null);
+                setGraphic(null);
             }
             else if (getIsCreationWindow()) {
                 setText(team.toString());

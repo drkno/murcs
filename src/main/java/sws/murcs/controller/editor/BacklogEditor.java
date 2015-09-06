@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -82,7 +83,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A choice box for choosing the estimation method for a backlog.
      */
     @FXML
-    private ComboBox<EstimateType> estimationMethodComboBox;
+    private ChoiceBox<EstimateType> estimationMethodChoiceBox;
 
     /**
      * A ChoiceBox for adding a story to the backlog.
@@ -168,7 +169,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
@@ -206,20 +207,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.setEditable(true);
         priorityColumn.setEditable(true);
         priorityColumn.setComparator((storyPriority1, storyPriority2) -> {
-            if (priorityColumn.getSortType() == TableColumn.SortType.ASCENDING) {
-                if (storyPriority1 == -1) {
-                    storyPriority1 = Integer.MAX_VALUE;
-                }
-                if (storyPriority2 == -1) {
-                    storyPriority2 = Integer.MAX_VALUE;
-                }
-            } else {
-                if (storyPriority1 == -1) {
-                    storyPriority1 = Integer.MIN_VALUE;
-                }
-                if (storyPriority2 == -1) {
-                    storyPriority2 = Integer.MIN_VALUE;
-                }
+            if (storyPriority1 == null && storyPriority2 == null) {
+                return 0;
+            }
+            if (storyPriority1 == null) {
+                return 1;
+            }
+            if (storyPriority2 == null) {
+                return -1;
             }
             return storyPriority1.compareTo(storyPriority2);
         });
@@ -251,9 +246,21 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!isCreationWindow) {
             GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
             popup.setTitleText("Are you sure?");
+            String extraWarning = "";
+            Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
+            if (storyUsage != null) {
+                extraWarning = "This story will also be removed from the sprint \"" + storyUsage.getShortName() + "\"";
+            }
             popup.setMessageText("Are you sure you wish to remove the story \""
-                    + story.getShortName() + "\" from this backlog?");
+                    + story.getShortName() + "\" from this backlog?\n\n"
+                    + extraWarning);
             popup.addYesNoButtons(() -> {
+                if (storyUsage != null) {
+                    storyUsage.removeStory(story);
+                }
+                if (story.getStoryState() != Story.StoryState.None) {
+                    story.setStoryState(Story.StoryState.None);
+                }
                 getModel().removeStory(story);
                 updateStoryTable();
                 updateAvailableStories();
@@ -508,11 +515,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         EstimateType current = getModel().getEstimateType();
-        estimationMethodComboBox.getItems().clear();
-        estimationMethodComboBox.getItems().addAll(EstimateType.values());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        estimationMethodChoiceBox.getItems().clear();
+        estimationMethodChoiceBox.getItems().addAll(EstimateType.values());
         if (current != null) {
-            estimationMethodComboBox.getSelectionModel().select(current);
+            estimationMethodChoiceBox.getSelectionModel().select(current);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         updateAssignedPO();
         updateAvailableStories();
@@ -631,10 +640,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             addFormError(poComboBox, "There must be a PO");
         }
 
-        EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        EstimateType newEstimateType = estimationMethodChoiceBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**

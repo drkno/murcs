@@ -172,7 +172,12 @@ public final class PersistenceManager {
      * @param model The new model
      */
     public void setCurrentModel(final Organisation model) {
+
         currentModel = model;
+        if (model == null) {
+            lastFile = null;
+            App.setWindowTitle(App.DEFAULT_WINDOW_TITLE);
+        }
     }
 
     /**

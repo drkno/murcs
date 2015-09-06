@@ -15,7 +15,7 @@
 
     Scenario: Generate a report
       Given that I press generate report shortcut
-      Then a save dialog appears
+      Then a generate report dialog appears
       # The rest should be covered in the generate report feature file
 
     Scenario: Hide the display list

@@ -38,7 +38,7 @@ public class App extends Application {
     /**
      * Default window title to use.
      */
-    private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
+    public static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
 
     /**
      * The main stage of the application.
@@ -156,7 +156,10 @@ public class App extends Application {
         if (index >= 0) {
             title = newTitle.substring(0, index);
         }
-        stage.setTitle(title);
+        final String finalTitle = title;
+        Platform.runLater(() -> {
+            stage.setTitle(finalTitle);
+        });
     }
 
     /**
