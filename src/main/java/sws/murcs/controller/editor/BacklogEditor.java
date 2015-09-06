@@ -514,13 +514,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         EstimateType current = getModel().getEstimateType();
-        Platform.runLater(() -> {
-            estimationMethodComboBox.getItems().clear();
-            estimationMethodComboBox.getItems().addAll(EstimateType.values());
-            if (current != null) {
-                estimationMethodComboBox.getSelectionModel().select(current);
-            }
-        });
+        estimationMethodComboBox.getItems().clear();
+        estimationMethodComboBox.getItems().addAll(EstimateType.values());
+        if (current != null) {
+            estimationMethodComboBox.getSelectionModel().select(current);
+        }
 
         updateAssignedPO();
         updateAvailableStories();
@@ -639,7 +637,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             addFormError(poComboBox, "There must be a PO");
         }
 
-        EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
+        EstimateType newEstimateType = estimationMethodComboBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
