@@ -60,6 +60,7 @@
                                <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
                                <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
                               <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
+                               <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Search Toolbar" />
                            </items>
                         </Menu>
                           </items>

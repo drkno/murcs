@@ -168,6 +168,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         loadToolbar();
         toolBarController.setLinkedController(this);
         toolBarController.setNavigable(this);
+        toolBarController.setToolBarMenu(toolBarMenu);
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.get().addChangeListener(this);

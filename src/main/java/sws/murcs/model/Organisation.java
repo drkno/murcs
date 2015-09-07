@@ -106,7 +106,7 @@ public class Organisation extends TrackableObject implements Serializable {
     /**
      * The version number of the application.
      */
-    private static final String VERSION = "0.0.5";
+    private static final String VERSION = "1.0.0";
 
     /**
      * Is this organisation using generated data?
