@@ -302,6 +302,7 @@ public class App extends Application {
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
         int numbering = argsList.indexOf("numbering");
+        vader = argsList.indexOf("vader") >= 0;
 
         if (numbering >= 0) {
             OrganisationGenerator.isNumbering(true);
@@ -312,7 +313,7 @@ public class App extends Application {
                 switch (args[debug + 1].substring(0, SUBSTRINGLENGTH).toLowerCase()) {
                     case "low": stressLevel = OrganisationGenerator.Stress.Low; break;
                     case "med": stressLevel = OrganisationGenerator.Stress.Medium; break;
-                    case "hig": stressLevel = OrganisationGenerator.Stress.High; vader = true; break;
+                    case "hig": stressLevel = OrganisationGenerator.Stress.High; break;
                     default: break;
                 }
             }
