@@ -29,6 +29,7 @@ import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.AddableDnDTabPaneSkin;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.NavigableTabController;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
@@ -246,9 +247,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         DnDTabPane tabPane = (DnDTabPane) containerPane.getChildren().get(0);
         tabPane.getTabs().add(tab);
 
+        final NavigableTabController navigable = new NavigableTabController();
+        navigable.setCurrentTab(tabbable);
+
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 stage.close();
+            }
+
+            for (Tabbable t : tabs) {
+                if (t.getTab() == newValue) {
+                    navigable.setCurrentTab(t);
+                    break;
+                }
             }
         });
 
@@ -277,6 +288,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Window newWindow = new Window(stage, tabbable, window);
         newWindow.register();
         newWindow.addGlobalShortcutsToWindow();
+
+        addNavigationShortcuts(newWindow.getStage(), navigable);
 
         stage.show();
         stage.setX(mousePos.getX());
