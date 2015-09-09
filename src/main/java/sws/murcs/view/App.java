@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.MainController;
@@ -20,6 +22,7 @@ import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -85,6 +88,11 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Dion Vader.
+     */
+    private static boolean vader = false;
 
     /**
      * Gets if the app is running on the style manager thread.
@@ -207,6 +215,12 @@ public class App extends Application {
         primaryStage.setTitle(DEFAULT_WINDOW_TITLE);
         setStage(primaryStage);
         mainController = createWindow(primaryStage);
+        if (vader) {
+            URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
+            Media hit = new Media(url.toString());
+            MediaPlayer mediaPlayer = new MediaPlayer(hit);
+            mediaPlayer.play();
+        }
     }
 
     /**
@@ -288,6 +302,7 @@ public class App extends Application {
         List<String> argsList = Arrays.asList(args);
         int debug = argsList.indexOf("debug");
         int numbering = argsList.indexOf("numbering");
+        vader = argsList.indexOf("vader") >= 0;
 
         if (numbering >= 0) {
             OrganisationGenerator.isNumbering(true);
