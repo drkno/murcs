@@ -384,14 +384,42 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> currentTabbable.create());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
                 () -> currentTabbable.remove());
-        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> goBack());
-        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> goForward());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
                 () -> mainTabPane.getTabs().remove(mainTabPane.getSelectionModel().getSelectedItem()));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
                 () -> addModelViewTab(mainTabPane));
+
+        //Make sure we can navigate from this window.
+        addNavigationShortcuts(window.getStage(), this);
+    }
+
+    /**
+     * Adds shortcuts for navigation to a stage.
+     * @param stage The stage to add the shortcuts to
+     * @param navigationController The navigation controller to use
+     */
+    private void addNavigationShortcuts(Stage stage, Navigable navigationController) {
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goBack());
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goForward());
+
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Project));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Team));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Person));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Skill));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Release));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Backlog));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Story));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Sprint));
     }
 
     /**
@@ -1064,6 +1092,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @Override
     public void navigateTo(final Model model) {
         currentTabbable.navigateTo(model);
+    }
+
+    @Override
+    public void navigateTo(ModelType type) {
+        currentTabbable.navigateTo(type);
     }
 
     @Override

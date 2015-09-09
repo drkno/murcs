@@ -431,6 +431,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
+    public void navigateTo(ModelType type) {
+        displayChoiceBox.getSelectionModel().select(type);
+    }
+
+    @Override
     public void navigateToNewTab(final Model model) {
         navigationManager.navigateToNewTab(model);
     }
