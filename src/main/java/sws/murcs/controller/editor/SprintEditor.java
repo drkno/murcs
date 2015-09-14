@@ -248,9 +248,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
             if (backlogComboBox.getValue() != null) {
                 if (storiesTable.getItems().size() > 0) {
                     GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Do you really want to change the Sprint Backlog? "
-                            + "All added stories will be cleared");
-                    popup.setTitleText("Change Sprint Backlog");
+                    popup.setMessageText("{ConfirmChangeSprintBacklog}");
+                    popup.setTitleText("{ConfirmChangeSprintBacklogTitle}");
                     popup.addYesNoButtons(() -> {
                         sprint.setBacklog(backlogComboBox.getValue());
                         storiesList.getItems().clear();
@@ -288,10 +287,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 });
             } catch (NotReadyException e) {
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you want to set Story"
+                popup.setMessageText("{SetStoryState1}"
                         + selectedStory.getShortName()
-                        + " to be Ready so that it can be added to this sprint?");
-                popup.setTitleText("Change Story State");
+                        + " {SetStoryState2}");
+                popup.setTitleText("{ChangeStoryStateTitle}");
                 popup.addYesNoButtons(() -> {
                     try {
                         selectedStory.setStoryState(Story.StoryState.Ready);
@@ -307,9 +306,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     }
                     catch (MultipleSprintsException e1) {
                         GenericPopup mpopup = new GenericPopup();
-                        popup.setTitleText("Story in another sprint");
-                        mpopup.setMessageText("The selected story is already in another sprint. "
-                                + "Please remove it from that one first.");
+                        popup.setTitleText("{StoryInSprintTitle}");
+                        mpopup.setMessageText("{StoryInSprintTitle}. {PleaseRemove}");
                         mpopup.show();
                     }
                     finally {
@@ -320,9 +318,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
             }
             catch (MultipleSprintsException e) {
                 GenericPopup popup = new GenericPopup();
-                popup.setTitleText("Story in another sprint");
-                popup.setMessageText("The selected story is already in another sprint. "
-                        + "Please remove it from that one first.");
+                popup.setTitleText("{StoryInSprintTitle}");
+                popup.setMessageText("{StoryInSprintTitle}. {PleaseRemove}");
                 popup.show();
             }
         }
@@ -534,10 +531,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
      */
     private void removeStory(final Story story) {
         GenericPopup popup = new GenericPopup();
-        popup.setMessageText("Are you sure you want to remove "
-                + story.getShortName() + " from "
+        popup.setMessageText("{AreYouSureRemove} "
+                + story.getShortName() + " {From} "
                 + getModel().getShortName() + "?");
-        popup.setTitleText("Remove Story from Sprint");
+        popup.setTitleText("{AreYouSure}");
         popup.addYesNoButtons(() -> {
             allocatableStories.add(story);
             storiesTable.getItems().remove(story);
