@@ -1,5 +1,9 @@
 package sws.murcs.controller;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
@@ -12,9 +16,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -28,11 +34,6 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Model View controller. Controls the main tabs.
@@ -116,6 +117,18 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     public final void initialize() {
         navigationManager = new NavigationManager();
         navigationManager.setModelViewController(this);
+
+        displayChoiceBox.setConverter(new StringConverter<ModelType>() {
+            @Override
+            public String toString(ModelType object) {
+                return InternationalizationHelper.tryGet(object.toString());
+            }
+
+            @Override
+            public ModelType fromString(String string) {
+                return null;
+            }
+        });
 
         for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
