@@ -611,10 +611,6 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (DuplicateObjectException e) {
-                addFormError(shortNameTextField, "A {Backlog} with this name already exists");
-            } catch (InvalidParameterException e) {
-                addFormError(shortNameTextField, "Short name cannot be empty");
             }
         }
 

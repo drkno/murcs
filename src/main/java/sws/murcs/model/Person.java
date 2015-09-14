@@ -86,7 +86,7 @@ public class Person extends Model {
      * @param newUserID The new user id
      * @throws CustomException User id is invalid
      */
-    public final void setUserId(final String newUserID) throws CustomException {
+    public final void setUserId(final String newUserID) throws InvalidParameterException, DuplicateObjectException {
         validateUserId(newUserID);
         this.userId = newUserID.trim();
         commit("edit person");
@@ -97,7 +97,7 @@ public class Person extends Model {
      * @param value The value.
      * @throws CustomException if there is a duplicate object.
      */
-    private void validateUserId(final String value) throws CustomException {
+    private void validateUserId(final String value) throws InvalidParameterException, DuplicateObjectException {
         Person model = UsageHelper.findBy(ModelType.Person, m -> m.getUserId().equalsIgnoreCase(value));
         if (model != null) {
             throw new DuplicateObjectException("A person with this ID already exists.");
