@@ -307,12 +307,7 @@ public class GenericPopup extends AnchorPane {
             return;
         }
 
-        String translated = InternationalizationHelper.tryGet(message);
-        if (translated == null) {
-            translated = message;
-        }
-
-
+        String translated = InternationalizationHelper.translatasert(message);
         messageText.setText(translated);
     }
 
@@ -322,7 +317,12 @@ public class GenericPopup extends AnchorPane {
      * @param title The window title.
      */
     public final void setWindowTitle(final String title) {
-        popupStage.setTitle(title);
+        if (title == null) {
+            return;
+        }
+
+        String translated = InternationalizationHelper.translatasert(title);
+        popupStage.setTitle(translated);
     }
 
     /**
@@ -334,7 +334,9 @@ public class GenericPopup extends AnchorPane {
         if (titleText == null) {
             return;
         }
-        messageTitle.setText(titleText);
+
+        String translated = InternationalizationHelper.translatasert(titleText);
+        messageTitle.setText(translated);
     }
 
     /**
@@ -385,8 +387,8 @@ public class GenericPopup extends AnchorPane {
      * @param cancelFunction The function you want to call on cancel button click
      */
     public final void addOkCancelButtons(final GenericCallback okFunction, final GenericCallback cancelFunction) {
-        addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
-        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("Cancel"), Position.RIGHT, Action.CANCEL, cancelFunction);
+        addButton(InternationalizationHelper.tryGet("OK"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
     /**
@@ -411,8 +413,8 @@ public class GenericPopup extends AnchorPane {
                                       final GenericCallback noFunction,
                                       final String yesStyles,
                                       final String noStyles) {
-        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
-        addButton("No", Position.RIGHT, Action.CANCEL, noFunction, noStyles);
+        addButton(InternationalizationHelper.tryGet("Yes"), Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
+        addButton(InternationalizationHelper.tryGet("No"), Position.RIGHT, Action.CANCEL, noFunction, noStyles);
     }
 
     /**
@@ -420,6 +422,6 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction Function to call on ok button being clicked.
      */
     public final void addOkButton(final GenericCallback okFunction) {
-        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("OK"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }
