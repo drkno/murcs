@@ -54,8 +54,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -168,6 +166,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         loadToolbar();
         toolBarController.setLinkedController(this);
         toolBarController.setNavigable(this);
+        toolBarController.setToolBarMenu(toolBarMenu);
 
         undoRedoNotification(ChangeState.Commit);
         UndoRedoManager.get().addChangeListener(this);
@@ -275,8 +274,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
-        Window newWindow = new Window(stage, tabbable);
-        App.getWindowManager().addWindow(newWindow);
+        Window newWindow = new Window(stage, tabbable, window);
+        newWindow.register();
+        newWindow.addGlobalShortcutsToWindow();
 
         stage.show();
         stage.setX(mousePos.getX());
@@ -371,32 +371,27 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
                 () -> showCreateWindow(ModelType.Sprint, ((ModelViewController) currentTabbable)::selectItem));
-
-        //Local shortcuts.
-        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
         undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
-        accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
                 () -> undo(null));
         redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
-        accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
                 () -> redo(null));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
-        accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
                 () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
-        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.EQUALS),
                 () -> currentTabbable.create());
-        accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
                 () -> currentTabbable.remove());
-        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
                 () -> goBack());
-        accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
                 () -> goForward());
-        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
                 () -> mainTabPane.getTabs().remove(mainTabPane.getSelectionModel().getSelectedItem()));
-        accelerators.put(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
                 () -> addModelViewTab(mainTabPane));
-
-        App.getStage().getScene().getAccelerators().putAll(accelerators);
     }
 
     /**

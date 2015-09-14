@@ -66,7 +66,7 @@ public class ShortcutManager {
      * Used when initialising a new window.
      * @param window The window to add shortcuts to.
      */
-    public final void addAllShortcutsToWindow(final Window window) {
+    protected final void addAllShortcutsToWindow(final Window window) {
         for (Shortcut entry : accelerators) {
             window.stage.getScene().getAccelerators().put(entry.shortcutKeys, entry.callback::call);
         }

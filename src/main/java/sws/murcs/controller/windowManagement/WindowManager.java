@@ -128,7 +128,9 @@ public class WindowManager {
     /**
      * Adds a window to the top most position in windows.
      * @param window new window to register.
+     * @deprecated This method should not be accessed directly as instead used via the Window.register function.
      */
+    @Deprecated
     public final void addWindow(final Window window) {
         windows.add(0, window);
         window.stage.toFront();
