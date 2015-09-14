@@ -41,7 +41,7 @@ public class EffortController {
      * The loader for effort entries.
      */
     private FXMLLoader effortEntryControllerLoader =
-            new FXMLLoader(EffortController.class.getResource("/sws/murcs/EffortEntry.fxml"));
+            new AutoLanguageFXMLLoader(EffortController.class.getResource("/sws/murcs/EffortEntry.fxml"));
 
     /**
      * Sets up the effort controller.

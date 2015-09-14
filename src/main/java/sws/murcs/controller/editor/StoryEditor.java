@@ -331,7 +331,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
             private Story model = getModel();
-            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+            private FXMLLoader threadTaskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
             @Override
             protected Void call() throws Exception {
@@ -964,7 +964,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
         if (taskLoader == null) {
-            taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+            taskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         }
         injectTaskEditor(task, true);
     }

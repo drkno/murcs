@@ -446,7 +446,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
 
             try {
@@ -477,7 +477,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     private void logEffortButtonClick(final ActionEvent event) {
         updateAssigneeButtons();
         if (effortPopOver == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
 
             try {

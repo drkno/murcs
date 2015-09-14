@@ -547,7 +547,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         /**
          * The loader that is used to load all of the tasks.
          */
-        private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        private FXMLLoader threadTaskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
         /**
          * Sets the list of tasks to load.

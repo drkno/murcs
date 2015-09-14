@@ -25,7 +25,7 @@ public class ReportGeneratorView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(ReportGeneratorController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(ReportGeneratorController
                     .class
                     .getResource("/sws/murcs/reporting/ReportGenerator.fxml"));
             Parent root = loader.load();

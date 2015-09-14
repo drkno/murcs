@@ -168,7 +168,7 @@ public class GenericPopup extends AnchorPane {
     public GenericPopup(final Exception exception, final Window pParentWindow) {
         popupStage = new Stage();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
         loader.setRoot(this);
         loader.setController(this);
 

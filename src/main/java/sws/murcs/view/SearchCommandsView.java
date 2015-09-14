@@ -38,7 +38,7 @@ public class SearchCommandsView {
         }
 
         hanger = pHanger;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
         try {
             Parent view = loader.load();
             SearchCommandsController controller = loader.getController();

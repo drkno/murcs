@@ -197,7 +197,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         /**
          * The loader that is used to load all of the stories.
          */
-        private FXMLLoader threadStoryLoader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoardStory.fxml"));
+        private FXMLLoader threadStoryLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoardStory.fxml"));
 
         /**
          * Sets the list of stories to load.

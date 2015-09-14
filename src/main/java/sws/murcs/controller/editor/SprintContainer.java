@@ -83,7 +83,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
         });
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
             overviewAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
@@ -96,7 +96,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
             Parent view = loader.load();
             scrumBoardAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
@@ -181,7 +181,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private void burnDownChartTabSelected() {
         if (burndownController == null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
+                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
                 Parent view = loader.load();
                 burnDownChartTab.setContent(view);
 
@@ -204,7 +204,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private void allTasksTabSelected() {
         if (allTasksController == null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
+                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
                 Parent view = loader.load();
                 allTasksAnchorPane.getChildren().add(view);
                 AnchorPane.setRightAnchor(view, 0.0);

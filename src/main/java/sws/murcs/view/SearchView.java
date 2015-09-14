@@ -34,7 +34,7 @@ public final class SearchView {
      */
     public static SearchView get() {
         if (instance == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(SearchView.class.getResource("/sws/murcs/Search.fxml"));
             PopOver popOver = null;
             try {

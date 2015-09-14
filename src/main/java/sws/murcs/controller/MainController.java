@@ -34,6 +34,7 @@ import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -172,6 +173,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         UndoRedoManager.get().addChangeListener(this);
 
         addModelViewTab(mainTabPane);
+        InternationalizationHelper.get().internationalize(borderPaneMain);
     }
 
     /**
@@ -290,7 +292,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private void loadToolbar() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
             Parent view = loader.load();
 
             ToolBarController controller = loader.getController();
@@ -423,7 +425,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @SuppressWarnings("checkstyle:magicnumber")
     public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
             Tabbable controller = loader.getController();

@@ -34,7 +34,7 @@ public class AboutView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(AboutController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(AboutController
                     .class
                     .getResource("/sws/murcs/About.fxml"));
             Parent root = loader.load();

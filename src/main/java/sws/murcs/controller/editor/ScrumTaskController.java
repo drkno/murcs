@@ -81,13 +81,13 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     /**
      * The effort popover fxml.
      */
-    private FXMLLoader effortPopOverFxml = new FXMLLoader(TaskEditor.class
+    private FXMLLoader effortPopOverFxml = new AutoLanguageFXMLLoader(TaskEditor.class
             .getResource("/sws/murcs/EffortPopOver.fxml"));
 
     /**
      * The assignees popover fxml.
      */
-    private FXMLLoader assigneesPopOverFxml = new FXMLLoader(TaskEditor.class
+    private FXMLLoader assigneesPopOverFxml = new AutoLanguageFXMLLoader(TaskEditor.class
             .getResource("/sws/murcs/AssigneesPopOver.fxml"));
 
     /**

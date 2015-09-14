@@ -234,7 +234,7 @@ public class ScrumBoardStoryController {
     /**
      * Task fxml loader.
      */
-    private FXMLLoader taskLoader = new FXMLLoader(ScrumBoardStoryController.class
+    private FXMLLoader taskLoader = new AutoLanguageFXMLLoader(ScrumBoardStoryController.class
             .getResource("/sws/murcs/ScrumTask.fxml"));
 
     /**

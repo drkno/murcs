@@ -114,7 +114,7 @@ public class CreatorWindowView {
             String type = ModelType.getModelType(model).toString();
 
             // Load the view
-            FXMLLoader loader = new FXMLLoader(CreatorWindowController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(CreatorWindowController
                     .class
                     .getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();

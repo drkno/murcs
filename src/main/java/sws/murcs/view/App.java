@@ -15,6 +15,7 @@ import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
@@ -243,7 +244,8 @@ public class App extends Application {
         }
 
         // Loads the primary fxml and sets mainController as its controller
-        FXMLLoader loader = new FXMLLoader();
+        FXMLLoader loader = new AutoLanguageFXMLLoader();
+        loader.setResources(InternationalizationHelper.currentLocale);
         loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
         Parent parent = null;
         try {

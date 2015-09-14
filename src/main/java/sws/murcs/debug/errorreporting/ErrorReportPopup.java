@@ -106,7 +106,7 @@ public class ErrorReportPopup {
     public static ErrorReportPopup newErrorReporter() {
         Stage stage = new Stage();
 
-        FXMLLoader loader = new FXMLLoader(ErrorReportPopup.class.getResource("/sws/murcs/ErrorReporting.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(ErrorReportPopup.class.getResource("/sws/murcs/ErrorReporting.fxml"));
         AnchorPane root;
         try {
             root = loader.load();
