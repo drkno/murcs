@@ -3,6 +3,7 @@ package sws.murcs.internationalization;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,14 @@ import java.util.stream.Collectors;
  * Helps internationalize a node graph.
  */
 public class InternationalizationHelper {
+    /**
+     * The current locale.
+     */
     private static Locale currentLocale;
+
+    /**
+     * The current bundle.
+     */
     private static ResourceBundle currentBundle;
 
     /**
@@ -21,12 +29,35 @@ public class InternationalizationHelper {
         return languages.keySet().stream().sorted().collect(Collectors.toList());
     }
 
+    /**
+     * Sets the current language.
+     * Bad things will happen if it's not one of the ones we support. Like,
+     * really bad things. Things so bad I should probably throw an exception.
+     * But I won't. Because you aren't the boss of me. (this should probably not
+     * get through PR).
+     * @param language The language.
+     */
     public static void setLanguage(String language) {
         String code = languages.get(language);
         currentLocale = new Locale(code.toLowerCase(), code.toUpperCase());
         currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale);
     }
 
+    /**
+     * Returns the translated text. If it can't find the key it returns null.
+     * @param key The translation key
+     */
+    public static String tryGet(String key) {
+        if (!getCurrentResources().containsKey(key)) {
+            return null;
+        }
+        return getCurrentResources().getString(key);
+    }
+
+    /**
+     * Gets the current active resource bundle.
+     * @return The current active resource bundle.
+     */
     public static ResourceBundle getCurrentResources() {
         if (currentBundle == null) {
             setLanguage("English");
@@ -34,7 +65,10 @@ public class InternationalizationHelper {
         return currentBundle;
     }
 
-    private static HashMap<String, String> languages = new HashMap<String, String>()
+    /**
+     * A hashmap of languages to codes.
+     */
+    private static Map<String, String> languages = new HashMap<String, String>()
     {{
         put("Afrikaans", "af");
         put("Albanian", "sq");
