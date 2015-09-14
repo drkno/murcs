@@ -27,7 +27,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
@@ -219,8 +219,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (isNullOrNotEqual(sprint.getShortName(), shortNameTextField.getText())) {
             try {
                 sprint.setShortName(shortNameTextField.getText());
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }   catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Sprint} {NameExistsError2}");
+            } catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -330,7 +332,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setAssociatedRelease(releaseComboBox.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(releaseComboBox, e.getMessage());
+                    addFormError(releaseComboBox, "{ReleaseNullError}");
                 }
             } else {
                 addFormError(releaseComboBox, "{ReleaseNullError}");
@@ -371,7 +373,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setStartDate(startDatePicker.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(startDatePicker, e.getMessage());
+                    addFormError(startDatePicker, "{NoStartDateError}");
                 }
             }
             else {
@@ -385,7 +387,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setEndDate(endDatePicker.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(endDatePicker, e.getMessage());
+                    addFormError(endDatePicker, "{NoEndDateError}");
                 }
             }
             else {
