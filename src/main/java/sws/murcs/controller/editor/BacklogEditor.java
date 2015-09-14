@@ -26,6 +26,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -463,18 +464,18 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         boolean hasErrors = false;
 
         if (currentStory == null) {
-            addFormError(storyPicker, "No story selected");
+            addFormError(storyPicker, "{NoStorySelectedError}");
             hasErrors = true;
         }
         if (!priorityString.isEmpty()) {
             try {
                 priority = Integer.parseInt(priorityString);
                 if (priority < 1) {
-                    addFormError(priorityTextField, "Priority cannot be less than 1");
+                    addFormError(priorityTextField, "{NegativePriorityError}");
                     hasErrors = true;
                 }
             } catch (Exception e) {
-                addFormError(priorityTextField, "Position is not a number");
+                addFormError(priorityTextField, "{NanError}");
                 hasErrors = true;
             }
         }
@@ -636,7 +637,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             }
         }
         if (getModel().getAssignedPO() == null) {
-            addFormError(poComboBox, "There must be a PO");
+            addFormError(poComboBox, "{NoPOError}");
         }
 
         estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -674,12 +675,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priority == null) {
                     super.commitEdit(null);
                     setPriority(null);
-                    textField.setTooltip(new Tooltip("This is a non-prioritised story"));
+                    textField.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ThisIsNonPrioritorised")));
                     updateStoryTable();
                 }
                 else if (priority < 1) {
                     textField.setTooltip(null);
-                    addFormError(textField, "Priority cannot be less than 1");
+                    addFormError(textField, "{NegativePriorityError}");
                 }
                 else {
                     super.commitEdit(priority);
@@ -735,16 +736,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
-                    getTooltip().setText("The story depends on another story with a lower priority than itself");
+                    getTooltip().setText(InternationalizationHelper.tryGet("BadDependencyTooltip"));
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
-                    getTooltip().setText("The story is ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("ReadyStoryTooltip"));
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
-                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
-                            + " as ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("UnestimatedTooltip"));
                 }
             }
         }
@@ -768,7 +768,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                             commitEdit(null);
                                         }
                                         else {
-                                            addFormError(textField, "Priority must be a number");
+                                            addFormError(textField, "{NanError}");
                                         }
                                     }
                                 }
@@ -788,7 +788,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                 commitEdit(null);
                             }
                             else {
-                                addFormError(textField, "Priority must be a number");
+                                addFormError(textField, "{NanError}");
                             }
                         }
                     }
@@ -838,7 +838,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     getModel().changeStoryPriority(story, priority);
                 }
                 catch (CustomException e) {
-                    addFormError(textField, "Priority must be a number");
+                    addFormError(textField, "{NanError}");
                 }
             }
             else {
