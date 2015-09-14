@@ -1192,14 +1192,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     String[] sprintNames = collect.toArray(new String[collect.size()]);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Do you really want to remove the last Acceptance Criteria from "
+                    popup.setMessageText("{ConfirmRemoveFinalAC1} "
                             + getModel().toString()
                             + " ?\n"
-                            + "This will set the Story Estimate to Not Estimated and the Story State to None.\n\n"
-                            + "The following Sprints will be affected:\n\t"
+                            + "{ConfirmRemoveFinalAC2}.\n\n"
+                            + "{SprintsWillBeAffected}:\n\t"
                             + String.join("\n\t", sprintNames));
-                    popup.setTitleText("Change Story State");
-                    popup.setWindowTitle("Are you sure?");
+                    popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                    popup.setWindowTitle("{AreYouSure}");
                     popup.addYesNoButtons(() -> {
                         getModel().setEstimate(EstimateType.NOT_ESTIMATED);
                         estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
