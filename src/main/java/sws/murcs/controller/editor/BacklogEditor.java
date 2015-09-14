@@ -636,8 +636,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             try {
                 getModel().setAssignedPO(viewProductOwner);
                 updateAssignedPO();
-            } catch (CustomException e) {
-                addFormError(poComboBox, e.getMessage());
+            } catch (InvalidParameterException e) {
+                addFormError(poComboBox, "{InvalidPOError}");
             }
         }
         if (getModel().getAssignedPO() == null) {

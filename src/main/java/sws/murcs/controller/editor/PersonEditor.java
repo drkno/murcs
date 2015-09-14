@@ -22,6 +22,8 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -150,8 +152,10 @@ public class PersonEditor extends GenericEditor<Person> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }  catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "A {Person} with this name already exists");
+            } catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "Short name cannot be empty");
             }
         }
 
