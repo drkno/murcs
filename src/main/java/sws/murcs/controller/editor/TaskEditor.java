@@ -301,7 +301,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         catch (NumberFormatException e) {
             estimateTextField.setText("" + task.getCurrentEstimate());
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
+            editorController.addFormError("tasks", estimateTextField, "{EstimateNegativeError}!");
         }
 
         // Check state
@@ -371,7 +371,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         else {
             acceptable = false;
             editorController.addFormError("tasks", nameTextField,
-                    "Task names must be unique and have at least one character!");
+                    "{NonUniqueTaskNameError}");
         }
 
         try {
@@ -380,7 +380,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         catch (NumberFormatException e) {
             acceptable = false;
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            editorController.addFormError("tasks", estimateTextField, "{EstimateNotANumberError}!");
         }
 
         if (acceptable) {
