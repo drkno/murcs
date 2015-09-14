@@ -129,16 +129,19 @@ public class InternationalizationHelper {
         put("Filipino", "tl");
         put("Finnish", "fi");
         put("French", "fr");
+        put("Foo", "fo");
         put("Galician", "gl");
         put("Georgian", "ka");
         put("German", "de");
         put("Greek", "el");
+        put("Groot", "gr");
         put("Gujarati", "gu");
         put("Haitian Creole", "ht");
         put("Hausa", "ha");
         put("Hebrew", "iw");
         put("Hindi", "hi");
         put("Hmong", "hmn");
+        put("Hodor", "ho");
         put("Hungarian", "hu");
         put("Icelandic", "is");
         put("Igbo", "ig");
@@ -169,6 +172,7 @@ public class InternationalizationHelper {
         put("Persian", "fa");
         put("Polish", "pl");
         put("Portuguese", "pt");
+        put("Programmer", "pr");
         put("Punjabi", "ma");
         put("Romanian", "ro");
         put("Russian", "ru");
