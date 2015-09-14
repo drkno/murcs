@@ -80,12 +80,12 @@ public class SearchCommandsController {
             String shortSyntax = c.getCommands()[1];
             Hyperlink commandLink1 = new Hyperlink(longSyntax);
             commandLink1.getStyleClass().add("zero-border");
-            commandLink1.setTooltip(new Tooltip("Click me :)"));
+            commandLink1.setTooltip(new Tooltip("{ClickMe}"));
             setupAutoFill(commandLink1, longSyntax);
-            Label orLabel = new Label(" or ");
+            Label orLabel = new Label(" {Or} ");
             Hyperlink commandLink2 = new Hyperlink(shortSyntax);
             commandLink2.getStyleClass().add("zero-border");
-            commandLink2.setTooltip(new Tooltip("Click me :)"));
+            commandLink2.setTooltip(new Tooltip("{ClickMe}"));
             setupAutoFill(commandLink2, longSyntax);
             HBox hBox1 = new HBox();
             hBox1.setAlignment(Pos.CENTER);

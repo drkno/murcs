@@ -275,7 +275,7 @@ public class SearchController {
             }
         });
         searchIcon.setOnMouseClicked(event -> { commandsPopOverStayOpen = !commandsPopOverStayOpen; });
-        Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
+        Tooltip.install(searchIcon, new Tooltip("{ShowAdvancedCommands}"));
         injectSearchCommands();
 
         resultsPane.setOpacity(0);
