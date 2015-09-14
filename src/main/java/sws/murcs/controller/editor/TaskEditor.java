@@ -426,9 +426,9 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
 
         GenericPopup popup = new GenericPopup();
-        popup.setWindowTitle("Delete Task");
-        popup.setTitleText("Really?");
-        popup.setMessageText("Are you sure you wish to remove this task?");
+        popup.setWindowTitle("{ConfirmDeleteTaskTitle}");
+        popup.setTitleText("{Really}?");
+        popup.setMessageText("ConfirmDeleteTask");
         popup.addYesNoButtons(() -> {
             editorController.removeTask(task);
             if (editorController instanceof StoryEditor) {
