@@ -245,9 +245,8 @@ public class BurndownController extends GenericEditor<Sprint> {
         if (PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData() && !hasShownGeneratedDataWarning) {
             hasShownGeneratedDataWarning = true;
             GenericPopup popup = new GenericPopup();
-            popup.setTitleText("Looks like you are using sample data.");
-            popup.setMessageText("Sample data can generate some very odd looking burndown graphs. Please only treat "
-                    + "these graphs as samples, and not as real burn downs.");
+            popup.setTitleText("{SampleDataWarningTitle}");
+            popup.setMessageText("{SampleDataWarning}");
             popup.show();
         }
     }
