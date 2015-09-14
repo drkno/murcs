@@ -591,7 +591,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
             } else {
-                addFormError(creatorChoiceBox, "Creator cannot be empty");
+                addFormError(creatorChoiceBox, "{CreatorNullError}");
             }
         }
 
@@ -634,7 +634,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (state == StoryState.Done) {
             for (Task task : getModel().getTasks()) {
                 if (task.getState() != TaskState.Done) {
-                    addFormError(storyStateChoiceBox, "Every task must be set to Done to set the story to Done");
+                    addFormError(storyStateChoiceBox, "{UndoneTasksError}");
                     hasErrors = true;
                     break;
                 }
@@ -644,22 +644,22 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     .map(m -> (Sprint) m)
                     .collect(Collectors.toList());
             if (sprintsWithStory.size() == 0) {
-                addFormError(storyStateChoiceBox, "The story must be part of a sprint to set the state to Done");
+                addFormError(storyStateChoiceBox, "{NoSprintStoryError}");
                 hasErrors = true;
             }
         }
         else if (state == StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
-                addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoACsError}");
                 hasErrors = true;
             }
             if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
-                addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoBacklogError}");
                 hasErrors = true;
             }
             if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)
                     || model.getEstimate().equals(EstimateType.INFINITE)) {
-                addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoEstimateError}");
                 hasErrors = true;
             }
         }
