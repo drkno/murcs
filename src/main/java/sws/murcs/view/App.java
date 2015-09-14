@@ -10,6 +10,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.arguments.ArgumentsManager;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.WindowManager;
@@ -24,7 +25,6 @@ import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -290,55 +290,82 @@ public class App extends Application {
     }
 
     /**
+     * Add sample data to the application.
+     * @param values options that were passed via the CLI to this argument.
+     * @throws Exception when generating data failed.
+     */
+    private static void sampleData(final List<String> values) throws Exception {
+        OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
+        if (values.size() == 1) {
+            if (values.get(0).length() < SUBSTRINGLENGTH) {
+                throw new Exception("Invalid debug keyword. Try low, medium or high.");
+            }
+            switch (values.get(0).substring(0, SUBSTRINGLENGTH).toLowerCase()) {
+                case "low":
+                    stressLevel = OrganisationGenerator.Stress.Low;
+                    break;
+                case "med":
+                    stressLevel = OrganisationGenerator.Stress.Medium;
+                    break;
+                case "hig":
+                    stressLevel = OrganisationGenerator.Stress.High;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (values.size() > 1) {
+            throw new Exception("Invalid use of the debug option.");
+        }
+        PersistenceManager.getCurrent().setCurrentModel(new OrganisationGenerator(stressLevel).generate());
+    }
+
+    /**
+     * Save a sample project to the current directory.
+     * @param values options that were passed to this argument.
+     * @throws Exception when saving a sample project failed.
+     */
+    private static void saveSample(final List<String> values) throws Exception {
+        if (values.size() != 0) {
+            throw new Exception("Invalid use of the sample option.");
+        }
+
+        try {
+            String fileLocation = "sample.project";
+            PersistenceManager.getCurrent().saveModel(fileLocation);
+        }
+        catch (Exception e) {
+            System.err.println("Could not save sample project.");
+        }
+        System.exit(0);
+    }
+
+    /**
      * Main function for starting the app.
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
         System.setProperty("prism.lcdtext", "false");
-        ErrorReporter.setup(args);
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.get().setDisabled(true);
 
-        List<String> argsList = Arrays.asList(args);
-        int debug = argsList.indexOf("debug");
-        int numbering = argsList.indexOf("numbering");
-        vader = argsList.indexOf("vader") >= 0;
+        ArgumentsManager.get().registerArgument("d", "debug", "Generates sample data for use while debugging.\n\t"
+                + "  Combine with \"high\", \"med\" and \"low\" to customise data generated.", App::sampleData);
+        ArgumentsManager.get().registerArgument("n", "numbering", "For use with debug. Enables numbers on randomly "
+                + "generated model types.", v -> OrganisationGenerator.isNumbering(true));
+        ArgumentsManager.get().registerArgument("s", "sample", "Generates a sample file for use while testing.",
+                App::saveSample);
+        ArgumentsManager.get().registerArgument("v", "vader", "Enables Dion Vader mode.", opts -> vader = true);
+        ArgumentsManager.get().parseArguments(args);
 
-        if (numbering >= 0) {
-            OrganisationGenerator.isNumbering(true);
-        }
-        if (debug >= 0) {
-            OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
-            if (debug + 1 < args.length) {
-                switch (args[debug + 1].substring(0, SUBSTRINGLENGTH).toLowerCase()) {
-                    case "low": stressLevel = OrganisationGenerator.Stress.Low; break;
-                    case "med": stressLevel = OrganisationGenerator.Stress.Medium; break;
-                    case "hig": stressLevel = OrganisationGenerator.Stress.High; break;
-                    default: break;
-                }
-            }
-            PersistenceManager.getCurrent().setCurrentModel(new OrganisationGenerator(stressLevel).generate());
-        }
-        else {
-            //Give us an empty model
-            PersistenceManager.getCurrent().setCurrentModel(new Organisation());
-        }
-
-        int sample = argsList.indexOf("sample");
-        if (sample >= 0) {
-            String fileLocation = "sample.project";
-            try {
-                PersistenceManager.getCurrent().saveModel(fileLocation);
-                System.exit(0);
-            }
-            catch (Exception e) {
-                System.err.println("Could not save sample project.");
-            }
-        }
-
-        UndoRedoManager.get().setDisabled(false);
-        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         try {
+            Organisation model = PersistenceManager.getCurrent().getCurrentModel();
+            if (PersistenceManager.getCurrent().getCurrentModel() == null) {
+                //Give us an empty model
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
+            }
+            UndoRedoManager.get().setDisabled(false);
             UndoRedoManager.get().importModel(model);
         }
         catch (Exception e) {
