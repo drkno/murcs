@@ -14,13 +14,11 @@ public @interface Searchable {
 
     /**
      * Priority to search this field with.
-     * @return The search priority.
      */
     SearchPriority value() default SearchPriority.Medium;
 
     /**
      * Field name to identify this field as.
-     * @return The field name.
      */
     String fieldName() default "";
 }
