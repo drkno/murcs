@@ -76,7 +76,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @param newShortName the new short name.
      * @throws CustomException if the short name is invalid.
      */
-    public final void setShortName(final String newShortName) throws CustomException {
+    public final void setShortName(final String newShortName) throws DuplicateObjectException, InvalidParameterException {
         validateShortName(newShortName);
         shortName = newShortName.trim();
         if (shortNameProperty != null) {
@@ -90,7 +90,7 @@ public abstract class Model extends TrackableObject implements Serializable {
      * @param value The value.
      * @throws CustomException if the short name is invalid.
      */
-    private void validateShortName(final String value) throws CustomException {
+    private void validateShortName(final String value) throws DuplicateObjectException, InvalidParameterException {
         ModelType type = ModelType.getModelType(getClass());
         Model model = UsageHelper.findBy(type, m -> m.getShortName().equalsIgnoreCase(value));
         if (model != null) {

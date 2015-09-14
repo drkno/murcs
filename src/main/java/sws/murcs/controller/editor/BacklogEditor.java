@@ -26,6 +26,8 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
@@ -609,8 +611,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "A {Backlog} with this name already exists");
+            } catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "Short name cannot be empty");
             }
         }
 
