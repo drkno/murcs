@@ -205,10 +205,10 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setMessageText("Are you sure you want to remove "
-                        + skill.getShortName() + " from "
+                popup.setMessageText("{AreYouSureRemove} "
+                        + skill.getShortName() + " {From} "
                         + getModel().getShortName() + "?");
-                popup.setTitleText("Remove Skill from Person");
+                popup.setTitleText("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     allocatableSkills.add(skill);
                     Node skillNode = skillNodeIndex.get(skill);
