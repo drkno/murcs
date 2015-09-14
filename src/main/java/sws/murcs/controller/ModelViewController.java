@@ -304,26 +304,26 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 .orElse(null);
 
         GenericPopup popup = new GenericPopup(window);
-        String message = "Are you sure you want to delete this?";
+        String message = "{AreYouSureDelete}";
         if (usages.size() != 0) {
-            message += "\nThis ";
+            message += "\n{This} ";
             ModelType type = ModelType.getModelType(selectedItem);
-            message += type.toString().toLowerCase() + " is used in " + usages.size() + " place(s):";
+            message += type.toString().toLowerCase() + " {IsUsedIn} " + usages.size() + " {Places}:";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
         }
-        popup.setTitleText("Really delete?");
+        popup.setTitleText("{Reallydelete}");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+        popup.addButton("{Yes}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
             popup.close();
             navigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             toolBarController.updateBackForwardButtons();
         }, "danger-will-robinson");
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
+        popup.addButton("{No}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
         popup.show();
     }
 

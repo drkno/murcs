@@ -416,13 +416,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         .collect(Collectors.toList());
                 String[] sprintNames = collect.toArray(new String[collect.size()]);
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to make the story "
-                        + story.toString() + " non-prioritised\n\n"
-                        + "This will cause the story state to be set to NONE"
-                        + " and effect the following sprints:\n\t"
+                popup.setMessageText("{SureMakeStory} "
+                        + story.toString()
+                        + " {UnprioritiseWarning}"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Un-prioritise story");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{UnprioritiseTitle}");
+                popup.setWindowTitle("{Areyousure}");
                 popup.addYesNoButtons(() -> {
                     popUpIsActive = false;
                     if (callback != null) {

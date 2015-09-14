@@ -222,7 +222,8 @@ public class GenericPopup extends AnchorPane {
                                 final Action action,
                                 final GenericCallback func,
                                 final String cssStyleClasses) {
-        Button button = new MaterialDesignButton(buttonText);
+        String translated = InternationalizationHelper.translatasert(buttonText);
+        Button button = new MaterialDesignButton(translated);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.call());

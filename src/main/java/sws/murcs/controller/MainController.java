@@ -633,10 +633,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private void newModel(final ActionEvent event) {
         if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to");
-            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardThem}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 try {
                     // Close all windows which are not the main app.
@@ -647,7 +647,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 }
             }, "danger-will-robinson");
             if (UndoRedoManager.get().canRevert()) {
-                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                popup.addButton("{Save}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
@@ -661,7 +661,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -704,10 +704,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     public final void open(final ActionEvent event) {
         if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to");
-            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardThem}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 if (openFile()) {
                     popup.close();
                     // Close all windows which are not the main app.
@@ -715,7 +715,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 }
             }, "danger-will-robinson");
             if (UndoRedoManager.get().canRevert()) {
-                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                popup.addButton("{SaveThem}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save() && openFile()) {
                         popup.close();
@@ -724,7 +724,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -771,9 +771,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         }
         catch (Exception e) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setTitleText("Old or corrupted file!");
-            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
-                    + "Please use the version it was created with to open the file.");
+            popup.setTitleText("{OldorCorrupt}");
+            popup.setMessageText("{FromOldVersion}");
             popup.show();
             return false;
         }
@@ -789,16 +788,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         mainTabPane.requestFocus();
         if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to");
-            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardandExit}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 App.getWindowManager().cleanUp();
                 Platform.exit();
             }, "danger-will-robinson");
             if (UndoRedoManager.get().canRevert()) {
-                popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                popup.addButton("{SaveandExit}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
@@ -807,7 +806,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -905,11 +904,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     public final void revert(final ActionEvent event) {
         if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Revert");
-            popup.setTitleText("Revert changes?");
-            popup.setMessageText("Looks like you are still working on something"
-                    + "\nUnsaved changes will be lost if you revert.");
-            popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{Revert}");
+            popup.setTitleText("{RevertChangesQuestion}");
+            popup.setMessageText("{LooksLikeStillWorking} {UnsavedChangesWillBeLost}");
+            popup.addButton("{RevertChanges}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
                     UndoRedoManager.get().revert(0);
                     popup.close();
@@ -921,7 +919,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 }
             }, "danger-will-robinson");
             if (UndoRedoManager.get().canRevert()) {
-                popup.addButton("Save changes as new", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                popup.addButton("{SaveAs}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (saveAs(null, false)) {
                         try {
@@ -936,7 +934,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Cancel", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
