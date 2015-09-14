@@ -243,20 +243,9 @@ public class App extends Application {
             shortcutManager = new ShortcutManager();
         }
 
-        // Loads the primary fxml and sets mainController as its controller
-        FXMLLoader loader = new AutoLanguageFXMLLoader();
-        loader.setResources(InternationalizationHelper.getCurrentResources());
-        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
-        Parent parent = null;
-        try {
-            parent = loader.load();
-        } catch (IOException e) {
-            //We should never hit this, if we managed to start the application
-            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
-        }
-        MainController controller = loader.getController();
+        MainController controller = loadRootNode();
 
-        Scene scene = new Scene(parent);
+        Scene scene = new Scene(controller.getRootNode());
         scene.getStylesheets()
                 .add(App.class
                         .getResource("/sws/murcs/styles/global.css")
@@ -272,6 +261,22 @@ public class App extends Application {
         window.setMinHeight(MINIMUM_APPLICATION_HEIGHT);
 
         controller.show();
+        return controller;
+    }
+
+    public static MainController loadRootNode() {
+        // Loads the primary fxml and sets mainController as its controller
+        FXMLLoader loader = new AutoLanguageFXMLLoader();
+        loader.setResources(InternationalizationHelper.getCurrentResources());
+        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            //We should never hit this, if we managed to start the application
+            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
+        }
+        MainController controller = loader.getController();
         return controller;
     }
 

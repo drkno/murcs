@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -43,6 +44,7 @@ import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -71,6 +73,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     private MenuBar menuBar;
+
+    /**
+     * A menu that lets you choose the language.
+     */
+    @FXML
+    private Menu languageMenu;
 
     /**
      * The Menu items for the main window.
@@ -132,6 +140,20 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
+        }
+
+        List<String> languages = InternationalizationHelper.getLanguages();
+        for (String language : languages) {
+            MenuItem lang = new MenuItem(language);
+            lang.setOnAction((a) -> {
+                //Hacky save. Dion Vader says it's okay.
+                borderPaneMain.requestFocus();
+                InternationalizationHelper.setLanguage(language);
+                Scene scene = borderPaneMain.getScene();
+                MainController controller = App.loadRootNode();
+                scene.setRoot(controller.getRootNode());
+            });
+            languageMenu.getItems().add(lang);
         }
 
         Pane containerPane = buildDnDTabPane();
@@ -1078,5 +1100,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     public ModelType getCurrentModelType() {
         return currentTabbable.getCurrentModelType();
+    }
+
+    /**
+     * Gets the root node of the controller.
+     * @return The root node
+     */
+    public Parent getRootNode() {
+        return borderPaneMain;
     }
 }
