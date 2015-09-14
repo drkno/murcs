@@ -387,13 +387,13 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setTitleText("Remove Team Member");
-                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                popup.setTitleText("{ConfirmRemoveTeamMemberTitle}");
+                String message = "{AreYouSureRemove} " + person.getShortName() + ".";
                 if (person.equals(getModel().getScrumMaster())) {
-                    message += "\nThey are currently the teams Scrum Master.";
+                    message += "\n{TheyAreScrumMaster}.";
                 }
                 if (person.equals(getModel().getProductOwner())) {
-                    message += "\nThey are currently the teams Product Owner.";
+                    message += "\n{TheyArePO}.";
                 }
                 popup.setMessageText(message);
                 popup.addYesNoButtons(() -> {
