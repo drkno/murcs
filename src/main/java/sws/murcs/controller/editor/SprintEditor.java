@@ -352,12 +352,12 @@ public class SprintEditor extends GenericEditor<Sprint> {
         Release release = releaseComboBox.getValue();
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            addFormError(startDatePicker, "Start date must be before end date");
+            addFormError(startDatePicker, "StartBeforeEndError");
             hasProblems = true;
         }
 
         if (release != null && endDate != null && endDate.isAfter(release.getReleaseDate())) {
-            addFormError(endDatePicker, "The sprint must end before its associated release");
+            addFormError(endDatePicker, "{EndsAfterReleaseError}");
             hasProblems = true;
         }
 
@@ -375,7 +375,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 }
             }
             else {
-                addFormError(startDatePicker, "You must specify a start date for the sprint");
+                addFormError(startDatePicker, "{NoStartDateError}");
             }
         }
 
@@ -389,7 +389,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 }
             }
             else {
-                addFormError(endDatePicker, "You must specify an end date for the sprint");
+                addFormError(endDatePicker, "{NoEndDateError}");
             }
         }
     }
