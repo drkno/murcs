@@ -18,6 +18,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
 
@@ -305,7 +306,14 @@ public class GenericPopup extends AnchorPane {
         if (message == null) {
             return;
         }
-        messageText.setText(message);
+
+        String translated = InternationalizationHelper.tryGet(message);
+        if (translated == null) {
+            translated = message;
+        }
+
+
+        messageText.setText(translated);
     }
 
     /**

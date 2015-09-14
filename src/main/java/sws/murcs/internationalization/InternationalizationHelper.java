@@ -1,5 +1,6 @@
 package sws.murcs.internationalization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -52,6 +53,39 @@ public class InternationalizationHelper {
             return null;
         }
         return getCurrentResources().getString(key);
+    }
+
+    /**
+     * Takes a string with keys surrounded by {key} and replaces
+     * those keys with their translation.
+     * @param text The text to translatasert.
+     * @return The translataserted text.
+     */
+    public static String translatasert(String text) {
+        String result = "";
+
+        int startIndex = text.indexOf("{");
+        int endIndex = text.indexOf("}", startIndex);
+
+        List<String> keys = new ArrayList<>();
+
+        while (startIndex != -1 && endIndex != -1) {
+            String key = text.substring(startIndex, endIndex);
+            keys.add(key);
+
+            startIndex = text.indexOf("{", endIndex);
+            endIndex = text.indexOf("}", startIndex);
+        }
+
+        for (String key : keys) {
+            String translated = tryGet(key);
+            if (translated == null) {
+                continue;
+            }
+            result = text.replace("{" + key + "}", translated);
+        }
+
+        return result;
     }
 
     /**
