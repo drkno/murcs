@@ -188,11 +188,11 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         // Must meet minimum requirements for an allocation
         if (team == null) {
-            addFormError(choiceBoxAddTeam, "Team may not be null");
+            addFormError(choiceBoxAddTeam, "{TeamNullError}");
             hasErrors = true;
         }
         if (startDate == null) {
-            addFormError(datePickerStartDate, "Start date must be specified");
+            addFormError(datePickerStartDate, "{StartDateNotSpecified}");
             hasErrors = true;
         }
 
