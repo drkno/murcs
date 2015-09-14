@@ -1,36 +1,37 @@
 package sws.murcs.internationalization;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Helps internationalize a node graph.
  */
 public class InternationalizationHelper {
-    private static InternationalizationHelper instance;
+    private static Locale currentLocale;
+    private static ResourceBundle currentBundle;
 
-    private static Locale english = new Locale("en", "EN");
-    private static Locale latin = new Locale("la", "LA");
+    /**
+     * Returns a list of all languages supported by the app.
+     * @return The supported languages
+     */
+    public static List<String> getLanguages() {
+        return languages.keySet().stream().sorted().collect(Collectors.toList());
+    }
 
-    private static ResourceBundle englishBundle = ResourceBundle.getBundle("sws.murcs.languages.words", english);
-//    private static ResourceBundle latinBundle = ResourceBundle.getBundle("sws.murcs.languages.words", latin);
-
-    private static ResourceBundle currentLocale = englishBundle;
-
-    public static void setLanguage(Language language) {
-        switch (language) {
-            case English:
-                currentLocale = englishBundle;
-                break;
-            case Latin:
-                //currentLocale = latinBundle;
-                break;
-        }
+    public static void setLanguage(String language) {
+        String code = languages.get(language);
+        currentLocale = new Locale(code.toLowerCase(), code.toUpperCase());
+        currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale);
     }
 
     public static ResourceBundle getCurrentResources() {
-        return currentLocale;
+        if (currentBundle == null) {
+            setLanguage("English");
+        }
+        return currentBundle;
     }
 
     private static HashMap<String, String> languages = new HashMap<String, String>()

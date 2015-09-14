@@ -35,9 +35,9 @@
                                       <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#create" text="%Sprint" />
                                   </items>
                               </Menu>
-                              <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="%Open"/>
+                              <MenuItem fx:id="open" mnemonicParsing="false" onAction="#open" text="%Open" />
                               <MenuItem fx:id="save" mnemonicParsing="false" onAction="#save" text="%Save" />
-                              <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="%SaveAs"/>
+                              <MenuItem fx:id="saveAs" mnemonicParsing="false" onAction="#saveAs" text="%SaveAs" />
                               <MenuItem fx:id="generateReport" mnemonicParsing="false" onAction="#generateReport" text="%GenerateReport" />
                               <SeparatorMenuItem mnemonicParsing="false" />
                               <MenuItem fx:id="fileQuit" mnemonicParsing="false" onAction="#fileQuitPress" text="%Quit" />
@@ -62,6 +62,11 @@
                               <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%ReportingToolbar" />
                                <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%SearchToolbar" />
                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Language">
+                          <items>
+                            <MenuItem mnemonicParsing="false" text="Action 1" />
+                          </items>
                         </Menu>
                           </items>
                       </Menu>
