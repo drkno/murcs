@@ -13,7 +13,7 @@ public class InternationalizationHelper {
     private static Locale latin = new Locale("la", "LA");
 
     private static ResourceBundle englishBundle = ResourceBundle.getBundle("sws.murcs.languages.words", english);
-    private static ResourceBundle latinBundle = ResourceBundle.getBundle("sws.murcs.languages.words", latin);
+//    private static ResourceBundle latinBundle = ResourceBundle.getBundle("sws.murcs.languages.words", latin);
 
     private static ResourceBundle currentLocale = englishBundle;
 
@@ -23,7 +23,7 @@ public class InternationalizationHelper {
                 currentLocale = englishBundle;
                 break;
             case Latin:
-                currentLocale = latinBundle;
+                //currentLocale = latinBundle;
                 break;
         }
     }
