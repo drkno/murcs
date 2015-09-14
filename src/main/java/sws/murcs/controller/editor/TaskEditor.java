@@ -177,8 +177,8 @@ public class TaskEditor implements UndoRedoChangeListener {
         descriptionTextArea.focusedProperty().addListener(changeListener);
 
         Platform.runLater(() -> {
-            editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
-            logEffortButton.setTooltip(new Tooltip("Log Effort"));
+            editAssignedButton.setTooltip(new Tooltip("{EditAssignees}"));
+            logEffortButton.setTooltip(new Tooltip("{LogEffort}"));
         });
     }
 
