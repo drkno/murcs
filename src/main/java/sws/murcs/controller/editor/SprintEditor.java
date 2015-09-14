@@ -239,7 +239,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             if (teamComboBox.getValue() != null) {
                 sprint.setTeam(teamComboBox.getValue());
             } else {
-                addFormError(teamComboBox, "You must select a team to associate with the sprint");
+                addFormError(teamComboBox, "{TeamNullError}");
             }
         }
 
@@ -271,7 +271,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 }
             }
             else {
-                addFormError(backlogComboBox, "You must select a backlog for this sprint");
+                addFormError(backlogComboBox, "{BacklogNullError}");
             }
         }
 
@@ -333,7 +333,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     addFormError(releaseComboBox, e.getMessage());
                 }
             } else {
-                addFormError(releaseComboBox, "You must select a release for this sprint");
+                addFormError(releaseComboBox, "{ReleaseNullError}");
             }
         }
 
