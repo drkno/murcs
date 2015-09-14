@@ -15,6 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.controls.md.MaterialDesignCheckBox;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Popup for reporting errors/bugs.

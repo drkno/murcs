@@ -1,6 +1,9 @@
 package sws.murcs.controller.editor;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,13 +15,10 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Controller for SprintContainer.

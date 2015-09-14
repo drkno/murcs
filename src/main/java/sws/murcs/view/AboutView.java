@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.AboutController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * The About window view.

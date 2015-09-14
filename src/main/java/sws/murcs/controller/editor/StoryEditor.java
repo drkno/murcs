@@ -1,6 +1,12 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,6 +52,7 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -62,13 +69,6 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * An editor for the story model.

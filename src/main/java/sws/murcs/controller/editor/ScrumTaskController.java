@@ -1,5 +1,9 @@
 package sws.murcs.controller.editor;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +16,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Person;
@@ -19,11 +24,6 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.helpers.UsageHelper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for a task within a scrum board.

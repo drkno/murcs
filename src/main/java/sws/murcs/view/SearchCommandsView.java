@@ -8,6 +8,7 @@ import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Search commands view for the pop over.

@@ -1,5 +1,7 @@
 package sws.murcs.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,11 +17,9 @@ import javafx.stage.Stage;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Generic popup creator and controller.

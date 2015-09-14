@@ -1,6 +1,11 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -22,6 +27,7 @@ import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.EffortEntry;
@@ -32,12 +38,6 @@ import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.

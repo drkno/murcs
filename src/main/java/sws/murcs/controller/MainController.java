@@ -1,5 +1,13 @@
 package sws.murcs.controller;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +42,7 @@ import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -47,15 +55,6 @@ import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
-
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.function.Consumer;
 
 /**
  * A controller for the base pane.
@@ -173,7 +172,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         UndoRedoManager.get().addChangeListener(this);
 
         addModelViewTab(mainTabPane);
-        InternationalizationHelper.get().internationalize(borderPaneMain);
     }
 
     /**

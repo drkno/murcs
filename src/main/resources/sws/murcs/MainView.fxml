@@ -19,7 +19,7 @@
          <children>
               <MenuBar fx:id="menuBar" BorderPane.alignment="CENTER">
                   <menus>
-                      <Menu id="fileMenu" mnemonicParsing="false" text="%fileMenu">
+                      <Menu id="fileMenu" mnemonicParsing="false" text="File">
                           <items>
                               <Menu id="newMenu" mnemonicParsing="false" text="New">
                                   <items>

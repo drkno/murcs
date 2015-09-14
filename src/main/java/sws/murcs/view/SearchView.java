@@ -1,13 +1,13 @@
 package sws.murcs.view;
 
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Window;
 import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-
-import java.io.IOException;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Provides methods for starting the search window/pane.

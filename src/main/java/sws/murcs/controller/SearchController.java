@@ -1,6 +1,10 @@
 package sws.murcs.controller;
 
 import com.sun.javafx.css.StyleManager;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -34,16 +38,12 @@ import javafx.util.Duration;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 import sws.murcs.view.App;
 import sws.murcs.view.SearchCommandsView;
-
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Controller for search UI.
