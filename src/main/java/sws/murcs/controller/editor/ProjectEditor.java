@@ -15,6 +15,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
@@ -145,8 +147,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }  catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Project} {NameExistsError2}");
+            } catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
