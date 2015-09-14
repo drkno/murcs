@@ -220,7 +220,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             try {
                 sprint.setShortName(shortNameTextField.getText());
             }   catch (DuplicateObjectException e) {
-                addFormError(shortNameTextField, "{NameExistsError1} {Sprint} {NameExistsError2}");
+                addFormError(shortNameTextField, "{NameExistsError1} {Story} {NameExistsError2}");
             } catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }

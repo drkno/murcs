@@ -52,6 +52,7 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
@@ -535,8 +536,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }    catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Sprint} {NameExistsError2}");
+            } catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -860,7 +863,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         try {
             newCondition.setCondition(conditionText);
         } catch (CustomException e) {
-            addFormError(addACButton, e.getMessage());
+            addFormError(addACButton, "{EmptyACError}");
             return;
         }
 
@@ -978,7 +981,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             getModel().addTask(task);
         }
         catch (DuplicateObjectException e) {
-            addFormError(taskContainer, e.getMessage());
+            addFormError(taskContainer, "{DuplicateTaskError}");
         }
     }
 
