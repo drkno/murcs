@@ -62,7 +62,7 @@ public class InternationalizationHelper {
      * @return The translataserted text.
      */
     public static String translatasert(String text) {
-        String result = "";
+        String result = text;
 
         int startIndex = text.indexOf("{");
         int endIndex = text.indexOf("}", startIndex);
@@ -70,7 +70,7 @@ public class InternationalizationHelper {
         List<String> keys = new ArrayList<>();
 
         while (startIndex != -1 && endIndex != -1) {
-            String key = text.substring(startIndex, endIndex);
+            String key = text.substring(startIndex + 1, endIndex);
             keys.add(key);
 
             startIndex = text.indexOf("{", endIndex);
@@ -82,7 +82,7 @@ public class InternationalizationHelper {
             if (translated == null) {
                 continue;
             }
-            result = text.replace("{" + key + "}", translated);
+            result = result.replace("{" + key + "}", translated);
         }
 
         return result;

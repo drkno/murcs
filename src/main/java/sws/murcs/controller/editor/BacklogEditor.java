@@ -246,7 +246,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private void removeStory(final Story story) {
         if (!isCreationWindow) {
             GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-            popup.setTitleText("{Areyousure}");
+            popup.setTitleText("{AreYouSure}");
             String extraWarning = "";
             Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
             if (storyUsage != null) {
