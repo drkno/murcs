@@ -231,10 +231,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
         GenericPopup alert = new GenericPopup();
-        alert.setTitleText("Unshedule A Team");
-        alert.setMessageText("Are you sure you wish to unshedule \""
+        alert.setTitleText("{UnscheduleTeamTitle}");
+        alert.setMessageText("{UnscheduleTeamWarning} \""
                 + allocation.getTeam()
-                + "\" from \""
+                + "\" {From} \""
                 + allocation.getProject()
                 + "\"?");
         alert.addYesNoButtons(() -> {
