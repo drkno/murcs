@@ -783,21 +783,21 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         children.add(new Label("["));
         Label storiesLabel = new Label(Integer.toString(treeInfo.getCount()));
         storiesLabel.setTooltip(
-                new Tooltip("The number of stories that this story depends on in total (including itself)."));
+                new Tooltip("{NumberOfDependencies}"));
         storiesLabel.getStyleClass().add("story-depends-on");
         children.add(storiesLabel);
         HBox.setHgrow(storiesLabel, Priority.ALWAYS);
 
         children.add(new Label(", "));
         Label immediateLabel = new Label(Integer.toString(treeInfo.getImmediateDepth()));
-        immediateLabel.setTooltip(new Tooltip("The number of stories this story immediately depends on."));
+        immediateLabel.setTooltip(new Tooltip("{DependsOn}"));
         immediateLabel.getStyleClass().add("story-depends-direct");
         children.add(immediateLabel);
         HBox.setHgrow(immediateLabel, Priority.ALWAYS);
 
         children.add(new Label(", "));
         Label deepLabel = new Label(Integer.toString(treeInfo.getMaxDepth()));
-        deepLabel.setTooltip(new Tooltip("The maximum number of stories this story transitively depends on."));
+        deepLabel.setTooltip(new Tooltip("{TransitiveDependencies}"));
         deepLabel.getStyleClass().add("story-depends-deep");
         children.add(deepLabel);
         HBox.setHgrow(deepLabel, Priority.ALWAYS);
