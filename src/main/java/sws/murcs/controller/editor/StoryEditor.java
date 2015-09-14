@@ -562,14 +562,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 String actualEstimate = estimateChoiceBox.getValue();
                 estimateChoiceBox.setValue(getModel().getEstimate());
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to set the Estimate of "
+                popup.setMessageText("{ConfirmEstimate} "
                         + getModel().toString()
-                        + String.format(" to %s?\n", actualEstimate)
-                        + "This will set the Story State to None.\n\n"
-                        + "The following Sprints will be affected:\n\t"
+                        + String.format(" {To} %s?\n", actualEstimate)
+                        + "{SetStoryStateToNone}\n\n"
+                        + "{SetStoryStateToNone}:\n\t"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Change Story State");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     getModel().setEstimate(actualEstimate);
                     estimateChoiceBox.setValue(actualEstimate);
@@ -676,13 +676,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 String[] sprintNames = collect.toArray(new String[collect.size()]);
                 storyStateChoiceBox.setValue(getModel().getStoryState());
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to set the State of "
+                popup.setMessageText("{ConfirmEstimate} "
                         + getModel().toString()
                         + String.format(" to %s?\n\n", state)
-                        + "The following Sprints will be affected:\n\t"
+                        + "{SprintsWillBeAffected}:\n\t"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Change Story State");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
                     getModel().setStoryState(StoryState.None);
@@ -720,10 +720,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setMessageText("Are you sure you want to remove the dependency "
+                popup.setMessageText("{ConfirmRemoveDependency} "
                         + newDependency.getShortName() + "?");
-                popup.setTitleText("Remove Dependency");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmRemoveDependencyTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     searchableComboBoxDecorator.add(newDependency);
                     Node dependencyNode = dependenciesMap.get(newDependency);
