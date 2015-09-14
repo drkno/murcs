@@ -1060,7 +1060,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     clearErrors();
                 } catch (CustomException e) {
                     clearErrors();
-                    addFormError(textArea, e.getMessage());
+                    addFormError(textArea, "{EmptyACError}");
                 }
 
             }
