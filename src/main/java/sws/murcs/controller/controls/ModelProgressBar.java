@@ -70,19 +70,19 @@ public class ModelProgressBar extends GridPane {
         Platform.runLater(() -> {
             completePane.getStyleClass().add("completePane");
             if (hasTooltips) {
-                completedTooltip = new Tooltip("Completed");
+                completedTooltip = new Tooltip("{Completed}");
                 Tooltip.install(completePane, completedTooltip);
             }
 
             progressPane.getStyleClass().add("progressPane");
             if (hasTooltips) {
-                progressTooltip = new Tooltip("Completed");
+                progressTooltip = new Tooltip("{Completed}");
                 Tooltip.install(progressPane, progressTooltip);
             }
 
             notStartedPane.getStyleClass().add("notstartedPane");
             if (hasTooltips) {
-                notStartedTooltip = new Tooltip("Completed");
+                notStartedTooltip = new Tooltip("{Completed}");
                 Tooltip.install(notStartedPane, notStartedTooltip);
             }
 
@@ -176,9 +176,9 @@ public class ModelProgressBar extends GridPane {
         float notStartedPrecentage = notStarted / total;
 
         if (completedTooltip != null) {
-            completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% complete.");
-            progressTooltip.setText(Math.round(inProgressPercentage * 1000) / 10 + "% in progress.");
-            notStartedTooltip.setText(Math.round(notStartedPrecentage * 1000) / 10 + "% not started.");
+            completedTooltip.setText(Math.round(completedPercentage * 1000) / 10 + "% {Complete}.");
+            progressTooltip.setText(Math.round(inProgressPercentage * 1000) / 10 + "% {InProgress}.");
+            notStartedTooltip.setText(Math.round(notStartedPrecentage * 1000) / 10 + "% {NotStarted}.");
         }
 
         float totalPercent = completedPercentage + inProgressPercentage + notStartedPrecentage;
