@@ -2,10 +2,8 @@ package sws.murcs.arguments;
 
 import sws.murcs.model.Organisation;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,9 +65,6 @@ public final class ArgumentsManager {
                         + ", " + longPrefix + argument.getLongArg());
                 System.out.println("\t  " + argument.getDescription().replaceAll("(?m)^", "\t  "));
             }
-            System.out.println("\nBUILT ON\n\t"
-                    + new Date(new File(getClass().getClassLoader().getResource(
-                    getClass().getCanonicalName().replace('.', '/') + ".class").toURI()).lastModified()));
             System.out.println("\nLICENSE\n\tMIT License. Please refer to the user guide for more information.");
 
             System.exit(0);

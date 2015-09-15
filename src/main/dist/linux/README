@@ -1,0 +1,8 @@
+INSTALLING
+To install, copy Murcs.desktop to your desktop. Edit the Murcs.desktop file to point to the new icon and Murcs.sh file location.
+
+RUNNING
+Either run chmod +x Murcs.sh and run it or double click Murcs.desktop.
+
+NOTE:
+This is not provided as an installer because that would not be testable as is required for this assessment.
