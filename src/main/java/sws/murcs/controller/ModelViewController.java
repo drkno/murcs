@@ -15,6 +15,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.helpfulHints.HelpfulHintsView;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -107,6 +108,8 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
      * The tab that view exists within.
      */
     private Tab containingTab;
+    private boolean hintsAreShown;
+    private HelpfulHintsView helpfulHints;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -151,6 +154,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         });
 
         UndoRedoManager.get().addChangeListener(this);
+        showHelpfulHints();
         updateList();
     }
 
@@ -175,6 +179,8 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         if (newValue == null && editorPane != null) {
             editorPane.dispose();
             editorPane = null;
+
+            //Clear the content pane later???
             contentPane.getChildren().clear();
 
             return;
@@ -190,6 +196,19 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         }
     }
 
+    private void showHelpfulHints() {
+        if (helpfulHints == null) {
+            helpfulHints = new HelpfulHintsView();
+            helpfulHints.create();
+        }
+        if (!contentPane.getChildren().contains(helpfulHints.getView())) {
+            contentPane.getChildren().add(helpfulHints.getView());
+        }
+        helpfulHints.showHints();
+        hintsAreShown = true;
+        System.out.println("show me a hint");
+    }
+
     /**
      * Updates the display list on the left hand side of the screen.
      */
@@ -203,22 +222,38 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         List<? extends Model> arrayList;
         switch (type) {
-            case Project: arrayList = model.getProjects(); break;
-            case Person: arrayList = model.getPeople(); break;
-            case Team: arrayList = model.getTeams(); break;
-            case Skill: arrayList = model.getSkills(); break;
-            case Release: arrayList = model.getReleases(); break;
-            case Story: arrayList = model.getStories(); break;
-            case Backlog: arrayList = model.getBacklogs(); break;
-            case Sprint: arrayList = model.getSprints(); break;
-            default: throw new UnsupportedOperationException();
+            case Project:
+                arrayList = model.getProjects();
+                break;
+            case Person:
+                arrayList = model.getPeople();
+                break;
+            case Team:
+                arrayList = model.getTeams();
+                break;
+            case Skill:
+                arrayList = model.getSkills();
+                break;
+            case Release:
+                arrayList = model.getReleases();
+                break;
+            case Story:
+                arrayList = model.getStories();
+                break;
+            case Backlog:
+                arrayList = model.getBacklogs();
+                break;
+            case Sprint:
+                arrayList = model.getSprints();
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
 
         if (arrayList.getClass() == ModelObservableArrayList.class) {
             ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
             arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
-        }
-        else {
+        } else {
             System.err.println("This list type does not yet have an ordering specified, "
                     + "please correct this so that the display list is shown correctly.");
         }
@@ -241,9 +276,22 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         if (selectionCleared && arrayList.size() > 0) {
             displayList.getSelectionModel().select(0);
-        }
-        else if (arrayList.size() > 0) {
+            if (hintsAreShown && helpfulHints != null) {
+                helpfulHints.hide();
+                hintsAreShown = false;
+            }
+        } else if (arrayList.size() > 0) {
             displayList.getSelectionModel().select(editorPane.getModel());
+            displayList.getSelectionModel().select(editorPane.getModel());
+            if (hintsAreShown && helpfulHints != null) {
+                helpfulHints.hide();
+                hintsAreShown = false;
+            }
+        }
+        else {
+//            if (!hintsAreShown) {
+//                helpfulHints.showHints();
+//            }
         }
     }
 
