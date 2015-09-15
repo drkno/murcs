@@ -1,6 +1,7 @@
 package sws.murcs.controller;
 
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -164,6 +165,29 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             Platform.runLater(() -> currentTabbable.update());
         });
 
+        mainTabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                if (mainTabPane.getTabs().size() > 1) {
+                    mainTabPane.getTabs().stream().forEach(t -> {
+                        t.setClosable(true);
+                    });
+                }
+                else {
+                    mainTabPane.getTabs().stream().forEach(t -> {
+                        t.setClosable(false);
+                    });
+                }
+            }
+            if (c.wasRemoved()) {
+                if (mainTabPane.getTabs().size() <= 1) {
+                    mainTabPane.getTabs().stream().forEach(t -> {
+                        t.setClosable(false);
+                    });
+                }
+            }
+        });
+
         loadToolbar();
         toolBarController.setLinkedController(this);
         toolBarController.setNavigable(this);
@@ -206,6 +230,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 return;
             }
 
+            tab.setClosable(true);
             PointerInfo info = MouseInfo.getPointerInfo();
             Point awtPoint = info.getLocation();
 
@@ -474,7 +499,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             Tab tabNode = new Tab();
             tabNode.setClosable(true);
-            tabNode.setOnClosed(e -> {
+            tabNode.setOnCloseRequest(e -> {
                 Tab t = (Tab) e.getSource();
                 Tabbable tabbable = getTabbable(t);
                 tabs.remove(tabbable);
