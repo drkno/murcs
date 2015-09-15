@@ -206,7 +206,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         }
         helpfulHints.showHints();
         hintsAreShown = true;
-        System.out.println("show me a hint");
     }
 
     /**
