@@ -47,7 +47,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="historyToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -92,7 +92,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="editToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -171,7 +171,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="reportingToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -204,7 +204,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="searchToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
