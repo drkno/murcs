@@ -163,7 +163,7 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/deploy/Windows/${project.artifactId}.exe</outfile>
+                            <outfile>target/deploy/${project.artifactId}.exe</outfile>
                             <jar>target/${project.artifactId}-${project.version}.jar</jar>
                             <dontWrapJar>false</dontWrapJar>
                             <errTitle>Murcs</errTitle>
@@ -198,10 +198,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/deploy</outputDirectory>
+                            <outputDirectory>${basedir}/target/deploy/linux</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/misc</directory>
+                                    <directory>src/main/dist</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
