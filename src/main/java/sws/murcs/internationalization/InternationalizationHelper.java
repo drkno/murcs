@@ -1,6 +1,7 @@
 package sws.murcs.internationalization;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +28,7 @@ public class InternationalizationHelper {
      * @return The supported languages
      */
     public static List<String> getLanguages() {
-        return languages.keySet().stream().sorted().collect(Collectors.toList());
+        return languages.keySet().stream().sorted(Comparator.<String>naturalOrder()).collect(Collectors.toList());
     }
 
     /**
@@ -41,7 +42,7 @@ public class InternationalizationHelper {
     public static void setLanguage(String language) {
         String code = languages.get(language);
         currentLocale = new Locale(code.toLowerCase(), code.toUpperCase());
-        currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale);
+        currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale, new UTF8Control());
     }
 
     /**
