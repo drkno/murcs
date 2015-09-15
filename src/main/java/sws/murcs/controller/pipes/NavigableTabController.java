@@ -33,12 +33,12 @@ public class NavigableTabController implements Navigable {
     }
 
     @Override
-    public void navigateTo(Model model) {
+    public void navigateTo(final Model model) {
         currentTab.navigateTo(model);
     }
 
     @Override
-    public void navigateTo(ModelType type) {
+    public void navigateTo(final ModelType type) {
         currentTab.navigateTo(type);
     }
 

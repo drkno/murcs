@@ -108,7 +108,15 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
      * The tab that view exists within.
      */
     private Tab containingTab;
+
+    /**
+     * Boolean if the hints are shown.
+     */
     private boolean hintsAreShown;
+
+    /**
+     * The helpful hints view.
+     */
     private HelpfulHintsView helpfulHints;
 
     /**
@@ -196,6 +204,9 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         }
     }
 
+    /**
+     * Shows the helpful hints and creates them if they have not been initialized.
+     */
     private void showHelpfulHints() {
         if (helpfulHints == null) {
             helpfulHints = new HelpfulHintsView();
@@ -286,11 +297,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 helpfulHints.hide();
                 hintsAreShown = false;
             }
-        }
-        else {
-//            if (!hintsAreShown) {
-//                helpfulHints.showHints();
-//            }
         }
     }
 
@@ -478,7 +484,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
-    public void navigateTo(ModelType type) {
+    public void navigateTo(final ModelType type) {
         displayChoiceBox.getSelectionModel().select(type);
     }
 

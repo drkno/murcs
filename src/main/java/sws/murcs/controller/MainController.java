@@ -411,7 +411,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param stage The stage to add the shortcuts to
      * @param navigationController The navigation controller to use
      */
-    private void addNavigationShortcuts(Stage stage, Navigable navigationController) {
+    private void addNavigationShortcuts(final Stage stage, final Navigable navigationController) {
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
                 () -> navigationController.goBack());
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
@@ -1108,7 +1108,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     @Override
-    public void navigateTo(ModelType type) {
+    public void navigateTo(final ModelType type) {
         currentTabbable.navigateTo(type);
     }
 
