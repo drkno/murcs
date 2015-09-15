@@ -10,11 +10,11 @@ fi
 
 if [[ "$javaPath" ]]; then
     version=$("$javaPath" -version 2>&1 | awk -F '"' '/version/ {print $2}')
-    if [[ "$version" > "1.8.0_60" ]]; then
+    if [[ "$version" > "1.8.0_59" ]]; then
         $javaPath -jar $jarPath
     else
         echo "Your Java version ($version) is not up to date enough to run this application."
-        echo "Please update to at lease Java 8u60 to use this application."
+        echo "Please update to at least Java 8u60 to use this application."
         exit -2
     fi
 else
