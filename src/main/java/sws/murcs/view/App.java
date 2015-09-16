@@ -250,6 +250,7 @@ public class App extends Application {
             parent = loader.load();
         } catch (IOException e) {
             //We should never hit this, if we managed to start the application
+            e.printStackTrace();
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
         }
         MainController controller = loader.getController();

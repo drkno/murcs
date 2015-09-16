@@ -127,6 +127,14 @@ public final class ErrorReporter {
      */
     private ErrorReporter() {
         String[] arg = ArgumentsManager.get().getArguments();
+        if (arg == null) {
+            try {
+                throw new Exception("Well this was truely a stuff up");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
         StringBuilder builder = new StringBuilder(arg.length * 2);
         for (String a : arg) {
             builder.append(a);
