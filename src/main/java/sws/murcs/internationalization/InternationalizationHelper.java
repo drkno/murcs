@@ -154,6 +154,8 @@ public class InternationalizationHelper {
         put("Kannada", "kn");
         put("Kazakh", "kk");
         put("Khmer", "km");
+        put("Klingon", "tlh");
+        put("Klingon IpIqaD", "tlhqaak");
         put("Korean", "ko");
         put("Lao", "lo");
         put("Latin", "la");
@@ -175,9 +177,11 @@ public class InternationalizationHelper {
         put("Portuguese", "pt");
         put("Programmer", "pr");
         put("Punjabi", "ma");
+        put("Queretaro Otomi", "otq");
         put("Romanian", "ro");
         put("Russian", "ru");
         put("Serbian", "sr");
+        put("Serbian (Latin)", "srlatn");
         put("Sesotho", "st");
         put("Sinhala", "si");
         put("Slovak", "sk");
@@ -199,6 +203,7 @@ public class InternationalizationHelper {
         put("Welsh", "cy");
         put("Yiddish", "yi");
         put("Yoruba", "yo");
+        put("Yucatec Maya", "yua");
         put("Zulu", "zu");
     }};
 }
