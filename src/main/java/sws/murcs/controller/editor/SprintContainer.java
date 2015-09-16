@@ -32,7 +32,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private VBox progressContainer;
 
     /**
-     * The three tabs used to view a sprint.
+     * The four tabs used to view a sprint.
      */
     @FXML
     private Tab overviewTab, scrumBoardTab, burnDownChartTab, allTasksTab;
@@ -106,7 +106,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             scrumBoard = loader.getController();
             scrumBoard.setSprintContainer(this);
         } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
+            ErrorReporter.get().reportError(e, "Unable to load the scrumboard");
         }
 
         progressBar = new ModelProgressBar(true);

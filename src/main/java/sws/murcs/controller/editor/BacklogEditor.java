@@ -150,9 +150,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private ObservableObjectValue<Story> selectedStory;
 
-    @FXML
     @Override
-    public final void initialize() {
+    protected final void initialize() {
         // set up change listener
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
