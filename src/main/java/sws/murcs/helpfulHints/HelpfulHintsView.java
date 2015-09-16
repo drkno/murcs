@@ -56,7 +56,7 @@ public class HelpfulHintsView {
     /**
      * Creates an instance of the controller and initializes controller variables.
      */
-    public void create() {
+    public final void create() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/HelpfulHints/HelpfulHints.fxml"));
         try {
             view = loader.load();
@@ -100,7 +100,7 @@ public class HelpfulHintsView {
      * Gets the view creating from loading the fxml.
      * @return The view.
      */
-    public Parent getView() {
+    public final Parent getView() {
         return view;
     }
 
@@ -117,7 +117,7 @@ public class HelpfulHintsView {
      * If the last hint is the same as the new hint generated then continue to request a hint until a new one is found.
      * @return A hint, hopefully helpful ;)
      */
-    protected String getHint() {
+    protected final String getHint() {
         String newHint = generateHint();
         if (oldHint != null && Objects.equals(newHint, oldHint)) {
             return getHint();
@@ -129,14 +129,14 @@ public class HelpfulHintsView {
     /**
      * Shows the hints.
      */
-    public void showHints() {
+    public final void showHints() {
         controller.play();
     }
 
     /**
      * Hides hints.
      */
-    public void hide() {
+    public final void hide() {
         controller.hide();
     }
 }

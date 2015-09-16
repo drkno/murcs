@@ -168,19 +168,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         mainTabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
             c.next();
             if (c.wasAdded()) {
-                if (mainTabPane.getTabs().size() > 1) {
-                    mainTabPane.getTabs().stream().forEach(t -> {
-                        t.setClosable(true);
-                    });
-                }
-                else {
-                    mainTabPane.getTabs().stream().forEach(t -> {
-                        t.setClosable(false);
-                    });
-                }
+                boolean isClosable = mainTabPane.getTabs().size() > 1;
+                mainTabPane.getTabs().stream().forEach(t -> {
+                    t.setClosable(isClosable);
+                });
             }
             if (c.wasRemoved()) {
-                if (mainTabPane.getTabs().size() <= 1) {
+                if (mainTabPane.getTabs().size() == 1) {
                     mainTabPane.getTabs().stream().forEach(t -> {
                         t.setClosable(false);
                     });

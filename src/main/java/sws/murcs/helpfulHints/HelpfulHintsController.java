@@ -28,13 +28,13 @@ public class HelpfulHintsController {
      * The duration of the fade in and out.
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private Duration fadeDuration = Duration.millis(500);
+    private final Duration fadeDuration = Duration.millis(500);
 
     /**
      * The pause duration for how long the text stays visible.
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private Duration pauseDuration = Duration.millis(3000);
+    private final Duration pauseDuration = Duration.millis(3000);
 
     /**
      * The model to extract the hints from.
@@ -89,14 +89,14 @@ public class HelpfulHintsController {
     /**
      * Plays the animation.
      */
-    protected void play() {
+    protected final void play() {
         hintsAnimation.play();
     }
 
     /**
      * Stops and hides the animation.
      */
-    protected void hide() {
+    protected final void hide() {
         hintsAnimation.stop();
         hintLabel.setOpacity(0);
     }
@@ -106,7 +106,7 @@ public class HelpfulHintsController {
      * Required when setting up the controller.
      * @param pModel The model for hint.
      */
-    public void setModel(final HelpfulHintsView pModel) {
+    public final void setModel(final HelpfulHintsView pModel) {
         model = pModel;
     }
 }

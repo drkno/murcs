@@ -187,8 +187,6 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         if (newValue == null && editorPane != null) {
             editorPane.dispose();
             editorPane = null;
-
-            //Clear the content pane later???
             contentPane.getChildren().clear();
 
             return;
@@ -522,6 +520,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     @Override
     public void undoRedoNotification(final ChangeState param) {
         switch (param) {
+            case Commit:
             case Forget:
             case Remake:
                 updateList();
