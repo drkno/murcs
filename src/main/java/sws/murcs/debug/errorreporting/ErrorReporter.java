@@ -130,7 +130,7 @@ public final class ErrorReporter {
         StringBuilder builder = new StringBuilder(arg.length * 2);
         for (String a : arg) {
             builder.append(a);
-            if (a.equalsIgnoreCase("debug")) {
+            if (a.equalsIgnoreCase("--debug") || a.equalsIgnoreCase("-d")) {
                 printStackTraces = true;
             }
             builder.append(" ");

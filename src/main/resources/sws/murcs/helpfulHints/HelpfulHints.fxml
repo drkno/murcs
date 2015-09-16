@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="hintPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.helpfulHints.HelpfulHintsController">
+   <center>
+      <Label fx:id="hintLabel" alignment="CENTER" contentDisplay="CENTER" styleClass="hint" wrapText="true" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="28.0" />
+         </font>
+         <opaqueInsets>
+            <Insets bottom="20.0" />
+         </opaqueInsets>
+         <BorderPane.margin>
+            <Insets left="20.0" right="20.0" />
+         </BorderPane.margin></Label>
+   </center>
+</BorderPane>

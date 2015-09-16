@@ -1,6 +1,7 @@
 package sws.murcs.controller.pipes;
 
 import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 
 /**
  * An interface that provides methods for going back and
@@ -35,6 +36,12 @@ public interface Navigable {
      * @param model The item to navigate to.
      */
     void navigateTo(Model model);
+
+    /**
+     * The model type to navigate to.
+     * @param type The type to select
+     */
+    void navigateTo(ModelType type);
 
     /**
      * Routes a message to the controller telling it to
