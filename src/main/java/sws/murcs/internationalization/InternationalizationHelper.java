@@ -79,6 +79,8 @@ public class InternationalizationHelper {
      * @return The translataserted text.
      */
     public static String translatasert(String text) {
+        if (text == null) return text;
+
         String result = text;
 
         int startIndex = text.indexOf("{");
