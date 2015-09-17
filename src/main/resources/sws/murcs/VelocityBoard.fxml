@@ -12,7 +12,7 @@
           <CategoryAxis label="sprint" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis label="stories per week" side="LEFT" />
+          <NumberAxis label="stories per day" side="LEFT" />
         </yAxis>
       </LineChart>
    </children>

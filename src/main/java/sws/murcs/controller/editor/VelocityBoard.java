@@ -5,6 +5,14 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Controller for VelocityBoard.
@@ -30,6 +38,9 @@ public class VelocityBoard {
         team = pTeam;
     }
 
+    /**
+     * Loads the team into the velocity board.
+     */
     protected void loadObject() {
         velocityChart.getData().clear();
 
@@ -37,28 +48,61 @@ public class VelocityBoard {
             throw new NullPointerException("Team is null in the velocity board");
         }
 
-        //Map<String, Double> velocities = new HashMap<>();
-        for (Model model : UsageHelper.findUsages(team, m -> m instanceof Sprint)) {
+        XYChart.Series series = new XYChart.Series();
+        series.setName("Sprint Velocity");
+
+        List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
+            if (s1.getStartDate().isEqual(s2.getStartDate())) {
+                return 0;
+            }
+            return s1.getStartDate().isBefore(s2.getStartDate()) ? -1 : 1;
+        }).collect(Collectors.toList());
+
+        double total = 0;
+        for (Model model : sprints) {
             Sprint sprint = (Sprint) model;
-            int total = 0;
+            double sum = 0;
             for (Story story : sprint.getStories()) {
-                int estimate = sprint.getBacklog().getEstimateType().getEstimates().indexOf(story.getEstimate());
+                int estimate = sprint.getBacklog().getEstimateType().getEstimates().indexOf(story.getEstimate()) + 1;
                 if (estimate >= 0) {
-                    total += estimate;
+                    sum += estimate;
                 }
             }
             double days = sprint.getEndDate().toEpochDay() - sprint.getStartDate().toEpochDay() + 1;
-            Double velocity = total / days;
+            Double velocity = sum / days;
+            total += velocity;
             String name = sprint.getShortName();
-            XYChart.Series series = new XYChart.Series();
             series.getData().add(new XYChart.Data(name, velocity));
-            velocityChart.getData().add(series);
-            //velocities.put(sprint.getShortName(), velocity);
         }
+        double averageVelocity = total / sprints.size();
+        velocityChart.getData().add(series);
+        if (sprints.size() > 1) {
+            String firstSprint = sprints.get(0).getShortName();
+            String lastSprint = sprints.get(sprints.size() - 1).getShortName();
 
+            // Get the mean velocity
+            XYChart.Series meanChart = new XYChart.Series();
+            meanChart.setName("Average Velocity");
+            meanChart.getData().add(new XYChart.Data(firstSprint, averageVelocity));
+            meanChart.getData().add(new XYChart.Data(lastSprint, averageVelocity));
+            velocityChart.getData().add(meanChart);
 
+            // Get the median velocity
+            XYChart.Series<String, Double> medianChart = new XYChart.Series<String, Double>();
+            List<XYChart.Data<String, Double>> sortedVelocities = medianChart.getData().stream().sorted((o1, o2) -> Double.compare(o1.getYValue(), o2.getYValue())).collect(Collectors.toList());
+            double median = sortedVelocities.get((sortedVelocities.size() - 1) / 2).getYValue();
+
+            medianChart.setName("Median Velocity");
+            meanChart.getData().add(new XYChart.Data(firstSprint, median));
+            meanChart.getData().add(new XYChart.Data(lastSprint, median));
+
+            velocityChart.getData().add(medianChart);
+        }
     }
 
+    /**
+     * Clears data related to this burndown chart.
+     */
     public void dispose() {
         team = null;
         velocityChart.getData().clear();
