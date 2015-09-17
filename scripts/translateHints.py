@@ -2,6 +2,7 @@ __author__ = 'jayha_000'
 
 path = "..\\src\main\\resources\\sws\\murcs\\"
 helpfulHints = path + "helpfulHints\\helpfulHints.nsv"
+helpfulHintKeys = path + "helpfulHints\\helpfulHintKeys.nsv"
 englishWords = path + "languages\\words_en_EN.properties"
 
 keys = dict()
@@ -41,14 +42,20 @@ with open(englishWords) as f:
 		keys[parts[0]] = parts[1]
 
 # Add all the hints we don't already have to our english file
+hint_keys = []
 for hint in hints:
 	key = key_for_hint(hint)
+	hint_keys.append(key)
 	if key not in keys:
 		keys[key] = hint
 
 # Save our new hints file
 with open(englishWords, 'w') as f:
 	for key in sorted(keys):
-		f.write(key + " = " + keys[key] + "\n")
+		f.write(key + " = " + keys[key].strip() + '\n')
+
+with open(helpfulHintKeys, 'w') as f:
+	for key in hint_keys:
+		f.write(key.strip() + '\n')
 
 

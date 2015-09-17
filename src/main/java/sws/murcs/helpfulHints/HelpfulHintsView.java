@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.GenerationHelper;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.io.BufferedReader;
@@ -42,7 +43,7 @@ public class HelpfulHintsView {
     /**
      * The path to the hints file to load from.
      */
-    private final String path = "/sws/murcs/helpfulHints/helpfulHints.nsv";
+    private final String path = "/sws/murcs/helpfulHints/helpfulHintKeys.nsv";
 
     /**
      * Sets up the helpful hints view.
@@ -109,7 +110,9 @@ public class HelpfulHintsView {
      * @return A hint.
      */
     private String generateHint() {
-        return hints.get(GenerationHelper.random(0, hints.size() - 1));
+        String key = hints.get(GenerationHelper.random(0, hints.size() - 1));
+        String hint = InternationalizationHelper.tryGet(key);
+        return hint;
     }
 
     /**
