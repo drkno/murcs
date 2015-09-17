@@ -39,6 +39,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
@@ -191,10 +192,10 @@ public class SearchController {
         ObservableList<SearchResult> results = searchHandler.getResults();
         results.addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                noItemsLabel.setText("No Items Found");
+                noItemsLabel.setText(InternationalizationHelper.tryGet("NoItemsFound"));
             }
             else {
-                noItemsLabel.setText("Hover over an item to preview.");
+                noItemsLabel.setText(InternationalizationHelper.tryGet("HoverToPreview"));
             }
         });
         foundItems.setItems(results);
@@ -275,7 +276,7 @@ public class SearchController {
             }
         });
         searchIcon.setOnMouseClicked(event -> { commandsPopOverStayOpen = !commandsPopOverStayOpen; });
-        Tooltip.install(searchIcon, new Tooltip("{ShowAdvancedCommands}"));
+        Tooltip.install(searchIcon, new Tooltip(InternationalizationHelper.tryGet("ShowAdvancedCommands")));
         injectSearchCommands();
 
         resultsPane.setOpacity(0);
