@@ -14,7 +14,10 @@ public class ImperialException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        App.invade();
-        return MARCH;
+        if (App.getVaderMode()) {
+            App.invade();
+            return MARCH;
+        }
+        return super.getMessage();
     }
 }

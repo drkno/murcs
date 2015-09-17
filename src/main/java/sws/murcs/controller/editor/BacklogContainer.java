@@ -7,8 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.ImperialException;
+import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Backlog;
 
 /**
@@ -101,11 +102,17 @@ public class BacklogContainer extends GenericEditor<Backlog> {
         Platform.runLater(() -> { isLoaded = true; });
     }
 
+    /**
+     * Sets up the estimation workspace.
+     */
     private void workspaceTabSelected() {
         estimationWorkspace.setModel(getModel());
         estimationWorkspace.loadObject();
     }
 
+    /**
+     * loads the backlog overview.
+     */
     private void overviewTabSelected() {
         backlogOverview.setModel(getModel());
         backlogOverview.loadObject();
@@ -127,5 +134,38 @@ public class BacklogContainer extends GenericEditor<Backlog> {
     @Override
     protected void saveChangesAndErrors() {
 
+    }
+
+    @Override
+    public final void setupSaveChangesButton() {
+    }
+
+    @Override
+    public void dispose() {
+        if (backlogOverview != null) {
+            backlogOverview.dispose();
+        }
+        if (estimationWorkspace != null) {
+            estimationWorkspace.dispose();
+        }
+    }
+
+    @Override
+    public void setNavigationManager(final Navigable navigationManager) {
+        backlogOverview.setNavigationManager(navigationManager);
+        if (estimationWorkspace != null) {
+            estimationWorkspace.setNavigationManager(navigationManager);
+        }
+        super.setNavigationManager(navigationManager);
+    }
+
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
+        if (backlogOverview != null) {
+            backlogOverview.loadObject();
+        }
+        if (estimationWorkspace != null) {
+            estimationWorkspace.loadObject();
+        }
     }
 }
