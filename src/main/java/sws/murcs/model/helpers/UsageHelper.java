@@ -1,5 +1,6 @@
 package sws.murcs.model.helpers;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
@@ -41,6 +42,16 @@ public final class UsageHelper {
      */
     public static boolean inUse(final Model model) {
         return findUsages(model).size() != 0;
+    }
+
+    /**
+     * Finds usages of a model and filters them using a predicate.
+     * @param model The model to find usages for
+     * @param filter The filter
+     * @return The usages
+     */
+    public static List<Model> findUsages(final Model model, final Predicate<Model> filter) {
+        return findUsages(model).stream().filter(filter).collect(Collectors.toList());
     }
 
     /**
@@ -122,6 +133,7 @@ public final class UsageHelper {
                 .stream()
                 .filter(sprint -> team.equals(sprint.getTeam()))
                 .forEach(sprint -> usages.add(sprint));
+
         return usages;
     }
 
