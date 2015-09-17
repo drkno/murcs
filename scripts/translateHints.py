@@ -12,7 +12,7 @@ hints = None
 def key_for_hint(hint):
 	# Check if our hint has already been added but has some funky name
 	for key in keys:
-		if keys[key] == hint:
+		if keys[key].strip() == hint.strip():
 			return key
 
 	key = hint.split("-")[-1].strip()  # get the thing after the last (probably the shortcut) - to be our key
