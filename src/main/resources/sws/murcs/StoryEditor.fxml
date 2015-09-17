@@ -263,7 +263,7 @@
                                                                 <RowConstraints vgrow="SOMETIMES" />
                                                             </rowConstraints>
                                                             <children>
-                                                                <ComboBox fx:id="dependenciesDropDown" editable="true" maxWidth="1.7976931348623157E308" promptText="Search for or select a new dependency" />
+                                                                <ComboBox fx:id="dependenciesDropDown" editable="true" maxWidth="1.7976931348623157E308" promptText="%Searchfororselectanewdependency" />
                                                                 <VBox fx:id="dependenciesContainer" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1" />
                                                             </children>
                                                         </GridPane>

@@ -257,7 +257,7 @@
                                                     <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="400.0" text="%Story" />
                                                   </columns>
                                                 </TableView>
-                                                <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="Add a story" GridPane.rowIndex="2" />
+                                                <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="%Addastory" GridPane.rowIndex="2" />
                                              </children>
                                           </GridPane>
                                        </content>

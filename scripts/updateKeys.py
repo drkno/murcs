@@ -6,27 +6,31 @@ path = "..\\src\\main\\resources\\sws\\murcs\\"
 import os
 keys = dict()
 
+def replace(text, lines):
+	for i, line in enumerate(lines):
+		if text in line:
+			start = line.index(text) + len(text)
+			end = line.index('"', start)
+			text = line[start:end]
+
+			# Make sure we don't already have this.
+			if len(text) > 0 and text[0] != "%":
+				key = cleanText(text)
+				value = text
+
+				key = addEntry(key, value)
+				newText = "%" + key
+
+				if key is not None:
+					line = line[:start] + newText + line[end:]
+
+		lines[i] = line
+
 def extractKeys(fxmlPath):
     f = open(fxmlPath, 'r')
     lines = f.readlines()
-    for i, line in enumerate(lines):
-    	if 'text="' in line:
-    		start = line.index('text="') + 6
-    		end = line.index('"', start)
-    		text = line[start:end]
-
-    		# Make sure we don't already have this.
-    		if len(text) > 0 and text[0] != "%":
-	    		key = cleanText(text)
-	    		value = text
-
-	    		key = addEntry(key, value)
-	    		newText = "%" + key
-
-	    		if key is not None:
-	    			line = line[:start] + newText + line[end:]
-
-    	lines[i] = line
+    replace('text="', lines)
+    replace('promptText="', lines)
 
     f.close()
     f = open(fxmlPath, "w")
