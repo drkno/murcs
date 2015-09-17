@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.controller.MainController;
@@ -246,11 +247,13 @@ public class App extends Application {
         MainController controller = loadRootNode();
 
         Scene scene = new Scene(controller.getRootNode());
+        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), 18.0);
         scene.getStylesheets()
                 .add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
         window.setScene(scene);
+        InternationalizationHelper.setLanguage("English");
         window.setTitle(DEFAULT_WINDOW_TITLE);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));

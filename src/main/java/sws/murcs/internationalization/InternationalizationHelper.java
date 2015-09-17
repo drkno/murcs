@@ -1,11 +1,15 @@
 package sws.murcs.internationalization;
 
+import javafx.scene.text.Font;
+import sws.murcs.view.App;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -41,7 +45,17 @@ public class InternationalizationHelper {
      */
     public static void setLanguage(String language) {
         String code = languages.get(language);
-        currentLocale = new Locale(code.toLowerCase(), code.toUpperCase());
+        if (App.getStage().getScene() != null) {
+            if (!Objects.equals(code, "tlhqaak")) {
+                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), 18.0);
+                App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'Roboto';");
+            }
+            else {
+                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/pIqaD/pIqaD.ttf").toExternalForm(), 18.0);
+                App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'pIqaD';");
+            }
+        }
+        currentLocale = new Locale(code, code.toUpperCase());
         currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale, new UTF8Control());
     }
 
