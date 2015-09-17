@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +39,7 @@ import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.AddableDnDTabPaneSkin;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.NavigableTabController;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
@@ -185,6 +187,23 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             Platform.runLater(() -> currentTabbable.update());
         });
 
+        mainTabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                boolean isClosable = mainTabPane.getTabs().size() > 1;
+                mainTabPane.getTabs().stream().forEach(t -> {
+                    t.setClosable(isClosable);
+                });
+            }
+            if (c.wasRemoved()) {
+                if (mainTabPane.getTabs().size() == 1) {
+                    mainTabPane.getTabs().stream().forEach(t -> {
+                        t.setClosable(false);
+                    });
+                }
+            }
+        });
+
         loadToolbar();
         toolBarController.setLinkedController(this);
         toolBarController.setNavigable(this);
@@ -227,6 +246,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 return;
             }
 
+            tab.setClosable(true);
             PointerInfo info = MouseInfo.getPointerInfo();
             Point awtPoint = info.getLocation();
 
@@ -268,9 +288,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         DnDTabPane tabPane = (DnDTabPane) containerPane.getChildren().get(0);
         tabPane.getTabs().add(tab);
 
+        final NavigableTabController navigable = new NavigableTabController();
+        navigable.setCurrentTab(tabbable);
+
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 stage.close();
+            }
+
+            for (Tabbable t : tabs) {
+                if (t.getTab() == newValue) {
+                    navigable.setCurrentTab(t);
+                    break;
+                }
             }
         });
 
@@ -299,6 +329,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Window newWindow = new Window(stage, tabbable, window);
         newWindow.register();
         newWindow.addGlobalShortcutsToWindow();
+
+        addNavigationShortcuts(newWindow.getStage(), navigable);
 
         stage.show();
         stage.setX(mousePos.getX());
@@ -406,14 +438,42 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> currentTabbable.create());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
                 () -> currentTabbable.remove());
-        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> goBack());
-        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> goForward());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
                 () -> mainTabPane.getTabs().remove(mainTabPane.getSelectionModel().getSelectedItem()));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
                 () -> addModelViewTab(mainTabPane));
+
+        //Make sure we can navigate from this window.
+        addNavigationShortcuts(window.getStage(), this);
+    }
+
+    /**
+     * Adds shortcuts for navigation to a stage.
+     * @param stage The stage to add the shortcuts to
+     * @param navigationController The navigation controller to use
+     */
+    private void addNavigationShortcuts(final Stage stage, final Navigable navigationController) {
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goBack());
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goForward());
+
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Project));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Team));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Person));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Skill));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Release));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Backlog));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Story));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Sprint));
     }
 
     /**
@@ -455,7 +515,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             Tab tabNode = new Tab();
             tabNode.setClosable(true);
-            tabNode.setOnClosed(e -> {
+            tabNode.setOnCloseRequest(e -> {
                 Tab t = (Tab) e.getSource();
                 Tabbable tabbable = getTabbable(t);
                 tabs.remove(tabbable);
@@ -1084,6 +1144,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @Override
     public void navigateTo(final Model model) {
         currentTabbable.navigateTo(model);
+    }
+
+    @Override
+    public void navigateTo(final ModelType type) {
+        currentTabbable.navigateTo(type);
     }
 
     @Override

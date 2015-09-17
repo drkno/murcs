@@ -77,6 +77,10 @@ public class Team extends Model {
      * Master is already performing another role.
      */
     public final void setScrumMaster(final Person newScrumMaster) throws MultipleRolesException {
+        if (getScrumMaster() == newScrumMaster) {
+            return;
+        }
+
         if (newScrumMaster == getProductOwner() && productOwner != null && getProductOwner() != null) {
             throw new MultipleRolesException("Scrum Master", "Product Owner", newScrumMaster, this);
         }
@@ -99,6 +103,10 @@ public class Team extends Model {
      * Product Owner is already performing another role.
      */
     public final void setProductOwner(final Person newProductOwner) throws MultipleRolesException {
+        if (newProductOwner == getProductOwner()) {
+            return;
+        }
+
         if (newProductOwner == getScrumMaster() && newProductOwner != null) {
             throw new MultipleRolesException("Product Owner", "Scrum Master", newProductOwner, this);
         }

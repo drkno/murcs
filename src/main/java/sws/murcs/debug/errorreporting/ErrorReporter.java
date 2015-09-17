@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
+import sws.murcs.arguments.ArgumentsManager;
 import sws.murcs.controller.JavaFXHelpers;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.controls.popover.PopOver;
@@ -99,22 +100,12 @@ public final class ErrorReporter {
     private boolean reporterIsOpen;
 
     /**
-     * Creates a new ErrorReporter and binds unhandled exceptions to this class.
-     * @param args the arguments the program was started with.
-     */
-    public static void setup(final String[] args) {
-        if (reporter == null) {
-            reporter = new ErrorReporter(args);
-        }
-    }
-
-    /**
      * Gets the current ErrorReporter instance.
      * @return the current ErrorReporter instance.
      */
     public static ErrorReporter get() {
         if (reporter == null) {
-            setup(new String[]{});
+            reporter = new ErrorReporter();
         }
         return reporter;
     }
@@ -133,13 +124,13 @@ public final class ErrorReporter {
      * Creates a new ErrorReporter.
      * ErrorReporter handles the reporting of errors to the SWS server when they
      * are unhanded or unexpected.
-     * @param arg arguments the program was started with.
      */
-    private ErrorReporter(final String[] arg) {
+    private ErrorReporter() {
+        String[] arg = ArgumentsManager.get().getArguments();
         StringBuilder builder = new StringBuilder(arg.length * 2);
         for (String a : arg) {
             builder.append(a);
-            if (a.equalsIgnoreCase("debug")) {
+            if (a.equalsIgnoreCase("--debug") || a.equalsIgnoreCase("-d")) {
                 printStackTraces = true;
             }
             builder.append(" ");
