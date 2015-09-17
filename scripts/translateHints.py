@@ -14,7 +14,7 @@ def key_for_hint(hint):
 		if keys[key] == hint:
 			return key
 
-	key = hint.split("-")[-1].strip() #get the thing after the last (probably the shortcut) - to be our key
+	key = hint.split("-")[-1].strip()  # get the thing after the last (probably the shortcut) - to be our key
 
 	cleaned_key = ""
 	for char in key:
@@ -49,6 +49,6 @@ for hint in hints:
 # Save our new hints file
 with open(englishWords, 'w') as f:
 	for key in sorted(keys):
-		f.write(key + " = " + keys[key] + "\n")
+		f.write(key + " = " + keys[key].strip())
 
 
