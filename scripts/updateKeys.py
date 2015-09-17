@@ -10,7 +10,6 @@ def replace(replace_text, lines):
 	for i, line in enumerate(lines):
 		if replace_text in line:
 			start = line.index(replace_text) + len(replace_text)
-			print("Start:", start, "Length:", len(line), "Line:", line)
 			end = line.index('"', start)
 			text = line[start:end]
 
