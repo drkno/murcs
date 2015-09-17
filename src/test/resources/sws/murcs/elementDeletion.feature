@@ -1,3 +1,4 @@
+@Manual
 @ElementDeletion
 Feature: Element Deletion
 
