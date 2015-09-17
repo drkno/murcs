@@ -10,6 +10,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import sws.murcs.arguments.ArgumentsManager;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.windowManagement.ShortcutManager;
@@ -88,6 +89,11 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Media player for playing music.
+     */
+    private static MediaPlayer mediaPlayer;
 
     /**
      * Dion Vader.
@@ -216,11 +222,30 @@ public class App extends Application {
         setStage(primaryStage);
         mainController = createWindow(primaryStage);
         if (vader) {
-            URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
-            Media hit = new Media(url.toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(hit);
-            mediaPlayer.play();
+            invade();
         }
+    }
+
+    /**
+     * Invades the application with beautiful music.
+     */
+    public static final void invade() {
+        URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
+        Media hit = new Media(url.toString());
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer(hit);
+        } else if (mediaPlayer.getCurrentTime().greaterThanOrEqualTo(mediaPlayer.getTotalDuration())){
+            mediaPlayer.seek(Duration.ZERO);
+        }
+        mediaPlayer.play();
+    }
+
+    /**
+     * Gets whether or not the app is in Darth Vader mode.
+     * @return indicates if the application is in Darth Vader mode.
+     */
+    public static boolean getVaderMode() {
+        return vader;
     }
 
     /**

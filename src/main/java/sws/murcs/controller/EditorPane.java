@@ -108,12 +108,13 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Skill, "SkillEditor.fxml");
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
-        fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
         if (isSearchOrCreation) {
             fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+            fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
         }
         else {
             fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
+            fxmlPaths.put(ModelType.Backlog, "BacklogContainer.fxml");
         }
 
         ModelType type = ModelType.getModelType(model);

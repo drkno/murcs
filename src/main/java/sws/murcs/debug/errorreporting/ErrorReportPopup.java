@@ -11,10 +11,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.controls.md.MaterialDesignCheckBox;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.view.App;
 
 /**
  * Popup for reporting errors/bugs.
@@ -44,6 +46,9 @@ public class ErrorReportPopup {
      */
     @FXML
     private Button reportButton, cancelButton;
+
+    @FXML
+    private GridPane mainGrid;
 
     /**
      * The stage for the popup.
@@ -129,7 +134,6 @@ public class ErrorReportPopup {
                 .add(ErrorReportPopup.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
-
         return controller;
     }
 
@@ -138,6 +142,7 @@ public class ErrorReportPopup {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
+        checkVaderMode();
         insertMDCheckBox();
         popupStage.initModality(Modality.WINDOW_MODAL);
         window = new Window(popupStage, this);
@@ -145,6 +150,20 @@ public class ErrorReportPopup {
         window.addGlobalShortcutsToWindow();
         window.show();
         detailTextArea.requestFocus();
+    }
+
+    /**
+     * Checks to see if it is debug vader mode and if it is it replaces the feedback text section
+     * with a lovely gif of Darth Vader saying "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!".
+     */
+    private void checkVaderMode() {
+        if (App.getVaderMode()) {
+            mainGrid.getChildren().remove(detailTextArea);
+            ImageView view = new ImageView();
+            view.setImage(new Image("/sws/murcs/no.gif"));
+            mainGrid.getChildren().add(view);
+            mainGrid.setRowIndex(view, 4);
+        }
     }
 
     /**

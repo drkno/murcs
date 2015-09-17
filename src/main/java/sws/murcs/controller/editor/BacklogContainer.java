@@ -102,11 +102,13 @@ public class BacklogContainer extends GenericEditor<Backlog> {
     }
 
     private void workspaceTabSelected() {
-        throw new ImperialException();
+        estimationWorkspace.setModel(getModel());
+        estimationWorkspace.loadObject();
     }
 
     private void overviewTabSelected() {
-        throw new ImperialException();
+        backlogOverview.setModel(getModel());
+        backlogOverview.loadObject();
     }
 
     /**
