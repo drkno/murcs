@@ -63,7 +63,7 @@
                                <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%SearchToolbar" />
                            </items>
                         </Menu>
-                        <Menu fx:id="languageMenu" mnemonicParsing="false" text="Language" />
+                        <Menu fx:id="languageMenu" mnemonicParsing="false" text="%Language" />
                           </items>
                       </Menu>
                       <Menu id="aboutMenu" mnemonicParsing="false" text="%Help">
