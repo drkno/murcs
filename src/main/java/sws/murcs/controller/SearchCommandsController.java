@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.search.tokens.BangCommand;
 import sws.murcs.search.tokens.Token;
 
@@ -80,12 +81,12 @@ public class SearchCommandsController {
             String shortSyntax = c.getCommands()[1];
             Hyperlink commandLink1 = new Hyperlink(longSyntax);
             commandLink1.getStyleClass().add("zero-border");
-            commandLink1.setTooltip(new Tooltip("{ClickMe}"));
+            commandLink1.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ClickMe")));
             setupAutoFill(commandLink1, longSyntax);
             Label orLabel = new Label(" {Or} ");
             Hyperlink commandLink2 = new Hyperlink(shortSyntax);
             commandLink2.getStyleClass().add("zero-border");
-            commandLink2.setTooltip(new Tooltip("{ClickMe}"));
+            commandLink2.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ClickMe")));
             setupAutoFill(commandLink2, longSyntax);
             HBox hBox1 = new HBox();
             hBox1.setAlignment(Pos.CENTER);
@@ -102,7 +103,7 @@ public class SearchCommandsController {
             vbox.getStyleClass().add("search-command");
             commandsTilePane.getChildren().add(vbox);
         });
-        helpText.setText("For more advanced commands see the user guide");
+        helpText.setText(InternationalizationHelper.tryGet("SearchAdvancedCommands"));
         helpText.getStyleClass().add("search-help-text");
     }
 
