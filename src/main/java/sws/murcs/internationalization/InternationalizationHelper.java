@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  * Helps internationalize a node graph.
  */
 public class InternationalizationHelper {
+
     /**
      * The current locale.
      */
@@ -62,6 +63,7 @@ public class InternationalizationHelper {
     /**
      * Returns the translated text. If it can't find the key it returns null.
      * @param key The translation key
+     * @return the translated text, or null if the key doesn't exist.
      */
     public static String tryGet(String key) {
         if (!getCurrentResources().containsKey(key)) {

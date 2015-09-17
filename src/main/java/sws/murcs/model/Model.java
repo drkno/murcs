@@ -1,7 +1,6 @@
 package sws.murcs.model;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
@@ -74,7 +73,8 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * Sets the short name.
      * @param newShortName the new short name.
-     * @throws CustomException if the short name is invalid.
+     * @throws DuplicateObjectException if the short name already exists.
+     * @throws InvalidParameterException if the short name is invalid.
      */
     public final void setShortName(final String newShortName) throws DuplicateObjectException, InvalidParameterException {
         validateShortName(newShortName);
@@ -88,7 +88,8 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * Indicates whether a value is a valid value for 'shortName' to hold.
      * @param value The value.
-     * @throws CustomException if the short name is invalid.
+     * @throws DuplicateObjectException if the short name already exists.
+     * @throws InvalidParameterException if the short name is invalid.
      */
     private void validateShortName(final String value) throws DuplicateObjectException, InvalidParameterException {
         ModelType type = ModelType.getModelType(getClass());
