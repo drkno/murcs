@@ -48,7 +48,7 @@ public class VelocityBoard {
             throw new NullPointerException("Team is null in the velocity board");
         }
 
-        XYChart.Series series = new XYChart.Series();
+        XYChart.Series<String, Double> series = new XYChart.Series<>();
         series.setName("Sprint Velocity");
 
         List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
@@ -88,13 +88,13 @@ public class VelocityBoard {
             velocityChart.getData().add(meanChart);
 
             // Get the median velocity
-            XYChart.Series<String, Double> medianChart = new XYChart.Series<String, Double>();
-            List<XYChart.Data<String, Double>> sortedVelocities = medianChart.getData().stream().sorted((o1, o2) -> Double.compare(o1.getYValue(), o2.getYValue())).collect(Collectors.toList());
+            XYChart.Series<String, Double> medianChart = new XYChart.Series<>();
+            List<XYChart.Data<String, Double>> sortedVelocities = series.getData().stream().sorted((o1, o2) -> Double.compare(o1.getYValue(), o2.getYValue())).collect(Collectors.toList());
             double median = sortedVelocities.get((sortedVelocities.size() - 1) / 2).getYValue();
 
             medianChart.setName("Median Velocity");
-            meanChart.getData().add(new XYChart.Data(firstSprint, median));
-            meanChart.getData().add(new XYChart.Data(lastSprint, median));
+            medianChart.getData().add(new XYChart.Data(firstSprint, median));
+            medianChart.getData().add(new XYChart.Data(lastSprint, median));
 
             velocityChart.getData().add(medianChart);
         }
