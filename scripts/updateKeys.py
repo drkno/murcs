@@ -6,10 +6,11 @@ path = "..\\src\\main\\resources\\sws\\murcs\\"
 import os
 keys = dict()
 
-def replace(text, lines):
+def replace(replace_text, lines):
 	for i, line in enumerate(lines):
-		if text in line:
-			start = line.index(text) + len(text)
+		if replace_text in line:
+			start = line.index(replace_text) + len(replace_text)
+			print("Start:", start, "Length:", len(line), "Line:", line)
 			end = line.index('"', start)
 			text = line[start:end]
 
@@ -75,12 +76,12 @@ def extractAll(outputFile):
     readKeys(outputFile)
 
     files = []
-    for file in os.listdir(path):
+    for file in os.listdir(path + "reporting\\"):
         if file.endswith(".fxml"):
             files.append(file)
     
     for file in files:
-    	extractKeys(path + file)
+    	extractKeys(path + "reporting\\" + file)
 
     file = open(outputFile, "w")
 
