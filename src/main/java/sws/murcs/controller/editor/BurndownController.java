@@ -6,6 +6,7 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.EstimateInfo;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -73,9 +74,11 @@ public class BurndownController extends GenericEditor<Sprint> {
             burndownChart.setVisible(true);
             // cant use clear due to an IllegalArgumentException when re-adding
             // readding done because of weird issues with graphs
-            aimedBurndown = new Series<>("Aimed", FXCollections.<Data<Long, Float>>observableArrayList());
-            burndown = new Series<>("Burndown      ", FXCollections.<Data<Long, Float>>observableArrayList());
-            burnup = new Series<>("Burnup", FXCollections.<Data<Long, Float>>observableArrayList());
+            aimedBurndown = new Series<>(InternationalizationHelper.tryGet("Aimed"),
+                    FXCollections.<Data<Long, Float>>observableArrayList());
+            burndown = new Series<>(InternationalizationHelper.translatasert("{Burndown}      "),
+                    FXCollections.<Data<Long, Float>>observableArrayList());
+            burnup = new Series<>(InternationalizationHelper.tryGet("Burnup"), FXCollections.<Data<Long, Float>>observableArrayList());
             updateAimedBurndown();
             updateBurnUp();
             updateBurnDown();

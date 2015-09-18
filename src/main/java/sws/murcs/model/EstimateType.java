@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.InternationalizationHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -132,13 +133,6 @@ public enum EstimateType {
 
     @Override
     public String toString() {
-        return super.toString().replaceAll(
-                String.format("%s|%s|%s",
-                        "(?<=[A-Z])(?=[A-Z][a-z])",
-                        "(?<=[^A-Z])(?=[A-Z])",
-                        "(?<=[A-Za-z])(?=[^A-Za-z])"
-                ),
-                " "
-        );
+        return InternationalizationHelper.tryGet(super.toString());
     }
 }

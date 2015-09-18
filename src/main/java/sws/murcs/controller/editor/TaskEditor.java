@@ -28,6 +28,7 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.EffortEntry;
@@ -242,7 +243,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         float pow = (float) Math.pow(10, dps);
         spent = Math.round(spent * pow) / pow;
 
-        spentEffortLabel.setText("(spent " + spent + " " + units + ")");
+        spentEffortLabel.setText(InternationalizationHelper.translatasert("({spent} " + spent + " {" + units + "})"));
     }
 
     /**
