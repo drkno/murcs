@@ -389,7 +389,7 @@ public class GenericPopup extends AnchorPane {
      */
     public final void addOkCancelButtons(final GenericCallback okFunction, final GenericCallback cancelFunction) {
         addButton(InternationalizationHelper.tryGet("Cancel"), Position.RIGHT, Action.CANCEL, cancelFunction);
-        addButton(InternationalizationHelper.tryGet("OK"), Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("Ok"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
     /**

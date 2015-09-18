@@ -103,7 +103,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     /**
      * The title property for the pane.
      */
-    private SimpleStringProperty titleProperty = new SimpleStringProperty("New Tab");
+    private SimpleStringProperty titleProperty = new SimpleStringProperty(InternationalizationHelper.tryGet("NewTab"));
 
     /**
      * The tab that view exists within.
