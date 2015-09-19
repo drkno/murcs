@@ -391,7 +391,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
             return; // prevent an existing button being added.
         }
         saveChangesButtonExists = true;
-        saveButton = new MaterialDesignButton("Save Changes");
+        saveButton = new MaterialDesignButton(InternationalizationHelper.tryGet("SaveChanges"));
         final int pad = 5;
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
         saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));
