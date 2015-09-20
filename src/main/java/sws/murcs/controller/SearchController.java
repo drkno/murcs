@@ -527,8 +527,8 @@ public class SearchController {
         imageView.setImage(spinner);
         loader.getChildren().add(imageView);
         Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
-                ? "Please update to at least Java 8u40 for speed\n*CLUNK*.........\n "
-                + "/wwwwhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
+                ? InternationalizationHelper.tryGet("PleaseUpdateJava") + "\n*CLUNK*.........\n "
+                + "/whir/" : "*CLUNK* /whir/");
         helpfulMessage.setTextAlignment(TextAlignment.CENTER);
         helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
@@ -634,7 +634,7 @@ public class SearchController {
             saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
             saveButton.setVisible(true);
             saveButton.setDisable(false);
-            saveButton.setText("Open In Window");
+            saveButton.setText(InternationalizationHelper.tryGet("OpenInWindow"));
             saveButton.setOnAction(selectEvent);
         }
     }

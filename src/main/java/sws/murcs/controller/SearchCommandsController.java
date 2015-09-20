@@ -83,7 +83,7 @@ public class SearchCommandsController {
             commandLink1.getStyleClass().add("zero-border");
             commandLink1.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ClickMe")));
             setupAutoFill(commandLink1, longSyntax);
-            Label orLabel = new Label(" {Or} ");
+            Label orLabel = new Label(InternationalizationHelper.translatasert(" {Or} "));
             Hyperlink commandLink2 = new Hyperlink(shortSyntax);
             commandLink2.getStyleClass().add("zero-border");
             commandLink2.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ClickMe")));

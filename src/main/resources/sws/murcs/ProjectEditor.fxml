@@ -134,7 +134,7 @@
                                              </GridPane.margin>
                                           </Button>
                                           <DatePicker fx:id="datePickerStartDate" promptText="%StartDate" GridPane.columnIndex="1" />
-                                          <DatePicker fx:id="datePickerEndDate" minWidth="0.0" promptText="End Date" GridPane.columnIndex="2">
+                                          <DatePicker fx:id="datePickerEndDate" minWidth="0.0" promptText="%EndDate" GridPane.columnIndex="2">
                                              <GridPane.margin>
                                                 <Insets left="10.0" />
                                              </GridPane.margin>
