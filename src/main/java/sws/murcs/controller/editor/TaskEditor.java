@@ -1,11 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -39,6 +34,11 @@ import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * The editor for a task contained within a story.
@@ -178,8 +178,8 @@ public class TaskEditor implements UndoRedoChangeListener {
         descriptionTextArea.focusedProperty().addListener(changeListener);
 
         Platform.runLater(() -> {
-            editAssignedButton.setTooltip(new Tooltip("{EditAssignees}"));
-            logEffortButton.setTooltip(new Tooltip("{LogEffort}"));
+            editAssignedButton.setTooltip(new Tooltip(InternationalizationHelper.tryGet("EditAssignees")));
+            logEffortButton.setTooltip(new Tooltip(InternationalizationHelper.tryGet("LogEffort")));
         });
     }
 
@@ -243,7 +243,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         float pow = (float) Math.pow(10, dps);
         spent = Math.round(spent * pow) / pow;
 
-        spentEffortLabel.setText(InternationalizationHelper.translatasert("({spent} " + spent + " {" + units + "})"));
+        spentEffortLabel.setText(InternationalizationHelper.translatasert("({Spent} " + spent + " {" + units + "})"));
     }
 
     /**

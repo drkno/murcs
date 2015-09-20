@@ -1,12 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -54,6 +48,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -70,6 +65,12 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * An editor for the story model.
@@ -536,9 +537,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            }    catch (DuplicateObjectException e) {
+            }
+            catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Sprint} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
@@ -804,8 +807,9 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         children.add(new Label("] "));
 
         hBox.setOnMouseEntered(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount())
-                        + " stories", immediateLabel, Integer.toString(treeInfo.getImmediateDepth()) + " direct",
-                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " deep"));
+                        + " " + InternationalizationHelper.tryGet("Stories"), immediateLabel,
+                Integer.toString(treeInfo.getImmediateDepth()) + " " + InternationalizationHelper.tryGet("Direct"),
+                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " " + InternationalizationHelper.tryGet("Deep")));
 
         hBox.setOnMouseExited(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount()),
                 immediateLabel, Integer.toString(treeInfo.getImmediateDepth()),
@@ -1236,6 +1240,4 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             return conditionCell;
         }
     }
-
-
 }

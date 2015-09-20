@@ -1,14 +1,5 @@
 package sws.murcs.controller;
 
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -17,13 +8,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -59,6 +48,15 @@ import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A controller for the base pane.
@@ -598,7 +596,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         if (!UndoRedoManager.get().canRevert()) {
             revert.setDisable(true);
             toolBarController.updateRevertButton(true);
-            String undoPrompt = "Undo...";
+            String undoPrompt = InternationalizationHelper.translatasert("{Undo}...");
             undoMenuItem.setDisable(true);
             undoMenuItem.setText(undoPrompt);
             toolBarController.updateUndoButton(true, undoPrompt);
@@ -607,7 +605,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         else {
             revert.setDisable(false);
             toolBarController.updateRevertButton(false);
-            String undoPrompt = "Undo " + UndoRedoManager.get().getRevertMessage();
+            String translated = "";
+            String[] strs = UndoRedoManager.get().getRevertMessage().split(" ");
+            for (int i = 0; i < strs.length; i++) {
+                if (i != 0) {
+                    translated += " ";
+                }
+                translated += "{" + strs[i] + "}";
+            }
+            String undoPrompt = InternationalizationHelper.tryGet("Undo") + " "
+                    + InternationalizationHelper.translatasert(translated);
             undoMenuItem.setDisable(false);
             undoMenuItem.setText(undoPrompt);
             toolBarController.updateUndoButton(false, undoPrompt);
@@ -616,13 +623,22 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
         if (!UndoRedoManager.get().canRemake()) {
             redoMenuItem.setDisable(true);
-            String redoPrompt = "Redo...";
+            String redoPrompt = InternationalizationHelper.translatasert("{Redo}...");
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(true, redoPrompt);
         }
         else {
             redoMenuItem.setDisable(false);
-            String redoPrompt = "Redo " + UndoRedoManager.get().getRemakeMessage();
+            String translated = "";
+            String[] strs = UndoRedoManager.get().getRemakeMessage().split(" ");
+            for (int i = 0; i < strs.length; i++) {
+                if (i != 0) {
+                    translated += " ";
+                }
+                translated += "{" + strs[i] + "}";
+            }
+            String redoPrompt = InternationalizationHelper.tryGet("Redo") + " "
+                    + InternationalizationHelper.translatasert(translated);
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(false, redoPrompt);
         }

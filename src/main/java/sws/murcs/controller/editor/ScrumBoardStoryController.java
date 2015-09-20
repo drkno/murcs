@@ -1,8 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -25,13 +22,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javax.naming.OperationNotSupportedException;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
+
+import javax.naming.OperationNotSupportedException;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A controller for stories on the scrum board. Handles dragging and dropping.
@@ -503,7 +505,7 @@ public class ScrumBoardStoryController {
                 storyStateSlider.setValue(0);
                 storyStateSlider.setDisable(true);
                 storyStateSlider.getStyleClass().removeAll("alt");
-                storyStateLabel.setText("Story is ongoing");
+                storyStateLabel.setText(InternationalizationHelper.tryGet("StoryIsOngoing"));
                 story.setStoryState(Story.StoryState.Ready);
                 return;
             }
@@ -514,10 +516,10 @@ public class ScrumBoardStoryController {
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }
-            storyStateLabel.setText("Story Done :)");
+            storyStateLabel.setText(InternationalizationHelper.translatasert("{StoryDone} :)"));
         }
         else {
-            storyStateLabel.setText("Mark story as Done");
+            storyStateLabel.setText(InternationalizationHelper.tryGet("MarkStoryAsDone"));
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }

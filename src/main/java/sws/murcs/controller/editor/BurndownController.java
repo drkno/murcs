@@ -248,8 +248,8 @@ public class BurndownController extends GenericEditor<Sprint> {
         if (PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData() && !hasShownGeneratedDataWarning) {
             hasShownGeneratedDataWarning = true;
             GenericPopup popup = new GenericPopup();
-            popup.setTitleText("{SampleDataWarningTitle}");
-            popup.setMessageText("{SampleDataWarning}");
+            popup.setTitleText(InternationalizationHelper.tryGet("SampleDataWarningTitle"));
+            popup.setMessageText(InternationalizationHelper.tryGet("SampleDataWarning"));
             popup.show();
         }
     }
