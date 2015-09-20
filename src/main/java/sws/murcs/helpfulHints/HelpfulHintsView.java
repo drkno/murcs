@@ -57,7 +57,7 @@ public class HelpfulHintsView {
      * Creates an instance of the controller and initializes controller variables.
      */
     public final void create() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/HelpfulHints/HelpfulHints.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/helpfulHints/HelpfulHints.fxml"));
         try {
             view = loader.load();
             controller = loader.getController();
