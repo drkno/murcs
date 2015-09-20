@@ -44,9 +44,9 @@ public class InternationalizationHelper {
      * get through PR).
      * @param language The language.
      */
-    public static void setLanguage(String language) {
+    public static void setLanguage(final String language) {
         String code = languages.get(language);
-        if (App.getStage().getScene() != null) {
+        if (App.getStage() != null && App.getStage().getScene() != null) {
             if (!Objects.equals(code, "tlhqaak")) {
                 Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), 18.0);
                 App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'Roboto';");
