@@ -100,6 +100,11 @@ public final class ErrorReporter {
     private boolean reporterIsOpen;
 
     /**
+     * Reports that we will try sending later.
+     */
+    private Collection<String> queuedReports;
+
+    /**
      * Gets the current ErrorReporter instance.
      * @return the current ErrorReporter instance.
      */
@@ -126,6 +131,7 @@ public final class ErrorReporter {
      * are unhanded or unexpected.
      */
     private ErrorReporter() {
+        queuedReports = new LinkedList<>();
         String[] arg = ArgumentsManager.get().getArguments();
         StringBuilder builder = new StringBuilder(arg.length * 2);
         for (String a : arg) {
@@ -430,24 +436,41 @@ public final class ErrorReporter {
      */
     @SuppressWarnings("checkstyle:magicnumber")
     private void sendReport(final String report) {
+        queuedReports.add(report);
         final int successfulCode = 200;
         final ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
         exec.schedule(() -> {
             try {
-                URL obj = new URL(BUG_REPORT_URL);
-                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                con.setRequestMethod("POST");
-                con.setRequestProperty("User-Agent", "SWS Error Reporter");
-                con.setRequestProperty("Content-Type", "application/json");
-                con.setDoOutput(true);
-                DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-                wr.writeBytes(report);
-                wr.flush();
-                wr.close();
+                for (String reportToSend : queuedReports) {
+                    URL obj = new URL(BUG_REPORT_URL);
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("POST");
+                    con.setRequestProperty("User-Agent", "SWS Error Reporter");
+                    con.setRequestProperty("Content-Type", "application/json");
+                    con.setDoOutput(true);
+                    DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+                    wr.writeBytes(reportToSend);
+                    wr.flush();
+                    wr.close();
 
-                if (con.getResponseCode() != successfulCode) {
-                    throw new Exception("Transmission failed.");
+                    if (con.getResponseCode() != successfulCode) {
+                        if (printStackTraces) {
+                            System.err.println("Error code returned was " + con.getResponseCode());
+                            InputStream errorStream = con.getErrorStream();
+                            InputStreamReader reader = new InputStreamReader(errorStream);
+                            StringBuilder builder = new StringBuilder();
+                            BufferedReader breader = new BufferedReader(reader);
+                            String line = breader.readLine();
+                            while (line != null) {
+                                builder.append(line);
+                                line = breader.readLine();
+                            }
+                            System.err.println("Response:\n" + builder.toString());
+                        }
+                        throw new Exception("Transmission failed.");
+                    }
                 }
+                queuedReports.clear();
 
                 if (shouldShowPopover) {
                     Label helpfulMessage = new Label("Report sent :)");
@@ -459,6 +482,16 @@ public final class ErrorReporter {
                     });
                 }
             } catch (Exception e) {
+                try {
+                    FileWriter fileWriter = new FileWriter("FailedErrorReports.log", true);
+                    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                    bufferedWriter.write(report);
+                    bufferedWriter.close();
+                }
+                catch (IOException e1) {
+                    // not a lot we can do
+                }
+
                 if (shouldShowPopover) {
                     VBox errorMessage = new VBox();
                     Label helpfulMessage = new Label("Sending of report failed :(\n"
