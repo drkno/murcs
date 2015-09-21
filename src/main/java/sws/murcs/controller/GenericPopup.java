@@ -423,6 +423,6 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction Function to call on ok button being clicked.
      */
     public final void addOkButton(final GenericCallback okFunction) {
-        addButton(InternationalizationHelper.tryGet("OK"), Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("Ok"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }
