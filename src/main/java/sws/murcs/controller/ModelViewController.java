@@ -131,12 +131,12 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         displayChoiceBox.setConverter(new StringConverter<ModelType>() {
             @Override
-            public String toString(ModelType object) {
+            public String toString(final ModelType object) {
                 return InternationalizationHelper.tryGet(object.toString());
             }
 
             @Override
-            public ModelType fromString(String string) {
+            public ModelType fromString(final String string) {
                 return null;
             }
         });

@@ -137,9 +137,10 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            }  catch (DuplicateObjectException e) {
+            } catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Release} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }

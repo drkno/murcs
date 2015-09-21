@@ -613,7 +613,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 getModel().setShortName(viewShortName);
             } catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Backlog} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }

@@ -91,7 +91,8 @@ public class SkillEditor extends GenericEditor<Skill> {
                 getModel().setShortName(viewShortName);
             }   catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Skill} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }

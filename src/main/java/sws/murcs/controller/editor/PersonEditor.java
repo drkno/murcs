@@ -152,9 +152,10 @@ public class PersonEditor extends GenericEditor<Person> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            }   catch (DuplicateObjectException e) {
+            } catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Person} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
@@ -172,7 +173,8 @@ public class PersonEditor extends GenericEditor<Person> {
                 getModel().setUserId(viewUserId);
             } catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{UserNameExistsError1} {Person} {UserNameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{UserNameExistsError2}");
             }
         }

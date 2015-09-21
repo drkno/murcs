@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Helps internationalize a node graph.
  */
-public class InternationalizationHelper {
+public final class InternationalizationHelper {
 
     /**
      * The current locale.
@@ -27,6 +27,17 @@ public class InternationalizationHelper {
      * The current bundle.
      */
     private static ResourceBundle currentBundle;
+
+    /**
+     * The default font size of all text.
+     */
+    private static final double FONT_SIZE = 18.0;
+
+    /**
+     * Private constructor as it's a utility class.
+     */
+    private InternationalizationHelper() {
+    }
 
     /**
      * Returns a list of all languages supported by the app.
@@ -48,11 +59,13 @@ public class InternationalizationHelper {
         String code = languages.get(language);
         if (App.getStage() != null && App.getStage().getScene() != null) {
             if (!Objects.equals(code, "tlhqaak")) {
-                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), 18.0);
+                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf")
+                        .toExternalForm(), FONT_SIZE);
                 App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'Roboto';");
             }
             else {
-                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/pIqaD/pIqaD.ttf").toExternalForm(), 18.0);
+                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/pIqaD/pIqaD.ttf").toExternalForm(),
+                        FONT_SIZE);
                 App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'pIqaD';");
             }
         }
@@ -65,7 +78,7 @@ public class InternationalizationHelper {
      * @param key The translation key
      * @return the translated text, or null if the key doesn't exist.
      */
-    public static String tryGet(String key) {
+    public static String tryGet(final String key) {
         if (!getCurrentResources().containsKey(key)) {
             return null;
         }
@@ -78,8 +91,10 @@ public class InternationalizationHelper {
      * @param text The text to translatasert.
      * @return The translataserted text.
      */
-    public static String translatasert(String text) {
-        if (text == null) return text;
+    public static String translatasert(final String text) {
+        if (text == null) {
+            return text;
+        }
 
         String result = text;
 
@@ -122,106 +137,108 @@ public class InternationalizationHelper {
      * A hashmap of languages to codes.
      */
     private static Map<String, String> languages = new HashMap<String, String>()
-    {{
-        put("Afrikaans", "af");
-        put("Albanian", "sq");
-        put("Arabic", "ar");
-        put("Armenian", "hy");
-        put("Azerbaijani", "az");
-        put("Basque", "eu");
-        put("Belarusian", "be");
-        put("Bengali", "bn");
-        put("Bosnian", "bs");
-        put("Bulgarian", "bg");
-        put("Catalan", "ca");
-        put("Cebuano", "ceb");
-        put("Chichewa", "ny");
-        put("Chinese Simplified", "zhcn");
-        put("Chinese Traditional", "zhtw");
-        put("Croatian", "hr");
-        put("Czech", "cs");
-        put("Danish", "da");
-        put("Dutch", "nl");
-        put("English", "en");
-        put("Esperanto", "eo");
-        put("Estonian", "et");
-        put("Filipino", "tl");
-        put("Finnish", "fi");
-        put("French", "fr");
-        put("Foo", "fo");
-        put("Galician", "gl");
-        put("Georgian", "ka");
-        put("German", "de");
-        put("Greek", "el");
-        put("Groot", "gr");
-        put("Gujarati", "gu");
-        put("Haitian Creole", "ht");
-        put("Hausa", "ha");
-        put("Hebrew", "iw");
-        put("Hindi", "hi");
-        put("Hmong", "hmn");
-        put("Hodor", "ho");
-        put("Hungarian", "hu");
-        put("Icelandic", "is");
-        put("Igbo", "ig");
-        put("Indonesian", "id");
-        put("Irish", "ga");
-        put("Italian", "it");
-        put("Japanese", "ja");
-        put("Javanese", "jw");
-        put("Kannada", "kn");
-        put("Kazakh", "kk");
-        put("Khmer", "km");
-        put("Klingon", "tlh");
-        put("Klingon IpIqaD", "tlhqaak");
-        put("Korean", "ko");
-        put("Lao", "lo");
-        put("Latin", "la");
-        put("Latvian", "lv");
-        put("Lithuanian", "lt");
-        put("Macedonian", "mk");
-        put("Malagasy", "mg");
-        put("Malay", "ms");
-        put("Malayalam", "ml");
-        put("Maltese", "mt");
-        put("Maori", "mi");
-        put("Marathi", "mr");
-        put("Mongolian", "mn");
-        put("Myanmar (Burmese)", "my");
-        put("Nepali", "ne");
-        put("Norwegian", "no");
-        put("Persian", "fa");
-        put("Polish", "pl");
-        put("Portuguese", "pt");
-        put("Programmer", "pr");
-        put("Punjabi", "ma");
-        put("Queretaro Otomi", "otq");
-        put("Romanian", "ro");
-        put("Russian", "ru");
-        put("Serbian", "sr");
-        put("Serbian (Latin)", "srlatn");
-        put("Sesotho", "st");
-        put("Sinhala", "si");
-        put("Slovak", "sk");
-        put("Slovenian", "sl");
-        put("Somali", "so");
-        put("Spanish", "es");
-        put("Sudanese", "su");
-        put("Swahili", "sw");
-        put("Swedish", "sv");
-        put("Tajik", "tg");
-        put("Tamil", "ta");
-        put("Telugu", "te");
-        put("Thai", "th");
-        put("Turkish", "tr");
-        put("Ukrainian", "uk");
-        put("Urdu", "ur");
-        put("Uzbek", "uz");
-        put("Vietnamese", "vi");
-        put("Welsh", "cy");
-        put("Yiddish", "yi");
-        put("Yoruba", "yo");
-        put("Yucatec Maya", "yua");
-        put("Zulu", "zu");
-    }};
+    {
+        {
+            put("Afrikaans", "af");
+            put("Albanian", "sq");
+            put("Arabic", "ar");
+            put("Armenian", "hy");
+            put("Azerbaijani", "az");
+            put("Basque", "eu");
+            put("Belarusian", "be");
+            put("Bengali", "bn");
+            put("Bosnian", "bs");
+            put("Bulgarian", "bg");
+            put("Catalan", "ca");
+            put("Cebuano", "ceb");
+            put("Chichewa", "ny");
+            put("Chinese Simplified", "zhcn");
+            put("Chinese Traditional", "zhtw");
+            put("Croatian", "hr");
+            put("Czech", "cs");
+            put("Danish", "da");
+            put("Dutch", "nl");
+            put("English", "en");
+            put("Esperanto", "eo");
+            put("Estonian", "et");
+            put("Filipino", "tl");
+            put("Finnish", "fi");
+            put("French", "fr");
+            put("Foo", "fo");
+            put("Galician", "gl");
+            put("Georgian", "ka");
+            put("German", "de");
+            put("Greek", "el");
+            put("Groot", "gr");
+            put("Gujarati", "gu");
+            put("Haitian Creole", "ht");
+            put("Hausa", "ha");
+            put("Hebrew", "iw");
+            put("Hindi", "hi");
+            put("Hmong", "hmn");
+            put("Hodor", "ho");
+            put("Hungarian", "hu");
+            put("Icelandic", "is");
+            put("Igbo", "ig");
+            put("Indonesian", "id");
+            put("Irish", "ga");
+            put("Italian", "it");
+            put("Japanese", "ja");
+            put("Javanese", "jw");
+            put("Kannada", "kn");
+            put("Kazakh", "kk");
+            put("Khmer", "km");
+            put("Klingon", "tlh");
+            put("Klingon IpIqaD", "tlhqaak");
+            put("Korean", "ko");
+            put("Lao", "lo");
+            put("Latin", "la");
+            put("Latvian", "lv");
+            put("Lithuanian", "lt");
+            put("Macedonian", "mk");
+            put("Malagasy", "mg");
+            put("Malay", "ms");
+            put("Malayalam", "ml");
+            put("Maltese", "mt");
+            put("Maori", "mi");
+            put("Marathi", "mr");
+            put("Mongolian", "mn");
+            put("Myanmar (Burmese)", "my");
+            put("Nepali", "ne");
+            put("Norwegian", "no");
+            put("Persian", "fa");
+            put("Polish", "pl");
+            put("Portuguese", "pt");
+            put("Programmer", "pr");
+            put("Punjabi", "ma");
+            put("Queretaro Otomi", "otq");
+            put("Romanian", "ro");
+            put("Russian", "ru");
+            put("Serbian", "sr");
+            put("Serbian (Latin)", "srlatn");
+            put("Sesotho", "st");
+            put("Sinhala", "si");
+            put("Slovak", "sk");
+            put("Slovenian", "sl");
+            put("Somali", "so");
+            put("Spanish", "es");
+            put("Sudanese", "su");
+            put("Swahili", "sw");
+            put("Swedish", "sv");
+            put("Tajik", "tg");
+            put("Tamil", "ta");
+            put("Telugu", "te");
+            put("Thai", "th");
+            put("Turkish", "tr");
+            put("Ukrainian", "uk");
+            put("Urdu", "ur");
+            put("Uzbek", "uz");
+            put("Vietnamese", "vi");
+            put("Welsh", "cy");
+            put("Yiddish", "yi");
+            put("Yoruba", "yo");
+            put("Yucatec Maya", "yua");
+            put("Zulu", "zu");
+        }
+    };
 }

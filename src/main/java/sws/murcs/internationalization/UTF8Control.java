@@ -27,9 +27,9 @@ public class UTF8Control extends ResourceBundle.Control {
      * @throws InstantiationException thrown if you fail to instantiate the resource bundle
      * @throws IOException thrown if you fail to load the resource bundle file.
      */
-    public ResourceBundle newBundle
-            (final String baseName, final Locale locale, final String format, final ClassLoader loader,
-             final boolean reload) throws IllegalAccessException, InstantiationException, IOException {
+    public ResourceBundle newBundle(final String baseName, final Locale locale, final String format,
+                                    final ClassLoader loader, final boolean reload) throws IllegalAccessException,
+            InstantiationException, IOException {
         // The below is a copy of the default implementation.
         String bundleName = toBundleName(baseName, locale);
         String resourceName = toResourceName(bundleName, "properties");

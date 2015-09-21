@@ -233,7 +233,8 @@ public class TeamEditor extends GenericEditor<Team> {
                 getModel().setShortName(viewShortName);
             }   catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Team} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }

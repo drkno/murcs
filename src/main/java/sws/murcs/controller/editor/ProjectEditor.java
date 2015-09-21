@@ -147,9 +147,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            }  catch (DuplicateObjectException e) {
+            } catch (DuplicateObjectException e) {
                 addFormError(shortNameTextField, "{NameExistsError1} {Project} {NameExistsError2}");
-            } catch (InvalidParameterException e) {
+            }
+            catch (InvalidParameterException e) {
                 addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
