@@ -258,9 +258,16 @@ public class App extends Application {
      * @return The main controller for the window
      */
     public static MainController createWindow(final Stage window) {
+        String language = "English";
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
+        }
+        else {
+            Organisation org = PersistenceManager.getCurrent().getCurrentModel();
+            if (org != null) {
+                language = org.getCurrentLanguage();
+            }
         }
 
         if (windowManager == null) {
@@ -281,7 +288,7 @@ public class App extends Application {
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
         window.setScene(scene);
-        InternationalizationHelper.setLanguage("English");
+        InternationalizationHelper.setLanguage(language);
         window.setTitle(DEFAULT_WINDOW_TITLE);
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));

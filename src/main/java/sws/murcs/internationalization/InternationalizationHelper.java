@@ -34,6 +34,11 @@ public final class InternationalizationHelper {
     private static final double FONT_SIZE = 18.0;
 
     /**
+     * The current language of the app.
+     */
+    private static String currentLanguage = "English";
+
+    /**
      * Private constructor as it's a utility class.
      */
     private InternationalizationHelper() {
@@ -56,6 +61,7 @@ public final class InternationalizationHelper {
      * @param language The language.
      */
     public static void setLanguage(final String language) {
+        currentLanguage = language;
         String code = languages.get(language);
         if (App.getStage() != null && App.getStage().getScene() != null) {
             if (!Objects.equals(code, "tlhqaak")) {
@@ -241,4 +247,12 @@ public final class InternationalizationHelper {
             put("Zulu", "zu");
         }
     };
+
+    /**
+     * Gets the current in use language.
+     * @return the language.
+     */
+    public static String getCurrentLanguage() {
+        return currentLanguage;
+    }
 }

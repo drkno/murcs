@@ -34,6 +34,11 @@ public class Organisation extends TrackableObject implements Serializable {
     private static final long serialVersionUID = 0L;
 
     /**
+     * The current language in use by the user.
+     */
+    private String currentLanguage = "English";
+
+    /**
      * The list of projects currently loaded in the application.
      */
     @Searchable
@@ -833,5 +838,21 @@ public class Organisation extends TrackableObject implements Serializable {
         for (Model item : items) {
             add(item);
         }
+    }
+
+    /**
+     * Gets the current language in use by the application.
+     * @return the language currently set.
+     */
+    public final String getCurrentLanguage() {
+        return currentLanguage;
+    }
+
+    /**
+     * Sets the current language in use by the application.
+     * @param language the language to set it to.
+     */
+    public void setCurrentLanguage(final String language) {
+        currentLanguage = language;
     }
 }
