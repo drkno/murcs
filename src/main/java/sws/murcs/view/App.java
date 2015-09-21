@@ -1,13 +1,8 @@
 package sws.murcs.view;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
@@ -16,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import sws.murcs.arguments.ArgumentsManager;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.WindowManager;
@@ -28,11 +24,15 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The main app class.
  */
-@SuppressWarnings("ALL")
 public class App extends Application {
 
     /**
@@ -71,10 +71,20 @@ public class App extends Application {
     private static final int SUBSTRINGLENGTH = 3;
 
     /**
+     * Supported Java update.
+     */
+    private static final int SUPPORTED_JAVA_UPDATE = 60;
+
+    /**
      * The update version of the current running version of Java. (i.e. if you're on 8u25 this would be 25).
      */
     public static final int JAVA_UPDATE_VERSION = Integer.parseInt(System.getProperty("java.version")
             .split("_")[1].split("-")[0]);
+
+    /**
+     * Default size of the font to load.
+     */
+    private static final double DEFAULT_FONT_SIZE = 18.0;
 
     /**
      * The current main controller.
@@ -167,9 +177,7 @@ public class App extends Application {
             title = newTitle.substring(0, index);
         }
         final String finalTitle = title;
-        Platform.runLater(() -> {
-            stage.setTitle(finalTitle);
-        });
+        Platform.runLater(() -> stage.setTitle(finalTitle));
     }
 
     /**
@@ -223,6 +231,25 @@ public class App extends Application {
             MediaPlayer mediaPlayer = new MediaPlayer(hit);
             mediaPlayer.play();
         }
+
+        // no point in translating as there is no way to set the language before starting up the app
+        if (JAVA_UPDATE_VERSION < SUPPORTED_JAVA_UPDATE) {
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Please Update Java");
+            popup.setMessageText("The recommended minimum requirement for this application is Java 8u60. "
+                    + "While we make every effort to support Java versions as low as Java 8u25, we do not guarantee "
+                    + "that all functionality will work as intended.\n\nPlease visit java.com to get "
+                    + "the latest version of Java.");
+            popup.addButton("Go to Java.com", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                try {
+                    Desktop.getDesktop().browse(new URL("https://java.com/download").toURI());
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Cannot open Java.com");
+                }
+            });
+            popup.addButton("Continue Anyway", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
+            popup.show();
+        }
     }
 
     /**
@@ -247,7 +274,8 @@ public class App extends Application {
         MainController controller = loadRootNode();
 
         Scene scene = new Scene(controller.getRootNode());
-        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), 18.0);
+        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(),
+                DEFAULT_FONT_SIZE);
         scene.getStylesheets()
                 .add(App.class
                         .getResource("/sws/murcs/styles/global.css")
@@ -267,20 +295,22 @@ public class App extends Application {
         return controller;
     }
 
+    /**
+     * Loads the root node into the main controller.
+     * @return the controller associated with the root node.
+     */
     public static MainController loadRootNode() {
         // Loads the primary fxml and sets mainController as its controller
         FXMLLoader loader = new AutoLanguageFXMLLoader();
         loader.setResources(InternationalizationHelper.getCurrentResources());
         loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
-        Parent parent = null;
         try {
-            parent = loader.load();
+            loader.load();
         } catch (IOException e) {
             //We should never hit this, if we managed to start the application
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
         }
-        MainController controller = loader.getController();
-        return controller;
+        return loader.getController();
     }
 
     /**
