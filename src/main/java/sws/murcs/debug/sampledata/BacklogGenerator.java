@@ -209,9 +209,11 @@ public class BacklogGenerator implements Generator<Backlog> {
                 backlog.addStory(story, 1);
                 story.setStoryState(Story.StoryState.Ready);
                 assert backlog.getPrioritisedStories().contains(story);
+                backlog.addToWorkspaceStories(story);
             }
             for (Story story : stories.subList(prioritised, size)) {
                 backlog.addStory(story, null);
+                backlog.addToWorkspaceStories(story);
             }
         } catch (CustomException e) {
             // Will never happen!! We hope.

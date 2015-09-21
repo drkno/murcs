@@ -4,6 +4,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,8 +14,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 /**
  * Model of a Backlog. A backlog is basically a group of stories created by a Person. This group of stories can be
@@ -62,11 +65,17 @@ public class Backlog extends Model {
     private EstimateType estimateType;
 
     /**
+     * Stories in the backlog workspace.
+     */
+    private List<Story> workspaceStories;
+
+    /**
      * The constructor for the backlog. Initialises the lists within the backlog.
      */
     public Backlog() {
         prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
+        workspaceStories = new ModelObservableArrayList<>();
         estimateType = EstimateType.Fibonacci;
     }
 
@@ -302,5 +311,21 @@ public class Backlog extends Model {
         }
 
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
+    }
+
+    public List<Story> getWorkspaceStories() {
+        return workspaceStories;
+    }
+
+    public boolean addToWorkspaceStories(final Story story) {
+        if (getAllStories().contains(story)) {
+            workspaceStories.add(story);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeStoryFromWorkspace(Story story) {
+        workspaceStories.remove(story);
     }
 }

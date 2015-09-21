@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -40,6 +41,9 @@ public class BacklogContainer extends GenericEditor<Backlog> {
     @FXML
     private AnchorPane overviewAnchorPane, workspaceAnchorPane;
 
+    @FXML
+    private VBox estimatesContainerVBox;
+
     /**
      * The overview of the backlog.
      */
@@ -72,14 +76,8 @@ public class BacklogContainer extends GenericEditor<Backlog> {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/EstimationWorkspace.fxml"));
-            Parent view = loader.load();
-            workspaceAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            estimationWorkspace = loader.getController();
+            estimationWorkspace = new EstimationWorkspace();
+            estimationWorkspace.setup(estimatesContainerVBox);
         } catch (Exception e) {
             ErrorReporter.get().reportError(e, "Unable to load estimation workspace");
         }

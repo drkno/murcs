@@ -291,13 +291,11 @@ public class ScrumBoard extends GenericEditor<Sprint> {
             try {
                 thread.join();
             } catch (Throwable t) {
-                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+                ErrorReporter.get().reportError(t, "Failed to stop the loading stories thread.");
             }
         }
         stop = false;
-        for (ScrumBoardStoryController storyController: scrumBoardStories) {
-            storyController.dispose();
-        }
+        scrumBoardStories.forEach(ScrumBoardStoryController::dispose);
     }
 
     @Override

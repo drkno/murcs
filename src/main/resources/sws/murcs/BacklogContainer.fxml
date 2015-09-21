@@ -15,7 +15,14 @@
             </Tab>
                 <Tab fx:id="workspaceTab" text="Estimation Workspace">
                <content>
-                  <AnchorPane fx:id="workspaceAnchorPane" prefHeight="200.0" prefWidth="200.0" />
+                  <AnchorPane fx:id="workspaceAnchorPane" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <VBox fx:id="estimatesContainerVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                           </content>
+                        </ScrollPane>
+                     </children></AnchorPane>
                </content>
             </Tab>
             </tabs>
