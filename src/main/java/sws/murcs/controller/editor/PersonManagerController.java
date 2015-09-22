@@ -8,7 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
-import sws.murcs.controller.pipes.AssigneeControllerParent;
+import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.model.Person;
 import sws.murcs.model.PersonMaintainer;
 import sws.murcs.model.helpers.RecentlyUsedHelper;
@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * The controller for the assignee popover GUI element.
  */
-public class AssigneeController {
+public class PersonManagerController {
 
     /**
      * The recently used VBox and the current assignees vbox.
@@ -36,7 +36,7 @@ public class AssigneeController {
     /**
      * The editor the popover is linked to.
      */
-    private AssigneeControllerParent parentEditor;
+    private PersonManagerControllerParent parentEditor;
 
     /**
      * The task the popover is linked to.
@@ -86,7 +86,7 @@ public class AssigneeController {
      * @param parent It's parent controller.
      * @param pPossibleAssignees The list of possible assignees.
      */
-    public void setUp(final AssigneeControllerParent parent, final List<Person> pPossibleAssignees) {
+    public void setUp(final PersonManagerControllerParent parent, final List<Person> pPossibleAssignees) {
         parentEditor = parent;
         personMaintainer = parent.getMaintainer();
         setUp(pPossibleAssignees);

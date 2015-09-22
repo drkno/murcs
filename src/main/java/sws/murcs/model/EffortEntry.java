@@ -118,6 +118,10 @@ public class EffortEntry extends TrackableObject implements Serializable, Person
         date = theDate;
     }
 
+    /**
+     * Gets the list of people for this effort entry and returns their short names as a comma seperated string.
+     * @return as described in the above documentation.
+     */
     public String getPeopleAsString() {
         return people.stream().map(Person::getShortName).collect(Collectors.joining(", "));
     }

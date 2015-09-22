@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -18,7 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.controller.pipes.AssigneeControllerParent;
+import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
@@ -28,12 +27,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * A controller for editing effort entries.
  */
-public class EffortEntryController implements AssigneeControllerParent {
+public class EffortEntryController implements PersonManagerControllerParent {
     /**
      * The column labels. We have ids for them because we add and remove them.
      */
@@ -79,6 +77,9 @@ public class EffortEntryController implements AssigneeControllerParent {
      */
     private EffortController effortController;
 
+    /**
+     * The popover for adding multiple people to the effort entry.
+     */
     private PopOver peoplePopOver;
 
     /**
@@ -364,6 +365,9 @@ public class EffortEntryController implements AssigneeControllerParent {
         updatePeopleLabel();
     }
 
+    /**
+     * Updates the people label to have the correct names on it.
+     */
     public void updatePeopleLabel() {
         if (effortEntry != null) {
             personsLabel.setText(effortEntry.getPeople().size() > 0 ? effortEntry.getPeopleAsString() : "No People");
@@ -381,16 +385,20 @@ public class EffortEntryController implements AssigneeControllerParent {
         return effortEntry;
     }
 
+    /**
+     * The event called when you want to edit the people who are having the effort logged against them.
+     * @param event the click on the edit button.
+     */
     @FXML
-    private void editPeopleButtonClicked(ActionEvent event) {
+    private void editPeopleButtonClicked(final ActionEvent event) {
         if (peoplePopOver == null) {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
             try {
                 Parent parent = loader.load();
                 peoplePopOver = new PopOver(parent);
-                AssigneeController controller = loader.getController();
+                PersonManagerController controller = loader.getController();
                 controller.setUp(this, getEligibleWorkers());
                 peoplePopOver.hideOnEscapeProperty().setValue(true);
                 peoplePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
