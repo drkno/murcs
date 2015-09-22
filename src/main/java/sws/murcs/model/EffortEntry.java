@@ -11,7 +11,7 @@ import java.util.HashSet;
 /**
  * Model object for effort spent on a Task.
  */
-public class EffortEntry extends TrackableObject implements Serializable {
+public class EffortEntry extends TrackableObject implements Serializable, PersonMaintainer {
 
     /**
      * The people who logged the effort.

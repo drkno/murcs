@@ -24,9 +24,18 @@
    </rowConstraints>
    <children>
       <DatePicker fx:id="datePicker" minHeight="-Infinity" minWidth="-Infinity" prefWidth="100.0" GridPane.rowIndex="1" />
-      <HBox GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
          <children>
-            <Label text="Label" />
+            <Label fx:id="personsLabel" text="Label" HBox.hgrow="ALWAYS" />
+            <Button fx:id="editPeopleButton" mnemonicParsing="false" onAction="#editPeopleButtonClicked" style="-fx-padding: 0;">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                     <image>
+                        <Image url="@icons/edit.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
       </HBox>
       <TextField fx:id="timeTextField" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefWidth="70.0" promptText="In minutes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
@@ -46,7 +55,7 @@
           </graphic>
       </Button>
       <Label fx:id="dateLabel" text="Date" GridPane.rowIndex="0" />
-      <Label fx:id="personLabel" text="People" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+      <Label fx:id="personLabel" text="Person" GridPane.columnIndex="1" GridPane.rowIndex="0" />
       <Label fx:id="timeLabel" text="Time (mins)" GridPane.columnIndex="2" GridPane.rowIndex="0" />
    </children>
    <padding>

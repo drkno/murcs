@@ -25,12 +25,7 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.EffortEntry;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
 
@@ -514,6 +509,11 @@ public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerPar
     public void removePerson(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
+    }
+
+    @Override
+    public PersonMaintainer getMaintainer() {
+        return task;
     }
 
     /**

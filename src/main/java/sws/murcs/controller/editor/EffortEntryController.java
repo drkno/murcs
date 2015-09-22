@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -15,10 +16,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import sws.murcs.controller.controls.popover.ArrowLocation;
+import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.AssigneeControllerParent;
+import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
+import sws.murcs.model.PersonMaintainer;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -52,16 +58,10 @@ public class EffortEntryController implements AssigneeControllerParent {
     private DatePicker datePicker;
 
     /**
-     * The choice box for deciding who logged the time.
-     */
-    @FXML
-    private ComboBox personComboBox;
-
-    /**
      * The action button.
      */
     @FXML
-    private Button actionButton;
+    private Button actionButton, editPeopleButton;
 
     /**
      * The main grid.
@@ -77,6 +77,8 @@ public class EffortEntryController implements AssigneeControllerParent {
      * The associated effort controller.
      */
     private EffortController effortController;
+
+    private PopOver peoplePopOver;
 
     /**
      * The effort being edited by this controller.
@@ -125,11 +127,6 @@ public class EffortEntryController implements AssigneeControllerParent {
             updateErrors();
         });
 
-        personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            update();
-            updateErrors();
-        });
-
         timeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) return;
 
@@ -171,10 +168,6 @@ public class EffortEntryController implements AssigneeControllerParent {
             effortEntry.setDescription(descriptionTextArea.getText());
         }
 
-        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPeople())) {
-            effortEntry.addPerson((Person) personComboBox.getValue());
-        }
-
         try {
             float time = Float.parseFloat(timeTextField.getText());
             if (effortEntry.getEffort() != time) {
@@ -191,7 +184,6 @@ public class EffortEntryController implements AssigneeControllerParent {
     private void updateErrors() {
         boolean notEdited = datePicker.getValue() == null
                 && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
-                && personComboBox.getValue() == null
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
         if (notEdited || effortEntry == null) {
@@ -213,13 +205,6 @@ public class EffortEntryController implements AssigneeControllerParent {
             errors = true;
         } else {
             descriptionTextArea.getStyleClass().removeAll("error");
-        }
-
-        if (personComboBox.getValue() == null || effortEntry.getPeople() == null) {
-            personComboBox.getStyleClass().add("error");
-            errors = true;
-        } else {
-            personComboBox.getStyleClass().removeAll("error");
         }
 
         boolean validTime = true;
@@ -280,7 +265,6 @@ public class EffortEntryController implements AssigneeControllerParent {
     public void setEffortEntry(final EffortEntry effortEntry) {
         this.effortEntry = null;
 
-        personComboBox.setValue(effortEntry.getPeople());
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
         timeTextField.setText("" + effortEntry.getEffort());
@@ -304,9 +288,6 @@ public class EffortEntryController implements AssigneeControllerParent {
      */
     public void setEffortController(final EffortController controller) {
         this.effortController = controller;
-
-        personComboBox.getItems().clear();
-        personComboBox.getItems().addAll(getEligibleWorkers());
     }
 
     /**
@@ -373,5 +354,31 @@ public class EffortEntryController implements AssigneeControllerParent {
     @Override
     public void removePerson(final Person person) {
         effortEntry.removePerson(person);
+    }
+
+    @Override
+    public PersonMaintainer getMaintainer() {
+        return effortEntry;
+    }
+
+    @FXML
+    private void editPeopleButtonClicked(ActionEvent event) {
+        if (peoplePopOver == null) {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
+
+            try {
+                Parent parent = loader.load();
+                peoplePopOver = new PopOver(parent);
+                AssigneeController controller = loader.getController();
+                controller.setUp(this, getEligibleWorkers());
+                peoplePopOver.hideOnEscapeProperty().setValue(true);
+            }
+            catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create an people popover");
+            }
+        }
+        peoplePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+        peoplePopOver.show(editPeopleButton);
     }
 }
