@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.String?>
-<GridPane fx:id="mainGrid" hgap="10.0" styleClass="root" vgap="10.0" xmlns="http://javafx.com/javafx/8"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EffortEntryController">
+
+<GridPane fx:id="mainGrid" hgap="10.0" styleClass="root" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EffortEntryController">
    <columnConstraints>
       <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
@@ -21,11 +24,11 @@
    </rowConstraints>
    <children>
       <DatePicker fx:id="datePicker" minHeight="-Infinity" minWidth="-Infinity" prefWidth="100.0" GridPane.rowIndex="1" />
-      <AnchorPane GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <HBox GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <children>
-            <ComboBox fx:id="personComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <Label text="Label" />
          </children>
-      </AnchorPane>
+      </HBox>
       <TextField fx:id="timeTextField" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefWidth="70.0" promptText="In minutes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
       <TextArea fx:id="descriptionTextArea" prefHeight="50.0" prefWidth="100.0" promptText="Description" GridPane.columnSpan="4" GridPane.rowIndex="2" />
       <Button fx:id="actionButton" mnemonicParsing="false" onAction="#actionButtonClicked" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
@@ -42,9 +45,9 @@
               </ImageView>
           </graphic>
       </Button>
-      <Label text="Date" GridPane.rowIndex="0" fx:id="dateLabel"/>
-      <Label text="Person" GridPane.rowIndex="0" GridPane.columnIndex="1" fx:id="personLabel"/>
-      <Label text="Time (mins)" GridPane.rowIndex="0" GridPane.columnIndex="2" fx:id="timeLabel"/>
+      <Label fx:id="dateLabel" text="Date" GridPane.rowIndex="0" />
+      <Label fx:id="personLabel" text="People" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+      <Label fx:id="timeLabel" text="Time (mins)" GridPane.columnIndex="2" GridPane.rowIndex="0" />
    </children>
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

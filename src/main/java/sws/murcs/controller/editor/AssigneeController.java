@@ -173,7 +173,7 @@ public class AssigneeController {
                 task.addAssignee(assignee);
             }
             else {
-                parentEditor.addAssignee(assignee);
+                parentEditor.addPerson(assignee);
             }
             RecentlyUsedHelper.get().addToRecentPeople(assignee);
         }
@@ -190,7 +190,7 @@ public class AssigneeController {
             task.removeAssignee(assignee);
         }
         else {
-            parentEditor.removeAssignee(assignee);
+            parentEditor.removePerson(assignee);
         }
         Platform.runLater(() -> searchableComboBoxDecorator.add(assignee));
     }
