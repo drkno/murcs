@@ -4,6 +4,9 @@ import sws.murcs.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.TreeSet;
 
 /**
  * Model object for effort spent on a Task.
@@ -11,9 +14,9 @@ import java.time.LocalDate;
 public class EffortEntry extends TrackableObject implements Serializable {
 
     /**
-     * The Person who logged the effort.
+     * The people who logged the effort.
      */
-    private Person person;
+    private Collection<Person> people = new TreeSet<>();
 
     /**
      * The amount of effort spent, may be a time measurement.
@@ -31,19 +34,29 @@ public class EffortEntry extends TrackableObject implements Serializable {
     private LocalDate date;
 
     /**
-     * Gets the person.
-     * @return The person
+     * Gets the people who logged this effort.
+     * @return The people who logged this effort
      */
-    public Person getPerson() {
-        return person;
+    public Collection<Person> getPeople() {
+        return Collections.unmodifiableCollection(people);
     }
 
     /**
-     * Sets the person.
+     * Adds a person to this effort entry.
      * @param person The new person
+     * @return true, if adding was successful. false otherwise.
      */
-    public void setPerson(final Person person) {
-        this.person = person;
+    public boolean addPerson(final Person person) {
+        return people.add(person);
+    }
+
+    /**
+     * Removes a person from this effort entry.
+     * @param person the person to remove.
+     * @return true, if removing was successful. false otherwise.
+     */
+    public boolean removePerson(final Person person) {
+        return people.remove(person);
     }
 
     /**

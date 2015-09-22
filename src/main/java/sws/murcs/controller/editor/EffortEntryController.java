@@ -170,8 +170,8 @@ public class EffortEntryController {
             effortEntry.setDescription(descriptionTextArea.getText());
         }
 
-        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPerson())) {
-            effortEntry.setPerson((Person) personComboBox.getValue());
+        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPeople())) {
+            effortEntry.addPerson((Person) personComboBox.getValue());
         }
 
         try {
@@ -215,7 +215,7 @@ public class EffortEntryController {
             descriptionTextArea.getStyleClass().removeAll("error");
         }
 
-        if (personComboBox.getValue() == null || effortEntry.getPerson() == null) {
+        if (personComboBox.getValue() == null || effortEntry.getPeople() == null) {
             personComboBox.getStyleClass().add("error");
             errors = true;
         } else {
@@ -280,7 +280,7 @@ public class EffortEntryController {
     public void setEffortEntry(final EffortEntry effortEntry) {
         this.effortEntry = null;
 
-        personComboBox.setValue(effortEntry.getPerson());
+        personComboBox.setValue(effortEntry.getPeople());
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
         timeTextField.setText("" + effortEntry.getEffort());

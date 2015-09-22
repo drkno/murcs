@@ -473,7 +473,7 @@ public class SprintGenerator implements Generator<Sprint> {
                 LocalDate date = sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength));
                 effort.setDate(date);
                 effort.setDescription(GenerationHelper.randomString(10));
-                effort.setPerson(person);
+                effort.addPerson(person);
                 effort.setEffort(GenerationHelper.random(1, 3));
                 task.logEffort(effort);
             }
