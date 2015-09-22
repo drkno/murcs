@@ -27,7 +27,10 @@ import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +95,11 @@ public class TeamEditor extends GenericEditor<Team> {
      * A map of people to their nodes in the member list on the view.
      */
     private Map<Person, Node> memberNodeIndex;
+
+    /**
+     * Width to subtract from the prefwidth to ensure that columns remain within the visible width.
+     */
+    private final int columnSizeSubtract = 10;
 
     /**
      * The pair programing table.
@@ -181,6 +189,8 @@ public class TeamEditor extends GenericEditor<Team> {
             memberNodeIndex.put(member, memberNode);
         });
 
+        pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
+                .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
         pairProgrammingTable.setItems(generatePairProgrammingEntries());
 
         allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
@@ -488,8 +498,7 @@ public class TeamEditor extends GenericEditor<Team> {
                 .collect(Collectors.toList());
 
         effortEntries.forEach(e -> {
-            String name = e.getPeople().stream()
-                    .map(Model::getShortName).sorted().collect(Collectors.joining(", "));
+            String name = e.getPeopleAsString();
             if (map.containsKey(name)) {
                 map.put(name, map.get(name) + e.getSetEffort());
             }
