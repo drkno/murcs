@@ -4,9 +4,9 @@ import sws.murcs.magic.tracking.TrackableObject;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Model object for effort spent on a Task.
@@ -16,7 +16,7 @@ public class EffortEntry extends TrackableObject implements Serializable {
     /**
      * The people who logged the effort.
      */
-    private Collection<Person> people = new HashSet<>();
+    private Collection<Person> people = new ArrayList<>();
 
     /**
      * The amount of effort spent, may be a time measurement.
