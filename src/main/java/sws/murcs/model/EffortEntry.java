@@ -60,19 +60,29 @@ public class EffortEntry extends TrackableObject implements Serializable {
     }
 
     /**
-     * Gets the effort logged.
+     * Gets the total effort logged by all members in this entry.
      * @return The effort logged
      */
     public float getEffort() {
-        return effort;
+        return effort * people.size();
     }
 
     /**
-     * Sets the effort logged.
+     * Sets the effort logged. This is the effort spent by any one
+     * individual person who contributed to this entry.
      * @param effort The effort logged
      */
     public void setEffort(final float effort) {
         this.effort = effort;
+    }
+
+    /**
+     * Gets the effort for any one individual who partook in the effort
+     * this effort entry represents.
+     * @return the set effort.
+     */
+    public final float getSetEffort() {
+        return effort;
     }
 
     /**
