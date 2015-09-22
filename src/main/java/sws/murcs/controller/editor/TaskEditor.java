@@ -20,7 +20,7 @@ import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
-import sws.murcs.controller.pipes.AssigneeControllerParent;
+import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -31,7 +31,6 @@ import sws.murcs.view.App;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * The editor for a task contained within a story.
  */
-public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerParent {
+public class TaskEditor implements UndoRedoChangeListener, PersonManagerControllerParent {
 
     /**
      * The model of the tasks you are editing.
@@ -446,12 +445,12 @@ public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerPar
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
             try {
                 Parent parent = loader.load();
                 assigneePopOver = new PopOver(parent);
-                AssigneeController controller = loader.getController();
+                PersonManagerController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
                 assigneePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {

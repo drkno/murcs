@@ -88,7 +88,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
      * The assignees popover fxml.
      */
     private FXMLLoader assigneesPopOverFxml = new FXMLLoader(TaskEditor.class
-            .getResource("/sws/murcs/AssigneesPopOver.fxml"));
+            .getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
     /**
      * Sets up the form.
@@ -147,7 +147,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
             try {
                 Parent parent = assigneesPopOverFxml.load();
                 taskPopover = new PopOver(parent);
-                AssigneeController controller = assigneesPopOverFxml.getController();
+                PersonManagerController controller = assigneesPopOverFxml.getController();
                 taskPopover.hideOnEscapeProperty().setValue(true);
                 List<Person> possibleAssignees = getPossibleAssignees();
                 controller.setUp(task, possibleAssignees);

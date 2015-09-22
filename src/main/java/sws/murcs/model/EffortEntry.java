@@ -119,8 +119,8 @@ public class EffortEntry extends TrackableObject implements Serializable, Person
     }
 
     /**
-     * Gets the people associated with this effort entry as a comma delimited string.
-     * @return a comma delimited string of people.
+     * Gets the list of people for this effort entry and returns their short names as a comma seperated string.
+     * @return as described in the above documentation.
      */
     public String getPeopleAsString() {
         return people.stream().map(Person::getShortName).sorted().collect(Collectors.joining(", "));
