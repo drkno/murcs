@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A controller for editing effort entries.
@@ -37,7 +38,7 @@ public class EffortEntryController implements AssigneeControllerParent {
      * The column labels. We have ids for them because we add and remove them.
      */
     @FXML
-    private Label dateLabel, personLabel, timeLabel;
+    private Label dateLabel, personLabel, timeLabel, personsLabel;
 
     /**
      * The text field containing time spent.
@@ -176,14 +177,17 @@ public class EffortEntryController implements AssigneeControllerParent {
         } catch (Exception e) {
             //Do nothing, we handle this not being invalid in the "updateErrors" method.
         }
+
+        updatePeopleLabel();
     }
 
     /**
      * Updates the errors on the form.
      */
-    private void updateErrors() {
+    public void updateErrors() {
         boolean notEdited = datePicker.getValue() == null
                 && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
+                && effortEntry.getPeople().size() == 0
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
         if (notEdited || effortEntry == null) {
@@ -205,6 +209,13 @@ public class EffortEntryController implements AssigneeControllerParent {
             errors = true;
         } else {
             descriptionTextArea.getStyleClass().removeAll("error");
+        }
+
+        if (effortEntry.getPeople().size() == 0) {
+            personsLabel.getStyleClass().add("error");
+            errors = true;
+        } else {
+            personsLabel.getStyleClass().removeAll("error");
         }
 
         boolean validTime = true;
@@ -263,11 +274,12 @@ public class EffortEntryController implements AssigneeControllerParent {
      * @param effortEntry The effort for this controller to edit.
      */
     public void setEffortEntry(final EffortEntry effortEntry) {
-        this.effortEntry = null;
+        this.effortEntry = effortEntry;
 
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
         timeTextField.setText("" + effortEntry.getEffort());
+        updatePeopleLabel();
 
         this.effortEntry = effortEntry;
 
@@ -349,11 +361,19 @@ public class EffortEntryController implements AssigneeControllerParent {
     @Override
     public void addPerson(final Person person) {
         effortEntry.addPerson(person);
+        updatePeopleLabel();
+    }
+
+    public void updatePeopleLabel() {
+        if (effortEntry != null) {
+            personsLabel.setText(effortEntry.getPeople().size() > 0 ? effortEntry.getPeopleAsString() : "No People");
+        }
     }
 
     @Override
     public void removePerson(final Person person) {
         effortEntry.removePerson(person);
+        updatePeopleLabel();
     }
 
     @Override
@@ -373,6 +393,11 @@ public class EffortEntryController implements AssigneeControllerParent {
                 AssigneeController controller = loader.getController();
                 controller.setUp(this, getEligibleWorkers());
                 peoplePopOver.hideOnEscapeProperty().setValue(true);
+                peoplePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        updatePeopleLabel();
+                    }
+                });
             }
             catch (IOException e) {
                 ErrorReporter.get().reportError(e, "Could not create an people popover");

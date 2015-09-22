@@ -31,6 +31,7 @@ import sws.murcs.view.App;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -252,8 +253,10 @@ public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerPar
                     .stream()
                     .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
                     .collect(Collectors.toList());
+            List<Person> tempPeople = new ArrayList<>();
             if (sprints.size() > 0) {
-                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+                sprints.forEach(sprint -> tempPeople.addAll(sprint.getTeam().getMembers()));
+                possibleAssignees = tempPeople;
                 return;
             }
         }

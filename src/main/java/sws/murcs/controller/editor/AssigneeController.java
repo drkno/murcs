@@ -62,7 +62,7 @@ public class AssigneeController {
     /**
      * A decorator for making the add assignees combobox searchable.
      */
-    private SearchableComboBox<Person> searchableComboBoxDecorator;
+    private SearchableComboBox searchableComboBoxDecorator;
 
     /**
      * Container spacing.
@@ -173,6 +173,10 @@ public class AssigneeController {
             }
             else {
                 parentEditor.addPerson(assignee);
+            }
+            if (parentEditor instanceof EffortEntryController) {
+                ((EffortEntryController) parentEditor).updatePeopleLabel();
+                ((EffortEntryController) parentEditor).updateErrors();
             }
             RecentlyUsedHelper.get().addToRecentPeople(assignee);
         }
