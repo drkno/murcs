@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.AssigneeControllerParent;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -42,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * The editor for a task contained within a story.
  */
-public class TaskEditor implements UndoRedoChangeListener {
+public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerParent {
 
     /**
      * The model of the tasks you are editing.
@@ -501,7 +502,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * Adss an assignee to the task and updates the assignee label to display it.
      * @param assignee the assignee to add to the task.
      */
-    public void addAssignee(final Person assignee) {
+    public void addPerson(final Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
     }
@@ -510,7 +511,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * Removes the given person from the assignees of the task.
      * @param assignee the assignee to remove from the task.
      */
-    public void removeAssignee(final Person assignee) {
+    public void removePerson(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
     }

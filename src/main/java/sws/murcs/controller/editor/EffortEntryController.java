@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import sws.murcs.controller.pipes.AssigneeControllerParent;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
@@ -25,7 +26,7 @@ import java.util.function.Consumer;
 /**
  * A controller for editing effort entries.
  */
-public class EffortEntryController {
+public class EffortEntryController implements AssigneeControllerParent {
     /**
      * The column labels. We have ids for them because we add and remove them.
      */
@@ -181,7 +182,6 @@ public class EffortEntryController {
             }
         } catch (Exception e) {
             //Do nothing, we handle this not being invalid in the "updateErrors" method.
-            int foo = 0; //Because checkstyle
         }
     }
 
@@ -363,5 +363,15 @@ public class EffortEntryController {
 
         mainGrid.getRowConstraints().get(0).setPrefHeight(0);
         mainGrid.getChildren().removeAll(dateLabel, personLabel, timeLabel);
+    }
+
+    @Override
+    public void addPerson(final Person person) {
+        effortEntry.addPerson(person);
+    }
+
+    @Override
+    public void removePerson(final Person person) {
+        effortEntry.removePerson(person);
     }
 }
