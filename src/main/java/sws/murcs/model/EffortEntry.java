@@ -7,11 +7,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Model object for effort spent on a Task.
  */
-public class EffortEntry extends TrackableObject implements Serializable {
+public class EffortEntry extends TrackableObject implements Serializable, PersonMaintainer {
 
     /**
      * The people who logged the effort.
@@ -115,5 +116,9 @@ public class EffortEntry extends TrackableObject implements Serializable {
      */
     public void setDate(final LocalDate theDate) {
         date = theDate;
+    }
+
+    public String getPeopleAsString() {
+        return people.stream().map(Person::getShortName).collect(Collectors.joining(", "));
     }
 }

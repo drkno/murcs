@@ -25,17 +25,13 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
-import sws.murcs.model.EffortEntry;
-import sws.murcs.model.Person;
-import sws.murcs.model.Sprint;
-import sws.murcs.model.Story;
-import sws.murcs.model.Task;
-import sws.murcs.model.TaskState;
+import sws.murcs.model.*;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -257,8 +253,10 @@ public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerPar
                     .stream()
                     .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
                     .collect(Collectors.toList());
+            List<Person> tempPeople = new ArrayList<>();
             if (sprints.size() > 0) {
-                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+                sprints.forEach(sprint -> tempPeople.addAll(sprint.getTeam().getMembers()));
+                possibleAssignees = tempPeople;
                 return;
             }
         }
@@ -514,6 +512,11 @@ public class TaskEditor implements UndoRedoChangeListener, AssigneeControllerPar
     public void removePerson(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
+    }
+
+    @Override
+    public PersonMaintainer getMaintainer() {
+        return task;
     }
 
     /**

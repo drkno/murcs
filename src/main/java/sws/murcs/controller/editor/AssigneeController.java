@@ -8,8 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.SearchableComboBox;
+import sws.murcs.controller.pipes.AssigneeControllerParent;
 import sws.murcs.model.Person;
-import sws.murcs.model.Task;
+import sws.murcs.model.PersonMaintainer;
 import sws.murcs.model.helpers.RecentlyUsedHelper;
 
 import java.util.Collection;
@@ -35,12 +36,12 @@ public class AssigneeController {
     /**
      * The editor the popover is linked to.
      */
-    private TaskEditor parentEditor;
+    private AssigneeControllerParent parentEditor;
 
     /**
      * The task the popover is linked to.
      */
-    private Task task;
+    private PersonMaintainer personMaintainer;
 
     /**
      * The recent assignees (this is only updated when the popover is opened otherwise you'd get
@@ -61,7 +62,7 @@ public class AssigneeController {
     /**
      * A decorator for making the add assignees combobox searchable.
      */
-    private SearchableComboBox<Person> searchableComboBoxDecorator;
+    private SearchableComboBox searchableComboBoxDecorator;
 
     /**
      * Container spacing.
@@ -71,11 +72,11 @@ public class AssigneeController {
     /**
      * Sets up the assignee controller.
      * With a list of possible assignees and the task that the assignee controller is associated with.
-     * @param pTask The task this popover is associated with.
+     * @param maintainer The task this popover is associated with.
      * @param pPossibleAssignees The list of possible assignees.
      */
-    public void setUp(final Task pTask, final List<Person> pPossibleAssignees) {
-        task = pTask;
+    public void setUp(final PersonMaintainer maintainer, final List<Person> pPossibleAssignees) {
+        personMaintainer = maintainer;
         setUp(pPossibleAssignees);
     }
 
@@ -85,9 +86,9 @@ public class AssigneeController {
      * @param parent It's parent controller.
      * @param pPossibleAssignees The list of possible assignees.
      */
-    public void setUp(final TaskEditor parent, final List<Person> pPossibleAssignees) {
+    public void setUp(final AssigneeControllerParent parent, final List<Person> pPossibleAssignees) {
         parentEditor = parent;
-        task = parent.getTask();
+        personMaintainer = parent.getMaintainer();
         setUp(pPossibleAssignees);
     }
 
@@ -109,15 +110,13 @@ public class AssigneeController {
             if (newValue != null) {
                 Person selectedPerson = (Person) assigneeComboBox.getValue();
                 if (selectedPerson != null) {
-                    Platform.runLater(() -> {
-                        assigneeComboBox.getSelectionModel().clearSelection();
-                    });
+                    Platform.runLater(() -> assigneeComboBox.getSelectionModel().clearSelection());
                     addAssignee(selectedPerson, true);
                 }
             }
         });
         searchableComboBoxDecorator.addAll(possibleAssignees);
-        assignees = task.getAssignees();
+        assignees = personMaintainer.getPeople();
         addAssignees(assignees);
     }
 
@@ -144,7 +143,7 @@ public class AssigneeController {
         Button button = new Button();
         button.setText(assignee.getShortName());
         button.setOnAction((event) -> {
-            if (!task.getAssignees().contains(assignee)) {
+            if (!personMaintainer.getPeople().contains(assignee)) {
                 addAssignee(assignee, true);
             }
         });
@@ -169,11 +168,15 @@ public class AssigneeController {
         AnchorPane.setRightAnchor(delete, 0.0);
         currentAssigneesVBox.getChildren().add(container);
         if (newAssignee) {
-            if (task != null) {
-                task.addAssignee(assignee);
+            if (personMaintainer != null) {
+                personMaintainer.addPerson(assignee);
             }
             else {
                 parentEditor.addPerson(assignee);
+            }
+            if (parentEditor instanceof EffortEntryController) {
+                ((EffortEntryController) parentEditor).updatePeopleLabel();
+                ((EffortEntryController) parentEditor).updateErrors();
             }
             RecentlyUsedHelper.get().addToRecentPeople(assignee);
         }
@@ -186,8 +189,8 @@ public class AssigneeController {
      */
     private void removeAssignee(final Person assignee, final AnchorPane container) {
         currentAssigneesVBox.getChildren().remove(container);
-        if (task != null) {
-            task.removeAssignee(assignee);
+        if (personMaintainer != null) {
+            personMaintainer.removePerson(assignee);
         }
         else {
             parentEditor.removePerson(assignee);
