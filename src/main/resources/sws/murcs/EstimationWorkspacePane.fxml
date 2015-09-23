@@ -22,15 +22,15 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="estimateBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="150.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EstimatePane">
+<BorderPane fx:id="estimateBorderPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="150.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EstimatePane">
    <center>
       <GridPane fx:id="estimateGridPane" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <TilePane fx:id="storiesContainerTilePane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefRows="2" tileAlignment="TOP_LEFT" GridPane.columnIndex="1" />

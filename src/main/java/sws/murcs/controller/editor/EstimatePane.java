@@ -2,15 +2,23 @@ package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Backlog;
@@ -25,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Created by wooll on 17/09/2015.
  */
-public class EstimatePane implements UndoRedoChangeListener{
+public class EstimatePane implements UndoRedoChangeListener {
 
     @FXML
     private BorderPane estimateBorderPane;
@@ -57,12 +65,32 @@ public class EstimatePane implements UndoRedoChangeListener{
      */
     private boolean stop;
 
+    /**
+     * The story currently being dragged.
+     */
+    private static Story draggingStory;
+
+    /**
+     * The estimate of the currently dragging story.
+     */
+    private static String draggingEstimate;
+
+    @FXML
+    private void initialize() {
+        UndoRedoManager.get().addChangeListener(this);
+        estimateBorderPane.getStyleClass().add("separators");
+    }
 
     public void configure(final String estimateType, final Backlog pBacklog) {
         estimate = estimateType;
         estimateLabel.setText(estimate);
         backlog = pBacklog;
         estimatePaneStories = new ArrayList<>();
+
+        addDragOverHandler(storiesContainerTilePane);
+        addDragEnteredHandler(storiesContainerTilePane);
+        addDragExitedHandler(storiesContainerTilePane);
+        addDragDroppedHandler(storiesContainerTilePane, estimate);
     }
 
     protected void loadObject() {
@@ -75,18 +103,13 @@ public class EstimatePane implements UndoRedoChangeListener{
                 .stream()
                 .filter(s -> Objects.equals(s.getEstimate(), estimate))
                 .collect(Collectors.toList());
-        if (stories.size() != 0) {
+        if (stories.size() > 0) {
             StoryLoadingTask storyThread = new StoryLoadingTask();
             storyThread.setStories(stories);
             thread = new Thread(storyThread);
             thread.setDaemon(true);
             thread.start();
         }
-    }
-
-    @Override
-    public void undoRedoNotification(ChangeState param) {
-
     }
 
     /**
@@ -136,6 +159,8 @@ public class EstimatePane implements UndoRedoChangeListener{
                     Parent view;
                     view = threadStoryLoader.load();
                     controller.setStory(story);
+                    controller.setBacklog(currentBacklog);
+                    controller.setParent(EstimatePane.this);
                     controller.loadStory();
                     Platform.runLater(() -> {
                         if (backlog == null || !backlog.equals(currentBacklog)) {
@@ -147,6 +172,8 @@ public class EstimatePane implements UndoRedoChangeListener{
                             synchronized (StyleManager.getInstance()) {
                                 App.setOnStyleManagerThread(true);
                                 storiesContainerTilePane.getChildren().add(view);
+                                addDragDetectedHandler(view, story, estimate);
+                                addDragDoneHandler(view);
                                 App.setOnStyleManagerThread(false);
                             }
 
@@ -167,7 +194,6 @@ public class EstimatePane implements UndoRedoChangeListener{
                 disposeOfStories();
                 return;
             }
-//            showStories();
         }
     }
 
@@ -196,4 +222,92 @@ public class EstimatePane implements UndoRedoChangeListener{
         estimatePaneStories = null;
     }
 
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert) {
+            this.loadObject();
+        }
+    }
+
+    /**
+     * Adds a drag detected handler to the node.
+     * @param source The node to add the handler to
+     * @param story The task that the dragged node represents
+     * @param estimate The story that the task is from
+     */
+    @SuppressWarnings("checkstyle:magicnumber")
+    private void addDragDetectedHandler(final Node source, final Story story, final String estimate) {
+        source.setOnDragDetected(event -> {
+            draggingStory = story;
+            draggingEstimate = estimate;
+            Dragboard dragBoard = source.startDragAndDrop(TransferMode.ANY);
+            ClipboardContent content = new ClipboardContent();
+            content.putString(story.getShortName());
+            dragBoard.setContent(content);
+            WritableImage image = source.snapshot(new SnapshotParameters(), null);
+            dragBoard.setDragView(image, image.getWidth() * 0.5, image.getHeight() * 0.5);
+            event.consume();
+        });
+    }
+
+    /**
+     * Adds a drag over handler to the node.
+     * @param target The node to add the handler to
+     */
+    private void addDragOverHandler(final Pane target) {
+        target.setOnDragOver(event -> {
+            if (event.getGestureSource() != target
+                    && event.getDragboard().hasString()) {
+                event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+            }
+            event.consume();
+        });
+    }
+
+    /**
+     * Adds a drag entered handler to the node.
+     * @param target The node to add the handler to
+     */
+    private void addDragEnteredHandler(final Pane target) {
+        target.setOnDragEntered(event -> {
+            if (event.getGestureSource() != target
+                    && event.getDragboard().hasString()) {
+              target.getStyleClass().add("scrumBoard-story-legal");
+            }
+            event.consume();
+        });
+    }
+
+    /**
+     * Adds a drag exited handler to the node.
+     * @param target The node to add the handler to
+     */
+    private void addDragExitedHandler(final Pane target) {
+        target.setOnDragExited(event -> {
+            target.getStyleClass().removeAll("scrumBoard-story-legal");
+            event.consume();
+        });
+    }
+
+    /**
+     * Adds a drag dropped handler to the node.
+     * @param target The node to add the handler to
+     * @param newEstimate The new state to set the task to
+     */
+    private void addDragDroppedHandler(final Pane target, final String newEstimate) {
+        target.setOnDragDropped(event -> {
+            draggingStory.setEstimate(newEstimate);
+            event.setDropCompleted(true);
+            loadObject();
+            event.consume();
+        });
+    }
+
+    /**
+     * Adds a drag done handler to the node.
+     * @param source The node to add the handler to
+     */
+    private void addDragDoneHandler(final Node source) {
+        source.setOnDragDone(Event::consume);
+    }
 }

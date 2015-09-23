@@ -27,6 +27,7 @@ import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.listeners.GenericCallback;
+import sws.murcs.listeners.SWSCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Model;
@@ -39,6 +40,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -193,7 +195,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        List<SWSCallback<Story>> callbacks = new ArrayList<>();
+        callbacks.add(this::removeStory);
+        callbacks.add(this::workspaceStory);
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
         priorityColumn.setCellValueFactory(param -> {
             SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
             Integer priority = getModel().getStoryPriority(param.getValue());
@@ -235,6 +240,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         dropPriorityButton.setDisable(true);
         decreasePriorityButton.setDisable(true);
         increasePriorityButton.setDisable(true);
+    }
+
+    private void workspaceStory(final Story story) {
+        if (getModel().getWorkspaceStories().contains(story)) {
+            getModel().removeStoryFromWorkspace(story);
+        }
+        else {
+            getModel().addToWorkspaceStories(story);
+        }
+        updateStoryTable();
     }
 
     /**

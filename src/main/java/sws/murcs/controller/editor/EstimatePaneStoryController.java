@@ -1,9 +1,15 @@
 package sws.murcs.controller.editor;
 
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.magic.tracking.listener.ChangeState;
+import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
+import sws.murcs.model.Backlog;
 import sws.murcs.model.Story;
 
 import java.util.List;
@@ -12,24 +18,31 @@ import java.util.List;
  * Created by wooll on 20/09/2015.
  */
 public class EstimatePaneStoryController {
-    public Button removeFromWorkSpaceButton;
-    public Label storyLabel;
-    public BorderPane storyBoarderPane;
-    private EstimatePane estimatePane;
-    private List<Story> stories;
+
+    @FXML
+    private Button removeFromWorkSpaceButton;
+
+    @FXML
+    private Label storyLabel;
+
+    @FXML
+    private HBox storyContainer;
+
     private Story story;
+    private Backlog backlog;
+    private EstimatePane parent;
 
     public void dispose() {
-
+        story = null;
+        backlog = null;
     }
 
-
-
-    public void setEstimatePane(EstimatePane estimatePane) {
-        this.estimatePane = estimatePane;
+    @FXML
+    private void initialize() {
+        storyContainer.getStyleClass().add("workspace-story");
     }
 
-    public void setStory(Story story) {
+    public void setStory(final Story story) {
         this.story = story;
     }
 
@@ -37,7 +50,16 @@ public class EstimatePaneStoryController {
         storyLabel.setText(story.getShortName());
     }
 
-    public void removeStoryFromWorkspace(ActionEvent actionEvent) {
+    public void setParent(final EstimatePane estimatePane) {
+        parent = estimatePane;
+    }
 
+    public void removeStoryFromWorkspace(final ActionEvent actionEvent) {
+        backlog.removeStoryFromWorkspace(story);
+        parent.loadObject();
+    }
+
+    public void setBacklog(final Backlog backlog) {
+        this.backlog = backlog;
     }
 }

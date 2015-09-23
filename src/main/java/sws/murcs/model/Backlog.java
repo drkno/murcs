@@ -14,10 +14,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.StreamSupport;
 
 /**
  * Model of a Backlog. A backlog is basically a group of stories created by a Person. This group of stories can be
@@ -67,6 +65,7 @@ public class Backlog extends Model {
     /**
      * Stories in the backlog workspace.
      */
+    @TrackableValue
     private List<Story> workspaceStories;
 
     /**
@@ -320,12 +319,14 @@ public class Backlog extends Model {
     public boolean addToWorkspaceStories(final Story story) {
         if (getAllStories().contains(story)) {
             workspaceStories.add(story);
+            commit("Story added to workspace");
             return true;
         }
         return false;
     }
 
-    public void removeStoryFromWorkspace(Story story) {
+    public void removeStoryFromWorkspace(final Story story) {
         workspaceStories.remove(story);
+        commit("Story removed from workspace");
     }
 }
