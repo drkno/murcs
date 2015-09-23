@@ -27,6 +27,8 @@ import sws.murcs.model.Story;
 import sws.murcs.view.App;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -73,7 +75,7 @@ public class EstimatePane implements UndoRedoChangeListener {
     /**
      * The estimate value.
      */
-    private String estimate;
+    protected String estimate;
 
     /**
      * List of estimate panes.
@@ -101,23 +103,36 @@ public class EstimatePane implements UndoRedoChangeListener {
     private static String draggingEstimate;
 
     /**
+     * The estimation workspace.
+     */
+    protected EstimationWorkspace workspace;
+
+    /**
+     * Comparator for sorting stories.
+     */
+    private Comparator<Story> storyComparator;
+
+    /**
      * Initialize the estimate pane.
      */
     @FXML
     private void initialize() {
         UndoRedoManager.get().addChangeListener(this);
         estimateBorderPane.getStyleClass().add("separators");
+        storyComparator = (s1, s2) -> s1.getShortName().toLowerCase().compareTo(s2.getShortName().toLowerCase());
     }
 
     /**
      * Configure estimate pane with values.
      * @param estimateValue The estimate value.
      * @param pBacklog The backlog.
+     * @param pWorkspace The workspace.
      */
-    public void configure(final String estimateValue, final Backlog pBacklog) {
+    public void configure(final String estimateValue, final Backlog pBacklog, final EstimationWorkspace pWorkspace) {
         estimate = estimateValue;
         estimateLabel.setText(estimate);
         backlog = pBacklog;
+        workspace = pWorkspace;
         estimatePaneStories = new ArrayList<>();
 
         addDragOverHandler(storiesContainerTilePane);
@@ -142,6 +157,7 @@ public class EstimatePane implements UndoRedoChangeListener {
                 .stream()
                 .filter(s -> Objects.equals(s.getEstimate(), estimate))
                 .collect(Collectors.toList());
+        Collections.sort(stories, storyComparator);
         if (stories.size() > 0) {
             StoryLoadingTask storyThread = new StoryLoadingTask();
             storyThread.setStories(stories);
@@ -338,9 +354,12 @@ public class EstimatePane implements UndoRedoChangeListener {
      */
     private void addDragDroppedHandler(final Pane target, final String newEstimate) {
         target.setOnDragDropped(event -> {
-            draggingStory.setEstimate(newEstimate);
-            event.setDropCompleted(true);
-            loadObject();
+            if (!Objects.equals(newEstimate, draggingEstimate)) {
+                draggingStory.setEstimate(newEstimate);
+                event.setDropCompleted(true);
+                loadObject();
+                workspace.reloadEstimationPane(draggingEstimate);
+            }
             event.consume();
         });
     }

@@ -18,9 +18,9 @@
             </Tab>
                 <Tab fx:id="workspaceTab" text="Estimation Workspace">
                <content>
-                  <ScrollPane fitToHeight="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <content>
-                        <VBox fx:id="estimatesContainerVBox" />
+                        <VBox fx:id="estimatesContainerVBox" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" />
                      </content>
                   </ScrollPane>
                </content>

@@ -130,6 +130,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
         }
         else if (tab.equals(workspaceTab)) {
             workspaceTabSelected();
+            estimationWorkspace.forceLoadObject();
         }
     }
 

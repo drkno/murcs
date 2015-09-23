@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The estimation workspace for manipulating stories in a backlog.
@@ -44,13 +45,28 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
         if (getModel() != null) {
             if (currentBacklog == null
                     || !getModel().equals(currentBacklog)) {
-                estimatePanes.clear();
-                rootPane.getChildren().clear();
-                loadEstimatePanels();
-                estimatePanes.stream().forEach(EstimatePane::loadObject);
-                currentBacklog = getModel();
+                load();
             }
         }
+    }
+
+    /**
+     * Forces a reload of the estimate panes..
+     */
+    protected void forceLoadObject() {
+        System.out.println("test");
+        load();
+    }
+
+    /**
+     * Loads the estimate panes.
+     */
+    private void load() {
+        estimatePanes.clear();
+        rootPane.getChildren().clear();
+        loadEstimatePanels();
+        estimatePanes.stream().forEach(EstimatePane::loadObject);
+        currentBacklog = getModel();
     }
 
     /**
@@ -68,7 +84,7 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
                 estimateLoader.setController(null);
                 Parent root = estimateLoader.load();
                 EstimatePane controller = estimateLoader.getController();
-                controller.configure(estimateType, getModel());
+                controller.configure(estimateType, getModel(), this);
                 rootPane.getChildren().add(root);
                 estimatePanes.add(controller);
             } catch (IOException e) {
@@ -94,5 +110,16 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
     protected void setup(final Pane root) {
         rootPane = root;
         estimatePanes = new ArrayList<>();
+    }
+
+    /**
+     * Reloads an estimate pane of a given estimate.
+     * @param estimate The estimate to reload
+     */
+    protected void reloadEstimationPane(final String estimate) {
+        EstimatePane estimatePane = estimatePanes.stream().filter(e -> Objects.equals(e.estimate, estimate)).findFirst().get();
+        if (estimatePane != null) {
+            estimatePane.loadObject();
+        }
     }
 }

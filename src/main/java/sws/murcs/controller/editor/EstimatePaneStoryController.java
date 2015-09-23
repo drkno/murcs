@@ -64,6 +64,15 @@ public class EstimatePaneStoryController {
     }
 
     /**
+     * Navigate to story.
+     * @param actionEvent Event (ignored)
+     */
+    @FXML
+    private void navigateToStory(final ActionEvent actionEvent) {
+        parent.workspace.getNavigationManager().navigateTo(story);
+    }
+
+    /**
      * Sets the story.
      * @param story The story.
      */
