@@ -18,7 +18,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Model of a sprint.
@@ -45,6 +48,7 @@ public class Sprint extends Model {
      */
     @TrackableValue
     @Searchable
+    @XmlIDREF
     private Release associatedRelease;
 
     /**
@@ -255,5 +259,32 @@ public class Sprint extends Model {
         if (end != null && rel != null && end.isAfter(rel.getReleaseDate())) {
             throw new InvalidParameterException("The sprint should end before the release date");
         }
+    }
+
+    /**
+     * Gets the pair programming groups that occurred in this sprint.
+     * @return the groups that peer programmed together.
+     */
+    @XmlElementWrapper(name = "pairs")
+    @XmlElement(name = "pair")
+    public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
+        List<EffortEntry> effortEntries = getStories().stream()
+                .map(s -> s.getTasks()).flatMap(s -> s.stream())
+                .map(t -> t.getEffort()).flatMap(e -> e.stream())
+                .filter(e -> e.getPeople().size() > 1)
+                .collect(Collectors.toList());
+
+        Map<String, Float> map = new HashMap<>();
+        effortEntries.forEach(e -> {
+            String name = e.getPeopleAsString();
+            if (map.containsKey(name)) {
+                map.put(name, map.get(name) + e.getSetEffort());
+            } else {
+                map.put(name, e.getSetEffort());
+            }
+        });
+
+        return map.entrySet().stream()
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue())).collect(Collectors.toList());
     }
 }

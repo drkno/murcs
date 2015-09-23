@@ -4,6 +4,7 @@ import sws.murcs.model.Backlog;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Project;
+import sws.murcs.model.Release;
 import sws.murcs.model.Skill;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -100,6 +101,13 @@ public class ReportModelAll extends ReportModel {
     private List<Skill> listSkills;
 
     /**
+     * The list of releases and their details.
+     */
+    @XmlElementWrapper(name = "releases")
+    @XmlElement(name = "release")
+    private List<Release> listReleases;
+
+    /**
      * Constructor.
      * @param organisation a organisation
      */
@@ -120,12 +128,15 @@ public class ReportModelAll extends ReportModel {
         listTeams = new ArrayList<>(organisation.getTeams());
         listPeople = new ArrayList<>(organisation.getPeople());
         listSkills = new ArrayList<>(organisation.getSkills());
+        listReleases = new ArrayList<>(organisation.getReleases());
         Collections.sort(listTeams, (Team t1, Team t2) -> t1.getShortName()
                 .toLowerCase().compareTo(t2.getShortName().toLowerCase()));
         Collections.sort(listPeople, (Person p1, Person p2) -> p1.getShortName()
                 .toLowerCase().compareTo(p2.getShortName().toLowerCase()));
         Collections.sort(listSkills, (Skill s1, Skill s2) -> s1.getShortName()
                 .toLowerCase().compareTo(s2.getShortName().toLowerCase()));
+        Collections.sort(listReleases, (Release r1, Release r2) -> r1.getShortName()
+                .toLowerCase().compareTo(r2.getShortName().toLowerCase()));
     }
 
     /**

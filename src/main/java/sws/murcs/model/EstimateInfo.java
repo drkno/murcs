@@ -25,8 +25,8 @@ public class EstimateInfo extends TrackableObject implements Serializable {
      * A map of the time remaining on specific days.
      */
     @TrackableValue
-    @XmlElementWrapper(name = "releases")
-    @XmlElement(name = "release")
+    @XmlElementWrapper(name = "estimates")
+    @XmlElement(name = "estimate")
     private Map<LocalDate, Float> estimates = new HashMap<>();
 
     /**
