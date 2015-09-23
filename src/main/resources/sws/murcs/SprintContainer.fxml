@@ -8,22 +8,22 @@
     <children>
         <TabPane fx:id="containerTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" side="RIGHT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
             <tabs>
-                <Tab fx:id="overviewTab" text="Overview">
+                <Tab fx:id="overviewTab" text="%Overview">
                <content>
                   <AnchorPane fx:id="overviewAnchorPane" prefHeight="200.0" prefWidth="200.0" />
                </content>
             </Tab>
-                <Tab fx:id="scrumBoardTab" text="Scrum Board">
+                <Tab fx:id="scrumBoardTab" text="%ScrumBoard">
                <content>
                   <AnchorPane fx:id="scrumBoardAnchorPane" prefHeight="200.0" prefWidth="200.0" />
                </content>
             </Tab>
-                <Tab fx:id="burnDownChartTab" text="Burn Down Chart">
+                <Tab fx:id="burnDownChartTab" text="%BurnDownChart">
                <content>
                   <AnchorPane fx:id="burnDownChartAnchorPane" prefHeight="200.0" prefWidth="200.0" />
                </content>
             </Tab>
-            <Tab fx:id="allTasksTab" text="All Tasks">
+            <Tab fx:id="allTasksTab" text="%AllTasks">
               <content>
                 <AnchorPane fx:id="allTasksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
               </content>

@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import sws.murcs.exceptions.CyclicDependencyException;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.helpers.DependenciesHelper;
@@ -48,7 +49,12 @@ public class Story extends Model {
         /**
          * Indicates that this story has been completed.
          */
-        Done
+        Done;
+
+        @Override
+        public String toString() {
+            return InternationalizationHelper.tryGet(super.toString());
+        }
     }
 
     /**

@@ -43,7 +43,7 @@
             </Button>
             <HBox fx:id="minimisedHBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
-                  <TextField fx:id="nameTextField" minWidth="-Infinity" prefWidth="50.0" promptText="Name" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="nameTextField" minWidth="-Infinity" prefWidth="50.0" promptText="%Name" HBox.hgrow="ALWAYS" />
                   <TextField fx:id="estimateTextField" minWidth="40.0" prefWidth="60.0" promptText="Estimate" />
                   <ChoiceBox fx:id="stateChoiceBox" minWidth="80.0" prefWidth="100.0" />
                </children>
@@ -70,10 +70,10 @@
             </Button>
             <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
-                  <Label text="Assignees:" HBox.hgrow="NEVER" />
+                  <Label text="%Assignees" HBox.hgrow="NEVER" />
                   <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="assigneesLabel" text="Placeholder Text" wrapText="true" VBox.vgrow="SOMETIMES" />
+                        <Label fx:id="assigneesLabel" text="%PlaceholderText" wrapText="true" VBox.vgrow="SOMETIMES" />
                      </children>
                   </VBox>
                   <Button fx:id="editAssignedButton" mnemonicParsing="false" onAction="#editAssignedButtonClicked" style="-fx-padding: 0;" HBox.hgrow="NEVER">
@@ -93,7 +93,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                   <Label fx:id="spentEffortLabel" text="(spent 0 hours)" />
+                   <Label fx:id="spentEffortLabel" text="%spent0hours" />
                </children>
                <padding>
                   <Insets right="10.0" />
@@ -102,7 +102,7 @@
             <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
-                  <Button fx:id="createButton" alignment="BOTTOM_LEFT" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                  <Button fx:id="createButton" alignment="BOTTOM_LEFT" mnemonicParsing="false" onAction="#createButtonClicked" text="%Create" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets left="310.0" />
                      </GridPane.margin>

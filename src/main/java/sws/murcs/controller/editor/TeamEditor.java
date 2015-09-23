@@ -26,6 +26,8 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -229,8 +231,11 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }   catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Team} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -387,13 +392,13 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setTitleText("Remove Team Member");
-                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                popup.setTitleText("{ConfirmRemoveTeamMemberTitle}");
+                String message = "{AreYouSureRemove} " + person.getShortName() + ".";
                 if (person.equals(getModel().getScrumMaster())) {
-                    message += "\nThey are currently the teams Scrum Master.";
+                    message += "\n{TheyAreScrumMaster}.";
                 }
                 if (person.equals(getModel().getProductOwner())) {
-                    message += "\nThey are currently the teams Product Owner.";
+                    message += "\n{TheyArePO}.";
                 }
                 popup.setMessageText(message);
                 popup.addYesNoButtons(() -> {

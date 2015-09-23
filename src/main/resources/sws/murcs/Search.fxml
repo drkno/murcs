@@ -33,7 +33,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <TextField fx:id="searchText" promptText="Search" style="-fx-text-box-border: transparent; -fx-focus-color: transparent; -fx-background-color: transparent;" GridPane.columnIndex="1" GridPane.columnSpan="2147483647">
+                  <TextField fx:id="searchText" promptText="%Search" style="-fx-text-box-border: transparent; -fx-focus-color: transparent; -fx-background-color: transparent;" GridPane.columnIndex="1" GridPane.columnSpan="2147483647">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -71,7 +71,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label fx:id="noItemsLabel" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: transparent;" text="Hover over an item to preview." textAlignment="CENTER" textFill="#8a8a8a" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                              <Label fx:id="noItemsLabel" alignment="CENTER" contentDisplay="CENTER" style="-fx-background-color: transparent;" text="%Hoveroveranitemtopreview" textAlignment="CENTER" textFill="#8a8a8a" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                  <font>
                                     <Font size="22.0" />
                                  </font>

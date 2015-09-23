@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.GenerationHelper;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.io.BufferedReader;
@@ -42,7 +43,7 @@ public class HelpfulHintsView {
     /**
      * The path to the hints file to load from.
      */
-    private final String path = "/sws/murcs/helpfulHints/helpfulHints.nsv";
+    private final String path = "/sws/murcs/helpfulHints/helpfulHintKeys.nsv";
 
     /**
      * Sets up the helpful hints view.
@@ -57,7 +58,7 @@ public class HelpfulHintsView {
      * Creates an instance of the controller and initializes controller variables.
      */
     public final void create() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/HelpfulHints/HelpfulHints.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/helpfulHints/HelpfulHints.fxml"));
         try {
             view = loader.load();
             controller = loader.getController();
@@ -77,6 +78,10 @@ public class HelpfulHintsView {
         try {
             InputStream input = getClass().getResourceAsStream(path);
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            if (PersistenceManager.getCurrent().getCurrentModel() == null) {
+                //This is *VERY* bad and should never happen.
+                return;
+            }
             boolean isInDebugMode = PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData();
             String line = br.readLine();
             while (line != null) {
@@ -109,7 +114,8 @@ public class HelpfulHintsView {
      * @return A hint.
      */
     private String generateHint() {
-        return hints.get(GenerationHelper.random(0, hints.size() - 1));
+        String key = hints.get(GenerationHelper.random(0, hints.size() - 1));
+        return InternationalizationHelper.tryGet(key);
     }
 
     /**

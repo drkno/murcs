@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.internationalization.InternationalizationHelper;
+
 /**
  * The states that a Task can be in.
  */
@@ -22,13 +24,6 @@ public enum TaskState {
 
     @Override
     public String toString() {
-        return super.toString().replaceAll(
-                String.format("%s|%s|%s",
-                        "(?<=[A-Z])(?=[A-Z][a-z])",
-                        "(?<=[^A-Z])(?=[A-Z])",
-                        "(?<=[A-Za-z])(?=[^A-Za-z])"
-                ),
-                " "
-        );
+        return InternationalizationHelper.tryGet(super.toString());
     }
 }
