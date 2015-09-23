@@ -5,7 +5,7 @@ Feature: Velocity Tracking
   Given I have selected the velocity board view
   Then the velocities of sprints are displayed in a chart
 
-  Scenario: Uncomplete Sprints
+  Scenario: Incomplete Sprints
   Given I have selected the velocity board view
   And there are sprints displayed that are ongoing
   Then those values are indicated as estimates
