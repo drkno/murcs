@@ -4,9 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -60,7 +57,8 @@ public class VelocityBoard {
         Series indicatorySeries = new Series();
         realSeries.setName("Sprint Velocities");
         indicatorySeries.setName("Estimated Velocities");
-        List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
+        List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(
+                s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
             if (s1.getStartDate().isEqual(s2.getStartDate())) {
                 return 0;
             }
