@@ -1,7 +1,10 @@
 package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableObject;
+import sws.murcs.reporting.LocalDateAdapter;
 
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,26 +15,34 @@ import java.util.stream.Collectors;
 /**
  * Model object for effort spent on a Task.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class EffortEntry extends TrackableObject implements Serializable, PersonMaintainer {
 
     /**
      * The people who logged the effort.
      */
+
+    @XmlElementWrapper(name = "people")
+    @XmlElement(name = "person")
+    @XmlIDREF
     private Collection<Person> people = new ArrayList<>();
 
     /**
      * The amount of effort spent, may be a time measurement.
      */
+    @XmlAttribute
     private float effort;
 
     /**
      * The description of the work done.
      */
+    @XmlAttribute
     private String description;
 
     /**
      * The day the work was done.
      */
+    @XmlJavaTypeAdapter(type = LocalDate.class, value = LocalDateAdapter.class)
     private LocalDate date;
 
     /**
