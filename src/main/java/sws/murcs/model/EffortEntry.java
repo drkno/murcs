@@ -48,6 +48,9 @@ public class EffortEntry extends TrackableObject implements Serializable, Person
      * @return true, if adding was successful. false otherwise.
      */
     public boolean addPerson(final Person person) {
+        if (people.contains(person)) {
+            return false;
+        }
         return people.add(person);
     }
 
