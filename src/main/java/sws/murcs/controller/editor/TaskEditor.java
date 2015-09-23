@@ -453,7 +453,7 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
             FXMLLoader loader = new AutoLanguageFXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
             try {
                 Parent parent = loader.load();
