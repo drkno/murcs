@@ -11,12 +11,12 @@
     <children>
         <TabPane fx:id="containerTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" side="RIGHT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
             <tabs>
-                <Tab fx:id="overviewTab" text="Overview">
+                <Tab fx:id="overviewTab" text="%Overview">
                <content>
                   <AnchorPane fx:id="overviewAnchorPane" prefHeight="200.0" prefWidth="200.0" />
                </content>
             </Tab>
-                <Tab fx:id="workspaceTab" text="Estimation Workspace">
+                <Tab fx:id="workspaceTab" text="%EstimationWorkspace">
                <content>
                   <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <content>

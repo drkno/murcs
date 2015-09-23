@@ -22,7 +22,7 @@
             </ImageView>
          </graphic>
          <tooltip>
-            <Tooltip text="Navigate to story" />
+            <Tooltip text="%Navigatetostory" />
          </tooltip>
          <styleClass>
             <String fx:value="mdr-button" />
@@ -45,7 +45,7 @@
             <Insets left="10.0" right="10.0" />
          </GridPane.margin>
          <tooltip>
-            <Tooltip text="Remove this story from the workspace" />
+            <Tooltip text="%Removethisstoryfromtheworkspace" />
          </tooltip>
       </Button>
    </children>

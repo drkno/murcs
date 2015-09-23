@@ -12,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.controller.editor.GenericEditor;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Model;
 import sws.murcs.model.Story;
@@ -108,11 +109,11 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
                         .findFirst()
                         .isPresent()) {
                     image2 = new Image("sws/murcs/icons/minusWhite.png");
-                    tooltip = new Tooltip("Remove story from estimation workspace");
+                    tooltip = new Tooltip(InternationalizationHelper.tryGet("Removestoryfromestimationworkspace"));
                 }
                 else {
                     image2 = new Image("sws/murcs/icons/addWhite.png");
-                    tooltip = new Tooltip("Add story to estimation workspace");
+                    tooltip = new Tooltip(InternationalizationHelper.tryGet("Addstorytoestimationworkspace"));
                 }
                 ImageView imageView2 = new ImageView(image2);
                 imageView2.setFitHeight(20);
