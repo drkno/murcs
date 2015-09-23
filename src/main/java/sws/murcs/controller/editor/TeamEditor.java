@@ -8,7 +8,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -22,8 +29,17 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleRolesException;
-import sws.murcs.model.*;
+import sws.murcs.model.EffortEntry;
+import sws.murcs.model.ModelType;
+import sws.murcs.model.Person;
+import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
+import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -255,8 +271,11 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }   catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Team} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -413,13 +432,13 @@ public class TeamEditor extends GenericEditor<Team> {
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setTitleText("Remove Team Member");
-                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                popup.setTitleText("{ConfirmRemoveTeamMemberTitle}");
+                String message = "{AreYouSureRemove} " + person.getShortName() + ".";
                 if (person.equals(getModel().getScrumMaster())) {
-                    message += "\nThey are currently the teams Scrum Master.";
+                    message += "\n{TheyAreScrumMaster}.";
                 }
                 if (person.equals(getModel().getProductOwner())) {
-                    message += "\nThey are currently the teams Product Owner.";
+                    message += "\n{TheyArePO}.";
                 }
                 popup.setMessageText(message);
                 popup.addYesNoButtons(() -> {

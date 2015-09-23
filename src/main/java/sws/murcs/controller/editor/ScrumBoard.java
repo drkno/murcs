@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.view.App;
@@ -197,7 +198,7 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         /**
          * The loader that is used to load all of the stories.
          */
-        private FXMLLoader threadStoryLoader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoardStory.fxml"));
+        private FXMLLoader threadStoryLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoardStory.fxml"));
 
         /**
          * Sets the list of stories to load.

@@ -46,6 +46,9 @@ import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.AcceptanceCondition;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -62,7 +65,6 @@ import sws.murcs.model.helpers.DependencyTreeInfo;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -331,7 +333,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         StoryEditor foo = this;
         javafx.concurrent.Task<Void> taskThread = new javafx.concurrent.Task<Void>() {
             private Story model = getModel();
-            private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+            private FXMLLoader threadTaskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
             @Override
             protected Void call() throws Exception {
@@ -535,8 +537,12 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }
+            catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Sprint} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -562,14 +568,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 String actualEstimate = estimateChoiceBox.getValue();
                 estimateChoiceBox.setValue(getModel().getEstimate());
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to set the Estimate of "
+                popup.setMessageText("{ConfirmEstimate} "
                         + getModel().toString()
-                        + String.format(" to %s?\n", actualEstimate)
-                        + "This will set the Story State to None.\n\n"
-                        + "The following Sprints will be affected:\n\t"
+                        + String.format(" {To} %s?\n", actualEstimate)
+                        + "{SetStoryStateToNone}\n\n"
+                        + "{SetStoryStateToNone}:\n\t"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Change Story State");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     getModel().setEstimate(actualEstimate);
                     estimateChoiceBox.setValue(actualEstimate);
@@ -591,7 +597,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             if (viewCreator != null) {
                 getModel().setCreator(viewCreator);
             } else {
-                addFormError(creatorChoiceBox, "Creator cannot be empty");
+                addFormError(creatorChoiceBox, "{CreatorNullError}");
             }
         }
 
@@ -634,7 +640,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         if (state == StoryState.Done) {
             for (Task task : getModel().getTasks()) {
                 if (task.getState() != TaskState.Done) {
-                    addFormError(storyStateChoiceBox, "Every task must be set to Done to set the story to Done");
+                    addFormError(storyStateChoiceBox, "{UndoneTasksError}");
                     hasErrors = true;
                     break;
                 }
@@ -644,22 +650,22 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     .map(m -> (Sprint) m)
                     .collect(Collectors.toList());
             if (sprintsWithStory.size() == 0) {
-                addFormError(storyStateChoiceBox, "The story must be part of a sprint to set the state to Done");
+                addFormError(storyStateChoiceBox, "{NoSprintStoryError}");
                 hasErrors = true;
             }
         }
         else if (state == StoryState.Ready) {
             if (getModel().getAcceptanceCriteria().size() == 0) {
-                addFormError(storyStateChoiceBox, "The story must have at least one AC to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoACsError}");
                 hasErrors = true;
             }
             if (UsageHelper.findUsages(model).stream().noneMatch(m -> m instanceof Backlog)) {
-                addFormError(storyStateChoiceBox, "The story must be part of a backlog to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoBacklogError}");
                 hasErrors = true;
             }
             if (model.getEstimate().equals(EstimateType.NOT_ESTIMATED)
                     || model.getEstimate().equals(EstimateType.INFINITE)) {
-                addFormError(storyStateChoiceBox, "The story must be estimated to set the state to Ready");
+                addFormError(storyStateChoiceBox, "{NoEstimateError}");
                 hasErrors = true;
             }
         }
@@ -676,13 +682,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                 String[] sprintNames = collect.toArray(new String[collect.size()]);
                 storyStateChoiceBox.setValue(getModel().getStoryState());
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to set the State of "
+                popup.setMessageText("{ConfirmEstimate} "
                         + getModel().toString()
                         + String.format(" to %s?\n\n", state)
-                        + "The following Sprints will be affected:\n\t"
+                        + "{SprintsWillBeAffected}:\n\t"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Change Story State");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
                     getModel().setStoryState(StoryState.None);
@@ -720,10 +726,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setMessageText("Are you sure you want to remove the dependency "
+                popup.setMessageText("{ConfirmRemoveDependency} "
                         + newDependency.getShortName() + "?");
-                popup.setTitleText("Remove Dependency");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{ConfirmRemoveDependencyTitle}");
+                popup.setWindowTitle("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     searchableComboBoxDecorator.add(newDependency);
                     Node dependencyNode = dependenciesMap.get(newDependency);
@@ -780,29 +786,30 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         children.add(new Label("["));
         Label storiesLabel = new Label(Integer.toString(treeInfo.getCount()));
         storiesLabel.setTooltip(
-                new Tooltip("The number of stories that this story depends on in total (including itself)."));
+                new Tooltip("{NumberOfDependencies}"));
         storiesLabel.getStyleClass().add("story-depends-on");
         children.add(storiesLabel);
         HBox.setHgrow(storiesLabel, Priority.ALWAYS);
 
         children.add(new Label(", "));
         Label immediateLabel = new Label(Integer.toString(treeInfo.getImmediateDepth()));
-        immediateLabel.setTooltip(new Tooltip("The number of stories this story immediately depends on."));
+        immediateLabel.setTooltip(new Tooltip("{DependsOn}"));
         immediateLabel.getStyleClass().add("story-depends-direct");
         children.add(immediateLabel);
         HBox.setHgrow(immediateLabel, Priority.ALWAYS);
 
         children.add(new Label(", "));
         Label deepLabel = new Label(Integer.toString(treeInfo.getMaxDepth()));
-        deepLabel.setTooltip(new Tooltip("The maximum number of stories this story transitively depends on."));
+        deepLabel.setTooltip(new Tooltip("{TransitiveDependencies}"));
         deepLabel.getStyleClass().add("story-depends-deep");
         children.add(deepLabel);
         HBox.setHgrow(deepLabel, Priority.ALWAYS);
         children.add(new Label("] "));
 
         hBox.setOnMouseEntered(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount())
-                        + " stories", immediateLabel, Integer.toString(treeInfo.getImmediateDepth()) + " direct",
-                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " deep"));
+                        + " " + InternationalizationHelper.tryGet("Stories"), immediateLabel,
+                Integer.toString(treeInfo.getImmediateDepth()) + " " + InternationalizationHelper.tryGet("Direct"),
+                deepLabel, Integer.toString(treeInfo.getMaxDepth()) + " " + InternationalizationHelper.tryGet("Deep")));
 
         hBox.setOnMouseExited(event -> transitionText(hBox, storiesLabel, Integer.toString(treeInfo.getCount()),
                 immediateLabel, Integer.toString(treeInfo.getImmediateDepth()),
@@ -860,7 +867,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
         try {
             newCondition.setCondition(conditionText);
         } catch (CustomException e) {
-            addFormError(addACButton, e.getMessage());
+            addFormError(addACButton, "{EmptyACError}");
             return;
         }
 
@@ -964,7 +971,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
         if (taskLoader == null) {
-            taskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+            taskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         }
         injectTaskEditor(task, true);
     }
@@ -978,7 +985,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             getModel().addTask(task);
         }
         catch (DuplicateObjectException e) {
-            addFormError(taskContainer, e.getMessage());
+            addFormError(taskContainer, "{DuplicateTaskError}");
         }
     }
 
@@ -1057,7 +1064,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     clearErrors();
                 } catch (CustomException e) {
                     clearErrors();
-                    addFormError(textArea, e.getMessage());
+                    addFormError(textArea, "{EmptyACError}");
                 }
 
             }
@@ -1192,14 +1199,14 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     String[] sprintNames = collect.toArray(new String[collect.size()]);
                     storyStateChoiceBox.setValue(getModel().getStoryState());
                     GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Do you really want to remove the last Acceptance Criteria from "
+                    popup.setMessageText("{ConfirmRemoveFinalAC1} "
                             + getModel().toString()
                             + " ?\n"
-                            + "This will set the Story Estimate to Not Estimated and the Story State to None.\n\n"
-                            + "The following Sprints will be affected:\n\t"
+                            + "{ConfirmRemoveFinalAC2}.\n\n"
+                            + "{SprintsWillBeAffected}:\n\t"
                             + String.join("\n\t", sprintNames));
-                    popup.setTitleText("Change Story State");
-                    popup.setWindowTitle("Are you sure?");
+                    popup.setTitleText("{ConfirmChangeStoryStateTitle}");
+                    popup.setWindowTitle("{AreYouSure}");
                     popup.addYesNoButtons(() -> {
                         getModel().setEstimate(EstimateType.NOT_ESTIMATED);
                         estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
@@ -1233,6 +1240,4 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             return conditionCell;
         }
     }
-
-
 }

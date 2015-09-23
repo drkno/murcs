@@ -52,7 +52,7 @@
                      <children>
                             <VBox>
                                 <children>
-                                    <Label text="Sprint Goal/Label" />
+                                    <Label text="%SprintGoalLabel" />
                                     <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 </children>
                                 <padding>
@@ -61,7 +61,7 @@
                             </VBox>
                             <VBox GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="Name" GridPane.rowIndex="1" />
+                                    <Label text="%Name" GridPane.rowIndex="1" />
                                     <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                                 </children>
                                 <padding>
@@ -77,7 +77,7 @@
                               <RowConstraints minHeight="25.0" vgrow="ALWAYS" />
                            </rowConstraints>
                            <children>
-                                    <Label text="Description">
+                                    <Label text="%Description">
                                  <GridPane.margin>
                                     <Insets bottom="5.0" />
                                  </GridPane.margin>
@@ -90,7 +90,7 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="6">
                            <children>
-                              <Label text="Team" />
+                              <Label text="%Team" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
@@ -109,7 +109,7 @@
                                           </ImageView>
                                        </graphic>
                                        <tooltip>
-                                          <Tooltip text="Navigate to the Team the sprint is assigned to" />
+                                          <Tooltip text="%NavigatetotheTeamthesprintisassignedto" />
                                        </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
@@ -129,7 +129,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="7">
                            <children>
-                              <Label text="Release" />
+                              <Label text="%Release" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
@@ -148,7 +148,7 @@
                                           </ImageView>
                                        </graphic>
                                        <tooltip>
-                                          <Tooltip text="Navigate to the Release the sprint is assigned to" />
+                                          <Tooltip text="%NavigatetotheReleasethesprintisassignedto" />
                                        </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
@@ -171,7 +171,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5">
                            <children>
-                              <Label text="Backlog" />
+                              <Label text="%Backlog" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
@@ -195,7 +195,7 @@
                                           </ImageView>
                                        </graphic>
                                        <tooltip>
-                                          <Tooltip text="Navigate to the Backlog the sprint is apart of" />
+                                          <Tooltip text="%NavigatetotheBacklogthesprintisapartof" />
                                        </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
@@ -210,7 +210,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="3">
                            <children>
-                              <Label text="Start Date" />
+                              <Label text="%StartDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="startDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -223,7 +223,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="4">
                            <children>
-                              <Label text="End Date" />
+                              <Label text="%EndDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="endDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -238,7 +238,7 @@
                            <children>
                               <AnchorPane>
                                  <children>
-                                    <TitledPane expanded="true" text="Stories" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <TitledPane expanded="true" text="%Stories" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
                                           <GridPane>
                                             <columnConstraints>
@@ -252,12 +252,12 @@
                                              <children>
                                                 <TableView fx:id="storiesTable" minHeight="0.0" minWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                                   <columns>
-                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="Completeness" />
-                                                    <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="Estimate" />
-                                                    <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="400.0" text="Story" />
+                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Completeness" />
+                                                    <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Estimate" />
+                                                    <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="400.0" text="%Story" />
                                                   </columns>
                                                 </TableView>
-                                                <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="Add a story" GridPane.rowIndex="2" />
+                                                <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="%Addastory" GridPane.rowIndex="2" />
                                              </children>
                                           </GridPane>
                                        </content>

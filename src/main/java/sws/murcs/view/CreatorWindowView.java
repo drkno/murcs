@@ -1,5 +1,6 @@
 package sws.murcs.view;
 
+import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -9,10 +10,9 @@ import javafx.stage.Stage;
 import sws.murcs.controller.CreatorWindowController;
 import sws.murcs.controller.EditorPane;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
-
-import java.util.function.Consumer;
 
 /**
  * Sets up the creation window view.
@@ -114,7 +114,7 @@ public class CreatorWindowView {
             String type = ModelType.getModelType(model).toString();
 
             // Load the view
-            FXMLLoader loader = new FXMLLoader(CreatorWindowController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(CreatorWindowController
                     .class
                     .getResource("/sws/murcs/CreatorWindow.fxml"));
             Parent root = loader.load();

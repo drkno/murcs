@@ -14,6 +14,7 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.FormErrors;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -285,7 +286,8 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
             throw new UnsupportedOperationException("An error message must be provided.");
         }
         Collection<Map.Entry<Node, String>> invalidInSection = invalidNodes.get(sectionName);
-        invalidInSection.add(new AbstractMap.SimpleEntry<>(invalidNode, helpfulMessage));
+        invalidInSection
+                .add(new AbstractMap.SimpleEntry<>(invalidNode, InternationalizationHelper.translatasert(helpfulMessage)));
         if (!App.getOnStyleManagerThread()) {
             synchronized (StyleManager.class) {
                 App.setOnStyleManagerThread(true);
@@ -390,7 +392,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
             return; // prevent an existing button being added.
         }
         saveChangesButtonExists = true;
-        saveButton = new MaterialDesignButton("Save Changes");
+        saveButton = new MaterialDesignButton(InternationalizationHelper.tryGet("SaveChanges"));
         final int pad = 5;
         saveButton.setPadding(new Insets(pad, 0, 0, 0));
         saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#9CCC65"));

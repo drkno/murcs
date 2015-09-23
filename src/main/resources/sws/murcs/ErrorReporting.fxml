@@ -26,8 +26,8 @@
             <ImageView fx:id="messageImage" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
             <HBox nodeOrientation="RIGHT_TO_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                <children>
-                  <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#close" text="Cancel" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
-                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="Submit Feedback" />
+                  <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#close" text="%Cancel" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM" />
+                  <Button fx:id="reportButton" defaultButton="true" mnemonicParsing="false" text="%SubmitFeedback" />
                </children>
                <GridPane.margin>
                   <Insets right="10.0" />
@@ -45,7 +45,7 @@
                 <RowConstraints minHeight="-Infinity" prefHeight="75.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <Label fx:id="messageTitleLabel" text="Message">
+                  <Label fx:id="messageTitleLabel" text="%Message">
                      <font>
                         <Font name="System Bold" size="21.0" />
                      </font>
@@ -54,8 +54,8 @@
                      </padding>
                   </Label>
                   <TextArea fx:id="detailTextArea" prefHeight="25" prefWidth="300.0" wrapText="true" GridPane.rowIndex="4" />
-                  <Label fx:id="messageDetailLabel" text="Detail" wrapText="true" GridPane.rowIndex="1" />
-                  <Label fx:id="screenshotLabel" mnemonicParsing="false" text="Include Screenshots?" GridPane.rowIndex="2" />
+                  <Label fx:id="messageDetailLabel" text="%Detail" wrapText="true" GridPane.rowIndex="1" />
+                  <Label fx:id="screenshotLabel" mnemonicParsing="false" text="%IncludeScreenshots" GridPane.rowIndex="2" />
                   <Label fx:id="screenShotWarningLabel" wrapText="true" GridPane.rowIndex="3">
                      <padding>
                         <Insets bottom="10.0" />

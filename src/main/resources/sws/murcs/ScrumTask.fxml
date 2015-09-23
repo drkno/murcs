@@ -9,7 +9,7 @@
 
 <VBox prefHeight="50.0" prefWidth="140.0" spacing="5.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ScrumTaskController">
    <children>
-      <Label fx:id="nameLabel" prefWidth="130.0" text="Placeholder Text" wrapText="true" />
+      <Label fx:id="nameLabel" prefWidth="130.0" text="%PlaceholderText" wrapText="true" />
       <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
          <children>
             <TextField fx:id="estimateTextField" prefWidth="40.0" HBox.hgrow="ALWAYS" />

@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.Person;
@@ -81,14 +82,14 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     /**
      * The effort popover fxml.
      */
-    private FXMLLoader effortPopOverFxml = new FXMLLoader(TaskEditor.class
+    private FXMLLoader effortPopOverFxml = new AutoLanguageFXMLLoader(TaskEditor.class
             .getResource("/sws/murcs/EffortPopOver.fxml"));
 
     /**
      * The assignees popover fxml.
      */
-    private FXMLLoader assigneesPopOverFxml = new FXMLLoader(TaskEditor.class
-            .getResource("/sws/murcs/PersonManagerPopOver.fxml"));
+    private FXMLLoader assigneesPopOverFxml = new AutoLanguageFXMLLoader(TaskEditor.class
+            .getResource("/sws/murcs/AssigneesPopOver.fxml"));
 
     /**
      * Sets up the form.

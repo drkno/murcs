@@ -8,6 +8,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Project;
 import sws.murcs.model.Release;
@@ -136,8 +137,11 @@ public class ReleaseEditor extends GenericEditor<Release> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Release} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -189,6 +193,6 @@ public class ReleaseEditor extends GenericEditor<Release> {
             }
             return;
         }
-        throw new InvalidParameterException("There needs to be an associated project");
+        throw new InvalidParameterException("{NoAssociatedProjectError}");
     }
 }
