@@ -6,6 +6,7 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 public class EffortEntryTest {
@@ -87,12 +88,10 @@ public class EffortEntryTest {
     }
 
     @Test
-    public void testGetDate() throws Exception {
-
-    }
-
-    @Test
-    public void testSetDate() throws Exception {
-
+    public void testDate() throws Exception {
+        EffortEntry entry = new EffortEntry();
+        LocalDate d = LocalDate.now();
+        entry.setDate(d);
+        Assert.assertEquals("Date returned was incorrect.", d, entry.getDate());
     }
 }
