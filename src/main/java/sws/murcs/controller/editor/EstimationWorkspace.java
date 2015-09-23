@@ -19,11 +19,24 @@ import java.util.List;
  */
 public class EstimationWorkspace extends GenericEditor<Backlog> {
 
+    /**
+     * The root pane of the estimation workspace.
+     */
     private Pane rootPane;
 
+    /**
+     * List of estimate panes.
+     */
     private Collection<EstimatePane> estimatePanes;
 
+    /**
+     * Loader for loading estimate pane fxml.
+     */
     private FXMLLoader estimateLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/EstimationWorkspacePane.fxml"));
+
+    /**
+     * The current backlog.
+     */
     private Backlog currentBacklog;
 
     @Override
@@ -40,6 +53,9 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
         }
     }
 
+    /**
+     * Loads the estimate panes.
+     */
     private void loadEstimatePanels() {
         List<String> estimates = new ArrayList<>();
         estimates.add(EstimateType.NOT_ESTIMATED);
@@ -71,12 +87,12 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
         currentBacklog = getModel();
     }
 
+    /**
+     * Sets up the estimation workspace.
+     * @param root The root pane.
+     */
     protected void setup(final Pane root) {
         rootPane = root;
         estimatePanes = new ArrayList<>();
     }
-
-
-
-
 }

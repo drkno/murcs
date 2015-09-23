@@ -42,6 +42,9 @@ public class BacklogContainer extends GenericEditor<Backlog> {
     @FXML
     private AnchorPane overviewAnchorPane, workspaceAnchorPane;
 
+    /**
+     * Container for the estimate panes.
+     */
     @FXML
     private VBox estimatesContainerVBox;
 

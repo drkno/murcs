@@ -49,6 +49,9 @@ public class ErrorReportPopup {
     @FXML
     private Button reportButton, cancelButton;
 
+    /**
+     * The main grid pane for the error reporter.
+     */
     @FXML
     private GridPane mainGrid;
 
@@ -158,6 +161,7 @@ public class ErrorReportPopup {
      * Checks to see if it is debug vader mode and if it is it replaces the feedback text section
      * with a lovely gif of Darth Vader saying "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!".
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void checkVaderMode() {
         if (App.getVaderMode()) {
             mainGrid.getChildren().remove(detailTextArea);

@@ -12,8 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.controller.editor.GenericEditor;
-import sws.murcs.listeners.RemoveCallback;
-import sws.murcs.listeners.SWSCallback;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Model;
 import sws.murcs.model.Story;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -39,14 +38,14 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
     /**
      * Callback for when the story is removed.
      */
-    private List<SWSCallback<Story>> callbacks;
+    private List<ChangeCallback<Story>> callbacks;
 
     /**
      * Creates a table view cell for a story with a button for removing it and a hyperlink to its name.
      * @param editor editor that this cell is contained within.
      * @param callback callback for removing the story.
      */
-    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final List<SWSCallback<Story>> callback) {
+    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final List<ChangeCallback<Story>> callback) {
         genericEditor = editor;
         callbacks = callback;
     }

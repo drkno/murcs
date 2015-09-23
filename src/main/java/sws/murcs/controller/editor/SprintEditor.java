@@ -32,7 +32,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
-import sws.murcs.listeners.SWSCallback;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.ModelType;
@@ -495,7 +495,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        List<SWSCallback<Story>> callbacks = new ArrayList<>();
+        List<ChangeCallback<Story>> callbacks = new ArrayList<>();
         callbacks.add(this::removeStory);
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
         storyColumn.prefWidthProperty().bind(

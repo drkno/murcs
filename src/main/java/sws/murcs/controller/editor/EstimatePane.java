@@ -32,28 +32,52 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Created by wooll on 17/09/2015.
+ * A Pane which has a estimate value and which estimateStoryPanes can be dragged into and out of.
  */
 public class EstimatePane implements UndoRedoChangeListener {
 
+    /**
+     * The outer estimate border pane.
+     */
     @FXML
     private BorderPane estimateBorderPane;
 
+    /**
+     * The estimate grid pane.
+     */
     @FXML
     private GridPane estimateGridPane;
 
+    /**
+     * The tile pane which contains estimateStoryPanes.
+     */
     @FXML
     private TilePane storiesContainerTilePane;
 
+    /**
+     * Estimate value label.
+     */
     @FXML
     private Label estimateLabel;
 
+    /**
+     * Stories in the estimate pane.
+     */
     private List<Story> stories;
 
+    /**
+     * The backlog which this is apart of.
+     */
     private Backlog backlog;
 
+    /**
+     * The estimate value.
+     */
     private String estimate;
 
+    /**
+     * List of estimate panes.
+     */
     private List<EstimatePaneStoryController> estimatePaneStories;
 
     /**
@@ -76,14 +100,22 @@ public class EstimatePane implements UndoRedoChangeListener {
      */
     private static String draggingEstimate;
 
+    /**
+     * Initialize the estimate pane.
+     */
     @FXML
     private void initialize() {
         UndoRedoManager.get().addChangeListener(this);
         estimateBorderPane.getStyleClass().add("separators");
     }
 
-    public void configure(final String estimateType, final Backlog pBacklog) {
-        estimate = estimateType;
+    /**
+     * Configure estimate pane with values.
+     * @param estimateValue The estimate value.
+     * @param pBacklog The backlog.
+     */
+    public void configure(final String estimateValue, final Backlog pBacklog) {
+        estimate = estimateValue;
         estimateLabel.setText(estimate);
         backlog = pBacklog;
         estimatePaneStories = new ArrayList<>();
@@ -94,11 +126,17 @@ public class EstimatePane implements UndoRedoChangeListener {
         addDragDroppedHandler(storiesContainerTilePane, estimate);
     }
 
+    /**
+     * Loads the estimate pane.
+     */
     protected void loadObject() {
         storiesContainerTilePane.getChildren().clear();
         loadStories();
     }
 
+    /**
+     * Loads story tiles in the estimate pane.
+     */
     private void loadStories() {
         stories = backlog.getWorkspaceStories()
                 .stream()
@@ -214,6 +252,9 @@ public class EstimatePane implements UndoRedoChangeListener {
         estimatePaneStories.forEach(EstimatePaneStoryController::dispose);
     }
 
+    /**
+     * Disposes of the estimate pane.
+     */
     public void dispose() {
         disposeOfStories();
         stop = true;

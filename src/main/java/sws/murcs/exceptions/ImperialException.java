@@ -10,7 +10,8 @@ public class ImperialException extends RuntimeException {
     /**
      * Very import marching song.
      */
-    private static final String MARCH = "Dion Vader!! DA DA DA, DUN DADAA DUN DADAA, DEIN DEIN DEIN, DEIN DADUN, DUN DADAA, DIN DUN DINDIN DEIN DIN DUNDUNDUN... Oh FUCK IT!";
+    private static final String MARCH = "Dion Vader!! DA DA DA, DUN DADAA DUN DADAA, "
+            + "DEIN DEIN DEIN, DEIN DADUN, DUN DADAA, DIN DUN DINDIN DEIN DIN DUNDUNDUN... Oh Fiddlesticks!";
 
     @Override
     public String getMessage() {

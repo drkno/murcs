@@ -29,8 +29,8 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.listeners.GenericCallback;
-import sws.murcs.listeners.SWSCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.Model;
@@ -198,7 +198,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        List<SWSCallback<Story>> callbacks = new ArrayList<>();
+        List<ChangeCallback<Story>> callbacks = new ArrayList<>();
         callbacks.add(this::removeStory);
         callbacks.add(this::workspaceStory);
         storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
@@ -245,6 +245,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         increasePriorityButton.setDisable(true);
     }
 
+    /**
+     * Adds or removes a story from the workspace depending on if the story is in the workspace.
+     * @param story The story to add or remove from the workspace.
+     */
     private void workspaceStory(final Story story) {
         if (getModel().getWorkspaceStories().contains(story)) {
             getModel().removeStoryFromWorkspace(story);

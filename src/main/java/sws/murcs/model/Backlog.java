@@ -312,19 +312,34 @@ public class Backlog extends Model {
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
     }
 
+    /**
+     * Gets the stories in the workspace.
+     * @return The stories workspace.
+     */
     public List<Story> getWorkspaceStories() {
         return workspaceStories;
     }
 
+    /**
+     * Adds a story to the workspace if it does not already contain it.
+     * @param story The story to add to the workspace.
+     * @return If a story was added to the workspace.
+     */
     public boolean addToWorkspaceStories(final Story story) {
         if (getAllStories().contains(story)) {
-            workspaceStories.add(story);
-            commit("Story added to workspace");
-            return true;
+            boolean addSuccess = workspaceStories.add(story);
+            if (addSuccess) {
+                commit("Story added to workspace");
+            }
+            return addSuccess;
         }
         return false;
     }
 
+    /**
+     * Removes a story from the workspace.
+     * @param story The story to remove.
+     */
     public void removeStoryFromWorkspace(final Story story) {
         workspaceStories.remove(story);
         commit("Story removed from workspace");
