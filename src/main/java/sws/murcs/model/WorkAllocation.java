@@ -1,6 +1,6 @@
 package sws.murcs.model;
 
-import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.reporting.adapters.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
