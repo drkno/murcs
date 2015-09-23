@@ -22,6 +22,8 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
 import sws.murcs.model.persistence.PersistenceManager;
@@ -150,8 +152,11 @@ public class PersonEditor extends GenericEditor<Person> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Person} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -166,8 +171,11 @@ public class PersonEditor extends GenericEditor<Person> {
         if (isNullOrNotEqual(modelUserId, viewUserId)) {
             try {
                 getModel().setUserId(viewUserId);
-            } catch (CustomException e) {
-                addFormError(userIdTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{UserNameExistsError1} {Person} {UserNameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{UserNameExistsError2}");
             }
         }
     }
@@ -205,10 +213,10 @@ public class PersonEditor extends GenericEditor<Person> {
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setMessageText("Are you sure you want to remove "
-                        + skill.getShortName() + " from "
+                popup.setMessageText("{AreYouSureRemove} "
+                        + skill.getShortName() + " {From} "
                         + getModel().getShortName() + "?");
-                popup.setTitleText("Remove Skill from Person");
+                popup.setTitleText("{AreYouSure}");
                 popup.addYesNoButtons(() -> {
                     allocatableSkills.add(skill);
                     Node skillNode = skillNodeIndex.get(skill);

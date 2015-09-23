@@ -4,6 +4,7 @@ import com.sun.javafx.scene.control.skin.ButtonSkin;
 import javafx.scene.control.Button;
 import javafx.scene.control.Skin;
 import javafx.scene.paint.Color;
+import sws.murcs.internationalization.InternationalizationHelper;
 
 /**
  * Code behind custom material design buttons.
@@ -20,7 +21,8 @@ public class MaterialDesignButton extends Button {
      * @param text The text to display on the face of the button
      */
     public MaterialDesignButton(final String text) {
-        super(text);
+        super(InternationalizationHelper.translatasert(text));
+
         rippleEffect = new MaterialDesignRippleEffect(this);
         getStyleClass().addAll("md-button");
     }

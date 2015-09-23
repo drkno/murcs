@@ -1,4 +1,10 @@
 @font-face {
-  font-family: "Roboto";
-  src: url("../../../sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf") format('truetype');
+  src: url("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf");
 }
+
+@font-face {
+  src: url("/sws/murcs/styles/fonts/pIqaD/pIqaD.ttf");
+}
+
+$font-stack: "pIqaD";
+

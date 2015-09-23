@@ -28,7 +28,7 @@
             </GridPane>
             <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                <children>
-                  <Button fx:id="createButton" alignment="CENTER" defaultButton="true" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#createButtonClicked" text="Create" GridPane.rowIndex="1">
+                  <Button fx:id="createButton" alignment="CENTER" defaultButton="true" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#createButtonClicked" text="%Create" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </GridPane.margin>
@@ -36,7 +36,7 @@
                         <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="cancelButton" alignment="CENTER" cancelButton="true" contentDisplay="CENTER" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#cancelButtonClicked" text="Cancel" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
+                  <Button fx:id="cancelButton" alignment="CENTER" cancelButton="true" contentDisplay="CENTER" minHeight="-Infinity" minWidth="80.0" mnemonicParsing="false" onAction="#cancelButtonClicked" text="%Cancel" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS">
                      <GridPane.margin>
                         <Insets bottom="10.0" right="10.0" top="10.0" />
                      </GridPane.margin>

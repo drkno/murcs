@@ -4,6 +4,7 @@ import com.sun.javafx.scene.control.skin.ToggleButtonSkin;
 import javafx.scene.control.Skin;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
+import sws.murcs.internationalization.InternationalizationHelper;
 
 /**
  * Material design toggle button class.
@@ -19,7 +20,7 @@ public class MaterialDesignToggleButton extends ToggleButton {
      * @param text The text displayed on the button.
      */
     public MaterialDesignToggleButton(final String text) {
-        super(text);
+        super(InternationalizationHelper.translatasert(text));
         rippleEffect = new MaterialDesignRippleEffect(this);
         getStyleClass().addAll("md-button");
     }

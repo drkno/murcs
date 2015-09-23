@@ -27,6 +27,7 @@ public class Task extends TrackableObject implements Serializable, PersonMaintai
     /**
      * Serialisation ID for backwards compatible serialisation.
      */
+    @XmlTransient
     private static final long serialVersionUID = 0L;
 
     /**
@@ -38,6 +39,7 @@ public class Task extends TrackableObject implements Serializable, PersonMaintai
     /**
      * The hashcode of the object.
      */
+    @XmlTransient
     private Integer hashCode = null;
 
     /**

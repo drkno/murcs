@@ -1,15 +1,17 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.Task;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for logging effort on a task.
@@ -41,7 +43,7 @@ public class EffortController {
      * The loader for effort entries.
      */
     private FXMLLoader effortEntryControllerLoader =
-            new FXMLLoader(EffortController.class.getResource("/sws/murcs/EffortEntry.fxml"));
+            new AutoLanguageFXMLLoader(EffortController.class.getResource("/sws/murcs/EffortEntry.fxml"));
 
     /**
      * Sets up the effort controller.

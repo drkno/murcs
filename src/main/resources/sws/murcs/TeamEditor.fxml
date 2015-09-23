@@ -39,7 +39,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="Name" />
+                              <Label text="%Name" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                             <padding>
@@ -48,7 +48,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="Long Name" GridPane.rowIndex="1" />
+                              <Label text="%LongName" GridPane.rowIndex="1" />
                               <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                            </children>
                             <padding>
@@ -57,7 +57,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="Description" GridPane.rowIndex="1" />
+                              <Label text="%Description" GridPane.rowIndex="1" />
                               <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                            </children>
                            <padding>
@@ -75,7 +75,7 @@
                               <RowConstraints vgrow="NEVER" />
                            </rowConstraints>
                            <children>
-                              <Label text="Team Members" />
+                              <Label text="%TeamMembers" />
                               <ScrollPane fitToWidth="true" GridPane.rowIndex="1">
                                  <content>
                                     <VBox>
@@ -85,7 +85,7 @@
                                     </VBox>
                                  </content>
                               </ScrollPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Add a member" GridPane.rowIndex="2">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Addamember" GridPane.rowIndex="2">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
@@ -105,7 +105,7 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="4" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="Product Owner" />
+                              <Label text="%ProductOwner" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -130,7 +130,7 @@
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip text="Clear current PO" />
+                                            <Tooltip text="%ClearcurrentPO" />
                                         </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
@@ -145,7 +145,7 @@
                                          </ImageView>
                                      </graphic>
                                      <tooltip>
-                                         <Tooltip text="Navigate to selected PO" />
+                                         <Tooltip text="%NavigatetoselectedPO" />
                                      </tooltip>
                                      <GridPane.margin>
                                          <Insets left="5.0" />
@@ -160,7 +160,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="Scrum Master" />
+                              <Label text="%ScrumMaster" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -185,7 +185,7 @@
                                             </ImageView>
                                         </graphic>
                                         <tooltip>
-                                            <Tooltip text="Clear current SM" />
+                                            <Tooltip text="%ClearcurrentSM" />
                                         </tooltip>
                                        <GridPane.margin>
                                           <Insets left="5.0" />
@@ -200,7 +200,7 @@
                                              </ImageView>
                                          </graphic>
                                          <tooltip>
-                                             <Tooltip text="Navigate to selected SM" />
+                                             <Tooltip text="%NavigatetoselectedSM" />
                                          </tooltip>
                                          <GridPane.margin>
                                              <Insets left="5.0" />
