@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Sets up the report generator view.
@@ -25,7 +26,7 @@ public class ReportGeneratorView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(ReportGeneratorController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(ReportGeneratorController
                     .class
                     .getResource("/sws/murcs/reporting/ReportGenerator.fxml"));
             Parent root = loader.load();

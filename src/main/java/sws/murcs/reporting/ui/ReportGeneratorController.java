@@ -23,6 +23,7 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.MaterialDesignToggleButton;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
@@ -153,7 +154,7 @@ public class ReportGeneratorController {
         final int minWidth = 80;
         final int five = 5;
         final int ten = 10;
-        createButton = new MaterialDesignButton("Generate Report");
+        createButton = new MaterialDesignButton("{GenerateReport}");
         buttonContainer.getChildren().add(createButton);
         createButton.alignmentProperty().set(Pos.CENTER);
         createButton.setDefaultButton(true);
@@ -168,7 +169,7 @@ public class ReportGeneratorController {
         createButton.getStyleClass().add("create-save-button");
         createButton.setRippleColour(JavaFXHelpers.hex2RGB("#42A5F5"));
 
-        cancelButton = new MaterialDesignButton("Cancel");
+        cancelButton = new MaterialDesignButton("{Cancel}");
         buttonContainer.getChildren().add(cancelButton);
         cancelButton.alignmentProperty().set(Pos.CENTER);
         cancelButton.setCancelButton(true);
@@ -187,9 +188,9 @@ public class ReportGeneratorController {
      * Sets up the content inside the toolbar.
      */
     private void setupReportTypeSelection() {
-        all = new MaterialDesignToggleButton("All");
-        management = new MaterialDesignToggleButton("Management");
-        workflow = new MaterialDesignToggleButton("Workflow");
+        all = new MaterialDesignToggleButton("{All}");
+        management = new MaterialDesignToggleButton("{Management}");
+        workflow = new MaterialDesignToggleButton("{Workflow}");
         all.alignmentProperty().setValue(Pos.CENTER);
         management.alignmentProperty().setValue(Pos.CENTER);
         workflow.alignmentProperty().setValue(Pos.CENTER);
@@ -397,7 +398,7 @@ public class ReportGeneratorController {
                 fileChooser.getExtensionFilters()
                         .add(new FileChooser.ExtensionFilter("Report File (*.report)", "*.report"));
                 fileChooser.setInitialDirectory(new File(PersistenceManager.getCurrent().getCurrentWorkingDirectory()));
-                fileChooser.setTitle("Report Save Location");
+                fileChooser.setTitle(InternationalizationHelper.tryGet("ReportSaveLocation"));
                 file = fileChooser.showSaveDialog(App.getStage());
                 if (file != null) {
                     generateReport(file);
@@ -471,14 +472,14 @@ public class ReportGeneratorController {
             if (!type.getStyleClass().contains("error")) {
                 type.getStyleClass().add("error");
             }
-            errorMessage.setText("Oh no, you don't have a type of report selected.");
+            errorMessage.setText(InternationalizationHelper.tryGet("NoReportTypeSelected"));
             return false;
         }
         else if (list.getSelectionModel().getSelectedItem() == null) {
             if (!list.getStyleClass().contains("error")) {
                 list.getStyleClass().add("error");
             }
-            errorMessage.setText("Well now you need to select something to generate a report for.");
+            errorMessage.setText(InternationalizationHelper.tryGet("NothingToGenerateReportFor"));
             return false;
         }
         else {

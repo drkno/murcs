@@ -12,9 +12,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -547,7 +549,7 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         /**
          * The loader that is used to load all of the tasks.
          */
-        private FXMLLoader threadTaskLoader = new FXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
+        private FXMLLoader threadTaskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
 
         /**
          * Sets the list of tasks to load.

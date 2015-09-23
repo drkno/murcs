@@ -1,18 +1,18 @@
 package sws.murcs.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.view.App;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Creates the editor Pane.
@@ -125,7 +125,7 @@ public class EditorPane {
         String fxmlPath = "/sws/murcs/" + fxmlPaths.get(type);
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource(fxmlPath));
             // This is due to problems between java 8u25 and java 8u40
             if (App.JAVA_UPDATE_VERSION < betterJavaVersion
                     && !Thread.currentThread().getName().toLowerCase().contains("fx")) {

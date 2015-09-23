@@ -11,9 +11,9 @@
    <children>
       <VBox fx:id="contentVBox" prefHeight="400.0" prefWidth="500.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="Log Effort" />
+            <Label text="%LogEffort" />
             <Separator prefWidth="200.0" />
-            <Label text="Spent Effort" />
+            <Label text="%SpentEffort" />
             <ScrollPane fitToHeight="true" fitToWidth="true" VBox.vgrow="ALWAYS">
                <content>
                   <VBox fx:id="effortsVBox" spacing="10.0" />

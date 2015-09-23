@@ -24,6 +24,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
@@ -234,7 +236,7 @@ public class ScrumBoardStoryController {
     /**
      * Task fxml loader.
      */
-    private FXMLLoader taskLoader = new FXMLLoader(ScrumBoardStoryController.class
+    private FXMLLoader taskLoader = new AutoLanguageFXMLLoader(ScrumBoardStoryController.class
             .getResource("/sws/murcs/ScrumTask.fxml"));
 
     /**
@@ -503,7 +505,7 @@ public class ScrumBoardStoryController {
                 storyStateSlider.setValue(0);
                 storyStateSlider.setDisable(true);
                 storyStateSlider.getStyleClass().removeAll("alt");
-                storyStateLabel.setText("Story is ongoing");
+                storyStateLabel.setText(InternationalizationHelper.tryGet("StoryIsOngoing"));
                 story.setStoryState(Story.StoryState.Ready);
                 return;
             }
@@ -514,10 +516,10 @@ public class ScrumBoardStoryController {
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }
-            storyStateLabel.setText("Story Done :)");
+            storyStateLabel.setText(InternationalizationHelper.translatasert("{StoryDone} :)"));
         }
         else {
-            storyStateLabel.setText("Mark story as Done");
+            storyStateLabel.setText(InternationalizationHelper.tryGet("MarkStoryAsDone"));
             if (!storyStateLabel.getStyleClass().contains("alt")) {
                 storyStateSlider.getStyleClass().add("alt");
             }
