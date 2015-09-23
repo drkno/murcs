@@ -137,10 +137,10 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         navigationManager = new NavigationManager();
         navigationManager.setModelViewController(this);
 
-        hBoxMainDisplay.sceneProperty().addListener((observable1, oldValue1, newValue1) -> {
+        hBoxMainDisplay.sceneProperty().addListener((observable, oldValue, newValue) -> {
             //We don't really want to store a null value.
-            if (newValue1 != null) {
-                activeScene = newValue1;
+            if (newValue != null) {
+                activeScene = newValue;
             }
         });
 

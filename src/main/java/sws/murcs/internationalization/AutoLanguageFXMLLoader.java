@@ -5,8 +5,9 @@ import javafx.fxml.FXMLLoader;
 
 /**
  * Automagically loads a language into a FXML
- * file that specifies the keys. If you don't say what your key is,
- * you're going to have a bad time.
+ * file that specifies the keys. Note: This class
+ * relies heavily on the InternationalizationHelper
+ * so make sure you've specified a valid language.
  */
 public class AutoLanguageFXMLLoader extends FXMLLoader {
 

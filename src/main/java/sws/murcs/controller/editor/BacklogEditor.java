@@ -421,7 +421,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 GenericPopup popup = new GenericPopup();
                 popup.setMessageText("{SureMakeStory} "
                         + story.toString()
-                        + " {UnprioritiseWarning}"
+                        + " {UnprioritiseWarning}\n"
                         + String.join("\n\t", sprintNames));
                 popup.setTitleText("{UnprioritiseTitle}");
                 popup.setWindowTitle("{Areyousure}");
