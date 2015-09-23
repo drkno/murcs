@@ -20,6 +20,7 @@ import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.PersonMaintainer;
@@ -371,7 +372,7 @@ public class EffortEntryController implements PersonManagerControllerParent {
      */
     public void updatePeopleLabel() {
         if (effortEntry != null) {
-            personsLabel.setText(effortEntry.getPeople().size() > 0 ? effortEntry.getPeopleAsString() : "No People");
+            personsLabel.setText(effortEntry.getPeople().size() > 0 ? effortEntry.getPeopleAsString() : InternationalizationHelper.tryGet("NoPeople"));
         }
     }
 

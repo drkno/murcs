@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="475.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
+<AnchorPane prefHeight="475.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -34,7 +34,7 @@
                         <RowConstraints vgrow="ALWAYS" />
                         <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                         <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints minHeight="-Infinity" valignment="TOP" />
+                        <RowConstraints minHeight="-Infinity" valignment="TOP" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
                         <VBox>
@@ -217,14 +217,14 @@
                             <children>
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
-                                     <TitledPane expanded="true" text="Pair Programming" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS">
+                                     <TitledPane expanded="true" text="%PairProgramming" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS">
                                        <content>
                                           <AnchorPane>
                                              <children>
-                                                       <TableView fx:id="pairProgrammingTable" focusTraversable="false" prefHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                       <TableView fx:id="pairProgrammingTable" focusTraversable="false" maxHeight="400.0" prefHeight="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                            <columns>
-                                                               <TableColumn fx:id="pairsColumn" minWidth="300.0" prefWidth="-1.0" sortable="false" text="Pair/Group" />
-                                                               <TableColumn fx:id="timeSpentColumn" prefWidth="-1.0" sortable="false" text="Time Spent (mins)" />
+                                                               <TableColumn fx:id="pairsColumn" minWidth="300.0" prefWidth="-1.0" sortable="false" text="%PairGroup" />
+                                                               <TableColumn fx:id="timeSpentColumn" prefWidth="-1.0" sortable="false" text="%TimeSpent" />
                                                            </columns>
                                                            <columnResizePolicy>
                                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

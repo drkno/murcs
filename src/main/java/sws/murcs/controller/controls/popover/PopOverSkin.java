@@ -259,7 +259,7 @@ public class PopOverSkin implements Skin<PopOver> {
                 xOffset = evt.getScreenX();
                 yOffset = evt.getScreenY();
 
-                if (dragStartLocation.distance(xOffset, yOffset) > twenty) {
+                if (dragStartLocation != null && dragStartLocation.distance(xOffset, yOffset) > twenty) {
                     tornOff = true;
                     updatePath();
                 } else if (tornOff) {

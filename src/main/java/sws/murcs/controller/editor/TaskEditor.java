@@ -269,14 +269,14 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
         }
         editAssignedButton.setDisable(true);
         logEffortButton.setDisable(true);
-        assigneesLabel.setText("To add assignees this story must be in a sprint with a team assigned to it");
+        assigneesLabel.setText(InternationalizationHelper.tryGet("AssigneesPrompt"));
     }
 
     /**
      * Updates the assignees label to display all the current assigness as a list.
      */
     private void updateAssigneesLabel() {
-        assigneesLabel.setText(task.getAssignees().size() > 0 ? task.getAssigneesAsString() : "Not assigned");
+        assigneesLabel.setText(task.getAssignees().size() > 0 ? task.getAssigneesAsString() : InternationalizationHelper.tryGet("NotAssigned"));
     }
 
     /**
