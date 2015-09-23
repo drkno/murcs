@@ -2,9 +2,12 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogContainer">
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogContainer">
     <children>
         <TabPane fx:id="containerTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" side="RIGHT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
             <tabs>
@@ -15,14 +18,11 @@
             </Tab>
                 <Tab fx:id="workspaceTab" text="Estimation Workspace">
                <content>
-                  <AnchorPane fx:id="workspaceAnchorPane" prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <ScrollPane fitToHeight="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <content>
-                              <VBox fx:id="estimatesContainerVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
-                           </content>
-                        </ScrollPane>
-                     </children></AnchorPane>
+                  <ScrollPane fitToHeight="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <content>
+                        <VBox fx:id="estimatesContainerVBox" />
+                     </content>
+                  </ScrollPane>
                </content>
             </Tab>
             </tabs>
