@@ -5,7 +5,10 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import sws.murcs.internationalization.InternationalizationHelper;
-import sws.murcs.model.*;
+import sws.murcs.model.Model;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Team;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
@@ -84,7 +87,6 @@ public class VelocityBoard {
             String name = sprint.getShortName();
             Data dataPoint = new Data(name, velocity);
             if (sprint.getEndDate().isBefore(LocalDate.now())) {
-                //dataPoint.setNode(new Circle(5, Color.RED));
                 realSeries.getData().add(dataPoint);
             }
             else {
@@ -93,7 +95,6 @@ public class VelocityBoard {
                     indicatorySeries.getData().add(new Data(point.getXValue(), point.getYValue()));
                 }
                 real = false;
-                //dataPoint.setNode(new Circle(5, Color.CYAN));
                 indicatorySeries.getData().add(dataPoint);
             }
         }

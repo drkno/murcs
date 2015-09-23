@@ -136,7 +136,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        Platform.runLater(() -> isLoaded = true);
+        Platform.runLater(() -> { isLoaded = true; });
     }
 
 
