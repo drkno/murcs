@@ -34,7 +34,7 @@
                         <RowConstraints vgrow="ALWAYS" />
                         <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                         <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
-                        <RowConstraints minHeight="100.0" prefHeight="200.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="-Infinity" valignment="TOP" />
                      </rowConstraints>
                      <children>
                         <VBox>
@@ -213,15 +213,15 @@
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </padding>
                         </VBox>
-                        <VBox spacing="5.0" GridPane.hgrow="NEVER" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS">
+                        <VBox spacing="5.0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
                             <children>
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
                                      <TitledPane expanded="true" text="Pair Programming" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS">
                                        <content>
-                                          <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                          <AnchorPane>
                                              <children>
-                                                       <TableView fx:id="pairProgrammingTable" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                       <TableView fx:id="pairProgrammingTable" focusTraversable="false" prefHeight="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                            <columns>
                                                                <TableColumn fx:id="pairsColumn" minWidth="300.0" prefWidth="-1.0" sortable="false" text="Pair/Group" />
                                                                <TableColumn fx:id="timeSpentColumn" prefWidth="-1.0" sortable="false" text="Time Spent (mins)" />
