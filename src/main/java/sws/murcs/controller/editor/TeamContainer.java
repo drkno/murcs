@@ -9,6 +9,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Team;
 
 /**
@@ -54,7 +55,7 @@ public class TeamContainer extends GenericEditor<Team> {
         });
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/TeamEditor.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TeamEditor.fxml"));
             Parent view = loader.load();
             overviewAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
@@ -67,7 +68,7 @@ public class TeamContainer extends GenericEditor<Team> {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/VelocityBoard.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/VelocityBoard.fxml"));
             Parent view = loader.load();
             velocityAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);

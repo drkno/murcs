@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
@@ -55,8 +56,8 @@ public class VelocityBoard {
 
         Series<String, Double> realSeries = new Series<>();
         Series indicatorySeries = new Series();
-        realSeries.setName("Sprint Velocities");
-        indicatorySeries.setName("Estimated Velocities");
+        realSeries.setName(InternationalizationHelper.tryGet("SprintVelocities"));
+        indicatorySeries.setName(InternationalizationHelper.tryGet("EstimatedVelocities"));
         List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(
                 s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
             if (s1.getStartDate().isEqual(s2.getStartDate())) {
@@ -107,7 +108,7 @@ public class VelocityBoard {
             // Get the mean velocity
             Series meanSeries = new Series();
             double averageVelocity = sumVelocities / sprints.size();
-            meanSeries.setName("Average Velocity");
+            meanSeries.setName(InternationalizationHelper.tryGet("AverageVelocity"));
             meanSeries.getData().add(new Data(firstSprint, averageVelocity));
             meanSeries.getData().add(new Data(lastSprint, averageVelocity));
             velocityChart.getData().add(meanSeries);
@@ -116,7 +117,8 @@ public class VelocityBoard {
             Series medianChart = new Series();
             List<Double> sortedVelocities = velocities.stream().sorted((o1, o2) -> Double.compare(o1, o2)).collect(Collectors.toList());
             double median = sortedVelocities.get((sortedVelocities.size() - 1) / 2);
-            medianChart.setName("Median Velocity");
+
+            medianChart.setName(InternationalizationHelper.tryGet("MedianVelocity"));
             medianChart.getData().add(new Data(firstSprint, median));
             medianChart.getData().add(new Data(lastSprint, median));
             velocityChart.getData().add(medianChart);
