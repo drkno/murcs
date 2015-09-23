@@ -8,10 +8,10 @@
    <children>
       <LineChart fx:id="velocityChart" alternativeRowFillVisible="false" animated="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" layoutX="14.0" verticalGridLinesVisible="false" verticalZeroLineVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <xAxis>
-          <CategoryAxis label="sprint" side="BOTTOM" />
+          <CategoryAxis label="Sprint" side="BOTTOM" />
         </xAxis>
         <yAxis>
-          <NumberAxis label="stories per day" side="LEFT" />
+          <NumberAxis label="Stories per Day" side="LEFT" />
         </yAxis>
       </LineChart>
    </children>

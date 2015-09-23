@@ -11,6 +11,7 @@ import sws.murcs.model.*;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,33 +45,30 @@ public class VelocityBoard {
     @FXML
     private void initialize() {
         velocityChart.setCreateSymbols(false);
-        velocityChart.getStyleClass().add(".chart-bar { -fx-background-insets: 0,1,2; }");
     }
 
     /**
      * Loads the team into the velocity board.
      */
     protected void loadObject() {
-        String velocitySeriesStyle = "";
-        String meanSeriesStyle = "-fx-stroke-width: 1px;";
-        String medianSeriesStyle = "";
-        String pointStyle = "";
-        String indicativePointStyle = "";
-
         velocityChart.getData().clear();
         if (team == null) {
             throw new NullPointerException("Team is null in the velocity board");
         }
 
-        Series<String, Double> velocitySeries = new Series<>();
-        velocitySeries.setName("Sprint Velocities");
+        Series<String, Double> realSeries = new Series<>();
+        Series indicatorySeries = new Series();
+        realSeries.setName("Sprint Velocities");
+        indicatorySeries.setName("Estimated Velocities");
         List<Sprint> sprints = PersistenceManager.getCurrent().getCurrentModel().getSprints().stream().filter(s -> team.equals(s.getTeam())).sorted((s1, s2) -> {
             if (s1.getStartDate().isEqual(s2.getStartDate())) {
                 return 0;
             }
             return s1.getStartDate().isBefore(s2.getStartDate()) ? -1 : 1;
         }).collect(Collectors.toList());
+        List<Double> velocities = new ArrayList<>();
         double sumVelocities = 0;
+        boolean real = true;
         for (Model model : sprints) {
             Sprint sprint = (Sprint) model;
             double storyTotal = 0;
@@ -82,21 +80,29 @@ public class VelocityBoard {
             }
             double days = sprint.getEndDate().toEpochDay() - sprint.getStartDate().toEpochDay() + 1;
             Double velocity = storyTotal / days;
+            velocities.add(velocity);
             sumVelocities += velocity;
             String name = sprint.getShortName();
             Data dataPoint = new Data(name, velocity);
-            if (sprint.getEndDate().isAfter(LocalDate.now())) {
-                dataPoint.setNode(new Circle(5, Color.GRAY));
+            if (sprint.getEndDate().isBefore(LocalDate.now())) {
+                //dataPoint.setNode(new Circle(5, Color.RED));
+                realSeries.getData().add(dataPoint);
             }
             else {
-                dataPoint.setNode(new Circle(5, Color.RED));
+                if (real && realSeries.getData().size() > 0) {
+                    Data point = realSeries.getData().get(realSeries.getData().size() - 1);
+                    indicatorySeries.getData().add(new Data(point.getXValue(), point.getYValue()));
+                }
+                real = false;
+                //dataPoint.setNode(new Circle(5, Color.CYAN));
+                indicatorySeries.getData().add(dataPoint);
             }
-            velocitySeries.getData().add(dataPoint);
         }
-        velocityChart.getData().add(velocitySeries);
+        velocityChart.getData().add(realSeries);
+        velocityChart.getData().add(indicatorySeries);
 
         // Add the horizontal lines
-        if (sprints.size() > 1) {
+        if (sprints.size() > 2) {
             String firstSprint = sprints.get(0).getShortName();
             String lastSprint = sprints.get(sprints.size() - 1).getShortName();
 
@@ -110,8 +116,8 @@ public class VelocityBoard {
 
             // Get the median velocity
             Series medianChart = new Series();
-            List<Data<String, Double>> sortedVelocities = velocitySeries.getData().stream().sorted((o1, o2) -> Double.compare(o1.getYValue(), o2.getYValue())).collect(Collectors.toList());
-            double median = sortedVelocities.get((sortedVelocities.size() - 1) / 2).getYValue();
+            List<Double> sortedVelocities = velocities.stream().sorted((o1, o2) -> Double.compare(o1, o2)).collect(Collectors.toList());
+            double median = sortedVelocities.get((sortedVelocities.size() - 1) / 2);
             medianChart.setName("Median Velocity");
             medianChart.getData().add(new Data(firstSprint, median));
             medianChart.getData().add(new Data(lastSprint, median));
