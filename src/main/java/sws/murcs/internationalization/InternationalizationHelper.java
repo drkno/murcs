@@ -206,7 +206,6 @@ public final class InternationalizationHelper {
             put("Maori", "mi");
             put("Marathi", "mr");
             put("Mongolian", "mn");
-            put("Myanmar (Burmese)", "my");
             put("Nepali", "ne");
             put("Norwegian", "no");
             put("Persian", "fa");
