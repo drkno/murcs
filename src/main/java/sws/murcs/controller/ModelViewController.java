@@ -274,7 +274,8 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         if (arrayList.getClass() == ModelObservableArrayList.class) {
             ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
             arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
-        } else {
+        }
+        else {
             System.err.println("This list type does not yet have an ordering specified, "
                     + "please correct this so that the display list is shown correctly.");
         }

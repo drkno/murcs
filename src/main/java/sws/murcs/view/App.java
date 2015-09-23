@@ -395,7 +395,7 @@ public class App extends Application {
                 + "generated model types.", v -> OrganisationGenerator.isNumbering(true));
         ArgumentsManager.get().registerArgument("s", "sample", "Generates a sample file for use while testing.",
                 App::saveSample);
-        ArgumentsManager.get().registerArgument("v", "vader", "Enables Dion Vader mode.", opts -> vader = true);
+        ArgumentsManager.get().registerArgument("v", "vader", "Enables Dion Vader mode.", opts -> { vader = true; });
         ArgumentsManager.get().parseArguments(args);
 
         try {

@@ -78,6 +78,10 @@ public class HelpfulHintsView {
         try {
             InputStream input = getClass().getResourceAsStream(path);
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
+            if (PersistenceManager.getCurrent().getCurrentModel() == null) {
+                //This is *VERY* bad and should never happen.
+                return;
+            }
             boolean isInDebugMode = PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData();
             String line = br.readLine();
             while (line != null) {
@@ -111,8 +115,7 @@ public class HelpfulHintsView {
      */
     private String generateHint() {
         String key = hints.get(GenerationHelper.random(0, hints.size() - 1));
-        String hint = InternationalizationHelper.tryGet(key);
-        return hint;
+        return InternationalizationHelper.tryGet(key);
     }
 
     /**
