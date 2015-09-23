@@ -244,6 +244,7 @@ public final class InternationalizationHelper {
             put("Yiddish", "yi");
             put("Yoruba", "yo");
             put("Yucatec Maya", "yua");
+            put("White Space", "wi");
             put("Zulu", "zu");
         }
     };
