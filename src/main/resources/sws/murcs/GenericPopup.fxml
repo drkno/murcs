@@ -22,7 +22,7 @@
         </ImageView>
         <VBox maxHeight="+Infinity" maxWidth="+Infinity" prefWidth="298.0" spacing="7.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
           <children>
-            <Label fx:id="messageTitle" text="message" textAlignment="LEFT" wrapText="true">
+            <Label fx:id="messageTitle" text="%message" textAlignment="LEFT" wrapText="true">
               <font>
                 <Font name="System Bold" size="13.0" />
               </font>
@@ -31,7 +31,7 @@
                     <content>
                       <AnchorPane style="-fx-background-color: transparent;">
                            <children>
-                        <Label fx:id="messageText" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="298.0" text="details" textAlignment="LEFT" wrapText="true">
+                        <Label fx:id="messageText" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="298.0" text="%details" textAlignment="LEFT" wrapText="true">
                           <font>
                             <Font size="12.0" />
                           </font>

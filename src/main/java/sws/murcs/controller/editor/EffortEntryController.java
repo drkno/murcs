@@ -19,6 +19,7 @@ import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.PersonMaintainer;
@@ -392,7 +393,7 @@ public class EffortEntryController implements PersonManagerControllerParent {
     @FXML
     private void editPeopleButtonClicked(final ActionEvent event) {
         if (peoplePopOver == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
             try {

@@ -49,7 +49,7 @@
                             <children>
                                 <VBox>
                                     <children>
-                                        <Label focusTraversable="false" text="Release Name" />
+                                        <Label focusTraversable="false" text="%ReleaseName" />
                                         <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     </children>
                                     <padding>
@@ -58,7 +58,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="1">
                                     <children>
-                                        <Label focusTraversable="false" text="Estimated Release Date" />
+                                        <Label focusTraversable="false" text="%EstimatedReleaseDate" />
                                         <AnchorPane>
                                             <children>
                                                 <DatePicker fx:id="releaseDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -78,7 +78,7 @@
                                         <RowConstraints vgrow="ALWAYS" />
                                     </rowConstraints>
                                     <children>
-                                        <Label text="Description" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
+                                        <Label text="%Description" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
                                         <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" GridPane.rowIndex="1" />
                                     </children>
                                     <GridPane.margin>
@@ -87,7 +87,7 @@
                                 </GridPane>
                                 <VBox GridPane.rowIndex="3">
                                     <children>
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Associated Project">
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%AssociatedProject">
                                             <VBox.margin>
                                                 <Insets top="5.0" />
                                             </VBox.margin>
@@ -118,7 +118,7 @@
                                           <Insets left="5.0" />
                                        </GridPane.margin>
                                        <tooltip>
-                                          <Tooltip text="Navigate to associated project" />
+                                          <Tooltip text="%Navigatetoassociatedproject" />
                                        </tooltip>
                                     </Button>
                                  </children>

@@ -1,6 +1,5 @@
 package sws.murcs.controller.editor;
 
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +11,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
@@ -83,7 +83,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
         });
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
             Parent view = loader.load();
             overviewAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
@@ -96,7 +96,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
             Parent view = loader.load();
             scrumBoardAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
@@ -181,7 +181,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private void burnDownChartTabSelected() {
         if (burndownController == null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
+                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
                 Parent view = loader.load();
                 burnDownChartTab.setContent(view);
 
@@ -204,7 +204,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private void allTasksTabSelected() {
         if (allTasksController == null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
+                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
                 Parent view = loader.load();
                 allTasksAnchorPane.getChildren().add(view);
                 AnchorPane.setRightAnchor(view, 0.0);

@@ -15,6 +15,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
@@ -145,8 +147,11 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Project} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -188,11 +193,11 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         // Must meet minimum requirements for an allocation
         if (team == null) {
-            addFormError(choiceBoxAddTeam, "Team may not be null");
+            addFormError(choiceBoxAddTeam, "{TeamNullError}");
             hasErrors = true;
         }
         if (startDate == null) {
-            addFormError(datePickerStartDate, "Start date must be specified");
+            addFormError(datePickerStartDate, "{StartDateNotSpecified}");
             hasErrors = true;
         }
 
@@ -231,10 +236,10 @@ public class ProjectEditor extends GenericEditor<Project> {
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
         GenericPopup alert = new GenericPopup();
-        alert.setTitleText("Unshedule A Team");
-        alert.setMessageText("Are you sure you wish to unshedule \""
+        alert.setTitleText("{UnscheduleTeamTitle}");
+        alert.setMessageText("{UnscheduleTeamWarning} \""
                 + allocation.getTeam()
-                + "\" from \""
+                + "\" {From} \""
                 + allocation.getProject()
                 + "\"?");
         alert.addYesNoButtons(() -> {

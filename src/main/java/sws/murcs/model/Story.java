@@ -1,22 +1,27 @@
 package sws.murcs.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
+import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import sws.murcs.exceptions.CyclicDependencyException;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.helpers.DependenciesHelper;
-import sws.murcs.search.Searchable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A class representing a story in the backlog for a project.
@@ -48,7 +53,12 @@ public class Story extends Model {
         /**
          * Indicates that this story has been completed.
          */
-        Done
+        Done;
+
+        @Override
+        public String toString() {
+            return InternationalizationHelper.tryGet(super.toString());
+        }
     }
 
     /**
@@ -333,5 +343,31 @@ public class Story extends Model {
             return shortName == shortNameO;
         }
         return shortName.equalsIgnoreCase(shortNameO);
+    }
+
+    /**
+     * Gets the pair programming groups that occurred in this story.
+     * @return the groups that peer programmed together.
+     */
+    @XmlElementWrapper(name = "pairs")
+    @XmlElement(name = "pair")
+    public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
+        List<EffortEntry> effortEntries = getTasks().stream()
+                .map(t -> t.getEffort()).flatMap(e -> e.stream())
+                .filter(e -> e.getPeople().size() > 1)
+                .collect(Collectors.toList());
+
+        Map<String, Float> map = new HashMap<>();
+        effortEntries.forEach(e -> {
+            String name = e.getPeopleAsString();
+            if (map.containsKey(name)) {
+                map.put(name, map.get(name) + e.getSetEffort());
+            } else {
+                map.put(name, e.getSetEffort());
+            }
+        });
+
+        return map.entrySet().stream()
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue())).collect(Collectors.toList());
     }
 }
