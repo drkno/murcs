@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.5</projectVersion>
-    <dateGenerated>2015-09-01</dateGenerated>
+    <projectVersion>1.0.0</projectVersion>
+    <dateGenerated>2015-09-23</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelProject">
         <projects>
             <project shortName="FITR">
                 <longName>Fitness is Training Right</longName>
                 <description>We are building a fitness tracking application for the world</description>
                 <releases>
-                    <release shortName="Now">
-                        <description>This current time</description>
-                        <releaseDate>2015-04-22</releaseDate>
-                    </release>
+                    <release>Now</release>
                 </releases>
                 <backlogs/>
             </project>

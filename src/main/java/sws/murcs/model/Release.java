@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +99,9 @@ public class Release extends Model {
     @XmlElement(name = "pair")
     public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
         List<Sprint> sprints = UsageHelper.findAllBy(ModelType.Sprint, s -> s.getAssociatedRelease().equals(this));
+        if (sprints == null) {
+            sprints = new ArrayList<>();
+        }
         List<PeerProgrammingGroup> groups = sprints.stream()
                 .map(Sprint::getPairProgrammingGroups).flatMap(Collection::stream)
                 .collect(Collectors.toList());

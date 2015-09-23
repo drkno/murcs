@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.5</projectVersion>
-    <dateGenerated>2015-09-01</dateGenerated>
+    <projectVersion>1.0.0</projectVersion>
+    <dateGenerated>2015-09-23</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelBacklog">
         <backlogs>
             <backlog shortName="This is the backlog">
@@ -25,10 +25,10 @@
                                 <state>InProgress</state>
                                 <estimateInfo>
                                     <estimates>
-                                        <entry>
-                                            <key/>
-                                            <value>100.0</value>
-                                        </entry>
+                                        <item>
+                                            <date>2015-09-23</date>
+                                            <estimateValue>100.0</estimateValue>
+                                        </item>
                                     </estimates>
                                 </estimateInfo>
                             </task>
@@ -38,6 +38,7 @@
                             <dependence>2</dependence>
                         </dependencies>
                         <estimate>1</estimate>
+                        <pairs/>
                     </story>
                 </prioritisedStories>
                 <estimateType>Fibonacci</estimateType>
