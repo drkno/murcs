@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -121,6 +122,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private HelpfulHintsView helpfulHints;
 
     /**
+     * The active scene. We save this because JavaFX magically sets it to null (sometimes)
+     * and we have no idea why. It also doesn't fire the change listener when it sets it
+     * to null, so we're exploiting that :P
+     */
+    private Scene activeScene;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
@@ -128,6 +136,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     public final void initialize() {
         navigationManager = new NavigationManager();
         navigationManager.setModelViewController(this);
+
+        hBoxMainDisplay.sceneProperty().addListener((observable1, oldValue1, newValue1) -> {
+            //We don't really want to store a null value.
+            if (newValue1 != null) {
+                activeScene = newValue1;
+            }
+        });
 
         displayChoiceBox.setConverter(new StringConverter<ModelType>() {
             @Override
@@ -351,7 +366,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         Window window = App.getWindowManager()
                 .getAllWindows()
                 .stream()
-                .filter(w -> w.getStage() == hBoxMainDisplay.getScene().getWindow())
+                .filter(w -> w.getStage() == activeScene.getWindow())
                 .findFirst()
                 .orElse(null);
 

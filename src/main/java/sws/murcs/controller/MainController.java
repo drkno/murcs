@@ -145,14 +145,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         List<String> languages = InternationalizationHelper.getLanguages();
         for (String language : languages) {
             MenuItem lang = new MenuItem(language);
-            lang.setOnAction((a) -> {
-                //Hacky save. Dion Vader says it's okay.
-                borderPaneMain.requestFocus();
-                InternationalizationHelper.setLanguage(language);
-                Scene scene = borderPaneMain.getScene();
-                MainController controller = App.loadRootNode();
-                scene.setRoot(controller.getRootNode());
-            });
+            lang.setOnAction((a) -> changeLanguage(language));
             languageMenu.getItems().add(lang);
         }
 
@@ -211,6 +204,25 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         UndoRedoManager.get().addChangeListener(this);
 
         addModelViewTab(mainTabPane);
+    }
+
+    /**
+     * Sets the current language of the application.
+     * @param language language to set the language to.
+     */
+    private void changeLanguage(final String language) {
+        //Hacky save. Dion Vader says it's okay.
+        borderPaneMain.requestFocus();
+        InternationalizationHelper.setLanguage(language);
+        Organisation org = PersistenceManager.getCurrent().getCurrentModel();
+        if (org != null) {
+            org.setCurrentLanguage(language);
+        }
+        Scene scene = borderPaneMain.getScene();
+        MainController controller = App.loadRootNode();
+        scene.setRoot(controller.getRootNode());
+
+        App.getWindowManager().cleanUp();
     }
 
     /**
@@ -767,7 +779,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         PersistenceManager.getCurrent().setCurrentModel(model);
         UndoRedoManager.get().importModel(model);
         UndoRedoManager.get().forget();
-
+        model.setCurrentLanguage(InternationalizationHelper.getCurrentLanguage());
         //We need to reset.
         reset();
     }
@@ -837,7 +849,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 PersistenceManager.getCurrent().setCurrentModel(model);
                 UndoRedoManager.get().forget(true);
                 UndoRedoManager.get().importModel(model);
-
+                changeLanguage(model.getCurrentLanguage());
                 reset();
                 return true;
             }
