@@ -1,6 +1,5 @@
 package sws.murcs.model.helpers;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
