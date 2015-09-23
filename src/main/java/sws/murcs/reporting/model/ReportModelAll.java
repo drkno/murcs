@@ -56,28 +56,6 @@ public class ReportModelAll extends ReportModel {
     @XmlElement(name = "workAllocation")
     private List<WorkAllocation> workAllocations;
 
-    /**
-     * The unassigned people in the report.
-     */
-    @XmlElementWrapper(name = "unassignedStories")
-    @XmlElement(name = "story")
-    private List<Story> listUnassignedStories;
-
-    /**
-     * The unassigned teams in the report.
-     */
-    @XmlElementWrapper(name = "unassignedTeams")
-    @XmlElement(name = "team")
-    @XmlIDREF
-    private List<Team> listUnassignedTeams;
-
-    /**
-     * The unassigned people in the report.
-     */
-    @XmlElementWrapper(name = "unassignedPeople")
-    @XmlElement(name = "person")
-    @XmlIDREF
-    private List<Person> listUnassignedPeople;
 
     /**
      * The list of Teams and their details.
@@ -106,6 +84,30 @@ public class ReportModelAll extends ReportModel {
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
     private List<Release> listReleases;
+
+
+    /**
+     * The unassigned people in the report.
+     */
+    @XmlElementWrapper(name = "unassignedStories")
+    @XmlElement(name = "story")
+    private List<Story> listUnassignedStories;
+
+    /**
+     * The unassigned teams in the report.
+     */
+    @XmlElementWrapper(name = "unassignedTeams")
+    @XmlElement(name = "team")
+    @XmlIDREF
+    private List<Team> listUnassignedTeams;
+
+    /**
+     * The unassigned people in the report.
+     */
+    @XmlElementWrapper(name = "unassignedPeople")
+    @XmlElement(name = "person")
+    @XmlIDREF
+    private List<Person> listUnassignedPeople;
 
     /**
      * Constructor.

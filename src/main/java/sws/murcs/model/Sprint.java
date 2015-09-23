@@ -277,7 +277,7 @@ public class Sprint extends Model {
         float total = effortEntries.stream().map(EffortEntry::getEffort).reduce((a, b) -> a + b).orElse(0f);
 
         Map<String, Float> map = new HashMap<>();
-        effortEntries.forEach(e -> {
+        effortEntries.stream().filter(f -> f.getPeople().size() > 1).forEach(e -> {
             String name = e.getPeopleAsString();
             if (map.containsKey(name)) {
                 map.put(name, map.get(name) + e.getSetEffort());
