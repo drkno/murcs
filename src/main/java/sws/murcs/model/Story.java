@@ -352,13 +352,16 @@ public class Story extends Model {
     @XmlElementWrapper(name = "pairs")
     @XmlElement(name = "pair")
     public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
-        List<EffortEntry> effortEntries = getTasks().stream()
-                .map(t -> t.getEffort()).flatMap(e -> e.stream())
-                .filter(e -> e.getPeople().size() > 1)
+        List<List<EffortEntry>> effortEntries = getTasks().stream()
+                .map(Task::getEffort)
                 .collect(Collectors.toList());
 
+        float total = effortEntries.stream().filter(e -> e.size() > 0)
+                .map(e -> e.get(0).getEffort()).reduce((a, b) -> a + b).orElse(0f);
+
         Map<String, Float> map = new HashMap<>();
-        effortEntries.forEach(e -> {
+        effortEntries.stream().flatMap(Collection::stream)
+                .filter(e -> e.getPeople().size() > 1).forEach(e -> {
             String name = e.getPeopleAsString();
             if (map.containsKey(name)) {
                 map.put(name, map.get(name) + e.getSetEffort());
@@ -368,6 +371,6 @@ public class Story extends Model {
         });
 
         return map.entrySet().stream()
-                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue())).collect(Collectors.toList());
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue(), total)).collect(Collectors.toList());
     }
 }

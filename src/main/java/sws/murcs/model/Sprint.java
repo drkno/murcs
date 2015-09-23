@@ -269,10 +269,11 @@ public class Sprint extends Model {
     @XmlElement(name = "pair")
     public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
         List<EffortEntry> effortEntries = getStories().stream()
-                .map(s -> s.getTasks()).flatMap(s -> s.stream())
-                .map(t -> t.getEffort()).flatMap(e -> e.stream())
-                .filter(e -> e.getPeople().size() > 1)
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
                 .collect(Collectors.toList());
+
+        float total = effortEntries.stream().map(EffortEntry::getEffort).reduce((a, b) -> a + b).orElse(0f);
 
         Map<String, Float> map = new HashMap<>();
         effortEntries.forEach(e -> {
@@ -285,6 +286,6 @@ public class Sprint extends Model {
         });
 
         return map.entrySet().stream()
-                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue())).collect(Collectors.toList());
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue(), total)).collect(Collectors.toList());
     }
 }

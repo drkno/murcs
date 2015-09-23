@@ -97,23 +97,26 @@ public class Release extends Model {
     @XmlElementWrapper(name = "pairs")
     @XmlElement(name = "pair")
     public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
-        Project project = UsageHelper.findBy(ModelType.Project, p -> p.getReleases().contains(this));
-        List<PeerProgrammingGroup> groups = project.getBacklogs().stream()
-                .map(Backlog::getAllStories).flatMap(Collection::stream)
-                .map(Story::getPairProgrammingGroups).flatMap(Collection::stream)
+        List<Sprint> sprints = UsageHelper.findAllBy(ModelType.Sprint, s -> s.getAssociatedRelease().equals(this));
+        List<PeerProgrammingGroup> groups = sprints.stream()
+                .map(Sprint::getPairProgrammingGroups).flatMap(Collection::stream)
                 .collect(Collectors.toList());
+        float total = sprints.stream().map(Sprint::getPairProgrammingGroups)
+                .filter(g -> g.size() > 0)
+                .map(g -> g.get(0).getTotalTime()).reduce((a, b) -> a + b).orElse(0f);
 
         Map<String, Float> map = new HashMap<>();
         groups.forEach(e -> {
             String name = e.getGroupMembers();
             if (map.containsKey(name)) {
-                map.put(name, map.get(name) + e.getEstimation());
+                map.put(name, map.get(name) + e.getTimeSpent());
             } else {
-                map.put(name, e.getEstimation());
+                map.put(name, e.getTimeSpent());
             }
         });
 
         return map.entrySet().stream()
-                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue())).collect(Collectors.toList());
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue(),
+                        total)).collect(Collectors.toList());
     }
 }
