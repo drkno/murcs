@@ -35,7 +35,7 @@
                             <children>
                                 <VBox>
                                     <children>
-                                        <Label focusTraversable="false" text="Short Name"/>
+                                        <Label focusTraversable="false" text="%ShortName"/>
                                         <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="shortNameTextField"/>
                                     </children>
                                     <padding>
@@ -44,7 +44,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="1">
                                     <children>
-                                        <Label GridPane.rowIndex="1" focusTraversable="false" text="Long Name"/>
+                                        <Label GridPane.rowIndex="1" focusTraversable="false" text="%LongName"/>
                                         <TextField GridPane.columnIndex="1" fx:id="longNameTextField"/>
                                     </children>
                                     <padding>
@@ -60,7 +60,7 @@
                                         <RowConstraints minHeight="10.0" vgrow="ALWAYS"/>
                                     </rowConstraints>
                                     <children>
-                                        <Label focusTraversable="false" text="Description"/>
+                                        <Label focusTraversable="false" text="%Description"/>
                                         <TextArea GridPane.rowIndex="1" fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true"/>
                                     </children>
                                     <GridPane.margin>

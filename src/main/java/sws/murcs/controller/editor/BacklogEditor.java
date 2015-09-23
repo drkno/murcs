@@ -26,6 +26,9 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -245,14 +248,14 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private void removeStory(final Story story) {
         if (!isCreationWindow) {
             GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-            popup.setTitleText("Are you sure?");
+            popup.setTitleText("{AreYouSure}");
             String extraWarning = "";
             Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
             if (storyUsage != null) {
-                extraWarning = "This story will also be removed from the sprint \"" + storyUsage.getShortName() + "\"";
+                extraWarning = "{StoryWillBeRemovedFromSprint} \"" + storyUsage.getShortName() + "\"";
             }
-            popup.setMessageText("Are you sure you wish to remove the story \""
-                    + story.getShortName() + "\" from this backlog?\n\n"
+            popup.setMessageText("{AreYouSureRemoveStory} \""
+                    + story.getShortName() + "\" {FromBacklog}\n\n"
                     + extraWarning);
             popup.addYesNoButtons(() -> {
                 if (storyUsage != null) {
@@ -416,13 +419,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                         .collect(Collectors.toList());
                 String[] sprintNames = collect.toArray(new String[collect.size()]);
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you really want to make the story "
-                        + story.toString() + " non-prioritised\n\n"
-                        + "This will cause the story state to be set to NONE"
-                        + " and effect the following sprints:\n\t"
+                popup.setMessageText("{SureMakeStory} "
+                        + story.toString()
+                        + " {UnprioritiseWarning}\n"
                         + String.join("\n\t", sprintNames));
-                popup.setTitleText("Un-prioritise story");
-                popup.setWindowTitle("Are you sure?");
+                popup.setTitleText("{UnprioritiseTitle}");
+                popup.setWindowTitle("{Areyousure}");
                 popup.addYesNoButtons(() -> {
                     popUpIsActive = false;
                     if (callback != null) {
@@ -464,18 +466,18 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         boolean hasErrors = false;
 
         if (currentStory == null) {
-            addFormError(storyPicker, "No story selected");
+            addFormError(storyPicker, "{NoStorySelectedError}");
             hasErrors = true;
         }
         if (!priorityString.isEmpty()) {
             try {
                 priority = Integer.parseInt(priorityString);
                 if (priority < 1) {
-                    addFormError(priorityTextField, "Priority cannot be less than 1");
+                    addFormError(priorityTextField, "{NegativePriorityError}");
                     hasErrors = true;
                 }
             } catch (Exception e) {
-                addFormError(priorityTextField, "Position is not a number");
+                addFormError(priorityTextField, "{NanError}");
                 hasErrors = true;
             }
         }
@@ -609,8 +611,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Backlog} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -632,12 +637,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             try {
                 getModel().setAssignedPO(viewProductOwner);
                 updateAssignedPO();
-            } catch (CustomException e) {
-                addFormError(poComboBox, e.getMessage());
+            } catch (InvalidParameterException e) {
+                addFormError(poComboBox, "{InvalidPOError}");
             }
         }
         if (getModel().getAssignedPO() == null) {
-            addFormError(poComboBox, "There must be a PO");
+            addFormError(poComboBox, "{NoPOError}");
         }
 
         estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -675,12 +680,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priority == null) {
                     super.commitEdit(null);
                     setPriority(null);
-                    textField.setTooltip(new Tooltip("This is a non-prioritised story"));
+                    textField.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ThisIsNonPrioritorised")));
                     updateStoryTable();
                 }
                 else if (priority < 1) {
                     textField.setTooltip(null);
-                    addFormError(textField, "Priority cannot be less than 1");
+                    addFormError(textField, "{NegativePriorityError}");
                 }
                 else {
                     super.commitEdit(priority);
@@ -736,16 +741,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
-                    getTooltip().setText("The story depends on another story with a lower priority than itself");
+                    getTooltip().setText(InternationalizationHelper.tryGet("BadDependencyTooltip"));
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
-                    getTooltip().setText("The story is ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("ReadyStoryTooltip"));
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
-                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
-                            + " as ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("UnestimatedTooltip"));
                 }
             }
         }
@@ -769,7 +773,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                             commitEdit(null);
                                         }
                                         else {
-                                            addFormError(textField, "Priority must be a number");
+                                            addFormError(textField, "{NanError}");
                                         }
                                     }
                                 }
@@ -789,7 +793,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                 commitEdit(null);
                             }
                             else {
-                                addFormError(textField, "Priority must be a number");
+                                addFormError(textField, "{NanError}");
                             }
                         }
                     }
@@ -839,7 +843,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     getModel().changeStoryPriority(story, priority);
                 }
                 catch (CustomException e) {
-                    addFormError(textField, "Priority must be a number");
+                    addFormError(textField, "{NanError}");
                 }
             }
             else {

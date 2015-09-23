@@ -1,10 +1,15 @@
 package sws.murcs.controller;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -12,9 +17,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.helpfulHints.HelpfulHintsView;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
@@ -29,11 +36,6 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Model View controller. Controls the main tabs.
@@ -102,7 +104,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     /**
      * The title property for the pane.
      */
-    private SimpleStringProperty titleProperty = new SimpleStringProperty("New Tab");
+    private SimpleStringProperty titleProperty = new SimpleStringProperty(InternationalizationHelper.tryGet("NewTab"));
 
     /**
      * The tab that view exists within.
@@ -120,6 +122,13 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private HelpfulHintsView helpfulHints;
 
     /**
+     * The active scene. We save this because JavaFX magically sets it to null (sometimes)
+     * and we have no idea why. It also doesn't fire the change listener when it sets it
+     * to null, so we're exploiting that :P
+     */
+    private Scene activeScene;
+
+    /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
      * Put all initialisation of GUI in this function.
      */
@@ -127,6 +136,25 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     public final void initialize() {
         navigationManager = new NavigationManager();
         navigationManager.setModelViewController(this);
+
+        hBoxMainDisplay.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            //We don't really want to store a null value.
+            if (newValue != null) {
+                activeScene = newValue;
+            }
+        });
+
+        displayChoiceBox.setConverter(new StringConverter<ModelType>() {
+            @Override
+            public String toString(final ModelType object) {
+                return InternationalizationHelper.tryGet(object.toString());
+            }
+
+            @Override
+            public ModelType fromString(final String string) {
+                return null;
+            }
+        });
 
         for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
@@ -261,7 +289,8 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         if (arrayList.getClass() == ModelObservableArrayList.class) {
             ModelObservableArrayList<? extends Model> arrList = (ModelObservableArrayList) arrayList;
             arrayList = new SortedList<>(arrList, (Comparator<? super Model>) arrList);
-        } else {
+        }
+        else {
             System.err.println("This list type does not yet have an ordering specified, "
                     + "please correct this so that the display list is shown correctly.");
         }
@@ -337,31 +366,31 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         Window window = App.getWindowManager()
                 .getAllWindows()
                 .stream()
-                .filter(w -> w.getStage() == hBoxMainDisplay.getScene().getWindow())
+                .filter(w -> w.getStage() == activeScene.getWindow())
                 .findFirst()
                 .orElse(null);
 
         GenericPopup popup = new GenericPopup(window);
-        String message = "Are you sure you want to delete this?";
+        String message = "{AreYouSureDelete}";
         if (usages.size() != 0) {
-            message += "\nThis ";
+            message += "\n{This} ";
             ModelType type = ModelType.getModelType(selectedItem);
-            message += type.toString().toLowerCase() + " is used in " + usages.size() + " place(s):";
+            message += type.toString().toLowerCase() + " {IsUsedIn} " + usages.size() + " {Places}:";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
         }
-        popup.setTitleText("Really delete?");
+        popup.setTitleText("{Reallydelete}");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+        popup.addButton("{Yes}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
             popup.close();
             navigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             toolBarController.updateBackForwardButtons();
         }, "danger-will-robinson");
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
+        popup.addButton("{No}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
         popup.show();
     }
 

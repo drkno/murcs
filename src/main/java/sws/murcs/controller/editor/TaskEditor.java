@@ -22,6 +22,8 @@ import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.EffortEntry;
@@ -32,7 +34,6 @@ import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,8 +178,8 @@ public class TaskEditor implements UndoRedoChangeListener {
         descriptionTextArea.focusedProperty().addListener(changeListener);
 
         Platform.runLater(() -> {
-            editAssignedButton.setTooltip(new Tooltip("Edit Assignees"));
-            logEffortButton.setTooltip(new Tooltip("Log Effort"));
+            editAssignedButton.setTooltip(new Tooltip(InternationalizationHelper.tryGet("EditAssignees")));
+            logEffortButton.setTooltip(new Tooltip(InternationalizationHelper.tryGet("LogEffort")));
         });
     }
 
@@ -242,7 +243,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         float pow = (float) Math.pow(10, dps);
         spent = Math.round(spent * pow) / pow;
 
-        spentEffortLabel.setText("(spent " + spent + " " + units + ")");
+        spentEffortLabel.setText(InternationalizationHelper.translatasert("({Spent} " + spent + " {" + units + "})"));
     }
 
     /**
@@ -301,7 +302,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         catch (NumberFormatException e) {
             estimateTextField.setText("" + task.getCurrentEstimate());
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a positive number!");
+            editorController.addFormError("tasks", estimateTextField, "{EstimateNegativeError}!");
         }
 
         // Check state
@@ -371,7 +372,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         else {
             acceptable = false;
             editorController.addFormError("tasks", nameTextField,
-                    "Task names must be unique and have at least one character!");
+                    "{NonUniqueTaskNameError}");
         }
 
         try {
@@ -380,7 +381,7 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
         catch (NumberFormatException e) {
             acceptable = false;
-            editorController.addFormError("tasks", estimateTextField, "Estimate must be a number!");
+            editorController.addFormError("tasks", estimateTextField, "{EstimateNotANumberError}!");
         }
 
         if (acceptable) {
@@ -426,9 +427,9 @@ public class TaskEditor implements UndoRedoChangeListener {
         }
 
         GenericPopup popup = new GenericPopup();
-        popup.setWindowTitle("Delete Task");
-        popup.setTitleText("Really?");
-        popup.setMessageText("Are you sure you wish to remove this task?");
+        popup.setWindowTitle("{ConfirmDeleteTaskTitle}");
+        popup.setTitleText("{Really}?");
+        popup.setMessageText("ConfirmDeleteTask");
         popup.addYesNoButtons(() -> {
             editorController.removeTask(task);
             if (editorController instanceof StoryEditor) {
@@ -446,7 +447,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     @FXML
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
 
             try {
@@ -477,7 +478,7 @@ public class TaskEditor implements UndoRedoChangeListener {
     private void logEffortButtonClick(final ActionEvent event) {
         updateAssigneeButtons();
         if (effortPopOver == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(TaskEditor.class.getResource("/sws/murcs/EffortPopOver.fxml"));
 
             try {

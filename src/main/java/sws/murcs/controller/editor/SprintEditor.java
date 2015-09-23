@@ -27,7 +27,7 @@ import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
@@ -219,8 +219,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (isNullOrNotEqual(sprint.getShortName(), shortNameTextField.getText())) {
             try {
                 sprint.setShortName(shortNameTextField.getText());
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }   catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Story} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -239,7 +242,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
             if (teamComboBox.getValue() != null) {
                 sprint.setTeam(teamComboBox.getValue());
             } else {
-                addFormError(teamComboBox, "You must select a team to associate with the sprint");
+                addFormError(teamComboBox, "{TeamNullError}");
             }
         }
 
@@ -248,9 +251,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
             if (backlogComboBox.getValue() != null) {
                 if (storiesTable.getItems().size() > 0) {
                     GenericPopup popup = new GenericPopup();
-                    popup.setMessageText("Do you really want to change the Sprint Backlog? "
-                            + "All added stories will be cleared");
-                    popup.setTitleText("Change Sprint Backlog");
+                    popup.setMessageText("{ConfirmChangeSprintBacklog}");
+                    popup.setTitleText("{ConfirmChangeSprintBacklogTitle}");
                     popup.addYesNoButtons(() -> {
                         sprint.setBacklog(backlogComboBox.getValue());
                         storiesList.getItems().clear();
@@ -272,7 +274,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 }
             }
             else {
-                addFormError(backlogComboBox, "You must select a backlog for this sprint");
+                addFormError(backlogComboBox, "{BacklogNullError}");
             }
         }
 
@@ -288,10 +290,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 });
             } catch (NotReadyException e) {
                 GenericPopup popup = new GenericPopup();
-                popup.setMessageText("Do you want to set Story"
+                popup.setMessageText("{SetStoryState1}"
                         + selectedStory.getShortName()
-                        + " to be Ready so that it can be added to this sprint?");
-                popup.setTitleText("Change Story State");
+                        + " {SetStoryState2}");
+                popup.setTitleText("{ChangeStoryStateTitle}");
                 popup.addYesNoButtons(() -> {
                     try {
                         selectedStory.setStoryState(Story.StoryState.Ready);
@@ -307,9 +309,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
                     }
                     catch (MultipleSprintsException e1) {
                         GenericPopup mpopup = new GenericPopup();
-                        popup.setTitleText("Story in another sprint");
-                        mpopup.setMessageText("The selected story is already in another sprint. "
-                                + "Please remove it from that one first.");
+                        popup.setTitleText("{StoryInSprintTitle}");
+                        mpopup.setMessageText("{StoryInSprintTitle}. {PleaseRemove}");
                         mpopup.show();
                     }
                     finally {
@@ -320,9 +321,8 @@ public class SprintEditor extends GenericEditor<Sprint> {
             }
             catch (MultipleSprintsException e) {
                 GenericPopup popup = new GenericPopup();
-                popup.setTitleText("Story in another sprint");
-                popup.setMessageText("The selected story is already in another sprint. "
-                        + "Please remove it from that one first.");
+                popup.setTitleText("{StoryInSprintTitle}");
+                popup.setMessageText("{StoryInSprintTitle}. {PleaseRemove}");
                 popup.show();
             }
         }
@@ -333,10 +333,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setAssociatedRelease(releaseComboBox.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(releaseComboBox, e.getMessage());
+                    addFormError(releaseComboBox, "{ReleaseNullError}");
                 }
             } else {
-                addFormError(releaseComboBox, "You must select a release for this sprint");
+                addFormError(releaseComboBox, "{ReleaseNullError}");
             }
         }
 
@@ -355,12 +355,12 @@ public class SprintEditor extends GenericEditor<Sprint> {
         Release release = releaseComboBox.getValue();
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            addFormError(startDatePicker, "Start date must be before end date");
+            addFormError(startDatePicker, "StartBeforeEndError");
             hasProblems = true;
         }
 
         if (release != null && endDate != null && endDate.isAfter(release.getReleaseDate())) {
-            addFormError(endDatePicker, "The sprint must end before its associated release");
+            addFormError(endDatePicker, "{EndsAfterReleaseError}");
             hasProblems = true;
         }
 
@@ -374,11 +374,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setStartDate(startDatePicker.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(startDatePicker, e.getMessage());
+                    addFormError(startDatePicker, "{NoStartDateError}");
                 }
             }
             else {
-                addFormError(startDatePicker, "You must specify a start date for the sprint");
+                addFormError(startDatePicker, "{NoStartDateError}");
             }
         }
 
@@ -388,11 +388,11 @@ public class SprintEditor extends GenericEditor<Sprint> {
                 try {
                     sprint.setEndDate(endDatePicker.getValue());
                 } catch (InvalidParameterException e) {
-                    addFormError(endDatePicker, e.getMessage());
+                    addFormError(endDatePicker, "{NoEndDateError}");
                 }
             }
             else {
-                addFormError(endDatePicker, "You must specify an end date for the sprint");
+                addFormError(endDatePicker, "{NoEndDateError}");
             }
         }
     }
@@ -534,10 +534,10 @@ public class SprintEditor extends GenericEditor<Sprint> {
      */
     private void removeStory(final Story story) {
         GenericPopup popup = new GenericPopup();
-        popup.setMessageText("Are you sure you want to remove "
-                + story.getShortName() + " from "
+        popup.setMessageText("{AreYouSureRemove} "
+                + story.getShortName() + " {From} "
                 + getModel().getShortName() + "?");
-        popup.setTitleText("Remove Story from Sprint");
+        popup.setTitleText("{AreYouSure}");
         popup.addYesNoButtons(() -> {
             allocatableStories.add(story);
             storiesTable.getItems().remove(story);

@@ -21,7 +21,7 @@
             <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="70.0" vgrow="NEVER" />
         </rowConstraints>
          <children>
-            <Label text="Filter By" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+            <Label text="%FilterBy" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin></Label>
@@ -41,11 +41,11 @@
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin></ChoiceBox>
-            <Label text="Group By" GridPane.columnIndex="1">
+            <Label text="%GroupBy" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin></Label>
-            <Label text="Order By" GridPane.columnIndex="2">
+            <Label text="%OrderBy" GridPane.columnIndex="2">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </GridPane.margin></Label>
