@@ -32,7 +32,7 @@ Its faster to create a new tab by pressing - CTRL + T
 Its faster to close your current tab by pressing - CTRL + W
 Did you know you can if you need to compare two model items, you can drag a tab into its own window!
 Sometimes you need to quickly move between two model items. You can rearrange tabs to put them closer together!
-@Try starting the program from command line with the following argument "-v"
+@Try starting the program from command line with the following argument "-vader"
 @I wonder what would happen if you pressed UP UP DOWN DOWN LEFT RIGHT LEFT RIGHT B A in the about menu?
-@I wonder if the application knows what the answer is. -42..
+@I wonder if the application knows what the answer is.
 There's a handy scrum board view for sprint. Just navigate to your sprint and press the "Scrum Board" tab on the right hand side.
