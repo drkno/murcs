@@ -48,11 +48,8 @@ public final class InternationalizationHelper {
     }
 
     /**
-     * Sets the current language.
-     * Bad things will happen if it's not one of the ones we support. Like,
-     * really bad things. Things so bad I should probably throw an exception.
-     * But I won't. Because you aren't the boss of me. (this should probably not
-     * get through PR).
+     * Sets the current language. Make sure you set it to a real language.
+     * Otherwise it won't work.
      * @param language The language.
      */
     public static void setLanguage(final String language) {
