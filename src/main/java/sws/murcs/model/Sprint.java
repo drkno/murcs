@@ -5,7 +5,7 @@ import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.model.helpers.UsageHelper;
-import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.reporting.adapters.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
