@@ -26,7 +26,7 @@ public class OrganisationStoryTest {
     @BeforeClass
     public static void classSetup() {
         generator = new OrganisationGenerator(OrganisationGenerator.Stress.High);
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
         if (PersistenceManager.getCurrent() == null) {
             PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         }
@@ -35,7 +35,7 @@ public class OrganisationStoryTest {
 
     @AfterClass
     public static void classTearDown() {
-        UndoRedoManager.setDisabled(false);
+        UndoRedoManager.get().setDisabled(false);
         PersistenceManager.getCurrent().setCurrentModel(null);
         model = null;
     }
@@ -162,7 +162,7 @@ public class OrganisationStoryTest {
         List<Story> stories = model.getStories();
         List<Backlog> backlogs = model.getBacklogs();
         try {
-            backlogs.get(0).addStory(stories.get(0), 0);
+            backlogs.get(0).addStory(stories.get(0), 1);
         }
         catch (Exception e) {
             // ignore, we just want to ensure story is attached to a backlog

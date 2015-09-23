@@ -1,7 +1,6 @@
 package sws.murcs.model;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableObject;
@@ -23,6 +22,11 @@ import java.io.Serializable;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class Model extends TrackableObject implements Serializable {
+
+    /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
 
     /**
      * The short name of a model object.
@@ -69,9 +73,10 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * Sets the short name.
      * @param newShortName the new short name.
-     * @throws CustomException if the short name is invalid.
+     * @throws DuplicateObjectException if the short name already exists.
+     * @throws InvalidParameterException if the short name is invalid.
      */
-    public final void setShortName(final String newShortName) throws CustomException {
+    public final void setShortName(final String newShortName) throws DuplicateObjectException, InvalidParameterException {
         validateShortName(newShortName);
         shortName = newShortName.trim();
         if (shortNameProperty != null) {
@@ -83,9 +88,10 @@ public abstract class Model extends TrackableObject implements Serializable {
     /**
      * Indicates whether a value is a valid value for 'shortName' to hold.
      * @param value The value.
-     * @throws CustomException if the short name is invalid.
+     * @throws DuplicateObjectException if the short name already exists.
+     * @throws InvalidParameterException if the short name is invalid.
      */
-    private void validateShortName(final String value) throws CustomException {
+    private void validateShortName(final String value) throws DuplicateObjectException, InvalidParameterException {
         ModelType type = ModelType.getModelType(getClass());
         Model model = UsageHelper.findBy(type, m -> m.getShortName().equalsIgnoreCase(value));
         if (model != null) {

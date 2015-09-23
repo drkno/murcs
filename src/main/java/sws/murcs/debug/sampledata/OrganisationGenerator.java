@@ -172,9 +172,14 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
                 }
             }
-            if (!items.stream().filter(g::equals).findAny().isPresent()) {
-                items.add(g);
+            while (items.stream().filter(g::equals).findAny().isPresent()) {
+                try {
+                    g.setShortName(g.getShortName() + " " + NameGenerator.randomName());
+                } catch (CustomException e) {
+                    ErrorReporter.get().reportErrorSecretly(e, "OrganisationGenerator: setting short name failed");
+                }
             }
+            items.add(g);
         }
         return items;
     }
@@ -227,6 +232,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
     public final Organisation generate() {
         try {
             Organisation model = new Organisation();
+            model.setIsUsingGeneratedData(true);
 
             int min = getMin(stress, SkillGenerator.LOW_STRESS_MIN, SkillGenerator.MEDIUM_STRESS_MIN,
                     SkillGenerator.HIGH_STRESS_MIN);
@@ -243,6 +249,24 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     PersonGenerator.HIGH_STRESS_MAX);
             people.addAll(generateItems(personGenerator, min, max)
                     .stream().map(m -> (Person) m).collect(Collectors.toList()));
+            Person dionVader = people.get(GenerationHelper.random(people.size()));
+            try {
+                dionVader.setShortName("Dion Vader");
+                dionVader.setLongName("DA DA DA Dun daDAA Dun DaDAAA (to the darth vader theme)");
+                dionVader.setDescription("He finds your lack of SENG disturbing");
+
+                Skill allOfThem = new Skill();
+                allOfThem.setShortName("All of them");
+                allOfThem.setLongName("Really. Every last one. Even SLEEPING");
+                allOfThem.setDescription("Dion finds your lack of SENG disturbing...");
+
+                dionVader.addSkill(allOfThem);
+                skills.add(allOfThem);
+            } catch (Exception e) {
+                //Never. Ever. Dion wouldn't let it. He is the dark lord. He is all powerful.
+                e.printStackTrace(); //Because checkstyle.
+            }
+
 
             // deal with pass by reference issues
             List<Person> teamPeople = new ArrayList<>(people);
@@ -286,7 +310,7 @@ public class OrganisationGenerator implements Generator<Organisation> {
                     .stream().map(m -> (Story) m).collect(Collectors.toList());
             storyGenerator.addDependencies(stories, max, min);
 
-            backlogGenerator.setStoryPool(stories);
+            backlogGenerator.setUnsafeStories(stories);
             backlogGenerator.setPersonsPool(people);
             min = getMin(stress, BacklogGenerator.LOW_STRESS_MIN, BacklogGenerator.MEDIUM_STRESS_MIN,
                     BacklogGenerator.HIGH_STRESS_MIN);

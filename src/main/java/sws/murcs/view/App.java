@@ -3,37 +3,47 @@ package sws.murcs.view;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sws.murcs.arguments.ArgumentsManager;
+import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.MainController;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.WindowManager;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.debug.sampledata.OrganisationGenerator;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.AppClosingListener;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
-
+import java.awt.Desktop;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
  * The main app class.
  */
-@SuppressWarnings("ALL")
 public class App extends Application {
+
+    /**
+     * If the application is on the style manager thread.
+     */
+    private static boolean onStyleManagerThread = false;
 
     /**
      * Default window title to use.
      */
-    private static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
+    public static final String DEFAULT_WINDOW_TITLE = "- Untitled -";
 
     /**
      * The main stage of the application.
@@ -61,10 +71,20 @@ public class App extends Application {
     private static final int SUBSTRINGLENGTH = 3;
 
     /**
+     * Supported Java update.
+     */
+    private static final int SUPPORTED_JAVA_UPDATE = 60;
+
+    /**
      * The update version of the current running version of Java. (i.e. if you're on 8u25 this would be 25).
      */
     public static final int JAVA_UPDATE_VERSION = Integer.parseInt(System.getProperty("java.version")
             .split("_")[1].split("-")[0]);
+
+    /**
+     * Default size of the font to load.
+     */
+    private static final double DEFAULT_FONT_SIZE = 18.0;
 
     /**
      * The current main controller.
@@ -80,6 +100,27 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Dion Vader.
+     */
+    private static boolean vader = false;
+
+    /**
+     * Gets if the app is running on the style manager thread.
+     * @return if on style manager thread
+     */
+    public static boolean getOnStyleManagerThread() {
+        return onStyleManagerThread;
+    }
+
+    /**
+     * Sets if on the style manager thread.
+     * @param pOnStyleMangerThread if on the style manager thread
+     */
+    public static void setOnStyleManagerThread(final boolean pOnStyleMangerThread) {
+        onStyleManagerThread = pOnStyleMangerThread;
+    }
 
     /**
      * Gets the shortcut manager.
@@ -135,7 +176,8 @@ public class App extends Application {
         if (index >= 0) {
             title = newTitle.substring(0, index);
         }
-        stage.setTitle(title);
+        final String finalTitle = title;
+        Platform.runLater(() -> stage.setTitle(finalTitle));
     }
 
     /**
@@ -183,6 +225,31 @@ public class App extends Application {
         primaryStage.setTitle(DEFAULT_WINDOW_TITLE);
         setStage(primaryStage);
         mainController = createWindow(primaryStage);
+        if (vader) {
+            URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
+            Media hit = new Media(url.toString());
+            MediaPlayer mediaPlayer = new MediaPlayer(hit);
+            mediaPlayer.play();
+        }
+
+        // no point in translating as there is no way to set the language before starting up the app
+        if (JAVA_UPDATE_VERSION < SUPPORTED_JAVA_UPDATE) {
+            GenericPopup popup = new GenericPopup();
+            popup.setTitleText("Please Update Java");
+            popup.setMessageText("The recommended minimum requirement for this application is Java 8u60. "
+                    + "While we make every effort to support Java versions as low as Java 8u25, we do not guarantee "
+                    + "that all functionality will work as intended.\n\nPlease visit java.com to get "
+                    + "the latest version of Java.");
+            popup.addButton("Go to Java.com", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+                try {
+                    Desktop.getDesktop().browse(new URL("https://java.com/download").toURI());
+                } catch (Exception e) {
+                    ErrorReporter.get().reportError(e, "Cannot open Java.com");
+                }
+            });
+            popup.addButton("Continue Anyway", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
+            popup.show();
+        }
     }
 
     /**
@@ -191,9 +258,16 @@ public class App extends Application {
      * @return The main controller for the window
      */
     public static MainController createWindow(final Stage window) {
+        String language = "English";
         if (!PersistenceManager.currentPersistenceManagerExists()) {
             FilePersistenceLoader loader = new FilePersistenceLoader();
             PersistenceManager.setCurrent(new PersistenceManager(loader));
+        }
+        else {
+            Organisation org = PersistenceManager.getCurrent().getCurrentModel();
+            if (org != null) {
+                language = org.getCurrentLanguage();
+            }
         }
 
         if (windowManager == null) {
@@ -204,34 +278,17 @@ public class App extends Application {
             shortcutManager = new ShortcutManager();
         }
 
-        // Loads the primary fxml and sets mainController as its controller
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
-        Parent parent = null;
-        try {
-            parent = loader.load();
-        } catch (IOException e) {
-            //We should never hit this, if we managed to start the application
-            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
-        }
-        MainController controller = loader.getController();
+        MainController controller = loadRootNode();
 
-        Scene scene = new Scene(parent);
-        scene.getStylesheets()
-<<<<<<< HEAD
-                .add(getClass()
-                        .getResource("/sws/murcs/styles/global.css")
-                        .toExternalForm());
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(defaultWindowTitle);
-        primaryStage.setOnCloseRequest(App::notifyListeners);
-=======
-                .add(App.class
+        Scene scene = new Scene(controller.getRootNode());
+        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(),
+                DEFAULT_FONT_SIZE);
+        scene.getStylesheets().add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
         window.setScene(scene);
+        InternationalizationHelper.setLanguage(language);
         window.setTitle(DEFAULT_WINDOW_TITLE);
->>>>>>> master
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         window.getIcons().add(iconImage);
@@ -242,6 +299,24 @@ public class App extends Application {
 
         controller.show();
         return controller;
+    }
+
+    /**
+     * Loads the root node into the main controller.
+     * @return the controller associated with the root node.
+     */
+    public static MainController loadRootNode() {
+        // Loads the primary fxml and sets mainController as its controller
+        FXMLLoader loader = new AutoLanguageFXMLLoader();
+        loader.setResources(InternationalizationHelper.getCurrentResources());
+        loader.setLocation(App.class.getResource("/sws/murcs/MainView.fxml"));
+        try {
+            loader.load();
+        } catch (IOException e) {
+            //We should never hit this, if we managed to start the application
+            ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
+        }
+        return loader.getController();
     }
 
     /**
@@ -261,54 +336,83 @@ public class App extends Application {
     }
 
     /**
+     * Add sample data to the application.
+     * @param values options that were passed via the CLI to this argument.
+     * @throws Exception when generating data failed.
+     */
+    private static void sampleData(final List<String> values) throws Exception {
+        OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
+        if (values.size() == 1) {
+            if (values.get(0).length() < SUBSTRINGLENGTH) {
+                throw new Exception("Invalid debug keyword. Try low, medium or high.");
+            }
+            switch (values.get(0).substring(0, SUBSTRINGLENGTH).toLowerCase()) {
+                case "low":
+                    stressLevel = OrganisationGenerator.Stress.Low;
+                    break;
+                case "med":
+                    stressLevel = OrganisationGenerator.Stress.Medium;
+                    break;
+                case "hig":
+                    stressLevel = OrganisationGenerator.Stress.High;
+                    break;
+                default:
+                    break;
+            }
+        }
+        else if (values.size() > 1) {
+            throw new Exception("Invalid use of the debug option.");
+        }
+        PersistenceManager.getCurrent().setCurrentModel(new OrganisationGenerator(stressLevel).generate());
+    }
+
+    /**
+     * Save a sample project to the current directory.
+     * @param values options that were passed to this argument.
+     * @throws Exception when saving a sample project failed.
+     */
+    private static void saveSample(final List<String> values) throws Exception {
+        if (values.size() != 0) {
+            throw new Exception("Invalid use of the sample option.");
+        }
+
+        try {
+            String fileLocation = "sample.project";
+            PersistenceManager.getCurrent().saveModel(fileLocation);
+        }
+        catch (Exception e) {
+            System.err.println("Could not save sample project.");
+        }
+        System.exit(0);
+    }
+
+    /**
      * Main function for starting the app.
      * @param args Arguments passed into the main function (they're irrelevant currently)
      */
     public static void main(final String[] args) {
-        ErrorReporter.setup(args);
+        System.setProperty("prism.lcdtext", "false");
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
 
-        List<String> argsList = Arrays.asList(args);
-        int debug = argsList.indexOf("debug");
-        int numbering = argsList.indexOf("numbering");
+        ArgumentsManager.get().registerArgument("d", "debug", "Generates sample data for use while debugging.\n\t"
+                + "  Combine with \"high\", \"med\" and \"low\" to customise data generated.", App::sampleData);
+        ArgumentsManager.get().registerArgument("n", "numbering", "For use with debug. Enables numbers on randomly "
+                + "generated model types.", v -> OrganisationGenerator.isNumbering(true));
+        ArgumentsManager.get().registerArgument("s", "sample", "Generates a sample file for use while testing.",
+                App::saveSample);
+        ArgumentsManager.get().registerArgument("v", "vader", "Enables Dion Vader mode.", opts -> { vader = true; });
+        ArgumentsManager.get().parseArguments(args);
 
-        if (numbering >= 0) {
-            OrganisationGenerator.isNumbering(true);
-        }
-        if (debug >= 0) {
-            OrganisationGenerator.Stress stressLevel = OrganisationGenerator.Stress.Low;
-            if (debug + 1 < args.length) {
-                switch (args[debug + 1].substring(0, SUBSTRINGLENGTH).toLowerCase()) {
-                    case "low": stressLevel = OrganisationGenerator.Stress.Low; break;
-                    case "med": stressLevel = OrganisationGenerator.Stress.Medium; break;
-                    case "hig": stressLevel = OrganisationGenerator.Stress.High; break;
-                    default: break;
-                }
-            }
-            PersistenceManager.getCurrent().setCurrentModel(new OrganisationGenerator(stressLevel).generate());
-        }
-        else {
-            //Give us an empty model
-            PersistenceManager.getCurrent().setCurrentModel(new Organisation());
-        }
-
-        int sample = argsList.indexOf("sample");
-        if (sample >= 0) {
-            String fileLocation = "sample.project";
-            try {
-                PersistenceManager.getCurrent().saveModel(fileLocation);
-                System.exit(0);
-            }
-            catch (Exception e) {
-                System.err.println("Could not save sample project.");
-            }
-        }
-
-        UndoRedoManager.setDisabled(false);
-        Organisation model = PersistenceManager.getCurrent().getCurrentModel();
         try {
-            UndoRedoManager.importModel(model);
+            Organisation model = PersistenceManager.getCurrent().getCurrentModel();
+            if (PersistenceManager.getCurrent().getCurrentModel() == null) {
+                //Give us an empty model
+                model = new Organisation();
+                PersistenceManager.getCurrent().setCurrentModel(model);
+            }
+            UndoRedoManager.get().setDisabled(false);
+            UndoRedoManager.get().importModel(model);
         }
         catch (Exception e) {
             // There is a BIG problem if this fails

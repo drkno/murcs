@@ -24,7 +24,7 @@ public class SkillTest {
         skill.setShortName("OMG");
         skill2.setShortName("A very good skill to have");
         skill3.setShortName("Something worth while");
-        UndoRedoManager.setDisabled(true);
+        UndoRedoManager.get().setDisabled(true);
     }
 
     @After

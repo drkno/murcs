@@ -1,10 +1,15 @@
 package sws.murcs.controller;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -12,9 +17,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import sws.murcs.controller.controls.cells.DisplayListCell;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.helpfulHints.HelpfulHintsView;
 import sws.murcs.listeners.ViewUpdate;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
@@ -28,10 +36,6 @@ import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Model View controller. Controls the main tabs.
@@ -100,12 +104,29 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     /**
      * The title property for the pane.
      */
-    private SimpleStringProperty titleProperty = new SimpleStringProperty("Model View");
+    private SimpleStringProperty titleProperty = new SimpleStringProperty(InternationalizationHelper.tryGet("NewTab"));
 
     /**
      * The tab that view exists within.
      */
     private Tab containingTab;
+
+    /**
+     * Boolean if the hints are shown.
+     */
+    private boolean hintsAreShown;
+
+    /**
+     * The helpful hints view.
+     */
+    private HelpfulHintsView helpfulHints;
+
+    /**
+     * The active scene. We save this because JavaFX magically sets it to null (sometimes)
+     * and we have no idea why. It also doesn't fire the change listener when it sets it
+     * to null, so we're exploiting that :P
+     */
+    private Scene activeScene;
 
     /**
      * Initialises the GUI, setting up the the options in the choice box and populates the display list if necessary.
@@ -115,6 +136,25 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     public final void initialize() {
         navigationManager = new NavigationManager();
         navigationManager.setModelViewController(this);
+
+        hBoxMainDisplay.sceneProperty().addListener((observable, oldValue, newValue) -> {
+            //We don't really want to store a null value.
+            if (newValue != null) {
+                activeScene = newValue;
+            }
+        });
+
+        displayChoiceBox.setConverter(new StringConverter<ModelType>() {
+            @Override
+            public String toString(final ModelType object) {
+                return InternationalizationHelper.tryGet(object.toString());
+            }
+
+            @Override
+            public ModelType fromString(final String string) {
+                return null;
+            }
+        });
 
         for (ModelType type : ModelType.values()) {
             displayChoiceBox.getItems().add(type);
@@ -141,7 +181,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         displayList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue != newValue) {
-                if (editorPane != null && newValue != null) {
+                if (editorPane != null && newValue != null && editorPane.getController().isLoaded()) {
                     editorPane.getController().saveChanges();
                 }
                 updateDisplayListSelection(newValue, oldValue);
@@ -149,7 +189,8 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
             updateTitle();
         });
 
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
+        showHelpfulHints();
         updateList();
     }
 
@@ -190,11 +231,25 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     /**
+     * Shows the helpful hints and creates them if they have not been initialized.
+     */
+    private void showHelpfulHints() {
+        if (helpfulHints == null) {
+            helpfulHints = new HelpfulHintsView();
+            helpfulHints.create();
+        }
+        if (!contentPane.getChildren().contains(helpfulHints.getView())) {
+            contentPane.getChildren().add(helpfulHints.getView());
+        }
+        helpfulHints.showHints();
+        hintsAreShown = true;
+    }
+
+    /**
      * Updates the display list on the left hand side of the screen.
      */
     private void updateList() {
         ModelType type = ModelType.getModelType(displayChoiceBox.getSelectionModel().getSelectedIndex());
-        displayList.getSelectionModel().clearSelection();
         Organisation model = PersistenceManager.getCurrent().getCurrentModel();
 
         if (model == null) {
@@ -203,15 +258,32 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
         List<? extends Model> arrayList;
         switch (type) {
-            case Project: arrayList = model.getProjects(); break;
-            case Person: arrayList = model.getPeople(); break;
-            case Team: arrayList = model.getTeams(); break;
-            case Skill: arrayList = model.getSkills(); break;
-            case Release: arrayList = model.getReleases(); break;
-            case Story: arrayList = model.getStories(); break;
-            case Backlog: arrayList = model.getBacklogs(); break;
-            case Sprint: arrayList = model.getSprints(); break;
-            default: throw new UnsupportedOperationException();
+            case Project:
+                arrayList = model.getProjects();
+                break;
+            case Person:
+                arrayList = model.getPeople();
+                break;
+            case Team:
+                arrayList = model.getTeams();
+                break;
+            case Skill:
+                arrayList = model.getSkills();
+                break;
+            case Release:
+                arrayList = model.getReleases();
+                break;
+            case Story:
+                arrayList = model.getStories();
+                break;
+            case Backlog:
+                arrayList = model.getBacklogs();
+                break;
+            case Sprint:
+                arrayList = model.getSprints();
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
 
         if (arrayList.getClass() == ModelObservableArrayList.class) {
@@ -223,8 +295,36 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                     + "please correct this so that the display list is shown correctly.");
         }
 
-        displayList.setItems((ObservableList) arrayList);
-        displayList.getSelectionModel().select(0);
+        boolean selectionCleared = false;
+        if (displayList.getSelectionModel().getSelectedIndex() < 0) {
+            selectionCleared = true;
+        }
+
+        if (editorPane == null || editorPane.getModel() == null || !arrayList.contains(editorPane.getModel())) {
+            displayList.getSelectionModel().clearSelection();
+            selectionCleared = true;
+        }
+
+        if (!Objects.equals(displayList.getItems(), arrayList)) {
+            displayList.getSelectionModel().clearSelection();
+            displayList.setItems((ObservableList) arrayList);
+            selectionCleared = true;
+        }
+
+        if (selectionCleared && arrayList.size() > 0) {
+            displayList.getSelectionModel().select(0);
+            if (hintsAreShown && helpfulHints != null) {
+                helpfulHints.hide();
+                hintsAreShown = false;
+            }
+        } else if (arrayList.size() > 0) {
+            displayList.getSelectionModel().select(editorPane.getModel());
+            displayList.getSelectionModel().select(editorPane.getModel());
+            if (hintsAreShown && helpfulHints != null) {
+                helpfulHints.hide();
+                hintsAreShown = false;
+            }
+        }
     }
 
     @Override
@@ -266,35 +366,35 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
         Window window = App.getWindowManager()
                 .getAllWindows()
                 .stream()
-                .filter(w -> w.getStage() == hBoxMainDisplay.getScene().getWindow())
+                .filter(w -> w.getStage() == activeScene.getWindow())
                 .findFirst()
                 .orElse(null);
 
         GenericPopup popup = new GenericPopup(window);
-        String message = "Are you sure you want to delete this?";
+        String message = "{AreYouSureDelete}";
         if (usages.size() != 0) {
-            message += "\nThis ";
+            message += "\n{This} ";
             ModelType type = ModelType.getModelType(selectedItem);
-            message += type.toString().toLowerCase() + " is used in " + usages.size() + " place(s):";
+            message += type.toString().toLowerCase() + " {IsUsedIn} " + usages.size() + " {Places}:";
             for (Model usage : usages) {
                 message += "\n" + usage.getShortName();
             }
         }
-        popup.setTitleText("Really delete?");
+        popup.setTitleText("{Reallydelete}");
         popup.setMessageText(message);
 
-        popup.addButton("Yes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+        popup.addButton("{Yes}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
             popup.close();
             navigationManager.clearHistory();
             Model item = (Model) displayList.getSelectionModel().getSelectedItem();
             model.remove(item);
             toolBarController.updateBackForwardButtons();
         }, "danger-will-robinson");
-        popup.addButton("No", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "dont-panic");
+        popup.addButton("{No}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close, "everything-is-fine");
         popup.show();
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings("checkstyle:finalparameters")
     @Override
     public final void selectItem(Model parameter) {
         ModelType type;
@@ -411,6 +511,11 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     }
 
     @Override
+    public void navigateTo(final ModelType type) {
+        displayChoiceBox.getSelectionModel().select(type);
+    }
+
+    @Override
     public void navigateToNewTab(final Model model) {
         navigationManager.navigateToNewTab(model);
     }
@@ -422,7 +527,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
 
     @Override
     public void update() {
-        if (editorPane != null) {
+        if (editorPane != null && PersistenceManager.getCurrent().getCurrentModel() != null) {
             editorPane.getController().loadObject();
         }
     }
@@ -444,6 +549,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     @Override
     public void undoRedoNotification(final ChangeState param) {
         switch (param) {
+            case Commit:
             case Forget:
             case Remake:
                 updateList();

@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import sws.murcs.controller.AboutController;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * The About window view.
@@ -34,7 +35,7 @@ public class AboutView {
     public final void show() {
         try {
             // Load the view
-            FXMLLoader loader = new FXMLLoader(AboutController
+            FXMLLoader loader = new AutoLanguageFXMLLoader(AboutController
                     .class
                     .getResource("/sws/murcs/About.fxml"));
             Parent root = loader.load();

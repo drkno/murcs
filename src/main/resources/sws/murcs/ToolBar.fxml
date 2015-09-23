@@ -25,7 +25,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Back (Alt+Left)" />
+                  <Tooltip />
                </tooltip>
                <HBox.margin>
                   <Insets />
@@ -40,14 +40,14 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Navigate Forward (Alt+Right)" />
+                  <Tooltip />
                </tooltip>
             </Button>
          </children>
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="historyToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -92,7 +92,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="editToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -106,17 +106,17 @@
                     </ImageView>
                 </graphic>
               <items>
-                  <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addButtonClick" text="Project" />
-                  <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addButtonClick" text="Team" />
-                  <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addButtonClick" text="Person" />
-                  <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addButtonClick" text="Skill" />
-                  <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addButtonClick" text="Release" />
-                  <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addButtonClick" text="Backlog" />
-                  <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addButtonClick" text="Story" />
-                  <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#addButtonClick" text="Sprint" />
+                  <MenuItem fx:id="addProject" mnemonicParsing="false" onAction="#addButtonClick" text="%Project" />
+                  <MenuItem fx:id="addTeam" mnemonicParsing="false" onAction="#addButtonClick" text="%Team" />
+                  <MenuItem fx:id="addPerson" mnemonicParsing="false" onAction="#addButtonClick" text="%Person" />
+                  <MenuItem fx:id="addSkill" mnemonicParsing="false" onAction="#addButtonClick" text="%Skill" />
+                  <MenuItem fx:id="addRelease" mnemonicParsing="false" onAction="#addButtonClick" text="%Release" />
+                  <MenuItem fx:id="addBacklog" mnemonicParsing="false" onAction="#addButtonClick" text="%Backlog" />
+                  <MenuItem fx:id="addStory" mnemonicParsing="false" onAction="#addButtonClick" text="%Story" />
+                  <MenuItem fx:id="addSprint" mnemonicParsing="false" onAction="#addButtonClick" text="%Sprint" />
               </items>
                <tooltip>
-                  <Tooltip text="Add new item (+)" />
+                  <Tooltip text="%Addnewitem" />
                </tooltip>
             </SplitMenuButton>
             <Button fx:id="removeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeButtonClick" prefHeight="30.0" prefWidth="30.0">
@@ -128,7 +128,7 @@
                   </ImageView>
                </graphic>
                <tooltip>
-                  <Tooltip text="Delete currently selected item (Delete)" />
+                  <Tooltip text="%DeletecurrentlyselecteditemDelete" />
                </tooltip>
             </Button>
             <Button fx:id="saveButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveButtonClick" prefHeight="30.0" prefWidth="30.0">
@@ -171,7 +171,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="reportingToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -204,7 +204,7 @@
       </HBox>
       <Separator minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL">
          <padding>
-            <Insets left="7.0" right="5.0" />
+            <Insets left="5.0" right="7.0" />
          </padding>
       </Separator>
       <HBox fx:id="searchToolBar" minHeight="-Infinity" minWidth="-Infinity" spacing="5.0">
@@ -227,11 +227,11 @@
    <contextMenu>
       <ContextMenu fx:id="visibilityContextMenu">
         <items>
-            <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Navigation Toolbar" />
-            <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="History Toolbar" />
-            <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Edit Toolbar" />
-            <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Reporting Toolbar" />
-            <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="Search Toolbar" />
+            <CheckMenuItem id="navigation" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%NavigationToolbar" />
+            <CheckMenuItem id="history" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%HistoryToolbar" />
+            <CheckMenuItem id="edit" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%EditToolbar" />
+            <CheckMenuItem id="reporting" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%ReportingToolbar" />
+            <CheckMenuItem id="search" mnemonicParsing="false" onAction="#toolBarToggle" selected="true" text="%SearchToolbar" />
         </items>
       </ContextMenu>
    </contextMenu>

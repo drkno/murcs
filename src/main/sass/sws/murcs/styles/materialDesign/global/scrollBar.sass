@@ -1,23 +1,22 @@
 @import "../../globalStyles"
 
-.scroll-bar:horizontal > .track-background, .scroll-bar:horizontal:hover
+.scroll-bar:vertical, .scroll-bar:vertical:hover,
+.scroll-bar:horizontal, .scroll-bar:vertical:hover
   -fx-background-color: transparent
   -fx-background-insets: 0.0
-  -fx-padding: 0.0 0.0 2.0 0.0
+  -fx-padding: 2.0
 
-.scroll-bar:vertical, .scroll-bar:vertical:hover
-  -fx-background-color: transparent
-  -fx-background-insets: 0.0
-  -fx-padding: -1.0 2.0 -1.0 0.0
-
-.scroll-bar:vertical > .track-background
+.scroll-bar:vertical > .track-background,
+.scroll-bar:horizontal > .track-background
   -fx-background-color: transparent
   -fx-background-insets: 0.0
   -fx-padding: -1.0 0.0 -1.0 0.0
 
-.scroll-bar:horizontal > .thumb, .scroll-bar:vertical > .thumb
+.scroll-bar:horizontal > .thumb,
+.scroll-bar:vertical > .thumb
   -fx-background-color: rgba(0.0, 0.0, 0.0, 0.3)
   -fx-background-insets: 0.0
+  -fx-padding: 2px
   -fx-background-radius: 4.0
 
 .scroll-bar:horizontal > .track,
@@ -44,3 +43,5 @@
   -fx-background-insets:  0.0
   -fx-padding: 0.0em 4.0pt 0.0em 0.0em
 
+  .scroll-pane > .corner
+    -fx-background-color: transparent

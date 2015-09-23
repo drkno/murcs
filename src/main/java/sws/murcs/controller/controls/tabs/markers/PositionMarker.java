@@ -29,7 +29,7 @@ public final class PositionMarker extends Group {
 	/**
 	 * Create a new marker.
 	 */
-    @SuppressWarnings("all")
+	@SuppressWarnings("checkstyle:magicnumber")
 	public PositionMarker() {
 		setMouseTransparent(true);
 		getStyleClass().add("position-marker"); //$NON-NLS-1$
@@ -38,17 +38,15 @@ public final class PositionMarker extends Group {
 
 		getChildren().add(outer);
 
-		{
-			Line l = new Line();
-			l.setStartX(0);
-			l.setStartY(6);
-			l.setEndX(0);
-			l.setEndY(40);
-			l.setStrokeWidth(7);
-			l.setStrokeLineCap(StrokeLineCap.ROUND);
-			l.setStroke(Color.WHITE);
-			getChildren().add(l);
-		}
+		Line l1 = new Line();
+		l1.setStartX(0);
+		l1.setStartY(6);
+		l1.setEndX(0);
+		l1.setEndY(40);
+		l1.setStrokeWidth(7);
+		l1.setStrokeLineCap(StrokeLineCap.ROUND);
+		l1.setStroke(Color.WHITE);
+		getChildren().add(l1);
 
 		Circle c = new Circle(6);
 		c.fillProperty().bind(fillProperty());
@@ -58,17 +56,15 @@ public final class PositionMarker extends Group {
 		inner.setFill(Color.WHITE);
 		getChildren().add(inner);
 
-		{
-			Line l = new Line();
-			l.setStartX(0);
-			l.setStartY(6);
-			l.setEndX(0);
-			l.setEndY(40);
-			l.setStrokeWidth(3);
-			l.setStrokeLineCap(StrokeLineCap.ROUND);
-			l.strokeProperty().bind(this.fill);
-			getChildren().add(l);
-		}
+		Line l2 = new Line();
+		l2.setStartX(0);
+		l2.setStartY(6);
+		l2.setEndX(0);
+		l2.setEndY(40);
+		l2.setStrokeWidth(3);
+		l2.setStrokeLineCap(StrokeLineCap.ROUND);
+		l2.strokeProperty().bind(this.fill);
+		getChildren().add(l2);
 
 		setEffect(new DropShadow(3, Color.BLACK));
 	}

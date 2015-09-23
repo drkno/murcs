@@ -1,5 +1,7 @@
 package sws.murcs.controller;
 
+import java.util.Arrays;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,13 +14,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.view.App;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Generic popup creator and controller.
@@ -167,7 +169,7 @@ public class GenericPopup extends AnchorPane {
     public GenericPopup(final Exception exception, final Window pParentWindow) {
         popupStage = new Stage();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/GenericPopup.fxml"));
         loader.setRoot(this);
         loader.setController(this);
 
@@ -198,8 +200,8 @@ public class GenericPopup extends AnchorPane {
      * Sets up a window for the popup.
      */
     private void setupWindow() {
+        popupStage.initOwner(App.getWindowManager().getTop().getStage());
         popupStage.initModality(Modality.WINDOW_MODAL);
-        popupStage.initOwner(App.getStage());
         window = new Window(popupStage, this, parentWindow);
         window.register();
     }
@@ -220,7 +222,8 @@ public class GenericPopup extends AnchorPane {
                                 final Action action,
                                 final GenericCallback func,
                                 final String cssStyleClasses) {
-        Button button = new Button(buttonText);
+        String translated = InternationalizationHelper.translatasert(buttonText);
+        Button button = new MaterialDesignButton(translated);
         button.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         //And this, is where the magic happens!
         button.setOnAction((a) -> func.call());
@@ -304,7 +307,9 @@ public class GenericPopup extends AnchorPane {
         if (message == null) {
             return;
         }
-        messageText.setText(message);
+
+        String translated = InternationalizationHelper.translatasert(message);
+        messageText.setText(translated);
     }
 
     /**
@@ -313,7 +318,12 @@ public class GenericPopup extends AnchorPane {
      * @param title The window title.
      */
     public final void setWindowTitle(final String title) {
-        popupStage.setTitle(title);
+        if (title == null) {
+            return;
+        }
+
+        String translated = InternationalizationHelper.translatasert(title);
+        popupStage.setTitle(translated);
     }
 
     /**
@@ -325,7 +335,9 @@ public class GenericPopup extends AnchorPane {
         if (titleText == null) {
             return;
         }
-        messageTitle.setText(titleText);
+
+        String translated = InternationalizationHelper.translatasert(titleText);
+        messageTitle.setText(translated);
     }
 
     /**
@@ -376,8 +388,8 @@ public class GenericPopup extends AnchorPane {
      * @param cancelFunction The function you want to call on cancel button click
      */
     public final void addOkCancelButtons(final GenericCallback okFunction, final GenericCallback cancelFunction) {
-        addButton("Cancel", Position.RIGHT, Action.CANCEL, cancelFunction);
-        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("Cancel"), Position.RIGHT, Action.CANCEL, cancelFunction);
+        addButton(InternationalizationHelper.tryGet("Ok"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 
     /**
@@ -402,8 +414,8 @@ public class GenericPopup extends AnchorPane {
                                       final GenericCallback noFunction,
                                       final String yesStyles,
                                       final String noStyles) {
-        addButton("Yes", Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
-        addButton("No", Position.RIGHT, Action.CANCEL, noFunction, noStyles);
+        addButton(InternationalizationHelper.tryGet("Yes"), Position.RIGHT, Action.DEFAULT, yesFunction, yesStyles);
+        addButton(InternationalizationHelper.tryGet("No"), Position.RIGHT, Action.CANCEL, noFunction, noStyles);
     }
 
     /**
@@ -411,6 +423,6 @@ public class GenericPopup extends AnchorPane {
      * @param okFunction Function to call on ok button being clicked.
      */
     public final void addOkButton(final GenericCallback okFunction) {
-        addButton("OK", Position.RIGHT, Action.DEFAULT, okFunction);
+        addButton(InternationalizationHelper.tryGet("Ok"), Position.RIGHT, Action.DEFAULT, okFunction);
     }
 }

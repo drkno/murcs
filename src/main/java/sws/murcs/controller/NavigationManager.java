@@ -1,16 +1,14 @@
 package sws.murcs.controller;
 
-import sws.murcs.controller.pipes.Navigable;
-import sws.murcs.model.Model;
-import sws.murcs.view.App;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
+import sws.murcs.model.Model;
+import sws.murcs.view.App;
 
 /**
  * A class for helping with navigation.
  */
-public final class NavigationManager implements Navigable {
+public final class NavigationManager {
     /**
      * Limit on the size of the stacks.
      */
@@ -61,7 +59,6 @@ public final class NavigationManager implements Navigable {
      * Determines whether or not it is possible to go back.
      * @return If it is possible to go back.
      */
-    @Override
     public boolean canGoBack() {
         return !backStack.isEmpty();
     }
@@ -69,7 +66,6 @@ public final class NavigationManager implements Navigable {
     /**
      * Traverses forward in the back forward history.
      */
-    @Override
     public void goForward() {
         if (toIgnore) {
             return;
@@ -87,7 +83,6 @@ public final class NavigationManager implements Navigable {
     /**
      * Traverses backward in the back forward history.
      */
-    @Override
     public void goBack() {
         if (toIgnore) {
             return;
@@ -111,7 +106,10 @@ public final class NavigationManager implements Navigable {
         navigateTo(model, true);
     }
 
-    @Override
+    /**
+     * Opens a model item in new tab.
+     * @param model The model item to select
+     */
     public void navigateToNewTab(final Model model) {
         ModelViewController controller = App.getMainController()
                 .addModelViewTab(modelViewController.getTab().getTabPane());
@@ -124,7 +122,6 @@ public final class NavigationManager implements Navigable {
      * @param addToStack Whether or not to add the model to the history stack
      */
     private void navigateTo(final Model model, final boolean addToStack) {
-
         if (head == null) {
             head = model;
         }

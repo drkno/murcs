@@ -8,6 +8,7 @@ import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Search commands view for the pop over.
@@ -38,7 +39,7 @@ public class SearchCommandsView {
         }
 
         hanger = pHanger;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
         try {
             Parent view = loader.load();
             SearchCommandsController controller = loader.getController();
@@ -50,6 +51,7 @@ public class SearchCommandsView {
             ((Parent) popOver.getSkin().getNode()).getStylesheets()
                     .add(controller.getClass().getResource("/sws/murcs/styles/search.css").toExternalForm());
         } catch (Exception e) {
+            hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands popOver");
         }
     }

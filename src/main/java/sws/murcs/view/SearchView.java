@@ -1,13 +1,13 @@
 package sws.murcs.view;
 
+import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Window;
 import sws.murcs.controller.SearchController;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-
-import java.io.IOException;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 
 /**
  * Provides methods for starting the search window/pane.
@@ -34,12 +34,12 @@ public final class SearchView {
      */
     public static SearchView get() {
         if (instance == null) {
-            FXMLLoader loader = new FXMLLoader();
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
             loader.setLocation(SearchView.class.getResource("/sws/murcs/Search.fxml"));
-
+            PopOver popOver = null;
             try {
                 Parent parent = loader.load();
-                PopOver popOver = new PopOver(parent);
+                popOver = new PopOver(parent);
                 SearchController controller = loader.getController();
                 controller.setPopOver(popOver);
                 popOver.detachableProperty().setValue(true);
@@ -49,6 +49,9 @@ public final class SearchView {
                 instance = new SearchView(popOver, controller);
             }
             catch (IOException e) {
+                if (popOver != null) {
+                    popOver.hide();
+                }
                 ErrorReporter.get().reportError(e, "Could not create a search dialog");
             }
         }

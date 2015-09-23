@@ -29,6 +29,16 @@ import java.util.stream.Collectors;
 public class Organisation extends TrackableObject implements Serializable {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
+     * The current language in use by the user.
+     */
+    private String currentLanguage = "English";
+
+    /**
      * The list of projects currently loaded in the application.
      */
     @Searchable
@@ -101,7 +111,12 @@ public class Organisation extends TrackableObject implements Serializable {
     /**
      * The version number of the application.
      */
-    private static final String VERSION = "0.0.5";
+    private static final String VERSION = "1.0.0";
+
+    /**
+     * Is this organisation using generated data?
+     */
+    private boolean usingGeneratedData = false;
 
     /**
      * Sets up a new organisation.
@@ -136,6 +151,22 @@ public class Organisation extends TrackableObject implements Serializable {
             // if you try to set the shortName as null or empty.
             ErrorReporter.get().reportError(e, "Adding PO and SM skills to Organisation failed");
         }
+    }
+
+    /**
+     * Gets whether this organisation is using generated data.
+     * @return is using generated data?
+     */
+    public final boolean isUsingGeneratedData() {
+        return usingGeneratedData;
+    }
+
+    /**
+     * Sets wheather this organisation is using generated data.
+     * @param generatedData is using generated data.
+     */
+    public final void setIsUsingGeneratedData(final boolean generatedData) {
+        usingGeneratedData = generatedData;
     }
 
     /**
@@ -411,7 +442,7 @@ public class Organisation extends TrackableObject implements Serializable {
     public final void addAllocation(final WorkAllocation workAllocation)
             throws InvalidParameterException, OverlappedDatesException {
         if (workAllocation == null) {
-            throw new InvalidParameterException("Cannot add a null WorkAllocation.");
+            throw new InvalidParameterException("{NullWorkAllocation}");
         }
 
         Team team = workAllocation.getTeam();
@@ -419,15 +450,15 @@ public class Organisation extends TrackableObject implements Serializable {
         LocalDate endDate = workAllocation.getEndDate();
 
         if (team == null) {
-            throw new InvalidParameterException("The team cannot be nothing");
+            throw new InvalidParameterException("{TeamNullError}");
         }
 
         if (startDate == null) {
-            throw new InvalidParameterException("The start date cannot be nothing");
+            throw new InvalidParameterException("{StartDateNotSpecified}");
         }
 
         if (endDate != null && startDate.isAfter(endDate)) {
-            throw new InvalidParameterException("End Date is before Start Date");
+            throw new InvalidParameterException("{StartBeforeEndError}");
         }
 
         if (endDate != null) {
@@ -437,11 +468,11 @@ public class Organisation extends TrackableObject implements Serializable {
                     if (allocation.getEndDate() != null) {
                         if ((allocation.getStartDate().isBefore(endDate)
                                 && allocation.getEndDate().isAfter(startDate))) {
-                            throw new OverlappedDatesException("Work Dates Overlap");
+                            throw new OverlappedDatesException("{WorkDatesOverlapError}");
                         }
                     }
                     else if (allocation.getStartDate().isBefore(endDate)) {
-                        throw new OverlappedDatesException("Work Dates Overlap");
+                        throw new OverlappedDatesException("{WorkDatesOverlapError}");
                     }
                 }
             }
@@ -450,7 +481,7 @@ public class Organisation extends TrackableObject implements Serializable {
             for (WorkAllocation allocation : allocations) {
                 if (allocation.getTeam() == team) {
                     if (allocation.getEndDate() == null || allocation.getEndDate().isAfter(startDate)) {
-                        throw new OverlappedDatesException("Work Dates Overlap");
+                        throw new OverlappedDatesException("{WorkDatesOverlapError}");
                     }
                 }
             }
@@ -466,16 +497,16 @@ public class Organisation extends TrackableObject implements Serializable {
      */
     public final void addAllocations(final List<WorkAllocation> allocationsToAdd) throws Exception {
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
         for (WorkAllocation allocation : allocationsToAdd) {
             addAllocation(allocation);
         }
-        UndoRedoManager.assimilate(commitNumber);
+        UndoRedoManager.get().assimilate(commitNumber);
         commit("edit project");
     }
 
@@ -623,11 +654,11 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
         switch (type) {
             case Project:
@@ -659,13 +690,13 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         try {
-            UndoRedoManager.assimilate(commitNumber);
+            UndoRedoManager.get().assimilate(commitNumber);
         }
         catch (Exception e) {
             // This will never happen  because we have called commit before calling assimilate
             ErrorReporter.get().reportError(e, "Could not assimilate while adding");
         }
-        UndoRedoManager.add(model);
+        UndoRedoManager.get().add(model);
         commit("create " + type.toString().toLowerCase());
     }
 
@@ -676,11 +707,11 @@ public class Organisation extends TrackableObject implements Serializable {
     public final void remove(final Model model) {
         ModelType type = ModelType.getModelType(model);
         long commitNumber;
-        if (UndoRedoManager.getHead() == null) {
+        if (UndoRedoManager.get().getHead() == null) {
             commitNumber = 0;
         }
         else {
-            commitNumber = UndoRedoManager.getHead().getCommitNumber();
+            commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
         }
 
         switch (type) {
@@ -715,12 +746,12 @@ public class Organisation extends TrackableObject implements Serializable {
         }
 
         try {
-            UndoRedoManager.assimilate(commitNumber);
+            UndoRedoManager.get().assimilate(commitNumber);
         } catch (Exception e) {
             // This should never happen  because we have called commit before calling assimilate
             ErrorReporter.get().reportError(e, "Could not assimilate while removing");
         }
-        UndoRedoManager.remove(model);
+        UndoRedoManager.get().remove(model);
         commit("remove " + type.toString().toLowerCase());
     }
 
@@ -807,5 +838,21 @@ public class Organisation extends TrackableObject implements Serializable {
         for (Model item : items) {
             add(item);
         }
+    }
+
+    /**
+     * Gets the current language in use by the application.
+     * @return the language currently set.
+     */
+    public final String getCurrentLanguage() {
+        return currentLanguage;
+    }
+
+    /**
+     * Sets the current language in use by the application.
+     * @param language the language to set it to.
+     */
+    public void setCurrentLanguage(final String language) {
+        currentLanguage = language;
     }
 }

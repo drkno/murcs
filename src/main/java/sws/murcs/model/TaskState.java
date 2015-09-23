@@ -1,5 +1,7 @@
 package sws.murcs.model;
 
+import sws.murcs.internationalization.InternationalizationHelper;
+
 /**
  * The states that a Task can be in.
  */
@@ -16,27 +18,12 @@ public enum TaskState {
     InProgress,
 
     /**
-     * The task is pending.
-     */
-    Pending,
-
-    /**
-     * The task is blocked by another task.
-     */
-    Blocked,
-
-    /**
-     * The task is ready to be started.
-     */
-    Ready,
-
-    /**
      * The task is completed.
      */
-    Done,
+    Done;
 
-    /**
-     * The task is deferred to a later time.
-     */
-    Deferred
+    @Override
+    public String toString() {
+        return InternationalizationHelper.tryGet(super.toString());
+    }
 }

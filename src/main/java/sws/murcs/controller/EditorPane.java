@@ -1,23 +1,29 @@
 package sws.murcs.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import sws.murcs.controller.editor.GenericEditor;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Model;
 import sws.murcs.model.ModelType;
 import sws.murcs.view.App;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Creates the editor Pane.
  */
 public class EditorPane {
+
+    /**
+     * Loads a different fzml for search and or creation type.
+     */
+    private Boolean isSearchOrCreation;
+
     /**
      * The controller for the editor.
      */
@@ -41,7 +47,7 @@ public class EditorPane {
     /**
      * Better supported Java version.
      */
-    private final int betterJavaVersion = 40;
+    private final int betterJavaVersion = 60;
 
     /**
      * Creates a new Editor pane, and sets the model.
@@ -49,7 +55,18 @@ public class EditorPane {
      * @param navigationManager The navigation manager that the pane should make use of
      */
     public EditorPane(final Model pModel, final Navigable navigationManager) {
+        this(pModel, navigationManager, false);
+    }
+
+    /**
+     * Creates a new Editor pane, and sets the model.
+     * @param pModel The model to set
+     * @param navigationManager The navigation manager that the pane should make use of
+     * @param pIsSearchOrCreation Loads a different fxml for search or creation window
+     */
+    public EditorPane(final Model pModel, final Navigable navigationManager, final Boolean pIsSearchOrCreation)  {
         this.navigationManager = navigationManager;
+        isSearchOrCreation = pIsSearchOrCreation;
         if (pModel != null) {
             model = pModel;
             create();
@@ -92,7 +109,12 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
         fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
-        fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+        if (isSearchOrCreation) {
+            fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+        }
+        else {
+            fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
+        }
 
         ModelType type = ModelType.getModelType(model);
         if (!fxmlPaths.containsKey(type)) {
@@ -102,7 +124,7 @@ public class EditorPane {
         String fxmlPath = "/sws/murcs/" + fxmlPaths.get(type);
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource(fxmlPath));
             // This is due to problems between java 8u25 and java 8u40
             if (App.JAVA_UPDATE_VERSION < betterJavaVersion
                     && !Thread.currentThread().getName().toLowerCase().contains("fx")) {

@@ -7,6 +7,10 @@ Feature: Hyperlinks
     When I click on a work allocation
     Then The window updates to displaying the details of that team
 
+  Scenario: Opening Hyperlinks in new tabs
+    When I CTRL + Click on a hyperlink
+    Then it should open in a new tab.
+
   Scenario: View a person that is a member of a team
     Given I am viewing a team
     When I click on the name of a person

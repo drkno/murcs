@@ -1,23 +1,23 @@
 package sws.murcs.model;
 
-import sws.murcs.exceptions.CyclicDependencyException;
-import sws.murcs.exceptions.DuplicateObjectException;
-import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.magic.tracking.UndoRedoManager;
-import sws.murcs.model.helpers.DependenciesHelper;
-import sws.murcs.search.Searchable;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
+import sws.murcs.exceptions.CyclicDependencyException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.helpers.DependenciesHelper;
+import sws.murcs.search.Searchable;
 
 /**
  * A class representing a story in the backlog for a project.
@@ -25,6 +25,11 @@ import java.util.List;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Story extends Model {
+
+    /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
 
     /**
      * Represents the current state of a story.
@@ -37,10 +42,19 @@ public class Story extends Model {
         None,
 
         /**
-         * Indicates that a story is not yet ready to
-         * be pulled into a sprint.
+         * Indicates that a story is ready to be pulled into a sprint.
          */
-        Ready
+        Ready,
+
+        /**
+         * Indicates that this story has been completed.
+         */
+        Done;
+
+        @Override
+        public String toString() {
+            return InternationalizationHelper.tryGet(super.toString());
+        }
     }
 
     /**
@@ -164,7 +178,7 @@ public class Story extends Model {
             acceptanceCriteria.add(condition);
 
             //Make sure the new condition is tracked by UndoRedo
-            UndoRedoManager.add(condition);
+            UndoRedoManager.get().add(condition);
         }
         commit("edit acceptance criteria");
     }
@@ -266,7 +280,7 @@ public class Story extends Model {
     public final void addTask(final Task newTask) throws DuplicateObjectException {
         if (!tasks.contains(newTask)) {
             tasks.add(newTask);
-            UndoRedoManager.add(newTask);
+            UndoRedoManager.get().add(newTask);
         } else {
             throw new DuplicateObjectException("You can't add two of the same task to a story!");
         }
@@ -280,7 +294,8 @@ public class Story extends Model {
     public final void removeTask(final Task task) {
         if (tasks.contains(task)) {
             tasks.remove(task);
-            UndoRedoManager.remove(task);
+            UndoRedoManager.get().remove(task);
+            commit("edit story");
         }
     }
 
@@ -290,6 +305,18 @@ public class Story extends Model {
      */
     public final List<Task> getTasks() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /**
+     * Gets the estimation info for the story.
+     * @return The estimation info for this task.
+     */
+    public EstimateInfo getEstimationInfo() {
+        EstimateInfo estimatedTimeRemaining = new EstimateInfo();
+        for (Task task : getTasks()) {
+            estimatedTimeRemaining.mergeIn(task.getEstimateInfo());
+        }
+        return estimatedTimeRemaining;
     }
 
     @Override

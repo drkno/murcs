@@ -7,6 +7,10 @@ Feature: List Display
       Then the list items repopulate with that type
       And the first item is selected
 
+    Scenario: Opening list item in a new tab
+      When I CTRL + Click on an item in the display list
+      Then the item is opened in a new tab
+
     Scenario: Select item from list display
       When I select an item from the list display
       Then details of the select item are shown

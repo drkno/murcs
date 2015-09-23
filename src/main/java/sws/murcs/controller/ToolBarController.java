@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import sws.murcs.controller.pipes.ModelManagable;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.controller.pipes.ToolBarCommands;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.ModelType;
 
 import java.util.List;
@@ -95,13 +96,24 @@ public class ToolBarController {
      * Sets up the tooltips for the toolbar controls that will have different shortcuts on different OS's.
      */
     private void setUpToolTips() {
-        revertButton.getTooltip().setText("Revert changes (" + shortCutKey + "+R)");
-        openButton.getTooltip().setText("Open project (" + shortCutKey + "+O)");
-        saveAsButton.getTooltip().setText("Save As (" + shortCutKey + "+Shift+S)");
-        saveButton.getTooltip().setText("Save (" + shortCutKey + "+S)");
-        sendFeedbackButton.getTooltip().setText("Send feedback to the developers (" + shortCutKey + "+B)");
-        generateReportButton.getTooltip().setText("Generate report (" + shortCutKey + "+G)");
-        searchButton.getTooltip().setText("Search (" + shortCutKey + "+F Or " + shortCutKey + "+Space)");
+        revertButton.getTooltip().setText(InternationalizationHelper.tryGet("RevertChanges")
+                + " (" + shortCutKey + "+R)");
+        openButton.getTooltip().setText(InternationalizationHelper.tryGet("OpenProject")
+                + " (" + shortCutKey + "+O)");
+        saveAsButton.getTooltip().setText(InternationalizationHelper.tryGet("SaveAs")
+                + " (" + shortCutKey + "+Shift+S)");
+        saveButton.getTooltip().setText(InternationalizationHelper.tryGet("Save")
+                + " (" + shortCutKey + "+S)");
+        sendFeedbackButton.getTooltip().setText(InternationalizationHelper.tryGet("SendFeedbackToTheDevelopers")
+                + " (" + shortCutKey + "+B)");
+        generateReportButton.getTooltip().setText(InternationalizationHelper.tryGet("GenerateReport")
+                + " (" + shortCutKey + "+G)");
+        searchButton.getTooltip().setText(InternationalizationHelper.translatasert("{Search} ("
+                + shortCutKey + "+F {Or} " + shortCutKey + "+Space)"));
+        forwardButton.getTooltip().setText(InternationalizationHelper.tryGet("NavigateForward")
+                + " (" + shortCutKey + "+Period)");
+        backButton.getTooltip().setText(InternationalizationHelper.tryGet("NavigateBack")
+                + " (" + shortCutKey + "+Comma)");
     }
 
     /**
@@ -200,6 +212,9 @@ public class ToolBarController {
                     break;
                 case "addStory":
                     type = ModelType.Story;
+                    break;
+                case "addSprint":
+                    type = ModelType.Sprint;
                     break;
                 default:
                     throw new UnsupportedOperationException("Adding has not been implemented.");

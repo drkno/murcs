@@ -1,7 +1,7 @@
 package sws.murcs.controller.windowManagement;
 
 import javafx.collections.FXCollections;
-import sws.murcs.controller.ModelViewController;
+import sws.murcs.controller.MainController;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -128,7 +128,9 @@ public class WindowManager {
     /**
      * Adds a window to the top most position in windows.
      * @param window new window to register.
+     * @deprecated This method should not be accessed directly as instead used via the Window.register function.
      */
+    @Deprecated
     public final void addWindow(final Window window) {
         windows.add(0, window);
         window.stage.toFront();
@@ -216,7 +218,7 @@ public class WindowManager {
      */
     public final void cleanUp() {
         for (int i = 0; i < windows.size(); i++) {
-            if (windows.get(i).getController().getClass() != ModelViewController.class) {
+            if (windows.get(i).getController().getClass() != MainController.class) {
                 windows.get(i).close();
                 i--;
             }

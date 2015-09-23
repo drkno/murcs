@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="rootPane" prefHeight="400.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintContainer">
+    <children>
+        <TabPane fx:id="containerTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" side="RIGHT" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+            <tabs>
+                <Tab fx:id="overviewTab" text="%Overview">
+               <content>
+                  <AnchorPane fx:id="overviewAnchorPane" prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+                <Tab fx:id="scrumBoardTab" text="%ScrumBoard">
+               <content>
+                  <AnchorPane fx:id="scrumBoardAnchorPane" prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+                <Tab fx:id="burnDownChartTab" text="%BurnDownChart">
+               <content>
+                  <AnchorPane fx:id="burnDownChartAnchorPane" prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+            <Tab fx:id="allTasksTab" text="%AllTasks">
+              <content>
+                <AnchorPane fx:id="allTasksAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+            </tabs>
+        </TabPane>
+      <VBox fx:id="progressContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0" />
+    </children>
+</AnchorPane>

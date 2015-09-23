@@ -1,6 +1,5 @@
 package sws.murcs.debug.errorreporting;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -16,6 +15,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sws.murcs.controller.controls.md.MaterialDesignCheckBox;
 import sws.murcs.controller.windowManagement.Window;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 
 /**
  * Popup for reporting errors/bugs.
@@ -82,6 +83,7 @@ public class ErrorReportPopup {
     private void setStage(final Stage stage) {
         popupStage = stage;
         popupStage.setResizable(true);
+        popupStage.setTitle("Feedback");
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
@@ -106,7 +108,7 @@ public class ErrorReportPopup {
     public static ErrorReportPopup newErrorReporter() {
         Stage stage = new Stage();
 
-        FXMLLoader loader = new FXMLLoader(ErrorReportPopup.class.getResource("/sws/murcs/ErrorReporting.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(ErrorReportPopup.class.getResource("/sws/murcs/ErrorReporting.fxml"));
         AnchorPane root;
         try {
             root = loader.load();
@@ -139,12 +141,12 @@ public class ErrorReportPopup {
      */
     public final void show() {
         insertMDCheckBox();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initModality(Modality.WINDOW_MODAL);
         window = new Window(popupStage, this);
         window.register();
         window.addGlobalShortcutsToWindow();
         window.show();
-        Platform.runLater(messageTitleLabel::requestFocus);
+        detailTextArea.requestFocus();
     }
 
     /**
@@ -168,8 +170,19 @@ public class ErrorReportPopup {
      */
     public final void setReportListener(final ReportError report) {
         reportButton.setOnAction(a -> {
-            window.close();
+            close();
             report.sendReport(detailTextArea.getText());
+        });
+    }
+
+    /**
+     * Sets what will be called when the cancel button is pressed.
+     * @param report the callback.
+     */
+    public final void setCloseListener(final ErrorReporterOpening report) {
+        cancelButton.setOnAction(a -> {
+            close();
+            report.setReporterIsOpen(false);
         });
     }
 
@@ -188,21 +201,14 @@ public class ErrorReportPopup {
     public final void setType(final ErrorType type) {
         switch (type) {
             case Automatic:
-                setTitleText("Something went wrong.");
-                setMessageText("An unexpected problem occurred. If you wish to report this problem to get it fixed, "
-                        + "type how it occurred below and click 'Report'. Otherwise click 'Cancel'.\n\nIf the "
-                        + "crash allows you to continue working, it is advised you save your data and restart the "
-                        + "application before continuing.");
-                setScreenShotWarningText("Note that screenshots may contain sensitive or confidential data!!\n"
-                       + "If possible please include them as this will help us debug the issue.\n"
-                       + "Please act responsibly.");
+                setTitleText(InternationalizationHelper.tryGet("SomethingWentWrong"));
+                setMessageText(InternationalizationHelper.tryGet("UnexpectedProblemMessage"));
+                setScreenShotWarningText(InternationalizationHelper.tryGet("ScreenshotWarning"));
                 break;
             case Manual:
-                setTitleText("Feedback");
-                setMessageText("Noticed something isn't right? Describe it below.\n");
-                setScreenShotWarningText("Note that screenshots may contain sensitive or confidential data!!\n"
-                        + "If possible please include them as this will help us debug the issue.\n"
-                        + "Please act responsibly.");
+                setTitleText(InternationalizationHelper.tryGet("Feedback"));
+                setMessageText(InternationalizationHelper.tryGet("NoticedSomethingIsntQuiteRight"));
+                setScreenShotWarningText(InternationalizationHelper.tryGet("ScreenshotWarning"));
                 break;
             default:
                 break;

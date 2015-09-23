@@ -15,6 +15,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Project;
 import sws.murcs.model.Team;
@@ -103,6 +105,9 @@ public class ProjectEditor extends GenericEditor<Project> {
     @Override
     public final void loadObject() {
         Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
+        if (organisation == null) {
+            return;
+        }
 
         String modelShortName = getModel().getShortName();
         String viewShortName = shortNameTextField.getText();
@@ -142,8 +147,11 @@ public class ProjectEditor extends GenericEditor<Project> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Project} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -185,11 +193,11 @@ public class ProjectEditor extends GenericEditor<Project> {
 
         // Must meet minimum requirements for an allocation
         if (team == null) {
-            addFormError(choiceBoxAddTeam, "Team may not be null");
+            addFormError(choiceBoxAddTeam, "{TeamNullError}");
             hasErrors = true;
         }
         if (startDate == null) {
-            addFormError(datePickerStartDate, "Start date must be specified");
+            addFormError(datePickerStartDate, "{StartDateNotSpecified}");
             hasErrors = true;
         }
 
@@ -228,17 +236,17 @@ public class ProjectEditor extends GenericEditor<Project> {
         int rowNumber = teamsViewer.getSelectionModel().getSelectedIndex();
         WorkAllocation allocation = observableAllocations.get(rowNumber);
         GenericPopup alert = new GenericPopup();
-        alert.setTitleText("Unshedule A Team");
-        alert.setMessageText("Are you sure you wish to unshedule \""
+        alert.setTitleText("{UnscheduleTeamTitle}");
+        alert.setMessageText("{UnscheduleTeamWarning} \""
                 + allocation.getTeam()
-                + "\" from \""
+                + "\" {From} \""
                 + allocation.getProject()
                 + "\"?");
         alert.addYesNoButtons(() -> {
             PersistenceManager.getCurrent().getCurrentModel().removeAllocation(allocation);
-            observableAllocations.remove(rowNumber);
+            observableAllocations.remove(allocation);
             alert.close();
-        }, "danger-will-robinson", "dont-panic");
+        }, "danger-will-robinson", "everything-is-fine");
         alert.show();
     }
 
@@ -249,8 +257,9 @@ public class ProjectEditor extends GenericEditor<Project> {
         @Override
         protected void updateItem(final Team team, final boolean empty) {
             super.updateItem(team, empty);
-            if (team == null) {
-                setText("");
+            if (team == null || empty) {
+                setText(null);
+                setGraphic(null);
             }
             else if (getIsCreationWindow()) {
                 setText(team.toString());

@@ -13,6 +13,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -24,6 +26,8 @@ import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleRolesException;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
@@ -39,6 +43,18 @@ import java.util.stream.Collectors;
  * The controller for the team editor.
  */
 public class TeamEditor extends GenericEditor<Team> {
+
+    /**
+     * Button used to navigate to the SM person.
+     */
+    @FXML
+    private Button navigateToSMButton;
+
+    /**
+     * Button used to navigate to the PO person.
+     */
+    @FXML
+    private Button navigateToPOButton;
 
     /**
      * The member of the team.
@@ -105,6 +121,26 @@ public class TeamEditor extends GenericEditor<Team> {
         allocatablePeople = FXCollections.observableArrayList();
         addTeamMemberPicker.setItems((ObservableList<Person>) allocatablePeople);
         memberNodeIndex = new HashMap<>();
+        navigateToPOButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (productOwnerPicker.getSelectionModel().getSelectedItem() != null) {
+                Person person = productOwnerPicker.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
+        navigateToSMButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (scrumMasterPicker.getSelectionModel().getSelectedItem() != null) {
+                Person person = scrumMasterPicker.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
     }
 
     @Override
@@ -195,8 +231,11 @@ public class TeamEditor extends GenericEditor<Team> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            }   catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Team} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -251,6 +290,7 @@ public class TeamEditor extends GenericEditor<Team> {
         productOwners.remove(modelScrumMaster);
 
         clearPOButton.setDisable(true);
+        navigateToPOButton.setDisable(true);
 
         // Remove listener while editing the product owner picker
         productOwnerPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -259,7 +299,9 @@ public class TeamEditor extends GenericEditor<Team> {
         if (modelProductOwner != null) {
             productOwnerPicker.getSelectionModel().select(modelProductOwner);
             clearPOButton.setDisable(false);
-
+            if (!isCreationWindow) {
+                navigateToPOButton.setDisable(false);
+            }
         }
         productOwnerPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -282,6 +324,7 @@ public class TeamEditor extends GenericEditor<Team> {
         scrumMasters.remove(modelProductOwner);
 
         clearSMButton.setDisable(true);
+        navigateToSMButton.setDisable(true);
 
         // Remove listener while editing the scrum master picker
         scrumMasterPicker.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
@@ -291,6 +334,9 @@ public class TeamEditor extends GenericEditor<Team> {
         if (modelScrumMaster != null) {
             scrumMasterPicker.getSelectionModel().select(modelScrumMaster);
             clearSMButton.setDisable(false);
+            if (!isCreationWindow) {
+                navigateToSMButton.setDisable(false);
+            }
         }
         scrumMasterPicker.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -329,20 +375,30 @@ public class TeamEditor extends GenericEditor<Team> {
      * @param person The team member
      * @return the node representing the team member
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Node generateMemberNode(final Person person) {
-        MaterialDesignButton removeButton = new MaterialDesignButton("X");
+        MaterialDesignButton removeButton = new MaterialDesignButton(null);
+        removeButton.setPrefHeight(15);
+        removeButton.setPrefWidth(15);
+        Image image = new Image("sws/murcs/icons/removeWhite.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(20);
+        imageView.setFitWidth(20);
+        imageView.setPreserveRatio(true);
+        imageView.setPickOnBounds(true);
+        removeButton.setGraphic(imageView);
         removeButton.getStyleClass().add("mdr-button");
         removeButton.getStyleClass().add("mdrd-button");
         removeButton.setOnAction(event -> {
             if (!isCreationWindow) {
                 GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                popup.setTitleText("Remove Team Member");
-                String message = "Are you sure you wish to remove " + person.getShortName() + " from this team?";
+                popup.setTitleText("{ConfirmRemoveTeamMemberTitle}");
+                String message = "{AreYouSureRemove} " + person.getShortName() + ".";
                 if (person.equals(getModel().getScrumMaster())) {
-                    message += "\nThey are currently the teams Scrum Master.";
+                    message += "\n{TheyAreScrumMaster}.";
                 }
                 if (person.equals(getModel().getProductOwner())) {
-                    message += "\nThey are currently the teams Product Owner.";
+                    message += "\n{TheyArePO}.";
                 }
                 popup.setMessageText(message);
                 popup.addYesNoButtons(() -> {
@@ -353,7 +409,7 @@ public class TeamEditor extends GenericEditor<Team> {
                     getModel().removeMember(person);
                     updatePOSM();
                     popup.close();
-                }, "danger-will-robinson", "dont-panic");
+                }, "danger-will-robinson", "everything-is-fine");
                 popup.show();
             }
             else {

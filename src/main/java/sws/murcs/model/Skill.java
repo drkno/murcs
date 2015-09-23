@@ -12,6 +12,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Skill extends Model {
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * The short name for the product owner.
      */
     public static final String PO_NAME = "PO";

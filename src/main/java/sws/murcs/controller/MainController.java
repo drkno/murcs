@@ -1,6 +1,16 @@
 package sws.murcs.controller;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -29,11 +39,14 @@ import sws.murcs.controller.controls.tabs.tabpane.DnDTabPaneFactory;
 import sws.murcs.controller.controls.tabs.tabpane.skin.AddableDnDTabPaneSkin;
 import sws.murcs.controller.editor.BacklogEditor;
 import sws.murcs.controller.pipes.Navigable;
+import sws.murcs.controller.pipes.NavigableTabController;
 import sws.murcs.controller.pipes.Tabbable;
 import sws.murcs.controller.pipes.ToolBarCommands;
 import sws.murcs.controller.windowManagement.ShortcutManager;
 import sws.murcs.controller.windowManagement.Window;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -46,17 +59,6 @@ import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
-
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * A controller for the base pane.
@@ -75,11 +77,18 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     private MenuBar menuBar;
 
     /**
+     * A menu that lets you choose the language.
+     */
+    @FXML
+    private Menu languageMenu;
+
+    /**
      * The Menu items for the main window.
      */
     @FXML
     private MenuItem fileQuit, undoMenuItem, redoMenuItem, open, save, saveAs, generateReport, addProject, newModel,
-            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle;
+            addTeam, addPerson, addSkill, addRelease, addStory, addBacklog, revert, highlightToggle, addSprint,
+            reportBug;
 
     /**
      * The menu item for hiding the sidebar.
@@ -97,7 +106,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * The top toolbar and menu container.
      */
     @FXML
-    private VBox vBoxSideDisplay, titleVBox;
+    private VBox titleVBox;
 
     /**
      * The main tab pane (where everything goes). We have to build
@@ -135,6 +144,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             menuBar.useSystemMenuBarProperty().set(true);
         }
 
+        List<String> languages = InternationalizationHelper.getLanguages();
+        for (String language : languages) {
+            MenuItem lang = new MenuItem(language);
+            lang.setOnAction((a) -> changeLanguage(language));
+            languageMenu.getItems().add(lang);
+        }
+
         Pane containerPane = buildDnDTabPane();
         borderPaneMain.setCenter(containerPane);
 
@@ -164,21 +180,58 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             Platform.runLater(() -> currentTabbable.update());
         });
 
+        mainTabPane.getTabs().addListener((ListChangeListener<Tab>) c -> {
+            c.next();
+            if (c.wasAdded()) {
+                boolean isClosable = mainTabPane.getTabs().size() > 1;
+                mainTabPane.getTabs().stream().forEach(t -> {
+                    t.setClosable(isClosable);
+                });
+            }
+            if (c.wasRemoved()) {
+                if (mainTabPane.getTabs().size() == 1) {
+                    mainTabPane.getTabs().stream().forEach(t -> {
+                        t.setClosable(false);
+                    });
+                }
+            }
+        });
+
         loadToolbar();
         toolBarController.setLinkedController(this);
         toolBarController.setNavigable(this);
+        toolBarController.setToolBarMenu(toolBarMenu);
 
         undoRedoNotification(ChangeState.Commit);
-        UndoRedoManager.addChangeListener(this);
+        UndoRedoManager.get().addChangeListener(this);
 
         addModelViewTab(mainTabPane);
+    }
+
+    /**
+     * Sets the current language of the application.
+     * @param language language to set the language to.
+     */
+    private void changeLanguage(final String language) {
+        //Hacky save. Dion Vader says it's okay.
+        borderPaneMain.requestFocus();
+        InternationalizationHelper.setLanguage(language);
+        Organisation org = PersistenceManager.getCurrent().getCurrentModel();
+        if (org != null) {
+            org.setCurrentLanguage(language);
+        }
+        Scene scene = borderPaneMain.getScene();
+        MainController controller = App.loadRootNode();
+        scene.setRoot(controller.getRootNode());
+
+        App.getWindowManager().cleanUp();
     }
 
     /**
      * Builds a new DnDTabPane and returns it's container.
      * @return The container of the DnDTabPane
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     private Pane buildDnDTabPane() {
         DnDTabPane tabPane = new DnDTabPane();
 
@@ -205,6 +258,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 return;
             }
 
+            tab.setClosable(true);
             PointerInfo info = MouseInfo.getPointerInfo();
             Point awtPoint = info.getLocation();
 
@@ -246,9 +300,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         DnDTabPane tabPane = (DnDTabPane) containerPane.getChildren().get(0);
         tabPane.getTabs().add(tab);
 
+        final NavigableTabController navigable = new NavigableTabController();
+        navigable.setCurrentTab(tabbable);
+
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 stage.close();
+            }
+
+            for (Tabbable t : tabs) {
+                if (t.getTab() == newValue) {
+                    navigable.setCurrentTab(t);
+                    break;
+                }
             }
         });
 
@@ -274,6 +338,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
+        Window newWindow = new Window(stage, tabbable, window);
+        newWindow.register();
+        newWindow.addGlobalShortcutsToWindow();
+
+        addNavigationShortcuts(newWindow.getStage(), navigable);
+
         stage.show();
         stage.setX(mousePos.getX());
         stage.setY(mousePos.getY());
@@ -286,7 +356,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private void loadToolbar() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ToolBar.fxml"));
             Parent view = loader.load();
 
             ToolBarController controller = loader.getController();
@@ -316,62 +386,106 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         ShortcutManager shortcutManager = App.getShortcutManager();
 
         //Global shortcuts
+        revert.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN,
                 KeyCombination.SHIFT_DOWN), () -> revert(null));
+        newModel.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN),
                 () -> newModel(null));
+        save.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN),
                 this::save);
+        saveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
+                KeyCombination.SHIFT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN,
                 KeyCombination.SHIFT_DOWN), () -> saveAs(null));
+        open.setAccelerator(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.O, KeyCombination.SHORTCUT_DOWN),
                 () -> open(null));
+        generateReport.setAccelerator(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.G, KeyCombination.SHORTCUT_DOWN),
                 () -> generateReport(null));
+        reportBug.setAccelerator(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.B, KeyCombination.SHORTCUT_DOWN),
                 () -> ErrorReporter.get().reportManually());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.SPACE, KeyCombination.SHORTCUT_DOWN),
                 () -> search(null));
+        addProject.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Project));
+                () -> showCreateWindow(ModelType.Project, ((ModelViewController) currentTabbable)::selectItem));
+        addTeam.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Team));
+                () -> showCreateWindow(ModelType.Team, ((ModelViewController) currentTabbable)::selectItem));
+        addPerson.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Person));
+                () -> showCreateWindow(ModelType.Person, ((ModelViewController) currentTabbable)::selectItem));
+        addSkill.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Skill));
+                () -> showCreateWindow(ModelType.Skill, ((ModelViewController) currentTabbable)::selectItem));
+        addRelease.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Release));
+                () -> showCreateWindow(ModelType.Release, ((ModelViewController) currentTabbable)::selectItem));
+        addBacklog.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Backlog));
+                () -> showCreateWindow(ModelType.Backlog, ((ModelViewController) currentTabbable)::selectItem));
+        addStory.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN),
-                () -> showCreateWindow(ModelType.Story));
-
-        //Local shortcuts.
-        Map<KeyCombination, Runnable> accelerators = new HashMap<>();
-        accelerators.put(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
+                () -> showCreateWindow(ModelType.Story, ((ModelViewController) currentTabbable)::selectItem));
+        addSprint.setAccelerator(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN),
+                () -> showCreateWindow(ModelType.Sprint, ((ModelViewController) currentTabbable)::selectItem));
+        undoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.Z, KeyCombination.SHORTCUT_DOWN),
                 () -> undo(null));
-        accelerators.put(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
+        redoMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.Y, KeyCombination.SHORTCUT_DOWN),
                 () -> redo(null));
-
-        accelerators.put(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
+        showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
                 () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
-        accelerators.put(new KeyCodeCombination(KeyCode.EQUALS),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.EQUALS),
                 () -> currentTabbable.create());
-        accelerators.put(new KeyCodeCombination(KeyCode.DELETE),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
                 () -> currentTabbable.remove());
-        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> goBack());
-        accelerators.put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> goForward());
-        accelerators.put(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN),
                 () -> mainTabPane.getTabs().remove(mainTabPane.getSelectionModel().getSelectedItem()));
-        accelerators.put(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
+        shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN),
                 () -> addModelViewTab(mainTabPane));
 
-        App.getStage().getScene().getAccelerators().putAll(accelerators);
+        //Make sure we can navigate from this window.
+        addNavigationShortcuts(window.getStage(), this);
+    }
+
+    /**
+     * Adds shortcuts for navigation to a stage.
+     * @param stage The stage to add the shortcuts to
+     * @param navigationController The navigation controller to use
+     */
+    private void addNavigationShortcuts(final Stage stage, final Navigable navigationController) {
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goBack());
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
+                () -> navigationController.goForward());
+
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Project));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Team));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Person));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Skill));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Release));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Backlog));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Story));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.ALT_DOWN),
+                () -> navigationController.navigateTo(ModelType.Sprint));
     }
 
     /**
@@ -400,10 +514,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      * @param addToPane Indicates whether the tab should be automatically added to the tab pane.
      * @return The newly created tabbable
      */
-    @SuppressWarnings("CheckStyle-IDEA")
+    @SuppressWarnings("checkstyle:magicnumber")
     public Tabbable addTab(final String fxmlPath, final TabPane tabPane, final boolean addToPane) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
             Tabbable controller = loader.getController();
@@ -413,7 +527,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
 
             Tab tabNode = new Tab();
             tabNode.setClosable(true);
-            tabNode.setOnClosed(e -> {
+            tabNode.setOnCloseRequest(e -> {
                 Tab t = (Tab) e.getSource();
                 Tabbable tabbable = getTabbable(t);
                 tabs.remove(tabbable);
@@ -493,10 +607,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @Override
     public final void undoRedoNotification(final ChangeState change) {
-        if (!UndoRedoManager.canRevert()) {
+        if (!UndoRedoManager.get().canRevert()) {
             revert.setDisable(true);
             toolBarController.updateRevertButton(true);
-            String undoPrompt = "Undo...";
+            String undoPrompt = InternationalizationHelper.translatasert("{Undo}...");
             undoMenuItem.setDisable(true);
             undoMenuItem.setText(undoPrompt);
             toolBarController.updateUndoButton(true, undoPrompt);
@@ -505,22 +619,40 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         else {
             revert.setDisable(false);
             toolBarController.updateRevertButton(false);
-            String undoPrompt = "Undo " + UndoRedoManager.getRevertMessage();
+            String translated = "";
+            String[] strs = UndoRedoManager.get().getRevertMessage().split(" ");
+            for (int i = 0; i < strs.length; i++) {
+                if (i != 0) {
+                    translated += " ";
+                }
+                translated += "{" + strs[i] + "}";
+            }
+            String undoPrompt = InternationalizationHelper.tryGet("Undo") + " "
+                    + InternationalizationHelper.translatasert(translated);
             undoMenuItem.setDisable(false);
             undoMenuItem.setText(undoPrompt);
             toolBarController.updateUndoButton(false, undoPrompt);
             App.addTitleStar();
         }
 
-        if (!UndoRedoManager.canRemake()) {
+        if (!UndoRedoManager.get().canRemake()) {
             redoMenuItem.setDisable(true);
-            String redoPrompt = "Redo...";
+            String redoPrompt = InternationalizationHelper.translatasert("{Redo}...");
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(true, redoPrompt);
         }
         else {
             redoMenuItem.setDisable(false);
-            String redoPrompt = "Redo " + UndoRedoManager.getRemakeMessage();
+            String translated = "";
+            String[] strs = UndoRedoManager.get().getRemakeMessage().split(" ");
+            for (int i = 0; i < strs.length; i++) {
+                if (i != 0) {
+                    translated += " ";
+                }
+                translated += "{" + strs[i] + "}";
+            }
+            String redoPrompt = InternationalizationHelper.tryGet("Redo") + " "
+                    + InternationalizationHelper.translatasert(translated);
             redoMenuItem.setText(redoPrompt);
             toolBarController.updateRedoButton(false, redoPrompt);
         }
@@ -580,7 +712,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             type = ModelType.parseString(source.getText());
         }
 
-        showCreateWindow(type);
+        showCreateWindow(type, ((ModelViewController) currentTabbable)::selectItem);
     }
 
     /**
@@ -589,12 +721,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     private void newModel(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
-            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardThem}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 try {
                     // Close all windows which are not the main app.
@@ -604,8 +736,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     ErrorReporter.get().reportError(e, "Something went wrong creating a new organisation :(");
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
-                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            if (UndoRedoManager.get().canRevert()) {
+                popup.addButton("{Save}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
@@ -619,7 +751,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -627,7 +759,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -647,8 +779,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         PersistenceManager.getCurrent().setCurrentModel(null);
         Organisation model = new Organisation();
         PersistenceManager.getCurrent().setCurrentModel(model);
-        UndoRedoManager.importModel(model);
-
+        UndoRedoManager.get().importModel(model);
+        UndoRedoManager.get().forget();
+        model.setCurrentLanguage(InternationalizationHelper.getCurrentLanguage());
         //We need to reset.
         reset();
     }
@@ -659,20 +792,20 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     public final void open(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
-            popup.addButton("Discard Them", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardThem}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 if (openFile()) {
                     popup.close();
                     // Close all windows which are not the main app.
                     App.getWindowManager().cleanUp();
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
-                popup.addButton("Save Them", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            if (UndoRedoManager.get().canRevert()) {
+                popup.addButton("{SaveThem}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save() && openFile()) {
                         popup.close();
@@ -681,7 +814,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -689,7 +822,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -716,9 +849,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     throw new Exception("Organisation was not opened.");
                 }
                 PersistenceManager.getCurrent().setCurrentModel(model);
-                UndoRedoManager.forget(true);
-                UndoRedoManager.importModel(model);
-
+                UndoRedoManager.get().forget(true);
+                UndoRedoManager.get().importModel(model);
+                changeLanguage(model.getCurrentLanguage());
                 reset();
                 return true;
             }
@@ -728,9 +861,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         }
         catch (Exception e) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setTitleText("Old or corrupted file!");
-            popup.setMessageText("The project you attempted to open is for an older version or is corrupted. "
-                    + "Please use the version it was created with to open the file.");
+            popup.setTitleText("{OldorCorrupt}");
+            popup.setMessageText("{FromOldVersion}");
             popup.show();
             return false;
         }
@@ -744,18 +876,18 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     private void fileQuitPress(final ActionEvent event) {
         mainTabPane.requestFocus();
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setWindowTitle("Still working on something?");
-            popup.setTitleText("Looks like you are still working on something.\nOr have unsaved changes.");
-            popup.setMessageText("Do you want to,");
-            popup.addButton("Discard and Exit", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{StillWorking}");
+            popup.setTitleText("{LooksLikeStillWorking}");
+            popup.setMessageText("{Doyouwantto}");
+            popup.addButton("{DiscardandExit}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 popup.close();
                 App.getWindowManager().cleanUp();
                 Platform.exit();
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
-                popup.addButton("Save and Exit", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            if (UndoRedoManager.get().canRevert()) {
+                popup.addButton("{SaveandExit}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (save()) {
                         popup.close();
@@ -764,7 +896,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -774,7 +906,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                                 App.getWindowManager().bringToTop(openWindow, true);
                             });
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
         else {
@@ -829,11 +961,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void undo(final ActionEvent event) {
         try {
-            UndoRedoManager.revert();
+            UndoRedoManager.get().revert();
         }
         catch (Exception e) {
             // Something went very wrong
-            UndoRedoManager.forget();
+            UndoRedoManager.get().forget();
             ErrorReporter.get().reportError(e, "Undo-redo failed to revert");
         }
     }
@@ -845,11 +977,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void redo(final ActionEvent event) {
         try {
-            UndoRedoManager.remake();
+            UndoRedoManager.get().remake();
         }
         catch (Exception e) {
             // something went terribly wrong....
-            UndoRedoManager.forget();
+            UndoRedoManager.get().forget();
             ErrorReporter.get().reportError(e, "Undo-redo failed to remake");
         }
     }
@@ -860,14 +992,14 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     @FXML
     public final void revert(final ActionEvent event) {
-        if (UndoRedoManager.canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
+        if (UndoRedoManager.get().canRevert() || App.getWindowManager().getAllWindows().size() > 1) {
             GenericPopup popup = new GenericPopup(window);
-            popup.setTitleText("Revert changes?");
-            popup.setMessageText("Look like you are still working on something"
-                    + "\nChanges will be lost if you continue.");
-            popup.addButton("Revert Changes", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
+            popup.setWindowTitle("{Revert}");
+            popup.setTitleText("{RevertChangesQuestion}");
+            popup.setMessageText("{LooksLikeStillWorking} {UnsavedChangesWillBeLost}");
+            popup.addButton("{RevertChanges}", GenericPopup.Position.LEFT, GenericPopup.Action.NONE, () -> {
                 try {
-                    UndoRedoManager.revert(0);
+                    UndoRedoManager.get().revert(0);
                     popup.close();
                     // Close all windows which are not the main app.
                     App.getWindowManager().cleanUp();
@@ -876,12 +1008,12 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     ErrorReporter.get().reportError(e, "Something went wrong reverting the state of the organisation.");
                 }
             }, "danger-will-robinson");
-            if (UndoRedoManager.canRevert()) {
-                popup.addButton("Save Changes", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
+            if (UndoRedoManager.get().canRevert()) {
+                popup.addButton("{SaveAs}", GenericPopup.Position.RIGHT, GenericPopup.Action.DEFAULT, () -> {
                     // Let the user save the project
                     if (saveAs(null, false)) {
                         try {
-                            UndoRedoManager.revert(0);
+                            UndoRedoManager.get().revert(0);
                             popup.close();
                             // Close all windows which are not the main app.
                             App.getWindowManager().cleanUp();
@@ -892,7 +1024,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                     }
                 });
             }
-            popup.addButton("Back to Safety", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
+            popup.addButton("{Cancel}", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, () -> {
                 popup.close();
                 App.getWindowManager().getAllWindows()
                         .stream()
@@ -900,7 +1032,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                         .forEach(openWindow -> {
                             App.getWindowManager().bringToTop(openWindow, true);
                         });
-            }, "dont-panic");
+            }, "everything-is-fine");
             popup.show();
         }
     }
@@ -923,7 +1055,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         try {
             if (PersistenceManager.getCurrent().getLastFile() != null) {
                 PersistenceManager.getCurrent().save();
-                UndoRedoManager.forget();
+                UndoRedoManager.get().forget();
                 return true;
             }
             else {
@@ -968,7 +1100,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 PersistenceManager.getCurrent().setCurrentWorkingDirectory(file.getParentFile().getAbsolutePath());
                 PersistenceManager.getCurrent().saveModel(fileName);
                 if (forgetHistory) {
-                    UndoRedoManager.forget();
+                    UndoRedoManager.get().forget();
                 }
                 return true;
             }
@@ -1045,6 +1177,11 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     }
 
     @Override
+    public void navigateTo(final ModelType type) {
+        currentTabbable.navigateTo(type);
+    }
+
+    @Override
     public void navigateToNewTab(final Model model) {
         ModelViewController controller = addModelViewTab(mainTabPane);
         controller.navigateTo(model);
@@ -1056,5 +1193,13 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     public ModelType getCurrentModelType() {
         return currentTabbable.getCurrentModelType();
+    }
+
+    /**
+     * Gets the root node of the controller.
+     * @return The root node
+     */
+    public Parent getRootNode() {
+        return borderPaneMain;
     }
 }

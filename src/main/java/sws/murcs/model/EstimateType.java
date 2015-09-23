@@ -1,6 +1,7 @@
 package sws.murcs.model;
 
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.InternationalizationHelper;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +33,11 @@ public enum EstimateType {
     MovieClassification;
 
     /**
+     * Serialisation ID for backwards compatible serialisation.
+     */
+    private static final long serialVersionUID = 0L;
+
+    /**
      * A list of all the already loaded estimate types.
      */
     private static Map<EstimateType, List<String>> estimates = new HashMap<>();
@@ -61,7 +67,7 @@ public enum EstimateType {
             return estimates.get(this);
         }
 
-        String path = "estimates/" + toString() + ".csv";
+        String path = "estimates/" + nonDisplayToString() + ".csv";
         try {
             InputStream input = getClass().getResourceAsStream(path);
             List<String> currentEstimates = new ArrayList<>();
@@ -106,5 +112,27 @@ public enum EstimateType {
         int newIndex = (int) (newEstimates.size() * percent);
 
         return newEstimates.get(newIndex);
+    }
+
+    /**
+     * Gets the sort index of an estimate.
+     * @param estimate estimate to get sort index of.
+     * @return the sort index.
+     */
+    public final int getSortIndex(final String estimate) {
+        return getEstimates().indexOf(estimate);
+    }
+
+    /**
+     * The normal toString method without spaces to make it readable.
+     * @return the normal toString method.
+     */
+    public String nonDisplayToString() {
+        return super.toString();
+    }
+
+    @Override
+    public String toString() {
+        return InternationalizationHelper.tryGet(super.toString());
     }
 }

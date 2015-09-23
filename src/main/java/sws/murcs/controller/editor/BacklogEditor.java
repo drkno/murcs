@@ -11,9 +11,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
@@ -23,21 +22,29 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.GenericPopup;
-import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
+import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.CustomException;
+import sws.murcs.exceptions.DuplicateObjectException;
+import sws.murcs.exceptions.InvalidParameterException;
+import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
+import sws.murcs.model.Model;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -45,10 +52,17 @@ import java.util.stream.Collectors;
  * Since there should only be one instance of this PopUp
  */
 public class BacklogEditor extends GenericEditor<Backlog> {
+
     /**
      * The fixed height of rows in the table view for stories.
      */
     private static final Double FIXED_ROW_HEIGHT_STORY_TABLE = 30.0;
+
+    /**
+     * The Button for navigating to the PO.
+     */
+    @FXML
+    private Button navigateToPOButton;
 
     /**
      * Text fields for displaying short name, long name and priority.
@@ -72,7 +86,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      * A choice box for choosing the estimation method for a backlog.
      */
     @FXML
-    private ComboBox<EstimateType> estimationMethodComboBox;
+    private ChoiceBox<EstimateType> estimationMethodChoiceBox;
 
     /**
      * A ChoiceBox for adding a story to the backlog.
@@ -115,6 +129,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     private static SimpleBooleanProperty highlighted = new SimpleBooleanProperty(true);
 
     /**
+     * A flag if a popup is already active to prevent duplicates.
+     */
+    private boolean popUpIsActive = false;
+
+    /**
      * Sets the state of the story highlighting.
      */
     public static void toggleHighlightState() {
@@ -153,7 +172,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         longNameTextField.focusedProperty().addListener(getChangeListener());
         descriptionTextArea.focusedProperty().addListener(getChangeListener());
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
-        estimationMethodComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
         storyTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int selectedIndex = storyTable.getSelectionModel().getSelectedIndex();
@@ -178,7 +197,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell());
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
         priorityColumn.setCellValueFactory(param -> {
             SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
             Integer priority = getModel().getStoryPriority(param.getValue());
@@ -191,24 +210,72 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         storyTable.setEditable(true);
         priorityColumn.setEditable(true);
         priorityColumn.setComparator((storyPriority1, storyPriority2) -> {
-            if (priorityColumn.getSortType() == TableColumn.SortType.ASCENDING) {
-                if (storyPriority1 == -1) {
-                    storyPriority1 = Integer.MAX_VALUE;
-                }
-                if (storyPriority2 == -1) {
-                    storyPriority2 = Integer.MAX_VALUE;
-                }
-            } else {
-                if (storyPriority1 == -1) {
-                    storyPriority1 = Integer.MIN_VALUE;
-                }
-                if (storyPriority2 == -1) {
-                    storyPriority2 = Integer.MIN_VALUE;
-                }
+            if (storyPriority1 == null && storyPriority2 == null) {
+                return 0;
+            }
+            if (storyPriority1 == null) {
+                return 1;
+            }
+            if (storyPriority2 == null) {
+                return -1;
             }
             return storyPriority1.compareTo(storyPriority2);
         });
         storyColumn.setComparator(String::compareTo);
+
+        navigateToPOButton.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (poComboBox.getSelectionModel().getSelectedItem() != null) {
+                Person person = poComboBox.getSelectionModel().getSelectedItem();
+                if (e.isControlDown()) {
+                    getNavigationManager().navigateToNewTab(person);
+                } else {
+                    getNavigationManager().navigateTo(person);
+                }
+            }
+        });
+        navigateToPOButton.setDisable(true);
+
+        jumpPriorityButton.setDisable(true);
+        dropPriorityButton.setDisable(true);
+        decreasePriorityButton.setDisable(true);
+        increasePriorityButton.setDisable(true);
+    }
+
+    /**
+     * Method for managing the removal of stories from the backlog.
+     * @param story story to remove.
+     */
+    private void removeStory(final Story story) {
+        if (!isCreationWindow) {
+            GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
+            popup.setTitleText("{AreYouSure}");
+            String extraWarning = "";
+            Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
+            if (storyUsage != null) {
+                extraWarning = "{StoryWillBeRemovedFromSprint} \"" + storyUsage.getShortName() + "\"";
+            }
+            popup.setMessageText("{AreYouSureRemoveStory} \""
+                    + story.getShortName() + "\" {FromBacklog}\n\n"
+                    + extraWarning);
+            popup.addYesNoButtons(() -> {
+                if (storyUsage != null) {
+                    storyUsage.removeStory(story);
+                }
+                if (story.getStoryState() != Story.StoryState.None) {
+                    story.setStoryState(Story.StoryState.None);
+                }
+                getModel().removeStory(story);
+                updateStoryTable();
+                updateAvailableStories();
+                popup.close();
+            }, "danger-will-robinson", "everything-is-fine");
+            popup.show();
+        }
+        else {
+            getModel().removeStory(story);
+            updateStoryTable();
+            updateAvailableStories();
+        }
     }
 
     /**
@@ -260,7 +327,19 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 storyPriority++;
             }
             try {
-                getModel().modifyStory(story, storyPriority);
+                if (storyPriority != null) {
+                    getModel().modifyStory(story, storyPriority);
+                }
+                else {
+                    changeStoryStateToNone(story, () -> {
+                        try {
+                            getModel().modifyStory(story, null);
+                        } catch (CustomException e) {
+                            //Should not ever happen, this should be handled by the GUI
+                            ErrorReporter.get().reportError(e, "Failed to modify the priority of the story");
+                        }
+                    });
+                }
             }
             catch (CustomException e) {
                 //Should not ever happen, this should be handled by the GUI
@@ -302,14 +381,74 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (story != null) {
             Integer storyPriority = getModel().getStoryPriority(story);
             if (storyPriority != -1) {
-                try {
-                    getModel().modifyStory(story, null);
-                }
-                catch (CustomException e) {
-                    //Should not ever happen, this should be handled by the GUI
-                    ErrorReporter.get().reportError(e, "Cannot decrease priority");
-                }
+                changeStoryStateToNone(story, () -> {
+                    try {
+                        getModel().modifyStory(story, null);
+                    } catch (CustomException e) {
+                        //Should not ever happen, this should be handled by the GUI
+                        ErrorReporter.get().reportError(e, "Cannot decrease priority");
+                    }
+                });
                 updateStoryTable();
+            }
+        }
+    }
+
+    /**
+     * Change the story state from none to ready and informs the user if this will effect any sprints.
+     * @param story The story to change the state of.
+     */
+    private void changeStoryStateToNone(final Story story) {
+        changeStoryStateToNone(story, null);
+    }
+    /**
+     * Change the story state from none to ready and informs the user if this will effect any sprints.
+     * @param story The story to change the state of.
+     * @param callback A callback to call once the state change has happened.
+     */
+    private void changeStoryStateToNone(final Story story, final GenericCallback callback) {
+        if (story.getStoryState() == Story.StoryState.Ready) {
+            if (UsageHelper.findUsages(story).stream().anyMatch(m -> m instanceof Sprint)) {
+                popUpIsActive = true;
+                List<Sprint> sprintsWithStory = UsageHelper.findUsages(story).stream()
+                        .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
+                        .map(m -> (Sprint) m)
+                        .collect(Collectors.toList());
+                List<String> collect = sprintsWithStory.stream()
+                        .map(Model::toString)
+                        .collect(Collectors.toList());
+                String[] sprintNames = collect.toArray(new String[collect.size()]);
+                GenericPopup popup = new GenericPopup();
+                popup.setMessageText("{SureMakeStory} "
+                        + story.toString()
+                        + " {UnprioritiseWarning}\n"
+                        + String.join("\n\t", sprintNames));
+                popup.setTitleText("{UnprioritiseTitle}");
+                popup.setWindowTitle("{Areyousure}");
+                popup.addYesNoButtons(() -> {
+                    popUpIsActive = false;
+                    if (callback != null) {
+                        callback.call();
+                    }
+                    sprintsWithStory.forEach(sprint -> sprint.removeStory(story));
+                    story.setStoryState(Story.StoryState.None);
+                    popup.close();
+                }, () -> {
+                    popUpIsActive = false;
+                    popup.close();
+                }, "danger-will-robinson", "everything-is-fine");
+                popup.show();
+            }
+            else {
+                story.setStoryState(Story.StoryState.None);
+                if (callback != null) {
+                    callback.call();
+                }
+            }
+        }
+        else {
+            if (callback != null) {
+                callback.call();
             }
         }
     }
@@ -327,18 +466,18 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         boolean hasErrors = false;
 
         if (currentStory == null) {
-            addFormError(storyPicker, "No story selected");
+            addFormError(storyPicker, "{NoStorySelectedError}");
             hasErrors = true;
         }
         if (!priorityString.isEmpty()) {
             try {
                 priority = Integer.parseInt(priorityString);
                 if (priority < 1) {
-                    addFormError(priorityTextField, "Priority cannot be less than 1");
+                    addFormError(priorityTextField, "{NegativePriorityError}");
                     hasErrors = true;
                 }
             } catch (Exception e) {
-                addFormError(priorityTextField, "Position is not a number");
+                addFormError(priorityTextField, "{NanError}");
                 hasErrors = true;
             }
         }
@@ -378,11 +517,13 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         }
 
         EstimateType current = getModel().getEstimateType();
-        estimationMethodComboBox.getItems().clear();
-        estimationMethodComboBox.getItems().addAll(EstimateType.values());
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        estimationMethodChoiceBox.getItems().clear();
+        estimationMethodChoiceBox.getItems().addAll(EstimateType.values());
         if (current != null) {
-            estimationMethodComboBox.getSelectionModel().select(current);
+            estimationMethodChoiceBox.getSelectionModel().select(current);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
 
         updateAssignedPO();
         updateAvailableStories();
@@ -417,6 +558,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         poComboBox.getItems().addAll(productOwners);
         if (poComboBox != null) {
             poComboBox.getSelectionModel().select(productOwner);
+            if (!isCreationWindow) {
+                navigateToPOButton.setDisable(false);
+            }
         }
         poComboBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
@@ -467,8 +611,11 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (isNullOrNotEqual(modelShortName, viewShortName)) {
             try {
                 getModel().setShortName(viewShortName);
-            } catch (CustomException e) {
-                addFormError(shortNameTextField, e.getMessage());
+            } catch (DuplicateObjectException e) {
+                addFormError(shortNameTextField, "{NameExistsError1} {Backlog} {NameExistsError2}");
+            }
+            catch (InvalidParameterException e) {
+                addFormError(shortNameTextField, "{ShortNameEmptyError}");
             }
         }
 
@@ -490,18 +637,20 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             try {
                 getModel().setAssignedPO(viewProductOwner);
                 updateAssignedPO();
-            } catch (CustomException e) {
-                addFormError(poComboBox, e.getMessage());
+            } catch (InvalidParameterException e) {
+                addFormError(poComboBox, "{InvalidPOError}");
             }
         }
         if (getModel().getAssignedPO() == null) {
-            addFormError(poComboBox, "There must be a PO");
+            addFormError(poComboBox, "{NoPOError}");
         }
 
-        EstimateType newEstimateType = estimationMethodComboBox.getSelectionModel().getSelectedItem();
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
+        EstimateType newEstimateType = estimationMethodChoiceBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
+        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**
@@ -528,12 +677,20 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         @Override
         public void commitEdit(final Integer priority) {
             if (!isEmpty()) {
-                if (priority < 1) {
-                    addFormError(textField, "Priority cannot be less than 1");
+                if (priority == null) {
+                    super.commitEdit(null);
+                    setPriority(null);
+                    textField.setTooltip(new Tooltip(InternationalizationHelper.tryGet("ThisIsNonPrioritorised")));
+                    updateStoryTable();
+                }
+                else if (priority < 1) {
+                    textField.setTooltip(null);
+                    addFormError(textField, "{NegativePriorityError}");
                 }
                 else {
                     super.commitEdit(priority);
                     setPriority(priority);
+                    textField.setTooltip(null);
                     updateStoryTable();
                 }
             }
@@ -584,16 +741,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
 
                 if (badDependency) {
                     getStyleClass().add("red-tab-tablecell");
-                    getTooltip().setText("The story depends on another story with a lower priority than itself");
+                    getTooltip().setText(InternationalizationHelper.tryGet("BadDependencyTooltip"));
                 }
                 else if (storyState == Story.StoryState.Ready) {
                     getStyleClass().add("green-tab-tablecell");
-                    getTooltip().setText("The story is ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("ReadyStoryTooltip"));
                 }
                 else if (story.getAcceptanceCriteria().size() > 0) {
                     getStyleClass().add("orange-tab-tablecell");
-                    getTooltip().setText("The story is almost ready but still requires an estimation and to be marked"
-                            + " as ready");
+                    getTooltip().setText(InternationalizationHelper.tryGet("UnestimatedTooltip"));
                 }
             }
         }
@@ -613,7 +769,12 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                                         commitEdit(priority);
                                     }
                                     catch (NumberFormatException e) {
-                                        addFormError(textField, "Priority must be a number");
+                                        if (Objects.equals(textField.getText(), "-") && !popUpIsActive) {
+                                            commitEdit(null);
+                                        }
+                                        else {
+                                            addFormError(textField, "{NanError}");
+                                        }
                                     }
                                 }
                             }
@@ -628,8 +789,16 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                             commitEdit(priority);
                         }
                         catch (NumberFormatException e) {
-                            addFormError(textField, "Priority must be a number");
+                            if (Objects.equals(textField.getText(), "-")) {
+                                commitEdit(null);
+                            }
+                            else {
+                                addFormError(textField, "{NanError}");
+                            }
                         }
+                    }
+                    else {
+                        commitEdit(null);
                     }
                 }
                 if (t.getCode() == KeyCode.ESCAPE) {
@@ -655,6 +824,9 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                 if (priority != -1) {
                     priorityString = priority.toString();
                 }
+                else {
+                    priorityString = "-";
+                }
             }
 
             return priorityString;
@@ -671,80 +843,17 @@ public class BacklogEditor extends GenericEditor<Backlog> {
                     getModel().changeStoryPriority(story, priority);
                 }
                 catch (CustomException e) {
-                    addFormError(textField, "Priority must be a number");
+                    addFormError(textField, "{NanError}");
                 }
             }
             else {
-                try {
-                    getModel().changeStoryPriority(story, null);
-                }
-                catch (CustomException e) {
-                    ErrorReporter.get().reportError(e, "Failed to set priority");
-                }
-            }
-        }
-    }
-
-    /**
-     * A TableView cell that contains a link to the story it represents and a button to remove it.
-     */
-    private class RemovableHyperlinkCell extends TableCell<Story, String> {
-        @Override
-        protected void updateItem(final String storyName, final boolean empty) {
-            super.updateItem(storyName, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                Story story = (Story) getTableRow().getItem();
-                AnchorPane container = new AnchorPane();
-                if (getIsCreationWindow()) {
-                    Label name = new Label(storyName);
-                    container.getChildren().add(name);
-                } else {
-                    Hyperlink nameLink = new Hyperlink(storyName);
-                    nameLink.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
-                        if (e.isControlDown()) {
-                            getNavigationManager().navigateToNewTab(story);
-                        } else {
-                            getNavigationManager().navigateTo(story);
-                        }
-                    });
-                    container.getChildren().add(nameLink);
-                }
-
-                Button button = new Button("X");
-                button.getStyleClass().add("mdr-button");
-                button.getStyleClass().add("mdrd-button");
-                button.setOnAction(e -> {
-                    if (!isCreationWindow) {
-                        GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
-                        popup.setTitleText("Are you sure?");
-                        popup.setMessageText("Are you sure you wish to remove the story \""
-                                + story.getShortName() + "\" from this backlog?");
-                        popup.addYesNoButtons(() -> {
-                            getModel().removeStory(story);
-                            updateStoryTable();
-                            updateAvailableStories();
-                            popup.close();
-                        }, "danger-will-robinson", "dont-panic");
-                        popup.show();
-                    }
-                    else {
-                        getModel().removeStory(story);
-                        updateStoryTable();
-                        updateAvailableStories();
+                changeStoryStateToNone(story, () -> {
+                    try {
+                        getModel().changeStoryPriority(story, null);
+                    } catch (CustomException e) {
+                        ErrorReporter.get().reportError(e, "Failed to set priority");
                     }
                 });
-                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
-                fadeButtonOnHover.setupEffect();
-                AnchorPane.setRightAnchor(button, 0.0);
-                container.getChildren().add(button);
-
-                container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);
-                setGraphic(container);
-                setAlignment(Pos.CENTER);
             }
         }
     }

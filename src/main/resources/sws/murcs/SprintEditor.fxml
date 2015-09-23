@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -14,7 +19,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintEditor">
+
+<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintEditor">
     <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -25,7 +32,7 @@
             <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER" />
          </rowConstraints>
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="241.0" prefViewportWidth="220.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="241.0" prefViewportWidth="220.0" styleClass="edge-to-edge" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <columnConstraints>
@@ -41,12 +48,11 @@
                         <RowConstraints vgrow="NEVER" />
                         <RowConstraints />
                         <RowConstraints />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
                      </rowConstraints>
                      <children>
                             <VBox>
                                 <children>
-                                    <Label text="Sprint Goal/Label" />
+                                    <Label text="%SprintGoalLabel" />
                                     <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 </children>
                                 <padding>
@@ -55,7 +61,7 @@
                             </VBox>
                             <VBox GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="Name" GridPane.rowIndex="1" />
+                                    <Label text="%Name" GridPane.rowIndex="1" />
                                     <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                                 </children>
                                 <padding>
@@ -67,11 +73,15 @@
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                            </columnConstraints>
                            <rowConstraints>
-                              <RowConstraints vgrow="NEVER" />
+                              <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                               <RowConstraints minHeight="25.0" vgrow="ALWAYS" />
                            </rowConstraints>
                            <children>
-                                    <Label text="Description" />
+                                    <Label text="%Description">
+                                 <GridPane.margin>
+                                    <Insets bottom="5.0" />
+                                 </GridPane.margin>
+                              </Label>
                               <TextArea fx:id="descriptionTextArea" wrapText="true" GridPane.rowIndex="1" />
                            </children>
                            <GridPane.margin>
@@ -80,12 +90,38 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="6">
                            <children>
-                              <Label text="Team" />
-                              <AnchorPane>
+                              <Label text="%Team" />
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="teamComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button fx:id="navigateToTeamButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%NavigatetotheTeamthesprintisassignedto" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="teamComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <GridPane.margin>
                               <Insets bottom="5.0" left="10.0" right="10.0" />
@@ -93,12 +129,38 @@
                         </VBox>
                         <VBox GridPane.rowIndex="7">
                            <children>
-                              <Label text="Release" />
-                              <AnchorPane>
+                              <Label text="%Release" />
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="releaseComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Button fx:id="navigateToReleaseButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%NavigatetotheReleasethesprintisassignedto" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="releaseComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="10.0" right="10.0" />
@@ -109,12 +171,38 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5">
                            <children>
-                              <Label text="Backlog" />
-                              <AnchorPane>
+                              <Label text="%Backlog" />
+                              <GridPane>
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                                    <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                 </rowConstraints>
                                  <children>
-                                    <ComboBox fx:id="backlogComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <AnchorPane>
+                                       <children>
+                                          <ComboBox fx:id="backlogComboBox" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                       </children>
+                                    </AnchorPane>
+                                    <Button fx:id="navigateToBacklogButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
+                                       <graphic>
+                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@icons/navigateBlack.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <tooltip>
+                                          <Tooltip text="%NavigatetotheBacklogthesprintisapartof" />
+                                       </tooltip>
+                                       <GridPane.margin>
+                                          <Insets left="5.0" />
+                                       </GridPane.margin>
+                                    </Button>
                                  </children>
-                              </AnchorPane>
+                              </GridPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -122,7 +210,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="3">
                            <children>
-                              <Label text="Start Date" />
+                              <Label text="%StartDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="startDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -135,7 +223,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="4">
                            <children>
-                              <Label text="End Date" />
+                              <Label text="%EndDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="endDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -148,38 +236,41 @@
                         </VBox>
                         <VBox GridPane.rowIndex="8">
                            <children>
-                              <TitledPane expanded="false" animated="false" text="Stories">
-                                <content>
-                                  <AnchorPane prefHeight="180.0" prefWidth="200.0">
-                                       <children>
-                                          <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <AnchorPane>
+                                 <children>
+                                    <TitledPane expanded="true" text="%Stories" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints fillHeight="false" minHeight="-Infinity" prefHeight="100.0" vgrow="NEVER" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                            </rowConstraints>
                                              <children>
-                                                <ScrollPane fitToHeight="true" fitToWidth="true" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS" minHeight="100">
-                                                   <content>
-                                                      <VBox fx:id="storiesContainer" fillWidth="true" mouseTransparent="false" VBox.vgrow="ALWAYS"/>
-                                                   </content>
-                                                </ScrollPane>
-                                                <AnchorPane>
-                                                   <children>
-                                                      <ComboBox fx:id="storiesList" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                </AnchorPane>
+                                                <TableView fx:id="storiesTable" minHeight="0.0" minWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                                  <columns>
+                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Completeness" />
+                                                    <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Estimate" />
+                                                    <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="400.0" prefWidth="400.0" text="%Story" />
+                                                  </columns>
+                                                </TableView>
+                                                <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="%Addastory" GridPane.rowIndex="2" />
                                              </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                </content>
-                              </TitledPane>
+                                          </GridPane>
+                                       </content>
+                                    </TitledPane>
+                                 </children>
+                              </AnchorPane>
                            </children>
-                           <padding>
-                              <Insets bottom="5.0" left="10.0" right="10.0" />
-                           </padding>
                         </VBox>
                      </children>
                   </GridPane>
                </content>
             </ScrollPane>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" GridPane.rowIndex="1" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="17.0" prefViewportWidth="10.0" styleClass="edge-to-edge" GridPane.rowIndex="1">
                <content>
                   <GridPane>
                      <children>

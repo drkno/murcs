@@ -1,6 +1,10 @@
 package sws.murcs.controller;
 
 import com.sun.javafx.css.StyleManager;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -34,16 +38,13 @@ import javafx.util.Duration;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.popover.PopOver;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.Model;
 import sws.murcs.search.SearchHandler;
 import sws.murcs.search.SearchResult;
 import sws.murcs.view.App;
 import sws.murcs.view.SearchCommandsView;
-
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Controller for search UI.
@@ -191,10 +192,10 @@ public class SearchController {
         ObservableList<SearchResult> results = searchHandler.getResults();
         results.addListener((ListChangeListener<SearchResult>) c -> {
             if (c.getList().size() == 0) {
-                noItemsLabel.setText("No Items Found");
+                noItemsLabel.setText(InternationalizationHelper.tryGet("NoItemsFound"));
             }
             else {
-                noItemsLabel.setText("Hover over an item to preview.");
+                noItemsLabel.setText(InternationalizationHelper.tryGet("HoverToPreview"));
             }
         });
         foundItems.setItems(results);
@@ -241,8 +242,10 @@ public class SearchController {
         searchText.textProperty().addListener((observable, oldValue, newValue) -> {
             final String placeholderLabel = "42";
             String search = searchText.getText();
-            if (Objects.equals(search, "")) {
-                hideSearchList();
+            if (Objects.equals(search, "") || search.matches("^(![a-zA-Z]*\\s*)+$")) {
+                if (searchCommandButtonActive) {
+                    hideSearchList();
+                }
                 emptySearch = true;
             }
             else {
@@ -272,8 +275,8 @@ public class SearchController {
                 hideSearchCommandsPopOver();
             }
         });
-        searchIcon.setOnMouseClicked(event -> commandsPopOverStayOpen = !commandsPopOverStayOpen);
-        Tooltip.install(searchIcon, new Tooltip("Show advanced commands"));
+        searchIcon.setOnMouseClicked(event -> { commandsPopOverStayOpen = !commandsPopOverStayOpen; });
+        Tooltip.install(searchIcon, new Tooltip(InternationalizationHelper.tryGet("ShowAdvancedCommands")));
         injectSearchCommands();
 
         resultsPane.setOpacity(0);
@@ -380,7 +383,24 @@ public class SearchController {
                         vbox.getChildren().add(box);
                         VBox.setVgrow(box, Priority.ALWAYS);
 
-                        synchronized (StyleManager.getInstance()) {
+                        if (!App.getOnStyleManagerThread()) {
+                            synchronized (StyleManager.getInstance()) {
+                                App.setOnStyleManagerThread(true);
+                                List<String> matches = item.getMatches();
+                                for (int i = 0; i < matches.size(); i++) {
+                                    Label matchLabel = new Label(matches.get(i));
+                                    if (i % 2 == 0) {
+                                        matchLabel.getStyleClass().add("search-result");
+                                    }
+                                    children.add(matchLabel);
+                                }
+                                context.getStyleClass().add("search-result-context");
+                                Label selectionAfter = new Label(item.selectionAfter());
+                                children.add(selectionAfter);
+                                setGraphic(vbox);
+                                App.setOnStyleManagerThread(false);
+                            }
+                        } else {
                             List<String> matches = item.getMatches();
                             for (int i = 0; i < matches.size(); i++) {
                                 Label matchLabel = new Label(matches.get(i));
@@ -402,7 +422,7 @@ public class SearchController {
                 shouldDelay = true;
                 param.getSelectionModel().select(cell.getIndex());
             });
-            cell.setOnMouseExited(event -> shouldDelay = false);
+            cell.setOnMouseExited(event -> { shouldDelay = false; });
             cell.setOnMouseClicked(selectEvent);
 
             return cell;
@@ -507,8 +527,8 @@ public class SearchController {
         imageView.setImage(spinner);
         loader.getChildren().add(imageView);
         Label helpfulMessage = new Label(App.JAVA_UPDATE_VERSION < 40
-                ? "Please update to at least Java 8u40 for speed\n*CLUNK*.........\n "
-                + "/wwwwhhhiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiirrrrrrrrrrr/" : "*CLUNK* /whir/");
+                ? InternationalizationHelper.tryGet("PleaseUpdateJava") + "\n*CLUNK*.........\n "
+                + "/whir/" : "*CLUNK* /whir/");
         helpfulMessage.setTextAlignment(TextAlignment.CENTER);
         helpfulMessage.getStyleClass().add("search-preview-message");
         loader.getChildren().add(helpfulMessage);
@@ -551,8 +571,9 @@ public class SearchController {
                     }
 
                     synchronized (StyleManager.getInstance()) {
+                        App.setOnStyleManagerThread(true);
                         if (editorPane == null) {
-                            editorPane = new EditorPane(newValue, App.getMainController());
+                            editorPane = new EditorPane(newValue, App.getMainController(), true);
                         } else if (editorPane.getModel().getClass() == newValue.getClass()) {
                             editorPane.setModel(newValue);
                         }
@@ -561,10 +582,18 @@ public class SearchController {
                             editorPane = new EditorPane(newValue, App.getMainController());
                         }
                         editorPane.getView().getStyleClass().add("search-preview");
-
-                        while (!editorPane.getController().isLoaded()) {
-                            Thread.sleep(disableDelay);
+                        App.setOnStyleManagerThread(false);
+                    }
+                    while (!editorPane.getController().isLoaded()) {
+                        Thread.sleep(disableDelay);
+                    }
+                    if (!App.getOnStyleManagerThread()) {
+                        synchronized (StyleManager.getInstance()) {
+                            App.setOnStyleManagerThread(true);
+                            disableControlsAndUpdateButton();
+                            App.setOnStyleManagerThread(false);
                         }
+                    } else {
                         disableControlsAndUpdateButton();
                     }
                 }
@@ -583,6 +612,7 @@ public class SearchController {
                 latch.await();
             }
             catch (Throwable e) {
+                popOverWindow.hide();
                 ErrorReporter.get().reportError(e, "A failure occurred while rendering a search preview.");
             }
         }
@@ -599,19 +629,21 @@ public class SearchController {
         view.setFocusTraversable(false);
         previewPane.setFocusTraversable(false);
         MaterialDesignButton saveButton = (MaterialDesignButton) editorPane.getController().getSaveChangesButton();
-        saveButton.getStyleClass().add("button-default");
-        saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
-        saveButton.setVisible(true);
-        saveButton.setDisable(false);
-        saveButton.setText("Open In Window");
-        saveButton.setOnAction(selectEvent);
+        if (saveButton != null) {
+            saveButton.getStyleClass().add("button-default");
+            saveButton.setRippleColour(JavaFXHelpers.hex2RGB("#1e88e5"));
+            saveButton.setVisible(true);
+            saveButton.setDisable(false);
+            saveButton.setText(InternationalizationHelper.tryGet("OpenInWindow"));
+            saveButton.setOnAction(selectEvent);
+        }
     }
 
     /**
      * Injects a task editor tied to the given task.
      */
     private void injectSearchCommands() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SearchCommands.fxml"));
         try {
             searchCommandsPane = loader.load();
             SearchCommandsController controller = loader.getController();
@@ -619,6 +651,7 @@ public class SearchController {
             searchPane.setAlignment(Pos.CENTER);
             searchPane.add(searchCommandsPane, 0, 1);
         } catch (Exception e) {
+            popOverWindow.hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands");
         }
     }
