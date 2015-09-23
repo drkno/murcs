@@ -5,6 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.exceptions.ImperialException;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 
@@ -22,7 +23,7 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
 
     private Collection<EstimatePane> estimatePanes;
 
-    private FXMLLoader estimateLoader = new FXMLLoader(getClass().getResource("/sws/murcs/EstimationWorkspacePane.fxml"));
+    private FXMLLoader estimateLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/EstimationWorkspacePane.fxml"));
     private Backlog currentBacklog;
 
     @Override

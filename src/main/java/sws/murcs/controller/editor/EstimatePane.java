@@ -18,6 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
@@ -130,7 +131,7 @@ public class EstimatePane implements UndoRedoChangeListener {
         /**
          * The loader that is used to load all of the stories.
          */
-        private FXMLLoader threadStoryLoader = new FXMLLoader(getClass().getResource("/sws/murcs/EstimatePaneStory.fxml"));
+        private FXMLLoader threadStoryLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/EstimatePaneStory.fxml"));
 
         /**
          * Sets the list of stories to load.

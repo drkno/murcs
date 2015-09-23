@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Backlog;
 
@@ -63,7 +64,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
         });
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sws/murcs/BacklogEditor.fxml"));
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/BacklogEditor.fxml"));
             Parent view = loader.load();
             overviewAnchorPane.getChildren().add(view);
             AnchorPane.setRightAnchor(view, 0.0);
