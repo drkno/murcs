@@ -45,7 +45,7 @@
                     <children>
                         <Label fx:id="messageTitleLabel" alignment="TOP_CENTER" styleClass="label-bold" contentDisplay="CENTER" text="%Murcs" textAlignment="CENTER" GridPane.halignment="CENTER">
                             <font>
-                                <Font size="12.0"/>
+                                <Font size="21.0"/>
                             </font>
                             <padding>
                                 <Insets bottom="10.0" />
