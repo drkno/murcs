@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -17,6 +21,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+
 <AnchorPane prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ProjectEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -28,7 +33,7 @@
             <RowConstraints minHeight="-Infinity" prefHeight="50.0" vgrow="NEVER" />
          </rowConstraints>
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="500.0" prefViewportWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="500.0" prefViewportWidth="500.0" styleClass="edge-to-edge" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <GridPane layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <columnConstraints>
@@ -44,13 +49,13 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="%ShortName" />
+                              <Label styleClass="text-input-label" text="%ShortName" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="%LongName" GridPane.rowIndex="1">
+                              <Label styleClass="text-input-label" text="%LongName" GridPane.rowIndex="1">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
@@ -60,7 +65,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="%Description">
+                              <Label styleClass="text-input-label" text="%Description">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
@@ -88,7 +93,7 @@
                               <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                            </rowConstraints>
                            <children>
-                              <Label text="%Teams">
+                              <Label styleClass="text-input-label" text="%Teams">
                                  <GridPane.margin>
                                     <Insets />
                                  </GridPane.margin>
@@ -163,7 +168,7 @@
                   </GridPane>
                </content>
             </ScrollPane>
-            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="50.0" prefViewportWidth="10.0" GridPane.rowIndex="1" styleClass="edge-to-edge">
+            <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="50.0" prefViewportWidth="10.0" styleClass="edge-to-edge" GridPane.rowIndex="1">
                <content>
                   <GridPane>
                      <children>
