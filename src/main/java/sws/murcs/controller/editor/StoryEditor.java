@@ -196,6 +196,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * The last selected story.
      */
     private Story lastSelectedStory;
+
+    /**
+     * Says whether or not the story editor is currently creating a new task.
+     */
     private boolean creatingTask;
 
     @Override

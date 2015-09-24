@@ -40,5 +40,8 @@ public interface TaskEditorParent extends FormErrors {
      */
     void updateEditors();
 
+    /**
+     * Called when the task has finished creation.
+     */
     void finishedCreation();
 }
