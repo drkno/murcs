@@ -206,7 +206,7 @@ public class EstimatePane implements UndoRedoChangeListener {
 
         @Override
         protected Story call() throws Exception {
-            if (backlog == null || !backlog.equals(currentBacklog)) {
+            if (backlog == null || !backlog.equals(currentBacklog) || threadCountCopy != threadCount) {
                 disposeOfStories();
                 return null;
             }
@@ -253,7 +253,7 @@ public class EstimatePane implements UndoRedoChangeListener {
 
         @Override
         protected void succeeded() {
-            if (backlog == null || !backlog.equals(currentBacklog)) {
+            if (backlog == null || !backlog.equals(currentBacklog) || threadCountCopy != threadCount) {
                 disposeOfStories();
                 return;
             }
