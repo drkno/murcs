@@ -112,6 +112,8 @@ public class EstimatePane implements UndoRedoChangeListener {
      */
     private Comparator<Story> storyComparator;
 
+    private long threadCount;
+
     /**
      * Initialize the estimate pane.
      */
@@ -153,11 +155,13 @@ public class EstimatePane implements UndoRedoChangeListener {
      * Loads story tiles in the estimate pane.
      */
     private void loadStories() {
+        disposeOfStories();
         stories = backlog.getWorkspaceStories()
                 .stream()
                 .filter(s -> Objects.equals(s.getEstimate(), estimate))
                 .collect(Collectors.toList());
         Collections.sort(stories, storyComparator);
+        threadCount++;
         if (stories.size() > 0) {
             StoryLoadingTask storyThread = new StoryLoadingTask();
             storyThread.setStories(stories);
@@ -195,9 +199,13 @@ public class EstimatePane implements UndoRedoChangeListener {
             stories = newStories;
         }
 
+        /**
+         * Keeps a copy of the current thread being executed.
+         */
+        private long threadCountCopy = threadCount;
+
         @Override
         protected Story call() throws Exception {
-
             if (backlog == null || !backlog.equals(currentBacklog)) {
                 disposeOfStories();
                 return null;
@@ -218,7 +226,7 @@ public class EstimatePane implements UndoRedoChangeListener {
                     controller.setParent(EstimatePane.this);
                     controller.loadStory();
                     Platform.runLater(() -> {
-                        if (backlog == null || !backlog.equals(currentBacklog)) {
+                        if (backlog == null || !backlog.equals(currentBacklog) || threadCountCopy != threadCount) {
                             disposeOfStories();
                             return;
                         }
