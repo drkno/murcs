@@ -364,6 +364,16 @@ public class EstimatePane implements UndoRedoChangeListener {
         });
     }
 
+    protected void setEstimateLabelWidth(double prefWidth) {
+        estimateLabel.setMinWidth(prefWidth);
+        estimateLabel.setPrefWidth(prefWidth);
+        estimateLabel.setMaxWidth(prefWidth);
+    }
+
+    protected double getEstimateLabelWidth() {
+        return estimateLabel.getWidth();
+    }
+
     /**
      * Adds a drag done handler to the node.
      * @param source The node to add the handler to

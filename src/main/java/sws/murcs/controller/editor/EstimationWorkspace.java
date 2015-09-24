@@ -1,5 +1,7 @@
 package sws.murcs.controller.editor;
 
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -54,7 +56,6 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
      * Forces a reload of the estimate panes..
      */
     protected void forceLoadObject() {
-        System.out.println("test");
         load();
     }
 
@@ -67,6 +68,15 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
         loadEstimatePanels();
         estimatePanes.stream().forEach(EstimatePane::loadObject);
         currentBacklog = getModel();
+
+        Platform.runLater(() -> {
+            double max = 0;
+            for (EstimatePane pane : estimatePanes) {
+                max = pane.getEstimateLabelWidth() > max ? pane.getEstimateLabelWidth() : max;
+            }
+            final double realMax = max;
+            estimatePanes.forEach(estimatePane -> estimatePane.setEstimateLabelWidth(realMax));
+        });
     }
 
     /**
@@ -98,9 +108,12 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
         throw new ImperialException();
     }
 
+    @FXML
     @Override
     protected void initialize() {
         currentBacklog = getModel();
+
+
     }
 
     /**
