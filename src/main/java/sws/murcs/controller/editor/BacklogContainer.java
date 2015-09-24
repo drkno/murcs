@@ -136,11 +136,14 @@ public class BacklogContainer extends GenericEditor<Backlog> {
 
     @Override
     protected void saveChangesAndErrors() {
-
+        // Not used.
+        // Loosened precondition, Moffat ;)
     }
 
     @Override
     public final void setupSaveChangesButton() {
+        // Not used.
+        // Loosened precondition, Moffat ;)
     }
 
     @Override

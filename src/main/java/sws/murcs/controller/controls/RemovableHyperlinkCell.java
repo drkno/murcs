@@ -43,12 +43,14 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
 
     /**
      * Creates a table view cell for a story with a button for removing it and a hyperlink to its name.
+     * This method expects a list of callbacks to generate buttons for, however it won't do more than two.
+     * It has a specific purpose, and if in future you are touching this please refactor the design.
      * @param editor editor that this cell is contained within.
-     * @param callback callback for removing the story.
+     * @param pCallbacks List of callbacks to generate buttons for.
      */
-    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final List<ChangeCallback<Story>> callback) {
+    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final List<ChangeCallback<Story>> pCallbacks) {
         genericEditor = editor;
-        callbacks = callback;
+        callbacks = pCallbacks;
     }
 
     @Override
@@ -76,23 +78,25 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
                 container.getChildren().add(nameLink);
             }
 
-            MaterialDesignButton button = new MaterialDesignButton(null);
-            button.setPrefHeight(15);
-            button.setPrefWidth(15);
-            Image image = new Image("sws/murcs/icons/removeWhite.png");
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            imageView.setPreserveRatio(true);
-            imageView.setPickOnBounds(true);
-            button.setGraphic(imageView);
-            button.getStyleClass().add("mdr-button");
-            button.getStyleClass().add("mdrd-button");
-            button.setOnAction(e -> callbacks.get(0).changeItem(story));
-            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
-            fadeButtonOnHover.setupEffect();
-            AnchorPane.setRightAnchor(button, 0.0);
-            container.getChildren().add(button);
+            if (callbacks.size() > 0) {
+                MaterialDesignButton button = new MaterialDesignButton(null);
+                button.setPrefHeight(15);
+                button.setPrefWidth(15);
+                Image image = new Image("sws/murcs/icons/removeWhite.png");
+                ImageView imageView = new ImageView(image);
+                imageView.setFitHeight(20);
+                imageView.setFitWidth(20);
+                imageView.setPreserveRatio(true);
+                imageView.setPickOnBounds(true);
+                button.setGraphic(imageView);
+                button.getStyleClass().add("mdr-button");
+                button.getStyleClass().add("mdrd-button");
+                button.setOnAction(e -> callbacks.get(0).changeItem(story));
+                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+                fadeButtonOnHover.setupEffect();
+                AnchorPane.setRightAnchor(button, 0.0);
+                container.getChildren().add(button);
+            }
 
             if (callbacks.size() == 2) {
                 MaterialDesignButton otherButton = new MaterialDesignButton(null);
@@ -101,7 +105,6 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
                 Image image2;
                 Tooltip tooltip;
                 // I hate doing this here as it assumes that a story is only in one backlog, (which it should be anyway)
-                // but yeah.
                 // Please suggest a better solution in code review.
                 if (PersistenceManager.getCurrent().getCurrentModel().getBacklogs()
                         .stream()
