@@ -462,7 +462,7 @@ public final class UndoRedoManager {
      * @throws Exception when committing the changes fail.
      */
     public void importModel(final Organisation model) throws Exception {
-        forget(false);
+        forget(true);
         add(model);
         model.getPeople().forEach(this::add);
         model.getTeams().forEach(this::add);
