@@ -1,10 +1,11 @@
-package sws.murcs.model;
+package sws.murcs.unit.model;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sws.murcs.magic.tracking.UndoRedoManager;
+import sws.murcs.model.PeerProgrammingGroup;
 
 public class PeerProgrammingGroupTest {
 
