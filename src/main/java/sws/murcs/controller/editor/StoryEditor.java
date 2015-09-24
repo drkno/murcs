@@ -196,6 +196,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * The last selected story.
      */
     private Story lastSelectedStory;
+    private boolean creatingTask;
 
     @Override
     public final void loadObject() {
@@ -384,12 +385,17 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * Updates all of the task editors within the story.
      */
     public void updateEditors() {
-        if (getTasks().size() != taskEditors.size()) {
+        if (getTasks().size() != taskEditors.size() && !creatingTask) {
             loadTasks();
         }
         else {
             taskEditors.forEach(TaskEditor::update);
         }
+    }
+
+    @Override
+    public void finishedCreation() {
+        creatingTask = false;
     }
 
     /**
@@ -970,6 +976,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
+        creatingTask = true;
         if (taskLoader == null) {
             taskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         }
