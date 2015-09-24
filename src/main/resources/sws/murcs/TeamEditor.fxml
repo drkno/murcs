@@ -38,7 +38,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="%Name" />
+                              <Label styleClass="text-input-label" text="%Name" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                             <padding>
@@ -47,7 +47,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="%LongName" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%LongName" GridPane.rowIndex="1" />
                               <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                            </children>
                             <padding>
@@ -56,7 +56,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="%Description" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%Description" GridPane.rowIndex="1" />
                               <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                            </children>
                            <padding>
@@ -74,7 +74,7 @@
                               <RowConstraints vgrow="NEVER" />
                            </rowConstraints>
                            <children>
-                              <Label text="%TeamMembers" />
+                              <Label styleClass="text-input-label" text="%TeamMembers" />
                               <ScrollPane fitToWidth="true" GridPane.rowIndex="1">
                                  <content>
                                     <VBox>
@@ -84,7 +84,7 @@
                                     </VBox>
                                  </content>
                               </ScrollPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Addamember" GridPane.rowIndex="2">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-input-label" text="%Addamember" GridPane.rowIndex="2">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
@@ -104,7 +104,7 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="4" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="%ProductOwner" />
+                              <Label styleClass="text-input-label" text="%ProductOwner" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -120,7 +120,7 @@
                                           <ChoiceBox fx:id="productOwnerPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearPOButton" mnemonicParsing="false" onAction="#clearPO" styleClass="button-round" GridPane.columnIndex="1" prefHeight="30.0" prefWidth="30.0" minHeight="-Infinity" minWidth="-Infinity">
+                                    <Button fx:id="clearPOButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clearPO" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
                                         <graphic>
                                             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -135,7 +135,7 @@
                                           <Insets left="5.0" />
                                        </GridPane.margin>
                                     </Button>
-                                     <Button fx:id="navigateToPOButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" styleClass="button-round">
+                                     <Button fx:id="navigateToPOButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="2">
                                      <graphic>
                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -159,11 +159,12 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="%ScrumMaster" />
+                              <Label styleClass="text-input-label" text="%ScrumMaster" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                                     <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="-Infinity" />
+                                    <ColumnConstraints />
                                  </columnConstraints>
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" vgrow="NEVER" />
@@ -174,7 +175,7 @@
                                           <ChoiceBox fx:id="scrumMasterPicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" VBox.vgrow="ALWAYS" />
                                        </children>
                                     </AnchorPane>
-                                    <Button fx:id="clearSMButton" mnemonicParsing="false" onAction="#clearSM" styleClass="button-round" GridPane.columnIndex="1" prefHeight="30.0" prefWidth="30.0" minHeight="-Infinity" minWidth="-Infinity">
+                                    <Button fx:id="clearSMButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#clearSM" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="1">
                                         <graphic>
                                             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                                 <image>
@@ -189,7 +190,7 @@
                                           <Insets left="5.0" />
                                        </GridPane.margin>
                                     </Button>
-                                     <Button fx:id="navigateToSMButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" styleClass="button-round">
+                                     <Button fx:id="navigateToSMButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="button-round" GridPane.columnIndex="2">
                                          <graphic>
                                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                                  <image>
