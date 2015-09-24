@@ -43,6 +43,16 @@ public final class UsageHelper {
     }
 
     /**
+     * Finds usages of a model and filters them using a predicate.
+     * @param model The model to find usages for
+     * @param filter The filter
+     * @return The usages
+     */
+    public static List<Model> findUsages(final Model model, final Predicate<Model> filter) {
+        return findUsages(model).stream().filter(filter).collect(Collectors.toList());
+    }
+
+    /**
      * Returns a list of the model objects that make use of this one.
      * @param model The model to find the usages of
      * @return The different usages
@@ -121,6 +131,7 @@ public final class UsageHelper {
                 .stream()
                 .filter(sprint -> team.equals(sprint.getTeam()))
                 .forEach(sprint -> usages.add(sprint));
+
         return usages;
     }
 
