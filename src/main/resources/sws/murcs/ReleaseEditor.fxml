@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ReleaseEditor">
+<AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.ReleaseEditor">
     <children>
         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -49,7 +49,7 @@
                             <children>
                                 <VBox>
                                     <children>
-                                        <Label focusTraversable="false" text="%ReleaseName" />
+                                        <Label focusTraversable="false" styleClass="text-input-label" text="%ReleaseName" />
                                         <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     </children>
                                     <padding>
@@ -58,7 +58,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="1">
                                     <children>
-                                        <Label focusTraversable="false" text="%EstimatedReleaseDate" />
+                                        <Label focusTraversable="false" styleClass="text-input-label" text="%EstimatedReleaseDate" />
                                         <AnchorPane>
                                             <children>
                                                 <DatePicker fx:id="releaseDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -78,7 +78,7 @@
                                         <RowConstraints vgrow="ALWAYS" />
                                     </rowConstraints>
                                     <children>
-                                        <Label text="%Description" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
+                                        <Label styleClass="text-input-label" text="%Description" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
                                         <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" GridPane.rowIndex="1" />
                                     </children>
                                     <GridPane.margin>
@@ -87,7 +87,7 @@
                                 </GridPane>
                                 <VBox GridPane.rowIndex="3">
                                     <children>
-                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%AssociatedProject">
+                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-input-label" text="%AssociatedProject">
                                             <VBox.margin>
                                                 <Insets top="5.0" />
                                             </VBox.margin>

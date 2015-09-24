@@ -30,10 +30,11 @@
                <styleClass>
                   <String fx:value="mdge-button" />
                   <String fx:value="mdr-button" />
-                   <String fx:value="icon-button" />
+                  <String fx:value="icon-button" />
+                  <String fx:value="label-bold" />
                </styleClass>
                <font>
-                  <Font name="System Bold" size="12.0" />
+                  <Font size="12.0" />
                </font>
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

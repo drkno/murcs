@@ -18,9 +18,9 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="%OhFiddlesticks">
+                  <Label text="%OhFiddlesticks" styleClass="label-bold">
                      <font>
-                        <Font name="System Bold" size="12.0" />
+                        <Font size="12.0" />
                      </font>
                   </Label>
                   <Label text="%Asprintmusthavetasksbeforeaburndowngraphcanbegenerated" textAlignment="CENTER" wrapText="true" />

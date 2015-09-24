@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
+<AnchorPane fx:id="editor" prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.BacklogEditor">
     <children>
         <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
@@ -50,7 +50,7 @@
                             <children>
                                 <VBox>
                                     <children>
-                                        <Label text="%ShortName" />
+                                        <Label styleClass="text-input-label" text="%ShortName" />
                                         <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                     </children>
                                     <padding>
@@ -59,7 +59,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="1">
                                     <children>
-                                        <Label text="%LongName" GridPane.rowIndex="1" />
+                                        <Label styleClass="text-input-label" text="%LongName" GridPane.rowIndex="1" />
                                         <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                                     </children>
                                     <padding>
@@ -68,7 +68,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="2">
                                     <children>
-                                        <Label text="%Description" />
+                                        <Label styleClass="text-input-label" text="%Description" />
                                         <TextArea fx:id="descriptionTextArea" minHeight="-Infinity" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                                     </children>
                                     <padding>
@@ -77,7 +77,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="3">
                                     <children>
-                                        <Label text="%ProductOwner" GridPane.rowIndex="1" />
+                                        <Label styleClass="text-input-label" text="%ProductOwner" GridPane.rowIndex="1" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -116,7 +116,7 @@
                                 </VBox>
                                 <VBox GridPane.rowIndex="4">
                                     <children>
-                                        <Label text="%EstimationMethod" GridPane.rowIndex="1" />
+                                        <Label styleClass="text-input-label" text="%EstimationMethod" GridPane.rowIndex="1" />
                                         <AnchorPane>
                                             <children>
                                                 <ChoiceBox fx:id="estimationMethodChoiceBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

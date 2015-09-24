@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.PersonEditor">
+<AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.PersonEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -44,7 +44,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="%Name" />
+                              <Label styleClass="text-input-label" text="%Name" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                            <padding>
@@ -53,7 +53,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="%FullName" />
+                              <Label styleClass="text-input-label" text="%FullName" />
                               <TextField fx:id="longNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                            <padding>
@@ -62,7 +62,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="%UserID" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%UserID" GridPane.rowIndex="1" />
                               <TextField fx:id="userIdTextField" GridPane.columnIndex="1" />
                            </children>
                            <padding>
@@ -80,7 +80,7 @@
                               <RowConstraints vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label text="%Skills">
+                              <Label styleClass="text-input-label" text="%Skills">
                                  <GridPane.margin>
                                     <Insets top="5.0" />
                                  </GridPane.margin>
@@ -94,7 +94,7 @@
                                     </ScrollPane>
                                  </children>
                               </AnchorPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Addaskill" GridPane.rowIndex="2">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-input-label" text="%Addaskill" GridPane.rowIndex="2">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>

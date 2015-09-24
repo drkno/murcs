@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="475.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
+<AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -39,7 +39,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="%Name" />
+                              <Label styleClass="text-input-label" text="%Name" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                             <padding>
@@ -48,7 +48,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="%LongName" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%LongName" GridPane.rowIndex="1" />
                               <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                            </children>
                             <padding>
@@ -57,7 +57,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="%Description" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%Description" GridPane.rowIndex="1" />
                               <TextArea fx:id="descriptionTextArea" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
                            </children>
                            <padding>
@@ -75,7 +75,7 @@
                               <RowConstraints vgrow="NEVER" />
                            </rowConstraints>
                            <children>
-                              <Label text="%TeamMembers" />
+                              <Label styleClass="text-input-label" text="%TeamMembers" />
                               <ScrollPane fitToWidth="true" GridPane.rowIndex="1">
                                  <content>
                                     <VBox>
@@ -85,7 +85,7 @@
                                     </VBox>
                                  </content>
                               </ScrollPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Addamember" GridPane.rowIndex="2">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-input-label" text="%Addamember" GridPane.rowIndex="2">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
@@ -105,7 +105,7 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="4" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="%ProductOwner" />
+                              <Label styleClass="text-input-label" text="%ProductOwner" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -160,7 +160,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5" GridPane.vgrow="NEVER">
                            <children>
-                              <Label text="%ScrumMaster" />
+                              <Label styleClass="text-input-label" text="%ScrumMaster" />
                               <GridPane VBox.vgrow="NEVER">
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
