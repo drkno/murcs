@@ -470,9 +470,11 @@ public class SprintGenerator implements Generator<Sprint> {
                 Task task = story.getTasks().get(GenerationHelper.random(story.getTasks().size()));
 
                 List<Person> people = new ArrayList<>();
-                int numPeople = GenerationHelper.random(1, team.getMembers().size());
-                for (int g = 0; g < numPeople; g++) {
-                    people.add(team.getMembers().get(GenerationHelper.random(team.getMembers().size())));
+                if (team.getMembers().size() > 1) {
+                    int numPeople = GenerationHelper.random(1, team.getMembers().size());
+                    for (int g = 0; g < numPeople; g++) {
+                        people.add(team.getMembers().get(GenerationHelper.random(team.getMembers().size())));
+                    }
                 }
 
                 EffortEntry effort = new EffortEntry();
