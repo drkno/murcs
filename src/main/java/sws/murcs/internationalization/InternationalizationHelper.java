@@ -60,18 +60,6 @@ public final class InternationalizationHelper {
     public static void setLanguage(final String language) {
         currentLanguage = language;
         String code = languages.get(language);
-        if (App.getStage() != null && App.getStage().getScene() != null) {
-            if (!Objects.equals(code, "tlhqaak")) {
-                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf")
-                        .toExternalForm(), FONT_SIZE);
-                App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'Roboto';");
-            }
-            else {
-                Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/pIqaD/pIqaD.ttf").toExternalForm(),
-                        FONT_SIZE);
-                App.getStage().getScene().getRoot().setStyle("-fx-font-family: 'pIqaD';");
-            }
-        }
         currentLocale = new Locale(code, code.toUpperCase());
         currentBundle = ResourceBundle.getBundle("sws.murcs.languages.words", currentLocale, new UTF8Control());
     }

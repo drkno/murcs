@@ -305,8 +305,6 @@ public class App extends Application {
         MainController controller = loadRootNode();
 
         Scene scene = new Scene(controller.getRootNode());
-        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(),
-                DEFAULT_FONT_SIZE);
         scene.getStylesheets().add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
