@@ -283,8 +283,6 @@ public class EffortEntryController implements PersonManagerControllerParent {
         timeTextField.setText("" + effortEntry.getEffort());
         updatePeopleLabel();
 
-        this.effortEntry = effortEntry;
-
         Platform.runLater(() -> updateErrors());
     }
 
