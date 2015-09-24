@@ -81,13 +81,13 @@
                               <Insets />
                            </GridPane.margin>
                         </Separator>
-                        <GridPane minHeight="250.0" GridPane.rowIndex="4">
+                        <GridPane minHeight="300.0" GridPane.rowIndex="4">
                            <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                            </columnConstraints>
                            <rowConstraints>
                               <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
-                              <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+                              <RowConstraints vgrow="SOMETIMES" />
                               <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
                               <RowConstraints minHeight="3.0" vgrow="NEVER" />
                               <RowConstraints minHeight="-Infinity" vgrow="NEVER" />
