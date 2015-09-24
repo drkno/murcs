@@ -663,12 +663,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             addFormError(poComboBox, "{NoPOError}");
         }
 
-        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         EstimateType newEstimateType = estimationMethodChoiceBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
-        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**

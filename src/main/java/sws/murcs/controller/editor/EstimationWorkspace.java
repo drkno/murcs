@@ -53,7 +53,7 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
     }
 
     /**
-     * Forces a reload of the estimate panes..
+     * Forces a reload of the estimate panes.
      */
     protected void forceLoadObject() {
         load();
@@ -105,15 +105,14 @@ public class EstimationWorkspace extends GenericEditor<Backlog> {
 
     @Override
     protected void saveChangesAndErrors() {
-        throw new ImperialException();
+        // Not used.
+        // Loosened precondition, Moffat ;)
     }
 
     @FXML
     @Override
     protected void initialize() {
         currentBacklog = getModel();
-
-
     }
 
     /**

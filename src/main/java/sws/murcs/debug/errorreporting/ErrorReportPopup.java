@@ -147,7 +147,7 @@ public class ErrorReportPopup {
      * If you have not set up a title the dialog will automatically remove it and resize.
      */
     public final void show() {
-        checkVaderMode();
+        tryEnableVaderMode();
         insertMDCheckBox();
         popupStage.initModality(Modality.WINDOW_MODAL);
         window = new Window(popupStage, this);
@@ -162,7 +162,7 @@ public class ErrorReportPopup {
      * with a lovely gif of Darth Vader saying "NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!!!!".
      */
     @SuppressWarnings("checkstyle:magicnumber")
-    private void checkVaderMode() {
+    private void tryEnableVaderMode() {
         if (App.getVaderMode()) {
             mainGrid.getChildren().remove(detailTextArea);
             ImageView view = new ImageView();
