@@ -177,17 +177,16 @@ public class EffortEntryController implements PersonManagerControllerParent {
             if (effortEntry.getEffort() != time) {
                 effortEntry.setEffort(time);
             }
-        } catch (Exception e) {
-            //Do nothing, we handle this not being invalid in the "updateErrors" method.
         }
-
-        updatePeopleLabel();
+        finally {
+            updatePeopleLabel();
+        }
     }
 
     /**
      * Updates the errors on the form.
      */
-    public void updateErrors() {
+    protected void updateErrors() {
         boolean notEdited = datePicker.getValue() == null
                 && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
                 && effortEntry.getPeople().size() == 0
