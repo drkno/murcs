@@ -1,5 +1,10 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,6 +32,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.ModelType;
@@ -39,11 +45,6 @@ import sws.murcs.model.TaskState;
 import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
 
 /**
  * The controller for editing sprints.
@@ -494,7 +495,9 @@ public class SprintEditor extends GenericEditor<Sprint> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        List<ChangeCallback<Story>> callbacks = new ArrayList<>();
+        callbacks.add(this::removeStory);
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
         storyColumn.prefWidthProperty().bind(
                 storiesTable.widthProperty().subtract(estimateColumn.widthProperty())
                         .subtract(completenessColumn.widthProperty()).subtract(10));

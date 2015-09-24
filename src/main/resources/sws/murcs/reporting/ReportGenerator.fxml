@@ -33,7 +33,7 @@
                                        <Insets right="20.0" />
                                     </HBox.margin>
                                  </Label>
-                                 <ComboBox fx:id="managementTypeComboBox" prefWidth="150.0" promptText="%Selectreporttype" />
+                                 <ComboBox fx:id="managementTypeComboBox" promptText="%Selectreporttype" />
                               </children>
                            </HBox>
                            <ListView id="managementList" fx:id="managementList" minHeight="0.0" minWidth="-Infinity" prefHeight="150.0" VBox.vgrow="ALWAYS" />
@@ -51,7 +51,7 @@
                                               <Insets right="20.0" />
                                           </HBox.margin>
                                       </Label>
-                                      <ComboBox fx:id="workflowTypeComboBox" prefWidth="150.0" promptText="%Selectreporttype" />
+                                      <ComboBox fx:id="workflowTypeComboBox" promptText="%Selectreporttype" />
                                   </children>
                               </HBox>
                               <ListView fx:id="workflowList" minHeight="0.0" minWidth="-Infinity" prefHeight="150.0" VBox.vgrow="ALWAYS" />
