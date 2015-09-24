@@ -283,7 +283,7 @@ public class EstimatePane implements UndoRedoChangeListener {
     @Override
     public void undoRedoNotification(final ChangeState param) {
         if (param == ChangeState.Remake || param == ChangeState.Revert) {
-            this.loadObject();
+            loadObject();
         }
     }
 

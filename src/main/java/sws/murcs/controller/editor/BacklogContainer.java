@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import sws.murcs.controller.pipes.Navigable;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Backlog;
 
@@ -154,6 +155,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
         if (estimationWorkspace != null) {
             estimationWorkspace.dispose();
         }
+        UndoRedoManager.get().removeChangeListener(this);
     }
 
     @Override
