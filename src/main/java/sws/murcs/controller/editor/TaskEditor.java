@@ -396,6 +396,7 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
             ((StoryEditor) editorController).addTask(task);
             toggleButtonClicked(null);
             separator.setVisible(true);
+            editorController.finishedCreation();
         }
     }
 
