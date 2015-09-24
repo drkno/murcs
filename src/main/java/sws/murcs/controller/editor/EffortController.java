@@ -1,7 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.List;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +9,9 @@ import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
 import sws.murcs.model.Task;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for logging effort on a task.

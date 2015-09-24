@@ -1,6 +1,7 @@
 package sws.murcs.controller.editor;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -29,11 +32,18 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleRolesException;
+import sws.murcs.model.EffortEntry;
+import sws.murcs.model.ModelType;
 import sws.murcs.model.Person;
 import sws.murcs.model.Skill;
+import sws.murcs.model.Sprint;
+import sws.murcs.model.Story;
+import sws.murcs.model.Task;
 import sws.murcs.model.Team;
+import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +112,29 @@ public class TeamEditor extends GenericEditor<Team> {
      */
     private Map<Person, Node> memberNodeIndex;
 
+    /**
+     * Width to subtract from the prefwidth to ensure that columns remain within the visible width.
+     */
+    private final int columnSizeSubtract = 10;
+
+    /**
+     * The pair programing table.
+     */
+    @FXML
+    private TableView pairProgrammingTable;
+
+    /**
+     * The table column containing pairs.
+     */
+    @FXML
+    private TableColumn<Map.Entry<String, Float>, String> pairsColumn;
+
+    /**
+     * The table column containing time spent.
+     */
+    @FXML
+    private TableColumn<Map.Entry<String, Float>, Float> timeSpentColumn;
+
     @FXML
     @Override
     public final void initialize() {
@@ -141,6 +174,9 @@ public class TeamEditor extends GenericEditor<Team> {
                 }
             }
         });
+
+        pairsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getKey()));
+        timeSpentColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getValue()));
     }
 
     @Override
@@ -168,6 +204,10 @@ public class TeamEditor extends GenericEditor<Team> {
             teamMembersContainer.getChildren().add(memberNode);
             memberNodeIndex.put(member, memberNode);
         });
+
+        pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
+                .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
+        pairProgrammingTable.setItems(generatePairProgrammingEntries());
 
         allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
         updatePOSM();
@@ -454,5 +494,38 @@ public class TeamEditor extends GenericEditor<Team> {
         GridPane.setMargin(removeButton, new Insets(1, 1, 1, 0));
 
         return pane;
+    }
+
+    /**
+     * Gets the pair programming entries for this team over every sprint they have ever done.
+     *
+     * This code is by no means efficient or well written. It is essentially a hack.
+     * Then again there is no way to make it more efficient than it currently is.
+     * This code will run in O(stories)*O(tasks)*O(effort)*O(peopleInTeam^2).
+     *
+     * @return all the pairs in the team and the amount of time logged by each one.
+     */
+    private ObservableList<Map.Entry<String, Float>> generatePairProgrammingEntries() {
+        Map<String, Float> map = new HashMap<>();
+
+        List<Sprint> sprints = UsageHelper.findAllBy(ModelType.Sprint, s -> s.getTeam().equals(getModel()));
+        List<EffortEntry> effortEntries =
+                sprints.stream().map(Sprint::getStories).flatMap(Collection::stream)
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
+                .filter(e -> e.getPeople().size() > 1)
+                .collect(Collectors.toList());
+
+        effortEntries.forEach(e -> {
+            String name = e.getPeopleAsString();
+            if (map.containsKey(name)) {
+                map.put(name, map.get(name) + e.getSetEffort());
+            }
+            else {
+                map.put(name, e.getSetEffort());
+            }
+        });
+
+        return FXCollections.observableArrayList(map.entrySet().stream().collect(Collectors.toList()));
     }
 }

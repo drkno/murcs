@@ -85,10 +85,9 @@ public class HelpfulHintsView {
             boolean isInDebugMode = PersistenceManager.getCurrent().getCurrentModel().isUsingGeneratedData();
             String line = br.readLine();
             while (line != null) {
-                if (line.startsWith("@")) {
-                    if (isInDebugMode) {
-                        hints.add(line.substring(1));
-                    }
+                String value = InternationalizationHelper.tryGet(line);
+                if (value != null && value.startsWith("@") && isInDebugMode) {
+                    hints.add(line.substring(1));
                 }
                 else {
                     hints.add(line);

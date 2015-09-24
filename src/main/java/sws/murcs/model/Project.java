@@ -26,6 +26,7 @@ public class Project extends Model {
     @TrackableValue
     @XmlElementWrapper(name = "releases")
     @XmlElement(name = "release")
+    @XmlIDREF
     private List<Release> releases = new ArrayList<>();
 
     /**

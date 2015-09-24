@@ -1,14 +1,5 @@
 package sws.murcs.controller;
 
-import java.awt.MouseInfo;
-import java.awt.Point;
-import java.awt.PointerInfo;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -59,6 +50,15 @@ import sws.murcs.view.AboutView;
 import sws.murcs.view.App;
 import sws.murcs.view.CreatorWindowView;
 import sws.murcs.view.SearchView;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * A controller for the base pane.
@@ -142,6 +142,20 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         final String os = System.getProperty("os.name");
         if (os != null && os.startsWith("Mac")) {
             menuBar.useSystemMenuBarProperty().set(true);
+        }
+
+        if (os != null && os.startsWith("Linux")) {
+            /* Yes. I know. This is terrible.
+               There is some random problem with the render that means black boxes appear.
+               Sometimes one runLater is sufficient, but usually two are required. Why you
+               may ask? I have no idea. Cause Java.
+               1st runLater: (in theory) called after window is created.
+               2nd runLater: (in theory) called after the window is shown. */
+            Platform.runLater(() -> Platform.runLater(() -> {
+                Stage stage = getWindow().getStage();
+                stage.setWidth(stage.getWidth() + 1);
+                stage.setHeight(stage.getHeight() + 1);
+            }));
         }
 
         List<String> languages = InternationalizationHelper.getLanguages();

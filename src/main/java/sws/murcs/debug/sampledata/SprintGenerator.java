@@ -17,6 +17,7 @@ import sws.murcs.model.Team;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -467,13 +468,20 @@ public class SprintGenerator implements Generator<Sprint> {
             for (int i = 0; i < logEntries; i++) {
                 Story story = sprint.getStories().get(GenerationHelper.random(numStories));
                 Task task = story.getTasks().get(GenerationHelper.random(story.getTasks().size()));
-                Person person = team.getMembers().get(GenerationHelper.random(team.getMembers().size()));
+
+                List<Person> people = new ArrayList<>();
+                int numPeople = GenerationHelper.random(1, team.getMembers().size());
+                for (int g = 0; g < numPeople; g++) {
+                    people.add(team.getMembers().get(GenerationHelper.random(team.getMembers().size())));
+                }
 
                 EffortEntry effort = new EffortEntry();
                 LocalDate date = sprint.getStartDate().plusDays(GenerationHelper.random(sprintLength));
                 effort.setDate(date);
                 effort.setDescription(GenerationHelper.randomString(10));
-                effort.setPerson(person);
+                for (int j = 0; j < people.size(); j++) {
+                    effort.addPerson(people.get(j));
+                }
                 effort.setEffort(GenerationHelper.random(1, 3));
                 task.logEffort(effort);
             }

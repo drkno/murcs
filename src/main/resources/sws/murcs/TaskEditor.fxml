@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <?import java.lang.*?>
-<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="80.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+<AnchorPane fx:id="editor" minHeight="-Infinity" minWidth="10.0" prefHeight="80.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
     <children>
       <GridPane fx:id="taskGridPane" minWidth="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -45,7 +47,7 @@
             <HBox fx:id="minimisedHBox" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
                   <TextField fx:id="nameTextField" minWidth="-Infinity" prefWidth="50.0" promptText="%Name" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="estimateTextField" minWidth="40.0" prefWidth="60.0" promptText="Estimate" />
+                  <TextField fx:id="estimateTextField" minWidth="40.0" prefWidth="60.0" promptText="%Estimate" />
                   <ChoiceBox fx:id="stateChoiceBox" minWidth="80.0" prefWidth="100.0" />
                </children>
                <GridPane.margin>
@@ -100,7 +102,7 @@
                   <Insets right="10.0" />
                </padding>
             </HBox>
-            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextArea fx:id="descriptionTextArea" maxHeight="-Infinity" minHeight="-Infinity" minWidth="20.0" prefHeight="150.0" prefWidth="250.0" promptText="%Description" visible="false" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <children>
                   <Button fx:id="createButton" alignment="BOTTOM_LEFT" mnemonicParsing="false" onAction="#createButtonClicked" text="%Create" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2">

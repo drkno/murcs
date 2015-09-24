@@ -14,7 +14,6 @@ import sws.murcs.model.Task;
 import sws.murcs.model.Team;
 import sws.murcs.model.WorkAllocation;
 import sws.murcs.model.persistence.PersistenceManager;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -41,6 +40,16 @@ public final class UsageHelper {
      */
     public static boolean inUse(final Model model) {
         return findUsages(model).size() != 0;
+    }
+
+    /**
+     * Finds usages of a model and filters them using a predicate.
+     * @param model The model to find usages for
+     * @param filter The filter
+     * @return The usages
+     */
+    public static List<Model> findUsages(final Model model, final Predicate<Model> filter) {
+        return findUsages(model).stream().filter(filter).collect(Collectors.toList());
     }
 
     /**
@@ -122,6 +131,7 @@ public final class UsageHelper {
                 .stream()
                 .filter(sprint -> team.equals(sprint.getTeam()))
                 .forEach(sprint -> usages.add(sprint));
+
         return usages;
     }
 
@@ -221,6 +231,41 @@ public final class UsageHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * Finds all model objects in the organisation from a predicate.
+     * If there is no Organisation to search, null will be returned.
+     * @param type type that should be search.
+     * @param predicate the predicate to match.
+     * @param <T> the model type to return and search.
+     * @return the first instance that meets the criteria, or null if not found.
+     */
+    public static <T extends Model> List<T> findAllBy(final ModelType type, final Predicate<T> predicate) {
+        if (PersistenceManager.getCurrent() == null) {
+            return null;
+        }
+
+        Organisation currentModel = PersistenceManager.getCurrent().getCurrentModel();
+        if (currentModel == null) {
+            return null;
+        }
+
+        List<T> list = null;
+        switch (type) {
+            case Skill: list = (List<T>) currentModel.getSkills(); break;
+            case Person: list = (List<T>) currentModel.getPeople(); break;
+            case Project: list = (List<T>) currentModel.getProjects(); break;
+            case Team: list = (List<T>) currentModel.getTeams(); break;
+            case Release: list = (List<T>) currentModel.getReleases(); break;
+            case Story: list = (List<T>) currentModel.getStories(); break;
+            case Backlog: list = (List<T>) currentModel.getBacklogs(); break;
+            case Sprint: list = (List<T>) currentModel.getSprints(); break;
+            default: throw new UnsupportedOperationException("This type of model is unsupported (fixme!).");
+        }
+        return list.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
     }
 
     /**

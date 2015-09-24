@@ -859,13 +859,14 @@ public class TaskGenerator implements Generator<Task> {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:magicnumber")
     public final Task generate() {
         Task t = new Task();
         t.setDescription(GenerationHelper.randomElement(defaultDescriptions));
         t.setCurrentEstimate(GenerationHelper.random(MAX_ESTIMATE));
         t.setState(TaskState.values()[GenerationHelper.random(TaskState.values().length)]);
         t.setName(GenerationHelper.randomElement(taskNames));
-        t.setEstimationDate(LocalDate.MIN);
+        t.setEstimationDate(LocalDate.of(1800, 1, 1));
         return t;
     }
 }

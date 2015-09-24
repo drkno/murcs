@@ -24,12 +24,35 @@
    </rowConstraints>
    <children>
       <DatePicker fx:id="datePicker" minHeight="-Infinity" minWidth="-Infinity" prefWidth="100.0" GridPane.rowIndex="1" />
-      <AnchorPane GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <AnchorPane GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
          <children>
-            <ComboBox fx:id="personComboBox" prefWidth="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label fx:id="personsLabel" maxWidth="250.0" minWidth="-Infinity" prefWidth="200.0" text="Label" GridPane.hgrow="ALWAYS" HBox.hgrow="SOMETIMES">
+                     <GridPane.margin>
+                        <Insets right="10.0" />
+                     </GridPane.margin></Label>
+                  <Button fx:id="editPeopleButton" mnemonicParsing="false" onAction="#editPeopleButtonClicked" style="-fx-padding: 0;" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+                     <graphic>
+                        <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true" styleClass="mdr-button">
+                           <image>
+                              <Image url="@icons/edit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </GridPane>
          </children>
       </AnchorPane>
-      <TextField fx:id="timeTextField" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefWidth="70.0" promptText="%Inminutes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+      <TextField fx:id="timeTextField" alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" prefWidth="80.0" promptText="%Inminutes" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
       <TextArea fx:id="descriptionTextArea" prefHeight="50.0" prefWidth="100.0" promptText="Description" GridPane.columnSpan="4" GridPane.rowIndex="2" />
       <Button fx:id="actionButton" mnemonicParsing="false" onAction="#actionButtonClicked" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <styleClass>

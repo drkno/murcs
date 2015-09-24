@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.controls.popover.ArrowLocation;
 import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.PersonManagerControllerParent;
 import sws.murcs.controller.pipes.TaskEditorParent;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
@@ -28,12 +29,14 @@ import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.magic.tracking.listener.UndoRedoChangeListener;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
+import sws.murcs.model.PersonMaintainer;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.TaskState;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.view.App;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * The editor for a task contained within a story.
  */
-public class TaskEditor implements UndoRedoChangeListener {
+public class TaskEditor implements UndoRedoChangeListener, PersonManagerControllerParent {
 
     /**
      * The model of the tasks you are editing.
@@ -257,21 +260,23 @@ public class TaskEditor implements UndoRedoChangeListener {
                     .stream()
                     .filter(model -> model instanceof Sprint).map(model -> (Sprint) model)
                     .collect(Collectors.toList());
+            List<Person> tempPeople = new ArrayList<>();
             if (sprints.size() > 0) {
-                sprints.forEach(sprint -> possibleAssignees.addAll(sprint.getTeam().getMembers()));
+                sprints.forEach(sprint -> tempPeople.addAll(sprint.getTeam().getMembers()));
+                possibleAssignees = tempPeople;
                 return;
             }
         }
         editAssignedButton.setDisable(true);
         logEffortButton.setDisable(true);
-        assigneesLabel.setText("To add assignees this story must be in a sprint with a team assigned to it");
+        assigneesLabel.setText(InternationalizationHelper.tryGet("AssigneesPrompt"));
     }
 
     /**
      * Updates the assignees label to display all the current assigness as a list.
      */
     private void updateAssigneesLabel() {
-        assigneesLabel.setText(task.getAssignees().size() > 0 ? task.getAssigneesAsString() : "Not assigned");
+        assigneesLabel.setText(task.getAssignees().size() > 0 ? task.getAssigneesAsString() : InternationalizationHelper.tryGet("NotAssigned"));
     }
 
     /**
@@ -448,12 +453,12 @@ public class TaskEditor implements UndoRedoChangeListener {
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (assigneePopOver == null) {
             FXMLLoader loader = new AutoLanguageFXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/AssigneesPopOver.fxml"));
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
             try {
                 Parent parent = loader.load();
                 assigneePopOver = new PopOver(parent);
-                AssigneeController controller = loader.getController();
+                PersonManagerController controller = loader.getController();
                 controller.setUp(this, possibleAssignees);
                 assigneePopOver.hideOnEscapeProperty().setValue(true);
                 assigneePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
@@ -502,7 +507,7 @@ public class TaskEditor implements UndoRedoChangeListener {
      * Adss an assignee to the task and updates the assignee label to display it.
      * @param assignee the assignee to add to the task.
      */
-    public void addAssignee(final Person assignee) {
+    public void addPerson(final Person assignee) {
         task.addAssignee(assignee);
         updateAssigneesLabel();
     }
@@ -511,9 +516,14 @@ public class TaskEditor implements UndoRedoChangeListener {
      * Removes the given person from the assignees of the task.
      * @param assignee the assignee to remove from the task.
      */
-    public void removeAssignee(final Person assignee) {
+    public void removePerson(final Person assignee) {
         task.removeAssignee(assignee);
         updateAssigneesLabel();
+    }
+
+    @Override
+    public PersonMaintainer getMaintainer() {
+        return task;
     }
 
     /**

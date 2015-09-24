@@ -1,4 +1,4 @@
-package sws.murcs.reporting;
+package sws.murcs.reporting.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;

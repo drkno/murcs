@@ -1,6 +1,6 @@
 package sws.murcs.reporting.header;
 
-import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.reporting.adapters.LocalDateAdapter;
 import sws.murcs.reporting.model.ReportModel;
 
 import javax.xml.bind.annotation.XmlElement;

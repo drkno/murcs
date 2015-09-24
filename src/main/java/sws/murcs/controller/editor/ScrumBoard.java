@@ -1,8 +1,6 @@
 package sws.murcs.controller.editor;
 
 import com.sun.javafx.css.StyleManager;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.animation.FadeTransition;
 import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
@@ -19,6 +17,9 @@ import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.view.App;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Scrum Board controller. This consists of several story
