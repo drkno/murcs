@@ -414,6 +414,7 @@ public class App extends Application {
      */
     public static void main(final String[] args) {
         System.setProperty("prism.lcdtext", "false");
+        System.setProperty("glass.accessible.force", "false");
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.get().setDisabled(true);
 
