@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
-    <projectVersion>0.0.5</projectVersion>
-    <dateGenerated>2015-09-01</dateGenerated>
+    <projectVersion>1.0.0</projectVersion>
+    <dateGenerated>2015-09-23</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
         <projects>
             <project shortName="FITR">
                 <longName>Fitness is Training Right</longName>
                 <description>We are building a fitness tracking application for the world</description>
                 <releases>
-                    <release shortName="Now">
-                        <description>This current time</description>
-                        <releaseDate>2015-04-22</releaseDate>
-                    </release>
+                    <release>Now</release>
                 </releases>
                 <backlogs/>
             </project>
@@ -38,10 +35,10 @@
                                 <state>InProgress</state>
                                 <estimateInfo>
                                     <estimates>
-                                        <entry>
-                                            <key/>
-                                            <value>100.0</value>
-                                        </entry>
+                                        <item>
+                                            <date>2015-09-23</date>
+                                            <estimateValue>100.0</estimateValue>
+                                        </item>
                                     </estimates>
                                 </estimateInfo>
                             </task>
@@ -51,6 +48,7 @@
                             <dependence>2</dependence>
                         </dependencies>
                         <estimate>1</estimate>
+                        <pairs/>
                     </story>
                 </prioritisedStories>
                 <estimateType>Fibonacci</estimateType>
@@ -60,15 +58,13 @@
             <sprint shortName="This is the sprint">
                 <longName>This is the sprint's long name</longName>
                 <description>high five</description>
-                <associatedRelease shortName="Now">
-                    <description>This current time</description>
-                    <releaseDate>2015-04-22</releaseDate>
-                </associatedRelease>
+                <associatedRelease>Now</associatedRelease>
                 <stories>
                     <story>1</story>
                 </stories>
                 <associatedBacklog>This is the backlog</associatedBacklog>
                 <team>Sengineers</team>
+                <pairs/>
             </sprint>
         </sprints>
         <workAllocations>
@@ -79,25 +75,6 @@
                 <endDate>2015-05-08</endDate>
             </workAllocation>
         </workAllocations>
-        <unassignedStories>
-            <story shortName="2">
-                <longName>Story Maintenance</longName>
-                <description>add stories to project</description>
-                <storyState>None</storyState>
-                <acceptanceCriteria/>
-                <tasks/>
-                <creator>Unallocated</creator>
-                <dependencies/>
-                <estimate>Not Estimated</estimate>
-            </story>
-        </unassignedStories>
-        <unassignedTeams>
-            <team>Lonely</team>
-            <team>Riding Solo</team>
-        </unassignedTeams>
-        <unassignedPeople>
-            <person>Unallocated</person>
-        </unassignedPeople>
         <teams>
             <team shortName="Lonely">
                 <longName>Mr Lonely</longName>
@@ -169,5 +146,32 @@
                 <description>Manages the efforts of a team, resolves difficulties and removes obstacles to task completion.</description>
             </skill>
         </skills>
+        <releases>
+            <release shortName="Now">
+                <description>This current time</description>
+                <releaseDate>2015-04-22</releaseDate>
+                <pairs/>
+            </release>
+        </releases>
+        <unassignedStories>
+            <story shortName="2">
+                <longName>Story Maintenance</longName>
+                <description>add stories to project</description>
+                <storyState>None</storyState>
+                <acceptanceCriteria/>
+                <tasks/>
+                <creator>Unallocated</creator>
+                <dependencies/>
+                <estimate>Not Estimated</estimate>
+                <pairs/>
+            </story>
+        </unassignedStories>
+        <unassignedTeams>
+            <team>Lonely</team>
+            <team>Riding Solo</team>
+        </unassignedTeams>
+        <unassignedPeople>
+            <person>Unallocated</person>
+        </unassignedPeople>
     </content>
 </report>

@@ -103,7 +103,6 @@ public class EditorPane {
     public final void create() {
         Map<ModelType, String> fxmlPaths = new HashMap<>();
         fxmlPaths.put(ModelType.Project, "ProjectEditor.fxml");
-        fxmlPaths.put(ModelType.Team, "TeamEditor.fxml");
         fxmlPaths.put(ModelType.Person, "PersonEditor.fxml");
         fxmlPaths.put(ModelType.Skill, "SkillEditor.fxml");
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
@@ -111,10 +110,13 @@ public class EditorPane {
         if (isSearchOrCreation) {
             fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
             fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
+            fxmlPaths.put(ModelType.Team, "TeamEditor.fxml");
+
         }
         else {
             fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
             fxmlPaths.put(ModelType.Backlog, "BacklogContainer.fxml");
+            fxmlPaths.put(ModelType.Team, "TeamContainer.fxml");
         }
 
         ModelType type = ModelType.getModelType(model);

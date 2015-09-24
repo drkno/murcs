@@ -22,11 +22,12 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Task extends TrackableObject implements Serializable {
+public class Task extends TrackableObject implements Serializable, PersonMaintainer {
 
     /**
      * Serialisation ID for backwards compatible serialisation.
      */
+    @XmlTransient
     private static final long serialVersionUID = 0L;
 
     /**
@@ -38,6 +39,7 @@ public class Task extends TrackableObject implements Serializable {
     /**
      * The hashcode of the object.
      */
+    @XmlTransient
     private Integer hashCode = null;
 
     /**
@@ -320,5 +322,22 @@ public class Task extends TrackableObject implements Serializable {
      */
     public String getAssigneesAsString() {
         return assignees.stream().map(Person::getShortName).collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public boolean addPerson(final Person person) {
+        addAssignee(person);
+        return true;
+    }
+
+    @Override
+    public boolean removePerson(final Person person) {
+        removeAssignee(person);
+        return true;
+    }
+
+    @Override
+    public Collection<Person> getPeople() {
+        return getAssignees();
     }
 }

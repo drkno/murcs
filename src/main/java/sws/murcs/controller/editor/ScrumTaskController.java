@@ -1,9 +1,5 @@
 package sws.murcs.controller.editor;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,6 +20,11 @@ import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.model.Task;
 import sws.murcs.model.helpers.UsageHelper;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for a task within a scrum board.
@@ -85,12 +86,6 @@ public class ScrumTaskController implements UndoRedoChangeListener {
             .getResource("/sws/murcs/EffortPopOver.fxml"));
 
     /**
-     * The assignees popover fxml.
-     */
-    private FXMLLoader assigneesPopOverFxml = new AutoLanguageFXMLLoader(TaskEditor.class
-            .getResource("/sws/murcs/AssigneesPopOver.fxml"));
-
-    /**
      * Sets up the form.
      */
     @FXML
@@ -145,9 +140,11 @@ public class ScrumTaskController implements UndoRedoChangeListener {
     private void editAssignedButtonClicked(final ActionEvent event) {
         if (taskPopover == null) {
             try {
-                Parent parent = assigneesPopOverFxml.load();
+                FXMLLoader loader = new AutoLanguageFXMLLoader();
+                loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
+                Parent parent = loader.load();
                 taskPopover = new PopOver(parent);
-                AssigneeController controller = assigneesPopOverFxml.getController();
+                PersonManagerController controller = loader.getController();
                 taskPopover.hideOnEscapeProperty().setValue(true);
                 List<Person> possibleAssignees = getPossibleAssignees();
                 controller.setUp(task, possibleAssignees);

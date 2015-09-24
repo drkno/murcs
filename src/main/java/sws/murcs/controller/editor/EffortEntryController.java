@@ -4,9 +4,9 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -15,9 +15,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import sws.murcs.controller.controls.popover.ArrowLocation;
+import sws.murcs.controller.controls.popover.PopOver;
+import sws.murcs.controller.pipes.PersonManagerControllerParent;
+import sws.murcs.debug.errorreporting.ErrorReporter;
+import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.internationalization.InternationalizationHelper;
 import sws.murcs.model.EffortEntry;
 import sws.murcs.model.Person;
+import sws.murcs.model.PersonMaintainer;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,12 +33,12 @@ import java.util.function.Consumer;
 /**
  * A controller for editing effort entries.
  */
-public class EffortEntryController {
+public class EffortEntryController implements PersonManagerControllerParent {
     /**
      * The column labels. We have ids for them because we add and remove them.
      */
     @FXML
-    private Label dateLabel, personLabel, timeLabel;
+    private Label dateLabel, personLabel, timeLabel, personsLabel;
 
     /**
      * The text field containing time spent.
@@ -51,16 +59,10 @@ public class EffortEntryController {
     private DatePicker datePicker;
 
     /**
-     * The choice box for deciding who logged the time.
-     */
-    @FXML
-    private ComboBox personComboBox;
-
-    /**
      * The action button.
      */
     @FXML
-    private Button actionButton;
+    private Button actionButton, editPeopleButton;
 
     /**
      * The main grid.
@@ -76,6 +78,11 @@ public class EffortEntryController {
      * The associated effort controller.
      */
     private EffortController effortController;
+
+    /**
+     * The popover for adding multiple people to the effort entry.
+     */
+    private PopOver peoplePopOver;
 
     /**
      * The effort being edited by this controller.
@@ -124,11 +131,6 @@ public class EffortEntryController {
             updateErrors();
         });
 
-        personComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            update();
-            updateErrors();
-        });
-
         timeTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) return;
 
@@ -170,28 +172,24 @@ public class EffortEntryController {
             effortEntry.setDescription(descriptionTextArea.getText());
         }
 
-        if (personComboBox.getValue() != null && !personComboBox.getValue().equals(effortEntry.getPerson())) {
-            effortEntry.setPerson((Person) personComboBox.getValue());
-        }
-
         try {
             float time = Float.parseFloat(timeTextField.getText());
             if (effortEntry.getEffort() != time) {
                 effortEntry.setEffort(time);
             }
-        } catch (Exception e) {
-            //Do nothing, we handle this not being invalid in the "updateErrors" method.
-            int foo = 0; //Because checkstyle
+        }
+        finally {
+            updatePeopleLabel();
         }
     }
 
     /**
      * Updates the errors on the form.
      */
-    private void updateErrors() {
+    protected void updateErrors() {
         boolean notEdited = datePicker.getValue() == null
                 && (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty())
-                && personComboBox.getValue() == null
+                && effortEntry.getPeople().size() == 0
                 && timeTextField.getText().equals("0.0");
         //If we haven't touched the form yet, don't highlight errors but set the flag.
         if (notEdited || effortEntry == null) {
@@ -215,11 +213,11 @@ public class EffortEntryController {
             descriptionTextArea.getStyleClass().removeAll("error");
         }
 
-        if (personComboBox.getValue() == null || effortEntry.getPerson() == null) {
-            personComboBox.getStyleClass().add("error");
+        if (effortEntry.getPeople().size() == 0) {
+            personsLabel.getStyleClass().add("error");
             errors = true;
         } else {
-            personComboBox.getStyleClass().removeAll("error");
+            personsLabel.getStyleClass().removeAll("error");
         }
 
         boolean validTime = true;
@@ -278,14 +276,12 @@ public class EffortEntryController {
      * @param effortEntry The effort for this controller to edit.
      */
     public void setEffortEntry(final EffortEntry effortEntry) {
-        this.effortEntry = null;
+        this.effortEntry = effortEntry;
 
-        personComboBox.setValue(effortEntry.getPerson());
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
         timeTextField.setText("" + effortEntry.getEffort());
-
-        this.effortEntry = effortEntry;
+        updatePeopleLabel();
 
         Platform.runLater(() -> updateErrors());
     }
@@ -304,9 +300,6 @@ public class EffortEntryController {
      */
     public void setEffortController(final EffortController controller) {
         this.effortController = controller;
-
-        personComboBox.getItems().clear();
-        personComboBox.getItems().addAll(getEligibleWorkers());
     }
 
     /**
@@ -363,5 +356,61 @@ public class EffortEntryController {
 
         mainGrid.getRowConstraints().get(0).setPrefHeight(0);
         mainGrid.getChildren().removeAll(dateLabel, personLabel, timeLabel);
+    }
+
+    @Override
+    public void addPerson(final Person person) {
+        effortEntry.addPerson(person);
+        updatePeopleLabel();
+    }
+
+    /**
+     * Updates the people label to have the correct names on it.
+     */
+    public void updatePeopleLabel() {
+        if (effortEntry != null) {
+            personsLabel.setText(effortEntry.getPeople().size() > 0 ? effortEntry.getPeopleAsString() : InternationalizationHelper.tryGet("NoPeople"));
+        }
+    }
+
+    @Override
+    public void removePerson(final Person person) {
+        effortEntry.removePerson(person);
+        updatePeopleLabel();
+    }
+
+    @Override
+    public PersonMaintainer getMaintainer() {
+        return effortEntry;
+    }
+
+    /**
+     * The event called when you want to edit the people who are having the effort logged against them.
+     * @param event the click on the edit button.
+     */
+    @FXML
+    private void editPeopleButtonClicked(final ActionEvent event) {
+        if (peoplePopOver == null) {
+            FXMLLoader loader = new AutoLanguageFXMLLoader();
+            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
+
+            try {
+                Parent parent = loader.load();
+                peoplePopOver = new PopOver(parent);
+                PersonManagerController controller = loader.getController();
+                controller.setUp(this, getEligibleWorkers());
+                peoplePopOver.hideOnEscapeProperty().setValue(true);
+                peoplePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue) {
+                        updatePeopleLabel();
+                    }
+                });
+            }
+            catch (IOException e) {
+                ErrorReporter.get().reportError(e, "Could not create an people popover");
+            }
+        }
+        peoplePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+        peoplePopOver.show(editPeopleButton);
     }
 }

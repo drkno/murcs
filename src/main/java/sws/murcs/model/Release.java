@@ -1,14 +1,23 @@
 package sws.murcs.model;
 
 import sws.murcs.magic.tracking.TrackableValue;
-import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.model.helpers.UsageHelper;
+import sws.murcs.reporting.adapters.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A model that represents a release for a project.
@@ -80,5 +89,38 @@ public class Release extends Model {
     public final void changeRelease(final Project project) {
         project.addRelease(this);
         commit("edit release");
+    }
+
+    /**
+     * Gets the pair programming groups that occurred in this story.
+     * @return the groups that peer programmed together.
+     */
+    @XmlElementWrapper(name = "pairs")
+    @XmlElement(name = "pair")
+    public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
+        List<Sprint> sprints = UsageHelper.findAllBy(ModelType.Sprint, s -> s.getAssociatedRelease().equals(this));
+        if (sprints == null) {
+            sprints = new ArrayList<>();
+        }
+        List<PeerProgrammingGroup> groups = sprints.stream()
+                .map(Sprint::getPairProgrammingGroups).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        float total = sprints.stream().map(Sprint::getPairProgrammingGroups)
+                .filter(g -> g.size() > 0)
+                .map(g -> g.get(0).getTotalTime()).reduce((a, b) -> a + b).orElse(0f);
+
+        Map<String, Float> map = new HashMap<>();
+        groups.forEach(e -> {
+            String name = e.getGroupMembers();
+            if (map.containsKey(name)) {
+                map.put(name, map.get(name) + e.getTimeSpent());
+            } else {
+                map.put(name, e.getTimeSpent());
+            }
+        });
+
+        return map.entrySet().stream()
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue(),
+                        total)).collect(Collectors.toList());
     }
 }

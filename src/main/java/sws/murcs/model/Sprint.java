@@ -5,7 +5,7 @@ import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
 import sws.murcs.magic.tracking.TrackableValue;
 import sws.murcs.model.helpers.UsageHelper;
-import sws.murcs.reporting.LocalDateAdapter;
+import sws.murcs.reporting.adapters.LocalDateAdapter;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -17,8 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Model of a sprint.
@@ -45,6 +49,7 @@ public class Sprint extends Model {
      */
     @TrackableValue
     @Searchable
+    @XmlIDREF
     private Release associatedRelease;
 
     /**
@@ -255,5 +260,33 @@ public class Sprint extends Model {
         if (end != null && rel != null && end.isAfter(rel.getReleaseDate())) {
             throw new InvalidParameterException("The sprint should end before the release date");
         }
+    }
+
+    /**
+     * Gets the pair programming groups that occurred in this sprint.
+     * @return the groups that peer programmed together.
+     */
+    @XmlElementWrapper(name = "pairs")
+    @XmlElement(name = "pair")
+    public final List<PeerProgrammingGroup> getPairProgrammingGroups() {
+        List<EffortEntry> effortEntries = getStories().stream()
+                .map(Story::getTasks).flatMap(Collection::stream)
+                .map(Task::getEffort).flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        float total = effortEntries.stream().map(EffortEntry::getEffort).reduce((a, b) -> a + b).orElse(0f);
+
+        Map<String, Float> map = new HashMap<>();
+        effortEntries.stream().filter(f -> f.getPeople().size() > 1).forEach(e -> {
+            String name = e.getPeopleAsString();
+            if (map.containsKey(name)) {
+                map.put(name, map.get(name) + e.getSetEffort());
+            } else {
+                map.put(name, e.getSetEffort());
+            }
+        });
+
+        return map.entrySet().stream()
+                .map(e -> new PeerProgrammingGroup(e.getKey(), e.getValue(), total)).collect(Collectors.toList());
     }
 }
