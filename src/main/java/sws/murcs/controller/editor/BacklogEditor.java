@@ -775,6 +775,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          */
         private void createTextField() {
             textField = new TextField(getString());
+            textField.setAlignment(Pos.CENTER);
             textField.focusedProperty().addListener(
                         (observable, oldValue, newValue) -> {
                             if (!newValue) {
