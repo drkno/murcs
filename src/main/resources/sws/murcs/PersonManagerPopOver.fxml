@@ -19,10 +19,11 @@
          <children>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Label text="%AddAssignees">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font></Label>
+                  <Label text="%AddAssignees" styleClass="label-bold">
+                      <font>
+                          <Font size="12.0"/>
+                      </font>
+                  </Label>
                   <ComboBox fx:id="assigneeComboBox" prefWidth="150.0" />
                   <ScrollPane fitToHeight="true" fitToWidth="true" minHeight="-Infinity" prefHeight="140.0">
                      <content>
@@ -39,9 +40,9 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
                <children>
-                  <Label text="%RecentlyUsed">
+                  <Label text="%RecentlyUsed" styleClass="label-bold">
                      <font>
-                        <Font name="System Bold" size="12.0" />
+                        <Font size="12.0" />
                      </font></Label>
                </children>
             </VBox>

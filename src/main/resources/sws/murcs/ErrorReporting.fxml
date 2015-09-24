@@ -45,9 +45,9 @@
                 <RowConstraints minHeight="-Infinity" prefHeight="75.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <Label fx:id="messageTitleLabel" text="%Message">
+                  <Label fx:id="messageTitleLabel" text="%Message" styleClass="label-bold">
                      <font>
-                        <Font name="System Bold" size="21.0" />
+                        <Font size="21.0" />
                      </font>
                      <padding>
                         <Insets bottom="10.0" />

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.lang.String?>
 
-<GridPane fx:id="mainGrid" hgap="10.0" styleClass="root" vgap="10.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EffortEntryController">
+<GridPane fx:id="mainGrid" hgap="10.0" styleClass="root" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.EffortEntryController">
    <columnConstraints>
       <ColumnConstraints hgrow="NEVER" minWidth="-Infinity" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
