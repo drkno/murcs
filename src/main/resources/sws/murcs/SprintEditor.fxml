@@ -20,8 +20,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintEditor">
+<AnchorPane fx:id="editor" prefHeight="625.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintEditor">
     <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -52,7 +51,7 @@
                      <children>
                             <VBox>
                                 <children>
-                                    <Label text="%SprintGoalLabel" />
+                                    <Label styleClass="text-input-label" text="%SprintGoalLabel" />
                                     <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                 </children>
                                 <padding>
@@ -61,7 +60,7 @@
                             </VBox>
                             <VBox GridPane.rowIndex="1">
                                 <children>
-                                    <Label text="%Name" GridPane.rowIndex="1" />
+                                    <Label styleClass="text-input-label" text="%Name" GridPane.rowIndex="1" />
                                     <TextField fx:id="longNameTextField" GridPane.columnIndex="1" />
                                 </children>
                                 <padding>
@@ -77,7 +76,7 @@
                               <RowConstraints minHeight="25.0" vgrow="ALWAYS" />
                            </rowConstraints>
                            <children>
-                                    <Label text="%Description">
+                                    <Label styleClass="text-input-label" text="%Description">
                                  <GridPane.margin>
                                     <Insets bottom="5.0" />
                                  </GridPane.margin>
@@ -90,7 +89,7 @@
                         </GridPane>
                         <VBox GridPane.rowIndex="6">
                            <children>
-                              <Label text="%Team" />
+                              <Label styleClass="text-input-label" text="%Team" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
@@ -129,7 +128,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="7">
                            <children>
-                              <Label text="%Release" />
+                              <Label styleClass="text-input-label" text="%Release" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
@@ -171,7 +170,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="5">
                            <children>
-                              <Label text="%Backlog" />
+                              <Label styleClass="text-input-label" text="%Backlog" />
                               <GridPane>
                                  <columnConstraints>
                                     <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" />
@@ -210,7 +209,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="3">
                            <children>
-                              <Label text="%StartDate" />
+                              <Label styleClass="text-input-label" text="%StartDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="startDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
@@ -223,7 +222,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="4">
                            <children>
-                              <Label text="%EndDate" />
+                              <Label styleClass="text-input-label" text="%EndDate" />
                               <AnchorPane>
                                  <children>
                                     <DatePicker fx:id="endDatePicker" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />

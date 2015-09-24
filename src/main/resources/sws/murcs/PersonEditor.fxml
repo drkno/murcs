@@ -44,7 +44,7 @@
                      <children>
                         <VBox>
                            <children>
-                              <Label text="%Name" />
+                              <Label styleClass="text-input-label" text="%Name" />
                               <TextField fx:id="shortNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                            <padding>
@@ -53,7 +53,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="1">
                            <children>
-                              <Label text="%FullName" />
+                              <Label styleClass="text-input-label" text="%FullName" />
                               <TextField fx:id="longNameTextField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                            </children>
                            <padding>
@@ -62,7 +62,7 @@
                         </VBox>
                         <VBox GridPane.rowIndex="2">
                            <children>
-                              <Label text="%UserID" GridPane.rowIndex="1" />
+                              <Label styleClass="text-input-label" text="%UserID" GridPane.rowIndex="1" />
                               <TextField fx:id="userIdTextField" GridPane.columnIndex="1" />
                            </children>
                            <padding>
@@ -80,7 +80,7 @@
                               <RowConstraints vgrow="SOMETIMES" />
                            </rowConstraints>
                            <children>
-                              <Label text="%Skills">
+                              <Label styleClass="text-input-label" text="%Skills">
                                  <GridPane.margin>
                                     <Insets top="5.0" />
                                  </GridPane.margin>
@@ -94,7 +94,7 @@
                                     </ScrollPane>
                                  </children>
                               </AnchorPane>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Addaskill" GridPane.rowIndex="2">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-input-label" text="%Addaskill" GridPane.rowIndex="2">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>
