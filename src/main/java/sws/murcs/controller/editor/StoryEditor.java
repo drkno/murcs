@@ -1022,7 +1022,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     @Override
     public void changesMade() {
-        //We do not care if changes are made in this editor.
+        progressBar.setStory(getModel());
     }
 
     /**
