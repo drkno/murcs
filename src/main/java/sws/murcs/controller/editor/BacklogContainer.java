@@ -66,26 +66,6 @@ public class BacklogContainer extends GenericEditor<Backlog> {
                 tabSelectionChanged(newValue);
             }
         });
-
-        try {
-            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/BacklogEditor.fxml"));
-            Parent view = loader.load();
-            overviewAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            backlogOverview = loader.getController();
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load backlog overview");
-        }
-
-        try {
-            estimationWorkspace = new EstimationWorkspace();
-            estimationWorkspace.setup(estimatesContainerVBox);
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load estimation workspace");
-        }
     }
 
     @Override
@@ -102,23 +82,61 @@ public class BacklogContainer extends GenericEditor<Backlog> {
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        Platform.runLater(() -> { isLoaded = true; });
+        Platform.runLater(() -> {
+            isLoaded = true;
+        });
     }
 
     /**
      * Sets up the estimation workspace.
      */
     private void workspaceTabSelected() {
+        if (estimationWorkspace == null || estimationWorkspace.disposed) {
+            createEstimationWorkspace();
+        }
         estimationWorkspace.setModel(getModel());
         estimationWorkspace.loadObject();
+    }
+
+    /**
+     * Creates a new estimation workspace.
+     */
+    private void createEstimationWorkspace() {
+        try {
+            estimationWorkspace = new EstimationWorkspace();
+            estimationWorkspace.setup(estimatesContainerVBox);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load estimation workspace");
+        }
     }
 
     /**
      * loads the backlog overview.
      */
     private void overviewTabSelected() {
+        if (backlogOverview == null || backlogOverview.disposed) {
+            createOverview();
+        }
         backlogOverview.setModel(getModel());
         backlogOverview.loadObject();
+    }
+
+    /**
+     * Creates a new overview controller.
+     **/
+    private void createOverview() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/BacklogEditor.fxml"));
+            Parent view = loader.load();
+            overviewAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            backlogOverview = loader.getController();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load backlog overview");
+        }
     }
 
     /**
@@ -160,10 +178,14 @@ public class BacklogContainer extends GenericEditor<Backlog> {
 
     @Override
     public void setNavigationManager(final Navigable navigationManager) {
-        backlogOverview.setNavigationManager(navigationManager);
-        if (estimationWorkspace != null) {
-            estimationWorkspace.setNavigationManager(navigationManager);
+        if (backlogOverview == null) {
+            createOverview();
         }
+        backlogOverview.setNavigationManager(navigationManager);
+        if (estimationWorkspace == null) {
+            createEstimationWorkspace();
+        }
+        estimationWorkspace.setNavigationManager(navigationManager);
         super.setNavigationManager(navigationManager);
     }
 
