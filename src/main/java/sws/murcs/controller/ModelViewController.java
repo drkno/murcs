@@ -200,6 +200,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
     private void updateTitle() {
         Model selectedItem = (Model) displayList.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
+            titleProperty.set(InternationalizationHelper.tryGet("NewTab"));
             return;
         }
 
