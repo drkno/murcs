@@ -470,7 +470,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> {
                     Object controller = App.getWindowManager().getTop().getController();
                     if (controller instanceof Tabbable[]) {
-                        Tabbable[] modelController = ((Tabbable[]) controller);
+                        Tabbable[] modelController = (Tabbable[]) controller;
                         modelController[0].toggleSideBar(!modelController[0].sideBarVisible());
                     }
                     else {
