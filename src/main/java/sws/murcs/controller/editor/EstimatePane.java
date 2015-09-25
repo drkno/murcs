@@ -112,6 +112,9 @@ public class EstimatePane implements UndoRedoChangeListener {
      */
     private Comparator<Story> storyComparator;
 
+    /**
+     * Current thread iteration. Used to prevent old threads displaying stories in the editor pane.
+     */
     private long threadCount;
 
     /**
