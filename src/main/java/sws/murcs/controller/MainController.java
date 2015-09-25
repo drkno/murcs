@@ -239,6 +239,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         scene.setRoot(controller.getRootNode());
 
         App.getWindowManager().cleanUp();
+        controller.window = window;
+        controller.setupShortcuts();
     }
 
     /**
