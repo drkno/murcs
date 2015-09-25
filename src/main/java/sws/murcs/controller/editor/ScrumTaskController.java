@@ -196,7 +196,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
 
     @Override
     public void undoRedoNotification(final ChangeState param) {
-        if (param == ChangeState.Remake || param == ChangeState.Revert) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert || param == ChangeState.Commit) {
             parent.update();
         }
     }
