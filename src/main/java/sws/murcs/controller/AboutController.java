@@ -64,7 +64,7 @@ public class AboutController {
     private int hashIndex = 0;
 
     /**
-     * The list hashes, because Java doesn't like these as strings for some reason.
+     * The list of hashes, because Java doesn't like these as strings for some reason.
      */
     private String[] hashes = new String[]{
             "VVA=",

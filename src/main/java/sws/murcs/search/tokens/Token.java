@@ -1,14 +1,12 @@
 package sws.murcs.search.tokens;
 
-import sws.murcs.internationalization.InternationalizationHelper;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import sws.murcs.model.ModelType;
 import sws.murcs.search.SearchPriority;
 import sws.murcs.search.SearchResult;
 import sws.murcs.view.App;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Token that is used to check search criteria.
@@ -29,18 +27,18 @@ public abstract class Token {
      * Collection of special tokens to be used when setting up the compiler.
      */
     private static BangCommand[] specialTokens = new BangCommand[] {
-        new BangCommand("regex", "reg", InternationalizationHelper.tryGet("EnablesRegex"), SearchToken::setIsRegex),
-        new BangCommand("case", "ca", InternationalizationHelper.tryGet("EnablesCaseSensitivity"), SearchToken::setIsCaseSensitive),
-        new BangCommand("name", "na", InternationalizationHelper.tryGet("LimitToDisplayNames"), v -> { displayNamesOnly = v; }),
-        new BangCommand("backlog", "ba", InternationalizationHelper.tryGet("LimitToBacklogs"), v -> addSearchType(v, ModelType.Backlog)),
-        new BangCommand("people", "pe", InternationalizationHelper.tryGet("LimitToPeople"), v -> addSearchType(v, ModelType.Person)),
-        new BangCommand("project", "pr", InternationalizationHelper.tryGet("LimitToProjects"), v -> addSearchType(v, ModelType.Project)),
-        new BangCommand("release", "re", InternationalizationHelper.tryGet("LimitToReleases"), v -> addSearchType(v, ModelType.Release)),
-        new BangCommand("skill", "sk", InternationalizationHelper.tryGet("LimitToSkills"), v -> addSearchType(v, ModelType.Skill)),
-        new BangCommand("story", "st", InternationalizationHelper.tryGet("LimitToStories"), v -> addSearchType(v, ModelType.Story)),
-        new BangCommand("team", "te", InternationalizationHelper.tryGet("LimitToTeams"), v -> addSearchType(v, ModelType.Team)),
-        new BangCommand("sprint", "sp", InternationalizationHelper.tryGet("LimitToSprints"), v -> addSearchType(v, ModelType.Sprint)),
-        new BangCommand("current", "cu", InternationalizationHelper.tryGet("LimitToCurrent"),
+        new BangCommand("regex", "reg", "EnablesRegex", SearchToken::setIsRegex),
+        new BangCommand("case", "ca", "EnablesCaseSensitivity", SearchToken::setIsCaseSensitive),
+        new BangCommand("name", "na", "LimitToDisplayNames", v -> { displayNamesOnly = v; }),
+        new BangCommand("backlog", "ba", "LimitToBacklogs", v -> addSearchType(v, ModelType.Backlog)),
+        new BangCommand("people", "pe", "LimitToPeople", v -> addSearchType(v, ModelType.Person)),
+        new BangCommand("project", "pr", "LimitToProjects", v -> addSearchType(v, ModelType.Project)),
+        new BangCommand("release", "re", "LimitToReleases", v -> addSearchType(v, ModelType.Release)),
+        new BangCommand("skill", "sk", "LimitToSkills", v -> addSearchType(v, ModelType.Skill)),
+        new BangCommand("story", "st", "LimitToStories", v -> addSearchType(v, ModelType.Story)),
+        new BangCommand("team", "te", "LimitToTeams", v -> addSearchType(v, ModelType.Team)),
+        new BangCommand("sprint", "sp", "LimitToSprints", v -> addSearchType(v, ModelType.Sprint)),
+        new BangCommand("current", "cu", "LimitToCurrent",
         v -> {
             if (App.getMainController() != null) {
                 addSearchType(v, App.getMainController().getCurrentModelType());
