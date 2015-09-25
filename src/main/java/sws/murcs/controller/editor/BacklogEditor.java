@@ -267,14 +267,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!isCreationWindow) {
             GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
             popup.setTitleText("{AreYouSure}");
+            popup.setWindowTitle("{AreYouSure}");
             String extraWarning = "";
             Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
             if (storyUsage != null) {
                 extraWarning = "{StoryWillBeRemovedFromSprint} \"" + storyUsage.getShortName() + "\"";
             }
             popup.setMessageText("{AreYouSureRemoveStory} \""
-                    + story.getShortName() + "\" {FromBacklog}\n\n"
-                    + extraWarning);
+                    + story.getShortName() + "\" {FromBacklog}"
+                    + (extraWarning.length() > 0 ? "\n\n" + extraWarning : ""));
             popup.addYesNoButtons(() -> {
                 if (storyUsage != null) {
                     storyUsage.removeStory(story);
