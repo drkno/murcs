@@ -1219,14 +1219,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     popup.setTitleText("{ConfirmChangeStoryStateTitle}");
                     popup.setWindowTitle("{AreYouSure}");
                     popup.addYesNoButtons(() -> {
-                        getModel().setEstimate(EstimateType.NOT_ESTIMATED);
-                        estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
                         sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
                         updateEstimation();
-                        storyStateChoiceBox.setValue(StoryState.None);
-                        getModel().setStoryState(StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
                     popup.show();
