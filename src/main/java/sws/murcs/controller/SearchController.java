@@ -108,7 +108,12 @@ public class SearchController {
     /**
      * Handler to control searching.
      */
-    private SearchHandler searchHandler;
+    private static SearchHandler searchHandler = new SearchHandler();
+
+    /**
+     * Kills the threads now.
+     */
+    private boolean killThreadsNow = false;
 
     /**
      * Thread to render previewing from.
@@ -185,7 +190,6 @@ public class SearchController {
         previewRenderThread = new Thread(this::renderPreview);
         previewRenderThread.setDaemon(true);
         previewRenderThread.start();
-        searchHandler = new SearchHandler();
         foundItems.setCellFactory(createItemsCellFactory());
         searchHash = new String(Base64.getDecoder().decode(searchHash));
         Parent parent = searchText.getParent();
@@ -540,6 +544,9 @@ public class SearchController {
                 synchronized (previewRenderThread) {
                     previewRenderThread.wait();
                 }
+                if (killThreadsNow) {
+                    return;
+                }
 
                 if (!popOverWindow.isShowing()) {
                     return;
@@ -653,6 +660,24 @@ public class SearchController {
         } catch (Exception e) {
             popOverWindow.hide();
             ErrorReporter.get().reportError(e, "Unable to create search commands");
+        }
+    }
+
+    /**
+     * Kills all the search threads. If you call this the
+     * search controller WILL NOT work. This method is intended
+     * only for clean up purposes.
+     */
+    public void kill() {
+        try {
+            killThreadsNow = true;
+            synchronized (previewRenderThread) {
+                previewRenderThread.notify();
+            }
+            previewRenderThread.join();
+            killThreadsNow = false;
+        } catch (Throwable t) {
+            ErrorReporter.get().reportErrorSecretly(t, "Failed to stop preview thread.");
         }
     }
 }

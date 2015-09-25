@@ -241,6 +241,8 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         App.getWindowManager().cleanUp();
         controller.window = window;
         controller.setupShortcuts();
+
+        SearchView.restart();
     }
 
     /**
