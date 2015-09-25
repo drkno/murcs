@@ -119,7 +119,7 @@ public class TeamContainer extends GenericEditor<Team> {
      * Loads this team overview into the overview tab.
      */
     private void overviewTabSelected() {
-        if (overviewEditor == null || overviewEditor.disposed) {
+        if (overviewEditor == null || overviewEditor.isDisposed()) {
             createOverviewEditor();
         }
         overviewEditor.setModel(getModel());

@@ -25,6 +25,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
      */
     @FXML
     private AnchorPane rootPane;
+
     /**
      * The tab pane the tabs reside in.
      */
@@ -91,7 +92,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
      * Sets up the estimation workspace.
      */
     private void workspaceTabSelected() {
-        if (estimationWorkspace == null || estimationWorkspace.disposed) {
+        if (estimationWorkspace == null || estimationWorkspace.isDisposed()) {
             createEstimationWorkspace();
         }
         estimationWorkspace.setModel(getModel());
@@ -114,7 +115,7 @@ public class BacklogContainer extends GenericEditor<Backlog> {
      * loads the backlog overview.
      */
     private void overviewTabSelected() {
-        if (backlogOverview == null || backlogOverview.disposed) {
+        if (backlogOverview == null || backlogOverview.isDisposed()) {
             createOverview();
         }
         backlogOverview.setModel(getModel());

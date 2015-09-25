@@ -110,7 +110,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     /**
      * Whether or not the editor has been disposed of.
      */
-    protected boolean disposed;
+    private boolean disposed;
 
     /**
      * A generic editor for editing models.
@@ -451,5 +451,13 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
                 .filter(w -> w.getStage() == node.getScene().getWindow())
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Gets if this editor was disposed.
+     * @return the editor was disposed.
+     */
+    public final boolean isDisposed() {
+        return disposed;
     }
 }
