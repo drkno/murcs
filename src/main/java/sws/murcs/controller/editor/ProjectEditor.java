@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.DatePickerHelper;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -187,8 +188,8 @@ public class ProjectEditor extends GenericEditor<Project> {
         saveChanges();
 
         Team team = choiceBoxAddTeam.getValue();
-        LocalDate startDate = datePickerStartDate.getValue();
-        LocalDate endDate = datePickerEndDate.getValue();
+        LocalDate startDate = DatePickerHelper.getDate(datePickerStartDate);
+        LocalDate endDate = DatePickerHelper.getDate(datePickerEndDate);
         boolean hasErrors = false;
 
         // Must meet minimum requirements for an allocation
