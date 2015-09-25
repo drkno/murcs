@@ -286,10 +286,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
             createOverviewEditor();
         }
         overviewEditor.setNavigationManager(navigationManager);
-        if (allTasksController == null) {
-            createAllTasksEditor();
+        if (allTasksController != null) {
+            allTasksController.setNavigationManager(navigationManager);
         }
-        allTasksController.setNavigationManager(navigationManager);
         if (scrumBoard == null) {
             createScrumBoardEditor();
         }

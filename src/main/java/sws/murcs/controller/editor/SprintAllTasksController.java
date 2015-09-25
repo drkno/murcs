@@ -230,18 +230,18 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void changesMade() {
-        Platform.runLater(() -> {
-            tasksVBox.getChildren().clear();
-            clearStoryContainers();
-            if (currentOrderBy != OrderBy.Obfuscation) {
-                sortAllTasks(currentOrderBy);
-            }
-            updateVisibleNodes(currentFilterBy);
-            insertVisibleNodes();
-            if (currentGroupBy == GroupBy.Story) {
-                addStoryContainers();
-            }
-        });
+//        Platform.runLater(() -> {
+        tasksVBox.getChildren().clear();
+        clearStoryContainers();
+        if (currentOrderBy != OrderBy.Obfuscation) {
+            sortAllTasks(currentOrderBy);
+        }
+        updateVisibleNodes(currentFilterBy);
+        insertVisibleNodes();
+        if (currentGroupBy == GroupBy.Story) {
+            addStoryContainers();
+        }
+//        });
     }
 
     @Override
