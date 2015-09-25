@@ -317,6 +317,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
 
     @Override
     public void undoRedoNotification(final ChangeState param) {
+        progressBar.setSprint(getModel());
         if (burndownController != null) {
             burndownController.loadObject();
         }

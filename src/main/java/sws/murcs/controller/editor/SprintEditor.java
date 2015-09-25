@@ -286,6 +286,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (selectedStory != null) {
             try {
                 getModel().addStory(selectedStory);
+
                 storiesTable.getItems().add(selectedStory);
                 Platform.runLater(() -> {
                     storiesList.getSelectionModel().clearSelection();
