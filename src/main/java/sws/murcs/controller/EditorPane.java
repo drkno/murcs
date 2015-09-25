@@ -179,7 +179,7 @@ public class EditorPane {
             model = pModel;
             controller.setModel(pModel);
             // This is because "Java sucks" - Dion
-            // "You guys are dicks" - Dion, Daniel, Jay
+            // "You guys are mean" - Dion, Daniel, Jay
             // It's a bug somewhere in between java 8u25 and 8u40
             if (App.JAVA_UPDATE_VERSION < betterJavaVersion
                     && !Thread.currentThread().getName().toLowerCase().contains("fx")) {

@@ -73,7 +73,7 @@
             </Button>
             <HBox alignment="CENTER_LEFT" prefWidth="250.0" spacing="10.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
-                  <Label text="%Assignees" HBox.hgrow="NEVER" />
+                  <Label minWidth="65.0" text="%Assignees" HBox.hgrow="NEVER" />
                   <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label fx:id="assigneesLabel" text="%PlaceholderText" wrapText="true" VBox.vgrow="SOMETIMES" />
@@ -96,7 +96,7 @@
                            </image>
                         </ImageView>
                      </graphic></Button>
-                   <Label fx:id="spentEffortLabel" text="%spent0hours" />
+                   <Label fx:id="spentEffortLabel" alignment="CENTER_RIGHT" contentDisplay="BOTTOM" minWidth="125.0" text="%spent0hours" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets right="10.0" />
