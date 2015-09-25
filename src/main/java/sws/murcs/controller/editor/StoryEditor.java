@@ -100,7 +100,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private TextField shortNameTextField;
 
-    /**%
+    /**
      * The description of the story.
      */
     @FXML
