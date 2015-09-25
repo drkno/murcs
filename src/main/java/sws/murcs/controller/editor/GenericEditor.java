@@ -108,6 +108,11 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
     private ChangeListener<Boolean> errorMessagePopoverListener;
 
     /**
+     * Whether or not the editor has been disposed of.
+     */
+    protected boolean disposed;
+
+    /**
      * A generic editor for editing models.
      */
     public GenericEditor() {
@@ -317,6 +322,7 @@ public abstract class GenericEditor<T extends Model> implements UndoRedoChangeLi
         // it needs to decide if that is appropriate by itself
         errorMessagePopoverListener = null;
         saveButton = null;
+        disposed = true;
     }
 
     /**

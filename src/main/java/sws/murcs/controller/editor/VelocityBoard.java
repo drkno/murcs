@@ -33,6 +33,11 @@ public class VelocityBoard {
     private Team team;
 
     /**
+     * Whether or not the editor has been disposed.
+     */
+    protected boolean disposed;
+
+    /**
      * Sets the team of this velocity board.
      * @param pTeam The team to set to.
      */
@@ -132,5 +137,6 @@ public class VelocityBoard {
     public void dispose() {
         team = null;
         velocityChart.getData().clear();
+        disposed = true;
     }
 }
