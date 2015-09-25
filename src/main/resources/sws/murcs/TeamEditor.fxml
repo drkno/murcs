@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
+<AnchorPane prefHeight="500.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.TeamEditor">
    <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <columnConstraints>
@@ -23,7 +23,7 @@
          <children>
             <ScrollPane fitToHeight="true" fitToWidth="true" prefViewportHeight="380.0" prefViewportWidth="169.0" styleClass="edge-to-edge" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <GridPane>
+                  <GridPane fx:id="mainGrid">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
                      </columnConstraints>
@@ -213,7 +213,7 @@
                               <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                            </padding>
                         </VBox>
-                        <VBox spacing="5.0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+                        <VBox fx:id="pairProgrammingVBox" spacing="5.0" GridPane.halignment="LEFT" GridPane.hgrow="NEVER" GridPane.rowIndex="6" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
                             <children>
                                 <AnchorPane GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
                                     <children>
@@ -223,7 +223,7 @@
                                              <children>
                                                        <TableView fx:id="pairProgrammingTable" focusTraversable="false" maxHeight="400.0" prefHeight="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                            <columns>
-                                                               <TableColumn fx:id="pairsColumn" minWidth="300.0" prefWidth="-1.0" sortable="false" text="%PairGroup" />
+                                                               <TableColumn fx:id="pairsColumn" prefWidth="-1.0" sortable="false" text="%PairGroup" />
                                                                <TableColumn fx:id="timeSpentColumn" prefWidth="-1.0" sortable="false" text="%TimeSpent" />
                                                            </columns>
                                                            <columnResizePolicy>
