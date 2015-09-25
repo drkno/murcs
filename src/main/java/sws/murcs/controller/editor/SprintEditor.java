@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.DatePickerHelper;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -352,12 +353,12 @@ public class SprintEditor extends GenericEditor<Sprint> {
     private void saveDates() {
         boolean hasProblems = false;
         Sprint sprint = getModel();
-        LocalDate startDate = startDatePicker.getValue();
-        LocalDate endDate = endDatePicker.getValue();
+        LocalDate startDate = DatePickerHelper.getDate(startDatePicker);
+        LocalDate endDate = DatePickerHelper.getDate(endDatePicker);
         Release release = releaseComboBox.getValue();
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            addFormError(startDatePicker, "StartBeforeEndError");
+            addFormError(startDatePicker, "{StartBeforeEndError}");
             hasProblems = true;
         }
 
