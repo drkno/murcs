@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -84,7 +85,7 @@ public class App extends Application {
     /**
      * Default size of the font to load.
      */
-    private static final double DEFAULT_FONT_SIZE = 18.0;
+    private static final double DEFAULT_FONT_SIZE = 12.0;
 
     /**
      * The current main controller.
@@ -304,6 +305,7 @@ public class App extends Application {
         MainController controller = loadRootNode();
 
         Scene scene = new Scene(controller.getRootNode());
+        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), DEFAULT_FONT_SIZE);
         scene.getStylesheets().add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());

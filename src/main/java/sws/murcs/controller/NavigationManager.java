@@ -12,7 +12,7 @@ public final class NavigationManager {
     /**
      * Limit on the size of the stacks.
      */
-    private static final int STACK_LIMIT = 5;
+    private static final int STACK_LIMIT = Integer.MAX_VALUE;
 
     /**
      * The app controller.
