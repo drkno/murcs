@@ -103,13 +103,13 @@ public class TeamEditor extends GenericEditor<Team> {
     private Button clearPOButton, clearSMButton;
 
     /**
-     * The main containing grid.
+     * The main grid pane for the team editor.
      */
     @FXML
     private GridPane mainGrid;
 
     /**
-     * The VBox that contains the pair programming stuff.
+     * The pair programming VBox.
      */
     @FXML
     private VBox pairProgrammingVBox;
