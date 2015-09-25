@@ -6,7 +6,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import sws.murcs.debug.errorreporting.ErrorReporter;
-import sws.murcs.exceptions.ImperialException;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
