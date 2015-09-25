@@ -198,7 +198,7 @@ public class ProjectEditor extends GenericEditor<Project> {
             hasErrors = true;
         }
         if (startDate == null) {
-            addFormError(datePickerStartDate, "{StartDateNotSpecified}");
+            addFormError(datePickerStartDate.getEditor(), "{StartDateNotSpecified}");
             hasErrors = true;
         }
 
