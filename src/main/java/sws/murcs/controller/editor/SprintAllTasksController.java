@@ -664,11 +664,9 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         }
     }
 
-    /**
-     * Note that this is a blank method because the all tasks view does not support the creation of tasks.
-     */
     @Override
     public void finishedCreation() {
+        //Note that this is a blank method because the all tasks view does not support the creation of tasks.
     }
 
     /**
