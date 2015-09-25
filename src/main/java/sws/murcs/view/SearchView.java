@@ -34,28 +34,47 @@ public final class SearchView {
      */
     public static SearchView get() {
         if (instance == null) {
-            FXMLLoader loader = new AutoLanguageFXMLLoader();
-            loader.setLocation(SearchView.class.getResource("/sws/murcs/Search.fxml"));
-            PopOver popOver = null;
-            try {
-                Parent parent = loader.load();
-                popOver = new PopOver(parent);
-                SearchController controller = loader.getController();
-                controller.setPopOver(popOver);
-                popOver.detachableProperty().setValue(true);
-                popOver.detachedProperty().setValue(true);
-                popOver.hideOnEscapeProperty().setValue(true);
-
-                instance = new SearchView(popOver, controller);
-            }
-            catch (IOException e) {
-                if (popOver != null) {
-                    popOver.hide();
-                }
-                ErrorReporter.get().reportError(e, "Could not create a search dialog");
-            }
+            loadInstance();
         }
         return instance;
+    }
+
+    /**
+     * Loads a new instance of the search view.
+     */
+    private static void loadInstance() {
+        FXMLLoader loader = new AutoLanguageFXMLLoader();
+        loader.setLocation(SearchView.class.getResource("/sws/murcs/Search.fxml"));
+        PopOver popOver = null;
+        try {
+            Parent parent = loader.load();
+            popOver = new PopOver(parent);
+            SearchController controller = loader.getController();
+            controller.setPopOver(popOver);
+            popOver.detachableProperty().setValue(true);
+            popOver.detachedProperty().setValue(true);
+            popOver.hideOnEscapeProperty().setValue(true);
+
+            instance = new SearchView(popOver, controller);
+        }
+        catch (IOException e) {
+            if (popOver != null) {
+                popOver.hide();
+            }
+            ErrorReporter.get().reportError(e, "Could not create a search dialog");
+        }
+    }
+
+    /**
+     * Restarts the search pane (say, if someone changed the language, it would
+     * be a good idea to call this).
+     */
+    public static void restart() {
+        if (instance != null) {
+            instance.controller.kill();
+        }
+
+        loadInstance();
     }
 
     /**

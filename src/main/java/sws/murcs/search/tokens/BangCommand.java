@@ -1,5 +1,7 @@
 package sws.murcs.search.tokens;
 
+import sws.murcs.internationalization.InternationalizationHelper;
+
 /**
  * Bang command that represents a special command that can be performed.
  */
@@ -47,7 +49,7 @@ public class BangCommand {
      * @return the description.
      */
     public final String getDescription() {
-        return description;
+        return InternationalizationHelper.tryGet(description);
     }
 
     /**
