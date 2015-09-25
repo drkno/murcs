@@ -1198,8 +1198,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
-                        && getModel().getAcceptanceCriteria().size() <= 1) {
+                if (!isCreationWindow && getModel().getAcceptanceCriteria().size() <= 1) {
                     List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
                             .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                             .map(m -> (Sprint) m)
