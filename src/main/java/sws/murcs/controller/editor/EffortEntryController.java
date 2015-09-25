@@ -80,11 +80,6 @@ public class EffortEntryController implements PersonManagerControllerParent {
     private EffortController effortController;
 
     /**
-     * The popover for adding multiple people to the effort entry.
-     */
-    private PopOver peoplePopOver;
-
-    /**
      * The effort being edited by this controller.
      */
     private EffortEntry effortEntry;
@@ -280,10 +275,10 @@ public class EffortEntryController implements PersonManagerControllerParent {
 
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
-        timeTextField.setText("" + effortEntry.getEffort());
+        timeTextField.setText(Float.toString(effortEntry.getSetEffort()));
         updatePeopleLabel();
 
-        Platform.runLater(() -> updateErrors());
+        Platform.runLater(this::updateErrors);
     }
 
     /**
@@ -390,27 +385,25 @@ public class EffortEntryController implements PersonManagerControllerParent {
      */
     @FXML
     private void editPeopleButtonClicked(final ActionEvent event) {
-        if (peoplePopOver == null) {
-            FXMLLoader loader = new AutoLanguageFXMLLoader();
-            loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
+        FXMLLoader loader = new AutoLanguageFXMLLoader();
+        loader.setLocation(TaskEditor.class.getResource("/sws/murcs/PersonManagerPopOver.fxml"));
 
-            try {
-                Parent parent = loader.load();
-                peoplePopOver = new PopOver(parent);
-                PersonManagerController controller = loader.getController();
-                controller.setUp(this, getEligibleWorkers());
-                peoplePopOver.hideOnEscapeProperty().setValue(true);
-                peoplePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
-                    if (!newValue) {
-                        updatePeopleLabel();
-                    }
-                });
-            }
-            catch (IOException e) {
-                ErrorReporter.get().reportError(e, "Could not create an people popover");
-            }
+        try {
+            Parent parent = loader.load();
+            PopOver peoplePopOver = new PopOver(parent);
+            PersonManagerController controller = loader.getController();
+            controller.setUp(this, getEligibleWorkers());
+            peoplePopOver.hideOnEscapeProperty().setValue(true);
+            peoplePopOver.showingProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue) {
+                    updatePeopleLabel();
+                }
+            });
+            peoplePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
+            peoplePopOver.show(editPeopleButton);
         }
-        peoplePopOver.arrowLocationProperty().setValue(ArrowLocation.RIGHT_CENTER);
-        peoplePopOver.show(editPeopleButton);
+        catch (IOException e) {
+            ErrorReporter.get().reportError(e, "Could not create an people popover");
+        }
     }
 }

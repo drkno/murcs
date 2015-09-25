@@ -29,6 +29,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.listeners.GenericCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
@@ -42,6 +43,7 @@ import sws.murcs.model.Story;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -153,9 +155,8 @@ public class BacklogEditor extends GenericEditor<Backlog> {
      */
     private ObservableObjectValue<Story> selectedStory;
 
-    @FXML
     @Override
-    public final void initialize() {
+    protected final void initialize() {
         // set up change listener
         setChangeListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -197,7 +198,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        List<ChangeCallback<Story>> callbacks = new ArrayList<>();
+        callbacks.add(this::removeStory);
+        callbacks.add(this::workspaceStory);
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
         priorityColumn.setCellValueFactory(param -> {
             SimpleObjectProperty<Integer> property = new SimpleObjectProperty<>();
             Integer priority = getModel().getStoryPriority(param.getValue());
@@ -242,6 +246,20 @@ public class BacklogEditor extends GenericEditor<Backlog> {
     }
 
     /**
+     * Adds or removes a story from the workspace depending on if the story is in the workspace.
+     * @param story The story to add or remove from the workspace.
+     */
+    private void workspaceStory(final Story story) {
+        if (getModel().getWorkspaceStories().contains(story)) {
+            getModel().removeStoryFromWorkspace(story);
+        }
+        else {
+            getModel().addToWorkspaceStories(story);
+        }
+        updateStoryTable();
+    }
+
+    /**
      * Method for managing the removal of stories from the backlog.
      * @param story story to remove.
      */
@@ -249,14 +267,15 @@ public class BacklogEditor extends GenericEditor<Backlog> {
         if (!isCreationWindow) {
             GenericPopup popup = new GenericPopup(getWindowFromNode(shortNameTextField));
             popup.setTitleText("{AreYouSure}");
+            popup.setWindowTitle("{AreYouSure}");
             String extraWarning = "";
             Sprint storyUsage = UsageHelper.findBy(ModelType.Sprint, s -> s.getStories().contains(story));
             if (storyUsage != null) {
                 extraWarning = "{StoryWillBeRemovedFromSprint} \"" + storyUsage.getShortName() + "\"";
             }
             popup.setMessageText("{AreYouSureRemoveStory} \""
-                    + story.getShortName() + "\" {FromBacklog}\n\n"
-                    + extraWarning);
+                    + story.getShortName() + "\" {FromBacklog}"
+                    + (extraWarning.length() > 0 ? "\n\n" + extraWarning : ""));
             popup.addYesNoButtons(() -> {
                 if (storyUsage != null) {
                     storyUsage.removeStory(story);
@@ -645,12 +664,10 @@ public class BacklogEditor extends GenericEditor<Backlog> {
             addFormError(poComboBox, "{NoPOError}");
         }
 
-        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().removeListener(getChangeListener());
         EstimateType newEstimateType = estimationMethodChoiceBox.getValue();
         if (isNotEqual(getModel().getEstimateType(), newEstimateType)) {
             getModel().setEstimateType(newEstimateType);
         }
-        estimationMethodChoiceBox.getSelectionModel().selectedItemProperty().addListener(getChangeListener());
     }
 
     /**
@@ -759,6 +776,7 @@ public class BacklogEditor extends GenericEditor<Backlog> {
          */
         private void createTextField() {
             textField = new TextField(getString());
+            textField.setAlignment(Pos.CENTER);
             textField.focusedProperty().addListener(
                         (observable, oldValue, newValue) -> {
                             if (!newValue) {

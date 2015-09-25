@@ -239,6 +239,10 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         scene.setRoot(controller.getRootNode());
 
         App.getWindowManager().cleanUp();
+        controller.window = window;
+        controller.setupShortcuts();
+
+        SearchView.restart();
     }
 
     /**
@@ -317,6 +321,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         final NavigableTabController navigable = new NavigableTabController();
         navigable.setCurrentTab(tabbable);
 
+        final Tabbable[] currentTab = new Tabbable[1];
+        currentTab[0] = tabbable;
+
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 stage.close();
@@ -325,6 +332,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
             for (Tabbable t : tabs) {
                 if (t.getTab() == newValue) {
                     navigable.setCurrentTab(t);
+                    currentTab[0] = t;
                     break;
                 }
             }
@@ -352,7 +360,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
-        Window newWindow = new Window(stage, tabbable, window);
+        Window newWindow = new Window(stage, currentTab, window);
         newWindow.register();
         newWindow.addGlobalShortcutsToWindow();
 
@@ -459,7 +467,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> redo(null));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
-                () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
+                () -> {
+                    Object controller = App.getWindowManager().getTop().getController();
+                    if (controller instanceof Tabbable[]) {
+                        Tabbable[] modelController = (Tabbable[]) controller;
+                        modelController[0].toggleSideBar(!modelController[0].sideBarVisible());
+                    }
+                    else {
+                        currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible());
+                    }
+                });
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.EQUALS),
                 () -> currentTabbable.create());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
@@ -480,26 +497,26 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private void addNavigationShortcuts(final Stage stage, final Navigable navigationController) {
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> navigationController.goBack());
+                navigationController::goBack);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> navigationController.goForward());
+                navigationController::goForward);
 
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Project));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Team));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Person));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Skill));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Release));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Backlog));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Story));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.ALT_DOWN),
-                () -> navigationController.navigateTo(ModelType.Sprint));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Project));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Team));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Person));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Skill));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Release));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Backlog));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Story));
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCombination.SHORTCUT_DOWN,
+                KeyCodeCombination.SHIFT_DOWN), () -> navigationController.navigateTo(ModelType.Sprint));
     }
 
     /**
@@ -975,7 +992,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void undo(final ActionEvent event) {
         try {
-            UndoRedoManager.get().revert();
+            if (!undoMenuItem.isDisable()) {
+                UndoRedoManager.get().revert();
+            }
         }
         catch (Exception e) {
             // Something went very wrong
@@ -991,7 +1010,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void redo(final ActionEvent event) {
         try {
-            UndoRedoManager.get().remake();
+            if (!redoMenuItem.isDisable()) {
+                UndoRedoManager.get().remake();
+            }
         }
         catch (Exception e) {
             // something went terribly wrong....

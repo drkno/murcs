@@ -396,6 +396,7 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
             ((StoryEditor) editorController).addTask(task);
             toggleButtonClicked(null);
             separator.setVisible(true);
+            editorController.finishedCreation();
         }
     }
 
@@ -434,14 +435,14 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
         GenericPopup popup = new GenericPopup();
         popup.setWindowTitle("{ConfirmDeleteTaskTitle}");
         popup.setTitleText("{Really}?");
-        popup.setMessageText("ConfirmDeleteTask");
+        popup.setMessageText("{ConfirmDeleteTask}");
         popup.addYesNoButtons(() -> {
             editorController.removeTask(task);
             if (editorController instanceof StoryEditor) {
                 ((StoryEditor) editorController).removeTaskEditor(this);
             }
             popup.close();
-        });
+        }, "danger-will-robinson", "everything-is-fine");
         popup.show();
     }
 

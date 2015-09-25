@@ -4,6 +4,7 @@ import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.magic.tracking.TrackableValue;
+import sws.murcs.model.observable.ModelObservableArrayList;
 import sws.murcs.search.Searchable;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,6 +53,8 @@ public class Backlog extends Model {
      */
     @Searchable
     @TrackableValue
+    @XmlElementWrapper(name = "unprioritisedStories")
+    @XmlElement(name = "story")
     private List<Story> unprioritisedStories;
 
     /**
@@ -62,11 +65,18 @@ public class Backlog extends Model {
     private EstimateType estimateType;
 
     /**
+     * Stories in the backlog workspace.
+     */
+    @TrackableValue
+    private List<Story> workspaceStories;
+
+    /**
      * The constructor for the backlog. Initialises the lists within the backlog.
      */
     public Backlog() {
         prioritisedStories = new ArrayList<>();
         unprioritisedStories = new ArrayList<>();
+        workspaceStories = new ModelObservableArrayList<>();
         estimateType = EstimateType.Fibonacci;
     }
 
@@ -222,6 +232,9 @@ public class Backlog extends Model {
         else if (unprioritisedStories.contains(story)) {
             unprioritisedStories.remove(story);
         }
+        if (workspaceStories.contains(story)) {
+            workspaceStories.remove(story);
+        }
         story.setEstimate(EstimateType.NOT_ESTIMATED);
         story.setStoryState(Story.StoryState.None);
         commit("edit backlog");
@@ -302,5 +315,38 @@ public class Backlog extends Model {
         }
 
         return shortName.toLowerCase().equals(shortNameOther.toLowerCase());
+    }
+
+    /**
+     * Gets the stories in the workspace.
+     * @return The stories workspace.
+     */
+    public List<Story> getWorkspaceStories() {
+        return workspaceStories;
+    }
+
+    /**
+     * Adds a story to the workspace if it does not already contain it.
+     * @param story The story to add to the workspace.
+     * @return If a story was added to the workspace.
+     */
+    public boolean addToWorkspaceStories(final Story story) {
+        if (getAllStories().contains(story)) {
+            boolean addSuccess = workspaceStories.add(story);
+            if (addSuccess) {
+                commit("Story added to workspace");
+            }
+            return addSuccess;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a story from the workspace.
+     * @param story The story to remove.
+     */
+    public void removeStoryFromWorkspace(final Story story) {
+        workspaceStories.remove(story);
+        commit("Story removed from workspace");
     }
 }

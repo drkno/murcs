@@ -53,32 +53,6 @@ public class TeamContainer extends GenericEditor<Team> {
                 tabSelectionChanged(newValue);
             }
         });
-
-        try {
-            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TeamEditor.fxml"));
-            Parent view = loader.load();
-            overviewAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            overviewEditor = loader.getController();
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load team overview");
-        }
-
-        try {
-            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/VelocityBoard.fxml"));
-            Parent view = loader.load();
-            velocityAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            velocityBoard = loader.getController();
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load velocity board");
-        }
     }
 
     @Override
@@ -121,6 +95,9 @@ public class TeamContainer extends GenericEditor<Team> {
 
     @Override
     public void setNavigationManager(final Navigable navigationManager) {
+        if (overviewEditor == null) {
+            createOverviewEditor();
+        }
         overviewEditor.setNavigationManager(navigationManager);
         super.setNavigationManager(navigationManager);
     }
@@ -142,14 +119,49 @@ public class TeamContainer extends GenericEditor<Team> {
      * Loads this team overview into the overview tab.
      */
     private void overviewTabSelected() {
+        if (overviewEditor == null || overviewEditor.isDisposed()) {
+            createOverviewEditor();
+        }
         overviewEditor.setModel(getModel());
         overviewEditor.loadObject();
+    }
+
+    /**
+     * Creates the overview Editor.
+     */
+    private void createOverviewEditor() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TeamEditor.fxml"));
+            Parent view = loader.load();
+            overviewAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            overviewEditor = loader.getController();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load team overview");
+        }
     }
 
     /**
      * Loads the velocity board into the velocity tab.
      */
     private void velocityTabSelected() {
+        if (velocityBoard == null || velocityBoard.disposed) {
+            try {
+                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/VelocityBoard.fxml"));
+                Parent view = loader.load();
+                velocityAnchorPane.getChildren().add(view);
+                AnchorPane.setRightAnchor(view, 0.0);
+                AnchorPane.setLeftAnchor(view, 0.0);
+                AnchorPane.setTopAnchor(view, 0.0);
+                AnchorPane.setBottomAnchor(view, 0.0);
+                velocityBoard = loader.getController();
+            } catch (Exception e) {
+                ErrorReporter.get().reportError(e, "Unable to load velocity board");
+            }
+        }
         velocityBoard.setTeam(getModel());
         velocityBoard.loadObject();
     }

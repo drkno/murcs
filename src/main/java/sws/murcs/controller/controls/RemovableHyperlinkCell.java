@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -11,9 +12,13 @@ import javafx.scene.layout.AnchorPane;
 import sws.murcs.controller.controls.md.MaterialDesignButton;
 import sws.murcs.controller.controls.md.animations.FadeButtonOnHover;
 import sws.murcs.controller.editor.GenericEditor;
-import sws.murcs.listeners.RemoveCallback;
+import sws.murcs.internationalization.InternationalizationHelper;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Model;
 import sws.murcs.model.Story;
+import sws.murcs.model.persistence.PersistenceManager;
+
+import java.util.List;
 
 /**
  * A TableView cell that contains a link to the story it represents and a button to remove it.
@@ -34,16 +39,18 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
     /**
      * Callback for when the story is removed.
      */
-    private RemoveCallback<Story> removeCallback;
+    private List<ChangeCallback<Story>> callbacks;
 
     /**
      * Creates a table view cell for a story with a button for removing it and a hyperlink to its name.
+     * This method expects a list of callbacks to generate buttons for, however it won't do more than two.
+     * It has a specific purpose, and if in future you are touching this please refactor the design.
      * @param editor editor that this cell is contained within.
-     * @param callback callback for removing the story.
+     * @param pCallbacks List of callbacks to generate buttons for.
      */
-    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final RemoveCallback<Story> callback) {
+    public RemovableHyperlinkCell(final GenericEditor<? extends Model> editor, final List<ChangeCallback<Story>> pCallbacks) {
         genericEditor = editor;
-        removeCallback = callback;
+        callbacks = pCallbacks;
     }
 
     @Override
@@ -71,23 +78,59 @@ public class RemovableHyperlinkCell extends TableCell<Story, String> {
                 container.getChildren().add(nameLink);
             }
 
-            MaterialDesignButton button = new MaterialDesignButton(null);
-            button.setPrefHeight(15);
-            button.setPrefWidth(15);
-            Image image = new Image("sws/murcs/icons/removeWhite.png");
-            ImageView imageView = new ImageView(image);
-            imageView.setFitHeight(20);
-            imageView.setFitWidth(20);
-            imageView.setPreserveRatio(true);
-            imageView.setPickOnBounds(true);
-            button.setGraphic(imageView);
-            button.getStyleClass().add("mdr-button");
-            button.getStyleClass().add("mdrd-button");
-            button.setOnAction(e -> removeCallback.removeItem(story));
-            FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
-            fadeButtonOnHover.setupEffect();
-            AnchorPane.setRightAnchor(button, 0.0);
-            container.getChildren().add(button);
+            if (callbacks.size() > 0) {
+                MaterialDesignButton button = new MaterialDesignButton(null);
+                button.setPrefHeight(15);
+                button.setPrefWidth(15);
+                Image image = new Image("sws/murcs/icons/removeWhite.png");
+                ImageView imageView = new ImageView(image);
+                imageView.setFitHeight(20);
+                imageView.setFitWidth(20);
+                imageView.setPreserveRatio(true);
+                imageView.setPickOnBounds(true);
+                button.setGraphic(imageView);
+                button.getStyleClass().add("mdr-button");
+                button.getStyleClass().add("mdrd-button");
+                button.setOnAction(e -> callbacks.get(0).changeItem(story));
+                FadeButtonOnHover fadeButtonOnHover = new FadeButtonOnHover(button, getTableRow());
+                fadeButtonOnHover.setupEffect();
+                AnchorPane.setRightAnchor(button, 0.0);
+                container.getChildren().add(button);
+            }
+
+            if (callbacks.size() == 2) {
+                MaterialDesignButton otherButton = new MaterialDesignButton(null);
+                otherButton.setPrefHeight(15);
+                otherButton.setPrefWidth(15);
+                Image image2;
+                Tooltip tooltip;
+                // I hate doing this here as it assumes that a story is only in one backlog, (which it should be anyway)
+                // Please suggest a better solution in code review.
+                if (PersistenceManager.getCurrent().getCurrentModel().getBacklogs()
+                        .stream()
+                        .filter(b -> b.getWorkspaceStories().contains(story))
+                        .findFirst()
+                        .isPresent()) {
+                    image2 = new Image("sws/murcs/icons/minusWhite.png");
+                    tooltip = new Tooltip(InternationalizationHelper.tryGet("Removestoryfromestimationworkspace"));
+                }
+                else {
+                    image2 = new Image("sws/murcs/icons/addWhite.png");
+                    tooltip = new Tooltip(InternationalizationHelper.tryGet("Addstorytoestimationworkspace"));
+                }
+                ImageView imageView2 = new ImageView(image2);
+                imageView2.setFitHeight(20);
+                imageView2.setFitWidth(20);
+                imageView2.setPreserveRatio(true);
+                imageView2.setPickOnBounds(true);
+                otherButton.setTooltip(tooltip);
+                otherButton.setGraphic(imageView2);
+                otherButton.getStyleClass().add("mdr-button");
+                otherButton.getStyleClass().add("mdge-button");
+                otherButton.setOnAction(e -> callbacks.get(1).changeItem(story));
+                AnchorPane.setRightAnchor(otherButton, 40.0);
+                container.getChildren().add(otherButton);
+            }
 
             container.setMaxHeight(FIXED_ROW_HEIGHT_STORY_TABLE);
             setGraphic(container);

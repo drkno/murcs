@@ -86,8 +86,10 @@ public class HelpfulHintsView {
             String line = br.readLine();
             while (line != null) {
                 String value = InternationalizationHelper.tryGet(line);
-                if (value != null && value.startsWith("@") && isInDebugMode) {
-                    hints.add(line.substring(1));
+                if (value != null && value.contains("@")) {
+                    if (isInDebugMode) {
+                        hints.add(line.replace("@", ""));
+                    }
                 }
                 else {
                     hints.add(line);

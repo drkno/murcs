@@ -3,17 +3,25 @@
 \newcommand{\faqentry}[2]{\textbf{Q. #1}\\  \textbf{A.} \textit{#2}\vspace{0.5cm}}
 
 
-\faqentry{How do I make it work?}{Run it from the jar or compile it from the source code//
+\faqentry{How do I open the application?}{On Windows simply double click the .exe executable.\\
+	For OSX double click the .app\\
+	On Linux run the script Murcs.sh.\\
+	Murcs can also be run directly from the jar or compile it from the source code\\
 	Full instructions to  do this can be found README.md}
 
-\faqentry{Can I make it generate random information to use as a starting base?}{Yes. Simply add the argument debug (with optional low, medium high afterwards) when you run the jar and it will automatically generate some information for you to use. This may be a bit more technical than most people will want. It is also not supported by us so if it goes wrong you can't blame us as you've been warned.}
+\faqentry{Where can I find information about command line options?}{By running the application with -h}
 
-\faqentry{What happens with my old projects?}{After version 4, the application will do its best to open old project files, however, it is not guaranteed to work perfectly, and some information may be lost. For best results, always use the same version of the application.}
-
-\faqentry{Can I generate a sample project}{Yes. Start the application using the sample option, this will save a sample project to the current working directory and can be combined with the debug options to generate different types of projects.}
+\faqentry{What happens with my old projects?}{The application will do its best to open old project files, however, it is not guaranteed to work perfectly, and some information may be lost. For best results, always use the same version of the application.}
 
 \faqentry{Are there any bugs?}
 {
-Not that we know of.\newline
+There are several issues that we are aware of, they do not effect any of your data but they may cause things to look odd in the interface.\newline
+These issues include:
+\begin{itemize}
+\item In the estimates workspace on the backlog editor if you repeatedly press undo or redo it causes issues where not all the stories load into the editor.
+\item Navigation between different views does not keep track of the tab you were on in the Backlog, Team and Sprint editors.
+\item Sometimes when you are navigating between items it will navigate back or forward twice. We are currently unsure why this happens.
+\item The title above search results do not properly translate.
+\end{itemize}
 If you do find a bug or want to submit feedback, you can open the file menu and click feedback.
 }

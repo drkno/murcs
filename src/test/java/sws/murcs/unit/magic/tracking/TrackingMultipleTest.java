@@ -141,11 +141,8 @@ public class TrackingMultipleTest {
         Assert.assertEquals("test desc.", UndoRedoManager.get().getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
         UndoRedoManager.get().revert();
-        Assert.assertEquals("initial state", UndoRedoManager.get().getRevertMessage());
         Assert.assertEquals("test desc.", UndoRedoManager.get().getRemakeMessage());
-        UndoRedoManager.get().revert();
         Assert.assertEquals(null, UndoRedoManager.get().getRevertMessage());
-        Assert.assertEquals("initial state", UndoRedoManager.get().getRemakeMessage());
     }
 
     @Test
@@ -233,5 +230,26 @@ public class TrackingMultipleTest {
         UndoRedoManager.get().remake();
         Assert.assertEquals("Value lost after assimilate", 4, a.getTestInteger());
         Assert.assertEquals("Value lost after assimilate", "4", b.getTestString());
+    }
+
+    @Test
+    public void assimilateRevertUnevenTest() throws Exception {
+        TestInteger a = new TestInteger();
+        TestString b = new TestString();
+        a.setTestInteger(0);
+        b.setTestString("0");
+        a.setTestInteger(1);
+        a.setTestInteger(2);
+        long commitNumber = UndoRedoManager.get().getHead().getCommitNumber();
+        a.setTestInteger(3);
+        a.setTestInteger(4);
+        a.setTestInteger(5);
+        b.setTestString("1");
+        UndoRedoManager.get().assimilate(commitNumber);
+        Assert.assertEquals("Incorrect value for test.", 5, a.getTestInteger());
+        Assert.assertEquals("Incorrect value for test.", "1", b.getTestString());
+        UndoRedoManager.get().revert();
+        Assert.assertEquals("Assimilate failed", "0", b.getTestString());
+        Assert.assertEquals("Assimilate failed", 2, a.getTestInteger());
     }
 }

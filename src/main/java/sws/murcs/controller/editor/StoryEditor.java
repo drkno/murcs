@@ -197,6 +197,16 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     private Story lastSelectedStory;
 
+    /**
+     * Says whether or not the story editor is currently creating a new task.
+     */
+    private boolean creatingTask;
+
+    /**
+     * Whether a task was just removed.
+     */
+    private boolean removedTask;
+
     @Override
     public final void loadObject() {
         if (getModel() != null && !getModel().equals(lastSelectedStory)) {
@@ -311,6 +321,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         if (getModel() != lastSelectedStory) {
             taskEditors.clear();
+            removedTask = false;
         }
 
         progressBar.setStory(getModel());
@@ -339,6 +350,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             protected Void call() throws Exception {
                 Platform.runLater(() -> taskContainer.getChildren().clear());
                 taskEditors.clear();
+                removedTask = false;
                 for (Task task : model.getTasks()) {
                     if (stop) {
                         break;
@@ -384,12 +396,18 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * Updates all of the task editors within the story.
      */
     public void updateEditors() {
-        if (getTasks().size() != taskEditors.size()) {
+        if (getTasks().size() != taskEditors.size() - (removedTask ? 1 : 0)  && !creatingTask) {
             loadTasks();
         }
         else {
             taskEditors.forEach(TaskEditor::update);
         }
+        removedTask = false;
+    }
+
+    @Override
+    public void finishedCreation() {
+        creatingTask = false;
     }
 
     /**
@@ -612,20 +630,22 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         Story selectedStory = dependenciesDropDown.getValue();
         if (selectedStory != null) {
-            try {
-                Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                try {
+                    dependenciesDropDown.valueProperty().removeListener(getChangeListener());
                     dependenciesDropDown.getSelectionModel().clearSelection();
-                });
-                getModel().addDependency(selectedStory);
-                Node dependencyNode = generateStoryNode(selectedStory);
-                dependenciesContainer.getChildren().add(dependencyNode);
-                dependenciesMap.put(selectedStory, dependencyNode);
-                Platform.runLater(() -> {
+                    getModel().addDependency(selectedStory);
+                    Node dependencyNode = generateStoryNode(selectedStory);
+                    dependenciesContainer.getChildren().add(dependencyNode);
+                    dependenciesMap.put(selectedStory, dependencyNode);
                     searchableComboBoxDecorator.remove(selectedStory);
-                });
-            } catch (CustomException e) {
-                addFormError(dependenciesDropDown, e.getMessage());
-            }
+                } catch (CustomException e) {
+                    addFormError(dependenciesDropDown, e.getMessage());
+                }
+                finally {
+                    dependenciesDropDown.valueProperty().addListener(getChangeListener());
+                }
+            });
         }
     }
 
@@ -970,6 +990,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private void createTaskClick(final ActionEvent event) {
         Task task = new Task();
+        creatingTask = true;
         if (taskLoader == null) {
             taskLoader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/TaskEditor.fxml"));
         }
@@ -1001,7 +1022,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
     @Override
     public void changesMade() {
-        //We do not care if changes are made in this editor.
+        progressBar.setStory(getModel());
     }
 
     /**
@@ -1010,6 +1031,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     public final void removeTask(final Task task) {
         if (getModel().getTasks().contains(task)) {
+            removedTask = true;
             getModel().removeTask(task);
         }
     }
@@ -1187,8 +1209,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             button.getStyleClass().add("mdr-button");
             button.getStyleClass().add("mdrd-button");
             button.setOnAction(event -> {
-                if (!isCreationWindow && UsageHelper.findUsages(getModel()).stream().anyMatch(m -> m instanceof Sprint)
-                        && getModel().getAcceptanceCriteria().size() <= 1) {
+                if (!isCreationWindow && getModel().getAcceptanceCriteria().size() <= 1) {
                     List<Sprint> sprintsWithStory = UsageHelper.findUsages(getModel()).stream()
                             .filter(m -> ModelType.getModelType(m).equals(ModelType.Sprint))
                             .map(m -> (Sprint) m)
@@ -1208,14 +1229,10 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
                     popup.setTitleText("{ConfirmChangeStoryStateTitle}");
                     popup.setWindowTitle("{AreYouSure}");
                     popup.addYesNoButtons(() -> {
-                        getModel().setEstimate(EstimateType.NOT_ESTIMATED);
-                        estimateChoiceBox.setValue(EstimateType.NOT_ESTIMATED);
                         sprintsWithStory.forEach(sprint -> sprint.removeStory(getModel()));
                         getModel().removeAcceptanceCondition(acceptanceCondition);
                         updateAcceptanceCriteria();
                         updateEstimation();
-                        storyStateChoiceBox.setValue(StoryState.None);
-                        getModel().setStoryState(StoryState.None);
                         popup.close();
                     }, "danger-will-robinson", "everything-is-fine");
                     popup.show();

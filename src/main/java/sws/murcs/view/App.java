@@ -1,5 +1,10 @@
 package sws.murcs.view;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +15,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import sws.murcs.arguments.ArgumentsManager;
 import sws.murcs.controller.GenericPopup;
 import sws.murcs.controller.MainController;
@@ -24,11 +30,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The main app class.
@@ -84,7 +85,7 @@ public class App extends Application {
     /**
      * Default size of the font to load.
      */
-    private static final double DEFAULT_FONT_SIZE = 18.0;
+    private static final double DEFAULT_FONT_SIZE = 12.0;
 
     /**
      * The current main controller.
@@ -100,6 +101,11 @@ public class App extends Application {
      * The manager for global shortcuts.
      */
     private static ShortcutManager shortcutManager;
+
+    /**
+     * Media player for playing music.
+     */
+    private static MediaPlayer mediaPlayer;
 
     /**
      * Dion Vader.
@@ -226,12 +232,8 @@ public class App extends Application {
         setStage(primaryStage);
         mainController = createWindow(primaryStage);
         if (vader) {
-            URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
-            Media hit = new Media(url.toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(hit);
-            mediaPlayer.play();
+            invade();
         }
-
         // no point in translating as there is no way to set the language before starting up the app
         if (JAVA_UPDATE_VERSION < SUPPORTED_JAVA_UPDATE) {
             GenericPopup popup = new GenericPopup();
@@ -250,6 +252,28 @@ public class App extends Application {
             popup.addButton("Continue Anyway", GenericPopup.Position.RIGHT, GenericPopup.Action.CANCEL, popup::close);
             popup.show();
         }
+    }
+
+    /**
+     * Invades the application with beautiful music.
+     */
+    public static void invade() {
+        URL url = App.class.getResource("/sws/murcs/imperialMarch.mp3");
+        Media hit = new Media(url.toString());
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer(hit);
+        } else if (mediaPlayer.getCurrentTime().greaterThanOrEqualTo(mediaPlayer.getTotalDuration())) {
+            mediaPlayer.seek(Duration.ZERO);
+        }
+        mediaPlayer.play();
+    }
+
+    /**
+     * Gets whether or not the app is in Darth Vader mode.
+     * @return indicates if the application is in Darth Vader mode.
+     */
+    public static boolean getVaderMode() {
+        return vader;
     }
 
     /**
@@ -281,8 +305,7 @@ public class App extends Application {
         MainController controller = loadRootNode();
 
         Scene scene = new Scene(controller.getRootNode());
-        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(),
-                DEFAULT_FONT_SIZE);
+        Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf").toExternalForm(), DEFAULT_FONT_SIZE);
         scene.getStylesheets().add(App.class
                         .getResource("/sws/murcs/styles/global.css")
                         .toExternalForm());
@@ -316,6 +339,10 @@ public class App extends Application {
             //We should never hit this, if we managed to start the application
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
         }
+
+        //Hacky fix for the root node not getting updated when we reload..
+        mainController = loader.getController();
+
         return loader.getController();
     }
 
@@ -392,6 +419,7 @@ public class App extends Application {
      */
     public static void main(final String[] args) {
         System.setProperty("prism.lcdtext", "false");
+        System.setProperty("glass.accessible.force", "false");
         PersistenceManager.setCurrent(new PersistenceManager(new FilePersistenceLoader()));
         UndoRedoManager.get().setDisabled(true);
 

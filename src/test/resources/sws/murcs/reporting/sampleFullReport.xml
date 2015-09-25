@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <report>
     <projectVersion>1.0.0</projectVersion>
-    <dateGenerated>2015-09-23</dateGenerated>
+    <dateGenerated>2015-09-25</dateGenerated>
     <content xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="reportModelAll">
         <projects>
             <project shortName="FITR">
@@ -36,7 +36,7 @@
                                 <estimateInfo>
                                     <estimates>
                                         <item>
-                                            <date>2015-09-23</date>
+                                            <date>2015-09-25</date>
                                             <estimateValue>100.0</estimateValue>
                                         </item>
                                     </estimates>
@@ -51,6 +51,7 @@
                         <pairs/>
                     </story>
                 </prioritisedStories>
+                <unprioritisedStories/>
                 <estimateType>Fibonacci</estimateType>
             </backlog>
         </backlogs>

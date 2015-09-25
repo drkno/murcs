@@ -164,6 +164,11 @@ public final class UndoRedoManager {
         Collection<FieldValuePair> afterValues = new ArrayList<>();
         findChanges(beforeValues, afterValues);
 
+        // initial special first add last min bodge
+        if (afterValues.isEmpty() && beforeValues.isEmpty() && head != null && !canRevert()) {
+            return commitNumber++;
+        }
+
         // no changes made
         if (afterValues.isEmpty() && canRevert()) {
             if (!head.getMessage().contains(message)) {
@@ -436,6 +441,7 @@ public final class UndoRedoManager {
         if (canRemake()) {
             throw new Exception("Cannot assimilate while remake is possible.");
         }
+        List<FieldValuePair> removablePairs = new ArrayList<>();
         while (!revertStack.isEmpty()) {
             if (revertStack.peek().getCommitNumber() == assimilateCommitNumber) {
                 break;
@@ -448,9 +454,22 @@ public final class UndoRedoManager {
                     .collect(Collectors.toList());
             addablePairs.forEach(head::addPair);
 
+            Collection<FieldValuePair> removedFields = commit.getPairs().stream()
+                    .filter(FieldValuePair::isOldValue).collect(Collectors.toList());
+            removablePairs.removeIf(p -> removedFields.stream()
+                    .anyMatch(o -> o.getObject().equals(p.getObject()) && o.getField().equals(p.getField())));
+            removablePairs.addAll(removedFields);
+
             head.getRemovedFields().addAll(commit.getAddedFields());
             head.getAddedFields().addAll(commit.getRemovedFields());
         }
+
+        if (!revertStack.isEmpty()) {
+            removablePairs.removeIf(p -> revertStack.peek().getPairs().stream()
+                    .anyMatch(o -> o.getObject().equals(p.getObject()) && o.getField().equals(p.getField())));
+            removablePairs.forEach(revertStack.peek()::addPair);
+        }
+
         notifyListeners(ChangeState.Assimilate);
     }
 
@@ -462,7 +481,7 @@ public final class UndoRedoManager {
      * @throws Exception when committing the changes fail.
      */
     public void importModel(final Organisation model) throws Exception {
-        forget(false);
+        forget(true);
         add(model);
         model.getPeople().forEach(this::add);
         model.getTeams().forEach(this::add);

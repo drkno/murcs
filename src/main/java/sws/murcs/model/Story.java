@@ -270,10 +270,15 @@ public class Story extends Model {
         }
         if (newEstimate.equals(EstimateType.INFINITE) || newEstimate.equals(EstimateType.NOT_ESTIMATED)) {
             // The story state must now be set to None.
+            startAssimilation();
             setStoryState(StoryState.None);
+            estimate = newEstimate;
+            endAssimilation("edit story");
         }
-        estimate = newEstimate;
-        commit("edit story");
+        else {
+            estimate = newEstimate;
+            commit("edit story");
+        }
     }
 
     /**

@@ -7,7 +7,7 @@
       Then the all tasks tab will load with no filters.
 
     Scenario: Filtering Tasks
-      Given you have are in the all task view
+      Given you are in the all task view
       And you change the filter
       Then the tasks will either be filtered by allocated or unallocated tasks
 

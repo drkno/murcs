@@ -1,5 +1,10 @@
 package sws.murcs.controller.editor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import sws.murcs.controller.GenericPopup;
+import sws.murcs.controller.controls.DatePickerHelper;
 import sws.murcs.controller.controls.ModelProgressBar;
 import sws.murcs.controller.controls.RemovableHyperlinkCell;
 import sws.murcs.debug.errorreporting.ErrorReporter;
@@ -27,6 +33,7 @@ import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
 import sws.murcs.exceptions.MultipleSprintsException;
 import sws.murcs.exceptions.NotReadyException;
+import sws.murcs.listeners.ChangeCallback;
 import sws.murcs.model.Backlog;
 import sws.murcs.model.EstimateType;
 import sws.murcs.model.ModelType;
@@ -39,11 +46,6 @@ import sws.murcs.model.TaskState;
 import sws.murcs.model.Team;
 import sws.murcs.model.helpers.UsageHelper;
 import sws.murcs.model.persistence.PersistenceManager;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.List;
 
 /**
  * The controller for editing sprints.
@@ -284,6 +286,7 @@ public class SprintEditor extends GenericEditor<Sprint> {
         if (selectedStory != null) {
             try {
                 getModel().addStory(selectedStory);
+
                 storiesTable.getItems().add(selectedStory);
                 Platform.runLater(() -> {
                     storiesList.getSelectionModel().clearSelection();
@@ -351,12 +354,12 @@ public class SprintEditor extends GenericEditor<Sprint> {
     private void saveDates() {
         boolean hasProblems = false;
         Sprint sprint = getModel();
-        LocalDate startDate = startDatePicker.getValue();
-        LocalDate endDate = endDatePicker.getValue();
+        LocalDate startDate = DatePickerHelper.getDate(startDatePicker);
+        LocalDate endDate = DatePickerHelper.getDate(endDatePicker);
         Release release = releaseComboBox.getValue();
 
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
-            addFormError(startDatePicker, "StartBeforeEndError");
+            addFormError(startDatePicker, "{StartBeforeEndError}");
             hasProblems = true;
         }
 
@@ -494,7 +497,9 @@ public class SprintEditor extends GenericEditor<Sprint> {
             property.set(param.getValue().getShortName());
             return property;
         });
-        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, this::removeStory));
+        List<ChangeCallback<Story>> callbacks = new ArrayList<>();
+        callbacks.add(this::removeStory);
+        storyColumn.setCellFactory(param -> new RemovableHyperlinkCell(this, callbacks));
         storyColumn.prefWidthProperty().bind(
                 storiesTable.widthProperty().subtract(estimateColumn.widthProperty())
                         .subtract(completenessColumn.widthProperty()).subtract(10));

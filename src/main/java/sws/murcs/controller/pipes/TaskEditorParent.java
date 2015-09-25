@@ -39,4 +39,9 @@ public interface TaskEditorParent extends FormErrors {
      * Updates all the information in the task editors associated with this task editor parent.
      */
     void updateEditors();
+
+    /**
+     * Called when the task has finished creation.
+     */
+    void finishedCreation();
 }

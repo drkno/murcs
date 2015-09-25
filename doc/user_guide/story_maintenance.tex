@@ -2,7 +2,7 @@
 
 Managing Stories
 \newline
-Stories for a project can easily be added, deleted and updated using murcS. To begin select 'Story' in the Display Choice picker (circled below)
+Stories for a project can easily be added, deleted and updated using Murcs. To begin select 'Story' in the Display Choice picker (circled in Fig. 27)
 
 \begin{figure}[H]
 \centering
@@ -12,7 +12,8 @@ Stories for a project can easily be added, deleted and updated using murcS. To b
 \end{figure}
 
 Creating Stories
-Stories can be created in two different ways, by clicking the add button (circled in red in the image below) or by navigating File-->New-->Story.
+\newline
+Stories can be created in two different ways, by clicking the add button on the toolbar or by navigating File-\textgreater New-\textgreater Story.
 
 \begin{figure}[H]
 \centering
@@ -21,7 +22,7 @@ Stories can be created in two different ways, by clicking the add button (circle
 \label{fig:new_project}
 \end{figure}
 
-Whichever way you chose to create your story you will have been greeted with the following 'Story Creation Dialog' (pictured below). When creating a story you can specify a number of different fields. 
+Whichever way you chose to create your story you will have been greeted with the following 'Story Creation Dialog' (pictured in Fig. 28). When creating a story you can specify a number of different fields. 
 
 Name:
 This is the name of your story. It must not be empty and must be unique, but you can change it later. This will show up in the display list, so make it recognizable!
@@ -32,22 +33,23 @@ To make life easier for your team it is helpful to know what a story is about. T
 Creator:
 This field stores the original creator of the story. It cannot be changed after the project has been created, so make sure you get it right first time.
 
-Updating
-To update an existing story, simply select it from the display list. In the below picture we are editing the story known as 'A Story.' Note how the creator field is greyed out and cannot be changed.
+Updating:
+To update an existing story, simply select it from the display list. In Fig. 29 we are editing the story known as 'A Story.' Note how the creator field is greyed out and cannot be changed.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{images/screenshots/stories4.PNG}
+\includegraphics[width=\textwidth]{images/screenshots/stories3.PNG}
 \caption{The Editing Pane}
 \label{fig:new_project}
 \end{figure}
 
 Story State\newline
-The Story State property (circled below) defines the state a story is currently in. If you try to change this but the state is not supported an error message will be displayed at the bottom of the editor. \newline
+The Story State property (circled in Fig. 30) defines the state a story is currently in. If you try to change this but the state is not supported an error message will be displayed at the bottom of the editor. \newline
 
-Requirements\newline
+The requirements for each story state are as follows\newline
 None: No requirements\newline
 Ready: Story is in a backlog, story has at least one AC and story is estimated
+Done: Story is in a sprint all it's tasks must be done
 
 \begin{figure}[H]
 \centering
@@ -57,7 +59,7 @@ Ready: Story is in a backlog, story has at least one AC and story is estimated
 \end{figure}
 
 Estimating\newline
-To create an estimate for a story, your story must first be part of a backlog and have at least one Acceptance Condition (see below). The scale you estimate on depends on the scale specified in the backlog that this story is attached to. If you change this type on the backlog the program will do it's best to work out what the equivalent is on the new scale.
+To create an estimate for a story, your story must first be part of a backlog and have at least one Acceptance Condition (see Fig. 31). The scale you estimate on depends on the scale specified in the backlog that the story is attached to. If you change this type on the backlog the program will do it's best to work out what the equivalent is on the new scale.
 
 \begin{figure}[H]
 \centering
@@ -67,7 +69,7 @@ To create an estimate for a story, your story must first be part of a backlog an
 \end{figure}
 
 Acceptance Criteria (ACs)\newline
-A story can have any number of acceptance criteria. However, you should note that there are some things you cannot do to a story if it does not have an ACs (such as estimating that story or changing its state to ready). Acceptance criteria can be managed using "Acceptance Criteria" pane (marked below) while editing a story.
+A story can have any number of acceptance criteria. However, you should note that there are some things you cannot do to a story if it does not have an ACs (such as estimating that story or changing its state to ready). Acceptance criteria can be managed using "Acceptance Criteria" pane (marked in Fig. 32) while editing a story.
 
 \begin{figure}[H]
 \centering
@@ -76,7 +78,7 @@ A story can have any number of acceptance criteria. However, you should note tha
 \label{fig:new_project}
 \end{figure}
 
-You can create a new Acceptance Condition by typing in the "Add Condition" text field (marked below) and pressing the add button. New acceptance conditions will be added at the end of the list by default.
+You can create a new Acceptance Condition by typing in the "Add Condition" text field (marked in Fig. 33) and pressing the add button. New acceptance conditions will be added at the end of the list by default.
 
 \begin{figure}[H]
 \centering
@@ -85,10 +87,10 @@ You can create a new Acceptance Condition by typing in the "Add Condition" text 
 \label{fig:new_project}
 \end{figure}
 
-You can edit the condition on an AC by simply typing in the relevant text field. Your changes will be saved automatically, when you click away. Similarly, you can delete a condition using the 'X' button in the second column of the table.
+You can edit the condition on an AC by simply typing in the relevant text field. Your changes will be saved automatically, when you click away. Similarly, you can delete a condition using the 'X' button to the right of the condition.
 \newline\newline
 
-Acceptance Conditions can also be moved up and down in the list, depending on their priority. To do this, use the up and down arrows (marked below). A condition cannot be moved up from the top of the list or down from the bottom.
+Acceptance Conditions can also be moved up and down in the list, depending on their priority. To do this, use the up and down arrows (marked in Fig. 34). A condition cannot be moved up from the top of the list or down from the bottom.
 
 \begin{figure}[H]
 \centering
@@ -97,13 +99,13 @@ Acceptance Conditions can also be moved up and down in the list, depending on th
 \label{fig:new_project}
 \end{figure}
 
-Dependencies\newline
+Dependencies\newline\newline
 You can manage dependencies in the dependencies area of the story pane. To add a story as a dependency, simply start typing its name or select it from the list box provided. Dependencies must be transitive (they cannot cause dependency cycles). Attempting to add a dependency that will cause a cycle will result in an error.\newline
 Removing a dependency is done in the same way as for Acceptance Criteria. Pressing the 'X' button on the right hand side of each dependency will remove it from the story.\newline
-Depth of a dependency, as indicated to the left side of the 'X' button, describes the maximum number of dependencies that the dependency itself transitively depends on.\newline\newline
+Depth of a dependency, as indicated to the left side of the 'X' button, describes the maximum number of dependencies that the dependency itself transitively depends on, the number of total children it depends upon and the number of direct stories it depends upon.\newline\newline
 
 Deletion\newline
-To delete a story, simply press the delete button (the bin in the tooblar). You will be greeted with a confirmation dialog that will notify you of all the places the story is used. From this dialog you can go through with the deletion or cancel if you change your mind. For more information, see the 'Element Deletion' section of this guide.
+To delete a story, simply press the delete button (the bin in the tooblar). You will be greeted with a confirmation dialog (see Fig. 35) that will notify you of all the places the story is used. From this dialog you can go through with the deletion or cancel if you change your mind. For more information, see the 'Element Deletion' section of this guide.
 
 \begin{figure}[H]
 \centering

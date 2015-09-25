@@ -103,6 +103,18 @@ public class TeamEditor extends GenericEditor<Team> {
     private Button clearPOButton, clearSMButton;
 
     /**
+     * The main grid pane for the team editor.
+     */
+    @FXML
+    private GridPane mainGrid;
+
+    /**
+     * The pair programming VBox.
+     */
+    @FXML
+    private VBox pairProgrammingVBox;
+
+    /**
      * List of people that can be added to the team.
      */
     private List<Person> allocatablePeople;
@@ -205,11 +217,20 @@ public class TeamEditor extends GenericEditor<Team> {
             memberNodeIndex.put(member, memberNode);
         });
 
-        pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
-                .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
-        pairProgrammingTable.setItems(generatePairProgrammingEntries());
+        if (!getIsCreationWindow()) {
+            pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
+                    .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
+            pairProgrammingTable.setItems(generatePairProgrammingEntries());
+        } else {
+            mainGrid.getChildren().remove(pairProgrammingVBox);
+        }
 
-        allocatablePeople.addAll(PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople());
+        Collection<Person> available = PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople();
+        if (allocatablePeople.size() != available.size() || allocatablePeople.stream()
+                .allMatch(s -> available.contains(s))) {
+            allocatablePeople.clear();
+            allocatablePeople.addAll(available);
+        }
         updatePOSM();
 
         setIsCreationWindow(modelShortName == null);
@@ -248,22 +269,23 @@ public class TeamEditor extends GenericEditor<Team> {
             }
         }
 
-        Person person = addTeamMemberPicker.getValue();
+        final Person person = addTeamMemberPicker.getValue();
         if (person != null) {
-            try {
-                getModel().addMember(person);
-                Node memberNode = generateMemberNode(person);
-                teamMembersContainer.getChildren().add(memberNode);
-                memberNodeIndex.put(person, memberNode);
-                Platform.runLater(() -> {
-                    addTeamMemberPicker.getSelectionModel().clearSelection();
-                    allocatablePeople.remove(person);
-                });
+            Node memberNode = generateMemberNode(person);
+            teamMembersContainer.getChildren().add(memberNode);
+            memberNodeIndex.put(person, memberNode);
+
+            Platform.runLater(() -> {
+                addTeamMemberPicker.getSelectionModel().clearSelection();
+                allocatablePeople.remove(person);
+
+                try {
+                    getModel().addMember(person);
+                } catch (CustomException e) {
+                    ErrorReporter.get().reportError(e, "Failed to add the skill. This is bad.");
+                }
                 updatePOSM();
-            } catch (CustomException e) {
-                //This should never happen as the list of people to add should only contain valid options
-                ErrorReporter.get().reportError(e, "Failed to add the person to the team. This is bad.");
-            }
+            });
         }
 
         String modelShortName = getModel().getShortName();

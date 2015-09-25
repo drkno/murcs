@@ -107,13 +107,15 @@ public class EditorPane {
         fxmlPaths.put(ModelType.Skill, "SkillEditor.fxml");
         fxmlPaths.put(ModelType.Release, "ReleaseEditor.fxml");
         fxmlPaths.put(ModelType.Story, "StoryEditor.fxml");
-        fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
         if (isSearchOrCreation) {
             fxmlPaths.put(ModelType.Sprint, "SprintEditor.fxml");
+            fxmlPaths.put(ModelType.Backlog, "BacklogEditor.fxml");
             fxmlPaths.put(ModelType.Team, "TeamEditor.fxml");
+
         }
         else {
             fxmlPaths.put(ModelType.Sprint, "SprintContainer.fxml");
+            fxmlPaths.put(ModelType.Backlog, "BacklogContainer.fxml");
             fxmlPaths.put(ModelType.Team, "TeamContainer.fxml");
         }
 
@@ -148,8 +150,8 @@ public class EditorPane {
             else {
                 view = loader.load();
                 controller = loader.getController();
-                controller.setNavigationManager(navigationManager);
                 controller.setModel(model);
+                controller.setNavigationManager(navigationManager);
                 controller.loadObject();
             }
         }
@@ -177,7 +179,7 @@ public class EditorPane {
             model = pModel;
             controller.setModel(pModel);
             // This is because "Java sucks" - Dion
-            // "You guys are dicks" - Dion, Daniel, Jay
+            // "You guys are mean" - Dion, Daniel, Jay
             // It's a bug somewhere in between java 8u25 and 8u40
             if (App.JAVA_UPDATE_VERSION < betterJavaVersion
                     && !Thread.currentThread().getName().toLowerCase().contains("fx")) {

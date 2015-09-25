@@ -180,7 +180,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
 
     /**
      * Gets a list of all people that can be assigned to this story.
-     * @return The possible assigness
+     * @return The possible assignees
      */
     private List<Person> getPossibleAssignees() {
         List<Person> possibleAssignees = new ArrayList<>();
@@ -196,7 +196,7 @@ public class ScrumTaskController implements UndoRedoChangeListener {
 
     @Override
     public void undoRedoNotification(final ChangeState param) {
-        if (param == ChangeState.Remake || param == ChangeState.Revert) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert || param == ChangeState.Commit) {
             parent.update();
         }
     }

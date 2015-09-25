@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import sws.murcs.debug.errorreporting.ErrorReporter;
 import sws.murcs.internationalization.AutoLanguageFXMLLoader;
+import sws.murcs.magic.tracking.listener.ChangeState;
 import sws.murcs.model.Sprint;
 import sws.murcs.model.Story;
 import sws.murcs.view.App;
@@ -292,13 +293,11 @@ public class ScrumBoard extends GenericEditor<Sprint> {
             try {
                 thread.join();
             } catch (Throwable t) {
-                ErrorReporter.get().reportError(t, "Failed to stop the loading tasks thread.");
+                ErrorReporter.get().reportError(t, "Failed to stop the loading stories thread.");
             }
         }
         stop = false;
-        for (ScrumBoardStoryController storyController: scrumBoardStories) {
-            storyController.dispose();
-        }
+        scrumBoardStories.forEach(ScrumBoardStoryController::dispose);
     }
 
     @Override
@@ -309,5 +308,12 @@ public class ScrumBoard extends GenericEditor<Sprint> {
         thread = null;
         sprintContainer = null;
         super.dispose();
+    }
+
+    @Override
+    public void undoRedoNotification(final ChangeState param) {
+        if (param == ChangeState.Remake || param == ChangeState.Revert || param == ChangeState.Commit) {
+            loadObject();
+        }
     }
 }

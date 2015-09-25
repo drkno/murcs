@@ -372,6 +372,7 @@ public class ModelViewController implements ViewUpdate<Model>, UndoRedoChangeLis
                 .orElse(null);
 
         GenericPopup popup = new GenericPopup(window);
+        popup.setWindowTitle("{AreYouSure}");
         String message = "{AreYouSureDelete}";
         if (usages.size() != 0) {
             message += "\n{This} ";

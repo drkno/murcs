@@ -105,7 +105,8 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         Collection<Skill> available = PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel());
-        if (allocatableSkills.size() != available.size() || allocatableSkills.stream().allMatch(s -> available.contains(s))) {
+        if (allocatableSkills.size() != available.size() || allocatableSkills.stream()
+                .allMatch(s -> available.contains(s))) {
             allocatableSkills.clear();
             allocatableSkills.addAll(available);
         }
@@ -172,10 +173,10 @@ public class PersonEditor extends GenericEditor<Person> {
             try {
                 getModel().setUserId(viewUserId);
             } catch (DuplicateObjectException e) {
-                addFormError(shortNameTextField, "{UserNameExistsError1} {Person} {UserNameExistsError2}");
+                addFormError(userIdTextField, "{UserNameExistsError1} {Person} {UserNameExistsError2}");
             }
             catch (InvalidParameterException e) {
-                addFormError(shortNameTextField, "{UserNameExistsError2}");
+                addFormError(userIdTextField, "{UserNameEmptyError}");
             }
         }
     }

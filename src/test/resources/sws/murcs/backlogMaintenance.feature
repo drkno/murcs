@@ -42,7 +42,7 @@ Feature: Backlog Maintenance
     And the Backlog is added to the list
 
   Scenario: Cancel button pressed
-    Given The Create Project Popup is shown
+    Given The Create Backlog Popup is shown
     When I click Cancel
     Then the popup goes away
 

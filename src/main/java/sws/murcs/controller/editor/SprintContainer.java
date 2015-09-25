@@ -32,7 +32,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
     private VBox progressContainer;
 
     /**
-     * The three tabs used to view a sprint.
+     * The four tabs used to view a sprint.
      */
     @FXML
     private Tab overviewTab, scrumBoardTab, burnDownChartTab, allTasksTab;
@@ -82,32 +82,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
             }
         });
 
-        try {
-            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
-            Parent view = loader.load();
-            overviewAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            overviewEditor = loader.getController();
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
-        }
-
-        try {
-            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
-            Parent view = loader.load();
-            scrumBoardAnchorPane.getChildren().add(view);
-            AnchorPane.setRightAnchor(view, 0.0);
-            AnchorPane.setLeftAnchor(view, 0.0);
-            AnchorPane.setTopAnchor(view, 0.0);
-            AnchorPane.setBottomAnchor(view, 0.0);
-            scrumBoard = loader.getController();
-            scrumBoard.setSprintContainer(this);
-        } catch (Exception e) {
-            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
-        }
+        createOverviewEditor();
 
         progressBar = new ModelProgressBar(true);
         progressContainer.getChildren().add(progressBar);
@@ -136,7 +111,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
             default:
                 throw new UnsupportedOperationException("You tried switch to a tab that hasn't been linked yet");
         }
-        Platform.runLater(() -> { isLoaded = true; });
+        Platform.runLater(() -> {
+            isLoaded = true;
+        });
     }
 
 
@@ -163,6 +140,9 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints overview into the overview tab.
      */
     private void overviewTabSelected() {
+        if (overviewEditor == null || overviewEditor.isDisposed()) {
+            createOverviewEditor();
+        }
         overviewEditor.setModel(getModel());
         overviewEditor.loadObject();
     }
@@ -171,25 +151,38 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
+        if (scrumBoard == null || scrumBoard.isDisposed()) {
+            createScrumBoardEditor();
+        }
         scrumBoard.setModel(getModel());
         scrumBoard.loadObject();
+    }
+
+    /**
+     * Creates the scrum board editor.
+     */
+    private void createScrumBoardEditor() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/ScrumBoard.fxml"));
+            Parent view = loader.load();
+            scrumBoardAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            scrumBoard = loader.getController();
+            scrumBoard.setSprintContainer(this);
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load the scrumboard");
+        }
     }
 
     /**
      * Loads this sprints burn down chart into the burn down tab.
      */
     private void burnDownChartTabSelected() {
-        if (burndownController == null) {
-            try {
-                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
-                Parent view = loader.load();
-                burnDownChartTab.setContent(view);
-
-                burndownController = loader.getController();
-                burndownController.setNavigationManager(getNavigationManager());
-            } catch (Exception e) {
-                ErrorReporter.get().reportError(e, "Failed to load the burndown tab in sprints.");
-            }
+        if (burndownController == null || burndownController.isDisposed()) {
+            createBurndownEditor();
         }
 
         if (!Objects.equals(burndownController.getModel(), getModel())) {
@@ -199,25 +192,27 @@ public class SprintContainer extends GenericEditor<Sprint> {
     }
 
     /**
+     * Creates a burndown editor.
+     */
+    private void createBurndownEditor() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/Burndown.fxml"));
+            Parent view = loader.load();
+            burnDownChartTab.setContent(view);
+
+            burndownController = loader.getController();
+            burndownController.setNavigationManager(getNavigationManager());
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Failed to load the burndown tab in sprints.");
+        }
+    }
+
+    /**
      * Called when the all tasks tab has been selected.
      */
     private void allTasksTabSelected() {
-        if (allTasksController == null) {
-            try {
-                FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
-                Parent view = loader.load();
-                allTasksAnchorPane.getChildren().add(view);
-                AnchorPane.setRightAnchor(view, 0.0);
-                AnchorPane.setLeftAnchor(view, 0.0);
-                AnchorPane.setTopAnchor(view, 0.0);
-                AnchorPane.setBottomAnchor(view, 0.0);
-                allTasksController = loader.getController();
-                allTasksController.setModel(getModel());
-                allTasksController.setNavigationManager(getNavigationManager());
-                allTasksController.loadObject();
-            } catch (Exception e) {
-                ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
-            }
+        if (allTasksController == null || allTasksController.isDisposed()) {
+            createAllTasksEditor();
         }
         else if (allTasksController.getModel() != getModel()) {
             allTasksController.setModel(getModel());
@@ -233,6 +228,27 @@ public class SprintContainer extends GenericEditor<Sprint> {
             else {
                 allTasksController.updateEditors();
             }
+        }
+    }
+
+    /**
+     * Creates the all tasks editor.
+     */
+    private void createAllTasksEditor() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/AllTasksView.fxml"));
+            Parent view = loader.load();
+            allTasksAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            allTasksController = loader.getController();
+            allTasksController.setModel(getModel());
+            allTasksController.setNavigationManager(getNavigationManager());
+            allTasksController.loadObject();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Failed to load the all tasks tab in sprints.");
         }
     }
 
@@ -266,15 +282,42 @@ public class SprintContainer extends GenericEditor<Sprint> {
 
     @Override
     public void setNavigationManager(final Navigable navigationManager) {
+        if (overviewEditor == null) {
+            createOverviewEditor();
+        }
         overviewEditor.setNavigationManager(navigationManager);
         if (allTasksController != null) {
             allTasksController.setNavigationManager(navigationManager);
         }
+        if (scrumBoard == null) {
+            createScrumBoardEditor();
+        }
+        scrumBoard.setNavigationManager(navigationManager);
         super.setNavigationManager(navigationManager);
+    }
+
+
+    /**
+     * Creates the overview editor.
+     */
+    private void createOverviewEditor() {
+        try {
+            FXMLLoader loader = new AutoLanguageFXMLLoader(getClass().getResource("/sws/murcs/SprintEditor.fxml"));
+            Parent view = loader.load();
+            overviewAnchorPane.getChildren().add(view);
+            AnchorPane.setRightAnchor(view, 0.0);
+            AnchorPane.setLeftAnchor(view, 0.0);
+            AnchorPane.setTopAnchor(view, 0.0);
+            AnchorPane.setBottomAnchor(view, 0.0);
+            overviewEditor = loader.getController();
+        } catch (Exception e) {
+            ErrorReporter.get().reportError(e, "Unable to load sprint overview");
+        }
     }
 
     @Override
     public void undoRedoNotification(final ChangeState param) {
+        progressBar.setSprint(getModel());
         if (burndownController != null) {
             burndownController.loadObject();
         }

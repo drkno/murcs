@@ -208,7 +208,7 @@ public class TeamGenerator implements Generator<Team> {
             "Cracking Good Toast",
             "C.R.A.N.E.A.",
             "CRANEA",
-            "Crappy Raisins",
+            "Rubbish Raisins",
             "Crazy Cat Lady and the Puzzle Heads",
             "Crazy Robot",
             "CrazyRobot",

@@ -54,7 +54,9 @@ public class ReportGeneratorTest {
             }
             if (report.get(i).matches(".*<dateGenerated>2015-[0-9]{2}-[0-9]{2}</dateGenerated>.*")) {
                 report.set(i, "<dateGenerated>" + LocalDate.now() + "</dateGenerated>");
-                break;
+            }
+            if (report.get(i).matches(".*<date>2015-[0-9]{2}-[0-9]{2}</date>.*")) {
+                report.set(i, "<date>" + LocalDate.now() + "</date>");
             }
         }
     }
