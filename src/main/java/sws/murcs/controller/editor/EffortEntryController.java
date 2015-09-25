@@ -275,10 +275,10 @@ public class EffortEntryController implements PersonManagerControllerParent {
 
         datePicker.setValue(effortEntry.getDate());
         descriptionTextArea.setText(effortEntry.getDescription());
-        timeTextField.setText("" + effortEntry.getEffort());
+        timeTextField.setText(Float.toString(effortEntry.getSetEffort()));
         updatePeopleLabel();
 
-        Platform.runLater(() -> updateErrors());
+        Platform.runLater(this::updateErrors);
     }
 
     /**
