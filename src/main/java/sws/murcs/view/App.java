@@ -1,5 +1,10 @@
 package sws.murcs.view;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +12,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
@@ -25,11 +29,6 @@ import sws.murcs.magic.tracking.UndoRedoManager;
 import sws.murcs.model.Organisation;
 import sws.murcs.model.persistence.PersistenceManager;
 import sws.murcs.model.persistence.loaders.FilePersistenceLoader;
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The main app class.
@@ -338,6 +337,10 @@ public class App extends Application {
             //We should never hit this, if we managed to start the application
             ErrorReporter.get().reportErrorSecretly(e, "Couldn't open a MainWindow :'(");
         }
+
+        //Hacky fix for the root node not getting updated when we reload..
+        mainController = loader.getController();
+
         return loader.getController();
     }
 
