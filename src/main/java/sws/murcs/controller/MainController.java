@@ -329,7 +329,6 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 stage.close();
             }
 
-
             for (Tabbable t : tabs) {
                 if (t.getTab() == newValue) {
                     navigable.setCurrentTab(t);
