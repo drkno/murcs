@@ -100,7 +100,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
     @FXML
     private TextField shortNameTextField;
 
-    /**
+    /**%
      * The description of the story.
      */
     @FXML
@@ -201,6 +201,11 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * Says whether or not the story editor is currently creating a new task.
      */
     private boolean creatingTask;
+
+    /**
+     * Whether a task was just removed.
+     */
+    private boolean removedTask;
 
     @Override
     public final void loadObject() {
@@ -316,6 +321,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         if (getModel() != lastSelectedStory) {
             taskEditors.clear();
+            removedTask = false;
         }
 
         progressBar.setStory(getModel());
@@ -344,6 +350,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
             protected Void call() throws Exception {
                 Platform.runLater(() -> taskContainer.getChildren().clear());
                 taskEditors.clear();
+                removedTask = false;
                 for (Task task : model.getTasks()) {
                     if (stop) {
                         break;
@@ -389,12 +396,13 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      * Updates all of the task editors within the story.
      */
     public void updateEditors() {
-        if (getTasks().size() != taskEditors.size() && !creatingTask) {
+        if (getTasks().size() != taskEditors.size() - (removedTask ? 1 : 0)  && !creatingTask) {
             loadTasks();
         }
         else {
             taskEditors.forEach(TaskEditor::update);
         }
+        removedTask = false;
     }
 
     @Override
@@ -1023,6 +1031,7 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
      */
     public final void removeTask(final Task task) {
         if (getModel().getTasks().contains(task)) {
+            removedTask = true;
             getModel().removeTask(task);
         }
     }
