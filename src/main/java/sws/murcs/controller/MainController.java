@@ -975,7 +975,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void undo(final ActionEvent event) {
         try {
-            UndoRedoManager.get().revert();
+            if (!undoMenuItem.isDisable()) {
+                UndoRedoManager.get().revert();
+            }
         }
         catch (Exception e) {
             // Something went very wrong
@@ -991,7 +993,9 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
     @FXML
     public final void redo(final ActionEvent event) {
         try {
-            UndoRedoManager.get().remake();
+            if (!redoMenuItem.isDisable()) {
+                UndoRedoManager.get().remake();
+            }
         }
         catch (Exception e) {
             // something went terribly wrong....
