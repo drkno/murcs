@@ -105,7 +105,8 @@ public class PersonEditor extends GenericEditor<Person> {
         }
 
         Collection<Skill> available = PersistenceManager.getCurrent().getCurrentModel().getAvailableSkills(getModel());
-        if (allocatableSkills.size() != available.size() || allocatableSkills.stream().allMatch(s -> available.contains(s))) {
+        if (allocatableSkills.size() != available.size() || allocatableSkills.stream()
+                .allMatch(s -> available.contains(s))) {
             allocatableSkills.clear();
             allocatableSkills.addAll(available);
         }
