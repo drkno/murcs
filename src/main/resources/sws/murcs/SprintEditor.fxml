@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+
 <AnchorPane fx:id="editor" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sws.murcs.controller.editor.SprintEditor">
     <children>
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -235,9 +237,9 @@
                                              <children>
                                                 <TableView fx:id="storiesTable" minHeight="0.0" minWidth="0.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                                   <columns>
-                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" prefWidth="-1.0" style="-fx-alignment: center;" text="%Completeness" />
-                                                    <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" prefWidth="-1.0" style="-fx-alignment: center;" text="%Estimate" />
-                                                    <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" prefWidth="400.0" text="%Story" />
+                                                      <TableColumn fx:id="completenessColumn" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Completeness" />
+                                                    <TableColumn fx:id="estimateColumn" maxWidth="1.7976931348623157E308" minWidth="70.0" prefWidth="-1.0" style="-fx-alignment: center;" text="%Estimate" />
+                                                    <TableColumn fx:id="storyColumn" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="%Story" />
                                                   </columns>
                                                 </TableView>
                                                 <ComboBox fx:id="storiesList" maxWidth="1.7976931348623157E308" promptText="%Addastory" GridPane.rowIndex="2" />
