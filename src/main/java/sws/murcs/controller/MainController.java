@@ -319,14 +319,19 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         final NavigableTabController navigable = new NavigableTabController();
         navigable.setCurrentTab(tabbable);
 
+        final Tabbable[] currentTab = new Tabbable[1];
+        currentTab[0] = tabbable;
+
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 stage.close();
             }
 
+
             for (Tabbable t : tabs) {
                 if (t.getTab() == newValue) {
                     navigable.setCurrentTab(t);
+                    currentTab[0] = t;
                     break;
                 }
             }
@@ -354,7 +359,7 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
         Image iconImage = new Image(classLoader.getResourceAsStream(("sws/murcs/logo/logo_small.png")));
         stage.getIcons().add(iconImage);
 
-        Window newWindow = new Window(stage, tabbable, window);
+        Window newWindow = new Window(stage, currentTab, window);
         newWindow.register();
         newWindow.addGlobalShortcutsToWindow();
 
@@ -461,7 +466,16 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
                 () -> redo(null));
         showHide.setAccelerator(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN));
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN),
-                () -> currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible()));
+                () -> {
+                    Object controller = App.getWindowManager().getTop().getController();
+                    if (controller instanceof Tabbable[]) {
+                        Tabbable[] modelController = ((Tabbable[]) controller);
+                        modelController[0].toggleSideBar(!modelController[0].sideBarVisible());
+                    }
+                    else {
+                        currentTabbable.toggleSideBar(!currentTabbable.sideBarVisible());
+                    }
+                });
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.EQUALS),
                 () -> currentTabbable.create());
         shortcutManager.registerShortcut(new KeyCodeCombination(KeyCode.DELETE),
