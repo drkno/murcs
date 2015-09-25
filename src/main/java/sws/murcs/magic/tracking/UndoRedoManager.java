@@ -164,6 +164,11 @@ public final class UndoRedoManager {
         Collection<FieldValuePair> afterValues = new ArrayList<>();
         findChanges(beforeValues, afterValues);
 
+        // initial special first add last min bodge
+        if (afterValues.isEmpty() && beforeValues.isEmpty() && head != null && !canRevert()) {
+            return commitNumber++;
+        }
+
         // no changes made
         if (afterValues.isEmpty() && canRevert()) {
             if (!head.getMessage().contains(message)) {
