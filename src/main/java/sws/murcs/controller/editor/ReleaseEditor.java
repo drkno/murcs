@@ -7,6 +7,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import sws.murcs.controller.controls.DatePickerHelper;
 import sws.murcs.exceptions.CustomException;
 import sws.murcs.exceptions.DuplicateObjectException;
 import sws.murcs.exceptions.InvalidParameterException;
@@ -120,7 +121,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         }
 
         LocalDate modelReleaseDate = getModel().getReleaseDate();
-        LocalDate viewReleaseDate = releaseDatePicker.getValue();
+        LocalDate viewReleaseDate = DatePickerHelper.getDate(releaseDatePicker);
         if (isNotEqual(modelReleaseDate, viewReleaseDate)) {
             releaseDatePicker.setValue(modelReleaseDate);
         }
@@ -152,7 +153,7 @@ public class ReleaseEditor extends GenericEditor<Release> {
         }
 
         LocalDate modelReleaseDate = getModel().getReleaseDate();
-        LocalDate viewReleaseDate = releaseDatePicker.getValue();
+        LocalDate viewReleaseDate = DatePickerHelper.getDate(releaseDatePicker);
         if (isNullOrNotEqual(modelReleaseDate, viewReleaseDate)) {
             getModel().setReleaseDate(viewReleaseDate);
         }
