@@ -37,12 +37,12 @@ public class CreatorWindowView {
     /**
      * The minimum height of the application.
      */
-    private final int minimumApplicationHeight = 577;
+    private final int minimumApplicationHeight = 677;
 
     /**
      * The minimum width of the application.
      */
-    private final int minimumApplicationWidth = 300;
+    private final int minimumApplicationWidth = 400;
 
     /**
      * Gets the model.
