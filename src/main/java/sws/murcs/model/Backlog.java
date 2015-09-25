@@ -53,6 +53,8 @@ public class Backlog extends Model {
      */
     @Searchable
     @TrackableValue
+    @XmlElementWrapper(name = "unprioritisedStories")
+    @XmlElement(name = "story")
     private List<Story> unprioritisedStories;
 
     /**

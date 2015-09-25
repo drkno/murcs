@@ -271,20 +271,20 @@ public class ReportGeneratorController {
         ModelType type = managementTypeComboBox.getSelectionModel().getSelectedItem();
         if (type != null) {
             ObservableList<Model> values = new ModelObservableArrayList<>();
-            workflowList.setItems(values);
+            managementList.setItems(values);
             Organisation organisation = PersistenceManager.getCurrent().getCurrentModel();
 
             switch (type) {
                 case Project:
-                    values = checkListType(organisation::getProjects);
+                    values.addAll(checkListType(organisation::getProjects));
                     managementList.setVisible(true);
                     break;
                 case Team:
-                    values = checkListType(organisation::getTeams);
+                    values.addAll(checkListType(organisation::getTeams));
                     managementList.setVisible(true);
                     break;
                 case Person:
-                    values = checkListType(organisation::getPeople);
+                    values.addAll(checkListType(organisation::getPeople));
                     managementList.setVisible(true);
                     break;
                 default:
