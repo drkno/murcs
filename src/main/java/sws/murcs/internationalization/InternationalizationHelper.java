@@ -49,7 +49,16 @@ public final class InternationalizationHelper {
      * @return The supported languages
      */
     public static List<String> getLanguages() {
-        return languages.keySet().stream().sorted(Comparator.<String>naturalOrder()).collect(Collectors.toList());
+        List<String> allLanguages = languages.keySet()
+                .stream()
+                .collect(Collectors.toList());
+        if (App.getVaderMode()) {
+            allLanguages.addAll(funnyLanguages.keySet()
+                    .stream()
+                    .collect(Collectors.toList()));
+        }
+        allLanguages.sort(Comparator.<String>naturalOrder());
+        return allLanguages;
     }
 
     /**
@@ -60,6 +69,12 @@ public final class InternationalizationHelper {
     public static void setLanguage(final String language) {
         currentLanguage = language;
         String code = languages.get(language);
+        if (code == null && App.getVaderMode()) {
+            code = funnyLanguages.get(language);
+        }
+        if (code == null) {
+            throw new IllegalArgumentException("Language not supported");
+        }
         if (App.getStage() != null && App.getStage().getScene() != null) {
             if (!Objects.equals(code, "tlhqaak")) {
                 Font.loadFont(App.class.getResource("/sws/murcs/styles/fonts/Roboto/Roboto-Regular.ttf")
@@ -137,6 +152,20 @@ public final class InternationalizationHelper {
     }
 
     /**
+     * A hashmap of funny languages.
+     */
+    private static Map<String, String> funnyLanguages = new HashMap<String, String>()
+    {
+        {
+            put("Foo", "fo");
+            put("Groot", "gr");
+            put("Hodor", "ho");
+            put("Programmer", "pr");
+            put("White Space", "wi");
+        }
+    };
+
+    /**
      * A hashmap of languages to codes.
      */
     private static Map<String, String> languages = new HashMap<String, String>()
@@ -167,19 +196,16 @@ public final class InternationalizationHelper {
             put("Filipino", "tl");
             put("Finnish", "fi");
             put("French", "fr");
-            put("Foo", "fo");
             put("Galician", "gl");
             put("Georgian", "ka");
             put("German", "de");
             put("Greek", "el");
-            put("Groot", "gr");
             put("Gujarati", "gu");
             put("Haitian Creole", "ht");
             put("Hausa", "ha");
             put("Hebrew", "iw");
             put("Hindi", "hi");
             put("Hmong", "hmn");
-            put("Hodor", "ho");
             put("Hungarian", "hu");
             put("Icelandic", "is");
             put("Igbo", "ig");
@@ -211,7 +237,6 @@ public final class InternationalizationHelper {
             put("Persian", "fa");
             put("Polish", "pl");
             put("Portuguese", "pt");
-            put("Programmer", "pr");
             put("Punjabi", "ma");
             put("Queretaro Otomi", "otq");
             put("Romanian", "ro");
@@ -240,7 +265,6 @@ public final class InternationalizationHelper {
             put("Yiddish", "yi");
             put("Yoruba", "yo");
             put("Yucatec Maya", "yua");
-            put("White Space", "wi");
             put("Zulu", "zu");
         }
     };
