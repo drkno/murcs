@@ -622,20 +622,22 @@ public class StoryEditor extends GenericEditor<Story> implements TaskEditorParen
 
         Story selectedStory = dependenciesDropDown.getValue();
         if (selectedStory != null) {
-            try {
-                Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                try {
+                    dependenciesDropDown.valueProperty().removeListener(getChangeListener());
                     dependenciesDropDown.getSelectionModel().clearSelection();
-                });
-                getModel().addDependency(selectedStory);
-                Node dependencyNode = generateStoryNode(selectedStory);
-                dependenciesContainer.getChildren().add(dependencyNode);
-                dependenciesMap.put(selectedStory, dependencyNode);
-                Platform.runLater(() -> {
+                    getModel().addDependency(selectedStory);
+                    Node dependencyNode = generateStoryNode(selectedStory);
+                    dependenciesContainer.getChildren().add(dependencyNode);
+                    dependenciesMap.put(selectedStory, dependencyNode);
                     searchableComboBoxDecorator.remove(selectedStory);
-                });
-            } catch (CustomException e) {
-                addFormError(dependenciesDropDown, e.getMessage());
-            }
+                } catch (CustomException e) {
+                    addFormError(dependenciesDropDown, e.getMessage());
+                }
+                finally {
+                    dependenciesDropDown.valueProperty().addListener(getChangeListener());
+                }
+            });
         }
     }
 
