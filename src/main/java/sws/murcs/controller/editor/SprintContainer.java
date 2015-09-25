@@ -140,7 +140,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints overview into the overview tab.
      */
     private void overviewTabSelected() {
-        if (overviewEditor == null || overviewEditor.disposed) {
+        if (overviewEditor == null || overviewEditor.isDisposed()) {
             createOverviewEditor();
         }
         overviewEditor.setModel(getModel());
@@ -151,7 +151,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints scrum board into the scrum board tab.
      */
     private void scrumBoardTabSelected() {
-        if (scrumBoard == null || scrumBoard.disposed) {
+        if (scrumBoard == null || scrumBoard.isDisposed()) {
             createScrumBoardEditor();
         }
         scrumBoard.setModel(getModel());
@@ -181,7 +181,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Loads this sprints burn down chart into the burn down tab.
      */
     private void burnDownChartTabSelected() {
-        if (burndownController == null || burndownController.disposed) {
+        if (burndownController == null || burndownController.isDisposed()) {
             createBurndownEditor();
         }
 
@@ -211,7 +211,7 @@ public class SprintContainer extends GenericEditor<Sprint> {
      * Called when the all tasks tab has been selected.
      */
     private void allTasksTabSelected() {
-        if (allTasksController == null || allTasksController.disposed) {
+        if (allTasksController == null || allTasksController.isDisposed()) {
             createAllTasksEditor();
         }
         else if (allTasksController.getModel() != getModel()) {
