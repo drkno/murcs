@@ -41,6 +41,11 @@ public class FieldValuePair {
     private FieldValuePair parent;
 
     /**
+     * This FVP represents an old value.
+     */
+    private boolean representsOldValue;
+
+    /**
      * Creates a new field value pair.
      * @param objectField field to use.
      * @param source object to get value from.
@@ -58,13 +63,16 @@ public class FieldValuePair {
      * @param objectValue value of the object.
      * @param trackableObject object to use.
      * @param parent field value pair that created this one.
+     * @param isOldValue sets if this represents an old value.
      */
     private FieldValuePair(final Field field, final Object objectValue,
-                           final TrackableObject trackableObject, final FieldValuePair parent) {
+                           final TrackableObject trackableObject, final FieldValuePair parent,
+                           final boolean isOldValue) {
         this.field = field;
         this.value = objectValue;
         this.trackableObject = trackableObject;
         this.parent = parent;
+        this.representsOldValue = isOldValue;
     }
 
     /**
@@ -230,8 +238,16 @@ public class FieldValuePair {
         Object oldValue = value;
         value = currentValue;
         return new FieldValuePair[] {
-            new FieldValuePair(field, oldValue, trackableObject, this),
-            new FieldValuePair(field, currentValue, trackableObject, this)
+            new FieldValuePair(field, oldValue, trackableObject, this, true),
+            new FieldValuePair(field, currentValue, trackableObject, this, false)
         };
+    }
+
+    /**
+     * This FVP represents the old value of the object.
+     * @return true if it does, false otherwise.
+     */
+    protected boolean isOldValue() {
+        return representsOldValue;
     }
 }

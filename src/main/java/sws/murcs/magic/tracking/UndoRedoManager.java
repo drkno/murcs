@@ -436,6 +436,7 @@ public final class UndoRedoManager {
         if (canRemake()) {
             throw new Exception("Cannot assimilate while remake is possible.");
         }
+        List<FieldValuePair> removablePairs = new ArrayList<>();
         while (!revertStack.isEmpty()) {
             if (revertStack.peek().getCommitNumber() == assimilateCommitNumber) {
                 break;
@@ -448,9 +449,22 @@ public final class UndoRedoManager {
                     .collect(Collectors.toList());
             addablePairs.forEach(head::addPair);
 
+            Collection<FieldValuePair> removedFields = commit.getPairs().stream()
+                    .filter(FieldValuePair::isOldValue).collect(Collectors.toList());
+            removablePairs.removeIf(p -> removedFields.stream()
+                    .anyMatch(o -> o.getObject().equals(p.getObject()) && o.getField().equals(p.getField())));
+            removablePairs.addAll(removedFields);
+
             head.getRemovedFields().addAll(commit.getAddedFields());
             head.getAddedFields().addAll(commit.getRemovedFields());
         }
+
+        if (!revertStack.isEmpty()) {
+            removablePairs.removeIf(p -> revertStack.peek().getPairs().stream()
+                    .anyMatch(o -> o.getObject().equals(p.getObject()) && o.getField().equals(p.getField())));
+            removablePairs.forEach(revertStack.peek()::addPair);
+        }
+
         notifyListeners(ChangeState.Assimilate);
     }
 
