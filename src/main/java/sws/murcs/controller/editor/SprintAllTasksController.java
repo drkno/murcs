@@ -230,7 +230,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
 
     @Override
     public void changesMade() {
-//        Platform.runLater(() -> {
         tasksVBox.getChildren().clear();
         clearStoryContainers();
         if (currentOrderBy != OrderBy.Obfuscation) {
@@ -241,7 +240,6 @@ public class SprintAllTasksController extends GenericEditor<Sprint> implements T
         if (currentGroupBy == GroupBy.Story) {
             addStoryContainers();
         }
-//        });
     }
 
     @Override
