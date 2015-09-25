@@ -374,7 +374,7 @@ public class EstimatePane implements UndoRedoChangeListener {
             event.consume();
         });
     }
-
+    
     protected void setEstimateLabelWidth(double prefWidth) {
         estimateLabel.setMinWidth(prefWidth);
         estimateLabel.setPrefWidth(prefWidth);
