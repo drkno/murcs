@@ -102,6 +102,12 @@ public class TeamEditor extends GenericEditor<Team> {
     @FXML
     private Button clearPOButton, clearSMButton;
 
+    @FXML
+    private GridPane mainGrid;
+
+    @FXML
+    private VBox pairProgrammingVBox;
+
     /**
      * List of people that can be added to the team.
      */
@@ -205,9 +211,13 @@ public class TeamEditor extends GenericEditor<Team> {
             memberNodeIndex.put(member, memberNode);
         });
 
-        pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
-                .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
-        pairProgrammingTable.setItems(generatePairProgrammingEntries());
+        if (!getIsCreationWindow()) {
+            pairsColumn.prefWidthProperty().bind(pairProgrammingTable.widthProperty()
+                    .subtract(timeSpentColumn.widthProperty()).subtract(columnSizeSubtract));
+            pairProgrammingTable.setItems(generatePairProgrammingEntries());
+        } else {
+            mainGrid.getChildren().remove(pairProgrammingVBox);
+        }
 
         Collection<Person> available = PersistenceManager.getCurrent().getCurrentModel().getUnassignedPeople();
         if (allocatablePeople.size() != available.size() || allocatablePeople.stream()
