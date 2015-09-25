@@ -442,7 +442,7 @@ public class TaskEditor implements UndoRedoChangeListener, PersonManagerControll
                 ((StoryEditor) editorController).removeTaskEditor(this);
             }
             popup.close();
-        });
+        }, "danger-will-robinson", "everything-is-fine");
         popup.show();
     }
 
