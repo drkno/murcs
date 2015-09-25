@@ -498,25 +498,25 @@ public class MainController implements UndoRedoChangeListener, ToolBarCommands, 
      */
     private void addNavigationShortcuts(final Stage stage, final Navigable navigationController) {
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN),
-                () -> navigationController.goBack());
+                navigationController::goBack);
         stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.PERIOD, KeyCombination.SHORTCUT_DOWN),
-                () -> navigationController.goForward());
+                navigationController::goForward);
 
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Project));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Team));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Person));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT4, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Skill));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT5, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Release));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT6, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Backlog));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT7, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Story));
-        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.ALT_DOWN),
+        stage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.DIGIT8, KeyCodeCombination.SHIFT_DOWN),
                 () -> navigationController.navigateTo(ModelType.Sprint));
     }
 
