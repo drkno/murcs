@@ -1,3 +1,5 @@
+> Backup of an old all year University group project, "murcs" ("scrum" backwards)
+
 # MURCS README
 ## Building
 <b>NB:</b> The minimum Java version this application is tested to run with is 1.8u25 and above. Any version below this is unsupported. Java 1.8u40 or higher is highly recommended due to the security valnerabilities fixed in the runtime. Using an unsupported version of Java may result in the program not performing as intended by the developers.
